@@ -1,7 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.50.4" />
+    <PackageReference Include="Npgsql" Version="3.2.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Identity.Core">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.identity.core\2.0.0\lib\netstandard2.0\Microsoft.Extensions.Identity.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>

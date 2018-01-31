@@ -4,24 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain;
+using FantasyCritic.Web.Models.ManageViewModels;
+using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using FantasyCritic.Web.Models;
-using FantasyCritic.Web.Models.ManageViewModels;
-using FantasyCritic.Web.Services;
 
-namespace FantasyCritic.Web.Controllers
+namespace WebApp.Controllers
 {
     [Authorize]
     [Route("[controller]/[action]")]
     public class ManageController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<FantasyCriticUser> _userManager;
+        private readonly SignInManager<FantasyCriticUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
@@ -29,8 +29,8 @@ namespace FantasyCritic.Web.Controllers
         private const string AuthenicatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public ManageController(
-          UserManager<ApplicationUser> userManager,
-          SignInManager<ApplicationUser> signInManager,
+          UserManager<FantasyCriticUser> userManager,
+          SignInManager<FantasyCriticUser> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
           UrlEncoder urlEncoder)
@@ -266,7 +266,7 @@ namespace FantasyCritic.Web.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var info = await _signInManager.GetExternalLoginInfoAsync(user.Id);
+            var info = await _signInManager.GetExternalLoginInfoAsync(user.Id.ToString());
             if (info == null)
             {
                 throw new ApplicationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
@@ -495,7 +495,7 @@ namespace FantasyCritic.Web.Controllers
         {
             return string.Format(
                 AuthenicatorUriFormat,
-                _urlEncoder.Encode("FantasyCritic.Web"),
+                _urlEncoder.Encode("WebApp"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using FantasyCritic.Web.Data;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Services;
+using FantasyCritic.Lib;
+using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.PGSQL;
 
 namespace FantasyCritic.Web
 {
@@ -26,11 +29,13 @@ namespace FantasyCritic.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            string connectionString = "";
+            services.AddScoped<IFantasyCriticUserStore>(factory => new PGSQLFantasyCriticUserStore(connectionString));
+            services.AddScoped<IFantasyRoleStore>(factory => new PGSQLFantasyCriticRoleStore(connectionString));
+            services.AddScoped<IUserStore<FantasyCriticUser>>(factory => new PGSQLFantasyCriticUserStore(connectionString));
+            services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => new PGSQLFantasyCriticRoleStore(connectionString));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddIdentity<FantasyCriticUser, FantasyCriticRole>()
                 .AddDefaultTokenProviders();
 
             // Add application services.
