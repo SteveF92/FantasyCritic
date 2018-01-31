@@ -29,7 +29,7 @@ namespace FantasyCritic.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = "";
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddScoped<IFantasyCriticUserStore>(factory => new PGSQLFantasyCriticUserStore(connectionString));
             services.AddScoped<IFantasyRoleStore>(factory => new PGSQLFantasyCriticRoleStore(connectionString));
             services.AddScoped<IUserStore<FantasyCriticUser>>(factory => new PGSQLFantasyCriticUserStore(connectionString));
