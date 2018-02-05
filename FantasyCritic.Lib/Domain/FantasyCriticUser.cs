@@ -21,5 +21,10 @@ namespace FantasyCritic.Lib.Domain
         public string SecurityStamp { get; set; }
 
         public string PasswordHash { get; set; }
+
+        public bool TwoFactorEnabled
+        {
+            get { return false; }
+        }
     }
 }

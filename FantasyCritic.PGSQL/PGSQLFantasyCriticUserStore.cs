@@ -27,12 +27,12 @@ namespace FantasyCritic.PGSQL
             cancellationToken.ThrowIfCancellationRequested();
 
             Guid userID = Guid.NewGuid();
-            using (var connection = new NpgsqlConnection())
+            using (var connection = new NpgsqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                await connection.ExecuteAsync("insert into public.tblUser(UserId, UserName, NormalizedUserName, EmailAddress, PasswordHash, SecurityStamp, EmailConfirmed) values(@userID, @userName, @normalizedUserName, " +
-                                              "@emailAddress, @passwordHash, @securityStamp, @emailConfirmed)",
-                    new { userID = userID, userName = user.UserName, normalizedUserName = user.NormalizedUserName, emailAddress = user.EmailAddress, passwordHash = user.PasswordHash, securityStamp = user.SecurityStamp, emailConfirmed = user.EmailConfirmed});
+                await connection.ExecuteAsync("insert into tbluser(userid, username, normalizedusername, emailaddress, normalizedemailaddress, passwordhash, securitystamp, emailconfirmed) values(@userID, @userName, @normalizedusername, " +
+                                              "@emailAddress, @normalizedEmailAddress, @passwordHash, @securityStamp, @emailConfirmed)",
+                    new { userID = userID, userName = user.UserName, normalizedUsername = user.NormalizedUserName, emailAddress = user.EmailAddress, normalizedEmailAddress = user.NormalizedEmailAddress, passwordHash = user.PasswordHash, securityStamp = user.SecurityStamp, emailConfirmed = user.EmailConfirmed});
             }
 
             return IdentityResult.Success;
@@ -45,7 +45,7 @@ namespace FantasyCritic.PGSQL
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                await connection.ExecuteAsync("delete from public.tblUser where UserId = @userID", new {user.UserID});
+                await connection.ExecuteAsync("delete from tbluser where userid = @userID", new {user.UserID});
             }
 
             return IdentityResult.Success;
@@ -55,8 +55,8 @@ namespace FantasyCritic.PGSQL
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Guid parsedUserId;
-            if (!Guid.TryParse(userId, out parsedUserId))
+            Guid parseduserid;
+            if (!Guid.TryParse(userId, out parseduserid))
             {
                 throw new ArgumentOutOfRangeException("userId", $"'{new {userId}}' is not a valid GUID.");
             }
@@ -64,8 +64,8 @@ namespace FantasyCritic.PGSQL
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                var userResult = await connection.QueryAsync<FantasyCriticUser>($@"SELECT * FROM public.tblUser WHERE UserID = @userID", new { userId });
-                return userResult.Single();
+                var userResult = await connection.QueryAsync<FantasyCriticUser>($@"SELECT * FROM tbluser WHERE UserID = @userID", new { userId });
+                return userResult.SingleOrDefault();
             }
         }
 
@@ -76,8 +76,8 @@ namespace FantasyCritic.PGSQL
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                var userResult = await connection.QueryAsync<FantasyCriticUser>($@"SELECT * FROM public.tblUser WHERE UserName = @userName", new { userName });
-                return userResult.Single();
+                var userResult = await connection.QueryAsync<FantasyCriticUser>($@"SELECT * FROM tbluser WHERE username = @userName", new { userName });
+                return userResult.SingleOrDefault();
             }
         }
 
@@ -115,13 +115,13 @@ namespace FantasyCritic.PGSQL
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                await connection.ExecuteAsync($@"UPDATE public.tblUser SET
-                    UserName = @{nameof(FantasyCriticUser.UserName)},
-                    NormalizedUserName = @{nameof(FantasyCriticUser.NormalizedUserName)},
+                await connection.ExecuteAsync($@"UPDATE tbluser SET
+                    username = @{nameof(FantasyCriticUser.UserName)},
+                    normalizedusername = @{nameof(FantasyCriticUser.NormalizedUserName)},
                     Email = @{nameof(FantasyCriticUser.EmailAddress)},
-                    NormalizedEmail = @{nameof(FantasyCriticUser.NormalizedEmailAddress)},
-                    EmailConfirmed = @{nameof(FantasyCriticUser.EmailConfirmed)},
-                    PasswordHash = @{nameof(FantasyCriticUser.PasswordHash)},
+                    normalizedEmail = @{nameof(FantasyCriticUser.NormalizedEmailAddress)},
+                    emailconfirmed = @{nameof(FantasyCriticUser.EmailConfirmed)},
+                    passwordhash = @{nameof(FantasyCriticUser.PasswordHash)},
                     WHERE Id = @{nameof(FantasyCriticUser.UserID)}", user);
             }
 
@@ -158,7 +158,7 @@ namespace FantasyCritic.PGSQL
             {
                 await connection.OpenAsync(cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<FantasyCriticUser>($@"SELECT * FROM [FantasyCriticUser]
-                    WHERE [NormalizedEmail] = @{nameof(normalizedEmail)}", new { normalizedEmail });
+                    WHERE [normalizedEmail] = @{nameof(normalizedEmail)}", new { normalizedEmail });
             }
         }
 
@@ -229,13 +229,13 @@ namespace FantasyCritic.PGSQL
             {
                 await connection.OpenAsync(cancellationToken);
                 var normalizedName = roleName.ToUpper();
-                var roleId = await connection.ExecuteScalarAsync<int?>($"SELECT [Id] FROM [ApplicationRole] WHERE [NormalizedName] = @{nameof(normalizedName)}", new { normalizedName });
+                var roleId = await connection.ExecuteScalarAsync<int?>($"SELECT [Id] FROM [ApplicationRole] WHERE [normalizedName] = @{nameof(normalizedName)}", new { normalizedName });
                 if (!roleId.HasValue)
-                    roleId = await connection.ExecuteAsync($"INSERT INTO [ApplicationRole]([Name], [NormalizedName]) VALUES(@{nameof(roleName)}, @{nameof(normalizedName)})",
+                    roleId = await connection.ExecuteAsync($"INSERT INTO [ApplicationRole]([Name], [normalizedName]) VALUES(@{nameof(roleName)}, @{nameof(normalizedName)})",
                         new { roleName, normalizedName });
 
-                await connection.ExecuteAsync($"IF NOT EXISTS(SELECT 1 FROM [ApplicationUserRole] WHERE [UserId] = @userId AND [RoleId] = @{nameof(roleId)}) " +
-                    $"INSERT INTO [ApplicationUserRole]([UserId], [RoleId]) VALUES(@userId, @{nameof(roleId)})",
+                await connection.ExecuteAsync($"IF NOT EXISTS(SELECT 1 FROM [ApplicationUserRole] WHERE [userid] = @userId AND [RoleId] = @{nameof(roleId)}) " +
+                    $"INSERT INTO [ApplicationUserRole]([userid], [RoleId]) VALUES(@userId, @{nameof(roleId)})",
                     new { userId = user.UserID, roleId });
             }
         }
@@ -248,9 +248,9 @@ namespace FantasyCritic.PGSQL
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                var roleId = await connection.ExecuteScalarAsync<int?>("SELECT [Id] FROM [ApplicationRole] WHERE [NormalizedName] = @normalizedName", new { normalizedName = roleName.ToUpper() });
+                var roleId = await connection.ExecuteScalarAsync<int?>("SELECT [Id] FROM [ApplicationRole] WHERE [normalizedName] = @normalizedName", new { normalizedName = roleName.ToUpper() });
                 if (!roleId.HasValue)
-                    await connection.ExecuteAsync($"DELETE FROM [ApplicationUserRole] WHERE [UserId] = @userId AND [RoleId] = @{nameof(roleId)}", new { userId = user.Id, roleId });
+                    await connection.ExecuteAsync($"DELETE FROM [ApplicationUserRole] WHERE [userid] = @userId AND [RoleId] = @{nameof(roleId)}", new { userId = user.UserID, roleId });
             }
         }
 
@@ -263,7 +263,7 @@ namespace FantasyCritic.PGSQL
             {
                 await connection.OpenAsync(cancellationToken);
                 var queryResults = await connection.QueryAsync<string>("SELECT r.[Name] FROM [ApplicationRole] r INNER JOIN [ApplicationUserRole] ur ON ur.[RoleId] = r.Id " +
-                    "WHERE ur.UserId = @userId", new { userId = user.UserID });
+                    "WHERE ur.userid = @userId", new { userId = user.UserID });
 
                 return queryResults.ToList();
             }
@@ -276,9 +276,9 @@ namespace FantasyCritic.PGSQL
 
             using (var connection = new NpgsqlConnection(_connectionString))
             {
-                var roleId = await connection.ExecuteScalarAsync<int?>("SELECT [Id] FROM [ApplicationRole] WHERE [NormalizedName] = @normalizedName", new { normalizedName = roleName.ToUpper() });
+                var roleId = await connection.ExecuteScalarAsync<int?>("SELECT [Id] FROM [ApplicationRole] WHERE [normalizedName] = @normalizedName", new { normalizedName = roleName.ToUpper() });
                 if (roleId == default(int)) return false;
-                var matchingRoles = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM [ApplicationUserRole] WHERE [UserId] = @userId AND [RoleId] = @{nameof(roleId)}",
+                var matchingRoles = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM [ApplicationUserRole] WHERE [userid] = @userId AND [RoleId] = @{nameof(roleId)}",
                     new { userId = user.UserID, roleId });
 
                 return matchingRoles > 0;
@@ -293,7 +293,7 @@ namespace FantasyCritic.PGSQL
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 var queryResults = await connection.QueryAsync<FantasyCriticUser>("SELECT u.* FROM [FantasyCriticUser] u " +
-                    "INNER JOIN [ApplicationUserRole] ur ON ur.[UserId] = u.[Id] INNER JOIN [ApplicationRole] r ON r.[Id] = ur.[RoleId] WHERE r.[NormalizedName] = @normalizedName",
+                    "INNER JOIN [ApplicationUserRole] ur ON ur.[userid] = u.[Id] INNER JOIN [ApplicationRole] r ON r.[Id] = ur.[RoleId] WHERE r.[normalizedName] = @normalizedName",
                     new { normalizedName = roleName.ToUpper() });
 
                 return queryResults.ToList();

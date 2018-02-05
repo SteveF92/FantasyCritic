@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using FantasyCritic.Web.Services;
 
-namespace FantasyCritic.Web.Services
+namespace FantasyCritic.Web.Extensions
 {
     public static class EmailSenderExtensions
     {

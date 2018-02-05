@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Web.Extensions;
 using FantasyCritic.Web.Models.ManageViewModels;
 using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -86,7 +87,7 @@ namespace WebApp.Controllers
                 var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
                 if (!setEmailResult.Succeeded)
                 {
-                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
+                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.UserID}'.");
                 }
             }
 
@@ -255,16 +256,16 @@ namespace WebApp.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var info = await _signInManager.GetExternalLoginInfoAsync(user.Id.ToString());
+            var info = await _signInManager.GetExternalLoginInfoAsync(user.UserID.ToString());
             if (info == null)
             {
-                throw new ApplicationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occurred loading external login info for user with ID '{user.UserID}'.");
             }
 
             var result = await _userManager.AddLoginAsync(user, info);
             if (!result.Succeeded)
             {
-                throw new ApplicationException($"Unexpected error occurred adding external login for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occurred adding external login for user with ID '{user.UserID}'.");
             }
 
             // Clear the existing external cookie to ensure a clean login process
@@ -287,7 +288,7 @@ namespace WebApp.Controllers
             var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
             if (!result.Succeeded)
             {
-                throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.UserID}'.");
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
@@ -325,7 +326,7 @@ namespace WebApp.Controllers
 
             if (!user.TwoFactorEnabled)
             {
-                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.UserID}'.");
             }
 
             return View(nameof(Disable2fa));
@@ -344,10 +345,10 @@ namespace WebApp.Controllers
             var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
             if (!disable2faResult.Succeeded)
             {
-                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.UserID}'.");
             }
 
-            _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+            _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.UserID);
             return RedirectToAction(nameof(TwoFactorAuthentication));
         }
 
@@ -370,7 +371,7 @@ namespace WebApp.Controllers
             var model = new EnableAuthenticatorViewModel
             {
                 SharedKey = FormatKey(unformattedKey),
-                AuthenticatorUri = GenerateQrCodeUri(user.Email, unformattedKey)
+                AuthenticatorUri = GenerateQrCodeUri(user.EmailAddress, unformattedKey)
             };
 
             return View(model);
@@ -404,7 +405,7 @@ namespace WebApp.Controllers
             }
 
             await _userManager.SetTwoFactorEnabledAsync(user, true);
-            _logger.LogInformation("User with ID {UserId} has enabled 2FA with an authenticator app.", user.Id);
+            _logger.LogInformation("User with ID {UserId} has enabled 2FA with an authenticator app.", user.UserID);
             return RedirectToAction(nameof(GenerateRecoveryCodes));
         }
 
@@ -426,7 +427,7 @@ namespace WebApp.Controllers
 
             await _userManager.SetTwoFactorEnabledAsync(user, false);
             await _userManager.ResetAuthenticatorKeyAsync(user);
-            _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
+            _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.UserID);
 
             return RedirectToAction(nameof(EnableAuthenticator));
         }
@@ -442,13 +443,13 @@ namespace WebApp.Controllers
 
             if (!user.TwoFactorEnabled)
             {
-                throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' as they do not have 2FA enabled.");
+                throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.UserID}' as they do not have 2FA enabled.");
             }
 
             var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
             var model = new GenerateRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
-            _logger.LogInformation("User with ID {UserId} has generated new 2FA recovery codes.", user.Id);
+            _logger.LogInformation("User with ID {UserId} has generated new 2FA recovery codes.", user.UserID);
 
             return View(model);
         }
