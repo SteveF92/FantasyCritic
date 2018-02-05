@@ -76,7 +76,7 @@ namespace FantasyCritic.PGSQL
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                var userResult = await connection.QueryAsync<FantasyCriticUser>($@"SELECT * FROM tbluser WHERE username = @userName", new { userName });
+                var userResult = await connection.QueryAsync<FantasyCriticUser>($@"SELECT * FROM tbluser WHERE normalizedusername = @userName", new { userName });
                 return userResult.SingleOrDefault();
             }
         }
