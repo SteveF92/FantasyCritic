@@ -7,24 +7,35 @@ namespace FantasyCritic.Lib.Domain
 {
     public class FantasyCriticUser
     {
-        public Guid UserID { get; set; }
+        public FantasyCriticUser(Guid userID, string userName, string normalizedUserName, string emailAddress, 
+            string normalizedEmailAddress, bool emailConfirmed, string securityStamp, string passwordHash, bool twoFactorEnabled)
+        {
+            UserID = userID;
+            UserName = userName;
+            NormalizedUserName = normalizedUserName;
+            EmailAddress = emailAddress;
+            NormalizedEmailAddress = normalizedEmailAddress;
+            EmailConfirmed = emailConfirmed;
+            SecurityStamp = securityStamp;
+            PasswordHash = passwordHash;
+            TwoFactorEnabled = twoFactorEnabled;
+        }
 
-        public string UserName { get; set; }
+        public Guid UserID { get; }
 
-        public string NormalizedUserName { get; set; }
+        public string UserName { get; }
+
+        public string NormalizedUserName { get; }
 
         public string EmailAddress { get; set; }
-        public string NormalizedEmailAddress { get; set; }
+        public string NormalizedEmailAddress { get; }
 
-        public bool EmailConfirmed { get; set; }
+        public bool EmailConfirmed { get; }
 
-        public string SecurityStamp { get; set; }
+        public string SecurityStamp { get; }
 
-        public string PasswordHash { get; set; }
+        public string PasswordHash { get; }
 
-        public bool TwoFactorEnabled
-        {
-            get { return false; }
-        }
+        public bool TwoFactorEnabled { get; }
     }
 }
