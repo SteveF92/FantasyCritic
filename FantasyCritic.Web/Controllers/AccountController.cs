@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.AccountViewModels;
 using FantasyCritic.Web.Services;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Web.Controllers
 {
@@ -20,13 +21,13 @@ namespace FantasyCritic.Web.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly FantasyCriticUserManager _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         public AccountController(
-            UserManager<ApplicationUser> userManager,
+            FantasyCriticUserManager userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger)
