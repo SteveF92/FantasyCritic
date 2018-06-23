@@ -14,6 +14,7 @@ using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.ManageViewModels;
 using FantasyCritic.Web.Services;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Web.Controllers
 {
@@ -22,7 +23,7 @@ namespace FantasyCritic.Web.Controllers
     public class ManageController : Controller
     {
         private readonly FantasyCriticUserManager _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<FantasyCriticUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
@@ -32,7 +33,7 @@ namespace FantasyCritic.Web.Controllers
 
         public ManageController(
           FantasyCriticUserManager userManager,
-          SignInManager<ApplicationUser> signInManager,
+          SignInManager<FantasyCriticUser> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
           UrlEncoder urlEncoder)
@@ -59,8 +60,8 @@ namespace FantasyCritic.Web.Controllers
             var model = new IndexViewModel
             {
                 Username = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
+                Email = user.EmailAddress,
+                PhoneNumber = "NO PHONE",
                 IsEmailConfirmed = user.EmailConfirmed,
                 StatusMessage = StatusMessage
             };
@@ -83,23 +84,23 @@ namespace FantasyCritic.Web.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var email = user.Email;
+            var email = user.EmailAddress;
             if (model.Email != email)
             {
                 var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
                 if (!setEmailResult.Succeeded)
                 {
-                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
+                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.UserID}'.");
                 }
             }
 
-            var phoneNumber = user.PhoneNumber;
+            var phoneNumber = "NO PHONE";
             if (model.PhoneNumber != phoneNumber)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    throw new ApplicationException($"Unexpected error occurred setting phone number for user with ID '{user.Id}'.");
+                    throw new ApplicationException($"Unexpected error occurred setting phone number for user with ID '{user.UserID}'.");
                 }
             }
 
@@ -123,8 +124,8 @@ namespace FantasyCritic.Web.Controllers
             }
 
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-            var email = user.Email;
+            var callbackUrl = Url.EmailConfirmationLink(user.UserID.ToString(), code, Request.Scheme);
+            var email = user.EmailAddress;
             await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
             StatusMessage = "Verification email sent. Please check your email.";
@@ -268,16 +269,16 @@ namespace FantasyCritic.Web.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var info = await _signInManager.GetExternalLoginInfoAsync(user.Id);
+            var info = await _signInManager.GetExternalLoginInfoAsync(user.UserID.ToString());
             if (info == null)
             {
-                throw new ApplicationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occurred loading external login info for user with ID '{user.UserID}'.");
             }
 
             var result = await _userManager.AddLoginAsync(user, info);
             if (!result.Succeeded)
             {
-                throw new ApplicationException($"Unexpected error occurred adding external login for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occurred adding external login for user with ID '{user.UserID}'.");
             }
 
             // Clear the existing external cookie to ensure a clean login process
@@ -300,7 +301,7 @@ namespace FantasyCritic.Web.Controllers
             var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
             if (!result.Succeeded)
             {
-                throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.UserID}'.");
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
@@ -338,7 +339,7 @@ namespace FantasyCritic.Web.Controllers
 
             if (!user.TwoFactorEnabled)
             {
-                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.UserID}'.");
             }
 
             return View(nameof(Disable2fa));
@@ -357,10 +358,10 @@ namespace FantasyCritic.Web.Controllers
             var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
             if (!disable2faResult.Succeeded)
             {
-                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
+                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.UserID}'.");
             }
 
-            _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+            _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.UserID);
             return RedirectToAction(nameof(TwoFactorAuthentication));
         }
 
@@ -409,7 +410,7 @@ namespace FantasyCritic.Web.Controllers
             }
 
             await _userManager.SetTwoFactorEnabledAsync(user, true);
-            _logger.LogInformation("User with ID {UserId} has enabled 2FA with an authenticator app.", user.Id);
+            _logger.LogInformation("User with ID {UserId} has enabled 2FA with an authenticator app.", user.UserID);
             var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
             TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
@@ -447,7 +448,7 @@ namespace FantasyCritic.Web.Controllers
 
             await _userManager.SetTwoFactorEnabledAsync(user, false);
             await _userManager.ResetAuthenticatorKeyAsync(user);
-            _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
+            _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.UserID);
 
             return RedirectToAction(nameof(EnableAuthenticator));
         }
@@ -463,7 +464,7 @@ namespace FantasyCritic.Web.Controllers
 
             if (!user.TwoFactorEnabled)
             {
-                throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' because they do not have 2FA enabled.");
+                throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.UserID}' because they do not have 2FA enabled.");
             }
 
             return View(nameof(GenerateRecoveryCodes));
@@ -481,11 +482,11 @@ namespace FantasyCritic.Web.Controllers
 
             if (!user.TwoFactorEnabled)
             {
-                throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' as they do not have 2FA enabled.");
+                throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.UserID}' as they do not have 2FA enabled.");
             }
 
             var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-            _logger.LogInformation("User with ID {UserId} has generated new 2FA recovery codes.", user.Id);
+            _logger.LogInformation("User with ID {UserId} has generated new 2FA recovery codes.", user.UserID);
 
             var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
@@ -528,7 +529,7 @@ namespace FantasyCritic.Web.Controllers
                 unformattedKey);
         }
 
-        private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user, EnableAuthenticatorViewModel model)
+        private async Task LoadSharedKeyAndQrCodeUriAsync(FantasyCriticUser user, EnableAuthenticatorViewModel model)
         {
             var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
             if (string.IsNullOrEmpty(unformattedKey))
@@ -538,7 +539,7 @@ namespace FantasyCritic.Web.Controllers
             }
 
             model.SharedKey = FormatKey(unformattedKey);
-            model.AuthenticatorUri = GenerateQrCodeUri(user.Email, unformattedKey);
+            model.AuthenticatorUri = GenerateQrCodeUri(user.EmailAddress, unformattedKey);
         }
 
         #endregion
