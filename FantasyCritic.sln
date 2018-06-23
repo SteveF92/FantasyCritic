@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Lib", "FantasyCritic.Lib\FantasyCritic.Lib.csproj", "{2427271C-FA4F-496F-9DA8-F81088565BAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.MySQL", "FantasyCritic.MySQL\FantasyCritic.MySQL.csproj", "{D6D6A965-4B93-4F21-860D-2C27EC27DF29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.MySQL", "FantasyCritic.MySQL\FantasyCritic.MySQL.csproj", "{D6D6A965-4B93-4F21-860D-2C27EC27DF29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.Web", "FantasyCritic.Web\FantasyCritic.Web.csproj", "{AFF449DB-5927-4E23-A751-0097FD113464}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D6D6A965-4B93-4F21-860D-2C27EC27DF29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6D6A965-4B93-4F21-860D-2C27EC27DF29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6D6A965-4B93-4F21-860D-2C27EC27DF29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFF449DB-5927-4E23-A751-0097FD113464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFF449DB-5927-4E23-A751-0097FD113464}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFF449DB-5927-4E23-A751-0097FD113464}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFF449DB-5927-4E23-A751-0097FD113464}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
