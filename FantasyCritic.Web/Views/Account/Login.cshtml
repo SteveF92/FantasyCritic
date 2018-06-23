@@ -2,8 +2,10 @@
 @using System.Linq
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Http.Authentication
+@using FantasyCritic.Lib.Domain
+
 @model LoginViewModel
-@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<FantasyCriticUser> SignInManager
 
 @{
     ViewData["Title"] = "Log in";

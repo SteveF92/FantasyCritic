@@ -13,6 +13,7 @@ using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Services;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Web
 {
@@ -29,12 +30,21 @@ namespace FantasyCritic.Web
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddScoped<IFantasyCriticUserStore>(factory => new MySQLFantasyIdentityStore(connectionString));
-            services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString));
+
+            var identityStore = new MySQLFantasyIdentityStore(connectionString);
+            var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString);
+
+            services.AddScoped<IFantasyCriticUserStore>(factory => identityStore);
+            services.AddScoped<IFantasyCriticRoleStore>(factory => identityStore);
+            services.AddScoped<IFantasyCriticRepo>(factory => fantasyCriticRepo);
+            services.AddScoped<IUserStore<FantasyCriticUser>>(factory => identityStore);
+            services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => identityStore);
+
+            services.AddScoped<FantasyCriticUserManager>();
+            services.AddScoped<FantasyCriticUserManager>();
 
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>()
                 .AddDefaultTokenProviders();
-
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();

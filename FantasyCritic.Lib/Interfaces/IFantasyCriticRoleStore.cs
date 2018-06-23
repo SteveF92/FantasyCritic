@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Lib.Interfaces
 {
-    public interface IFantasyRoleStore : IRoleStore<FantasyCriticRole>
+    public interface IFantasyCriticRoleStore : IRoleStore<FantasyCriticRole>
     {
     }
 }

@@ -1,5 +1,7 @@
 ﻿@using FantasyCritic.Web.Views.Manage
-@inject SignInManager<ApplicationUser> SignInManager
+@using FantasyCritic.Lib.Domain
+
+@inject SignInManager<FantasyCriticUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

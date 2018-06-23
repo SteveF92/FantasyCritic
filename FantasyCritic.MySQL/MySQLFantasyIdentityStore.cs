@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.MySQL
 {
-    public class MySQLFantasyIdentityStore : IFantasyCriticUserStore, IFantasyRoleStore
+    public class MySQLFantasyIdentityStore : IFantasyCriticUserStore, IFantasyCriticRoleStore
     {
         private readonly string _connectionString;
 
