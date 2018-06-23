@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Lib.Interfaces
 {
-    public interface IFantasyCriticUserStore : IUserStore<FantasyCriticUser>, IUserEmailStore<FantasyCriticUser>, IUserPasswordStore<FantasyCriticUser>
+    public interface IFantasyCriticUserStore : IUserStore<FantasyCriticUser>, IUserEmailStore<FantasyCriticUser>, IUserPhoneNumberStore<FantasyCriticUser>,
+        IUserTwoFactorStore<FantasyCriticUser>, IUserPasswordStore<FantasyCriticUser>, IUserRoleStore<FantasyCriticUser>
     {
     }
 }

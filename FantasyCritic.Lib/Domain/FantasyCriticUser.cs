@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain
     public class FantasyCriticUser
     {
         public FantasyCriticUser(Guid userID, string userName, string normalizedUserName, string emailAddress, 
-            string normalizedEmailAddress, bool emailConfirmed, string securityStamp, string passwordHash)
+            string normalizedEmailAddress, bool emailConfirmed, string securityStamp, string passwordHash, bool twoFactorEnabled)
         {
             UserID = userID;
             UserName = userName;
@@ -18,6 +18,7 @@ namespace FantasyCritic.Lib.Domain
             EmailConfirmed = emailConfirmed;
             SecurityStamp = securityStamp;
             PasswordHash = passwordHash;
+            TwoFactorEnabled = twoFactorEnabled;
         }
 
         public Guid UserID { get; }
@@ -34,5 +35,7 @@ namespace FantasyCritic.Lib.Domain
         public string SecurityStamp { get; }
 
         public string PasswordHash { get; }
+
+        public bool TwoFactorEnabled { get; }
     }
 }
