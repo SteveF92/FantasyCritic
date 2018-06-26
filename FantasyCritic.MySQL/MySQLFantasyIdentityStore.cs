@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Dapper;
 
 namespace FantasyCritic.MySQL
 {
@@ -37,11 +38,6 @@ namespace FantasyCritic.MySQL
         }
 
         public Task<IdentityResult> DeleteAsync(FantasyCriticRole role, CancellationToken cancellationToken)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Dispose()
         {
             throw new System.NotImplementedException();
         }
@@ -224,6 +220,11 @@ namespace FantasyCritic.MySQL
         Task<FantasyCriticRole> IRoleStore<FantasyCriticRole>.FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 }
