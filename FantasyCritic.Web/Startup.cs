@@ -31,14 +31,15 @@ namespace FantasyCritic.Web
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
 
-            var identityStore = new MySQLFantasyIdentityStore(connectionString);
+            var userStore = new MySQLFantasyCriticUserStore(connectionString);
+            var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString);
 
-            services.AddScoped<IFantasyCriticUserStore>(factory => identityStore);
-            services.AddScoped<IFantasyCriticRoleStore>(factory => identityStore);
+            services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
+            services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
             services.AddScoped<IFantasyCriticRepo>(factory => fantasyCriticRepo);
-            services.AddScoped<IUserStore<FantasyCriticUser>>(factory => identityStore);
-            services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => identityStore);
+            services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
+            services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticUserManager>();

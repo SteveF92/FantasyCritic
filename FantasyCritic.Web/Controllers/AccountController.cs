@@ -222,7 +222,7 @@ namespace FantasyCritic.Web.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.Email, model.Email, false, "", "", false);
+                var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.Email, model.Email, false, "", "");
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

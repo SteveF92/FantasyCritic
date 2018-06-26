@@ -20,21 +20,21 @@ namespace FantasyCritic.Lib.Domain
             PasswordHash = passwordHash;
         }
 
-        public Guid UserID { get; }
+        public Guid UserID { get; set; }
 
-        public string UserName { get; }
+        public string UserName { get; set; }
 
-        public string NormalizedUserName { get; }
+        public string NormalizedUserName { get; set; }
 
-        public string EmailAddress { get; }
+        public string EmailAddress { get; set; }
 
-        public string NormalizedEmailAddress { get; }
+        public string NormalizedEmailAddress { get; set; }
 
-        public bool EmailConfirmed { get; }
+        public bool EmailConfirmed { get; set; }
 
-        public string SecurityStamp { get; }
+        public string SecurityStamp { get; set; }
 
-        public string PasswordHash { get; }
+        public string PasswordHash { get; set; }
 
         public bool TwoFactorEnabled => false;
     }
