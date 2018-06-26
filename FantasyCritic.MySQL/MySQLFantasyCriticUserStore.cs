@@ -242,34 +242,82 @@ namespace FantasyCritic.MySQL
             throw new System.NotImplementedException();
         }
 
-        public Task<IList<string>> GetRolesAsync(FantasyCriticUser user, CancellationToken cancellationToken)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public Task<bool> GetTwoFactorEnabledAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<IList<FantasyCriticUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        public async Task<IList<string>> GetRolesAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync(cancellationToken);
+                var roleResults = await connection.QueryAsync<string>(@"select tblrole.Name from tbluser join tbluserhasrole on (tbluser.UserID = tbluserhasrole.UserID) " +
+                    "join tblrole on (tbluserhasrole.RoleID = tblrole.RoleID) WHERE tbluser.UserID = @userID", new { userID = user.UserID });
+                var roleStrings = roleResults.ToList();
+                return roleStrings;
+            }
         }
 
-        public Task AddToRoleAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken)
+        public async Task<IList<FantasyCriticUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync(cancellationToken);
+                var userResults = await connection.QueryAsync<Guid>(@"select tbluser.UserID from tbluser join tbluserhasrole on (tbluser.UserID = tbluserhasrole.UserID) " +
+                    "join tblrole on (tbluserhasrole.RoleID = tblrole.RoleID) WHERE tblrole.Name = @roleName", new { roleName });
+
+                List<FantasyCriticUser> users = new List<FantasyCriticUser>();
+                foreach (Guid userID in userResults)
+                {
+                    var user = await FindByIdAsync(userID.ToString(), cancellationToken);
+                    users.Add(user);
+                }
+                return users;
+            }
         }
 
-        public Task<bool> IsInRoleAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken)
+        public async Task AddToRoleAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                string retrieveSQL = "select ID from tblrole where Name = @Name";
+
+                await connection.OpenAsync(cancellationToken);
+                var roleID = await connection.QueryAsync<int>(retrieveSQL, new { Name = roleName });
+
+                string insertSQL = "insert into tbluserhasrole (UserID, RoleID) VALUES (@UserID, @RoleID)";
+                await connection.ExecuteAsync(insertSQL, new { UserID = user.UserID, RoleID = roleID });
+            }
         }
 
-        public Task RemoveFromRoleAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken)
+        public async Task<bool> IsInRoleAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            var roles = await GetRolesAsync(user, cancellationToken);
+            bool inRole = roles.Select(x => x.ToLower()).Any(x => x.Contains(roleName.ToLower()));
+            return inRole;
+        }
+
+        public async Task RemoveFromRoleAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                string retrieveSQL = "select ID from tblrole where Name = @Name";
+
+                await connection.OpenAsync(cancellationToken);
+                var roleID = await connection.QueryAsync<int>(retrieveSQL, new { Name = roleName });
+
+                string deleteSQL = "delete from tbluserhasrole where UserID = @UserID and RoleID = @RoleID)";
+                await connection.ExecuteAsync(deleteSQL, new { UserID = user.UserID, RoleID = roleID });
+            }
         }
 
         public void Dispose()
