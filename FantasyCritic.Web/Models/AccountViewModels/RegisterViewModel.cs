@@ -14,7 +14,7 @@ namespace FantasyCritic.Web.Models.AccountViewModels
         public string Email { get; set; }
 
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "UserName")]
         public string UserName { get; set; }
 
         [Required]
