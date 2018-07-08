@@ -1,13 +1,18 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-import { routes } from './routes'
+import HomePage from "components/pages/homePage";
 
 Vue.use(VueRouter);
 
-let router = new VueRouter({
-    mode: 'history',
-    routes
-})
+let routes = [
+    {
+        path: "/",
+        component: HomePage,
+        name: "homePage"
+    }
+];
 
-export default router
+let theRouter = new VueRouter({ routes });
+
+export default theRouter;

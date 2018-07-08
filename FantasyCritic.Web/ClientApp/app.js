@@ -7,7 +7,7 @@ import App from 'components/app-root'
 
 Vue.prototype.$http = axios;
 
-sync(store, router)
+sync(store, router);
 
 const app = new Vue({
     store,
