@@ -6,6 +6,7 @@ import App from 'components/application'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import 'bootswatch/dist/superhero/bootstrap.css';
 
 Vue.use(BootstrapVue);
 
