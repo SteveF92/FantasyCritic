@@ -1,5 +1,5 @@
 <template>
-    <div id="app" class="container-fluid">
+    <div id="vue-app" class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <router-view></router-view>

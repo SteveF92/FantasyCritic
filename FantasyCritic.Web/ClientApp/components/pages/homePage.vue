@@ -10,7 +10,7 @@ import axios from "axios";
 export default {
     data() {
         return {
-            message: "This is the home page"
+            message: "This is the home page!"
         }
     }
 }
