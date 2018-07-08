@@ -1,22 +1,25 @@
 <template>
     <div id="vue-app" class="container-fluid">
+        <div id="top-nav-bar">
+            <top-navbar></top-navbar>
+        </div>
         <div class="row">
-            <div class="col-12">
+            <main class="col-12">
                 <router-view></router-view>
-            </div>
+            </main>
         </div>
     </div>
 
 </template>
 
 <script>
+    import TopNavbar from "components/modules/shared/topNavbar";
 
-export default {
-    data() {
-        return {
+    export default {
+        components: {
+            TopNavbar
         }
-    }
-}
+    };
 </script>
 
 <style>
