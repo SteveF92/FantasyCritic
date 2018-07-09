@@ -15,16 +15,23 @@
                         <router-link :to="{ name: 'contactPage' }" class="nav-link" title="Contact">Contact</router-link>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="text" placeholder="Search">
-                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                </form>
-                <div class="my-2 my-lg-0">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <b-button variant="primary":to="{ name: 'login' }" class="nav-link">Log in</b-button>
-                        </li>
-                    </ul>
+                <div v-if="isAuth">
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+                <div v-if="!isAuth">
+                    <div class="my-2 my-lg-0">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item">
+                                <b-button variant="primary" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
+                            </li>
+                            <li class="nav-item">
+                                <b-button variant="info" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -33,9 +40,17 @@
 
 <script>
     export default {
-
+        computed: {
+            isAuth() {
+                return false;
+            }
+        },
     }
 </script>
 
 <style scoped>
+    .navbar-nav .nav-item {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
 </style>

@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 
 import HomePage from "components/pages/homePage";
 import Login from "components/pages/login";
+import Register from "components/pages/register";
 import AboutPage from "components/pages/aboutPage";
 import ContactPage from "components/pages/contactPage";
 
@@ -18,6 +19,11 @@ let routes = [
         path: "/login",
         component: Login,
         name: "login"
+    },
+    {
+        path: "/register",
+        component: Register,
+        name: "register"
     },
     {
         path: "/about",
