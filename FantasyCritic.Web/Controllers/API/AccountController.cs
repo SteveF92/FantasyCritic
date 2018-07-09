@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models;
+using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,20 +21,20 @@ namespace FantasyCritic.Web.Controllers.API
     public class AccountController : Controller
     {
         private readonly FantasyCriticUserManager _userManager;
-        private readonly SignInManager<FantasyCriticUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
+        private readonly ITokenService _tokenService;
 
         public AccountController(
             FantasyCriticUserManager userManager,
-            SignInManager<FantasyCriticUser> signInManager,
             IEmailSender emailSender,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            ITokenService tokenService)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
+            _tokenService = tokenService;
         }
 
         [HttpPost]
@@ -41,7 +43,7 @@ namespace FantasyCritic.Web.Controllers.API
         {
             if (ModelState.IsValid)
             {
-                var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.Email, model.Email, false, "", "");
+                var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.Email, model.Email, false, "", "", "");
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -57,6 +59,35 @@ namespace FantasyCritic.Web.Controllers.API
 
             // If we got this far, something failed, redisplay form
             return BadRequest();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var usersClaims = new[]
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString())
+            };
+
+            var jwtToken = _tokenService.GenerateAccessToken(usersClaims);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            await _userManager.UpdateAsync(user);
+
+            return new ObjectResult(new
+            {
+                token = jwtToken,
+                refreshToken = refreshToken
+            });
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
@@ -30,8 +30,8 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbluser(UserID,UserName,NormalizedUserName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,EmailConfirmed) VALUES " +
-                    "(@UserID,@UserName,@NormalizedUserName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@EmailConfirmed)",
+                    "insert into tbluser(UserID,UserName,NormalizedUserName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,EmailConfirmed,RefreshToken) VALUES " +
+                    "(@UserID,@UserName,@NormalizedUserName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@EmailConfirmed,@RefreshToken)",
                     entity);
             }
 
@@ -63,7 +63,8 @@ namespace FantasyCritic.MySQL
                          $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +
                          $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +
                          $"EmailConfirmed = @{nameof(FantasyCriticUserEntity.EmailConfirmed)}, " +
-                         $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)} " +
+                         $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)}, " +
+                         $"RefreshToken = @{nameof(FantasyCriticUserEntity.RefreshToken)} " +
                          $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
 
             using (var connection = new MySqlConnection(_connectionString))

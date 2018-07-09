@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
+using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,11 +39,16 @@ namespace FantasyCritic.Web
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            int validMinutes = Convert.ToInt32(Configuration["Tokens:ValidMinutes"]);
+            var keyString = Configuration["Tokens:Key"];
+            var issuer = Configuration["Tokens:Issuer"];
+            var audience = Configuration["Tokens:Audience"];
 
             // Add application services.
             var userStore = new MySQLFantasyCriticUserStore(connectionString);
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString);
+            var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
 
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
             services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
@@ -55,22 +61,20 @@ namespace FantasyCritic.Web
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ISMSSender, SMSSender>();
+            services.AddTransient<ITokenService>(factory => tokenService);
             services.AddTransient<IClock>(factory => SystemClock.Instance);
 
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>()
                 .AddDefaultTokenProviders();
 
-            //Authorization
-            int validMinutes = Convert.ToInt32(Configuration["Tokens:ValidMinutes"]);
+            
 
             services.ConfigureApplicationCookie(opt =>
             {
                 opt.ExpireTimeSpan = TimeSpan.FromMinutes(validMinutes);
             });
 
-            var keyString = Configuration["Tokens:Key"];
-            var issuer = Configuration["Tokens:Issuer"];
-            var audience = Configuration["Tokens:Audience"];
+            
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(cfg =>

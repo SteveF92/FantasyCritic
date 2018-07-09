@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain
     public class FantasyCriticUser
     {
         public FantasyCriticUser(Guid userID, string userName, string normalizedUserName, string emailAddress, 
-            string normalizedEmailAddress, bool emailConfirmed, string securityStamp, string passwordHash)
+            string normalizedEmailAddress, bool emailConfirmed, string securityStamp, string passwordHash, string refreshToken)
         {
             UserID = userID;
             UserName = userName;
@@ -18,6 +18,7 @@ namespace FantasyCritic.Lib.Domain
             EmailConfirmed = emailConfirmed;
             SecurityStamp = securityStamp;
             PasswordHash = passwordHash;
+            RefreshToken = refreshToken;
         }
 
         public Guid UserID { get; set; }
@@ -36,6 +37,7 @@ namespace FantasyCritic.Lib.Domain
 
         public string PasswordHash { get; set; }
 
-        public bool TwoFactorEnabled => false;
+        public string RefreshToken { get; set; }
+
     }
 }
