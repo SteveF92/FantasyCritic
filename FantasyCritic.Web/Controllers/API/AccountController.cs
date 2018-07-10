@@ -41,24 +41,32 @@ namespace FantasyCritic.Web.Controllers.API
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.Email, model.Email, false, "", "", "");
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User created a new account with password.");
-
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.EmailConfirmationLink(user.UserID.ToString(), code, Request.Scheme);
-                    //await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
-                    return Created("", user.UserID.ToString());
-                }
+                return BadRequest();
             }
 
+            if (model.Password != model.ConfirmPassword)
+            {
+                return BadRequest();
+            }
+
+            var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.EmailAddress, model.EmailAddress, false, "", "", "");
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+
+            _logger.LogInformation("User created a new account with password.");
+
+            //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var callbackUrl = Url.EmailConfirmationLink(user.UserID.ToString(), code, Request.Scheme);
+            //await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+
+            return Created("", user.UserID.ToString());
+
             // If we got this far, something failed, redisplay form
-            return BadRequest();
         }
 
         [HttpPost]
