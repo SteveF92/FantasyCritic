@@ -1,6 +1,6 @@
 <template>
     <div>
-        {{message}}
+        This is the home page! You are {{ userName }}!
     </div>
 </template>
 
@@ -8,10 +8,10 @@
 import Vue from "vue";
 import axios from "axios";
 export default {
-    data() {
-        return {
-            message: "This is the home page!"
-        }
-    }
+        computed: {
+            userName() {
+                return this.$store.getters.userInfo.userName
+            }
+        },
 }
 </script>

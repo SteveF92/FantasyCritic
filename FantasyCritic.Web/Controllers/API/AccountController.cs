@@ -38,6 +38,15 @@ namespace FantasyCritic.Web.Controllers.API
             _tokenService = tokenService;
         }
 
+        public async Task<ActionResult> CurrentUser()
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await _userManager.GetRolesAsync(currentUser);
+
+            FantasyCriticUserViewModel vm = new FantasyCriticUserViewModel(currentUser, roles);
+            return Ok(vm);
+        }
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)

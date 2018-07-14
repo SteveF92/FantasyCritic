@@ -6,7 +6,7 @@ export default {
         jwt: null,
         expiration: null,
         redirect: "",
-        emailAddress: ""
+        userInfo: {}
     },
     getters: {
         isAuthenticated(state) {
@@ -21,7 +21,7 @@ export default {
         },
         token: (state) => state.jwt,
         redirect: (state) => state.redirect,
-        emailAddress: (state) => state.emailAddress
+        userInfo: (state) => state.userInfo
     },
     actions: {
         doAuthentication(context, creds) {
@@ -29,15 +29,28 @@ export default {
                 axios.post("/api/account/login", creds)
                     .then((res) => {
                         context.commit("setTokenInfo", res.data);
+                        context.dispatch("getUserInfo")
+                            .then(response => { resolve(response) });
                     })
                     .catch(error => {
                         reject();
                     });
             });
         },
+        getUserInfo(context) {
+            return new Promise(function (resolve, reject) {
+                axios
+                    .get("/api/account/CurrentUser")
+                    .then((res) => {
+                        context.commit("setUserInfo", res.data);
+                        resolve();
+                    })
+                    .catch(() => reject());
+            });
+        },
         logout(context) {
             return new Promise(function (resolve, reject) {
-                context.commit("clearToken");
+                context.commit("clearUserAndToken");
                 resolve();
             });
         },
@@ -50,13 +63,16 @@ export default {
             state.expiration = new Date(tokenInfo.expiration);
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + tokenInfo.token;
         },
-        clearToken(state) {
+        setUserInfo(state, userInfo) {
+            state.userInfo = userInfo;
+        },
+        clearUserAndToken(state) {
             localStorage.removeItem('jwt_token');
             localStorage.removeItem('jwt_expiration');
             state.jwt = null;
             state.expiration = null;
-            state.emailAddress = "";
             axios.defaults.headers.common['Authorization'] = "";
+            state.userInfo = {};
         },
         setRedirect(state, path) {
             state.redirect = path;
