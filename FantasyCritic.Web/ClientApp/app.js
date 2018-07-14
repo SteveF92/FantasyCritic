@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue';
 import axios from 'axios'
+import store from "./stores/store"
 import router from './router'
 import App from 'components/application'
 
@@ -14,11 +15,13 @@ import 'jquery/dist/jquery.slim.js';
 Vue.use(BootstrapVue);
 
 const app = new Vue({
+    store,
     router,
     ...App
 });
 
 export {
     app,
-    router
+    router,
+    store
 }

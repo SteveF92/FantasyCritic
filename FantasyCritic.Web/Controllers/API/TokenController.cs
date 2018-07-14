@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,10 +40,13 @@ namespace FantasyCritic.Web.Controllers.API
             user.RefreshToken = newRefreshToken;
             await _userManager.UpdateAsync(user);
 
+            var newJwtString = new JwtSecurityTokenHandler().WriteToken(newJwtToken);
+
             return new ObjectResult(new
             {
-                token = newJwtToken,
-                refreshToken = newRefreshToken
+                token = newJwtString,
+                refreshToken = refreshToken,
+                expiration = newJwtToken.ValidTo
             });
         }
 

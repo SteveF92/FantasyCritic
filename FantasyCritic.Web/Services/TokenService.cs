@@ -25,7 +25,7 @@ namespace FantasyCritic.Web.Services
             _expiresMinutes = expiresMinutes;
         }
 
-        public string GenerateAccessToken(IEnumerable<Claim> claims)
+        public JwtSecurityToken GenerateAccessToken(IEnumerable<Claim> claims)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
 
@@ -37,7 +37,7 @@ namespace FantasyCritic.Web.Services
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            return jwtToken;
         }
 
         public string GenerateRefreshToken()
