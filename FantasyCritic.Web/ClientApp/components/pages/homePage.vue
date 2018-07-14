@@ -12,6 +12,6 @@ export default {
             userName() {
                 return this.$store.getters.userInfo.userName
             }
-        },
+        }
 }
 </script>

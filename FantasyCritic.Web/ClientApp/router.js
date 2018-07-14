@@ -8,6 +8,7 @@ import Login from "components/pages/login";
 import Register from "components/pages/register";
 import AboutPage from "components/pages/aboutPage";
 import ContactPage from "components/pages/contactPage";
+import ManageUser from "components/pages/manageUser";
 
 Vue.use(VueRouter);
 
@@ -48,6 +49,11 @@ let routes = [
         meta: {
             isPublic: true
         }
+    },
+    {
+        path: "/manageUser",
+        component: ManageUser,
+        name: "manageUser"
     }
 ];
 

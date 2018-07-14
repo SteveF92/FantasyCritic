@@ -16,10 +16,28 @@
                     </li>
                 </ul>
                 <div v-if="isAuth">
-                    <form class="form-inline my-2 my-lg-0">
-                        <input class="form-control mr-sm-2" type="text" placeholder="Search">
-                        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                    </form>
+                    <div class="my-2 my-lg-0">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item">
+                                <form class="form-inline my-2 my-lg-0">
+                                    <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                                </form>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                                    {{userName}}
+                                    <span class="caret"></span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
+                                    <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#" v-on:click="logout()">Log off</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <div v-if="!isAuth">
                     <div class="my-2 my-lg-0">
@@ -42,9 +60,20 @@
     export default {
         computed: {
             isAuth() {
-                return false;
-            }
+                return this.$store.getters.isAuthenticated;
+            },
+            userName() {
+                return this.$store.getters.userInfo.userName;
+            },
         },
+        methods: {
+            logout() {
+                this.$store.dispatch("logout")
+                    .then(() => {
+                        this.$router.push({ name: "login" });
+                    });
+            }
+        }
     }
 </script>
 
