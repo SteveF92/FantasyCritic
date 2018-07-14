@@ -3,11 +3,11 @@ import VueRouter from "vue-router";
 
 import store from "./stores/store";
 
-import HomePage from "components/pages/homePage";
+import Home from "components/pages/home";
 import Login from "components/pages/login";
 import Register from "components/pages/register";
-import AboutPage from "components/pages/aboutPage";
-import ContactPage from "components/pages/contactPage";
+import About from "components/pages/about";
+import Contact from "components/pages/contact";
 import ManageUser from "components/pages/manageUser";
 
 Vue.use(VueRouter);
@@ -15,8 +15,8 @@ Vue.use(VueRouter);
 let routes = [
     {
         path: "/",
-        component: HomePage,
-        name: "homePage"
+        component: Home,
+        name: "home"
     },
     {
         path: "/login",
@@ -36,16 +36,16 @@ let routes = [
     },
     {
         path: "/about",
-        component: AboutPage,
-        name: "aboutPage",
+        component: About,
+        name: "about",
         meta: {
             isPublic: true
         }
     },
     {
         path: "/contact",
-        component: ContactPage,
-        name: "contactPage",
+        component: Contact,
+        name: "contact",
         meta: {
             isPublic: true
         }
