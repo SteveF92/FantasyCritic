@@ -5,12 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers.API
 {
+    [Route("api/[controller]/[action]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TokenController : Controller
     {
         private readonly ITokenService _tokenService;
@@ -22,14 +26,15 @@ namespace FantasyCritic.Web.Controllers.API
             _userManager = userManager;
         }
 
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Refresh(string token, string refreshToken)
+        public async Task<IActionResult> Refresh([FromBody] TokenRefreshRequest request)
         {
-            var principal = _tokenService.GetPrincipalFromExpiredToken(token);
+            var principal = _tokenService.GetPrincipalFromExpiredToken(request.Token);
             var username = principal.Identity.Name; //this is mapped to the Name claim by default
 
             var user = await _userManager.FindByNameAsync(username);
-            if (user == null || user.RefreshToken != refreshToken)
+            if (user == null || user.RefreshToken != request.RefreshToken)
             {
                 return BadRequest();
             }
@@ -45,7 +50,7 @@ namespace FantasyCritic.Web.Controllers.API
             return new ObjectResult(new
             {
                 token = newJwtString,
-                refreshToken = refreshToken,
+                refreshToken = newRefreshToken,
                 expiration = newJwtToken.ValidTo
             });
         }
