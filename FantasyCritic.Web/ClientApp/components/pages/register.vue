@@ -64,7 +64,7 @@
                     .catch(this.catchHandler);
             },
             responseHandler(response) {
-
+                this.$router.push({ name: "login" });
             },
             catchHandler(returnedError) {
 
