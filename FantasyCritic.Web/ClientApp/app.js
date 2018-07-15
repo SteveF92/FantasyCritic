@@ -32,9 +32,8 @@ axios.interceptors.response.use(function (response) {
             .then((res) => {
                 store.commit("setTokenInfo", res.data);
                 store.commit("setRefreshToken", res.data.refreshToken);
-                store.dispatch("getUserInfo")
-                    .then(response => { resolve(response) });
-
+                var newBearer = "Bearer " + res.data.token;
+                originalRequest.headers.Authorization = newBearer;
                 return axios(originalRequest);
             });
     }
