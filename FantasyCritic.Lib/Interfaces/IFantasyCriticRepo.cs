@@ -10,9 +10,10 @@ namespace FantasyCritic.Lib.Interfaces
     public interface IFantasyCriticRepo
     {
         Task<Maybe<FantasyCriticLeague>> GetLeagueByID(Guid id);
-        Task<IReadOnlyList<Guid>> GetPlayerIDsInLeague(FantasyCriticLeague league);
+        Task<IReadOnlyList<FantasyCriticUser>> GetPlayersInLeague(FantasyCriticLeague league);
         Task CreateLeague(FantasyCriticLeague league, int initialYear);
         Task SaveInvite(FantasyCriticLeague league, FantasyCriticUser user);
         Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(FantasyCriticLeague league);
+        Task AcceptInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser);
     }
 }

@@ -34,18 +34,9 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueByID(id);
         }
 
-        public async Task<IReadOnlyList<FantasyCriticUser>> GetPlayersInLeague(FantasyCriticLeague league)
+        public Task<IReadOnlyList<FantasyCriticUser>> GetPlayersInLeague(FantasyCriticLeague league)
         {
-            IReadOnlyList<Guid> ids = await _fantasyCriticRepo.GetPlayerIDsInLeague(league);
-
-            List<FantasyCriticUser> players = new List<FantasyCriticUser>();
-            foreach (var id in ids)
-            {
-                var user = await _userManager.FindByIdAsync(id.ToString());
-                players.Add(user);
-            }
-
-            return players;
+            return _fantasyCriticRepo.GetPlayersInLeague(league);
         }
 
         public async Task<Result> InviteUser(FantasyCriticLeague league, FantasyCriticUser inviteUser)
@@ -63,6 +54,25 @@ namespace FantasyCritic.Lib.Services
             }
 
             await _fantasyCriticRepo.SaveInvite(league, inviteUser);
+
+            return Result.Ok();
+        }
+
+        public async Task<Result> AcceptInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        {
+            bool userInLeague = await UserIsInLeague(league, inviteUser);
+            if (userInLeague)
+            {
+                return Result.Fail("User is already in league.");
+            }
+
+            bool userInvited = await UserIsInvited(league, inviteUser);
+            if (!userInvited)
+            {
+                return Result.Fail("User is not invited to this league.");
+            }
+
+            await _fantasyCriticRepo.AcceptInvite(league, inviteUser);
 
             return Result.Ok();
         }

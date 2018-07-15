@@ -47,9 +47,22 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task<IReadOnlyList<Guid>> GetPlayerIDsInLeague(FantasyCriticLeague league)
+        public async Task<IReadOnlyList<FantasyCriticUser>> GetPlayersInLeague(FantasyCriticLeague league)
         {
-            throw new NotImplementedException();
+            var query = new
+            {
+                leagueID = league.LeagueID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var results = await connection.QueryAsync<FantasyCriticUserEntity>(
+                    "select tbluser.* from tbluser join tblleagueplayer on (tbluser.UserID = tblleagueplayer.UserID) where tblleagueplayer.LeagueID = @leagueID;",
+                    query);
+
+                var users = results.Select(x => x.ToDomain()).ToList();
+                return users;
+            }
         }
 
         public async Task CreateLeague(FantasyCriticLeague league, int initialYear)
@@ -68,6 +81,8 @@ namespace FantasyCritic.MySQL
                     "insert into tblleagueyear(LeagueID,Year) VALUES (@LeagueID, @Year);",
                     leagueYearEntity);
             }
+
+            await AddPlayerToLeague(league, league.LeagueManager);
         }
 
         public Task SaveInvite(FantasyCriticLeague league, FantasyCriticUser user)
@@ -101,6 +116,39 @@ namespace FantasyCritic.MySQL
 
                 var users = results.Select(x => x.ToDomain()).ToList();
                 return users;
+            }
+        }
+
+        public async Task AcceptInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        {
+            await AddPlayerToLeague(league, inviteUser);
+
+            var deleteObject = new
+            {
+                leagueID = league.LeagueID,
+                userID = inviteUser.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "delete from tblleagueinvite where LeagueID = @leagueID and UserID = @userID;",
+                    deleteObject);
+            }
+        }
+
+        private Task AddPlayerToLeague(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        {
+            var userAddObject = new
+            {
+                leagueID = league.LeagueID,
+                userID = league.LeagueManager.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "insert into tblleagueplayer(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
             }
         }
     }
