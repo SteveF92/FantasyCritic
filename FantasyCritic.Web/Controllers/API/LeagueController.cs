@@ -96,7 +96,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            await _fantasyCriticService.InviteUser(league.Value, inviteUser);
+            Result result = await _fantasyCriticService.InviteUser(league.Value, inviteUser);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
             return Ok();
         }
     }

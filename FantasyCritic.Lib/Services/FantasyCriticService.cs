@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -47,9 +48,40 @@ namespace FantasyCritic.Lib.Services
             return players;
         }
 
-        public Task InviteUser(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        public async Task<Result> InviteUser(FantasyCriticLeague league, FantasyCriticUser inviteUser)
         {
-            return _fantasyCriticRepo.SaveInvite(league, inviteUser);
+            bool userInLeague = await UserIsInLeague(league, inviteUser);
+            if (userInLeague)
+            {
+                return Result.Fail("User is already in league.");
+            }
+
+            bool userInvited = await UserIsInvited(league, inviteUser);
+            if (userInvited)
+            {
+                return Result.Fail("User is already invited to this league.");
+            }
+
+            await _fantasyCriticRepo.SaveInvite(league, inviteUser);
+
+            return Result.Ok();
+        }
+
+        public Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(FantasyCriticLeague league)
+        {
+            return _fantasyCriticRepo.GetOutstandingInvitees(league);
+        }
+
+        private async Task<bool> UserIsInLeague(FantasyCriticLeague league, FantasyCriticUser user)
+        {
+            var playersInLeague = await GetPlayersInLeague(league);
+            return playersInLeague.Any(x => x.UserID == user.UserID);
+        }
+
+        private async Task<bool> UserIsInvited(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        {
+            var playersInLeague = await GetOutstandingInvitees(league);
+            return playersInLeague.Any(x => x.UserID == inviteUser.UserID);
         }
     }
 }

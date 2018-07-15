@@ -85,5 +85,23 @@ namespace FantasyCritic.MySQL
                     saveObject);
             }
         }
+
+        public async Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(FantasyCriticLeague league)
+        {
+            var query = new
+            {
+                leagueID = league.LeagueID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var results = await connection.QueryAsync<FantasyCriticUserEntity>(
+                    "select tbluser.* from tbluser join tblleagueinvite on (tbluser.UserID = tblleagueinvite.UserID) where tblleagueinvite.LeagueID = @leagueID;",
+                    query);
+
+                var users = results.Select(x => x.ToDomain()).ToList();
+                return users;
+            }
+        }
     }
 }
