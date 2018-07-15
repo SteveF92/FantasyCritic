@@ -37,6 +37,7 @@ export default {
                 axios.post("/api/account/login", creds)
                     .then((res) => {
                         context.commit("setTokenInfo", res.data);
+                        context.commit("setRefreshToken", res.data.refreshToken);
                         context.dispatch("getUserInfo")
                             .then(response => { resolve(response) });
                     })
@@ -50,6 +51,7 @@ export default {
                 axios.post("/api/token/refresh", creds)
                     .then((res) => {
                         context.commit("setTokenInfo", res.data);
+                        context.commit("setRefreshToken", res.data.refreshToken);
                         context.dispatch("getUserInfo")
                             .then(response => { resolve(response) });
                     })
@@ -80,10 +82,12 @@ export default {
         setTokenInfo(state, tokenInfo) {
             localStorage.setItem('jwt_token', tokenInfo.token);
             localStorage.setItem('jwt_expiration', tokenInfo.expiration);
-            localStorage.setItem('refresh_token', tokenInfo.refreshToken);
             state.jwt = tokenInfo.token;
             state.expiration = new Date(tokenInfo.expiration);
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + tokenInfo.token;
+        },
+        setRefreshToken(state, refreshToken) {
+            localStorage.setItem('refresh_token', refreshToken);
         },
         setUserInfo(state, userInfo) {
             state.userInfo = userInfo;

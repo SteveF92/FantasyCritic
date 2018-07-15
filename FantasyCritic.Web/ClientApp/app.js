@@ -14,6 +14,34 @@ import 'jquery/dist/jquery.slim.js';
 
 Vue.use(BootstrapVue);
 
+axios.interceptors.response.use(function (response) {
+    return response;
+}, function (error) {
+    const originalRequest = error.config;
+    if (error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+
+        var oldToken = localStorage.getItem("jwt_token");
+        var refreshToken = localStorage.getItem("refresh_token");
+        var refreshRequest = {
+            token: oldToken,
+            refreshToken: refreshToken
+        };
+
+        return axios.post("/api/token/refresh", refreshRequest)
+            .then((res) => {
+                store.commit("setTokenInfo", res.data);
+                store.commit("setRefreshToken", res.data.refreshToken);
+                store.dispatch("getUserInfo")
+                    .then(response => { resolve(response) });
+
+                return axios(originalRequest);
+            });
+    }
+
+    return Promise.reject(error);
+});
+
 const app = new Vue({
     store,
     router,
