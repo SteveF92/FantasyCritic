@@ -61,5 +61,35 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok(viewModel);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> InvitePlayer([FromBody] InviteRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser == null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var inviteUser = await _userManager.FindByEmailAsync(request.InviteEmail);
+            if (inviteUser == null)
+            {
+                return BadRequest();
+            }
+
+            await _fantasyCriticService.InviteUser(league.Value, inviteUser);
+            return Ok();
+        }
     }
 }

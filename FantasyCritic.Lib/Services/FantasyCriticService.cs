@@ -46,5 +46,10 @@ namespace FantasyCritic.Lib.Services
 
             return players;
         }
+
+        public Task InviteUser(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        {
+            return _fantasyCriticRepo.SaveInvite(league, inviteUser);
+        }
     }
 }

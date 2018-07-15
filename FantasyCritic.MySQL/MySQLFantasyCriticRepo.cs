@@ -69,5 +69,21 @@ namespace FantasyCritic.MySQL
                     leagueYearEntity);
             }
         }
+
+        public Task SaveInvite(FantasyCriticLeague league, FantasyCriticUser user)
+        {
+            var saveObject = new
+            {
+                leagueID = league.LeagueID,
+                userID = user.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "insert into tblleagueinvite(LeagueID,UserID) VALUES (@leagueID, @userID);",
+                    saveObject);
+            }
+        }
     }
 }

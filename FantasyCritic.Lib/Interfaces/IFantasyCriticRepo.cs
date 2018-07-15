@@ -12,5 +12,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<Maybe<FantasyCriticLeague>> GetLeagueByID(Guid id);
         Task<IReadOnlyList<Guid>> GetPlayerIDsInLeague(FantasyCriticLeague league);
         Task CreateLeague(FantasyCriticLeague league, int initialYear);
+        Task SaveInvite(FantasyCriticLeague league, FantasyCriticUser user);
     }
 }
