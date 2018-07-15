@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.MySQL.Entities
 {
@@ -42,5 +43,19 @@ namespace FantasyCritic.MySQL.Entities
         public string DraftSystem { get; set; }
         public string WaiverSystem { get; set; }
         public string ScoringSystem { get; set; }
+
+        public FantasyCriticLeague ToDomain(FantasyCriticUser manager, IEnumerable<int> leagueYears)
+        {
+            EligibilitySystem eligibilitySystem = Lib.Enums.EligibilitySystem.FromValue(EligibilitySystem);
+            DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
+            WaiverSystem waiverSystem = Lib.Enums.WaiverSystem.FromValue(WaiverSystem);
+            ScoringSystem scoringSystem = Lib.Enums.ScoringSystem.FromValue(ScoringSystem);
+
+            LeagueOptions options = new LeagueOptions(DraftGames, WaiverGames, AntiPicks, EstimatedGameScore,
+                eligibilitySystem, draftSystem, waiverSystem, scoringSystem);
+
+            FantasyCriticLeague parameters = new FantasyCriticLeague(LeagueID, LeagueName, manager, leagueYears, options);
+            return parameters;
+        }
     }
 }

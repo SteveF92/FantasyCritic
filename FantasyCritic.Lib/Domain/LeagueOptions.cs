@@ -9,6 +9,18 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
+        public LeagueOptions(int draftGames, int waiverGames, int antiPicks, decimal estimatedGameScore, EligibilitySystem eligibilitySystem, DraftSystem draftSystem, WaiverSystem waiverSystem, ScoringSystem scoringSystem)
+        {
+            DraftGames = draftGames;
+            WaiverGames = waiverGames;
+            AntiPicks = antiPicks;
+            EstimatedGameScore = estimatedGameScore;
+            EligibilitySystem = eligibilitySystem;
+            DraftSystem = draftSystem;
+            WaiverSystem = waiverSystem;
+            ScoringSystem = scoringSystem;
+        }
+
         public LeagueOptions(LeagueCreationParameters parameters)
         {
             DraftGames = parameters.DraftGames;

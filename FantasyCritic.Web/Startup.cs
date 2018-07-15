@@ -47,7 +47,7 @@ namespace FantasyCritic.Web
             // Add application services.
             var userStore = new MySQLFantasyCriticUserStore(connectionString);
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
-            var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString);
+            var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString, userStore);
             var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
 
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);

@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace FantasyCritic.MySQL
 {
-    public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
+    public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore, IReadOnlyFantasyCriticUserStore
     {
         private readonly string _connectionString;
 
