@@ -37,7 +37,15 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
-            var leagueViewModel = new FantasyCriticLeagueViewModel(league.Value);
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var playersInLeague = await _fantasyCriticService.GetPlayersInLeague(league.Value);
+            bool userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
+            if (!userIsInLeague)
+            {
+                return Unauthorized();
+            }
+
+            var leagueViewModel = new FantasyCriticLeagueViewModel(league.Value, playersInLeague);
             return Ok(leagueViewModel);
         }
 
@@ -57,19 +65,14 @@ namespace FantasyCritic.Web.Controllers.API
 
             LeagueCreationParameters domainRequest = request.ToDomain(currentUser);
             var league = await _fantasyCriticService.CreateLeague(domainRequest);
-            var viewModel = new FantasyCriticLeagueViewModel(league);
 
-            return Ok(viewModel);
+            return CreatedAtRoute("GetLeague", league.LeagueID);
         }
 
         [HttpPost]
         public async Task<IActionResult> InvitePlayer([FromBody] InviteRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser == null)
-            {
-                return BadRequest();
-            }
 
             if (!ModelState.IsValid)
             {
@@ -80,6 +83,11 @@ namespace FantasyCritic.Web.Controllers.API
             if (league.HasNoValue)
             {
                 return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Unauthorized();
             }
 
             var inviteUser = await _userManager.FindByEmailAsync(request.InviteEmail);
