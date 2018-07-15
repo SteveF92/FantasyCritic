@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
+using FantasyCritic.MySQL.Entities;
+using MySql.Data.MySqlClient;
 
 namespace FantasyCritic.MySQL
 {
@@ -27,9 +30,22 @@ namespace FantasyCritic.MySQL
             throw new NotImplementedException();
         }
 
-        public Task<FantasyCriticLeague> CreateLeague(FantasyCriticLeague league)
+        public async Task CreateLeague(FantasyCriticLeague league, int initialYear)
         {
-            throw new NotImplementedException();
+            FantasyCriticLeagueEntity entity = new FantasyCriticLeagueEntity(league);
+            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblleague(LeagueID,LeagueName,LeagueManager,DraftGames,WaiverGames,AntiPicks,EstimatedGameScore,EligibilitySystem,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
+                    "(@LeagueID,@LeagueName,@LeagueManager,@DraftGames,@WaiverGames,@AntiPicks,@EstimatedGameScore,@EligibilitySystem,@DraftSystem,@WaiverSystem,@ScoringSystem);",
+                    entity);
+
+                await connection.ExecuteAsync(
+                    "insert into tblleagueyear(LeagueID,Year) VALUES (@LeagueID, @Year);",
+                    leagueYearEntity);
+            }
         }
     }
 }

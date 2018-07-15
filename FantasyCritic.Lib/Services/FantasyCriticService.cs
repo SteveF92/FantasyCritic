@@ -24,7 +24,7 @@ namespace FantasyCritic.Lib.Services
         {
             LeagueOptions options = new LeagueOptions(parameters);
             FantasyCriticLeague newLeague = new FantasyCriticLeague(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, new List<int>(parameters.InitialYear), options);
-            await _fantasyCriticRepo.CreateLeague(newLeague);
+            await _fantasyCriticRepo.CreateLeague(newLeague, parameters.InitialYear);
             return newLeague;
         }
 
