@@ -142,7 +142,7 @@ namespace FantasyCritic.MySQL
             var userAddObject = new
             {
                 leagueID = league.LeagueID,
-                userID = league.LeagueManager.UserID
+                userID = inviteUser.UserID
             };
 
             using (var connection = new MySqlConnection(_connectionString))

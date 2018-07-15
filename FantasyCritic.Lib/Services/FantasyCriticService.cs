@@ -90,8 +90,8 @@ namespace FantasyCritic.Lib.Services
 
         private async Task<bool> UserIsInvited(FantasyCriticLeague league, FantasyCriticUser inviteUser)
         {
-            var playersInLeague = await GetOutstandingInvitees(league);
-            return playersInLeague.Any(x => x.UserID == inviteUser.UserID);
+            var playersInvited = await GetOutstandingInvitees(league);
+            return playersInvited.Any(x => x.UserID == inviteUser.UserID);
         }
     }
 }
