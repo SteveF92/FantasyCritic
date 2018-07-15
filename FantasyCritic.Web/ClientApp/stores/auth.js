@@ -9,15 +9,23 @@ export default {
         userInfo: {}
     },
     getters: {
-        isAuthenticated(state) {
-            if (state.jwt === null || state.expiration === null) {
+        hasToken(state) {
+            if (state.jwt === null) {
                 return false;
             }
-            var expire = state.expiration;
-            var now = new Date();
-            var before = expire > now;
 
-            return state.jwt && before;
+            return state.jwt;
+        },
+        tokenIsCurrent(state) {
+            return (now) => {
+                if (state.jwt === null || state.expiration === null) {
+                    return false;
+                }
+                var expire = state.expiration;
+                var before = expire > now;
+
+                return state.jwt && before;
+            }
         },
         token: (state) => state.jwt,
         redirect: (state) => state.redirect,
@@ -27,6 +35,19 @@ export default {
         doAuthentication(context, creds) {
             return new Promise(function (resolve, reject) {
                 axios.post("/api/account/login", creds)
+                    .then((res) => {
+                        context.commit("setTokenInfo", res.data);
+                        context.dispatch("getUserInfo")
+                            .then(response => { resolve(response) });
+                    })
+                    .catch(error => {
+                        reject();
+                    });
+            });
+        },
+        refreshToken(context, creds) {
+            return new Promise(function (resolve, reject) {
+                axios.post("/api/token/refresh", creds)
                     .then((res) => {
                         context.commit("setTokenInfo", res.data);
                         context.dispatch("getUserInfo")
@@ -59,6 +80,7 @@ export default {
         setTokenInfo(state, tokenInfo) {
             localStorage.setItem('jwt_token', tokenInfo.token);
             localStorage.setItem('jwt_expiration', tokenInfo.expiration);
+            localStorage.setItem('refresh_token', tokenInfo.refreshToken);
             state.jwt = tokenInfo.token;
             state.expiration = new Date(tokenInfo.expiration);
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + tokenInfo.token;

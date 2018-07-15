@@ -60,7 +60,7 @@
     export default {
         computed: {
             isAuth() {
-                return this.$store.getters.isAuthenticated;
+                return this.$store.getters.tokenIsCurrent(new Date());
             },
             userName() {
                 return this.$store.getters.userInfo.userName;

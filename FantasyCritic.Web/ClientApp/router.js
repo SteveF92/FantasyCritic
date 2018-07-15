@@ -60,7 +60,7 @@ let routes = [
 let theRouter = new VueRouter({ routes });
 
 theRouter.beforeEach(function (toRoute, fromRoute, next) {
-    if (toRoute.name === "login" && store.getters.isAuthenticated) {
+    if (toRoute.name === "login" && store.getters.tokenIsCurrent(new Date())) {
         next({ path: "/" });
         return;
     }
@@ -68,7 +68,8 @@ theRouter.beforeEach(function (toRoute, fromRoute, next) {
         next();
         return;
     }
-    if (!store.getters.isAuthenticated) {
+
+    if (!store.getters.hasToken) {
         var token = localStorage.getItem("jwt_token");
         if (token) {
             var expiration = localStorage.getItem("jwt_expiration");
@@ -80,14 +81,33 @@ theRouter.beforeEach(function (toRoute, fromRoute, next) {
         }
     }
 
-    if (store.getters.isAuthenticated) {
-        store.dispatch("getUserInfo")
-            .then(() => { next(); });
-    }
-    else {
+    if (!store.getters.hasToken) {
         store.commit("setRedirect", toRoute.path);
         next({ name: 'login' });
         return;
+    }
+
+    if (!store.getters.tokenIsCurrent(new Date())) {
+        var oldToken = localStorage.getItem("jwt_token");
+        var refreshToken = localStorage.getItem("refresh_token");
+        var refreshRequest = {
+            token: oldToken,
+            refreshToken: refreshToken
+        };
+
+        store.dispatch("refreshToken", refreshRequest)
+            .then(() => {
+                if (store.getters.tokenIsCurrent(new Date())) {
+                    next();
+                } else {
+                    store.commit("setRedirect", toRoute.path);
+                    next({ name: 'login' });
+                }
+            });
+    }
+
+    if (store.getters.tokenIsCurrent(new Date())) {
+        next();
     }
 });
 
