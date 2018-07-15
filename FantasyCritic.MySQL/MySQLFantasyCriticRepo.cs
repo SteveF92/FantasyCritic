@@ -1,4 +1,4 @@
-﻿using CSharpFunctionalExtensions;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using System;
@@ -23,6 +23,11 @@ namespace FantasyCritic.MySQL
         }
 
         public Task<IReadOnlyList<Guid>> GetPlayerIDsInLeague(FantasyCriticLeague league)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<FantasyCriticLeague> CreateLeague(FantasyCriticLeague league)
         {
             throw new NotImplementedException();
         }

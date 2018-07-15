@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +18,14 @@ namespace FantasyCritic.Lib.Services
         {
             _userManager = userManager;
             _fantasyCriticRepo = fantasyCriticRepo;
+        }
+
+        public async Task<FantasyCriticLeague> CreateLeague(LeagueCreationParameters parameters)
+        {
+            LeagueOptions options = new LeagueOptions(parameters);
+            FantasyCriticLeague newLeague = new FantasyCriticLeague(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, new List<int>(parameters.InitialYear), options);
+            await _fantasyCriticRepo.CreateLeague(newLeague);
+            return newLeague;
         }
 
         public Task<Maybe<FantasyCriticLeague>> GetLeagueByID(Guid id)

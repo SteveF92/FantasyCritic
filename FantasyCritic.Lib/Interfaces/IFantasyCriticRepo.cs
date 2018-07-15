@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,5 +11,6 @@ namespace FantasyCritic.Lib.Interfaces
     {
         Task<Maybe<FantasyCriticLeague>> GetLeagueByID(Guid id);
         Task<IReadOnlyList<Guid>> GetPlayerIDsInLeague(FantasyCriticLeague league);
+        Task<FantasyCriticLeague> CreateLeague(FantasyCriticLeague league);
     }
 }

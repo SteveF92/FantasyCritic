@@ -9,15 +9,14 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
-        public LeagueOptions(int rosterSize, decimal estimatedGameScore, EligibilitySystem eligibilitySystem,
-            DraftSystem draftSystem, WaiverSystem waiverSystem, ScoringSystem scoringSystem)
+        public LeagueOptions(LeagueCreationParameters parameters)
         {
-            RosterSize = rosterSize;
-            EstimatedGameScore = estimatedGameScore;
-            EligibilitySystem = eligibilitySystem;
-            DraftSystem = draftSystem;
-            WaiverSystem = waiverSystem;
-            ScoringSystem = scoringSystem;
+            RosterSize = parameters.RosterSize;
+            EstimatedGameScore = parameters.EstimatedGameScore;
+            EligibilitySystem = parameters.EligibilitySystem;
+            DraftSystem = parameters.DraftSystem;
+            WaiverSystem = parameters.WaiverSystem;
+            ScoringSystem = parameters.ScoringSystem;
         }
 
         public int RosterSize { get; }

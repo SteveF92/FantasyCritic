@@ -26,11 +26,7 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly ILogger _logger;
         private readonly ITokenService _tokenService;
 
-        public AccountController(
-            FantasyCriticUserManager userManager,
-            IEmailSender emailSender,
-            ILogger<AccountController> logger,
-            ITokenService tokenService)
+        public AccountController(FantasyCriticUserManager userManager, IEmailSender emailSender, ILogger<AccountController> logger, ITokenService tokenService)
         {
             _userManager = userManager;
             _emailSender = emailSender;
