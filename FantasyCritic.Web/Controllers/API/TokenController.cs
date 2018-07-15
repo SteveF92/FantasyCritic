@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models;
+using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

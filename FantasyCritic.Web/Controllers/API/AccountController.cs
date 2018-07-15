@@ -8,6 +8,8 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models;
+using FantasyCritic.Web.Models.Requests;
+using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
