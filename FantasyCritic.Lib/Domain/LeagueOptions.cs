@@ -11,7 +11,9 @@ namespace FantasyCritic.Lib.Domain
     {
         public LeagueOptions(LeagueCreationParameters parameters)
         {
-            RosterSize = parameters.RosterSize;
+            DraftGames = parameters.DraftGames;
+            WaiverGames = parameters.WaiverGames;
+            AntiPicks = parameters.AntiPicks;
             EstimatedGameScore = parameters.EstimatedGameScore;
             EligibilitySystem = parameters.EligibilitySystem;
             DraftSystem = parameters.DraftSystem;
@@ -19,7 +21,9 @@ namespace FantasyCritic.Lib.Domain
             ScoringSystem = parameters.ScoringSystem;
         }
 
-        public int RosterSize { get; }
+        public int DraftGames { get; }
+        public int WaiverGames { get; }
+        public int AntiPicks { get; }
         public decimal EstimatedGameScore { get; }
         public EligibilitySystem EligibilitySystem { get; }
         public DraftSystem DraftSystem { get; }

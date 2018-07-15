@@ -9,7 +9,11 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public string LeagueName { get; set; }
         [Required]
-        public int RosterSize { get; set; }
+        public int DraftGames { get; set; }
+        [Required]
+        public int WaiverGames { get; set; }
+        [Required]
+        public int AntiPicks { get; set; }
         [Required]
         public decimal EstimatedGameScore { get; set; }
         [Required]
@@ -30,7 +34,7 @@ namespace FantasyCritic.Web.Models.Requests
             WaiverSystem waiverSystem = Lib.Enums.WaiverSystem.FromValue(WaiverSystem);
             ScoringSystem scoringSystem = Lib.Enums.ScoringSystem.FromValue(ScoringSystem);
 
-            LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, RosterSize,
+            LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, DraftGames, WaiverGames, AntiPicks,
                 EstimatedGameScore, InitialYear, eligibilitySystem, draftSystem, waiverSystem, scoringSystem);
             return parameters;
         }
