@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 
@@ -5,13 +6,21 @@ namespace FantasyCritic.Web.Models.Requests
 {
     public class CreateLeagueRequest
     {
+        [Required]
         public string LeagueName { get; set; }
+        [Required]
         public int RosterSize { get; set; }
+        [Required]
         public decimal EstimatedGameScore { get; set; }
+        [Required]
         public int InitialYear { get; set; }
+        [Required]
         public string EligibilitySystem { get; set; }
+        [Required]
         public string DraftSystem { get; set; }
+        [Required]
         public string WaiverSystem { get; set; }
+        [Required]
         public string ScoringSystem { get; set; }
 
         public LeagueCreationParameters ToDomain(FantasyCriticUser manager)

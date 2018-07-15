@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
+using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,11 +36,16 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
             LeagueCreationParameters domainRequest = request.ToDomain(currentUser);
             var league = await _fantasyCriticService.CreateLeague(domainRequest);
+            var viewModel = new FantasyCriticLeagueViewModel(league);
 
-
-            return Ok();
+            return Ok(viewModel);
         }
     }
 }
