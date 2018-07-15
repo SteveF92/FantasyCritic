@@ -1,6 +1,6 @@
 namespace FantasyCritic.Web.Models.Requests
 {
-    public class RegisterViewModel
+    public class RegisterRequest
     {
         public string EmailAddress { get; set; }
         public string UserName { get; set; }

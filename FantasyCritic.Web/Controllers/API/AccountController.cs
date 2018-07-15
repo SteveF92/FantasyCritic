@@ -53,7 +53,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest model)
         {
             if (!ModelState.IsValid)
             {
@@ -85,7 +85,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
             var user = await _userManager.FindByEmailAsync(model.EmailAddress);
             if (user == null)
