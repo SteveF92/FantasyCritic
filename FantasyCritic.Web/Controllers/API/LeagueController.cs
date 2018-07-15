@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models;
@@ -25,6 +26,19 @@ namespace FantasyCritic.Web.Controllers.API
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetLeague(Guid id)
+        {
+            Maybe<FantasyCriticLeague> league = await _fantasyCriticService.GetLeagueByID(id);
+            if (league.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var leagueViewModel = new FantasyCriticLeagueViewModel(league.Value);
+            return Ok(leagueViewModel);
         }
 
         [HttpPost]
