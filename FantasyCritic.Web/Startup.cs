@@ -17,6 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 
 namespace FantasyCritic.Web
@@ -67,14 +69,10 @@ namespace FantasyCritic.Web
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>()
                 .AddDefaultTokenProviders();
 
-            
-
             services.ConfigureApplicationCookie(opt =>
             {
                 opt.ExpireTimeSpan = TimeSpan.FromMinutes(validMinutes);
             });
-
-            
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(cfg =>
@@ -88,7 +86,8 @@ namespace FantasyCritic.Web
                 });
 
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -107,9 +106,11 @@ namespace FantasyCritic.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
             }
 
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
