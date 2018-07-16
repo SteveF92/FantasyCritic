@@ -5,6 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
+using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Web;
 
 namespace FantasyCritic.Web
 {
@@ -15,8 +18,12 @@ namespace FantasyCritic.Web
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                .UseNLog()
                 .UseStartup<Startup>();
+        }
+            
     }
 }
