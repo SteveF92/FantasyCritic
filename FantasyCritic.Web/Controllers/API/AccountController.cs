@@ -45,12 +45,6 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(vm);
         }
 
-        public ActionResult Time()
-        {
-            var time = DateTime.Now.ToString();
-            return Ok(time);
-        }
-
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterRequest model)

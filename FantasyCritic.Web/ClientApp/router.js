@@ -9,6 +9,7 @@ import Register from "components/pages/register";
 import About from "components/pages/about";
 import Contact from "components/pages/contact";
 import ManageUser from "components/pages/manageUser";
+import CreateLeague from "components/pages/createLeague";
 
 Vue.use(VueRouter);
 
@@ -54,6 +55,11 @@ let routes = [
         path: "/manageUser",
         component: ManageUser,
         name: "manageUser"
+    },
+    {
+        path: "/createLeague",
+        component: CreateLeague,
+        name: "createLeague"
     }
 ];
 
