@@ -98,5 +98,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.GetOpenYears();
         }
+
+        public Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesForUser(FantasyCriticUser currentUser)
+        {
+            return _fantasyCriticRepo.GetLeaguesForUser(currentUser);
+        }
     }
 }

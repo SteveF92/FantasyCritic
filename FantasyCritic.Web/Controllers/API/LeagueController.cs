@@ -38,6 +38,21 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModel);
         }
 
+        public async Task<IActionResult> MyLeagues()
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            IReadOnlyList<FantasyCriticLeague> myLeagues = await _fantasyCriticService.GetLeaguesForUser(currentUser);
+
+            List<FantasyCriticLeagueViewModel> viewModels = new List<FantasyCriticLeagueViewModel>();
+            foreach (var league in myLeagues)
+            {
+                bool isManager = (league.LeagueManager.UserID == currentUser.UserID);
+                viewModels.Add(new FantasyCriticLeagueViewModel(league, isManager));
+            }
+
+            return Ok(viewModels);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetLeague(Guid id)
         {
@@ -55,7 +70,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return Unauthorized();
             }
 
-            var leagueViewModel = new FantasyCriticLeagueViewModel(league.Value, playersInLeague);
+            bool isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
+            var leagueViewModel = new FantasyCriticLeagueViewModel(league.Value, isManager, playersInLeague);
             return Ok(leagueViewModel);
         }
 

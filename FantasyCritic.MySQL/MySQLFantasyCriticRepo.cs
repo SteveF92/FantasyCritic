@@ -146,6 +146,37 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesForUser(FantasyCriticUser currentUser)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var queryObject = new
+                {
+                    userID = currentUser.UserID,
+                };
+
+                IEnumerable<FantasyCriticLeagueEntity> leagueEntities = await connection.QueryAsync<FantasyCriticLeagueEntity>(
+                    "select * from tblleague join tblleagueplayer on (tblleague.LeagueID = tblleagueplayer.LeagueID) where tblleagueplayer.UserID = @userID;", queryObject);
+
+                List<FantasyCriticLeague> leagues = new List<FantasyCriticLeague>();
+                foreach (var leagueEntity in leagueEntities)
+                {
+                    FantasyCriticUser manager = await _userStore.FindByIdAsync(leagueEntity.LeagueManager.ToString(), CancellationToken.None);
+
+                    IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tblleagueyear where LeagueID = @leagueID", new
+                    {
+                        leagueID = leagueEntity.LeagueID
+                    });
+
+                    IEnumerable<int> years = yearEntities.Select(x => x.Year);
+                    FantasyCriticLeague league = leagueEntity.ToDomain(manager, years);
+                    leagues.Add(league);
+                }
+
+                return leagues;
+            }
+        }
+
         private Task AddPlayerToLeague(FantasyCriticLeague league, FantasyCriticUser inviteUser)
         {
             var userAddObject = new
