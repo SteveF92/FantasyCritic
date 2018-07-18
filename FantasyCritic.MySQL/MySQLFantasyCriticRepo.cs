@@ -137,6 +137,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyList<int>> GetOpenYears()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var results = await connection.QueryAsync<int>("select tblsupportedyear.Year from tblsupportedyear where OpenForPlay = true");
+                return results.ToList();
+            }
+        }
+
         private Task AddPlayerToLeague(FantasyCriticLeague league, FantasyCriticUser inviteUser)
         {
             var userAddObject = new

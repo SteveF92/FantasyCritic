@@ -29,9 +29,10 @@ namespace FantasyCritic.Web.Controllers.API
             _fantasyCriticService = fantasyCriticService;
         }
 
-        public IActionResult LeagueOptions()
+        public async Task<IActionResult> LeagueOptions()
         {
-            LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(EligibilitySystem.GetAllPossibleValues(), DraftSystem.GetAllPossibleValues(),
+            IReadOnlyList<int> openYears = await _fantasyCriticService.GetOpenYears();
+            LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, EligibilitySystem.GetAllPossibleValues(), DraftSystem.GetAllPossibleValues(),
                 WaiverSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues());
 
             return Ok(viewModel);
@@ -73,9 +74,9 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             LeagueCreationParameters domainRequest = request.ToDomain(currentUser);
-            var league = await _fantasyCriticService.CreateLeague(domainRequest);
+            await _fantasyCriticService.CreateLeague(domainRequest);
 
-            return CreatedAtRoute("GetLeague", league.LeagueID);
+            return Ok();
         }
 
         [HttpPost]

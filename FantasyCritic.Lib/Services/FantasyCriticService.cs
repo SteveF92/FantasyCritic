@@ -93,5 +93,10 @@ namespace FantasyCritic.Lib.Services
             var playersInvited = await GetOutstandingInvitees(league);
             return playersInvited.Any(x => x.UserID == inviteUser.UserID);
         }
+
+        public  Task<IReadOnlyList<int>> GetOpenYears()
+        {
+            return _fantasyCriticRepo.GetOpenYears();
+        }
     }
 }
