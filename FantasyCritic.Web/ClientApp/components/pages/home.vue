@@ -1,25 +1,47 @@
 <template>
     <div>
-        Welcome to Fantasy Critic!
-
-        <router-link :to="{ name: 'createLeague' }" class="nav-link" title="CreateLeague">Create a League</router-link>
+        <h2>Welcome to Fantasy Critic!</h2>
+        <div class="col-md-4">
+            <b-button variant="primary" :to="{ name: 'createLeague' }" class="nav-link">Create a League</b-button>
+            <h3>Leagues I Manage</h3>
+            <ul>
+                <li v-for="league in myLeagues" v-if="league.isManager">
+                    {{league.leagueName}}
+                </li>
+            </ul>
+            <hr />
+            <h3>Leagues I Play In</h3>
+            <ul>
+                <li v-for="league in myLeagues" v-if="!league.isManager">
+                    {{league.leagueName}}
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import axios from "axios";
-export default {
+    import Vue from "vue";
+    import axios from "axios";
+    export default {
         data() {
             return {
-
+                errorInfo: "",
+                myLeagues: []
             }
-
         },
         methods: {
-
+            fetchMyLeagues() {
+                axios
+                    .get('/api/League/MyLeagues')
+                    .then(response => {
+                        this.myLeagues = response.data;
+                    })
+                    .catch(returnedError => (this.error = returnedError));
+            }
         },
         mounted() {
+            this.fetchMyLeagues();
         }
-}
+    }
 </script>
