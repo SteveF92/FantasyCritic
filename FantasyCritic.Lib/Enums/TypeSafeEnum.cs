@@ -15,7 +15,7 @@ namespace FantasyCritic.Lib.Enums
 
         public string Value { get; }
 
-        protected static IReadOnlyList<TEnum> GetAllPossibleValues()
+        public static IReadOnlyList<TEnum> GetAllPossibleValues()
         {
             Type enumType = typeof(TEnum);
             var fields = enumType.GetFields(BindingFlags.Public | BindingFlags.Static);

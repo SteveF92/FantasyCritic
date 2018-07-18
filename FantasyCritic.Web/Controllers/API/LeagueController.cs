@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
@@ -26,6 +27,14 @@ namespace FantasyCritic.Web.Controllers.API
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
+        }
+
+        public IActionResult LeagueOptions()
+        {
+            LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(EligibilitySystem.GetAllPossibleValues(), DraftSystem.GetAllPossibleValues(),
+                WaiverSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues());
+
+            return Ok(viewModel);
         }
 
         [HttpGet("{id}")]
