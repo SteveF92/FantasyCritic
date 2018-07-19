@@ -15,40 +15,42 @@
                         <router-link :to="{ name: 'contact' }" class="nav-link" title="Contact">Contact</router-link>
                     </li>
                 </ul>
-                <div v-if="isAuth">
-                    <div class="my-2 my-lg-0">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item">
-                                <form class="form-inline my-2 my-lg-0">
-                                    <input class="form-control mr-sm-2" type="text" placeholder="Search">
-                                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                                </form>
-                            </li>
+                <div v-cloak v-if="credsLoaded">
+                    <div v-if="isAuth">
+                        <div class="my-2 my-lg-0">
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item">
+                                    <form class="form-inline my-2 my-lg-0">
+                                        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                                        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                                    </form>
+                                </li>
 
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                                    {{userName}}
-                                    <span class="caret"></span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
-                                    <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#" v-on:click="logout()">Log off</a>
-                                </div>
-                            </li>
-                        </ul>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                                        {{userName}}
+                                        <span class="caret"></span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
+                                        <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#" v-on:click="logout()">Log off</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-                <div v-if="!isAuth">
-                    <div class="my-2 my-lg-0">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item">
-                                <b-button variant="primary" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
-                            </li>
-                            <li class="nav-item">
-                                <b-button variant="info" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
-                            </li>
-                        </ul>
+                    <div v-if="!isAuth">
+                        <div class="my-2 my-lg-0">
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item">
+                                    <b-button variant="primary" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
+                                </li>
+                                <li class="nav-item">
+                                    <b-button variant="info" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -58,6 +60,11 @@
 
 <script>
     export default {
+        data() {
+            return {
+                credsLoaded: false
+            }
+        },
         computed: {
             isAuth() {
                 return this.$store.getters.tokenIsCurrent(new Date());
@@ -73,6 +80,13 @@
                         this.$router.push({ name: "login" });
                     });
             }
+        },
+        mounted() {
+            this.$store.dispatch("getUserInfo")
+                .then(response => {
+                    this.credsLoaded = true;
+                    resolve(response)
+                });
         }
     }
 </script>
