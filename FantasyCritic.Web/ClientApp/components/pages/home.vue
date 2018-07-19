@@ -6,14 +6,14 @@
             <h3>Leagues I Manage</h3>
             <ul>
                 <li v-for="league in myLeagues" v-if="league.isManager">
-                    {{league.leagueName}}
+                    <router-link :to="{ name: 'league', params: { id: league.leagueID }}">{{league.leagueName}}</router-link>
                 </li>
             </ul>
             <hr />
             <h3>Leagues I Play In</h3>
             <ul>
                 <li v-for="league in myLeagues" v-if="!league.isManager">
-                    {{league.leagueName}}
+                    <router-link :to="{ name: 'league', params: { id: league.leagueID }}">{{league.leagueName}}</router-link>
                 </li>
             </ul>
         </div>

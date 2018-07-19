@@ -10,6 +10,7 @@ import About from "components/pages/about";
 import Contact from "components/pages/contact";
 import ManageUser from "components/pages/manageUser";
 import CreateLeague from "components/pages/createLeague";
+import League from "components/pages/league";
 
 Vue.use(VueRouter);
 
@@ -60,6 +61,11 @@ let routes = [
         path: "/createLeague",
         component: CreateLeague,
         name: "createLeague"
+    },
+    {
+        path: "/league/:id",
+        component: League,
+        name: "league"
     }
 ];
 

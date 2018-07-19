@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
@@ -9,6 +10,7 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public FantasyCriticLeagueViewModel(FantasyCriticLeague league, bool isManager)
         {
+            LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
             LeagueManager = new FantasyCriticPlayerViewModel(league.LeagueManager);
             IsManager = isManager;
@@ -16,12 +18,14 @@ namespace FantasyCritic.Web.Models.Responses
 
         public FantasyCriticLeagueViewModel(FantasyCriticLeague league, bool isManager, IEnumerable<FantasyCriticUser> players)
         {
+            LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
             LeagueManager = new FantasyCriticPlayerViewModel(league.LeagueManager);
             IsManager = isManager;
             Players = players.Select(x => new FantasyCriticPlayerViewModel(x)).ToList();
         }
 
+        public Guid LeagueID { get; }
         public string LeagueName { get; }
         public FantasyCriticPlayerViewModel LeagueManager { get; }
         public bool IsManager { get; }
