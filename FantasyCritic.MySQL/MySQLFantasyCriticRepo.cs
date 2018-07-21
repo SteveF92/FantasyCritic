@@ -123,18 +123,12 @@ namespace FantasyCritic.MySQL
         {
             await AddPlayerToLeague(league, inviteUser);
 
-            var deleteObject = new
-            {
-                leagueID = league.LeagueID,
-                userID = inviteUser.UserID
-            };
+            await DeleteInvite(league, inviteUser);
+        }
 
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.ExecuteAsync(
-                    "delete from tblleagueinvite where LeagueID = @leagueID and UserID = @userID;",
-                    deleteObject);
-            }
+        public Task DeclineInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        {
+            return DeleteInvite(league, inviteUser);
         }
 
         public async Task<IReadOnlyList<int>> GetOpenYears()
@@ -195,6 +189,22 @@ namespace FantasyCritic.MySQL
             {
                 return connection.ExecuteAsync(
                     "insert into tblleagueplayer(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
+            }
+        }
+
+        private async Task DeleteInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        {
+            var deleteObject = new
+            {
+                leagueID = league.LeagueID,
+                userID = inviteUser.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "delete from tblleagueinvite where LeagueID = @leagueID and UserID = @userID;",
+                    deleteObject);
             }
         }
 

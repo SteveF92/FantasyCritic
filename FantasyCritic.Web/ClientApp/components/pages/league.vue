@@ -1,8 +1,19 @@
 <template>
-    <div>
+    <div v-if="league">
         <h2>{{ league.leagueName }}</h2>
         <div class="col-md-8" v-if="league.outstandingInvite">
             You have been invited to join this league. Do you wish to join?
+            <div class="row">
+                <div class="btn-toolbar">
+                    <b-button variant="primary" v-on:click="acceptInvite" class="mx-2">Join</b-button>
+                    <b-button variant="secondary" v-on:click="declineInvite" class="mx-2">Decline</b-button>
+                </div>
+            </div>
+
+        </div>
+        <div>
+            <h3>League Manager</h3>
+            {{ league.leagueManager.userName }}
         </div>
         <h3>Players</h3>
         <ul>
@@ -37,7 +48,7 @@
             return {
                 errorInfo: "",
                 leagueID: "",
-                league: {},
+                league: null,
                 showInvitePlayer: false,
                 inviteEmail: ""
             }
@@ -55,6 +66,32 @@
             showInvite() {
                 this.showInvitePlayer = true;
             },
+            acceptInvite() {
+                var model = {
+                    leagueID: this.leagueID
+                };
+                axios
+                    .post('/api/league/AcceptInvite', model)
+                    .then(response => {
+                        this.fetchLeague();
+                    })
+                    .catch(response => {
+
+                    });
+            },
+            declineInvite() {
+                var model = {
+                    leagueID: this.leagueID
+                };
+                axios
+                    .post('/api/league/DeclineInvite', model)
+                    .then(response => {
+                        this.$router.push({ name: "home" });
+                    })
+                    .catch(response => {
+
+                    });
+            },
             invitePlayer() {
                 var model = {
                     leagueID: this.leagueID,
@@ -62,14 +99,12 @@
                 };
                 axios
                     .post('/api/league/InvitePlayer', model)
-                    .then(this.responseHandler)
-                    .catch(this.catchHandler);
-            },
-            responseHandler(response) {
-                this.$router.push({ name: "login" });
-            },
-            catchHandler(returnedError) {
+                    .then(response => {
 
+                    })
+                    .catch(response => {
+
+                    });
             }
         },
         mounted() {

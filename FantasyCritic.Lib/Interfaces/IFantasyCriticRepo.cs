@@ -15,6 +15,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task SaveInvite(FantasyCriticLeague league, FantasyCriticUser user);
         Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(FantasyCriticLeague league);
         Task AcceptInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser);
+        Task DeclineInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser);
         Task<IReadOnlyList<int>> GetOpenYears();
         Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesForUser(FantasyCriticUser currentUser);
         Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);

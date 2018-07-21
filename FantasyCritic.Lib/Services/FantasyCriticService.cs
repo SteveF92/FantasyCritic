@@ -77,6 +77,25 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
+        public async Task<Result> DeclineInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        {
+            bool userInLeague = await UserIsInLeague(league, inviteUser);
+            if (userInLeague)
+            {
+                return Result.Fail("User is already in league.");
+            }
+
+            bool userInvited = await UserIsInvited(league, inviteUser);
+            if (!userInvited)
+            {
+                return Result.Fail("User is not invited to this league.");
+            }
+
+            await _fantasyCriticRepo.DeclineInvite(league, inviteUser);
+
+            return Result.Ok();
+        }
+
         public Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(FantasyCriticLeague league)
         {
             return _fantasyCriticRepo.GetOutstandingInvitees(league);
