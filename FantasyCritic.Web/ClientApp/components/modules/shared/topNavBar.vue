@@ -29,7 +29,7 @@
                                     <a class="nav-link nav-icon" href="#">
                                         <font-awesome-layers class="fa-lg">
                                             <font-awesome-icon icon="bell"/>
-                                            <font-awesome-layers class="fa-layers-counter fa-layers-top-right fa-lg">3</font-awesome-layers>
+                                            <!--<font-awesome-layers class="fa-layers-counter fa-layers-top-right fa-lg">0</font-awesome-layers>-->
                                         </font-awesome-layers>
                                     </a>
                                 </li>
