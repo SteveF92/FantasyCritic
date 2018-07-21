@@ -53,7 +53,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModels);
         }
 
-        public async Task<IActionResult> Invites()
+        public async Task<IActionResult> MyInvites()
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             var invitedLeagues = await _fantasyCriticService.GetLeaguesInvitedTo(currentUser);
@@ -82,7 +82,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             bool isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
-            var leagueViewModel = new FantasyCriticLeagueViewModel(league.Value, isManager, playersInLeague, userIsInvitedToLeague);
+            var leagueViewModel = new FantasyCriticLeagueViewModel(league.Value, isManager, playersInLeague, inviteesToLeague, userIsInvitedToLeague);
             return Ok(leagueViewModel);
         }
 

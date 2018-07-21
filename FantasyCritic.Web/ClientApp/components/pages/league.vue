@@ -1,5 +1,8 @@
 <template>
     <div v-if="league">
+        <div v-if="errorInfo" class="alert alert-danger" role="alert">
+            {{errorInfo}}
+        </div>
         <div v-if="invitedEmail" class="alert alert-success" role="alert">
             Sucessfully sent invite to {{ invitedEmail }}!
         </div>
@@ -21,6 +24,12 @@
         <h3>Players</h3>
         <ul>
             <li v-for="player in league.players">
+                {{ player.userName }}
+            </li>
+        </ul>
+        <h3>Invited Players</h3>
+        <ul>
+            <li v-for="player in league.invitedPlayers">
                 {{ player.userName }}
             </li>
         </ul>
@@ -109,9 +118,10 @@
                         this.showInvitePlayer = false;
                         this.invitedEmail = this.inviteEmail;
                         this.inviteEmail = "";
+                        this.fetchLeague();
                     })
                     .catch(response => {
-
+                        this.errorInfo = "Cannot find a player with that email address."
                     });
             }
         },

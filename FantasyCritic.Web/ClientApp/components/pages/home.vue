@@ -79,7 +79,7 @@
             },
             fetchInvitedLeagues() {
                 axios
-                    .get('/api/League/Invites')
+                    .get('/api/League/MyInvites')
                     .then(response => {
                         this.invitedLeagues = response.data;
                     })
