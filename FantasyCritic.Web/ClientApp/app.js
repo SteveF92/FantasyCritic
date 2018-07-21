@@ -9,8 +9,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootswatch/dist/superhero/bootstrap.css';
 
-import 'font-awesome/css/font-awesome.css';
-
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 import 'jquery/dist/jquery.slim.js';
 
