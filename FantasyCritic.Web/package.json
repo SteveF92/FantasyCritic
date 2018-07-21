@@ -19,7 +19,10 @@
     "vue-router": "^2.1.1",
     "vue-server-renderer": "^2.1.8",
     "vuex": "^2.1.1",
-    "vuex-router-sync": "^4.0.1"
+    "vuex-router-sync": "^4.0.1",
+    "@fortawesome/fontawesome-svg-core": "1.2.1",
+    "@fortawesome/free-solid-svg-icons": "5.1.1",
+    "@fortawesome/vue-fontawesome": "0.1.1"
   },
   "devDependencies": {
     "aspnet-webpack": "^2.0.1",

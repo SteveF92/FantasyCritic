@@ -25,6 +25,14 @@
                                         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
                                     </form>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-icon" href="#">
+                                        <font-awesome-layers>
+                                            <font-awesome-icon icon="bell" />
+                                            <font-awesome-layers class="fa-layers-counter fa-layers-top-right">3</font-awesome-layers>
+                                        </font-awesome-layers>
+                                    </a>
+                                </li>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
                                         {{userName}}
@@ -84,7 +92,6 @@
             this.$store.dispatch("getUserInfo")
                 .then(response => {
                     this.credsLoaded = true;
-                    resolve(response)
                 });
         }
     }
