@@ -7,7 +7,7 @@ import App from 'components/application'
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCoffee, faBell } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -19,6 +19,8 @@ import 'jquery/dist/jquery.slim.js';
 library.add(faCoffee);
 library.add(faBell);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
+Vue.component('font-awesome-layers', FontAwesomeLayers)
+Vue.component('font-awesome-layers-text', FontAwesomeLayersText)
 Vue.use(BootstrapVue);
 
 axios.interceptors.response.use(function (response) {

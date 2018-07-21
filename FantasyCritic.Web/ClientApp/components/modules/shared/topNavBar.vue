@@ -1,6 +1,6 @@
 <template>
     <div>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="top-nav">
             <router-link :to="{ name: 'home' }" class="navbar-brand" title="Fantasy Critic">Fantasy Critic</router-link>
             <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" style="">
                 <span class="navbar-toggler-icon"></span>
@@ -27,9 +27,9 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link nav-icon" href="#">
-                                        <font-awesome-layers>
-                                            <font-awesome-icon icon="bell" />
-                                            <font-awesome-layers class="fa-layers-counter fa-layers-top-right">3</font-awesome-layers>
+                                        <font-awesome-layers class="fa-lg">
+                                            <font-awesome-icon icon="bell"/>
+                                            <font-awesome-layers class="fa-layers-counter fa-layers-top-right fa-lg">3</font-awesome-layers>
                                         </font-awesome-layers>
                                     </a>
                                 </li>
@@ -98,8 +98,18 @@
 </script>
 
 <style scoped>
-    .navbar-nav .nav-item {
-        margin-left: 5px;
-        margin-right: 5px;
-    }
+.navbar-nav .nav-item {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.nav-icon {
+    font-size: 1.1rem;
+}
+
+#top-nav {
+    max-height: 50px;
+    padding-bottom: 0;
+}
+
 </style>
