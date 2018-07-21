@@ -25,7 +25,9 @@
                                         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
                                     </form>
                                 </li>
-
+                                <li class="nav-item">
+                                    <i class="fa fa-bell"></i>
+                                </li>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
                                         {{userName}}
