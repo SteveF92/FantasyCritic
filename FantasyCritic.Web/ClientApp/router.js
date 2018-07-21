@@ -119,7 +119,8 @@ theRouter.beforeEach(function (toRoute, fromRoute, next) {
     }
 
     if (store.getters.tokenIsCurrent(new Date())) {
-        next();
+        store.dispatch("getUserInfo")
+            .then(() => { next() });
     }
 });
 

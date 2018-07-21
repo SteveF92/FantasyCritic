@@ -76,7 +76,7 @@ export default {
                 context.commit("clearUserAndToken");
                 resolve();
             });
-        },
+        }
     },
     mutations: {
         setTokenInfo(state, tokenInfo) {

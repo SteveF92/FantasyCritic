@@ -23,7 +23,7 @@
     };
 </script>
 
-<style
+<style>
     [v-cloak] {
         display: none;
     }
