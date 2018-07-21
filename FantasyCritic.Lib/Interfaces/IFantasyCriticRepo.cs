@@ -17,5 +17,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task AcceptInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser);
         Task<IReadOnlyList<int>> GetOpenYears();
         Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesForUser(FantasyCriticUser currentUser);
+        Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);
     }
 }

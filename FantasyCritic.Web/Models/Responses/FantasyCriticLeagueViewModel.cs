@@ -16,12 +16,13 @@ namespace FantasyCritic.Web.Models.Responses
             IsManager = isManager;
         }
 
-        public FantasyCriticLeagueViewModel(FantasyCriticLeague league, bool isManager, IEnumerable<FantasyCriticUser> players)
+        public FantasyCriticLeagueViewModel(FantasyCriticLeague league, bool isManager, IEnumerable<FantasyCriticUser> players, bool outstandingInvite)
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
             LeagueManager = new FantasyCriticPlayerViewModel(league.LeagueManager);
             IsManager = isManager;
+            OutstandingInvite = outstandingInvite;
             Players = players.Select(x => new FantasyCriticPlayerViewModel(x)).ToList();
         }
 
@@ -30,5 +31,6 @@ namespace FantasyCritic.Web.Models.Responses
         public FantasyCriticPlayerViewModel LeagueManager { get; }
         public bool IsManager { get; }
         public IReadOnlyList<FantasyCriticPlayerViewModel> Players { get; }
+        public bool OutstandingInvite { get; }
     }
 }

@@ -148,6 +148,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesForUser(FantasyCriticUser currentUser)
         {
+            IEnumerable<FantasyCriticLeagueEntity> leagueEntities;
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var queryObject = new
@@ -155,26 +156,31 @@ namespace FantasyCritic.MySQL
                     userID = currentUser.UserID,
                 };
 
-                IEnumerable<FantasyCriticLeagueEntity> leagueEntities = await connection.QueryAsync<FantasyCriticLeagueEntity>(
+                leagueEntities = await connection.QueryAsync<FantasyCriticLeagueEntity>(
                     "select * from tblleague join tblleagueplayer on (tblleague.LeagueID = tblleagueplayer.LeagueID) where tblleagueplayer.UserID = @userID;", queryObject);
-
-                List<FantasyCriticLeague> leagues = new List<FantasyCriticLeague>();
-                foreach (var leagueEntity in leagueEntities)
-                {
-                    FantasyCriticUser manager = await _userStore.FindByIdAsync(leagueEntity.LeagueManager.ToString(), CancellationToken.None);
-
-                    IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tblleagueyear where LeagueID = @leagueID", new
-                    {
-                        leagueID = leagueEntity.LeagueID
-                    });
-
-                    IEnumerable<int> years = yearEntities.Select(x => x.Year);
-                    FantasyCriticLeague league = leagueEntity.ToDomain(manager, years);
-                    leagues.Add(league);
-                }
-
-                return leagues;
             }
+
+            IReadOnlyList<FantasyCriticLeague> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
+            return leagues;
+        }
+
+        public async Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesInvitedTo(FantasyCriticUser currentUser)
+        {
+            var query = new
+            {
+                userID = currentUser.UserID
+            };
+
+            IEnumerable<FantasyCriticLeagueEntity> leagueEntities;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                leagueEntities = await connection.QueryAsync<FantasyCriticLeagueEntity>(
+                    "select tblLeague.* from tblLeague join tblleagueinvite on (tblLeague.LeagueID = tblleagueinvite.LeagueID) where tblleagueinvite.UserID = @userID;",
+                    query);
+            }
+
+            IReadOnlyList<FantasyCriticLeague> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
+            return leagues;
         }
 
         private Task AddPlayerToLeague(FantasyCriticLeague league, FantasyCriticUser inviteUser)
@@ -189,6 +195,31 @@ namespace FantasyCritic.MySQL
             {
                 return connection.ExecuteAsync(
                     "insert into tblleagueplayer(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
+            }
+        }
+
+        private async Task<IReadOnlyList<FantasyCriticLeague>> ConvertLeagueEntitiesToDomain(IEnumerable<FantasyCriticLeagueEntity> leagueEntities)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                List<FantasyCriticLeague> leagues = new List<FantasyCriticLeague>();
+                foreach (var leagueEntity in leagueEntities)
+                {
+                    FantasyCriticUser manager = await _userStore.FindByIdAsync(leagueEntity.LeagueManager.ToString(),
+                        CancellationToken.None);
+
+                    IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>(
+                        "select * from tblleagueyear where LeagueID = @leagueID", new
+                        {
+                            leagueID = leagueEntity.LeagueID
+                        });
+
+                    IEnumerable<int> years = yearEntities.Select(x => x.Year);
+                    FantasyCriticLeague league = leagueEntity.ToDomain(manager, years);
+                    leagues.Add(league);
+                }
+
+                return leagues;
             }
         }
     }

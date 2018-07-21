@@ -1,6 +1,9 @@
 <template>
     <div>
         <h2>{{ league.leagueName }}</h2>
+        <div class="col-md-8" v-if="league.outstandingInvite">
+            You have been invited to join this league. Do you wish to join?
+        </div>
         <h3>Players</h3>
         <ul>
             <li v-for="player in league.players">

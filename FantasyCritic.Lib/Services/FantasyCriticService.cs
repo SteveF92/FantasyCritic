@@ -103,5 +103,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.GetLeaguesForUser(currentUser);
         }
+
+        public Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesInvitedTo(FantasyCriticUser currentUser)
+        {
+            return _fantasyCriticRepo.GetLeaguesInvitedTo(currentUser);
+        }
     }
 }
