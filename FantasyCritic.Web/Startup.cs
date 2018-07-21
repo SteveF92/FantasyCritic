@@ -66,8 +66,15 @@ namespace FantasyCritic.Web
             services.AddTransient<ITokenService>(factory => tokenService);
             services.AddTransient<IClock>(factory => SystemClock.Instance);
 
-            services.AddIdentity<FantasyCriticUser, FantasyCriticRole>()
-                .AddDefaultTokenProviders();
+            services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 12;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            })
+            .AddDefaultTokenProviders();
 
             services.ConfigureApplicationCookie(opt =>
             {
