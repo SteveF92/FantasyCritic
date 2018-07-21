@@ -19,6 +19,9 @@
     export default {
         components: {
             TopNavbar
+        },
+        mounted() {
+
         }
     };
 </script>

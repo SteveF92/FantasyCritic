@@ -23,6 +23,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<FantasyCriticLeague> CreateLeague(LeagueCreationParameters parameters)
         {
+            LeagueOptions newOptions = null;
             LeagueOptions options = new LeagueOptions(parameters);
             FantasyCriticLeague newLeague = new FantasyCriticLeague(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, new List<int>(parameters.InitialYear), options);
             await _fantasyCriticRepo.CreateLeague(newLeague, parameters.InitialYear);

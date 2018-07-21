@@ -2,11 +2,11 @@
     <div>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="top-nav">
             <router-link :to="{ name: 'home' }" class="navbar-brand" title="Fantasy Critic">Fantasy Critic</router-link>
-            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" style="">
+            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation" style="">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="navbar-collapse collapse" id="navbarColor02" style="">
+            <div class="navbar-collapse collapse" id="navbar-collapsible">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
                         <router-link :to="{ name: 'about' }" class="nav-link" title="About">About</router-link>
@@ -97,6 +97,11 @@
 #top-nav {
     max-height: 50px;
     padding-bottom: 0;
+}
+
+#navbar-collapsible {
+    z-index: 10;
+    background-color: #4E5D6C;
 }
 
 </style>
