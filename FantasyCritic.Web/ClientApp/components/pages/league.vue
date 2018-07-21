@@ -1,5 +1,8 @@
 <template>
     <div v-if="league">
+        <div v-if="invitedEmail" class="alert alert-success" role="alert">
+            Sucessfully sent invite to {{ invitedEmail }}!
+        </div>
         <h2>{{ league.leagueName }}</h2>
         <div class="col-md-8" v-if="league.outstandingInvite">
             You have been invited to join this league. Do you wish to join?
@@ -35,6 +38,8 @@
                         <input type="submit" class="btn btn-primary" value="Send Invite" />
                     </div>
                 </form>
+                <div v-if="inviteSent">
+                </div>
             </div>
         </div>
     </div>
@@ -50,7 +55,8 @@
                 leagueID: "",
                 league: null,
                 showInvitePlayer: false,
-                inviteEmail: ""
+                inviteEmail: "",
+                invitedEmail: ""
             }
         },
         methods: {
@@ -100,7 +106,9 @@
                 axios
                     .post('/api/league/InvitePlayer', model)
                     .then(response => {
-
+                        this.showInvitePlayer = false;
+                        this.invitedEmail = this.inviteEmail;
+                        this.inviteEmail = "";
                     })
                     .catch(response => {
 
