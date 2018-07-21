@@ -169,7 +169,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 leagueEntities = await connection.QueryAsync<FantasyCriticLeagueEntity>(
-                    "select tblLeague.* from tblLeague join tblleagueinvite on (tblLeague.LeagueID = tblleagueinvite.LeagueID) where tblleagueinvite.UserID = @userID;",
+                    "select tblleague.* from tblleague join tblleagueinvite on (tblleague.LeagueID = tblleagueinvite.LeagueID) where tblleagueinvite.UserID = @userID;",
                     query);
             }
 
