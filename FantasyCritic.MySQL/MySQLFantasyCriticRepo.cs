@@ -177,6 +177,35 @@ namespace FantasyCritic.MySQL
             return leagues;
         }
 
+        public async Task<IReadOnlyList<MasterGame>> GetMasterGames()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var results = await connection.QueryAsync<MasterGameEntity>(
+                    "select * from tblmastergame;");
+
+                var masterGames = results.Select(x => x.ToDomain()).ToList();
+                return masterGames;
+            }
+        }
+
+        public async Task<Maybe<MasterGame>> GetMasterGame()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                MasterGameEntity result = await connection.QuerySingleOrDefaultAsync<MasterGameEntity>(
+                    "select * from tblmastergame;");
+
+                if (result == null)
+                {
+                    return Maybe<MasterGame>.None;
+                }
+
+                MasterGame domain = result.ToDomain();
+                return Maybe<MasterGame>.From(domain);
+            }
+        }
+
         private Task AddPlayerToLeague(FantasyCriticLeague league, FantasyCriticUser inviteUser)
         {
             var userAddObject = new

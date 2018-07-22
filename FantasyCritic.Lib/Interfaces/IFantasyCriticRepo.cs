@@ -19,5 +19,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<int>> GetOpenYears();
         Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesForUser(FantasyCriticUser currentUser);
         Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);
+        Task<IReadOnlyList<MasterGame>> GetMasterGames();
+        Task<Maybe<MasterGame>> GetMasterGame();
     }
 }

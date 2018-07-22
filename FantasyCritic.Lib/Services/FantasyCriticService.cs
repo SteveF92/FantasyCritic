@@ -128,5 +128,15 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.GetLeaguesInvitedTo(currentUser);
         }
+
+        public Task<IReadOnlyList<MasterGame>> GetMasterGames()
+        {
+            return _fantasyCriticRepo.GetMasterGames();
+        }
+
+        public Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
+        {
+            return _fantasyCriticRepo.GetMasterGame();
+        }
     }
 }
