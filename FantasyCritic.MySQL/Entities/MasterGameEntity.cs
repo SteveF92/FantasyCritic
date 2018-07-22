@@ -14,7 +14,7 @@ namespace FantasyCritic.MySQL.Entities
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
         public DateTime? ReleaseDate { get; set; }
-        public decimal CriticScore { get; set; }
+        public decimal? CriticScore { get; set; }
 
         public MasterGame ToDomain()
         {

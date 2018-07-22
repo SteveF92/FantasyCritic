@@ -29,6 +29,24 @@ namespace FantasyCritic.Web.Controllers.API
             _fantasyCriticService = fantasyCriticService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<MasterGameViewModel>> MasterGame(Guid id)
+        {
+            var masterGame = await _fantasyCriticService.GetMasterGame(id);
+            if (masterGame.HasNoValue)
+            {
+                return NotFound();
+            }
 
+            var viewModel = new MasterGameViewModel(masterGame.Value);
+            return viewModel;
+        }
+
+        public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame()
+        {
+            var masterGames = await _fantasyCriticService.GetMasterGames();
+            List<MasterGameViewModel> viewModels = masterGames.Select(x => new MasterGameViewModel(x)).ToList();
+            return viewModels;
+        }
     }
 }

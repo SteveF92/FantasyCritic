@@ -20,6 +20,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
+using NodaTime.Serialization.JsonNet;
+using NodaTime.TimeZones;
 
 namespace FantasyCritic.Web
 {
@@ -67,19 +69,16 @@ namespace FantasyCritic.Web
             services.AddTransient<IClock>(factory => SystemClock.Instance);
 
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 12;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-            })
-            .AddDefaultTokenProviders();
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 12;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                })
+                .AddDefaultTokenProviders();
 
-            services.ConfigureApplicationCookie(opt =>
-            {
-                opt.ExpireTimeSpan = TimeSpan.FromMinutes(validMinutes);
-            });
+            services.ConfigureApplicationCookie(opt => { opt.ExpireTimeSpan = TimeSpan.FromMinutes(validMinutes); });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(cfg =>
@@ -107,7 +106,11 @@ namespace FantasyCritic.Web
 
             // Add framework services.
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

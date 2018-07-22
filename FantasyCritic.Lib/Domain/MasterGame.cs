@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGame
     {
-        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, decimal criticScore)
+        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, decimal? criticScore)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -20,6 +20,6 @@ namespace FantasyCritic.Lib.Domain
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
-        public decimal CriticScore { get; }
+        public decimal? CriticScore { get; }
     }
 }
