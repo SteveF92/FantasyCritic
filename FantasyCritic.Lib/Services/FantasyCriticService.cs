@@ -136,7 +136,7 @@ namespace FantasyCritic.Lib.Services
 
         public Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
         {
-            return _fantasyCriticRepo.GetMasterGame();
+            return _fantasyCriticRepo.GetMasterGame(masterGameID);
         }
     }
 }

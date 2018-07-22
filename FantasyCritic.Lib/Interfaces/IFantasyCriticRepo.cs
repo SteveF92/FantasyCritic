@@ -20,6 +20,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesForUser(FantasyCriticUser currentUser);
         Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);
         Task<IReadOnlyList<MasterGame>> GetMasterGames();
-        Task<Maybe<MasterGame>> GetMasterGame();
+        Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);
     }
 }

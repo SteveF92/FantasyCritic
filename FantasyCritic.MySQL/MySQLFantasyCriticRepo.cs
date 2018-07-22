@@ -189,12 +189,12 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<Maybe<MasterGame>> GetMasterGame()
+        public async Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
                 MasterGameEntity result = await connection.QuerySingleOrDefaultAsync<MasterGameEntity>(
-                    "select * from tblmastergame;");
+                    "select * from tblmastergame where MasterGameID = @masterGameID", new { masterGameID });
 
                 if (result == null)
                 {
