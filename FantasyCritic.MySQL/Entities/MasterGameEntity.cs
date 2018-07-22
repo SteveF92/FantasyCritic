@@ -14,6 +14,7 @@ namespace FantasyCritic.MySQL.Entities
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
         public DateTime? ReleaseDate { get; set; }
+        public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
 
         public MasterGame ToDomain()
@@ -24,7 +25,7 @@ namespace FantasyCritic.MySQL.Entities
                 releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
             }
 
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, CriticScore);
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore);
         }
     }
 }

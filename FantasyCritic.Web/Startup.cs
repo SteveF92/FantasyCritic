@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Services;
@@ -54,6 +55,8 @@ namespace FantasyCritic.Web
             var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString, userStore);
             var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
 
+            services.AddHttpClient();
+
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
             services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
             services.AddScoped<IFantasyCriticRepo>(factory => fantasyCriticRepo);
@@ -67,6 +70,13 @@ namespace FantasyCritic.Web
             services.AddTransient<ISMSSender, SMSSender>();
             services.AddTransient<ITokenService>(factory => tokenService);
             services.AddTransient<IClock>(factory => SystemClock.Instance);
+            services.AddHttpClient<IOpenCriticService, OpenCriticService>();
+
+            services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
+            {
+                client.BaseAddress = new Uri("https://opencritic.com/");
+            });
+
 
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
                 {
@@ -103,6 +113,7 @@ namespace FantasyCritic.Web
                 options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
                 options.HttpsPort = 443;
             });
+
 
             // Add framework services.
             services.AddMvc()

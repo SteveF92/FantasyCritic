@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
@@ -22,11 +23,13 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
+        private readonly OpenCriticService _openCriticService;
 
-        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService)
+        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, OpenCriticService openCriticService)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
+            _openCriticService = openCriticService;
         }
 
         [HttpGet("{id}")]
@@ -47,6 +50,23 @@ namespace FantasyCritic.Web.Controllers.API
             var masterGames = await _fantasyCriticService.GetMasterGames();
             List<MasterGameViewModel> viewModels = masterGames.Select(x => new MasterGameViewModel(x)).ToList();
             return viewModels;
+        }
+
+        public async Task<ActionResult> RefreshCriticInfo()
+        {
+            var masterGames = await _fantasyCriticService.GetMasterGames();
+            foreach (var masterGame in masterGames)
+            {
+                if (!masterGame.OpenCriticID.HasValue)
+                {
+                    continue;
+                }
+
+                var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID.Value);
+                await _fantasyCriticService.UpdateCriticStats(masterGame, openCriticGame);
+            }
+
+            return Ok();
         }
     }
 }

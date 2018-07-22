@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.OpenCritic;
 using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Lib.Services
@@ -137,6 +138,11 @@ namespace FantasyCritic.Lib.Services
         public Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
         {
             return _fantasyCriticRepo.GetMasterGame(masterGameID);
+        }
+
+        public Task UpdateCriticStats(MasterGame masterGame, Maybe<OpenCriticGame> openCriticGame)
+        {
+            return Task.CompletedTask;
         }
     }
 }
