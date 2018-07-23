@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.OpenCritic;
 
 namespace FantasyCritic.Lib.Interfaces
 {
@@ -21,5 +22,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);
         Task<IReadOnlyList<MasterGame>> GetMasterGames();
         Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);
+        Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame);
     }
 }

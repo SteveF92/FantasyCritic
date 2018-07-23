@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL.Entities;
 using MySql.Data.MySqlClient;
@@ -203,6 +204,26 @@ namespace FantasyCritic.MySQL
 
                 MasterGame domain = result.ToDomain();
                 return Maybe<MasterGame>.From(domain);
+            }
+        }
+
+        public async Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
+        {
+            DateTime? releaseDate = null;
+            if (openCriticGame.ReleaseDate.HasValue)
+            {
+                releaseDate = openCriticGame.ReleaseDate.Value.ToDateTimeUnspecified();
+            }
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tblmastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterGameID = @masterGameID",
+                    new
+                    {
+                        masterGameID = masterGame.MasterGameID,
+                        releaseDate = releaseDate,
+                        criticScore = openCriticGame.Score
+                    });
             }
         }
 

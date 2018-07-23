@@ -10,51 +10,62 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NodaTime;
 using NodaTime.Text;
+using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.OpenCritic
 {
     public class OpenCriticService : IOpenCriticService
     {
         private readonly HttpClient _client;
+        private readonly ILogger<OpenCriticService> _logger;
 
-        public OpenCriticService(HttpClient client)
+        public OpenCriticService(HttpClient client, ILogger<OpenCriticService> logger)
         {
             _client = client;
+            _logger = logger;
         }
 
         public async Task<Maybe<OpenCriticGame>> GetOpenCriticGame(int openCriticGameID)
         {
-            var scoreResponse = await _client.GetStringAsync($"/api/game/score?id={openCriticGameID}");
-            var parsedResult = JsonConvert.DeserializeObject<OpenCriticScoreResponse>(scoreResponse);
-            if (parsedResult == null)
+            try
             {
-                return Maybe<OpenCriticGame>.None;
-            }
+                var gameResponse = await _client.GetStringAsync($"/api/game?id={openCriticGameID}");
+                JObject parsedGameResponse = JObject.Parse(gameResponse);
 
-            var gameResponse = await _client.GetStringAsync($"/api/game?id={openCriticGameID}");
-            JObject parsedGameResponse = JObject.Parse(gameResponse);
-
-            List<LocalDate> releaseDates = new List<LocalDate>();
-            var platforms = parsedGameResponse.GetValue("Platforms");
-            foreach (var platform in platforms.Children())
-            {
-                var gamePlatforms = platform.SelectToken("GamesPlatforms");
-                var releaseDateToken = gamePlatforms.SelectToken("releaseDate");
-                if (releaseDateToken == null)
+                List<LocalDate> releaseDates = new List<LocalDate>();
+                var platforms = parsedGameResponse.GetValue("Platforms");
+                foreach (var platform in platforms.Children())
                 {
-                    continue;
+                    var gamePlatforms = platform.SelectToken("GamesPlatforms");
+                    var releaseDateToken = gamePlatforms.SelectToken("releaseDate");
+                    if (releaseDateToken == null)
+                    {
+                        continue;
+                    }
+
+                    DateTime releaseDateResult = releaseDateToken.Value<DateTime>();
+                    LocalDate releaseDate = LocalDate.FromDateTime(releaseDateResult);
+
+                    releaseDates.Add(releaseDate);
                 }
 
-                DateTime releaseDateResult = releaseDateToken.Value<DateTime>();
-                LocalDate releaseDate = LocalDate.FromDateTime(releaseDateResult);
+                LocalDate? earliestReleaseDate = releaseDates.Min();
 
-                releaseDates.Add(releaseDate);
+                var scoreResponse = await _client.GetStringAsync($"/api/game/score?id={openCriticGameID}");
+                var parsedResult = JsonConvert.DeserializeObject<OpenCriticScoreResponse>(scoreResponse);
+                if (parsedResult == null)
+                {
+                    return Maybe<OpenCriticGame>.None;
+                }
+
+                var openCriticGame = new OpenCriticGame(parsedResult, earliestReleaseDate);
+                return openCriticGame;
             }
-
-            LocalDate? earliestReleaseDate = releaseDates.Min();
-
-            var openCriticGame = new OpenCriticGame(parsedResult, earliestReleaseDate);
-            return openCriticGame;
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Getting an open critic game failed: {openCriticGameID}");
+                throw;
+            }
         }
     }
 }

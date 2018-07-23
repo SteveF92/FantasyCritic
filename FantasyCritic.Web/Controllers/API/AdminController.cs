@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -19,37 +20,45 @@ namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class GameController : Controller
+    public class AdminController : Controller
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IOpenCriticService _openCriticService;
 
-        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService)
+        public AdminController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
             _openCriticService = openCriticService;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<MasterGameViewModel>> MasterGame(Guid id)
+        [HttpPost]
+        public async Task<IActionResult> RefreshCriticInfo()
         {
-            var masterGame = await _fantasyCriticService.GetMasterGame(id);
-            if (masterGame.HasNoValue)
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
+            if (!isAdmin)
             {
-                return NotFound();
+                return StatusCode(403);
             }
 
-            var viewModel = new MasterGameViewModel(masterGame.Value);
-            return viewModel;
-        }
-
-        public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame()
-        {
             var masterGames = await _fantasyCriticService.GetMasterGames();
-            List<MasterGameViewModel> viewModels = masterGames.Select(x => new MasterGameViewModel(x)).ToList();
-            return viewModels;
+            foreach (var masterGame in masterGames)
+            {
+                if (!masterGame.OpenCriticID.HasValue)
+                {
+                    continue;
+                }
+
+                var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID.Value);
+                if (openCriticGame.HasValue)
+                {
+                    await _fantasyCriticService.UpdateCriticStats(masterGame, openCriticGame.Value);
+                }
+            }
+
+            return Ok();
         }
     }
 }
