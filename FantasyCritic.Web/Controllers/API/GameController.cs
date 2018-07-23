@@ -23,13 +23,11 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
-        private readonly IOpenCriticService _openCriticService;
 
-        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService)
+        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
-            _openCriticService = openCriticService;
         }
 
         [HttpGet("{id}")]
