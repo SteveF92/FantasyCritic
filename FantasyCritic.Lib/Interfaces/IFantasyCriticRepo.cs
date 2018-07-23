@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.OpenCritic;
 
 namespace FantasyCritic.Lib.Interfaces
@@ -26,5 +27,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddPlayerGame(FantasyCriticLeague requestLeague, PlayerGame playerGame);
         Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league, FantasyCriticUser user);
         Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league);
+        Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem);
     }
 }

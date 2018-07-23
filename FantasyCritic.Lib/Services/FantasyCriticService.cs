@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using Microsoft.AspNetCore.Identity;
@@ -190,7 +191,11 @@ namespace FantasyCritic.Lib.Services
 
             if (request.MasterGame.HasValue)
             {
-                
+                bool eligible = await GameIsEligible(request.MasterGame.Value, request.League.LeagueOptions.EligibilitySystem);
+                if (!eligible)
+                {
+                    Result.Fail("That game is not eligible under this league's settings.");
+                }
             }
 
             IReadOnlyList<PlayerGame> allDraftGames = await _fantasyCriticRepo.GetPlayerGames(request.League);
@@ -253,6 +258,17 @@ namespace FantasyCritic.Lib.Services
             }
 
             return Result.Ok();
+        }
+
+        private async Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem)
+        {
+            if (eligibilitySystem.Equals(EligibilitySystem.Unlimited))
+            {
+                return true;
+            }
+
+            bool eligible = await _fantasyCriticRepo.GameIsEligible(masterGame, eligibilitySystem);
+            return eligible;
         }
     }
 }

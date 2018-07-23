@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL.Entities;
@@ -297,6 +298,24 @@ namespace FantasyCritic.MySQL
                 }
 
                 return playerGames;
+            }
+        }
+
+        public async Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem)
+        {
+            var query = new
+            {
+                masterGameID = masterGame.MasterGameID,
+                eligibilitySystem = eligibilitySystem.Value
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                dynamic entity = await connection.QueryFirstOrDefaultAsync<dynamic>(
+                    "select * from tblmastergameeligibility where EligibilitySystem = @eligibilitySystem and MasterGameID = @masterGameID;",
+                    query);
+
+                return entity != null;
             }
         }
 
