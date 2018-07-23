@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
 {
@@ -14,11 +16,11 @@ namespace FantasyCritic.MySQL.Entities
 
         }
 
-        public PlayerHasGameEntity(FantasyCriticLeague requestLeague, FantasyCriticUser requestUser, PlayerGame playerGame)
+        public PlayerHasGameEntity(FantasyCriticLeague requestLeague, PlayerGame playerGame)
         {
             LeagueID = requestLeague.LeagueID;
             Year = playerGame.Year;
-            UserID = requestUser.UserID;
+            UserID = playerGame.User.UserID;
             GameName = playerGame.GameName;
             Timestamp = playerGame.Timestamp.ToDateTimeUtc();
             Waiver = playerGame.Waiver;
@@ -40,5 +42,11 @@ namespace FantasyCritic.MySQL.Entities
         public bool AntiPick { get; set; }
         public decimal? FantasyScore { get; set; }
         public Guid? MasterGameID { get; set; }
+
+        public PlayerGame ToDomain(FantasyCriticUser user, Maybe<MasterGame> masterGame)
+        {
+            PlayerGame domain = new PlayerGame(user, Year, GameName, Instant.FromDateTimeUtc(Timestamp), Waiver, AntiPick, FantasyScore, masterGame);
+            return domain;
+        }
     }
 }

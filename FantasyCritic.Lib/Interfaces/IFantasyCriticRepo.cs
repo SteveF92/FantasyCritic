@@ -23,6 +23,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<MasterGame>> GetMasterGames();
         Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);
         Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame);
-        Task AddPlayerGame(FantasyCriticLeague requestLeague, FantasyCriticUser requestUser, PlayerGame playerGame);
+        Task AddPlayerGame(FantasyCriticLeague requestLeague, PlayerGame playerGame);
+        Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league, FantasyCriticUser user);
+        Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league);
     }
 }

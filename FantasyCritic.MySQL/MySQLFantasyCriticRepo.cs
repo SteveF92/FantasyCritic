@@ -227,9 +227,9 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task AddPlayerGame(FantasyCriticLeague requestLeague, FantasyCriticUser requestUser, PlayerGame playerGame)
+        public async Task AddPlayerGame(FantasyCriticLeague requestLeague, PlayerGame playerGame)
         {
-            PlayerHasGameEntity entity = new PlayerHasGameEntity(requestLeague, requestUser, playerGame);
+            PlayerHasGameEntity entity = new PlayerHasGameEntity(requestLeague, playerGame);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -237,6 +237,66 @@ namespace FantasyCritic.MySQL
                     "insert into tblplayerhasgame (LeagueID,Year,UserID,GameName,Timestamp,Waiver,AntiPick,FantasyScore,MasterGameID) VALUES " +
                     "(@LeagueID,@Year,@UserID,@GameName,@Timestamp,@Waiver,@AntiPick,@FantasyScore,@MasterGameID);",
                     entity);
+            }
+        }
+
+        public async Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league, FantasyCriticUser user)
+        {
+            var query = new
+            {
+                leagueID = league.LeagueID,
+                userID = user.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<PlayerHasGameEntity> entities = await connection.QueryAsync<PlayerHasGameEntity>(
+                    "select * from tblplayerhasgame where LeagueID = @leagueID and UserID = @UserID",
+                    query);
+
+                List<PlayerGame> playerGames = new List<PlayerGame>();
+                foreach (var entity in entities)
+                {
+                    Maybe<MasterGame> masterGame = null;
+                    if (entity.MasterGameID.HasValue)
+                    {
+                        masterGame = await GetMasterGame(entity.MasterGameID.Value);
+                    }
+
+                    playerGames.Add(entity.ToDomain(user, masterGame));
+                }
+
+                return playerGames;
+            }
+        }
+
+        public async Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league)
+        {
+            var query = new
+            {
+                leagueID = league.LeagueID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<PlayerHasGameEntity> entities = await connection.QueryAsync<PlayerHasGameEntity>(
+                    "select * from tblplayerhasgame where LeagueID = @leagueID;",
+                    query);
+
+                List<PlayerGame> playerGames = new List<PlayerGame>();
+                foreach (var entity in entities)
+                {
+                    Maybe<MasterGame> masterGame = null;
+                    if (entity.MasterGameID.HasValue)
+                    {
+                        masterGame = await GetMasterGame(entity.MasterGameID.Value);
+                    }
+
+                    FantasyCriticUser user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
+                    playerGames.Add(entity.ToDomain(user, masterGame));
+                }
+
+                return playerGames;
             }
         }
 

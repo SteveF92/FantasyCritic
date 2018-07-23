@@ -8,8 +8,9 @@ namespace FantasyCritic.Lib.Domain
 {
     public class PlayerGame
     {
-        public PlayerGame(int year, string gameName, Instant timestamp, bool waiver, bool antiPick, decimal? fantasyScore, Maybe<MasterGame> masterGame)
+        public PlayerGame(FantasyCriticUser user, int year, string gameName, Instant timestamp, bool waiver, bool antiPick, decimal? fantasyScore, Maybe<MasterGame> masterGame)
         {
+            User = user;
             Year = year;
             GameName = gameName;
             Timestamp = timestamp;
@@ -19,6 +20,7 @@ namespace FantasyCritic.Lib.Domain
             MasterGame = masterGame;
         }
 
+        public FantasyCriticUser User { get; }
         public int Year { get; }
         public string GameName { get; }
         public Instant Timestamp { get; }

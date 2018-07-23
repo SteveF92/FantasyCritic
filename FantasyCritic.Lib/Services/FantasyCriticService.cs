@@ -106,18 +106,6 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetOutstandingInvitees(league);
         }
 
-        private async Task<bool> UserIsInLeague(FantasyCriticLeague league, FantasyCriticUser user)
-        {
-            var playersInLeague = await GetPlayersInLeague(league);
-            return playersInLeague.Any(x => x.UserID == user.UserID);
-        }
-
-        private async Task<bool> UserIsInvited(FantasyCriticLeague league, FantasyCriticUser inviteUser)
-        {
-            var playersInvited = await GetOutstandingInvitees(league);
-            return playersInvited.Any(x => x.UserID == inviteUser.UserID);
-        }
-
         public  Task<IReadOnlyList<int>> GetOpenYears()
         {
             return _fantasyCriticRepo.GetOpenYears();
@@ -150,9 +138,119 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> ClaimGame(ClaimGameDomainRequest request)
         {
-            PlayerGame playerGame = new PlayerGame(request.Year, request.GameName, _clock.GetCurrentInstant(), request.Waiver, request.AntiPick, null, request.MasterGame);
+            PlayerGame playerGame = new PlayerGame(request.User, request.Year, request.GameName, _clock.GetCurrentInstant(), request.Waiver, request.AntiPick, null, request.MasterGame);
 
-            await _fantasyCriticRepo.AddPlayerGame(request.League, request.User, playerGame);
+            Result claimResult = await CanClaimGame(request);
+
+            if (claimResult.IsFailure)
+            {
+                return claimResult;
+            }
+
+            await _fantasyCriticRepo.AddPlayerGame(request.League, playerGame);
+
+            return Result.Ok();
+        }
+
+        public Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league, FantasyCriticUser user)
+        {
+            return _fantasyCriticRepo.GetPlayerGames(league, user);
+        }
+
+        private async Task<bool> UserIsInLeague(FantasyCriticLeague league, FantasyCriticUser user)
+        {
+            var playersInLeague = await GetPlayersInLeague(league);
+            return playersInLeague.Any(x => x.UserID == user.UserID);
+        }
+
+        private async Task<bool> UserIsInvited(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        {
+            var playersInvited = await GetOutstandingInvitees(league);
+            return playersInvited.Any(x => x.UserID == inviteUser.UserID);
+        }
+
+        private async Task<Result> CanClaimGame(ClaimGameDomainRequest request)
+        {
+            bool isInLeague = await UserIsInLeague(request.League, request.User);
+            if (!isInLeague)
+            {
+                return Result.Fail("User is not in that league.");
+            }
+
+            if (!request.League.LeagueYears.Contains(request.Year))
+            {
+                return Result.Fail("League is not active for that year.");
+            }
+
+            var openYears = await GetOpenYears();
+            if (!openYears.Contains(request.Year))
+            {
+                return Result.Fail("That year is not open for play");
+            }
+
+            if (request.MasterGame.HasValue)
+            {
+                
+            }
+
+            IReadOnlyList<PlayerGame> allDraftGames = await _fantasyCriticRepo.GetPlayerGames(request.League);
+            var otherPlayersGames = allDraftGames.Where(x => x.User.UserID != request.User.UserID);
+            bool otherPlayerHasGame;
+            if (request.MasterGame.HasValue)
+            {
+                otherPlayerHasGame = otherPlayersGames.Any(x => x.MasterGame.HasValue && request.MasterGame.Value.MasterGameID == x.MasterGame.Value.MasterGameID);
+            }
+            else
+            {
+                otherPlayerHasGame = otherPlayersGames.Any(x => x.GameName == request.GameName);
+            }
+
+            var playerGames = await GetPlayerGames(request.League, request.User);
+            var gamesForYear = playerGames.Where(x => x.Year == request.Year).ToList();
+            if (!request.Waiver && !request.AntiPick)
+            {
+                int leagueDraftGames = request.League.LeagueOptions.DraftGames;
+                int userDraftGames = gamesForYear.Count(x => !x.Waiver && !x.AntiPick);
+                if (userDraftGames == leagueDraftGames)
+                {
+                    return Result.Fail("User's draft spaces are filled.");
+                }
+
+                if (otherPlayerHasGame)
+                {
+                    return Result.Fail("Cannot draft a game that another player already has.");
+                }
+            }
+
+            if (request.Waiver)
+            {
+                int leagueWaiverGames = request.League.LeagueOptions.WaiverGames;
+                int userWaiverGames = gamesForYear.Count(x => x.Waiver);
+                if (userWaiverGames == leagueWaiverGames)
+                {
+                    return Result.Fail("User's waiver spaces are filled.");
+                }
+
+                if (otherPlayerHasGame)
+                {
+                    return Result.Fail("Cannot waiver claim a game that another player already has.");
+                }
+            }
+
+            if (request.AntiPick)
+            {
+                int leagueAntiPicks = request.League.LeagueOptions.AntiPicks;
+                int userAntiPicks = gamesForYear.Count(x => x.AntiPick);
+                if (userAntiPicks == leagueAntiPicks)
+                {
+                    return Result.Fail("User's anti pick spaces are filled.");
+                }
+
+                if (!otherPlayerHasGame)
+                {
+                    return Result.Fail("Cannot antipick a game that no other player has claimed.");
+                }
+            }
 
             return Result.Ok();
         }
