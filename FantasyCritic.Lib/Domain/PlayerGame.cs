@@ -2,26 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CSharpFunctionalExtensions;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
     public class PlayerGame
     {
-        public PlayerGame(string gameName, int rosterSlot, bool waiver, bool antiPick, decimal fantasyScore)
+        public PlayerGame(string gameName, Instant timestamp, bool waiver, bool antiPick, decimal fantasyScore)
         {
             GameName = gameName;
-            RosterSlot = rosterSlot;
+            Timestamp = timestamp;
             Waiver = waiver;
             AntiPick = antiPick;
             FantasyScore = fantasyScore;
             MasterGame = Maybe<MasterGame>.None;
         }
 
-        public PlayerGame(string gameName, int rosterSlot, bool waiver, bool antiPick, decimal fantasyScore,
+        public PlayerGame(string gameName, Instant timestamp, bool waiver, bool antiPick, decimal fantasyScore,
             MasterGame masterGame)
         {
             GameName = gameName;
-            RosterSlot = rosterSlot;
+            Timestamp = timestamp;
             Waiver = waiver;
             AntiPick = antiPick;
             FantasyScore = fantasyScore;
@@ -29,7 +30,7 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public string GameName { get; }
-        public int RosterSlot { get; }
+        public Instant Timestamp { get; }
         public bool Waiver { get; }
         public bool AntiPick { get; }
         public decimal FantasyScore { get; }
