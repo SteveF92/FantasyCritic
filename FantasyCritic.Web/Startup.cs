@@ -74,7 +74,7 @@ namespace FantasyCritic.Web
 
             services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
             {
-                client.BaseAddress = new Uri("https://opencritic.com/");
+                client.BaseAddress = new Uri("https://api.opencritic.com/");
             });
 
 

@@ -23,9 +23,9 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
-        private readonly OpenCriticService _openCriticService;
+        private readonly IOpenCriticService _openCriticService;
 
-        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, OpenCriticService openCriticService)
+        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
@@ -52,6 +52,7 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
+        [HttpPost]
         public async Task<ActionResult> RefreshCriticInfo()
         {
             var masterGames = await _fantasyCriticService.GetMasterGames();
