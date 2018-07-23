@@ -227,9 +227,17 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task AddPlayerGame(FantasyCriticLeague requestLeague, FantasyCriticUser requestUser, PlayerGame playerGame)
+        public async Task AddPlayerGame(FantasyCriticLeague requestLeague, FantasyCriticUser requestUser, PlayerGame playerGame)
         {
-            throw new NotImplementedException();
+            PlayerHasGameEntity entity = new PlayerHasGameEntity(requestLeague, requestUser, playerGame);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblplayerhasgame (LeagueID,Year,UserID,GameName,Timestamp,Waiver,AntiPick,FantasyScore,MasterGameID) VALUES " +
+                    "(@LeagueID,@Year,@UserID,@GameName,@Timestamp,@Waiver,@AntiPick,@FantasyScore,@MasterGameID);",
+                    entity);
+            }
         }
 
         private Task AddPlayerToLeague(FantasyCriticLeague league, FantasyCriticUser inviteUser)

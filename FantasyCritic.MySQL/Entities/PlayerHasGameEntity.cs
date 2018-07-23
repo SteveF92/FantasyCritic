@@ -20,7 +20,7 @@ namespace FantasyCritic.MySQL.Entities
             Year = playerGame.Year;
             UserID = requestUser.UserID;
             GameName = playerGame.GameName;
-            Timestamp = playerGame.Timestamp.ToDateTimeOffset();
+            Timestamp = playerGame.Timestamp.ToDateTimeUtc();
             Waiver = playerGame.Waiver;
             AntiPick = playerGame.AntiPick;
             FantasyScore = playerGame.FantasyScore;
@@ -35,7 +35,7 @@ namespace FantasyCritic.MySQL.Entities
         public int Year { get; set; }
         public Guid UserID { get; set; }
         public string GameName { get; set; }
-        public DateTimeOffset Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
         public bool Waiver { get; set; }
         public bool AntiPick { get; set; }
         public decimal? FantasyScore { get; set; }
