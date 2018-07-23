@@ -1,30 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
-using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class PlayerGame
+    public class ClaimGameDomainRequest
     {
-        public PlayerGame(int year, string gameName, Instant timestamp, bool waiver, bool antiPick, decimal? fantasyScore, Maybe<MasterGame> masterGame)
+        public ClaimGameDomainRequest(FantasyCriticLeague league, FantasyCriticUser user, int year, string gameName, bool waiver, bool antiPick, Maybe<MasterGame> masterGame)
         {
+            League = league;
+            User = user;
             Year = year;
             GameName = gameName;
-            Timestamp = timestamp;
             Waiver = waiver;
             AntiPick = antiPick;
-            FantasyScore = fantasyScore;
             MasterGame = masterGame;
         }
 
+        public FantasyCriticLeague League { get; }
+        public FantasyCriticUser User { get; }
         public int Year { get; }
         public string GameName { get; }
-        public Instant Timestamp { get; }
         public bool Waiver { get; }
         public bool AntiPick { get; }
-        public decimal? FantasyScore { get; }
         public Maybe<MasterGame> MasterGame { get; }
     }
 }

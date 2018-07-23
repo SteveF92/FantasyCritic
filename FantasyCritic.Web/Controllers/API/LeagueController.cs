@@ -191,5 +191,44 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ClaimGame([FromBody] ClaimGameRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var claimUser = await _userManager.FindByIdAsync(request.UserID.ToString());
+            if (claimUser == null)
+            {
+                return BadRequest();
+            }
+
+            Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+            if (request.MasterGameID.HasValue)
+            {
+                masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID.Value);
+            }
+
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(league.Value, claimUser, request.Year, request.GameName, request.Waiver, request.AntiPick, masterGame);
+
+            Result result = await _fantasyCriticService.ClaimGame(domainRequest);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok();
+        }
     }
 }

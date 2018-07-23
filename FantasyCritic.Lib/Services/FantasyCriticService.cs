@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using Microsoft.AspNetCore.Identity;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -15,11 +16,13 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
+        private readonly IClock _clock;
 
-        public FantasyCriticService(FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo)
+        public FantasyCriticService(FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
         {
             _userManager = userManager;
             _fantasyCriticRepo = fantasyCriticRepo;
+            _clock = clock;
         }
 
         public async Task<FantasyCriticLeague> CreateLeague(LeagueCreationParameters parameters)
@@ -143,6 +146,15 @@ namespace FantasyCritic.Lib.Services
         public Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
         {
             return _fantasyCriticRepo.UpdateCriticStats(masterGame, openCriticGame);
+        }
+
+        public async Task<Result> ClaimGame(ClaimGameDomainRequest request)
+        {
+            PlayerGame playerGame = new PlayerGame(request.Year, request.GameName, _clock.GetCurrentInstant(), request.Waiver, request.AntiPick, null, request.MasterGame);
+
+            await _fantasyCriticRepo.AddPlayerGame(request.League, request.User, playerGame);
+
+            return Result.Ok();
         }
     }
 }

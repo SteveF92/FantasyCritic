@@ -227,6 +227,11 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public Task AddPlayerGame(FantasyCriticLeague requestLeague, FantasyCriticUser requestUser, PlayerGame playerGame)
+        {
+            throw new NotImplementedException();
+        }
+
         private Task AddPlayerToLeague(FantasyCriticLeague league, FantasyCriticUser inviteUser)
         {
             var userAddObject = new
