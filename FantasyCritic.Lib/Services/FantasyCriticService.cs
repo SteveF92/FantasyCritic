@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using Microsoft.AspNetCore.Identity;
@@ -198,62 +199,57 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            IReadOnlyList<PlayerGame> allDraftGames = await _fantasyCriticRepo.GetPlayerGames(request.League);
-            var otherPlayersGames = allDraftGames.Where(x => x.User.UserID != request.User.UserID);
-            bool otherPlayerHasGame;
-            if (request.MasterGame.HasValue)
-            {
-                otherPlayerHasGame = otherPlayersGames.Any(x => x.MasterGame.HasValue && request.MasterGame.Value.MasterGameID == x.MasterGame.Value.MasterGameID);
-            }
-            else
-            {
-                otherPlayerHasGame = otherPlayersGames.Any(x => x.GameName == request.GameName);
-            }
+            IReadOnlyList<PlayerGame> allGamesInLeague = await _fantasyCriticRepo.GetPlayerGames(request.League);
+            var gamesForYear = allGamesInLeague.Where(x => x.Year == request.Year).ToList();
 
-            var playerGames = await GetPlayerGames(request.League, request.User);
-            var gamesForYear = playerGames.Where(x => x.Year == request.Year).ToList();
+            var thisPlayersGames = gamesForYear.Where(x => x.User.UserID == request.User.UserID).ToList();
+            bool gameAlreadyClaimed = gamesForYear.ContainsGame(request);
+
             if (!request.Waiver && !request.AntiPick)
             {
+                if (gameAlreadyClaimed)
+                {
+                    return Result.Fail("Cannot draft a game that someone already has.");
+                }
+
                 int leagueDraftGames = request.League.LeagueOptions.DraftGames;
-                int userDraftGames = gamesForYear.Count(x => !x.Waiver && !x.AntiPick);
+                int userDraftGames = thisPlayersGames.Count(x => !x.Waiver && !x.AntiPick);
                 if (userDraftGames == leagueDraftGames)
                 {
                     return Result.Fail("User's draft spaces are filled.");
-                }
-
-                if (otherPlayerHasGame)
-                {
-                    return Result.Fail("Cannot draft a game that another player already has.");
                 }
             }
 
             if (request.Waiver)
             {
+                if (gameAlreadyClaimed)
+                {
+                    return Result.Fail("Cannot waiver claim a game that someone already has.");
+                }
+
                 int leagueWaiverGames = request.League.LeagueOptions.WaiverGames;
-                int userWaiverGames = gamesForYear.Count(x => x.Waiver);
+                int userWaiverGames = thisPlayersGames.Count(x => x.Waiver);
                 if (userWaiverGames == leagueWaiverGames)
                 {
                     return Result.Fail("User's waiver spaces are filled.");
-                }
-
-                if (otherPlayerHasGame)
-                {
-                    return Result.Fail("Cannot waiver claim a game that another player already has.");
                 }
             }
 
             if (request.AntiPick)
             {
+                var otherPlayersGames = gamesForYear.Where(x => x.User.UserID != request.User.UserID);
+                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.AntiPick && !x.Waiver).ContainsGame(request);
+
                 int leagueAntiPicks = request.League.LeagueOptions.AntiPicks;
-                int userAntiPicks = gamesForYear.Count(x => x.AntiPick);
+                int userAntiPicks = thisPlayersGames.Count(x => x.AntiPick);
                 if (userAntiPicks == leagueAntiPicks)
                 {
                     return Result.Fail("User's anti pick spaces are filled.");
                 }
 
-                if (!otherPlayerHasGame)
+                if (!otherPlayerHasDraftGame)
                 {
-                    return Result.Fail("Cannot antipick a game that no other player has claimed.");
+                    return Result.Fail("Cannot antipick a game that no other player has drafted.");
                 }
             }
 
