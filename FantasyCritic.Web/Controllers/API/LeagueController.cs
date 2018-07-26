@@ -86,7 +86,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(leagueViewModel);
         }
 
-        public async Task<IActionResult> GetPlayerGames(Guid leagueID, Guid playerID, int year)
+        public async Task<IActionResult> GetPlayer(Guid leagueID, Guid playerID, int year)
         {
             Maybe<FantasyCriticLeague> league = await _fantasyCriticService.GetLeagueByID(leagueID);
             if (league.HasNoValue)
@@ -117,9 +117,11 @@ namespace FantasyCritic.Web.Controllers.API
             var requestedPlayer = await _userManager.FindByIdAsync(playerID.ToString());
             var playerGames = await _fantasyCriticService.GetPlayerGames(league.Value, requestedPlayer);
             var playerGamesForYear = playerGames.Where(x => x.Year == year);
-            var viewModels = playerGamesForYear.Select(x => new PlayerGameViewModel(x));
+            var gameViewModels = playerGamesForYear.Select(x => new PlayerGameViewModel(x));
 
-            return Ok(viewModels);
+            var playerViewModel = new FantasyCriticPlayerViewModel(league.Value, requestedPlayer, gameViewModels);
+
+            return Ok(playerViewModel);
         }
 
         [HttpPost]

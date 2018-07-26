@@ -24,7 +24,7 @@
         <h3>Players</h3>
         <ul>
             <li v-for="player in league.players">
-                {{ player.userName }}
+                <router-link :to="{ name: 'player', params: { leagueid: league.leagueID, playerid: player.userID, year: activeYear }}">{{ player.userName }}</router-link>
             </li>
         </ul>
         <h3>Invited Players</h3>
@@ -61,20 +61,21 @@
         data() {
             return {
                 errorInfo: "",
-                leagueID: "",
                 league: null,
                 showInvitePlayer: false,
                 inviteEmail: "",
-                invitedEmail: ""
+                invitedEmail: "",
+                activeYear: null
             }
         },
+        props: ['leagueid'],
         methods: {
             fetchLeague() {
-                this.leagueID = this.$route.params.id;
                 axios
-                    .get('/api/League/GetLeague/' + this.leagueID)
+                    .get('/api/League/GetLeague/' + this.leagueid)
                     .then(response => {
                         this.league = response.data;
+                        this.activeYear = this.league.activeYear;
                     })
                     .catch(returnedError => (this.error = returnedError));
             },

@@ -8,7 +8,7 @@
                 <h3>League Invites</h3>
                 <ul>
                     <li v-for="league in invitedLeagues">
-                        <router-link :to="{ name: 'league', params: { id: league.leagueID }}">{{league.leagueName}}</router-link>
+                        <router-link :to="{ name: 'league', params: { leagueid: league.leagueID }}">{{league.leagueName}}</router-link>
                     </li>
                 </ul>
                 <hr />
@@ -18,7 +18,7 @@
                 <h3>Leagues I Manage</h3>
                 <ul>
                     <li v-for="league in myLeagues" v-if="league.isManager">
-                        <router-link :to="{ name: 'league', params: { id: league.leagueID }}">{{league.leagueName}}</router-link>
+                        <router-link :to="{ name: 'league', params: { leagueid: league.leagueID }}">{{league.leagueName}}</router-link>
                     </li>
                 </ul>
                 <hr />
@@ -28,7 +28,7 @@
                 <h3>Leagues I Play In</h3>
                 <ul>
                     <li v-for="league in myLeagues" v-if="!league.isManager">
-                        <router-link :to="{ name: 'league', params: { id: league.leagueID }}">{{league.leagueName}}</router-link>
+                        <router-link :to="{ name: 'league', params: { leagueid: league.leagueID }}">{{league.leagueName}}</router-link>
                     </li>
                 </ul>
                 <hr />

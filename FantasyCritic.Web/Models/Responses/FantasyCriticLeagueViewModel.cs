@@ -14,6 +14,8 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueName = league.LeagueName;
             LeagueManager = new FantasyCriticPlayerViewModel(league.LeagueManager);
             IsManager = isManager;
+            Years = league.LeagueYears;
+            ActiveYear = league.LeagueYears.Max();
         }
 
         public FantasyCriticLeagueViewModel(FantasyCriticLeague league, bool isManager, IEnumerable<FantasyCriticUser> players,
@@ -26,6 +28,8 @@ namespace FantasyCritic.Web.Models.Responses
             OutstandingInvite = outstandingInvite;
             Players = players.Select(x => new FantasyCriticPlayerViewModel(x)).ToList();
             InvitedPlayers = invitedPlayers.Select(x => new FantasyCriticPlayerViewModel(x)).ToList();
+            Years = league.LeagueYears;
+            ActiveYear = league.LeagueYears.Max();
         }
 
         public Guid LeagueID { get; }
@@ -35,5 +39,7 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<FantasyCriticPlayerViewModel> Players { get; }
         public IReadOnlyList<FantasyCriticPlayerViewModel> InvitedPlayers { get; }
         public bool OutstandingInvite { get; }
+        public IReadOnlyList<int> Years { get; }
+        public int ActiveYear { get; }
     }
 }
