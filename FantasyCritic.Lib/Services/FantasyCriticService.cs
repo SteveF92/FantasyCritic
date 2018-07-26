@@ -41,9 +41,18 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueByID(id);
         }
 
-        public Task<IReadOnlyList<FantasyCriticUser>> GetPlayersInLeague(FantasyCriticLeague league)
+        public async Task<IReadOnlyList<LeaguePlayer>> GetPlayersInLeague(FantasyCriticLeague league)
         {
-            return _fantasyCriticRepo.GetPlayersInLeague(league);
+            var users = await _fantasyCriticRepo.GetPlayersInLeague(league);
+            List<LeaguePlayer> leaguePlayers = new List<LeaguePlayer>();
+            foreach (var user in users)
+            {
+                IReadOnlyList<PlayerGame> playerGames = await GetPlayerGames(league, user);
+                LeaguePlayer leaguePlayer = new LeaguePlayer(league, user, playerGames);
+                leaguePlayers.Add(leaguePlayer);
+            }
+
+            return leaguePlayers;
         }
 
         public async Task<Result> InviteUser(FantasyCriticLeague league, FantasyCriticUser inviteUser)
@@ -162,7 +171,7 @@ namespace FantasyCritic.Lib.Services
         private async Task<bool> UserIsInLeague(FantasyCriticLeague league, FantasyCriticUser user)
         {
             var playersInLeague = await GetPlayersInLeague(league);
-            return playersInLeague.Any(x => x.UserID == user.UserID);
+            return playersInLeague.Any(x => x.Player.UserID == user.UserID);
         }
 
         private async Task<bool> UserIsInvited(FantasyCriticLeague league, FantasyCriticUser inviteUser)

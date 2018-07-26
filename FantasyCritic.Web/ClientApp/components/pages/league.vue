@@ -27,6 +27,8 @@
                 <router-link :to="{ name: 'player', params: { leagueid: league.leagueID, playerid: player.userID, year: activeYear }}">{{ player.userName }}</router-link>
             </li>
         </ul>
+        <h3>Summary</h3>
+        <leagueGameSummary :players="league.players"></leagueGameSummary>
         <h3>Invited Players</h3>
         <ul>
             <li v-for="player in league.invitedPlayers">
@@ -57,6 +59,8 @@
 <script>
     import Vue from "vue";
     import axios from "axios";
+    import LeagueGameSummary from "components/modules/leagueGameSummary";
+
     export default {
         data() {
             return {
@@ -69,6 +73,9 @@
             }
         },
         props: ['leagueid'],
+        components: {
+            LeagueGameSummary
+        },
         methods: {
             fetchLeague() {
                 axios

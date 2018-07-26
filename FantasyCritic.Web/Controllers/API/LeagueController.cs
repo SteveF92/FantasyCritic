@@ -72,7 +72,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             var playersInLeague = await _fantasyCriticService.GetPlayersInLeague(league.Value);
-            bool userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
+            bool userIsInLeague = playersInLeague.Any(x => x.Player.UserID == currentUser.UserID);
 
             var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(league.Value);
             bool userIsInvitedToLeague = inviteesToLeague.Any(x => x.UserID == currentUser.UserID);
@@ -96,7 +96,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             var playersInLeague = await _fantasyCriticService.GetPlayersInLeague(league.Value);
-            bool userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
+            bool userIsInLeague = playersInLeague.Any(x => x.Player.UserID == currentUser.UserID);
             if (!userIsInLeague)
             {
                 return Unauthorized();
@@ -108,7 +108,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("League is not playing that year.");
             }
 
-            var requstedPlayerIsInLeague = playersInLeague.Any(x => x.UserID == playerID);
+            var requstedPlayerIsInLeague = playersInLeague.Any(x => x.Player.UserID == playerID);
             if (!requstedPlayerIsInLeague)
             {
                 return BadRequest("Requested player is not in requested league.");
@@ -117,9 +117,8 @@ namespace FantasyCritic.Web.Controllers.API
             var requestedPlayer = await _userManager.FindByIdAsync(playerID.ToString());
             var playerGames = await _fantasyCriticService.GetPlayerGames(league.Value, requestedPlayer);
             var playerGamesForYear = playerGames.Where(x => x.Year == year);
-            var gameViewModels = playerGamesForYear.Select(x => new PlayerGameViewModel(x));
 
-            var playerViewModel = new FantasyCriticPlayerViewModel(league.Value, requestedPlayer, gameViewModels);
+            var playerViewModel = new FantasyCriticPlayerViewModel(league.Value, requestedPlayer, playerGamesForYear);
 
             return Ok(playerViewModel);
         }

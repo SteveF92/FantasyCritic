@@ -12,13 +12,13 @@ namespace FantasyCritic.Web.Models.Responses
             UserName = user.UserName;
         }
 
-        public FantasyCriticPlayerViewModel(FantasyCriticLeague league, FantasyCriticUser user, IEnumerable<PlayerGameViewModel> games)
+        public FantasyCriticPlayerViewModel(FantasyCriticLeague league, FantasyCriticUser user, IEnumerable<PlayerGame> games)
         {
             LeagueID = league.LeagueID.ToString();
             LeagueName = league.LeagueName;
             UserID = user.UserID.ToString();
             UserName = user.UserName;
-            Games = games.ToList();
+            Games = games.Select(x => new PlayerGameViewModel(x)).ToList();
         }
 
         public string LeagueID { get; }
