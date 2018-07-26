@@ -14,7 +14,7 @@
 </template>
 
 <script>
-    import TopNavbar from "components/modules/shared/topNavbar";
+    import TopNavbar from "components/modules/topNavbar";
 
     export default {
         components: {
