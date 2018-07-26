@@ -16,6 +16,9 @@ namespace FantasyCritic.Web.Models.Responses
             IsManager = isManager;
             Years = league.LeagueYears;
             ActiveYear = league.LeagueYears.Max();
+            DraftGames = league.LeagueOptions.DraftGames;
+            WaiverGames = league.LeagueOptions.WaiverGames;
+            AntiPicks = league.LeagueOptions.AntiPicks;
         }
 
         public FantasyCriticLeagueViewModel(FantasyCriticLeague league, bool isManager, IEnumerable<LeaguePlayer> players,
@@ -30,6 +33,9 @@ namespace FantasyCritic.Web.Models.Responses
             InvitedPlayers = invitedPlayers.Select(x => new FantasyCriticPlayerViewModel(x)).ToList();
             Years = league.LeagueYears;
             ActiveYear = league.LeagueYears.Max();
+            DraftGames = league.LeagueOptions.DraftGames;
+            WaiverGames = league.LeagueOptions.WaiverGames;
+            AntiPicks = league.LeagueOptions.AntiPicks;
         }
 
         public Guid LeagueID { get; }
@@ -41,5 +47,8 @@ namespace FantasyCritic.Web.Models.Responses
         public bool OutstandingInvite { get; }
         public IReadOnlyList<int> Years { get; }
         public int ActiveYear { get; }
+        public int DraftGames { get; }
+        public int WaiverGames { get; }
+        public int AntiPicks { get; }
     }
 }

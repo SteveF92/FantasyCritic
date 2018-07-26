@@ -28,7 +28,7 @@
             </li>
         </ul>
         <h3>Summary</h3>
-        <leagueGameSummary :players="league.players"></leagueGameSummary>
+        <leagueGameSummary :players="league.players" :draftSlots="league.draftGames" :antiPickSlots="league.antiPicks" :waiverSlots="league.waiverGames"></leagueGameSummary>
         <h3>Invited Players</h3>
         <ul>
             <li v-for="player in league.invitedPlayers">
