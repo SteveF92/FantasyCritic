@@ -11,7 +11,7 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public PlayerGameViewModel(PlayerGame playerGame)
         {
-            Player = new FantasyCriticPlayerViewModel(playerGame.User);
+            Player = playerGame.User.UserName;
             Year = playerGame.Year;
             GameName = playerGame.GameName;
             Timestamp = playerGame.Timestamp.ToDateTimeUtc();
@@ -21,17 +21,25 @@ namespace FantasyCritic.Web.Models.Responses
 
             if (playerGame.MasterGame.HasValue)
             {
-                MasterGame = new MasterGameViewModel(playerGame.MasterGame.Value);
+                GameName = playerGame.MasterGame.Value.GameName;
+                EstimatedReleaseDate = playerGame.MasterGame.Value.EstimatedReleaseDate;
+                if (playerGame.MasterGame.Value.ReleaseDate.HasValue)
+                {
+                    ReleaseDate = playerGame.MasterGame.Value.ReleaseDate.Value.ToDateTimeUnspecified();
+                }
+                CriticScore = playerGame.MasterGame.Value.CriticScore;
             }
         }
 
-        public FantasyCriticPlayerViewModel Player { get; }
+        public string Player { get; }
         public int Year { get; }
         public string GameName { get; }
         public DateTime Timestamp { get; }
         public bool Waiver { get; }
         public bool AntiPick { get; }
+        public string EstimatedReleaseDate { get; }
+        public DateTime? ReleaseDate { get; }
         public decimal? FantasyScore { get; }
-        public MasterGameViewModel MasterGame { get; }
+        public decimal? CriticScore { get; }
     }
 }
