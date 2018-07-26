@@ -15,18 +15,6 @@
                 <playerGameRow v-for="game in games" :game="game" v-if="game.antiPick"></playerGameRow>
             </tbody>
         </table>
-        <h3>Games</h3>
-        <ul>
-            <li v-for="game in games" v-if="!game.antiPick">
-                {{ game.gameName }}
-            </li>
-        </ul>
-        <h3>Anti Picks</h3>
-        <ul>
-            <li v-for="game in games" v-if="game.antiPick">
-                {{ game.gameName }}
-            </li>
-        </ul>
     </div>
 </template>
 <script>
