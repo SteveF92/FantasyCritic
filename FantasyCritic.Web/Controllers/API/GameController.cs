@@ -43,10 +43,19 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModel;
         }
 
-        public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame()
+        public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame(string gameName)
         {
             var masterGames = await _fantasyCriticService.GetMasterGames();
-            List<MasterGameViewModel> viewModels = masterGames.Select(x => new MasterGameViewModel(x)).ToList();
+            List<MasterGameViewModel> viewModels;
+            if (!string.IsNullOrWhiteSpace(gameName))
+            {
+                gameName = gameName.ToLower();
+                viewModels = masterGames.Where(x => x.GameName.ToLower().Contains(gameName)).Select(x => new MasterGameViewModel(x)).ToList();
+            }
+            else
+            {
+                viewModels = masterGames.Select(x => new MasterGameViewModel(x)).ToList();
+            }
             return viewModels;
         }
     }
