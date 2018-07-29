@@ -6,7 +6,10 @@
         <div v-if="invitedEmail" class="alert alert-success" role="alert">
             Sucessfully sent invite to {{ invitedEmail }}!
         </div>
-        <h2>{{ league.leagueName }}</h2>
+        <div class="row">
+            <h2 class="col-11">{{ league.leagueName }}</h2>
+            <b-form-select v-model="activeYear" :options="league.years" class="col-1" />
+        </div>
         <div class="col-md-8" v-if="league.outstandingInvite">
             You have been invited to join this league. Do you wish to join?
             <div class="row">
