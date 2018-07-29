@@ -12,6 +12,7 @@ namespace FantasyCritic.Lib.Interfaces
     public interface IFantasyCriticRepo
     {
         Task<Maybe<League>> GetLeagueByID(Guid id);
+        Task<Maybe<LeagueYear>> GetLeagueYear(League requestLeague, int requestYear);
         Task<IReadOnlyList<FantasyCriticUser>> GetPlayersInLeague(League league);
         Task CreateLeague(League league, int initialYear, LeagueOptions options);
         Task SaveInvite(League league, FantasyCriticUser user);
@@ -27,6 +28,5 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddPlayerGame(League requestLeague, PlayerGame playerGame);
         Task<IReadOnlyList<PlayerGame>> GetPlayerGames(League league, FantasyCriticUser user);
         Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem);
-        Task<LeagueOptions> GetOptions(League requestLeague, int requestYear);
     }
 }

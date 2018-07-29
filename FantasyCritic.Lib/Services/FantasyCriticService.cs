@@ -42,15 +42,15 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueByID(id);
         }
 
-        public async Task<Maybe<LeagueOptions>> GetLeagueOptions(Guid id, int year)
+        public async Task<Maybe<LeagueYear>> GetLeagueYear(Guid id, int year)
         {
             var league = await GetLeagueByID(id);
             if (league.HasNoValue)
             {
-                return Maybe<LeagueOptions>.None;
+                return Maybe<LeagueYear>.None;
             }
 
-            var options = await _fantasyCriticRepo.GetOptions(league.Value, year);
+            var options = await _fantasyCriticRepo.GetLeagueYear(league.Value, year);
             return options;
         }
 
@@ -211,7 +211,13 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("That year is not open for play");
             }
 
-            LeagueOptions yearOptions = await _fantasyCriticRepo.GetOptions(request.League, request.Year);
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.League, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Something has gone terribly wrong with league years.");
+            }
+
+            LeagueOptions yearOptions = leagueYear.Value.Options;
             if (request.MasterGame.HasValue)
             {
                 bool eligible = await GameIsEligible(request.MasterGame.Value, yearOptions.EligibilitySystem);

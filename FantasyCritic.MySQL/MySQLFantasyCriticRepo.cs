@@ -49,6 +49,27 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<Maybe<LeagueYear>> GetLeagueYear(League requestLeague, int requestYear)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var queryObject = new
+                {
+                    leagueID = requestLeague.LeagueID,
+                    year = requestYear
+                };
+
+                LeagueYearEntity yearEntity = await connection.QueryFirstOrDefaultAsync<LeagueYearEntity>("select * from tblleagueyear where LeagueID = @leagueID and Year = @year", queryObject);
+                if (yearEntity == null)
+                {
+                    return Maybe<LeagueYear>.None;
+                }
+                LeagueYear year = yearEntity.ToDomain(requestLeague);
+                return year;
+            }
+        }
+
+
         public async Task<IReadOnlyList<FantasyCriticUser>> GetPlayersInLeague(League league)
         {
             var query = new
@@ -271,36 +292,6 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<PlayerGame>> GetPlayerGames(League league)
-        {
-            var query = new
-            {
-                leagueID = league.LeagueID
-            };
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                IEnumerable<PlayerHasGameEntity> entities = await connection.QueryAsync<PlayerHasGameEntity>(
-                    "select * from tblplayerhasgame where LeagueID = @leagueID;",
-                    query);
-
-                List<PlayerGame> playerGames = new List<PlayerGame>();
-                foreach (var entity in entities)
-                {
-                    Maybe<MasterGame> masterGame = null;
-                    if (entity.MasterGameID.HasValue)
-                    {
-                        masterGame = await GetMasterGame(entity.MasterGameID.Value);
-                    }
-
-                    FantasyCriticUser user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
-                    playerGames.Add(entity.ToDomain(user, masterGame));
-                }
-
-                return playerGames;
-            }
-        }
-
         public async Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem)
         {
             var query = new
@@ -317,11 +308,6 @@ namespace FantasyCritic.MySQL
 
                 return entity != null;
             }
-        }
-
-        public Task<LeagueOptions> GetOptions(League requestLeague, int requestYear)
-        {
-            throw new NotImplementedException();
         }
 
         private Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
