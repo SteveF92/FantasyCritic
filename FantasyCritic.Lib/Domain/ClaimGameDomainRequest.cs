@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class ClaimGameDomainRequest
     {
-        public ClaimGameDomainRequest(FantasyCriticLeague league, FantasyCriticUser user, int year, string gameName, bool waiver, bool antiPick, Maybe<MasterGame> masterGame)
+        public ClaimGameDomainRequest(League league, FantasyCriticUser user, int year, string gameName, bool waiver, bool antiPick, Maybe<MasterGame> masterGame)
         {
             League = league;
             User = user;
@@ -20,7 +20,7 @@ namespace FantasyCritic.Lib.Domain
             MasterGame = masterGame;
         }
 
-        public FantasyCriticLeague League { get; }
+        public League League { get; }
         public FantasyCriticUser User { get; }
         public int Year { get; }
         public string GameName { get; }

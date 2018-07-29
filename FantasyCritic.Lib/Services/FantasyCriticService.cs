@@ -27,35 +27,27 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public async Task<FantasyCriticLeague> CreateLeague(LeagueCreationParameters parameters)
+        public async Task<League> CreateLeague(LeagueCreationParameters parameters)
         {
             LeagueOptions newOptions = null;
             LeagueOptions options = new LeagueOptions(parameters);
-            FantasyCriticLeague newLeague = new FantasyCriticLeague(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, new List<int>(parameters.InitialYear), options);
-            await _fantasyCriticRepo.CreateLeague(newLeague, parameters.InitialYear);
+            IEnumerable<int> years = new List<int>(){ parameters.InitialYear };
+            League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, years);
+            await _fantasyCriticRepo.CreateLeague(newLeague, parameters.InitialYear, options);
             return newLeague;
         }
 
-        public Task<Maybe<FantasyCriticLeague>> GetLeagueByID(Guid id)
+        public Task<Maybe<League>> GetLeagueByID(Guid id)
         {
             return _fantasyCriticRepo.GetLeagueByID(id);
         }
 
-        public async Task<IReadOnlyList<LeaguePlayer>> GetPlayersInLeague(FantasyCriticLeague league)
+        public Task<IReadOnlyList<LeaguePlayer>> GetPlayersInLeague(League league)
         {
-            var users = await _fantasyCriticRepo.GetPlayersInLeague(league);
-            List<LeaguePlayer> leaguePlayers = new List<LeaguePlayer>();
-            foreach (var user in users)
-            {
-                IReadOnlyList<PlayerGame> playerGames = await GetPlayerGames(league, user);
-                LeaguePlayer leaguePlayer = new LeaguePlayer(league, user, playerGames);
-                leaguePlayers.Add(leaguePlayer);
-            }
-
-            return leaguePlayers;
+            return _fantasyCriticRepo.GetPlayersInLeague(league);
         }
 
-        public async Task<Result> InviteUser(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        public async Task<Result> InviteUser(League league, FantasyCriticUser inviteUser)
         {
             bool userInLeague = await UserIsInLeague(league, inviteUser);
             if (userInLeague)
@@ -74,7 +66,7 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public async Task<Result> AcceptInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        public async Task<Result> AcceptInvite(League league, FantasyCriticUser inviteUser)
         {
             bool userInLeague = await UserIsInLeague(league, inviteUser);
             if (userInLeague)
@@ -93,7 +85,7 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public async Task<Result> DeclineInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        public async Task<Result> DeclineInvite(League league, FantasyCriticUser inviteUser)
         {
             bool userInLeague = await UserIsInLeague(league, inviteUser);
             if (userInLeague)
@@ -112,7 +104,7 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(FantasyCriticLeague league)
+        public Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(League league)
         {
             return _fantasyCriticRepo.GetOutstandingInvitees(league);
         }
@@ -122,12 +114,12 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetOpenYears();
         }
 
-        public Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesForUser(FantasyCriticUser currentUser)
+        public Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser)
         {
             return _fantasyCriticRepo.GetLeaguesForUser(currentUser);
         }
 
-        public Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesInvitedTo(FantasyCriticUser currentUser)
+        public Task<IReadOnlyList<League>> GetLeaguesInvitedTo(FantasyCriticUser currentUser)
         {
             return _fantasyCriticRepo.GetLeaguesInvitedTo(currentUser);
         }
@@ -163,18 +155,18 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league, FantasyCriticUser user)
+        public Task<IReadOnlyList<PlayerGame>> GetPlayerGames(League league, FantasyCriticUser user)
         {
             return _fantasyCriticRepo.GetPlayerGames(league, user);
         }
 
-        private async Task<bool> UserIsInLeague(FantasyCriticLeague league, FantasyCriticUser user)
+        private async Task<bool> UserIsInLeague(League league, FantasyCriticUser user)
         {
             var playersInLeague = await GetPlayersInLeague(league);
             return playersInLeague.Any(x => x.Player.UserID == user.UserID);
         }
 
-        private async Task<bool> UserIsInvited(FantasyCriticLeague league, FantasyCriticUser inviteUser)
+        private async Task<bool> UserIsInvited(League league, FantasyCriticUser inviteUser)
         {
             var playersInvited = await GetOutstandingInvitees(league);
             return playersInvited.Any(x => x.UserID == inviteUser.UserID);
@@ -188,7 +180,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is not in that league.");
             }
 
-            if (!request.League.LeagueYears.Contains(request.Year))
+            if (!request.League.Years.Contains(request.Year))
             {
                 return Result.Fail("League is not active for that year.");
             }
@@ -199,17 +191,18 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("That year is not open for play");
             }
 
+            LeagueOptions yearOptions = await _fantasyCriticRepo.GetOptions(request.League, request.Year);
             if (request.MasterGame.HasValue)
             {
-                bool eligible = await GameIsEligible(request.MasterGame.Value, request.League.LeagueOptions.EligibilitySystem);
+                bool eligible = await GameIsEligible(request.MasterGame.Value, yearOptions.EligibilitySystem);
                 if (!eligible)
                 {
                     Result.Fail("That game is not eligible under this league's settings.");
                 }
             }
 
-            IReadOnlyList<PlayerGame> allGamesInLeague = await _fantasyCriticRepo.GetPlayerGames(request.League);
-            var gamesForYear = allGamesInLeague.Where(x => x.Year == request.Year).ToList();
+            IReadOnlyList<PlayerGame> allPlayerGames = await _fantasyCriticRepo.GetPlayerGames(request.League, request.User);
+            IReadOnlyList<PlayerGame> gamesForYear = allPlayerGames.Where(x => x.Year == request.Year).ToList();
 
             var thisPlayersGames = gamesForYear.Where(x => x.User.UserID == request.User.UserID).ToList();
             bool gameAlreadyClaimed = gamesForYear.ContainsGame(request);
@@ -221,7 +214,7 @@ namespace FantasyCritic.Lib.Services
                     return Result.Fail("Cannot draft a game that someone already has.");
                 }
 
-                int leagueDraftGames = request.League.LeagueOptions.DraftGames;
+                int leagueDraftGames = yearOptions.DraftGames;
                 int userDraftGames = thisPlayersGames.Count(x => !x.Waiver && !x.AntiPick);
                 if (userDraftGames == leagueDraftGames)
                 {
@@ -236,7 +229,7 @@ namespace FantasyCritic.Lib.Services
                     return Result.Fail("Cannot waiver claim a game that someone already has.");
                 }
 
-                int leagueWaiverGames = request.League.LeagueOptions.WaiverGames;
+                int leagueWaiverGames = yearOptions.WaiverGames;
                 int userWaiverGames = thisPlayersGames.Count(x => x.Waiver);
                 if (userWaiverGames == leagueWaiverGames)
                 {
@@ -249,7 +242,7 @@ namespace FantasyCritic.Lib.Services
                 var otherPlayersGames = gamesForYear.Where(x => x.User.UserID != request.User.UserID);
                 bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.AntiPick && !x.Waiver).ContainsGame(request);
 
-                int leagueAntiPicks = request.League.LeagueOptions.AntiPicks;
+                int leagueAntiPicks = yearOptions.AntiPicks;
                 int userAntiPicks = thisPlayersGames.Count(x => x.AntiPick);
                 if (userAntiPicks == leagueAntiPicks)
                 {

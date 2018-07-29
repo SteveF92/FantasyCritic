@@ -11,22 +11,22 @@ namespace FantasyCritic.Lib.Interfaces
 {
     public interface IFantasyCriticRepo
     {
-        Task<Maybe<FantasyCriticLeague>> GetLeagueByID(Guid id);
-        Task<IReadOnlyList<FantasyCriticUser>> GetPlayersInLeague(FantasyCriticLeague league);
-        Task CreateLeague(FantasyCriticLeague league, int initialYear);
-        Task SaveInvite(FantasyCriticLeague league, FantasyCriticUser user);
-        Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(FantasyCriticLeague league);
-        Task AcceptInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser);
-        Task DeclineInvite(FantasyCriticLeague league, FantasyCriticUser inviteUser);
+        Task<Maybe<League>> GetLeagueByID(Guid id);
+        Task<IReadOnlyList<LeaguePlayer>> GetPlayersInLeague(League league);
+        Task CreateLeague(League league, int initialYear, LeagueOptions options);
+        Task SaveInvite(League league, FantasyCriticUser user);
+        Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(League league);
+        Task AcceptInvite(League league, FantasyCriticUser inviteUser);
+        Task DeclineInvite(League league, FantasyCriticUser inviteUser);
         Task<IReadOnlyList<int>> GetOpenYears();
-        Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesForUser(FantasyCriticUser currentUser);
-        Task<IReadOnlyList<FantasyCriticLeague>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);
+        Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser);
+        Task<IReadOnlyList<League>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);
         Task<IReadOnlyList<MasterGame>> GetMasterGames();
         Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);
         Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame);
-        Task AddPlayerGame(FantasyCriticLeague requestLeague, PlayerGame playerGame);
-        Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league, FantasyCriticUser user);
-        Task<IReadOnlyList<PlayerGame>> GetPlayerGames(FantasyCriticLeague league);
+        Task AddPlayerGame(League requestLeague, PlayerGame playerGame);
+        Task<IReadOnlyList<PlayerGame>> GetPlayerGames(League league, FantasyCriticUser user);
         Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem);
+        Task<LeagueOptions> GetOptions(League requestLeague, int requestYear);
     }
 }
