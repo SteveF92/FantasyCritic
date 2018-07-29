@@ -8,13 +8,15 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeaguePlayer
     {
-        public LeaguePlayer(League league, FantasyCriticUser player)
+        public LeaguePlayer(League league, FantasyCriticUser user, IEnumerable<PlayerGame> playerGames)
         {
             League = league;
-            Player = player;
+            User = user;
+            PlayerGames = playerGames.ToList();
         }
 
         public League League { get; }
-        public FantasyCriticUser Player { get; }
+        public FantasyCriticUser User { get; }
+        public IReadOnlyList<PlayerGame> PlayerGames { get; }
     }
 }
