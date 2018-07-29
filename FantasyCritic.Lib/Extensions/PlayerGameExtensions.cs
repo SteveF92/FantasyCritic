@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Extensions
 {
     public static class PlayerGameExtensions
     {
-        public static bool ContainsGame(this IEnumerable<PlayerGame> games, PlayerGame game)
+        public static bool ContainsGame(this IEnumerable<PublisherGame> games, PublisherGame game)
         {
             bool containsGame;
             if (game.MasterGame.HasValue)
@@ -24,7 +24,7 @@ namespace FantasyCritic.Lib.Extensions
             return containsGame;
         }
 
-        public static bool ContainsGame(this IEnumerable<PlayerGame> games, ClaimGameDomainRequest game)
+        public static bool ContainsGame(this IEnumerable<PublisherGame> games, ClaimGameDomainRequest game)
         {
             bool containsGame;
             if (game.MasterGame.HasValue)

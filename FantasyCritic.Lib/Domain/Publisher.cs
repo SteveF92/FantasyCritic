@@ -6,17 +6,19 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class LeaguePlayer
+    public class Publisher
     {
-        public LeaguePlayer(League league, FantasyCriticUser user, IEnumerable<PlayerGame> playerGames)
+        public Publisher(League league, FantasyCriticUser user, int year, IEnumerable<PublisherGame> publisherGames)
         {
             League = league;
             User = user;
-            PlayerGames = playerGames.ToList();
+            Year = year;
+            PublisherGames = publisherGames.ToList();
         }
 
         public League League { get; }
         public FantasyCriticUser User { get; }
-        public IReadOnlyList<PlayerGame> PlayerGames { get; }
+        public int Year { get; }
+        public IReadOnlyList<PublisherGame> PublisherGames { get; }
     }
 }
