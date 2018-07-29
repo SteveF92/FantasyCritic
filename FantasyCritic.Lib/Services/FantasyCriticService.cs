@@ -140,7 +140,7 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year);
         }
 
-        public Task<Publisher> GetPublisher(League league, int year, FantasyCriticUser user)
+        public Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
         {
             return _fantasyCriticRepo.GetPublisher(league, year, user);
         }

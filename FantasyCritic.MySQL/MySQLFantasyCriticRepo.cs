@@ -69,8 +69,40 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task CreateLeague(League league, int initialYear, LeagueOptions options)
+        {
+            LeagueEntity entity = new LeagueEntity(league);
+            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear, options);
 
-        public async Task<IReadOnlyList<FantasyCriticUser>> GetPlayersInLeague(League league)
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblleague(LeagueID,LeagueName,LeagueManager,) VALUES " +
+                    "(@LeagueID,@LeagueName,@LeagueManager);",
+                    entity);
+
+                await connection.ExecuteAsync(
+                    "insert into tblleagueyear(LeagueID,Year,DraftGames,WaiverGames,AntiPicks,EstimatedGameScore,EligibilitySystem,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
+                    "(@LeagueID,@Year,@DraftGames,@WaiverGames,@AntiPicks,@EstimatedGameScore,@EligibilitySystem,@DraftSystem,@WaiverSystem,@ScoringSystem);",
+                    leagueYearEntity);
+            }
+
+            await AddPlayerToLeague(league, league.LeagueManager);
+        }
+
+        public async Task AddNewLeagueYear(League league, int year, LeagueOptions options)
+        {
+            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options);
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblleagueyear(LeagueID,Year,DraftGames,WaiverGames,AntiPicks,EstimatedGameScore,EligibilitySystem,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
+                    "(@LeagueID,@Year,@DraftGames,@WaiverGames,@AntiPicks,@EstimatedGameScore,@EligibilitySystem,@DraftSystem,@WaiverSystem,@ScoringSystem);",
+                    leagueYearEntity);
+            }
+        }
+
+        public async Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league)
         {
             var query = new
             {
@@ -88,24 +120,41 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task CreateLeague(League league, int initialYear, LeagueOptions options)
+        public async Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser)
         {
-            LeagueEntity entity = new LeagueEntity(league);
-            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear, options);
-
+            IEnumerable<LeagueEntity> leagueEntities;
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(
-                    "insert into tblleague(LeagueID,LeagueName,LeagueManager,DraftGames,WaiverGames,AntiPicks,EstimatedGameScore,EligibilitySystem,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
-                    "(@LeagueID,@LeagueName,@LeagueManager,@DraftGames,@WaiverGames,@AntiPicks,@EstimatedGameScore,@EligibilitySystem,@DraftSystem,@WaiverSystem,@ScoringSystem);",
-                    entity);
+                var queryObject = new
+                {
+                    userID = currentUser.UserID,
+                };
 
-                await connection.ExecuteAsync(
-                    "insert into tblleagueyear(LeagueID,Year) VALUES (@LeagueID, @Year);",
-                    leagueYearEntity);
+                leagueEntities = await connection.QueryAsync<LeagueEntity>(
+                    "select * from tblleague join tblleagueplayer on (tblleague.LeagueID = tblleagueplayer.LeagueID) where tblleagueplayer.UserID = @userID;", queryObject);
             }
 
-            await AddPlayerToLeague(league, league.LeagueManager);
+            IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
+            return leagues;
+        }
+
+        public async Task<IReadOnlyList<League>> GetLeaguesInvitedTo(FantasyCriticUser currentUser)
+        {
+            var query = new
+            {
+                userID = currentUser.UserID
+            };
+
+            IEnumerable<LeagueEntity> leagueEntities;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                leagueEntities = await connection.QueryAsync<LeagueEntity>(
+                    "select tblleague.* from tblleague join tblleagueinvite on (tblleague.LeagueID = tblleagueinvite.LeagueID) where tblleagueinvite.UserID = @userID;",
+                    query);
+            }
+
+            IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
+            return leagues;
         }
 
         public Task SaveInvite(League league, FantasyCriticUser user)
@@ -145,13 +194,84 @@ namespace FantasyCritic.MySQL
         public async Task AcceptInvite(League league, FantasyCriticUser inviteUser)
         {
             await AddPlayerToLeague(league, inviteUser);
-
             await DeleteInvite(league, inviteUser);
         }
 
         public Task DeclineInvite(League league, FantasyCriticUser inviteUser)
         {
             return DeleteInvite(league, inviteUser);
+        }
+
+        public async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year)
+        {
+            var usersInLeague = await GetUsersInLeague(league);
+
+            List<Publisher> publishers = new List<Publisher>();
+            foreach (var user in usersInLeague)
+            {
+                var publisher = await GetPublisher(league, year, user);
+                if (publisher.HasNoValue)
+                {
+                    continue;
+                }
+                publishers.Add(publisher.Value);
+            }
+
+            return publishers;
+        }
+
+        public async Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
+        {
+            var query = new
+            {
+                leagueID = league.LeagueID,
+                year,
+                userID = user.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                PublisherEnity publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEnity>(
+                    "select * from tblpublisher where tblpublisher.LeagueID = @leagueID and tblpublisher.Year = @year and tblpublisher.UserID = @userID;",
+                    query);
+
+                if (publisherEntity == null)
+                {
+                    return Maybe<Publisher>.None;
+                }
+
+                IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
+                    "select * from tblpublishergame where tblpublishergame.LeagueID = @leagueID and tblpublishergame.Year = @year and tblpublishergame.UserID = @userID;",
+                    query);
+
+                List<PublisherGame> domainGames = new List<PublisherGame>();
+                foreach (var entity in gameEntities)
+                {
+                    Maybe<MasterGame> masterGame = null;
+                    if (entity.MasterGameID.HasValue)
+                    {
+                        masterGame = await GetMasterGame(entity.MasterGameID.Value);
+                    }
+
+                    domainGames.Add(entity.ToDomain(masterGame));
+                }
+
+                var domainPublisher = publisherEntity.ToDomain(league, user, domainGames);
+                return domainPublisher;
+            }
+        }
+
+        public async Task AddPublisherGame(Publisher publisher, PublisherGame publisherGame)
+        {
+            PublisherGameEntity entity = new PublisherGameEntity(publisher, publisherGame);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblpublishergame (LeagueID,Year,UserID,GameName,Timestamp,Waiver,AntiPick,FantasyScore,MasterGameID) VALUES " +
+                    "(@LeagueID,@Year,@UserID,@GameName,@Timestamp,@Waiver,@AntiPick,@FantasyScore,@MasterGameID);",
+                    entity);
+            }
         }
 
         public async Task<IReadOnlyList<int>> GetOpenYears()
@@ -161,43 +281,6 @@ namespace FantasyCritic.MySQL
                 var results = await connection.QueryAsync<int>("select tblsupportedyear.Year from tblsupportedyear where OpenForPlay = true");
                 return results.ToList();
             }
-        }
-
-        public async Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser)
-        {
-            IEnumerable<LeagueEntity> leagueEntities;
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                var queryObject = new
-                {
-                    userID = currentUser.UserID,
-                };
-
-                leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select * from tblleague join tblleagueplayer on (tblleague.LeagueID = tblleagueplayer.LeagueID) where tblleagueplayer.UserID = @userID;", queryObject);
-            }
-
-            IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
-            return leagues;
-        }
-
-        public async Task<IReadOnlyList<League>> GetLeaguesInvitedTo(FantasyCriticUser currentUser)
-        {
-            var query = new
-            {
-                userID = currentUser.UserID
-            };
-
-            IEnumerable<LeagueEntity> leagueEntities;
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select tblleague.* from tblleague join tblleagueinvite on (tblleague.LeagueID = tblleagueinvite.LeagueID) where tblleagueinvite.UserID = @userID;",
-                    query);
-            }
-
-            IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
-            return leagues;
         }
 
         public async Task<IReadOnlyList<MasterGame>> GetMasterGames()
@@ -249,49 +332,6 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task AddPlayerGame(League requestLeague, PlayerGame playerGame)
-        {
-            PlayerHasGameEntity entity = new PlayerHasGameEntity(requestLeague, playerGame);
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.ExecuteAsync(
-                    "insert into tblplayerhasgame (LeagueID,Year,UserID,GameName,Timestamp,Waiver,AntiPick,FantasyScore,MasterGameID) VALUES " +
-                    "(@LeagueID,@Year,@UserID,@GameName,@Timestamp,@Waiver,@AntiPick,@FantasyScore,@MasterGameID);",
-                    entity);
-            }
-        }
-
-        public async Task<IReadOnlyList<PlayerGame>> GetPlayerGames(League league, FantasyCriticUser user)
-        {
-            var query = new
-            {
-                leagueID = league.LeagueID,
-                userID = user.UserID
-            };
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                IEnumerable<PlayerHasGameEntity> entities = await connection.QueryAsync<PlayerHasGameEntity>(
-                    "select * from tblplayerhasgame where LeagueID = @leagueID and UserID = @UserID",
-                    query);
-
-                List<PlayerGame> playerGames = new List<PlayerGame>();
-                foreach (var entity in entities)
-                {
-                    Maybe<MasterGame> masterGame = null;
-                    if (entity.MasterGameID.HasValue)
-                    {
-                        masterGame = await GetMasterGame(entity.MasterGameID.Value);
-                    }
-
-                    playerGames.Add(entity.ToDomain(user, masterGame));
-                }
-
-                return playerGames;
-            }
-        }
-
         public async Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem)
         {
             var query = new
@@ -321,7 +361,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 return connection.ExecuteAsync(
-                    "insert into tblleagueplayer(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
+                    "insert into tblleaguehasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
             }
         }
 
