@@ -42,9 +42,10 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueByID(id);
         }
 
-        public Task<IReadOnlyList<LeaguePlayer>> GetPlayersInLeague(League league)
+        public async Task<IReadOnlyList<LeaguePlayer>> GetPlayersInLeague(League league)
         {
-            return _fantasyCriticRepo.GetPlayersInLeague(league);
+            var users = await _fantasyCriticRepo.GetPlayersInLeague(league);
+            return users.Select(x => new LeaguePlayer(league, x)).ToList();
         }
 
         public async Task<Result> InviteUser(League league, FantasyCriticUser inviteUser)

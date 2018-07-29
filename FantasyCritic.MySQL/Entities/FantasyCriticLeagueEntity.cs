@@ -8,53 +8,27 @@ using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.MySQL.Entities
 {
-    internal class FantasyCriticLeagueEntity
+    internal class LeagueEntity
     {
-        public FantasyCriticLeagueEntity()
+        public LeagueEntity()
         {
 
         }
 
-        public FantasyCriticLeagueEntity(FantasyCriticLeague league)
+        public LeagueEntity(League league)
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
             LeagueManager = league.LeagueManager.UserID;
-
-            DraftGames = league.LeagueOptions.DraftGames;
-            WaiverGames = league.LeagueOptions.WaiverGames;
-            AntiPicks = league.LeagueOptions.AntiPicks;
-            EstimatedGameScore = league.LeagueOptions.EstimatedGameScore;
-
-            EligibilitySystem = league.LeagueOptions.EligibilitySystem.Value;
-            DraftSystem = league.LeagueOptions.DraftSystem.Value;
-            WaiverSystem = league.LeagueOptions.WaiverSystem.Value;
-            ScoringSystem = league.LeagueOptions.ScoringSystem.Value;
         }
 
         public Guid LeagueID { get; set; }
         public string LeagueName { get; set; }
         public Guid LeagueManager { get; set; }
-        public int DraftGames { get; set; }
-        public int WaiverGames { get; set; }
-        public int AntiPicks { get; set; }
-        public decimal EstimatedGameScore { get; set; }
-        public string EligibilitySystem { get; set; }
-        public string DraftSystem { get; set; }
-        public string WaiverSystem { get; set; }
-        public string ScoringSystem { get; set; }
 
-        public FantasyCriticLeague ToDomain(FantasyCriticUser manager, IEnumerable<int> leagueYears)
+        public League ToDomain(FantasyCriticUser manager, IEnumerable<int> years)
         {
-            EligibilitySystem eligibilitySystem = Lib.Enums.EligibilitySystem.FromValue(EligibilitySystem);
-            DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
-            WaiverSystem waiverSystem = Lib.Enums.WaiverSystem.FromValue(WaiverSystem);
-            ScoringSystem scoringSystem = Lib.Enums.ScoringSystem.FromValue(ScoringSystem);
-
-            LeagueOptions options = new LeagueOptions(DraftGames, WaiverGames, AntiPicks, EstimatedGameScore,
-                eligibilitySystem, draftSystem, waiverSystem, scoringSystem);
-
-            FantasyCriticLeague parameters = new FantasyCriticLeague(LeagueID, LeagueName, manager, leagueYears, options);
+            League parameters = new League(LeagueID, LeagueName, manager, years);
             return parameters;
         }
     }

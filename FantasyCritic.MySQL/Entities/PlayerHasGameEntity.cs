@@ -16,7 +16,7 @@ namespace FantasyCritic.MySQL.Entities
 
         }
 
-        public PlayerHasGameEntity(FantasyCriticLeague requestLeague, PlayerGame playerGame)
+        public PlayerHasGameEntity(League requestLeague, PlayerGame playerGame)
         {
             LeagueID = requestLeague.LeagueID;
             Year = playerGame.Year;
