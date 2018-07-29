@@ -42,6 +42,18 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueByID(id);
         }
 
+        public async Task<Maybe<LeagueOptions>> GetLeagueOptions(Guid id, int year)
+        {
+            var league = await GetLeagueByID(id);
+            if (league.HasNoValue)
+            {
+                return Maybe<LeagueOptions>.None;
+            }
+
+            var options = await _fantasyCriticRepo.GetOptions(league.Value, year);
+            return options;
+        }
+
         public async Task<IReadOnlyList<LeaguePlayer>> GetPlayersInLeague(League league)
         {
             var users = await _fantasyCriticRepo.GetPlayersInLeague(league);
