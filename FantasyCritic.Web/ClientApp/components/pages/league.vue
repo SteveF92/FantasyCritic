@@ -30,8 +30,12 @@
                 <router-link :to="{ name: 'player', params: { leagueid: league.leagueID, playerid: player.userID, year: activeYear }}">{{ player.userName }}</router-link>
             </li>
         </ul>
-        <h3>Summary</h3>
-        <leagueGameSummary :players="league.players" :draftSlots="league.draftGames" :antiPickSlots="league.antiPicks" :waiverSlots="league.waiverGames"></leagueGameSummary>
+
+        <div v-if="leagueYear">
+            <h3>Summary</h3>
+            <leagueGameSummary  :leagueYear="leagueYear"></leagueGameSummary>
+        </div>
+
         <h3>Invited Players</h3>
         <ul>
             <li v-for="player in league.invitedPlayers">
@@ -69,13 +73,13 @@
             return {
                 errorInfo: "",
                 league: null,
+                leagueYear: null,
                 showInvitePlayer: false,
                 inviteEmail: "",
-                invitedEmail: "",
-                activeYear: null
+                invitedEmail: ""
             }
         },
-        props: ['leagueid'],
+        props: ['leagueid', 'activeYear'],
         components: {
             LeagueGameSummary
         },
@@ -85,7 +89,14 @@
                     .get('/api/League/GetLeague/' + this.leagueid)
                     .then(response => {
                         this.league = response.data;
-                        this.activeYear = this.league.activeYear;
+                    })
+                    .catch(returnedError => (this.error = returnedError));
+            },
+            fetchLeagueYear() {
+                axios
+                    .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.activeYear)
+                    .then(response => {
+                        this.leagueYear = response.data;
                     })
                     .catch(returnedError => (this.error = returnedError));
             },
@@ -138,10 +149,11 @@
         },
         mounted() {
             this.fetchLeague();
+            this.fetchLeagueYear();
         },
         watch: {
             '$route'(to, from) {
-                this.fetchLeague();
+                this.fetchLeagueYear();
             }
         }
     }

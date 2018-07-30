@@ -1,7 +1,6 @@
 <template>
     <div>
-        <minimalPlayerGameTable v-for="player in players" :playerName="player.userName" :games="player.games" class="minimalPlayerTable"
-                                :draftSlots="draftSlots" :antiPickSlots="antiPickSlots" :waiverSlots="waiverSlots"></minimalPlayerGameTable>
+        <minimalPlayerGameTable v-for="publisher in publishers" :publisher="publisher" :options="options" class="minimalPlayerTable"></minimalPlayerGameTable>
     </div>
 </template>
 <script>
@@ -12,7 +11,21 @@
         components: {
             MinimalPlayerGameTable
         },
-        props: ['players', 'draftSlots', 'antiPickSlots', 'waiverSlots']
+        props: ['leagueYear'],
+        computed: {
+            publishers() {
+                return this.leagueYear.publishers;
+            },
+            options() {
+                var options = {
+                    draftSlots: this.leagueYear.draftGames,
+                    antiPickSlots: this.leagueYear.antiPicks,
+                    waiverSlots: this.leagueYear.waiverGames
+                };
+
+                return options;
+            }
+        }
     }
 </script>
 <style>

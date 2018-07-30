@@ -64,11 +64,12 @@ let routes = [
         name: "createLeague"
     },
     {
-        path: "/league/:leagueid",
+        path: "/league/:leagueid/:activeYear",
         component: League,
         name: "league",
         props: (route) => ({
-             leagueid: route.params.leagueid
+            leagueid: route.params.leagueid,
+            activeYear: route.params.activeYear
         })
     },
     {

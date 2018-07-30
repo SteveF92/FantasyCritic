@@ -4,7 +4,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col" colspan="3">{{playerName}}</th>
+                        <th scope="col" colspan="3">{{publisher.publisherName}}</th>
                     </tr>
                     <tr>
                         <th scope="col">Game</th>
@@ -34,8 +34,11 @@
             MinimalPlayerGameRow,
             MinimalBlankPlayerGameRow
         },
-        props: ['playerName', 'games', 'draftSlots', 'antiPickSlots', 'waiverSlots'],
+        props: ['publisher', 'options'],
         computed: {
+            games() {
+                return this.publisher.games;
+            },
             draftGames() {
                 return _.filter(this.games, { 'antiPick': false, 'waiver': false });
             },
@@ -47,17 +50,17 @@
             },
             draftFiller() {
                 var numberDrafted = this.draftGames.length;
-                var openSlots = this.draftSlots - numberDrafted;
+                var openSlots = this.options.draftSlots - numberDrafted;
                 return openSlots;
             },
             antiPickFiller() {
                 var numberAntiPicked = this.antiPicks.length;
-                var openSlots = this.antiPickSlots - numberAntiPicked;
+                var openSlots = this.options.antiPickSlots - numberAntiPicked;
                 return openSlots;
             },
             waiverFiller() {
                 var numberWaiverClaimed = this.waiverGames.length;
-                var openSlots = this.waiverSlots - numberWaiverClaimed;
+                var openSlots = this.options.waiverSlots - numberWaiverClaimed;
                 return openSlots;
             }
         }
