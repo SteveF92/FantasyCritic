@@ -286,18 +286,24 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
             if (league.HasNoValue)
             {
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID == currentUser.UserID)
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
                 return Forbid();
             }
 
-            var claimUser = await _userManager.FindByIdAsync(request.UserID.ToString());
+            var claimUser = await _userManager.FindByIdAsync(publisher.Value.User.UserID.ToString());
             if (claimUser == null)
             {
                 return BadRequest();
@@ -307,12 +313,6 @@ namespace FantasyCritic.Web.Controllers.API
             if (request.MasterGameID.HasValue)
             {
                 masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID.Value);
-            }
-
-            var publisher = await _fantasyCriticService.GetPublisher(league.Value, request.Year, claimUser);
-            if (publisher.HasNoValue)
-            {
-                return BadRequest();
             }
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.Waiver, request.AntiPick, masterGame);

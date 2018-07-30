@@ -8,9 +8,7 @@ namespace FantasyCritic.Web.Models.Requests
 {
     public class ClaimGameRequest
     {
-        public Guid LeagueID { get; set; }
-        public Guid UserID { get; set; }
-        public int Year { get; set; }
+        public Guid PublisherID { get; set; }
         public string GameName { get; set; }
         public bool Waiver { get; set; }
         public bool AntiPick { get; set; }

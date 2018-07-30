@@ -53,7 +53,6 @@
 
         <div v-if="league.isManager" class="col-4">
             <h4>Manager Actions</h4>
-
             <div>
                 <div v-if="!showInvitePlayer">
                     <b-button variant="info" class="nav-link" v-on:click="showInvitePlayerForm">Invite a Player</b-button>
@@ -76,43 +75,7 @@
                     <b-button variant="info" class="nav-link" v-on:click="showAddGameForm">Add Publisher Game</b-button>
                 </div>
                 <div v-if="showAddGame">
-                    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
-                        <div class="form-group">
-                            <label for="claimGameName" class="control-label">Game Name</label>
-                            <div class="input-group">
-                                <input v-model="claimGameName" id="claimGameName" name="claimGameName" type="text" class="form-control input" />
-                                <span class="input-group-btn">
-                                    <b-button variant="info" class="nav-link" v-on:click="searchGame">Search Game</b-button>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="claimPublisher" class="control-label">Publisher</label>
-                            <b-form-select v-model="claimPublisher">
-                                <option v-for="publisher in leagueYear.publishers" v-bind:value="publisher">
-                                    {{ publisher.publisherName }}
-                                </option>
-                            </b-form-select>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                <label class="btn btn-secondary active">
-                                    <input type="radio" name="options" id="draft" autocomplete="off" checked> Draft
-                                </label>
-                                <label class="btn btn-secondary">
-                                    <input type="radio" name="options" id="antiPick" autocomplete="off"> Anti Pick
-                                </label>
-                                <label class="btn btn-secondary">
-                                    <input type="radio" name="options" id="waiver" autocomplete="off"> Waiver
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group col-2">
-                            <input type="submit" class="btn btn-primary" value="Add game to publisher" />
-                        </div>
-                    </form>
+                    <managerClaimGameForm :publishers="leagueYear.publishers"></managerClaimGameForm>
                 </div>
             </div>
         </div>
@@ -123,6 +86,7 @@
     import Vue from "vue";
     import axios from "axios";
     import LeagueGameSummary from "components/modules/leagueGameSummary";
+    import ManagerClaimGameForm from "components/modules/managerClaimGameForm";
 
     export default {
         data() {
@@ -141,7 +105,8 @@
         },
         props: ['leagueid', 'year'],
         components: {
-            LeagueGameSummary
+            LeagueGameSummary,
+            ManagerClaimGameForm
         },
         methods: {
             fetchLeague() {
@@ -208,9 +173,6 @@
                     .catch(response => {
                         this.errorInfo = "Cannot find a player with that email address."
                     });
-            },
-            searchGame() {
-
             }
         },
         mounted() {

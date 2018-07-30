@@ -15,7 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueName = publisher.League.LeagueName;
             PlayerName = publisher.User.UserName;
             Year = publisher.Year;
-            Games = publisher.PublisherGames.Select(x => new PublisherGameViewModel(x)).ToList();
+            Games = publisher.PublisherGames.OrderBy(x => x.Timestamp).Select(x => new PublisherGameViewModel(x)).ToList();
         }
 
         public Guid PublisherID { get; }

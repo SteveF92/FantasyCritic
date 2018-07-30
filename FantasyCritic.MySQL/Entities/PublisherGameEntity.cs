@@ -18,9 +18,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public PublisherGameEntity(Publisher publisher, PublisherGame publisherGame)
         {
-            LeagueID = publisher.League.LeagueID;
-            Year = publisher.Year;
-            UserID = publisher.User.UserID;
+            PublisherID = publisher.PublisherID;
             GameName = publisherGame.GameName;
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
             Waiver = publisherGame.Waiver;
@@ -33,9 +31,7 @@ namespace FantasyCritic.MySQL.Entities
             }
         }
 
-        public Guid LeagueID { get; set; }
-        public int Year { get; set; }
-        public Guid UserID { get; set; }
+        public Guid PublisherID { get; set; }
         public string GameName { get; set; }
         public DateTime Timestamp { get; set; }
         public bool Waiver { get; set; }
