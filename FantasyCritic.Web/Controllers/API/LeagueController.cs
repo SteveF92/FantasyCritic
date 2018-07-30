@@ -86,9 +86,9 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(leagueViewModel);
         }
 
-        public async Task<IActionResult> GetLeagueYear(Guid id, int year)
+        public async Task<IActionResult> GetLeagueYear(Guid leagueID, int year)
         {
-            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(id, year);
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
             if (leagueYear.HasNoValue)
             {
                 throw new Exception("Something went really wrong, no options are set up for this league.");
