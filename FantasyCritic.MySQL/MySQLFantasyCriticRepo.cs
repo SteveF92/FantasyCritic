@@ -112,7 +112,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var results = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    "select tbluser.* from tbluser join tblleagueplayer on (tbluser.UserID = tblleagueplayer.UserID) where tblleagueplayer.LeagueID = @leagueID;",
+                    "select tbluser.* from tbluser join tblleaguehasuser on (tbluser.UserID = tblleaguehasuser.UserID) where tblleaguehasuser.LeagueID = @leagueID;",
                     query);
 
                 var users = results.Select(x => x.ToDomain()).ToList();
@@ -131,7 +131,7 @@ namespace FantasyCritic.MySQL
                 };
 
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select * from tblleague join tblleagueplayer on (tblleague.LeagueID = tblleagueplayer.LeagueID) where tblleagueplayer.UserID = @userID;", queryObject);
+                    "select tblleague. * from tblleague join tblleaguehasuser on (tblleague.LeagueID = tblleaguehasuser.LeagueID) where tblleaguehasuser.UserID = @userID;", queryObject);
             }
 
             IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
