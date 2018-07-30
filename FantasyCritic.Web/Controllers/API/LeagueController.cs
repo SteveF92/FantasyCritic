@@ -111,9 +111,10 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(leagueViewModel);
         }
 
-        public async Task<IActionResult> GetPublisher(Guid publisherID)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPublisher(Guid id)
         {
-            Maybe<Publisher> publisher = await _fantasyCriticService.GetPublisher(publisherID);
+            Maybe<Publisher> publisher = await _fantasyCriticService.GetPublisher(id);
             if (publisher.HasNoValue)
             {
                 return NotFound();

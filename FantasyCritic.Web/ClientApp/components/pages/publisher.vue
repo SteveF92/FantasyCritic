@@ -1,10 +1,11 @@
 <template>
-    <div v-if="player">
-        <h2>{{player.userName}}</h2>
+    <div v-if="publisher">
+        <h2>{{publisher.publisherName}}</h2>
+        <h4>{{publisher.playerName}}</h4>
         <h5>
-            <router-link :to="{ name: 'league', params: { leagueid: player.leagueID }}">League: {{player.leagueName}}</router-link>
+            <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID }}">League: {{publisher.leagueName}}</router-link>
         </h5>
-        <playerGameTable :games="player.games"></playerGameTable>
+        <playerGameTable :games="publisher.games"></playerGameTable>
     </div>
 </template>
 
@@ -17,7 +18,7 @@
         data() {
             return {
                 errorInfo: "",
-                player: null
+                publisher: null
             }
         },
         components: {
@@ -25,21 +26,21 @@
         },
         props: ['publisherid'],
         methods: {
-            fetchPlayer() {
+            fetchPublisher() {
                 axios
                     .get('/api/League/GetPublisher/' + this.publisherid)
                     .then(response => {
-                        this.player = response.data;
+                        this.publisher = response.data;
                     })
                     .catch(returnedError => (this.error = returnedError));
             }
         },
         mounted() {
-            this.fetchPlayer();
+            this.fetchPublisher();
         },
         watch: {
             '$route'(to, from) {
-                this.fetchPlayer();
+                this.fetchPublisher();
             }
         }
     }

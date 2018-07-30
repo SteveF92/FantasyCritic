@@ -253,7 +253,7 @@ namespace FantasyCritic.MySQL
 
                 IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID);
                 var user = await _userStore.FindByIdAsync(publisherEntity.UserID.ToString(), CancellationToken.None);
-                var league = await GetLeagueByID(publisherEntity.PublisherID);
+                var league = await GetLeagueByID(publisherEntity.LeagueID);
 
                 var domainPublisher = publisherEntity.ToDomain(league.Value, user, domainGames);
                 return domainPublisher;
