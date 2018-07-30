@@ -9,7 +9,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class InviteViewModel
     {
-        public InviteViewModel(FantasyCriticLeague league)
+        public InviteViewModel(League league)
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
