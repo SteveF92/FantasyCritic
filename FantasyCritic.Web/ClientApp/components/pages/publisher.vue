@@ -3,7 +3,7 @@
         <h2>{{publisher.publisherName}}</h2>
         <h4>{{publisher.playerName}}</h4>
         <h5>
-            <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID }}">League: {{publisher.leagueName}}</router-link>
+            <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>
         </h5>
         <playerGameTable :games="publisher.games"></playerGameTable>
     </div>
