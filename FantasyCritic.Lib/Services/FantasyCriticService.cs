@@ -58,6 +58,13 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.AddNewLeagueYear(league, year, options);
         }
 
+        public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName)
+        {
+            Publisher publisher = new Publisher(league, user, year, publisherName, new List<PublisherGame>());
+            await _fantasyCriticRepo.CreatePublisher(publisher);
+            return publisher;
+        }
+
         public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league)
         {
             return _fantasyCriticRepo.GetUsersInLeague(league);
@@ -181,7 +188,7 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.UpdateCriticStats(masterGame, openCriticGame);
         }
 
-        private async Task<bool> UserIsInLeague(League league, FantasyCriticUser user)
+        public async Task<bool> UserIsInLeague(League league, FantasyCriticUser user)
         {
             var playersInLeague = await GetUsersInLeague(league);
             return playersInLeague.Any(x => x.UserID == user.UserID);

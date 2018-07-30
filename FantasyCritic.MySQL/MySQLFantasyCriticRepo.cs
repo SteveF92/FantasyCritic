@@ -202,6 +202,19 @@ namespace FantasyCritic.MySQL
             return DeleteInvite(league, inviteUser);
         }
 
+        public async Task CreatePublisher(Publisher publisher)
+        {
+            var entity = new PublisherEnity(publisher);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblpublisher(LeagueID,Year,UserID,PublisherName) VALUES " +
+                    "(@LeagueID,@Year,@UserID,@PublisherName);",
+                    entity);
+            }
+        }
+
         public async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year)
         {
             var usersInLeague = await GetUsersInLeague(league);
