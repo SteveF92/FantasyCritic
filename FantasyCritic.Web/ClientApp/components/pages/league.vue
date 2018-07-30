@@ -86,7 +86,16 @@
                                 </span>
                             </div>
                         </div>
-                        <br />
+
+                        <div class="form-group">
+                            <label for="claimPublisher" class="control-label">Publisher</label>
+                            <b-form-select v-model="claimPublisher">
+                                <option v-for="publisher in leagueYear.publishers" v-bind:value="publisher">
+                                    {{ publisher.publisherName }}
+                                </option>
+                            </b-form-select>
+                        </div>
+
                         <div class="form-group">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                 <label class="btn btn-secondary active">
@@ -125,7 +134,9 @@
                 showAddGame: false,
                 inviteEmail: "",
                 invitedEmail: "",
-                activeYear: null
+                activeYear: null,
+                claimGameName: "",
+                claimPublisher: ""
             }
         },
         props: ['leagueid', 'year'],
@@ -197,6 +208,9 @@
                     .catch(response => {
                         this.errorInfo = "Cannot find a player with that email address."
                     });
+            },
+            searchGame() {
+
             }
         },
         mounted() {
@@ -210,7 +224,7 @@
             },
             'activeYear'(oldVal, newVal) {
                 var parameters = {
-                    leagueid: this.league.leagueID,
+                    leagueid: this.leagueid,
                     year: this.activeYear
                 };
                 this.$router.push({ name: "league", params: parameters });
