@@ -60,7 +60,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName)
         {
-            Publisher publisher = new Publisher(league, user, year, publisherName, new List<PublisherGame>());
+            Publisher publisher = new Publisher(Guid.NewGuid(), league, user, year, publisherName, new List<PublisherGame>());
             await _fantasyCriticRepo.CreatePublisher(publisher);
             return publisher;
         }
@@ -150,6 +150,11 @@ namespace FantasyCritic.Lib.Services
         public Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
         {
             return _fantasyCriticRepo.GetPublisher(league, year, user);
+        }
+
+        public Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
+        {
+            return _fantasyCriticRepo.GetPublisher(publisherID);
         }
 
         public async Task<Result> ClaimGame(ClaimGameDomainRequest request)

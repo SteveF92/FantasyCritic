@@ -111,36 +111,35 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(leagueViewModel);
         }
 
-        public async Task<IActionResult> GetPublisher(Guid leagueID, Guid playerID, int year)
+        public async Task<IActionResult> GetPublisher(Guid publisherID)
         {
-            Maybe<League> league = await _fantasyCriticService.GetLeagueByID(leagueID);
-            if (league.HasNoValue)
+            Maybe<Publisher> publisher = await _fantasyCriticService.GetPublisher(publisherID);
+            if (publisher.HasNoValue)
             {
                 return NotFound();
             }
 
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            var playersInLeague = await _fantasyCriticService.GetUsersInLeague(league.Value);
+            var playersInLeague = await _fantasyCriticService.GetUsersInLeague(publisher.Value.League);
             bool userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
             if (!userIsInLeague)
             {
                 return Unauthorized();
             }
 
-            bool leaguePlayingYear = league.Value.Years.Contains(year);
+            bool leaguePlayingYear = publisher.Value.League.Years.Contains(publisher.Value.Year);
             if (!leaguePlayingYear)
             {
                 return BadRequest("League is not playing that year.");
             }
             
-            var requstedPlayerIsInLeague = playersInLeague.Any(x => x.UserID == playerID);
+            var requstedPlayerIsInLeague = playersInLeague.Any(x => x.UserID == publisher.Value.User.UserID);
             if (!requstedPlayerIsInLeague)
             {
                 return BadRequest("Requested player is not in requested league.");
             }
 
-            var requestedPlayer = await _userManager.FindByIdAsync(playerID.ToString());
-            var publisher = await _fantasyCriticService.GetPublisher(league.Value, year, requestedPlayer);
+            var requestedPlayer = await _userManager.FindByIdAsync(publisher.Value.User.UserID.ToString());
             if (publisher.HasNoValue)
             {
                 return NotFound();

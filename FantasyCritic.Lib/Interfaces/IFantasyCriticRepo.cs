@@ -24,9 +24,10 @@ namespace FantasyCritic.Lib.Interfaces
         Task AcceptInvite(League league, FantasyCriticUser inviteUser);
         Task DeclineInvite(League league, FantasyCriticUser inviteUser);
 
+        Task<Maybe<Publisher>> GetPublisher(Guid publisherID);
+        Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user);
         Task CreatePublisher(Publisher publisher);
         Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year);
-        Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user);
         Task AddPublisherGame(Publisher publisher, PublisherGame publisherGame);
 
         Task<IReadOnlyList<int>> GetOpenYears();

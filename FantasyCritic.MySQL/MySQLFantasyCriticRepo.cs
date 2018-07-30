@@ -233,6 +233,33 @@ namespace FantasyCritic.MySQL
             return publishers;
         }
 
+        public async Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
+        {
+            var query = new
+            {
+                publisherID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                PublisherEnity publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEnity>(
+                    "select * from tblpublisher where tblpublisher.PublisherID = @publisherID;",
+                    query);
+
+                if (publisherEntity == null)
+                {
+                    return Maybe<Publisher>.None;
+                }
+
+                IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID);
+                var user = await _userStore.FindByIdAsync(publisherEntity.UserID.ToString(), CancellationToken.None);
+                var league = await GetLeagueByID(publisherEntity.PublisherID);
+
+                var domainPublisher = publisherEntity.ToDomain(league.Value, user, domainGames);
+                return domainPublisher;
+            }
+        }
+
         public async Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
         {
             var query = new
@@ -253,22 +280,7 @@ namespace FantasyCritic.MySQL
                     return Maybe<Publisher>.None;
                 }
 
-                IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
-                    "select * from tblpublishergame where tblpublishergame.LeagueID = @leagueID and tblpublishergame.Year = @year and tblpublishergame.UserID = @userID;",
-                    query);
-
-                List<PublisherGame> domainGames = new List<PublisherGame>();
-                foreach (var entity in gameEntities)
-                {
-                    Maybe<MasterGame> masterGame = null;
-                    if (entity.MasterGameID.HasValue)
-                    {
-                        masterGame = await GetMasterGame(entity.MasterGameID.Value);
-                    }
-
-                    domainGames.Add(entity.ToDomain(masterGame));
-                }
-
+                IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID);
                 var domainPublisher = publisherEntity.ToDomain(league, user, domainGames);
                 return domainPublisher;
             }
@@ -416,6 +428,35 @@ namespace FantasyCritic.MySQL
                 }
 
                 return leagues;
+            }
+        }
+
+        public async Task<IReadOnlyList<PublisherGame>> GetPublisherGames(Guid publisherID)
+        {
+            var query = new
+            {
+                publisherID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
+                    "select * from tblpublishergame where tblpublishergame.PublisherID = @publisherID;",
+                    query);
+
+                List<PublisherGame> domainGames = new List<PublisherGame>();
+                foreach (var entity in gameEntities)
+                {
+                    Maybe<MasterGame> masterGame = null;
+                    if (entity.MasterGameID.HasValue)
+                    {
+                        masterGame = await GetMasterGame(entity.MasterGameID.Value);
+                    }
+
+                    domainGames.Add(entity.ToDomain(masterGame));
+                }
+
+                return domainGames;
             }
         }
     }

@@ -8,8 +8,9 @@ namespace FantasyCritic.Lib.Domain
 {
     public class Publisher
     {
-        public Publisher(League league, FantasyCriticUser user, int year, string publisherName, IEnumerable<PublisherGame> publisherGames)
+        public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, IEnumerable<PublisherGame> publisherGames)
         {
+            PublisherID = publisherID;
             League = league;
             User = user;
             Year = year;
@@ -17,6 +18,7 @@ namespace FantasyCritic.Lib.Domain
             PublisherGames = publisherGames.ToList();
         }
 
+        public Guid PublisherID { get; }
         public League League { get; }
         public FantasyCriticUser User { get; }
         public int Year { get; }

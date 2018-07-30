@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FantasyCritic.Lib.Domain;
@@ -8,12 +9,14 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public PublisherViewModel(Publisher publisher)
         {
+            PublisherID = publisher.PublisherID;
             PublisherName = publisher.PublisherName;
             PlayerName = publisher.User.UserName;
             Year = publisher.Year;
             Games = publisher.PublisherGames.Select(x => new PublisherGameViewModel(x)).ToList();
         }
 
+        public Guid PublisherID { get; }
         public string PublisherName { get; }
         public string PlayerName { get; }
         public int Year { get; }
