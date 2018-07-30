@@ -23,11 +23,11 @@
         components: {
             PlayerGameTable
         },
-        props: ['leagueid', 'playerid', 'year'],
+        props: ['publisherid'],
         methods: {
             fetchPlayer() {
                 axios
-                    .get('/api/League/GetPlayer?LeagueID=' + this.leagueid + '&PlayerID=' + this.playerid + '&Year=' + this.year)
+                    .get('/api/League/GetPublisher/' + this.publisherid)
                     .then(response => {
                         this.player = response.data;
                     })

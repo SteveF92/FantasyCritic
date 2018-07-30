@@ -11,7 +11,7 @@ import Contact from "components/pages/contact";
 import ManageUser from "components/pages/manageUser";
 import CreateLeague from "components/pages/createLeague";
 import League from "components/pages/league";
-import Player from "components/pages/player";
+import Publisher from "components/pages/publisher";
 
 Vue.use(VueRouter);
 
@@ -73,13 +73,11 @@ let routes = [
         })
     },
     {
-        path: "/league/:leagueid/player/:playerid/year/:year",
-        component: Player,
-        name: "player",
+        path: "/publisher/:publisherid",
+        component: Publisher,
+        name: "publisher",
         props: (route) => ({
-            leagueid: route.params.leagueid,
-            playerid: route.params.playerid,
-            year: route.params.year
+            publisherid: route.params.publisherid
         })
     }
 ];

@@ -24,12 +24,15 @@
             <h3>League Manager</h3>
             {{ league.leagueManager.userName }}
         </div>
-        <h3>Players</h3>
-        <ul>
-            <li v-for="player in league.players">
-                <router-link :to="{ name: 'player', params: { leagueid: league.leagueID, playerid: player.userID, year: activeYear }}">{{ player.userName }}</router-link>
-            </li>
-        </ul>
+        <div v-if="leagueYear">
+            <h3>Publishers</h3>
+            <ul>
+                <li v-for="publisher in leagueYear.publishers">
+                    <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">{{ publisher.publisherName }}</router-link>
+                </li>
+            </ul>
+        </div>
+
 
         <div v-if="leagueYear">
             <h3>Summary</h3>
