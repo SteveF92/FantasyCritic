@@ -4,7 +4,11 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col" colspan="3">{{publisher.publisherName}}</th>
+                        <th scope="col" colspan="3">
+                            {{publisher.publisherName}}
+                            <br/>
+                            Player: {{publisher.playerName}}
+                        </th>
                     </tr>
                     <tr>
                         <th scope="col">Game</th>
