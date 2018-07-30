@@ -39,13 +39,17 @@
             <leagueGameSummary  :leagueYear="leagueYear"></leagueGameSummary>
         </div>
 
-        <h3>Invited Players</h3>
-        <ul>
-            <li v-for="player in league.invitedPlayers">
-                {{ player.userName }}
-            </li>
-        </ul>
+        <div v-if="league.invitedPlayers.length > 0">
+            <h5>Invited Players</h5>
+            <ul>
+                <li v-for="player in league.invitedPlayers">
+                    {{ player.userName }}
+                </li>
+            </ul>
+        </div>
+
         <div class="col-md-8" v-if="league.isManager">
+            <h4>Manager Actions</h4>
             <div v-if="!showInvitePlayer">
                 <b-button variant="info" class="nav-link" v-on:click="showInvite">Invite a Player</b-button>
             </div>
@@ -79,10 +83,11 @@
                 leagueYear: null,
                 showInvitePlayer: false,
                 inviteEmail: "",
-                invitedEmail: ""
+                invitedEmail: "",
+                activeYear: null
             }
         },
-        props: ['leagueid', 'activeYear'],
+        props: ['leagueid', 'year'],
         components: {
             LeagueGameSummary
         },
@@ -151,12 +156,20 @@
             }
         },
         mounted() {
+            this.activeYear = this.year;
             this.fetchLeague();
             this.fetchLeagueYear();
         },
         watch: {
             '$route'(to, from) {
                 this.fetchLeagueYear();
+            },
+            'activeYear'(oldVal, newVal) {
+                var parameters = {
+                    leagueid: this.league.leagueID,
+                    year: this.activeYear
+                };
+                this.$router.push({ name: "league", params: parameters });
             }
         }
     }
