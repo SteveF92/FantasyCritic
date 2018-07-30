@@ -10,6 +10,11 @@
                 </main>
             </div>
         </div>
+        <footer class="footer">
+            <div class="container">
+                <span class="text-muted">Fantasy Critic - Alpha Version</span>
+            </div>
+        </footer>
     </div>
 </template>
 
