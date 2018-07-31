@@ -20,7 +20,7 @@ namespace FantasyCritic.Web.Models.Responses
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             WaiverSystem = leagueYear.Options.WaiverSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Value;
-            Publishers = publishers.Select(x => new PublisherViewModel(x)).ToList();
+            Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x)).ToList();
         }
 
         public Guid LeagueID { get; }

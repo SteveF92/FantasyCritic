@@ -140,12 +140,6 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Requested player is not in requested league.");
             }
 
-            var requestedPlayer = await _userManager.FindByIdAsync(publisher.Value.User.UserID.ToString());
-            if (publisher.HasNoValue)
-            {
-                return NotFound();
-            }
-
             var publisherViewModel = new PublisherViewModel(publisher.Value);
             return Ok(publisherViewModel);
         }

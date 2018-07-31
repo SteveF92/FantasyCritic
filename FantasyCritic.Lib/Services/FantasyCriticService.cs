@@ -60,7 +60,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName)
         {
-            Publisher publisher = new Publisher(Guid.NewGuid(), league, user, year, publisherName, new List<PublisherGame>());
+            Publisher publisher = new Publisher(Guid.NewGuid(), league, user, year, publisherName, null, new List<PublisherGame>());
             await _fantasyCriticRepo.CreatePublisher(publisher);
             return publisher;
         }

@@ -15,6 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueName = publisher.League.LeagueName;
             PlayerName = publisher.User.UserName;
             Year = publisher.Year;
+            DraftPosition = publisher.DraftPosition;
             Games = publisher.PublisherGames.OrderBy(x => x.Timestamp).Select(x => new PublisherGameViewModel(x)).ToList();
         }
 
@@ -24,6 +25,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string LeagueName { get; }
         public string PlayerName { get; }
         public int Year { get; }
+        public int? DraftPosition { get; }
         public IReadOnlyList<PublisherGameViewModel> Games { get; }
     }
 }

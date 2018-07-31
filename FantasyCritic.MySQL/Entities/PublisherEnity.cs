@@ -21,6 +21,7 @@ namespace FantasyCritic.MySQL.Entities
             LeagueID = publisher.League.LeagueID;
             Year = publisher.Year;
             UserID = publisher.User.UserID;
+            DraftPosition = publisher.DraftPosition;
         }
 
         public Guid PublisherID { get; set; }
@@ -28,10 +29,11 @@ namespace FantasyCritic.MySQL.Entities
         public Guid LeagueID { get; set; }
         public int Year { get; set; }
         public Guid UserID { get; set; }
+        public int? DraftPosition { get; set; }
 
         public Publisher ToDomain(League league, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames)
         {
-            Publisher domain = new Publisher(PublisherID, league, user, Year, PublisherName, publisherGames);
+            Publisher domain = new Publisher(PublisherID, league, user, Year, PublisherName, DraftPosition, publisherGames);
             return domain;
         }
     }

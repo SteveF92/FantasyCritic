@@ -8,13 +8,14 @@ namespace FantasyCritic.Lib.Domain
 {
     public class Publisher
     {
-        public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, IEnumerable<PublisherGame> publisherGames)
+        public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, int? draftPosition, IEnumerable<PublisherGame> publisherGames)
         {
             PublisherID = publisherID;
             League = league;
             User = user;
             Year = year;
             PublisherName = publisherName;
+            DraftPosition = draftPosition;
             PublisherGames = publisherGames.ToList();
         }
 
@@ -23,6 +24,7 @@ namespace FantasyCritic.Lib.Domain
         public FantasyCriticUser User { get; }
         public int Year { get; }
         public string PublisherName { get; }
+        public int? DraftPosition { get; }
         public IReadOnlyList<PublisherGame> PublisherGames { get; }
     }
 }
