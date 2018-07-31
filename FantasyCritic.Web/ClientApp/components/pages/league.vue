@@ -75,7 +75,7 @@
                     <b-button variant="info" class="nav-link" v-on:click="showAddGameForm">Add Publisher Game</b-button>
                 </div>
                 <div v-if="showAddGame">
-                    <managerClaimGameForm :publishers="leagueYear.publishers"></managerClaimGameForm>
+                    <managerClaimGameForm :publishers="leagueYear.publishers" v-on:claim-game-success="showGameClaimed"></managerClaimGameForm>
                 </div>
             </div>
         </div>
@@ -173,6 +173,15 @@
                     .catch(response => {
                         this.errorInfo = "Cannot find a player with that email address."
                     });
+            },
+            showGameClaimed(gameName, publisher) {
+                this.showAddGame = false;
+                this.fetchLeagueYear();
+                let toast = this.$toasted.show(gameName + ' added to ' + publisher, {
+                    theme: "primary",
+                    position: "top-right",
+                    duration: 5000
+                });
             }
         },
         mounted() {

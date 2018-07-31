@@ -45,8 +45,8 @@
     export default {
         data() {
             return {
-                claimGameName: "",
-                claimPublisher: "",
+                claimGameName: null,
+                claimPublisher: null,
                 claimMasterGame: null,
                 claimGameType: null,
                 claimGameTypes: [
@@ -96,7 +96,11 @@
                 axios
                     .post('/api/league/ManagerClaimGame', request)
                     .then(response => {
-
+                        this.$emit('claim-game-success', gameName, this.claimPublisher.publisherName);
+                        this.claimGameName = null;
+                        this.claimPublisher = null;
+                        this.claimMasterGame = null;
+                        this.claimGameType = null;
                     })
                     .catch(response => {
 

@@ -8,23 +8,24 @@
     "install": "webpack --config webpack.config.vendor.js"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "1.2.1",
+    "@fortawesome/free-solid-svg-icons": "5.1.1",
+    "@fortawesome/vue-fontawesome": "0.1.1",
     "axios": "^0.15.3",
     "bootstrap": "4.1.0",
     "bootstrap-vue": "2.0.0-rc.11",
     "bootswatch": "4.1.0",
     "core-js": "^2.4.1",
     "jquery": "~3.3.1",
+    "lodash": "4.17.10",
+    "moment": "2.22.2",
     "vue": "^2.1.8",
-    "vue-template-compiler": "^2.1.8",
     "vue-router": "^2.1.1",
     "vue-server-renderer": "^2.1.8",
+    "vue-template-compiler": "^2.1.8",
+    "vue-toasted": "^1.1.24",
     "vuex": "^2.1.1",
-    "vuex-router-sync": "^4.0.1",
-    "@fortawesome/fontawesome-svg-core": "1.2.1",
-    "@fortawesome/free-solid-svg-icons": "5.1.1",
-    "@fortawesome/vue-fontawesome": "0.1.1",
-    "lodash": "4.17.10",
-    "moment": "2.22.2"
+    "vuex-router-sync": "^4.0.1"
   },
   "devDependencies": {
     "aspnet-webpack": "^2.0.1",

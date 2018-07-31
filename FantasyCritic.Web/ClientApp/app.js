@@ -4,6 +4,7 @@ import axios from 'axios'
 import store from "./stores/store"
 import router from './router'
 import App from 'components/application'
+import Toasted from 'vue-toasted';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCoffee, faBell } from '@fortawesome/free-solid-svg-icons';
@@ -22,6 +23,7 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.component('font-awesome-layers', FontAwesomeLayers)
 Vue.component('font-awesome-layers-text', FontAwesomeLayersText)
 Vue.use(BootstrapVue);
+Vue.use(Toasted);
 
 axios.interceptors.response.use(function (response) {
     return response;
