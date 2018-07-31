@@ -18,6 +18,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public PublisherGameEntity(Publisher publisher, PublisherGame publisherGame)
         {
+            PublisherGameID = publisherGame.PublisherGameID;
             PublisherID = publisher.PublisherID;
             GameName = publisherGame.GameName;
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
@@ -31,6 +32,7 @@ namespace FantasyCritic.MySQL.Entities
             }
         }
 
+        public Guid PublisherGameID { get; set; }
         public Guid PublisherID { get; set; }
         public string GameName { get; set; }
         public DateTime Timestamp { get; set; }
@@ -41,7 +43,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public PublisherGame ToDomain(Maybe<MasterGame> masterGame)
         {
-            PublisherGame domain = new PublisherGame(GameName, Instant.FromDateTimeUtc(Timestamp), Waiver, AntiPick, FantasyScore, masterGame);
+            PublisherGame domain = new PublisherGame(PublisherGameID, GameName, Instant.FromDateTimeUtc(Timestamp), Waiver, AntiPick, FantasyScore, masterGame);
             return domain;
         }
     }

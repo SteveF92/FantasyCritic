@@ -8,8 +8,9 @@ namespace FantasyCritic.Lib.Domain
 {
     public class PublisherGame
     {
-        public PublisherGame(string gameName, Instant timestamp, bool waiver, bool antiPick, decimal? fantasyScore, Maybe<MasterGame> masterGame)
+        public PublisherGame(Guid publisherGameID, string gameName, Instant timestamp, bool waiver, bool antiPick, decimal? fantasyScore, Maybe<MasterGame> masterGame)
         {
+            PublisherGameID = publisherGameID;
             GameName = gameName;
             Timestamp = timestamp;
             Waiver = waiver;
@@ -18,6 +19,7 @@ namespace FantasyCritic.Lib.Domain
             MasterGame = masterGame;
         }
 
+        public Guid PublisherGameID { get; }
         public string GameName { get; }
         public Instant Timestamp { get; }
         public bool Waiver { get; }
