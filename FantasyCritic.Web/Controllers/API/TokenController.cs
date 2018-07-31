@@ -35,7 +35,14 @@ namespace FantasyCritic.Web.Controllers.API
             var username = principal.Identity.Name; //this is mapped to the Name claim by default
 
             var user = await _userManager.FindByNameAsync(username);
-            if (user == null || user.RefreshToken != request.RefreshToken)
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var refreshTokens = await _userManager.GetRefreshTokens(user);
+            if (!refreshTokens.Contains(request.RefreshToken))
             {
                 return BadRequest();
             }
@@ -43,8 +50,8 @@ namespace FantasyCritic.Web.Controllers.API
             var newJwtToken = _tokenService.GenerateAccessToken(principal.Claims);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-            user.RefreshToken = newRefreshToken;
-            await _userManager.UpdateAsync(user);
+            await _userManager.RemoveRefreshToken(user, request.RefreshToken);
+            await _userManager.AddRefreshToken(user, newRefreshToken);
 
             var newJwtString = new JwtSecurityTokenHandler().WriteToken(newJwtToken);
 
@@ -64,8 +71,7 @@ namespace FantasyCritic.Web.Controllers.API
             var user = await _userManager.FindByNameAsync(username);
             if (user == null) return BadRequest();
 
-            user.RefreshToken = null;
-            await _userManager.UpdateAsync(user);
+            await _userManager.RemoveAllRefreshTokens(user);
 
             return NoContent();
         }

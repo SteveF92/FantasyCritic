@@ -30,8 +30,8 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbluser(UserID,UserName,NormalizedUserName,RealName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,EmailConfirmed,RefreshToken) VALUES " +
-                    "(@UserID,@UserName,@NormalizedUserName,@RealName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@EmailConfirmed,@RefreshToken)",
+                    "insert into tbluser(UserID,UserName,NormalizedUserName,RealName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,EmailConfirmed) VALUES " +
+                    "(@UserID,@UserName,@NormalizedUserName,@RealName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@EmailConfirmed)",
                     entity);
             }
 
@@ -65,7 +65,6 @@ namespace FantasyCritic.MySQL
                          $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +
                          $"EmailConfirmed = @{nameof(FantasyCriticUserEntity.EmailConfirmed)}, " +
                          $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)}, " +
-                         $"RefreshToken = @{nameof(FantasyCriticUserEntity.RefreshToken)} " +
                          $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -289,6 +288,44 @@ namespace FantasyCritic.MySQL
 
                 string deleteSQL = "delete from tbluserhasrole where UserID = @UserID and RoleID = @RoleID)";
                 await connection.ExecuteAsync(deleteSQL, new { UserID = user.UserID, RoleID = roleID });
+            }
+        }
+
+        public async Task<IReadOnlyList<string>> GetRefreshTokens(FantasyCriticUser user)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                IEnumerable<string> refreshTokens = await connection.QueryAsync<string>("select RefreshToken from tbluserrefreshtoken where UserID = @UserID;", new { user.UserID });
+
+                return refreshTokens.ToList();
+            }
+        }
+
+        public async Task AddRefreshToken(FantasyCriticUser user, string refreshToken)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync("insert into tbluserrefreshtoken(UserID,RefreshToken) VALUES (@UserID, @refreshToken);", new { user.UserID, refreshToken });
+            }
+        }
+
+        public async Task RemoveRefreshToken(FantasyCriticUser user, string refreshToken)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync("delete from tbluserrefreshtoken where UserID = @UserID and RefreshToken = @refreshToken;", new { user.UserID, refreshToken });
+            }
+        }
+
+        public async Task RemoveAllRefreshTokens(FantasyCriticUser user)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync("delete from tbluserrefreshtoken where UserID = @UserID;", new { user.UserID });
             }
         }
 

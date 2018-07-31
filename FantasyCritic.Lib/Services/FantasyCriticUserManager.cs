@@ -26,5 +26,25 @@ namespace FantasyCritic.Lib.Services
         {
             _userStore = store;
         }
+
+        public Task<IReadOnlyList<string>> GetRefreshTokens(FantasyCriticUser user)
+        {
+            return _userStore.GetRefreshTokens(user);
+        }
+
+        public Task AddRefreshToken(FantasyCriticUser user, string refreshToken)
+        {
+            return _userStore.AddRefreshToken(user, refreshToken);
+        }
+
+        public Task RemoveRefreshToken(FantasyCriticUser user, string refreshToken)
+        {
+            return _userStore.RemoveRefreshToken(user, refreshToken);
+        }
+
+        public Task RemoveAllRefreshTokens(FantasyCriticUser user)
+        {
+            return _userStore.RemoveAllRefreshTokens(user);
+        }
     }
 }

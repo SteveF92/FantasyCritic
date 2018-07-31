@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using FantasyCritic.Lib.Domain;
 
@@ -23,7 +24,6 @@ namespace FantasyCritic.MySQL.Entities
             EmailConfirmed = user.EmailConfirmed;
             SecurityStamp = user.SecurityStamp;
             PasswordHash = user.PasswordHash;
-            RefreshToken = user.RefreshToken;
         }
 
         public Guid UserID { get; set; }
@@ -35,11 +35,10 @@ namespace FantasyCritic.MySQL.Entities
         public bool EmailConfirmed { get; set; }
         public string SecurityStamp { get; set; }
         public string PasswordHash { get; set; }
-        public string RefreshToken { get; set; }
 
         public FantasyCriticUser ToDomain()
         {
-            FantasyCriticUser domain = new FantasyCriticUser(UserID, UserName, NormalizedUserName, RealName, EmailAddress, NormalizedUserName, EmailConfirmed, SecurityStamp, PasswordHash, RefreshToken);
+            FantasyCriticUser domain = new FantasyCriticUser(UserID, UserName, NormalizedUserName, RealName, EmailAddress, NormalizedUserName, EmailConfirmed, SecurityStamp, PasswordHash);
             return domain;
         }
     }
