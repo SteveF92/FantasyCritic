@@ -64,7 +64,7 @@ namespace FantasyCritic.MySQL
                          $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +
                          $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +
                          $"EmailConfirmed = @{nameof(FantasyCriticUserEntity.EmailConfirmed)}, " +
-                         $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)}, " +
+                         $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)} " +
                          $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
 
             using (var connection = new MySqlConnection(_connectionString))

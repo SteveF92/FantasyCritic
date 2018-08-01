@@ -12,6 +12,7 @@ import ManageUser from "components/pages/manageUser";
 import CreateLeague from "components/pages/createLeague";
 import League from "components/pages/league";
 import Publisher from "components/pages/publisher";
+import ConfirmEmail from "components/pages/confirmEmail";
 
 Vue.use(VueRouter);
 
@@ -57,6 +58,11 @@ let routes = [
         path: "/manageUser",
         component: ManageUser,
         name: "manageUser"
+    },
+    {
+        path: "/confirmEmail",
+        component: ConfirmEmail,
+        name: "confirmEmail"
     },
     {
         path: "/createLeague",

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Cache;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
@@ -70,7 +71,8 @@ namespace FantasyCritic.Web.Controllers.API
             _logger.LogInformation("User created a new account with password.");
 
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            await _emailSender.SendConfirmationEmail(user, code);
+            string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
+            await _emailSender.SendConfirmationEmail(user, code, baseURL);
 
             return Created("", user.UserID.ToString());
         }
@@ -80,9 +82,28 @@ namespace FantasyCritic.Web.Controllers.API
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            await _emailSender.SendConfirmationEmail(user, code);
+            string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
+            await _emailSender.SendConfirmationEmail(user, code, baseURL);
 
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserID);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, request.Code);
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+
+            return BadRequest();
         }
 
         [HttpPost]
