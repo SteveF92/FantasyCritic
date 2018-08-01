@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
+    <ProjectReference Include="..\FantasyCritic.SendGrid\FantasyCritic.SendGrid.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="NLog.config">

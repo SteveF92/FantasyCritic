@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
+using FantasyCritic.SendGrid;
 using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -54,6 +55,7 @@ namespace FantasyCritic.Web
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString, userStore);
             var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
+            SendGridEmailSender sendGridEmailSender = new SendGridEmailSender();
 
             services.AddHttpClient();
 
@@ -66,7 +68,7 @@ namespace FantasyCritic.Web
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticService>();
 
-            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<IEmailSender>(factory => sendGridEmailSender);
             services.AddTransient<ISMSSender, SMSSender>();
             services.AddTransient<ITokenService>(factory => tokenService);
             services.AddTransient<IClock>(factory => SystemClock.Instance);
