@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Web.Extensions;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Responses;
@@ -68,13 +69,20 @@ namespace FantasyCritic.Web.Controllers.API
 
             _logger.LogInformation("User created a new account with password.");
 
-            //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            //var callbackUrl = Url.EmailConfirmationLink(user.UserID.ToString(), code, Request.Scheme);
-            //await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            await _emailSender.SendConfirmationEmail(user, code);
 
             return Created("", user.UserID.ToString());
+        }
 
-            // If we got this far, something failed, redisplay form
+        [HttpPost]
+        public async Task<IActionResult> ResendConfirmationEmail()
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            await _emailSender.SendConfirmationEmail(user, code);
+
+            return Ok();
         }
 
         [HttpPost]
