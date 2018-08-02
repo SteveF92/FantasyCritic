@@ -27,13 +27,15 @@ namespace FantasyCritic.Web.Controllers.API
     public class AccountController : Controller
     {
         private readonly FantasyCriticUserManager _userManager;
+        private readonly SignInManager<FantasyCriticUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly ITokenService _tokenService;
 
-        public AccountController(FantasyCriticUserManager userManager, IEmailSender emailSender, ILogger<AccountController> logger, ITokenService tokenService)
+        public AccountController(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager, IEmailSender emailSender, ILogger<AccountController> logger, ITokenService tokenService)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
             _tokenService = tokenService;
@@ -159,6 +161,12 @@ namespace FantasyCritic.Web.Controllers.API
         {
             var user = await _userManager.FindByEmailAsync(model.EmailAddress);
             if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
+            if (!result.Succeeded)
             {
                 return BadRequest();
             }
