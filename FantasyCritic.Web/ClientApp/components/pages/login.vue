@@ -24,9 +24,9 @@
                     </div>
 
                 </form>
-                <!--<p>
+                <p>
                     <router-link :to="{ name: 'forgotPassword' }">Forgot your password?</router-link>
-                </p>-->
+                </p>
             </div>
         </div>
     </div>

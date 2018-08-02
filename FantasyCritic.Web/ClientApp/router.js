@@ -13,6 +13,8 @@ import CreateLeague from "components/pages/createLeague";
 import League from "components/pages/league";
 import Publisher from "components/pages/publisher";
 import ConfirmEmail from "components/pages/confirmEmail";
+import ForgotPassword from "components/pages/forgotPassword";
+import ResetPassword from "components/pages/resetPassword";
 
 Vue.use(VueRouter);
 
@@ -26,6 +28,22 @@ let routes = [
         path: "/login",
         component: Login,
         name: "login",
+        meta: {
+            isPublic: true
+        }
+    },
+    {
+        path: "/forgotPassword",
+        component: ForgotPassword,
+        name: "forgotPassword",
+        meta: {
+            isPublic: true
+        }
+    },
+    {
+        path: "/resetPassword",
+        component: ResetPassword,
+        name: "resetPassword",
         meta: {
             isPublic: true
         }
