@@ -19,7 +19,7 @@ namespace FantasyCritic.SendGrid
             var plainTextContent = message;
             var htmlContent = "";
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            await client.SendEmailAsync(msg);
+            var response = await client.SendEmailAsync(msg);
         }
     }
 }

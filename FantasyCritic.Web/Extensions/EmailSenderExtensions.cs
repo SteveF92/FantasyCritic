@@ -21,5 +21,15 @@ namespace FantasyCritic.Web.Extensions
 
             await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
         }
+
+        public static async Task SendForgotPasswordEmail(this IEmailSender emailSender, FantasyCriticUser user, string resetCode, string baseURL)
+        {
+            string emailAddress = user.EmailAddress;
+            string emailSubject = "FantasyCritic - Reset Your Password.";
+            string link = $"{baseURL}/#/confirmEmail?UserID={user.UserID}&Code={UrlEncoder.Default.Encode(resetCode)}";
+            string emailBody = $"Please use this code to confirm your FantasyCritic account:\n {link}";
+
+            await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
+        }
     }
 }

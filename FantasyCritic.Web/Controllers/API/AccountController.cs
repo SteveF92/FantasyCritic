@@ -16,6 +16,7 @@ using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -84,6 +85,52 @@ namespace FantasyCritic.Web.Controllers.API
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
             await _emailSender.SendConfirmationEmail(user, code, baseURL);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(request.EmailAddress);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                return Ok();
+            }
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
+            await _emailSender.SendForgotPasswordEmail(user, code, baseURL);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(request.EmailAddress);
+            if (user == null)
+            {
+                return Ok();
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, request.Code, request.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
 
             return Ok();
         }
