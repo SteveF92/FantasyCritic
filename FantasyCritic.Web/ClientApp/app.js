@@ -13,6 +13,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootswatch/dist/superhero/bootstrap.css';
 
 import 'bootstrap/dist/js/bootstrap.bundle.js';
+
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
 
