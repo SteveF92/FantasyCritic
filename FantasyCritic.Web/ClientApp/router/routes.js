@@ -1,9 +1,27 @@
-import CounterExample from 'components/counter-example'
-import FetchData from 'components/fetch-data'
-import HomePage from 'components/home-page'
+import Home from "components/pages/home";
+import Login from "components/pages/login";
+import ForgotPassword from "components/pages/forgotPassword";
 
 export const routes = [
-  { name: 'home', path: '/', component: HomePage, display: 'Home', icon: 'home' },
-  { name: 'counter', path: '/counter', component: CounterExample, display: 'Counter', icon: 'graduation-cap' },
-  { name: 'fetch-data', path: '/fetch-data', component: FetchData, display: 'Fetch data', icon: 'list' }
-]
+  {
+    path: "/",
+    component: Home,
+    name: "home"
+  },
+  {
+    path: "/login",
+    component: Login,
+    name: "login",
+    meta: {
+      isPublic: true
+    }
+  },
+  {
+    path: "/forgotPassword",
+    component: ForgotPassword,
+    name: "forgotPassword",
+    meta: {
+      isPublic: true
+    }
+  }
+];

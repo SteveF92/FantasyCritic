@@ -1,29 +1,39 @@
 <template>
-    <div id="app" class="container-fluid">
-        <div class="row">
-            <div class="col-md-3">
-                <nav-menu params="route: route"></nav-menu>
-            </div>
-            <div class="col-sm-9">
-                <router-view></router-view>
-            </div>
-        </div>
+  <div id="vue-app">
+    <div id="top-nav-bar">
+      <top-navbar></top-navbar>
     </div>
+    <div class="container-fluid">
+      <div class="row">
+        <main class="col-12">
+          <router-view></router-view>
+        </main>
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted">Fantasy Critic - Alpha Version</span>
+      </div>
+    </footer>
+  </div>
 </template>
 
 <script>
-    import NavMenu from './nav-menu'
+  import TopNavbar from "components/modules/topNavbar";
 
-    export default {
-      components: {
-        'nav-menu': NavMenu
-      },
+  export default {
+    components: {
+      TopNavbar
+    },
+    mounted() {
 
-      data () {
-        return {}
-      }
     }
+  };
 </script>
 
 <style>
+  [v-cloak] {
+    display: none;
+  }
 </style>
+
