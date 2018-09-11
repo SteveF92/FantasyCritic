@@ -97,7 +97,7 @@ export default {
       localStorage.removeItem('jwt_expiration');
       state.jwt = null;
       state.expiration = null;
-      axios.defaults.headers.common['Authorization'] = "";
+      delete axios.defaults.headers.common["Authorization"];
       state.userInfo = {};
     },
     setRedirect(state, path) {
