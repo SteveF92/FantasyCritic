@@ -8,6 +8,8 @@ import App from 'components/app-root';
 import { FontAwesomeIcon } from './icons';
 import Toasted from 'vue-toasted';
 
+import "./filters";
+
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootswatch/dist/superhero/bootstrap.css';

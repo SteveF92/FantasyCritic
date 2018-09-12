@@ -13,7 +13,7 @@
                     <tr>
                         <th scope="col">Game</th>
                         <th scope="col">Critic</th>
-                        <th scope="col">Fantasy</th>
+                        <th scope="col">Points</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,7 +77,15 @@
     }
 </style>
 <style>
-    .playerTable table tbody tr td {
-        height: 46px;
-    } 
+  .playerTable table thead tr th {
+    height: 35px;
+    padding: 5px;
+  } 
+  .playerTable table tbody tr td {
+    height: 35px;
+    padding: 5px;
+  }
+  .playerTable table tbody tr td.score{
+    text-align: center;
+  } 
 </style>

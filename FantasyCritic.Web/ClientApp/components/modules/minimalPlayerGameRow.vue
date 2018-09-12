@@ -1,8 +1,8 @@
 <template>
-    <tr>
+    <tr class="minimal-game-row">
         <td>{{game.gameName}}</td>
-        <td>{{game.criticScore}}</td>
-        <td>{{game.fantasyScore}}</td>
+        <td class="score">{{game.criticScore | score}}</td>
+        <td class="score">{{game.fantasyScore | score}}</td>
     </tr>
 </template>
 <script>
@@ -18,3 +18,8 @@
         }
     }
 </script>
+<style>
+  .minimal-game-row td {
+    font-size: 10pt;
+  }
+</style>
