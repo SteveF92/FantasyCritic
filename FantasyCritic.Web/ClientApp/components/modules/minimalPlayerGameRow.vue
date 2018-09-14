@@ -10,7 +10,7 @@
         Not linked to Master Game
       </span>
 
-      <span v-if="game.willNotRelease" class="game-status">
+      <span v-if="!game.willRelease && game.linked" class="game-status">
         Will not Release
       </span>
     </td>
