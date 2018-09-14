@@ -1,9 +1,10 @@
 <template>
-    <tr class="minimal-game-row">
-        <td>{{game.gameName}}</td>
-        <td class="score">{{game.criticScore | score}}</td>
-        <td class="score">{{game.fantasyScore | score}}</td>
-    </tr>
+  <tr class="minimal-game-row">
+    <td class="type-column">D</td>
+    <td class="game-column">{{game.gameName}}</td>
+    <td class="score-column">{{game.criticScore | score}}</td>
+    <td class="score-column">{{game.fantasyScore | score}}</td>
+  </tr>
 </template>
 <script>
     import Vue from "vue";

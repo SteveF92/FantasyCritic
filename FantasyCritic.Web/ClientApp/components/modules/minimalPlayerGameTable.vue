@@ -4,16 +4,17 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col" colspan="3">
+                        <th scope="col" colspan="4">
                             {{publisher.publisherName}}
                             <br/>
                             Player: {{publisher.playerName}}
                         </th>
                     </tr>
                     <tr>
-                        <th scope="col">Game</th>
-                        <th scope="col">Critic</th>
-                        <th scope="col">Points</th>
+                      <th scope="col" class="type-column">Type</th>
+                      <th scope="col" class="game-column">Game</th>
+                      <th scope="col" class="score-column">Critic</th>
+                      <th scope="col" class="score-column">Points</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,7 +86,15 @@
     height: 35px;
     padding: 5px;
   }
-  .playerTable table tbody tr td.score{
+  .type-column {
+    width: 30px;
     text-align: center;
-  } 
+  }
+  .game-column {
+
+  }
+  .score-column {
+    width: 30px;
+    text-align: center;
+  }
 </style>

@@ -39,7 +39,9 @@
 
         <div v-if="leagueYear">
             <h3>Summary</h3>
-            <leagueGameSummary  :leagueYear="leagueYear"></leagueGameSummary>
+            <div class="league-summary">
+              <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
+            </div>
         </div>
 
         <div v-if="league.invitedPlayers.length > 0">
@@ -203,3 +205,10 @@
         }
     }
 </script>
+<style>
+  .league-summary {
+    margin: auto;
+    width: 80%;
+    left: 10%;
+  }
+</style>
