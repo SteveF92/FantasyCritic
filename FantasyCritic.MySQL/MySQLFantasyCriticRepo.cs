@@ -251,7 +251,7 @@ namespace FantasyCritic.MySQL
                     return Maybe<Publisher>.None;
                 }
 
-                IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID);
+                IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
                 var user = await _userStore.FindByIdAsync(publisherEntity.UserID.ToString(), CancellationToken.None);
                 var league = await GetLeagueByID(publisherEntity.LeagueID);
 
@@ -280,7 +280,7 @@ namespace FantasyCritic.MySQL
                     return Maybe<Publisher>.None;
                 }
 
-                IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID);
+                IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
                 var domainPublisher = publisherEntity.ToDomain(league, user, domainGames);
                 return domainPublisher;
             }
@@ -431,7 +431,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<PublisherGame>> GetPublisherGames(Guid publisherID)
+        public async Task<IReadOnlyList<PublisherGame>> GetPublisherGames(Guid publisherID, int leagueYear)
         {
             var query = new
             {
@@ -447,19 +447,13 @@ namespace FantasyCritic.MySQL
                 List<PublisherGame> domainGames = new List<PublisherGame>();
                 foreach (var entity in gameEntities)
                 {
-                    var publisher = await GetPublisher(publisherID);
-                    if (publisher.HasNoValue)
-                    {
-                        throw new Exception($"Cannot find published with ID: {publisher}");
-                    }
-
                     Maybe<MasterGame> masterGame = null;
                     if (entity.MasterGameID.HasValue)
                     {
                         masterGame = await GetMasterGame(entity.MasterGameID.Value);
                     }
 
-                    domainGames.Add(entity.ToDomain(masterGame, publisher.Value.Year));
+                    domainGames.Add(entity.ToDomain(masterGame, leagueYear));
                 }
 
                 return domainGames;
