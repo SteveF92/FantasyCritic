@@ -1,7 +1,19 @@
 <template>
   <tr class="minimal-game-row">
     <td class="type-column">{{game.type}}</td>
-    <td class="game-column">{{game.gameName}}</td>
+    <td class="game-column">
+      <span>
+        {{game.gameName}}
+      </span>
+
+      <span v-if="!game.linked" class="game-status">
+        Not linked to Master Game
+      </span>
+
+      <span v-if="game.willNotRelease" class="game-status">
+        Will not Release
+      </span>
+    </td>
     <td class="score-column">{{game.criticScore | score}}</td>
     <td class="score-column">{{game.fantasyScore | score}}</td>
   </tr>
@@ -22,5 +34,10 @@
 <style>
   .minimal-game-row td {
     font-size: 10pt;
+  }
+  .game-status {
+    float: right;
+    color: #B1B1B1;
+    font-style: italic;
   }
 </style>
