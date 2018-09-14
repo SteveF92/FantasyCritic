@@ -13,6 +13,7 @@ using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
 {
@@ -22,11 +23,13 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
+        private readonly IClock _clock;
 
-        public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService)
+        public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IClock clock)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
+            _clock = clock;
         }
 
         public async Task<IActionResult> LeagueOptions()
@@ -107,7 +110,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
 
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, publishersInLeague);
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, publishersInLeague, _clock);
             return Ok(leagueViewModel);
         }
 
@@ -140,7 +143,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Requested player is not in requested league.");
             }
 
-            var publisherViewModel = new PublisherViewModel(publisher.Value);
+            var publisherViewModel = new PublisherViewModel(publisher.Value, _clock);
             return Ok(publisherViewModel);
         }
 

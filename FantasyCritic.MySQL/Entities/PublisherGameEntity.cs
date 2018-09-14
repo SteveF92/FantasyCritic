@@ -41,9 +41,9 @@ namespace FantasyCritic.MySQL.Entities
         public decimal? FantasyScore { get; set; }
         public Guid? MasterGameID { get; set; }
 
-        public PublisherGame ToDomain(Maybe<MasterGame> masterGame)
+        public PublisherGame ToDomain(Maybe<MasterGame> masterGame, int leagueYear)
         {
-            PublisherGame domain = new PublisherGame(PublisherGameID, GameName, Instant.FromDateTimeUtc(Timestamp), Waiver, AntiPick, FantasyScore, masterGame);
+            PublisherGame domain = new PublisherGame(PublisherGameID, GameName, Instant.FromDateTimeUtc(Timestamp), Waiver, AntiPick, FantasyScore, masterGame, leagueYear);
             return domain;
         }
     }

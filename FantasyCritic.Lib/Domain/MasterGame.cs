@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGame
     {
-        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore)
+        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -15,6 +15,7 @@ namespace FantasyCritic.Lib.Domain
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
             CriticScore = criticScore;
+            MinimumReleaseYear = minimumReleaseYear;
         }
 
         public Guid MasterGameID { get; }
@@ -23,5 +24,23 @@ namespace FantasyCritic.Lib.Domain
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
         public decimal? CriticScore { get; }
+        public int MinimumReleaseYear { get; }
+
+        public bool IsReleased(IClock clock)
+        {
+            if (!ReleaseDate.HasValue)
+            {
+                return false;
+            }
+
+            Instant now = clock.GetCurrentInstant();
+            LocalDate currentDate = now.InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).LocalDateTime.Date;
+            if (currentDate >= ReleaseDate.Value)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

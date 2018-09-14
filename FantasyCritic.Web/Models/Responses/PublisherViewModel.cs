@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FantasyCritic.Lib.Domain;
+using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherViewModel
     {
-        public PublisherViewModel(Publisher publisher)
+        public PublisherViewModel(Publisher publisher, IClock clock)
         {
             PublisherID = publisher.PublisherID;
             LeagueID = publisher.League.LeagueID;
@@ -16,7 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             PlayerName = publisher.User.UserName;
             Year = publisher.Year;
             DraftPosition = publisher.DraftPosition;
-            Games = publisher.PublisherGames.OrderBy(x => x.Timestamp).Select(x => new PublisherGameViewModel(x)).ToList();
+            Games = publisher.PublisherGames.OrderBy(x => x.Timestamp).Select(x => new PublisherGameViewModel(x, clock)).ToList();
         }
 
         public Guid PublisherID { get; }

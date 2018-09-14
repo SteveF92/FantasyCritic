@@ -447,13 +447,19 @@ namespace FantasyCritic.MySQL
                 List<PublisherGame> domainGames = new List<PublisherGame>();
                 foreach (var entity in gameEntities)
                 {
+                    var publisher = await GetPublisher(publisherID);
+                    if (publisher.HasNoValue)
+                    {
+                        throw new Exception($"Cannot find published with ID: {publisher}");
+                    }
+
                     Maybe<MasterGame> masterGame = null;
                     if (entity.MasterGameID.HasValue)
                     {
                         masterGame = await GetMasterGame(entity.MasterGameID.Value);
                     }
 
-                    domainGames.Add(entity.ToDomain(masterGame));
+                    domainGames.Add(entity.ToDomain(masterGame, publisher.Value.Year));
                 }
 
                 return domainGames;

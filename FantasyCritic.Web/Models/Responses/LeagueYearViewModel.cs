@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using FantasyCritic.Lib.Domain;
+using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueYearViewModel
     {
-        public LeagueYearViewModel(LeagueYear leagueYear, IEnumerable<Publisher> publishers)
+        public LeagueYearViewModel(LeagueYear leagueYear, IEnumerable<Publisher> publishers, IClock clock)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -20,7 +21,7 @@ namespace FantasyCritic.Web.Models.Responses
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             WaiverSystem = leagueYear.Options.WaiverSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Value;
-            Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x)).ToList();
+            Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock)).ToList();
         }
 
         public Guid LeagueID { get; }

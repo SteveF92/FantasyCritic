@@ -1,6 +1,6 @@
 <template>
   <tr class="minimal-game-row">
-    <td class="type-column">D</td>
+    <td class="type-column">{{game.type}}</td>
     <td class="game-column">{{game.gameName}}</td>
     <td class="score-column">{{game.criticScore | score}}</td>
     <td class="score-column">{{game.fantasyScore | score}}</td>

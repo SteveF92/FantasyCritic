@@ -8,7 +8,9 @@ namespace FantasyCritic.Lib.Domain
 {
     public class PublisherGame
     {
-        public PublisherGame(Guid publisherGameID, string gameName, Instant timestamp, bool waiver, bool antiPick, decimal? fantasyScore, Maybe<MasterGame> masterGame)
+        private readonly int _leagueYear;
+
+        public PublisherGame(Guid publisherGameID, string gameName, Instant timestamp, bool waiver, bool antiPick, decimal? fantasyScore, Maybe<MasterGame> masterGame, int leagueYear)
         {
             PublisherGameID = publisherGameID;
             GameName = gameName;
@@ -17,6 +19,7 @@ namespace FantasyCritic.Lib.Domain
             AntiPick = antiPick;
             FantasyScore = fantasyScore;
             MasterGame = masterGame;
+            _leagueYear = leagueYear;
         }
 
         public Guid PublisherGameID { get; }
@@ -26,5 +29,20 @@ namespace FantasyCritic.Lib.Domain
         public bool AntiPick { get; }
         public decimal? FantasyScore { get; }
         public Maybe<MasterGame> MasterGame { get; }
+
+        public bool WillRelease()
+        {
+            if (MasterGame.HasNoValue)
+            {
+                return false;
+            }
+
+            if (_leagueYear < MasterGame.Value.MinimumReleaseYear)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
