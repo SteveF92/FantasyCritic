@@ -10,9 +10,9 @@
                 </tr>
             </thead>
             <tbody>
-                <playerGameRow v-for="game in games" :game="game" v-if="!game.antiPick && !game.waiver"></playerGameRow>
+                <playerGameRow v-for="game in games" :game="game" v-if="!game.counterPick && !game.waiver"></playerGameRow>
                 <playerGameRow v-for="game in games" :game="game" v-if="game.waiver"></playerGameRow>
-                <playerGameRow v-for="game in games" :game="game" v-if="game.antiPick"></playerGameRow>
+                <playerGameRow v-for="game in games" :game="game" v-if="game.counterPick"></playerGameRow>
             </tbody>
         </table>
     </div>

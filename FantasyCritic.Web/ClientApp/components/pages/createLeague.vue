@@ -19,8 +19,8 @@
                 <input v-model="selectedLeagueOptions.waiverGames" id="waiverGames" name="waiverGames" type="text" class="form-control input" />
             </div>
             <div class="form-group col-md-10">
-                <label for="antiPicks" class="control-label">Number of Anti Picks</label>
-                <input v-model="selectedLeagueOptions.antiPicks" id="antiPicks" name="antiPicks" type="text" class="form-control input" />
+                <label for="counterPicks" class="control-label">Number of Counter Picks</label>
+                <input v-model="selectedLeagueOptions.counterPicks" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
             </div>
             <hr />
 
@@ -81,7 +81,7 @@ export default {
                     leagueName: "",
                     draftGames: "",
                     waiverGames: "",
-                    antiPicks: "",
+                    counterPicks: "",
                     estimatedGameScore: "",
                     initialYear: "",
                     eligibilitySystem: "",

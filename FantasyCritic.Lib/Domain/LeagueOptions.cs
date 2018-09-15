@@ -9,11 +9,11 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
-        public LeagueOptions(int draftGames, int waiverGames, int antiPicks, decimal estimatedGameScore, EligibilitySystem eligibilitySystem, DraftSystem draftSystem, WaiverSystem waiverSystem, ScoringSystem scoringSystem)
+        public LeagueOptions(int draftGames, int waiverGames, int counterPicks, decimal estimatedGameScore, EligibilitySystem eligibilitySystem, DraftSystem draftSystem, WaiverSystem waiverSystem, ScoringSystem scoringSystem)
         {
             DraftGames = draftGames;
             WaiverGames = waiverGames;
-            AntiPicks = antiPicks;
+            CounterPicks = counterPicks;
             EstimatedGameScore = estimatedGameScore;
             EligibilitySystem = eligibilitySystem;
             DraftSystem = draftSystem;
@@ -25,7 +25,7 @@ namespace FantasyCritic.Lib.Domain
         {
             DraftGames = parameters.DraftGames;
             WaiverGames = parameters.WaiverGames;
-            AntiPicks = parameters.AntiPicks;
+            CounterPicks = parameters.CounterPicks;
             EstimatedGameScore = parameters.EstimatedGameScore;
             EligibilitySystem = parameters.EligibilitySystem;
             DraftSystem = parameters.DraftSystem;
@@ -35,7 +35,7 @@ namespace FantasyCritic.Lib.Domain
 
         public int DraftGames { get; }
         public int WaiverGames { get; }
-        public int AntiPicks { get; }
+        public int CounterPicks { get; }
         public decimal EstimatedGameScore { get; }
         public EligibilitySystem EligibilitySystem { get; }
         public DraftSystem DraftSystem { get; }

@@ -11,7 +11,7 @@ namespace FantasyCritic.Web.Models.Requests
         public Guid PublisherID { get; set; }
         public string GameName { get; set; }
         public bool Waiver { get; set; }
-        public bool AntiPick { get; set; }
+        public bool CounterPick { get; set; }
         public Guid? MasterGameID { get; set; }
     }
 }

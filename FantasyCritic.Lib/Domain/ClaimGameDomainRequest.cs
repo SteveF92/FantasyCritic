@@ -9,19 +9,19 @@ namespace FantasyCritic.Lib.Domain
 {
     public class ClaimGameDomainRequest
     {
-        public ClaimGameDomainRequest(Publisher publisher, string gameName, bool waiver, bool antiPick, Maybe<MasterGame> masterGame)
+        public ClaimGameDomainRequest(Publisher publisher, string gameName, bool waiver, bool counterPick, Maybe<MasterGame> masterGame)
         {
             Publisher = publisher;
             GameName = gameName;
             Waiver = waiver;
-            AntiPick = antiPick;
+            CounterPick = counterPick;
             MasterGame = masterGame;
         }
 
         public Publisher Publisher { get; }
         public string GameName { get; }
         public bool Waiver { get; }
-        public bool AntiPick { get; }
+        public bool CounterPick { get; }
         public Maybe<MasterGame> MasterGame { get; }
     }
 }

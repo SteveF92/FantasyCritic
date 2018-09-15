@@ -312,7 +312,7 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID.Value);
             }
 
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.Waiver, request.AntiPick, masterGame);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.Waiver, request.CounterPick, masterGame);
 
             Result result = await _fantasyCriticService.ClaimGame(domainRequest);
             if (result.IsFailure)

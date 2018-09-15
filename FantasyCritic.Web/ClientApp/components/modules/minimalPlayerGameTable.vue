@@ -18,8 +18,8 @@
       <tbody>
         <minimalPlayerGameRow v-for="game in draftGames" :game="game"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in draftFiller"></minimalBlankPlayerGameRow>
-        <minimalPlayerGameRow v-for="game in antiPicks" :game="game"></minimalPlayerGameRow>
-        <minimalBlankPlayerGameRow v-for="blankSpace in antiPickFiller"></minimalBlankPlayerGameRow>
+        <minimalPlayerGameRow v-for="game in counterPicks" :game="game"></minimalPlayerGameRow>
+        <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
         <minimalPlayerGameRow v-for="game in waiverGames" :game="game"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in waiverFiller"></minimalBlankPlayerGameRow>
       </tbody>
@@ -43,10 +43,10 @@
                 return this.publisher.games;
             },
             draftGames() {
-                return _.filter(this.games, { 'antiPick': false, 'waiver': false });
+                return _.filter(this.games, { 'counterPick': false, 'waiver': false });
             },
-            antiPicks() {
-                return _.filter(this.games, { 'antiPick': true });
+            counterPicks() {
+                return _.filter(this.games, { 'counterPick': true });
             },
             waiverGames() {
                 return _.filter(this.games, { 'waiver': true });
@@ -56,9 +56,9 @@
                 var openSlots = this.options.draftSlots - numberDrafted;
                 return openSlots;
             },
-            antiPickFiller() {
-                var numberAntiPicked = this.antiPicks.length;
-                var openSlots = this.options.antiPickSlots - numberAntiPicked;
+            counterPickFiller() {
+                var numberCounterPicked = this.counterPicks.length;
+                var openSlots = this.options.counterPickSlots - numberCounterPicked;
                 return openSlots;
             },
             waiverFiller() {

@@ -23,7 +23,7 @@ namespace FantasyCritic.MySQL.Entities
             GameName = publisherGame.GameName;
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
             Waiver = publisherGame.Waiver;
-            AntiPick = publisherGame.AntiPick;
+            CounterPick = publisherGame.CounterPick;
             FantasyScore = publisherGame.FantasyScore;
 
             if (publisherGame.MasterGame.HasValue)
@@ -37,13 +37,13 @@ namespace FantasyCritic.MySQL.Entities
         public string GameName { get; set; }
         public DateTime Timestamp { get; set; }
         public bool Waiver { get; set; }
-        public bool AntiPick { get; set; }
+        public bool CounterPick { get; set; }
         public decimal? FantasyScore { get; set; }
         public Guid? MasterGameID { get; set; }
 
         public PublisherGame ToDomain(Maybe<MasterGame> masterGame, int leagueYear)
         {
-            PublisherGame domain = new PublisherGame(PublisherGameID, GameName, Instant.FromDateTimeUtc(Timestamp), Waiver, AntiPick, FantasyScore, masterGame, leagueYear);
+            PublisherGame domain = new PublisherGame(PublisherGameID, GameName, Instant.FromDateTimeUtc(Timestamp), Waiver, CounterPick, FantasyScore, masterGame, leagueYear);
             return domain;
         }
     }

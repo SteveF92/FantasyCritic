@@ -82,8 +82,8 @@ namespace FantasyCritic.MySQL
                     entity);
 
                 await connection.ExecuteAsync(
-                    "insert into tblleagueyear(LeagueID,Year,DraftGames,WaiverGames,AntiPicks,EstimatedGameScore,EligibilitySystem,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
-                    "(@LeagueID,@Year,@DraftGames,@WaiverGames,@AntiPicks,@EstimatedGameScore,@EligibilitySystem,@DraftSystem,@WaiverSystem,@ScoringSystem);",
+                    "insert into tblleagueyear(LeagueID,Year,DraftGames,WaiverGames,CounterPicks,EstimatedGameScore,EligibilitySystem,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
+                    "(@LeagueID,@Year,@DraftGames,@WaiverGames,@CounterPicks,@EstimatedGameScore,@EligibilitySystem,@DraftSystem,@WaiverSystem,@ScoringSystem);",
                     leagueYearEntity);
             }
 
@@ -96,8 +96,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblleagueyear(LeagueID,Year,DraftGames,WaiverGames,AntiPicks,EstimatedGameScore,EligibilitySystem,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
-                    "(@LeagueID,@Year,@DraftGames,@WaiverGames,@AntiPicks,@EstimatedGameScore,@EligibilitySystem,@DraftSystem,@WaiverSystem,@ScoringSystem);",
+                    "insert into tblleagueyear(LeagueID,Year,DraftGames,WaiverGames,CounterPicks,EstimatedGameScore,EligibilitySystem,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
+                    "(@LeagueID,@Year,@DraftGames,@WaiverGames,@CounterPicks,@EstimatedGameScore,@EligibilitySystem,@DraftSystem,@WaiverSystem,@ScoringSystem);",
                     leagueYearEntity);
             }
         }
@@ -293,8 +293,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,Waiver,AntiPick,FantasyScore,MasterGameID) VALUES " +
-                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@Waiver,@AntiPick,@FantasyScore,@MasterGameID);",
+                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,Waiver,CounterPick,FantasyScore,MasterGameID) VALUES " +
+                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@Waiver,@CounterPick,@FantasyScore,@MasterGameID);",
                     entity);
             }
         }

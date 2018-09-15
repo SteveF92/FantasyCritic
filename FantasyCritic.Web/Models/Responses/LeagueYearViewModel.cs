@@ -15,7 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
             Year = leagueYear.Year;
             DraftGames = leagueYear.Options.DraftGames;
             WaiverGames = leagueYear.Options.WaiverGames;
-            AntiPicks = leagueYear.Options.AntiPicks;
+            CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedGameScore = leagueYear.Options.EstimatedGameScore;
             EligibilitySystem = leagueYear.Options.EligibilitySystem.Value;
             DraftSystem = leagueYear.Options.DraftSystem.Value;
@@ -28,7 +28,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int Year { get; }
         public int DraftGames { get; }
         public int WaiverGames { get; }
-        public int AntiPicks { get; }
+        public int CounterPicks { get; }
         public decimal EstimatedGameScore { get; }
         public string EligibilitySystem { get; }
         public string DraftSystem { get; }

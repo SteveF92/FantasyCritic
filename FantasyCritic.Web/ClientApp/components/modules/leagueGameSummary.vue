@@ -28,7 +28,7 @@
             options() {
                 var options = {
                     draftSlots: this.leagueYear.draftGames,
-                    antiPickSlots: this.leagueYear.antiPicks,
+                    counterPickSlots: this.leagueYear.counterPicks,
                     waiverSlots: this.leagueYear.waiverGames
                 };
 

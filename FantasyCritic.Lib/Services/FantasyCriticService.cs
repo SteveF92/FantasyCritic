@@ -159,7 +159,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> ClaimGame(ClaimGameDomainRequest request)
         {
-            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.Waiver, request.AntiPick, null, request.MasterGame, request.Publisher.Year);
+            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.Waiver, request.CounterPick, null, request.MasterGame, request.Publisher.Year);
 
             Result claimResult = await CanClaimGame(request);
 
@@ -250,7 +250,7 @@ namespace FantasyCritic.Lib.Services
 
             bool gameAlreadyClaimed = gamesForYear.ContainsGame(request);
 
-            if (!request.Waiver && !request.AntiPick)
+            if (!request.Waiver && !request.CounterPick)
             {
                 if (gameAlreadyClaimed)
                 {
@@ -258,7 +258,7 @@ namespace FantasyCritic.Lib.Services
                 }
 
                 int leagueDraftGames = yearOptions.DraftGames;
-                int userDraftGames = thisPlayersGames.Count(x => !x.Waiver && !x.AntiPick);
+                int userDraftGames = thisPlayersGames.Count(x => !x.Waiver && !x.CounterPick);
                 if (userDraftGames == leagueDraftGames)
                 {
                     return Result.Fail("User's draft spaces are filled.");
@@ -280,20 +280,20 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            if (request.AntiPick)
+            if (request.CounterPick)
             {
-                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.AntiPick && !x.Waiver).ContainsGame(request);
+                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick && !x.Waiver).ContainsGame(request);
 
-                int leagueAntiPicks = yearOptions.AntiPicks;
-                int userAntiPicks = thisPlayersGames.Count(x => x.AntiPick);
-                if (userAntiPicks == leagueAntiPicks)
+                int leagueCounterPicks = yearOptions.CounterPicks;
+                int userCounterPicks = thisPlayersGames.Count(x => x.CounterPick);
+                if (userCounterPicks == leagueCounterPicks)
                 {
-                    return Result.Fail("User's anti pick spaces are filled.");
+                    return Result.Fail("User's counter pick spaces are filled.");
                 }
 
                 if (!otherPlayerHasDraftGame)
                 {
-                    return Result.Fail("Cannot antipick a game that no other player has drafted.");
+                    return Result.Fail("Cannot counterpick a game that no other player has drafted.");
                 }
             }
 
