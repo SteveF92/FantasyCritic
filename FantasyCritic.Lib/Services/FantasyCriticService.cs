@@ -44,6 +44,11 @@ namespace FantasyCritic.Lib.Services
             return options;
         }
 
+        public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
+        {
+            return _fantasyCriticRepo.GetLeagueYears(year);
+        }
+
         public async Task<League> CreateLeague(LeagueCreationParameters parameters)
         {
             LeagueOptions options = new LeagueOptions(parameters);

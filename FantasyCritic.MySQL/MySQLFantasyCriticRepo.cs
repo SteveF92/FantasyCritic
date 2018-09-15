@@ -69,6 +69,32 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var queryObject = new
+                {
+                    year
+                };
+
+                IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tblleagueyear where Year = @year", queryObject);
+                List<LeagueYear> leagueYears = new List<LeagueYear>();
+                foreach (var entity in yearEntities)
+                {
+                    var league = await GetLeagueByID(entity.LeagueID);
+                    if (league.HasNoValue)
+                    {
+                        throw new Exception($"Cannot find league for league-year (should never happen) LeagueID: {entity.LeagueID}");
+                    }
+                    LeagueYear leagueYear = entity.ToDomain(league.Value);
+                    leagueYears.Add(leagueYear);
+                }
+
+                return leagueYears;
+            }
+        }
+
         public async Task CreateLeague(League league, int initialYear, LeagueOptions options)
         {
             LeagueEntity entity = new LeagueEntity(league);
