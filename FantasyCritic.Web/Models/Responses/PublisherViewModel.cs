@@ -17,7 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             PlayerName = publisher.User.UserName;
             Year = publisher.Year;
             DraftPosition = publisher.DraftPosition;
-            Games = publisher.PublisherGames.OrderBy(x => x.CounterPick).ThenBy(x => x.Timestamp).Select(x => new PublisherGameViewModel(x, clock)).ToList();
+            Games = publisher.PublisherGames.OrderBy(x => x.Timestamp).Select(x => new PublisherGameViewModel(x, clock)).ToList();
         }
 
         public Guid PublisherID { get; }

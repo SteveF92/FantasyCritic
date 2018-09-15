@@ -18,10 +18,10 @@
       <tbody>
         <minimalPlayerGameRow v-for="game in draftGames" :game="game"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in draftFiller"></minimalBlankPlayerGameRow>
-        <minimalPlayerGameRow v-for="game in counterPicks" :game="game"></minimalPlayerGameRow>
-        <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
         <minimalPlayerGameRow v-for="game in waiverGames" :game="game"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in waiverFiller"></minimalBlankPlayerGameRow>
+        <minimalPlayerGameRow v-for="game in counterPicks" :game="game"></minimalPlayerGameRow>
+        <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
       </tbody>
     </table>
   </div>
