@@ -9,8 +9,8 @@
     </div>
 
     <div class="row">
-      <h2 class="col-11">{{ league.leagueName }}</h2>
-      <b-form-select v-model="activeYear" :options="league.years" class="col-1" />
+      <h2>{{ league.leagueName }}</h2>
+      <b-form-select v-model="activeYear" :options="league.years" class="year-selector" />
     </div>
 
     <div v-if="league.outstandingInvite">
@@ -210,5 +210,10 @@
     margin: auto;
     width: 80%;
     left: 10%;
+  }
+  .year-selector {
+    width: 100px;
+    position: absolute;
+    right: 0px;
   }
 </style>
