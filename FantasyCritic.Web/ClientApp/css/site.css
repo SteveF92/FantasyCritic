@@ -26,3 +26,11 @@ html {
     max-width: 680px;
     padding: 0 15px;
 }
+
+tr.table-primary, tr.table-primary th, tr.table-primary td {
+    background-color: #DF691A;
+}
+
+tr.table-secondary, tr.table-secondary th, tr.table-secondary td {
+    background-color: #415262;
+}

@@ -1,6 +1,5 @@
 <template>
-  <tr class="minimal-game-row">
-    <td class="type-column">{{game.type}}</td>
+  <tr class="minimal-game-row table-default">
     <td class="game-column">
       <span>
         {{game.gameName}}

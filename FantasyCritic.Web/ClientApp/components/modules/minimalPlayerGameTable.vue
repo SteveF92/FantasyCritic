@@ -1,33 +1,31 @@
 <template>
-    <div>
-        <div class="playerTable">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col" colspan="4">
-                            {{publisher.publisherName}}
-                            <br/>
-                            Player: {{publisher.playerName}}
-                        </th>
-                    </tr>
-                    <tr>
-                      <th scope="col" class="type-column">Type</th>
-                      <th scope="col" class="game-column">Game</th>
-                      <th scope="col" class="score-column">Critic</th>
-                      <th scope="col" class="score-column">Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <minimalPlayerGameRow v-for="game in draftGames" :game="game"></minimalPlayerGameRow>
-                    <minimalBlankPlayerGameRow v-for="blankSpace in draftFiller"></minimalBlankPlayerGameRow>
-                    <minimalPlayerGameRow v-for="game in antiPicks" :game="game"></minimalPlayerGameRow>
-                    <minimalBlankPlayerGameRow v-for="blankSpace in antiPickFiller"></minimalBlankPlayerGameRow>
-                    <minimalPlayerGameRow v-for="game in waiverGames" :game="game"></minimalPlayerGameRow>
-                    <minimalBlankPlayerGameRow v-for="blankSpace in waiverFiller"></minimalBlankPlayerGameRow>
-                </tbody>
-            </table>
-        </div>
-    </div>
+  <div class="player-table">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr class="table-primary">
+          <th scope="col" colspan="4">
+            {{publisher.publisherName}}
+            <br />
+            Player: {{publisher.playerName}}
+          </th>
+        </tr>
+        <tr class="table-secondary">
+          <th scope="col" class="game-column">Game</th>
+          <th scope="col" class="score-column">Critic</th>
+          <th scope="col" class="score-column">Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        <minimalPlayerGameRow v-for="game in draftGames" :game="game"></minimalPlayerGameRow>
+        <minimalBlankPlayerGameRow v-for="blankSpace in draftFiller"></minimalBlankPlayerGameRow>
+        <minimalPlayerGameRow v-for="game in antiPicks" :game="game"></minimalPlayerGameRow>
+        <minimalBlankPlayerGameRow v-for="blankSpace in antiPickFiller"></minimalBlankPlayerGameRow>
+        <minimalPlayerGameRow v-for="game in waiverGames" :game="game"></minimalPlayerGameRow>
+        <minimalBlankPlayerGameRow v-for="blankSpace in waiverFiller"></minimalBlankPlayerGameRow>
+      </tbody>
+    </table>
+  </div>
+    
 </template>
 <script>
     import Vue from "vue";
@@ -72,17 +70,17 @@
     }
 </script>
 <style scoped>
-    .playerTable {
+    .player-table {
         margin-left: 3px;
         margin-right: 3px;
     }
 </style>
 <style>
-  .playerTable table thead tr th {
+  .player-table table thead tr th {
     height: 35px;
     padding: 5px;
-  } 
-  .playerTable table tbody tr td {
+  }
+  .player-table table tbody tr td {
     height: 35px;
     padding: 5px;
   }

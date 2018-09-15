@@ -1,44 +1,44 @@
 <template>
-    <div>
-        <h2>Welcome to Fantasy Critic!</h2>
-        <div class="col-md-4">
-            <b-button variant="primary" :to="{ name: 'createLeague' }" class="nav-link">Create a League</b-button>
+  <div>
+    <h2>Welcome to Fantasy Critic!</h2>
+    <div class="col-md-4">
+      <b-button variant="primary" :to="{ name: 'createLeague' }" class="nav-link">Create a League</b-button>
 
-            <div v-if="anyInvitedLeagues">
-                <h3>League Invites</h3>
-                <ul>
-                    <li v-for="league in invitedLeagues">
-                        <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-                    </li>
-                </ul>
-                <hr />
-            </div>
+      <div v-if="anyInvitedLeagues">
+        <h3>League Invites</h3>
+        <ul>
+          <li v-for="league in invitedLeagues">
+            <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+          </li>
+        </ul>
+        <hr />
+      </div>
 
-            <div v-if="anyManagedLeagues">
-                <h3>Leagues I Manage</h3>
-                <ul>
-                    <li v-for="league in myLeagues" v-if="league.isManager">
-                        <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-                    </li>
-                </ul>
-                <hr />
-            </div>
+      <div v-if="anyManagedLeagues">
+        <h3>Leagues I Manage</h3>
+        <ul>
+          <li v-for="league in myLeagues" v-if="league.isManager">
+            <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+          </li>
+        </ul>
+        <hr />
+      </div>
 
-            <div v-if="anyPlayerLeagues">
-                <h3>Leagues I Play In</h3>
-                <ul>
-                    <li v-for="league in myLeagues" v-if="!league.isManager">
-                        <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-                    </li>
-                </ul>
-                <hr />
-            </div>
+      <div v-if="anyPlayerLeagues">
+        <h3>Leagues I Play In</h3>
+        <ul>
+          <li v-for="league in myLeagues" v-if="!league.isManager">
+            <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+          </li>
+        </ul>
+        <hr />
+      </div>
 
-            <div v-if="noLeagues">
-                You are not part of any leagues! Why not start one?
-            </div>
-        </div>
+      <div v-if="noLeagues">
+        You are not part of any leagues! Why not start one?
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
