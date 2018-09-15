@@ -18,16 +18,6 @@ namespace FantasyCritic.Web.Models.Responses
             Waiver = publisherGame.Waiver;
             AntiPick = publisherGame.AntiPick;
 
-            Type = "D";
-            if (publisherGame.Waiver)
-            {
-                Type = "W";
-            }
-            if (publisherGame.AntiPick)
-            {
-                Type = "CP";
-            }
-
             FantasyScore = publisherGame.FantasyScore;
 
             if (publisherGame.MasterGame.HasValue)
@@ -52,7 +42,6 @@ namespace FantasyCritic.Web.Models.Responses
 
         public string GameName { get; }
         public DateTime Timestamp { get; }
-        public string Type { get; }
         public bool Waiver { get; }
         public bool AntiPick { get; }
         public string EstimatedReleaseDate { get; }

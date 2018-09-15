@@ -1,8 +1,11 @@
 <template>
-  <tr class="minimal-game-row table-default">
+  <tr class="minimal-game-row table-default" v-bind:class="{ 'table-danger': game.antiPick }">
     <td class="game-column">
       <span>
         {{game.gameName}}
+      </span>
+      <span v-if="game.antiPick" class="counter-pick-text">
+        (Counter-Pick)
       </span>
 
       <span v-if="!game.linked" class="game-status">
@@ -33,6 +36,10 @@
 <style>
   .minimal-game-row td {
     font-size: 10pt;
+  }
+  .counter-pick-text {
+    color: #B1B1B1;
+    font-style: italic;
   }
   .game-status {
     float: right;
