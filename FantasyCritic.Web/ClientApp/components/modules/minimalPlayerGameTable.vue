@@ -70,10 +70,18 @@
     }
 </script>
 <style scoped>
-    .player-table {
-        margin-left: 3px;
-        margin-right: 3px;
-    }
+  .player-table {
+    margin-left: 3px;
+    margin-right: 7px;
+    border-radius: 2px;
+    border-color: #4E5D6C;
+    border-width: 5px;
+    border-style: solid;
+    margin-bottom: 10px;
+  }
+  .player-table table {
+    margin-bottom: 0px;
+  }
 </style>
 <style>
   .player-table table thead tr th {
