@@ -95,6 +95,11 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public Task UpdateFantasyScores(Dictionary<Guid, decimal?> publisherGameScores)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task CreateLeague(League league, int initialYear, LeagueOptions options)
         {
             LeagueEntity entity = new LeagueEntity(league);

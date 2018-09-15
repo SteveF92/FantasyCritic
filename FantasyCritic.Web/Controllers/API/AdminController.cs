@@ -60,5 +60,20 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateFantasyPoints([FromBody] int year)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
+            if (!isAdmin)
+            {
+                return StatusCode(403);
+            }
+
+            await _fantasyCriticService.UpdateFantasyScores(year);
+
+            return Ok();
+        }
     }
 }

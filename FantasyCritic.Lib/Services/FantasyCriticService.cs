@@ -178,6 +178,27 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
+        public async Task UpdateFantasyScores(int year)
+        {
+            Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
+
+            IReadOnlyList<LeagueYear> activeLeagueYears = await GetLeagueYears(year);
+            foreach (var leagueYear in activeLeagueYears)
+            {
+                var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, year);
+                foreach (var publisher in publishersInLeague)
+                {
+                    foreach (var publisherGame in publisher.PublisherGames)
+                    {
+                        decimal? fantasyScore = leagueYear.Options.ScoringSystem.ScoreGame(publisherGame, _clock);
+                        publisherGameScores.Add(publisherGame.PublisherGameID, fantasyScore);
+                    }
+                }
+            }
+
+            await _fantasyCriticRepo.UpdateFantasyScores(publisherGameScores);
+        }
+
         public  Task<IReadOnlyList<int>> GetOpenYears()
         {
             return _fantasyCriticRepo.GetOpenYears();
