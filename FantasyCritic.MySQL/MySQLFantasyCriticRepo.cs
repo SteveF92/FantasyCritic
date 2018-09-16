@@ -95,9 +95,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task UpdateFantasyScores(Dictionary<Guid, decimal?> publisherGameScores)
+        public async Task UpdateFantasyScores(Dictionary<Guid, decimal?> publisherGameScores)
         {
-            throw new NotImplementedException();
+            List<PublisherScoreUpdateEntity> updateEntities = publisherGameScores.Select(x => new PublisherScoreUpdateEntity(x)).ToList();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "update tblpublishergame SET FantasyScore = @FantasyScore where PublisherGameID = @PublisherGameID;",
+                    updateEntities);
+            }
         }
 
         public async Task CreateLeague(League league, int initialYear, LeagueOptions options)
@@ -108,7 +114,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblleague(LeagueID,LeagueName,LeagueManager,) VALUES " +
+                    "insert into tblleague(LeagueID,LeagueName,LeagueManager) VALUES " +
                     "(@LeagueID,@LeagueName,@LeagueManager);",
                     entity);
 

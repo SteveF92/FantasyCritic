@@ -44,5 +44,7 @@ namespace FantasyCritic.Lib.Domain
 
             return true;
         }
+
+        public override string ToString() => GameName;
     }
 }

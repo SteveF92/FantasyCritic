@@ -62,7 +62,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateFantasyPoints([FromBody] int year)
+        public async Task<IActionResult> UpdateFantasyPoints([FromBody] UpdateFantasyPointsRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             bool isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
@@ -70,8 +70,8 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return StatusCode(403);
             }
-
-            await _fantasyCriticService.UpdateFantasyScores(year);
+            
+            await _fantasyCriticService.UpdateFantasyScores(request.Year);
 
             return Ok();
         }
