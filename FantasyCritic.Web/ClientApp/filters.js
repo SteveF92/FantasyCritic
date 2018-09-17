@@ -1,6 +1,9 @@
 import Vue from 'vue';
 
 Vue.filter('score', function (value, decimals) {
+  if (value === 0) {
+    return 0;
+  }
   if (!value) {
     return "--";
   }
