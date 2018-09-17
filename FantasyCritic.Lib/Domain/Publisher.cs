@@ -26,5 +26,19 @@ namespace FantasyCritic.Lib.Domain
         public string PublisherName { get; }
         public int? DraftPosition { get; }
         public IReadOnlyList<PublisherGame> PublisherGames { get; }
+
+        public decimal TotalFantasyScore
+        {
+            get
+            {
+                var score = PublisherGames.Sum(x => x.FantasyScore);
+                if (!score.HasValue)
+                {
+                    return 0m;
+                }
+
+                return score.Value;
+            }
+        }
     }
 }

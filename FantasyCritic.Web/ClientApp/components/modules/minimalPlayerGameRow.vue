@@ -33,7 +33,7 @@
         }
     }
 </script>
-<style>
+<style scoped>
   .minimal-game-row td {
     font-size: 10pt;
   }

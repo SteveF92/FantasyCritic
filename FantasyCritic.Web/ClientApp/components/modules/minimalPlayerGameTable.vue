@@ -22,6 +22,14 @@
         <minimalBlankPlayerGameRow v-for="blankSpace in waiverFiller"></minimalBlankPlayerGameRow>
         <minimalPlayerGameRow v-for="game in counterPicks" :game="game"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
+        <tr class="minimal-game-row">
+          <td id="total-description">
+            <span id="total-description-text">
+              Total Fantasy Score
+            </span>
+          </td>
+          <td id="total-column" class="table-success" colspan="2">{{publisher.totalFantasyScore | score}}</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -99,8 +107,28 @@
   .game-column {
 
   }
+
   .score-column {
     width: 30px;
     text-align: center;
+  }
+
+  #total-description {
+    vertical-align: middle;
+  }
+
+  #total-description-text {
+    float: right;
+    text-align: right;
+    display: table-cell;
+    vertical-align: middle;
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  #total-column {
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
   }
 </style>
