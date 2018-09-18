@@ -89,4 +89,21 @@
     font-weight: bold;
     font-size: 20px;
   }
+
+  #total-description {
+    vertical-align: middle;
+  }
+
+  #total-description-text {
+    display: table-cell;
+    vertical-align: middle;
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  #total-column {
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+  }
 </style>
