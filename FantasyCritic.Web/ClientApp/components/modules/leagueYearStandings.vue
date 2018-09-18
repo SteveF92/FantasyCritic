@@ -21,7 +21,6 @@
 </template>
 <script>
   import Vue from "vue";
-
   export default {
     props: ['standings']
   }
