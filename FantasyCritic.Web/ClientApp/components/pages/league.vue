@@ -28,13 +28,8 @@
       {{ league.leagueManager.userName }}
     </div>
 
-    <div v-if="leagueYear">
-      <h3>Publishers</h3>
-      <ul>
-        <li v-for="publisher in leagueYear.publishers">
-          <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">{{ publisher.publisherName }}</router-link>
-        </li>
-      </ul>
+    <div v-if="leagueYear" class="col-6">
+      <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
     </div>
 
     <div v-if="leagueYear">
@@ -89,6 +84,7 @@
     import axios from "axios";
     import LeagueGameSummary from "components/modules/leagueGameSummary";
     import ManagerClaimGameForm from "components/modules/managerClaimGameForm";
+    import LeagueYearStandings from "components/modules/leagueYearStandings";
 
     export default {
         data() {
@@ -108,7 +104,8 @@
         props: ['leagueid', 'year'],
         components: {
             LeagueGameSummary,
-            ManagerClaimGameForm
+            ManagerClaimGameForm,
+            LeagueYearStandings
         },
         methods: {
             fetchLeague() {

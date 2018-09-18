@@ -4,7 +4,7 @@
       <thead>
         <tr class="table-primary">
           <th scope="col" colspan="4">
-            {{publisher.publisherName}}
+            <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">{{ publisher.publisherName }}</router-link>
             <br />
             Player: {{publisher.playerName}}
           </th>

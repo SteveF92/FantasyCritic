@@ -22,6 +22,7 @@ namespace FantasyCritic.Web.Models.Responses
             WaiverSystem = leagueYear.Options.WaiverSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Value;
             Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock)).ToList();
+            Standings = publishers.OrderByDescending(x => x.TotalFantasyScore).Select(x => new StandingViewModel(x)).ToList();
         }
 
         public Guid LeagueID { get; }
@@ -35,5 +36,6 @@ namespace FantasyCritic.Web.Models.Responses
         public string WaiverSystem { get; }
         public string ScoringSystem { get; }
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
+        public IReadOnlyList<StandingViewModel> Standings { get; }
     }
 }
