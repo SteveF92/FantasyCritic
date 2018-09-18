@@ -32,6 +32,7 @@ namespace FantasyCritic.Lib.Domain
             get
             {
                 List<decimal> gamesWithCriticScores = PublisherGames
+                    .Where(x => !x.CounterPick)
                     .Where(x => x.MasterGame.HasValue)
                     .Where(x => x.MasterGame.Value.CriticScore.HasValue)
                     .Select(x => x.MasterGame.Value.CriticScore.Value)
