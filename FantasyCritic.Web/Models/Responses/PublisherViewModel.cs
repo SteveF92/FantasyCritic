@@ -18,6 +18,7 @@ namespace FantasyCritic.Web.Models.Responses
             Year = publisher.Year;
             DraftPosition = publisher.DraftPosition;
             Games = publisher.PublisherGames.OrderBy(x => x.Timestamp).Select(x => new PublisherGameViewModel(x, clock)).ToList();
+            AverageCriticScore = publisher.AverageCriticScore;
             TotalFantasyScore = publisher.TotalFantasyScore;
         }
 
@@ -29,6 +30,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int Year { get; }
         public int? DraftPosition { get; }
         public IReadOnlyList<PublisherGameViewModel> Games { get; }
+        public decimal? AverageCriticScore { get; }
         public decimal TotalFantasyScore { get; }
     }
 }

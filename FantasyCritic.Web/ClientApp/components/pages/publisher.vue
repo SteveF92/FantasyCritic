@@ -5,7 +5,7 @@
         <h5>
             <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>
         </h5>
-        <playerGameTable :games="publisher.games"></playerGameTable>
+        <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options"></playerGameTable>
     </div>
 </template>
 
@@ -18,21 +18,42 @@
         data() {
             return {
                 errorInfo: "",
-                publisher: null
+                publisher: null,
+                leagueYear: null,
             }
         },
         components: {
             PlayerGameTable
         },
         props: ['publisherid'],
+        computed: {
+          options() {
+            var options = {
+              draftSlots: this.leagueYear.draftGames,
+              counterPickSlots: this.leagueYear.counterPicks,
+              waiverSlots: this.leagueYear.waiverGames
+            };
+
+            return options;
+          }
+        },
         methods: {
             fetchPublisher() {
                 axios
                     .get('/api/League/GetPublisher/' + this.publisherid)
                     .then(response => {
-                        this.publisher = response.data;
+                      this.publisher = response.data;
+                      this.fetchLeagueYear()
                     })
                     .catch(returnedError => (this.error = returnedError));
+            },
+            fetchLeagueYear() {
+              axios
+                .get('/api/League/GetLeagueYear?leagueID=' + this.publisher.leagueID + '&year=' + this.publisher.year)
+                .then(response => {
+                  this.leagueYear = response.data;
+                })
+                .catch(returnedError => (this.error = returnedError));
             }
         },
         mounted() {

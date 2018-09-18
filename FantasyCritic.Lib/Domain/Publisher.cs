@@ -27,6 +27,26 @@ namespace FantasyCritic.Lib.Domain
         public int? DraftPosition { get; }
         public IReadOnlyList<PublisherGame> PublisherGames { get; }
 
+        public decimal? AverageCriticScore
+        {
+            get
+            {
+                List<decimal> gamesWithCriticScores = PublisherGames
+                    .Where(x => x.MasterGame.HasValue)
+                    .Where(x => x.MasterGame.Value.CriticScore.HasValue)
+                    .Select(x => x.MasterGame.Value.CriticScore.Value)
+                    .ToList();
+
+                if (gamesWithCriticScores.Count == 0)
+                {
+                    return null;
+                }
+
+                decimal average = gamesWithCriticScores.Sum(x => x) / gamesWithCriticScores.Count;
+                return average;
+            }
+        }
+
         public decimal TotalFantasyScore
         {
             get
@@ -40,5 +60,7 @@ namespace FantasyCritic.Lib.Domain
                 return score.Value;
             }
         }
+
+        
     }
 }
