@@ -81,29 +81,57 @@
   }
   .player-table table {
     margin-bottom: 0px;
-  }
-
-  #average-critic-column {
-    text-align: center;
-    vertical-align: middle;
-    font-weight: bold;
-    font-size: 20px;
+    table-layout: fixed;
+    width: 100%;
   }
 
   #total-description {
     vertical-align: middle;
   }
 
-  #total-description-text {
-    display: table-cell;
-    vertical-align: middle;
-    font-weight: bold;
-    font-size: 20px;
+  @media only screen and (max-width: 459px) {
+    #average-critic-column {
+      text-align: center;
+      vertical-align: middle;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    #total-description-text {
+      display: table-cell;
+      vertical-align: middle;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    #total-column {
+      text-align: center;
+      font-weight: bold;
+      font-size: 20px;
+      vertical-align: middle;
+    }
   }
 
-  #total-column {
-    text-align: center;
-    font-weight: bold;
-    font-size: 25px;
+  @media only screen and (min-width: 460px) {
+    #average-critic-column {
+      text-align: center;
+      vertical-align: middle;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    #total-description-text {
+      display: table-cell;
+      vertical-align: middle;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    #total-column {
+      text-align: center;
+      font-weight: bold;
+      font-size: 25px;
+      vertical-align: middle;
+    }
   }
 </style>
