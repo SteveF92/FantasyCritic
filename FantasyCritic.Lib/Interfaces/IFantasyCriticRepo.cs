@@ -38,6 +38,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem);
 
         Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year);
-        Task UpdateFantasyScores(Dictionary<Guid, decimal?> publisherGameScores);
+        Task UpdateFantasyPoints(Dictionary<Guid, decimal?> publisherGameScores);
     }
 }

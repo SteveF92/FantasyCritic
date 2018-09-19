@@ -17,8 +17,8 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueName = publisher.League.LeagueName;
             PlayerName = publisher.User.UserName;
             Year = publisher.Year;
-            TotalFantasyScore = publisher.TotalFantasyScore;
-            ProjectedFantasyScore = publisher.GetProjectedFantasyPoints(scoringSystem, estimatedCriticScore);
+            TotalFantasyPoints = publisher.TotalFantasyPoints;
+            ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(scoringSystem, estimatedCriticScore);
         }
 
         public Guid PublisherID { get; }
@@ -27,7 +27,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string LeagueName { get; }
         public string PlayerName { get; }
         public int Year { get; }
-        public decimal TotalFantasyScore { get; }
-        public decimal ProjectedFantasyScore { get; }
+        public decimal TotalFantasyPoints { get; }
+        public decimal ProjectedFantasyPoints { get; }
     }
 }

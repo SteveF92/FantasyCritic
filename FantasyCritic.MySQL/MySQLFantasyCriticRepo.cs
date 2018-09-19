@@ -95,13 +95,13 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task UpdateFantasyScores(Dictionary<Guid, decimal?> publisherGameScores)
+        public async Task UpdateFantasyPoints(Dictionary<Guid, decimal?> publisherGameScores)
         {
             List<PublisherScoreUpdateEntity> updateEntities = publisherGameScores.Select(x => new PublisherScoreUpdateEntity(x)).ToList();
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "update tblpublishergame SET FantasyScore = @FantasyScore where PublisherGameID = @PublisherGameID;",
+                    "update tblpublishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;",
                     updateEntities);
             }
         }
@@ -330,8 +330,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,Waiver,CounterPick,FantasyScore,MasterGameID) VALUES " +
-                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@Waiver,@CounterPick,@FantasyScore,@MasterGameID);",
+                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,Waiver,CounterPick,FantasyPoints,MasterGameID) VALUES " +
+                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@Waiver,@CounterPick,@FantasyPoints,@MasterGameID);",
                     entity);
             }
         }

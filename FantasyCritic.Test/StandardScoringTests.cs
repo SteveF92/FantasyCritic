@@ -27,9 +27,9 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), null, 84.8095m, 2018);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
-            decimal? fantasyScore = standardScoring.GetPointsForGame(testGame, fakeClock);
+            decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
 
-            Assert.AreEqual(14.8095m, fantasyScore);
+            Assert.AreEqual(14.8095m, fantasyPoints);
         }
 
         [Test]
@@ -43,9 +43,9 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 94.8125m, 2018);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
-            decimal? fantasyScore = standardScoring.GetPointsForGame(testGame, fakeClock);
+            decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
 
-            Assert.AreEqual(29.625m, fantasyScore);
+            Assert.AreEqual(29.625m, fantasyPoints);
         }
 
         [Test]
@@ -59,9 +59,9 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
-            decimal? fantasyScore = standardScoring.GetPointsForGame(testGame, fakeClock);
+            decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
 
-            Assert.AreEqual(-4.1441m, fantasyScore);
+            Assert.AreEqual(-4.1441m, fantasyPoints);
         }
 
         [Test]
@@ -75,9 +75,9 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2018);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
-            decimal? fantasyScore = standardScoring.GetPointsForGame(testGame, fakeClock);
+            decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
 
-            Assert.AreEqual(null, fantasyScore);
+            Assert.AreEqual(null, fantasyPoints);
         }
 
         [Test]
@@ -91,9 +91,9 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2019);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
-            decimal? fantasyScore = standardScoring.GetPointsForGame(testGame, fakeClock);
+            decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
 
-            Assert.AreEqual(0m, fantasyScore);
+            Assert.AreEqual(0m, fantasyPoints);
         }
 
         [Test]
@@ -107,9 +107,9 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, true, null, masterGame, 2018);
 
-            decimal? fantasyScore = standardScoring.GetPointsForGame(testGame, fakeClock);
+            decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
 
-            Assert.AreEqual(4.1441m, fantasyScore);
+            Assert.AreEqual(4.1441m, fantasyPoints);
         }
     }
 }

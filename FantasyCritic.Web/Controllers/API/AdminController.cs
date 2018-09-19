@@ -71,7 +71,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return StatusCode(403);
             }
             
-            await _fantasyCriticService.UpdateFantasyScores(request.Year);
+            await _fantasyCriticService.UpdateFantasyPoints(request.Year);
 
             return Ok();
         }

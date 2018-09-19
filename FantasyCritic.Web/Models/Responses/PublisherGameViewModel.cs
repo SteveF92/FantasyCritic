@@ -18,7 +18,7 @@ namespace FantasyCritic.Web.Models.Responses
             Waiver = publisherGame.Waiver;
             CounterPick = publisherGame.CounterPick;
 
-            FantasyScore = publisherGame.FantasyScore;
+            FantasyPoints = publisherGame.FantasyPoints;
 
             if (publisherGame.MasterGame.HasValue)
             {
@@ -46,7 +46,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool CounterPick { get; }
         public string EstimatedReleaseDate { get; }
         public DateTime? ReleaseDate { get; }
-        public decimal? FantasyScore { get; }
+        public decimal? FantasyPoints { get; }
         public decimal? CriticScore { get; }
 
         public bool Linked { get; }

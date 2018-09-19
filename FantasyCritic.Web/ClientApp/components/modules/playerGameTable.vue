@@ -24,7 +24,7 @@
                 </td>
                 <td></td>
                 <td id="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</td>
-                <td id="total-column" class="table-success">{{publisher.totalFantasyScore | score(2)}}</td>
+                <td id="total-column" class="table-success">{{publisher.totalFantasyPoints | score(2)}}</td>
               </tr>
             </tbody>
         </table>

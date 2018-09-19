@@ -17,7 +17,7 @@
     <td v-if="game.releaseDate">{{releaseDate}}</td>
     <td v-else>{{game.estimatedReleaseDate}} (Estimated)</td>
     <td>{{game.criticScore | score(2)}}</td>
-    <td>{{game.fantasyScore | score(2)}}</td>
+    <td>{{game.fantasyPoints | score(2)}}</td>
   </tr>
 </template>
 <script>

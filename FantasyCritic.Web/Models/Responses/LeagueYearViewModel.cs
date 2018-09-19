@@ -22,7 +22,7 @@ namespace FantasyCritic.Web.Models.Responses
             WaiverSystem = leagueYear.Options.WaiverSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock)).ToList();
-            Standings = publishers.OrderByDescending(x => x.TotalFantasyScore).Select(x => new StandingViewModel(x, leagueYear.Options.ScoringSystem, leagueYear.Options.EstimatedGameScore)).ToList();
+            Standings = publishers.OrderByDescending(x => x.TotalFantasyPoints).Select(x => new StandingViewModel(x, leagueYear.Options.ScoringSystem, leagueYear.Options.EstimatedGameScore)).ToList();
         }
 
         public Guid LeagueID { get; }

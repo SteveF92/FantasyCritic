@@ -17,7 +17,7 @@
       </span>
     </td>
     <td class="score-column">{{game.criticScore | score}}</td>
-    <td class="score-column">{{game.fantasyScore | score}}</td>
+    <td class="score-column">{{game.fantasyPoints | score}}</td>
   </tr>
 </template>
 <script>

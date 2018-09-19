@@ -33,9 +33,9 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
 
         public decimal GetProjectedPointsForGame(PublisherGame publisherGame, decimal estimatedCriticScore)
         {
-            if (publisherGame.FantasyScore.HasValue)
+            if (publisherGame.FantasyPoints.HasValue)
             {
-                return publisherGame.FantasyScore.Value;
+                return publisherGame.FantasyPoints.Value;
             }
 
             return GetPointsForScore(publisherGame, estimatedCriticScore);

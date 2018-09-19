@@ -11,10 +11,10 @@ namespace FantasyCritic.MySQL.Entities
         public PublisherScoreUpdateEntity(KeyValuePair<Guid, decimal?> keyValuePair)
         {
             PublisherGameID = keyValuePair.Key;
-            FantasyScore = keyValuePair.Value;
+            FantasyPoints = keyValuePair.Value;
         }
 
         public Guid PublisherGameID { get; }
-        public decimal? FantasyScore { get; }
+        public decimal? FantasyPoints { get; }
     }
 }

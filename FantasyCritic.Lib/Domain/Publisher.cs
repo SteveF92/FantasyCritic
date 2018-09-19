@@ -49,11 +49,11 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        public decimal TotalFantasyScore
+        public decimal TotalFantasyPoints
         {
             get
             {
-                var score = PublisherGames.Sum(x => x.FantasyScore);
+                var score = PublisherGames.Sum(x => x.FantasyPoints);
                 if (!score.HasValue)
                 {
                     return 0m;
