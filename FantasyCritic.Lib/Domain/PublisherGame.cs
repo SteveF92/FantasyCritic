@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Enums;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
@@ -43,6 +45,11 @@ namespace FantasyCritic.Lib.Domain
             }
 
             return true;
+        }
+
+        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, decimal estimatedCriticScore)
+        {
+            return scoringSystem.GetProjectedPointsForGame(this, estimatedCriticScore);
         }
 
         public override string ToString() => GameName;

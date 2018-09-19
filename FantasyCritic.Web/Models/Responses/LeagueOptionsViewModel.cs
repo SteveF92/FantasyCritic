@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Web.Models.Responses
@@ -16,7 +18,7 @@ namespace FantasyCritic.Web.Models.Responses
             EligibilitySystems = eligibilitySystems.Select(x => x.Value).ToList();
             DraftSystems = draftSystems.Select(x => x.Value).ToList();
             WaiverSystems = waiverSystems.Select(x => x.Value).ToList();
-            ScoringSystems = scoringSystems.Select(x => x.Value).ToList();
+            ScoringSystems = scoringSystems.Select(x => x.Name).ToList();
         }
 
         public IReadOnlyList<int> OpenYears { get; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 
 namespace FantasyCritic.Lib.Domain
 {
@@ -62,6 +63,9 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        
+        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, decimal estimatedCriticScore)
+        {
+            return PublisherGames.Sum(x => x.GetProjectedFantasyPoints(scoringSystem, estimatedCriticScore));
+        }
     }
 }

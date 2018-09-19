@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Web.Models.Requests
@@ -32,7 +33,7 @@ namespace FantasyCritic.Web.Models.Requests
             EligibilitySystem eligibilitySystem = Lib.Enums.EligibilitySystem.FromValue(EligibilitySystem);
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             WaiverSystem waiverSystem = Lib.Enums.WaiverSystem.FromValue(WaiverSystem);
-            ScoringSystem scoringSystem = Lib.Enums.ScoringSystem.FromValue(ScoringSystem);
+            ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, DraftGames, WaiverGames, CounterPicks,
                 EstimatedGameScore, InitialYear, eligibilitySystem, draftSystem, waiverSystem, scoringSystem);

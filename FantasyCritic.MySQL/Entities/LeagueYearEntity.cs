@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.MySQL.Entities
@@ -28,7 +29,7 @@ namespace FantasyCritic.MySQL.Entities
             EligibilitySystem = options.EligibilitySystem.Value;
             DraftSystem = options.DraftSystem.Value;
             WaiverSystem = options.WaiverSystem.Value;
-            ScoringSystem = options.ScoringSystem.Value;
+            ScoringSystem = options.ScoringSystem.Name;
         }
 
         public Guid LeagueID { get; set; }
@@ -47,7 +48,7 @@ namespace FantasyCritic.MySQL.Entities
             EligibilitySystem eligibilitySystem = Lib.Enums.EligibilitySystem.FromValue(EligibilitySystem);
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             WaiverSystem waiverSystem = Lib.Enums.WaiverSystem.FromValue(WaiverSystem);
-            ScoringSystem scoringSystem = Lib.Enums.ScoringSystem.FromValue(ScoringSystem);
+            ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             LeagueOptions options = new LeagueOptions(DraftGames, WaiverGames, CounterPicks, EstimatedGameScore,
                 eligibilitySystem, draftSystem, waiverSystem, scoringSystem);

@@ -190,7 +190,7 @@ namespace FantasyCritic.Lib.Services
                 {
                     foreach (var publisherGame in publisher.PublisherGames)
                     {
-                        decimal? fantasyScore = leagueYear.Options.ScoringSystem.ScoreGame(publisherGame, _clock);
+                        decimal? fantasyScore = leagueYear.Options.ScoringSystem.GetPointsForGame(publisherGame, _clock);
                         publisherGameScores.Add(publisherGame.PublisherGameID, fantasyScore);
                     }
                 }
