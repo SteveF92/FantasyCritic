@@ -25,8 +25,8 @@
             <hr />
 
             <div class="form-group col-md-10">
-                <label for="estimatedGameScore" class="control-label">Estimated Game Score</label>
-                <input v-model="selectedLeagueOptions.estimatedGameScore" id="estimatedGameScore" name="estimatedGameScore" type="text" class="form-control input" />
+                <label for="estimatedCriticScore" class="control-label">Estimated Game Score</label>
+                <input v-model="selectedLeagueOptions.estimatedCriticScore" id="estimatedCriticScore" name="estimatedCriticScore" type="text" class="form-control input" />
             </div>
             <div class="form-group col-md-10">
                 <label for="intialYear" class="control-label">Year to Play</label>
@@ -82,7 +82,7 @@ export default {
                     draftGames: "",
                     waiverGames: "",
                     counterPicks: "",
-                    estimatedGameScore: "",
+                    estimatedCriticScore: "",
                     initialYear: "",
                     eligibilitySystem: "",
                     draftSystem: "",

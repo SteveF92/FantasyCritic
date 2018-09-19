@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueCreationParameters
     {
-        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int draftGames, int waiverGames, int counterPicks, decimal estimatedGameScore, int initialYear,
+        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int draftGames, int waiverGames, int counterPicks, decimal estimatedCriticScore, int initialYear,
             EligibilitySystem eligibilitySystem, DraftSystem draftSystem, WaiverSystem waiverSystem, ScoringSystem scoringSystem)
         {
             Manager = manager;
@@ -16,7 +16,7 @@ namespace FantasyCritic.Lib.Domain
             DraftGames = draftGames;
             WaiverGames = waiverGames;
             CounterPicks = counterPicks;
-            EstimatedGameScore = estimatedGameScore;
+            EstimatedCriticScore = estimatedCriticScore;
             InitialYear = initialYear;
             EligibilitySystem = eligibilitySystem;
             DraftSystem = draftSystem;
@@ -29,7 +29,7 @@ namespace FantasyCritic.Lib.Domain
         public int DraftGames { get; }
         public int WaiverGames { get; }
         public int CounterPicks { get; }
-        public decimal EstimatedGameScore { get; }
+        public decimal EstimatedCriticScore { get; }
         public int InitialYear { get; }
         public EligibilitySystem EligibilitySystem { get; }
         public DraftSystem DraftSystem { get; }

@@ -16,13 +16,13 @@ namespace FantasyCritic.Web.Models.Responses
             DraftGames = leagueYear.Options.DraftGames;
             WaiverGames = leagueYear.Options.WaiverGames;
             CounterPicks = leagueYear.Options.CounterPicks;
-            EstimatedGameScore = leagueYear.Options.EstimatedGameScore;
+            EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
             EligibilitySystem = leagueYear.Options.EligibilitySystem.Value;
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             WaiverSystem = leagueYear.Options.WaiverSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock)).ToList();
-            Standings = publishers.OrderByDescending(x => x.TotalFantasyPoints).Select(x => new StandingViewModel(x, leagueYear.Options.ScoringSystem, leagueYear.Options.EstimatedGameScore)).ToList();
+            Standings = publishers.OrderByDescending(x => x.TotalFantasyPoints).Select(x => new StandingViewModel(x, leagueYear.Options.ScoringSystem, leagueYear.Options.EstimatedCriticScore)).ToList();
         }
 
         public Guid LeagueID { get; }
@@ -30,7 +30,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int DraftGames { get; }
         public int WaiverGames { get; }
         public int CounterPicks { get; }
-        public decimal EstimatedGameScore { get; }
+        public decimal EstimatedCriticScore { get; }
         public string EligibilitySystem { get; }
         public string DraftSystem { get; }
         public string WaiverSystem { get; }

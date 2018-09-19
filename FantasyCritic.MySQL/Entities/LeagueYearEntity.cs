@@ -24,7 +24,7 @@ namespace FantasyCritic.MySQL.Entities
             DraftGames = options.DraftGames;
             WaiverGames = options.WaiverGames;
             CounterPicks = options.CounterPicks;
-            EstimatedGameScore = options.EstimatedGameScore;
+            EstimatedCriticScore = options.EstimatedCriticScore;
 
             EligibilitySystem = options.EligibilitySystem.Value;
             DraftSystem = options.DraftSystem.Value;
@@ -37,7 +37,7 @@ namespace FantasyCritic.MySQL.Entities
         public int DraftGames { get; set; }
         public int WaiverGames { get; set; }
         public int CounterPicks { get; set; }
-        public decimal EstimatedGameScore { get; set; }
+        public decimal EstimatedCriticScore { get; set; }
         public string EligibilitySystem { get; set; }
         public string DraftSystem { get; set; }
         public string WaiverSystem { get; set; }
@@ -50,7 +50,7 @@ namespace FantasyCritic.MySQL.Entities
             WaiverSystem waiverSystem = Lib.Enums.WaiverSystem.FromValue(WaiverSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            LeagueOptions options = new LeagueOptions(DraftGames, WaiverGames, CounterPicks, EstimatedGameScore,
+            LeagueOptions options = new LeagueOptions(DraftGames, WaiverGames, CounterPicks, EstimatedCriticScore,
                 eligibilitySystem, draftSystem, waiverSystem, scoringSystem);
 
             return new LeagueYear(league, Year, options);
