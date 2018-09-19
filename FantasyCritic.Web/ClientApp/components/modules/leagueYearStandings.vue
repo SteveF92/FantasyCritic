@@ -5,7 +5,8 @@
       <thead>
         <tr class="table-primary">
           <th>Publisher</th>
-          <th>Score</th>
+          <th>Points (Projected)</th>
+          <th>Points (Actual)</th>
         </tr>
       </thead>
       <tbody>
@@ -13,6 +14,7 @@
           <td>
             <router-link class="text-primary" :to="{ name: 'publisher', params: { publisherid: standing.publisherID }}">{{ standing.publisherName }}</router-link>
           </td>
+          <td>{{standing.projectedFantasyScore | score(2)}}</td>
           <td>{{standing.totalFantasyScore | score(2)}}</td>
         </tr>
       </tbody>
