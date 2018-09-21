@@ -349,10 +349,12 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var results = await connection.QueryAsync<MasterGameEntity>(
-                    "select * from tblmastergame;");
+                var masterGameResults = await connection.QueryAsync<MasterGameEntity>("select * from tblmastergame;");
+                var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tblmastersubgame;");
 
-                var masterGames = results.Select(x => x.ToDomain()).ToList();
+                var masterSubGames = masterSubGameResults.Select(x => x.ToDomain());
+                var masterGames = masterGameResults.Select(master => master.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == master.MasterGameID))).ToList();
+
                 return masterGames;
             }
         }
@@ -361,20 +363,21 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                MasterGameEntity result = await connection.QuerySingleOrDefaultAsync<MasterGameEntity>(
-                    "select * from tblmastergame where MasterGameID = @masterGameID", new { masterGameID });
-
-                if (result == null)
+                MasterGameEntity masterGame = await connection.QuerySingleOrDefaultAsync<MasterGameEntity>("select * from tblmastergame where MasterGameID = @masterGameID", new { masterGameID });
+                if (masterGame == null)
                 {
                     return Maybe<MasterGame>.None;
                 }
 
-                MasterGame domain = result.ToDomain();
+                IEnumerable<MasterSubGameEntity> masterSubGames = await connection.QueryAsync<MasterSubGameEntity>("select * from tblmastersubgame where MasterGameID = @masterGameID", new { masterGameID });
+
+
+                MasterGame domain = masterGame.ToDomain(masterSubGames.Select(x => x.ToDomain()));
                 return Maybe<MasterGame>.From(domain);
             }
         }
 
-        public async Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
+        public async Task UpdateCriticStats(IMasterGame masterGame, OpenCriticGame openCriticGame)
         {
             DateTime? releaseDate = null;
             if (openCriticGame.ReleaseDate.HasValue)
@@ -384,13 +387,27 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("update tblmastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterGameID = @masterGameID",
-                    new
-                    {
-                        masterGameID = masterGame.MasterGameID,
-                        releaseDate = releaseDate,
-                        criticScore = openCriticGame.Score
-                    });
+                switch (masterGame)
+                {
+                    case MasterGame _:
+                        await connection.ExecuteAsync("update tblmastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterGameID = @masterGameID",
+                            new
+                            {
+                                masterGameID = masterGame.MasterGameID,
+                                releaseDate = releaseDate,
+                                criticScore = openCriticGame.Score
+                            });
+                        break;
+                    case MasterSubGame masterSubGame:
+                        await connection.ExecuteAsync("update tblmastersubgame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterSubGameID = @masterSubGameID",
+                            new
+                            {
+                                masterSubGameID = masterSubGame.MasterSubGameID,
+                                releaseDate = releaseDate,
+                                criticScore = openCriticGame.Score
+                            });
+                        break;
+                }
             }
         }
 

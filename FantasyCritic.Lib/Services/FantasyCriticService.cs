@@ -214,7 +214,7 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetMasterGame(masterGameID);
         }
 
-        public Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
+        public Task UpdateCriticStats(IMasterGame masterGame, OpenCriticGame openCriticGame)
         {
             return _fantasyCriticRepo.UpdateCriticStats(masterGame, openCriticGame);
         }

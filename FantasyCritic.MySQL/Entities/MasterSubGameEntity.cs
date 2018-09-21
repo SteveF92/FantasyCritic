@@ -8,8 +8,9 @@ using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
 {
-    internal class MasterGameEntity
+    internal class MasterSubGameEntity
     {
+        public Guid MasterSubGameID { get; set; }
         public Guid MasterGameID { get; set; }
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
@@ -18,7 +19,7 @@ namespace FantasyCritic.MySQL.Entities
         public decimal? CriticScore { get; set; }
         public int MinimumReleaseYear { get; set; }
 
-        public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames)
+        public MasterSubGame ToDomain()
         {
             LocalDate? releaseDate = null;
             if (ReleaseDate.HasValue)
@@ -26,7 +27,7 @@ namespace FantasyCritic.MySQL.Entities
                 releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
             }
 
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, subGames.ToList());
+            return new MasterSubGame(MasterSubGameID, MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear);
         }
     }
 }
