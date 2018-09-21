@@ -371,13 +371,12 @@ namespace FantasyCritic.MySQL
 
                 IEnumerable<MasterSubGameEntity> masterSubGames = await connection.QueryAsync<MasterSubGameEntity>("select * from tblmastersubgame where MasterGameID = @masterGameID", new { masterGameID });
 
-
                 MasterGame domain = masterGame.ToDomain(masterSubGames.Select(x => x.ToDomain()));
                 return Maybe<MasterGame>.From(domain);
             }
         }
 
-        public async Task UpdateCriticStats(IMasterGame masterGame, OpenCriticGame openCriticGame)
+        public async Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
         {
             DateTime? releaseDate = null;
             if (openCriticGame.ReleaseDate.HasValue)
@@ -387,27 +386,33 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                switch (masterGame)
-                {
-                    case MasterGame _:
-                        await connection.ExecuteAsync("update tblmastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterGameID = @masterGameID",
-                            new
-                            {
-                                masterGameID = masterGame.MasterGameID,
-                                releaseDate = releaseDate,
-                                criticScore = openCriticGame.Score
-                            });
-                        break;
-                    case MasterSubGame masterSubGame:
-                        await connection.ExecuteAsync("update tblmastersubgame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterSubGameID = @masterSubGameID",
-                            new
-                            {
-                                masterSubGameID = masterSubGame.MasterSubGameID,
-                                releaseDate = releaseDate,
-                                criticScore = openCriticGame.Score
-                            });
-                        break;
-                }
+                await connection.ExecuteAsync("update tblmastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterGameID = @masterGameID",
+                    new
+                    {
+                        masterGameID = masterGame.MasterGameID,
+                        releaseDate = releaseDate,
+                        criticScore = openCriticGame.Score
+                    });
+            }
+        }
+
+        public async Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame)
+        {
+            DateTime? releaseDate = null;
+            if (openCriticGame.ReleaseDate.HasValue)
+            {
+                releaseDate = openCriticGame.ReleaseDate.Value.ToDateTimeUnspecified();
+            }
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tblmastersubgame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterSubGameID = @masterSubGameID",
+                    new
+                    {
+                        masterSubGameID = masterSubGame.MasterSubGameID,
+                        releaseDate = releaseDate,
+                        criticScore = openCriticGame.Score
+                    });
             }
         }
 

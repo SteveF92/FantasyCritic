@@ -10,18 +10,24 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class MasterGameViewModel
     {
-        public MasterGameViewModel(IMasterGame masterGame)
+        public MasterGameViewModel(MasterGame masterGame)
         {
             MasterGameID = masterGame.MasterGameID;
             GameName = masterGame.GameName;
             EstimatedReleaseDate = masterGame.EstimatedReleaseDate;
             ReleaseDate = masterGame.ReleaseDate;
             CriticScore = masterGame.CriticScore;
+            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x)).ToList();
+        }
 
-            if (masterGame is MasterGame rootMasterGame)
-            {
-                SubGames = rootMasterGame.SubGames.Select(x => new MasterGameViewModel(x)).ToList();
-            }
+        public MasterGameViewModel(MasterSubGame masterSubGame)
+        {
+            MasterGameID = masterSubGame.MasterGameID;
+            GameName = masterSubGame.GameName;
+            EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
+            ReleaseDate = masterSubGame.ReleaseDate;
+            CriticScore = masterSubGame.CriticScore;
+            SubGames = null;
         }
 
         public Guid MasterGameID { get; }

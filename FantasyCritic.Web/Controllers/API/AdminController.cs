@@ -44,6 +44,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var masterGames = await _fantasyCriticService.GetMasterGames();
+            masterGames = masterGames.Where(x => x.GameName.Contains("Walking")).ToList();
             foreach (var masterGame in masterGames)
             {
                 if (!masterGame.OpenCriticID.HasValue)
@@ -55,6 +56,21 @@ namespace FantasyCritic.Web.Controllers.API
                 if (openCriticGame.HasValue)
                 {
                     await _fantasyCriticService.UpdateCriticStats(masterGame, openCriticGame.Value);
+                }
+
+                foreach (var subGame in masterGame.SubGames)
+                {
+                    if (!subGame.OpenCriticID.HasValue)
+                    {
+                        continue;
+                    }
+
+                    var subGameOpenCriticGame = await _openCriticService.GetOpenCriticGame(subGame.OpenCriticID.Value);
+
+                    if (subGameOpenCriticGame.HasValue)
+                    {
+                        await _fantasyCriticService.UpdateCriticStats(subGame, subGameOpenCriticGame.Value);
+                    }
                 }
             }
 

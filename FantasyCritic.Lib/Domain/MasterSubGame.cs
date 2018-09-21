@@ -5,7 +5,7 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class MasterSubGame : IMasterGame
+    public class MasterSubGame
     {
         public MasterSubGame(Guid masterSubGameID, Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear)
         {
