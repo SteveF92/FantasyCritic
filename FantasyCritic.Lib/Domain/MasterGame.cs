@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NodaTime;
 
@@ -7,6 +8,8 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGame
     {
+        private readonly decimal? _criticScore;
+
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear)
         {
             MasterGameID = masterGameID;
@@ -14,7 +17,7 @@ namespace FantasyCritic.Lib.Domain
             EstimatedReleaseDate = estimatedReleaseDate;
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
-            CriticScore = criticScore;
+            _criticScore = criticScore;
             MinimumReleaseYear = minimumReleaseYear;
             SubGames = new List<MasterSubGame>();
         }
@@ -26,7 +29,7 @@ namespace FantasyCritic.Lib.Domain
             EstimatedReleaseDate = estimatedReleaseDate;
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
-            CriticScore = criticScore;
+            _criticScore = criticScore;
             MinimumReleaseYear = minimumReleaseYear;
             SubGames = subGames;
         }
@@ -36,7 +39,26 @@ namespace FantasyCritic.Lib.Domain
         public string EstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
-        public decimal? CriticScore { get; }
+
+        public decimal? CriticScore
+        {
+            get
+            {
+                if (_criticScore.HasValue)
+                {
+                    return _criticScore;
+                }
+
+                if (!SubGames.Any(x => x.CriticScore.HasValue))
+                {
+                    return null;
+                }
+
+                decimal average = SubGames.Where(x => x.CriticScore.HasValue).Average(x => x.CriticScore.Value);
+                return average;
+            }
+        }
+
         public int MinimumReleaseYear { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
 
