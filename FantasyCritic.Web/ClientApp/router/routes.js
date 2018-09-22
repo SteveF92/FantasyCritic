@@ -7,6 +7,7 @@ import ManageUser from "components/pages/manageUser";
 import CreateLeague from "components/pages/createLeague";
 import League from "components/pages/league";
 import Publisher from "components/pages/publisher";
+import MasterGame from "components/pages/masterGame";
 import ConfirmEmail from "components/pages/confirmEmail";
 import ForgotPassword from "components/pages/forgotPassword";
 import ResetPassword from "components/pages/resetPassword";
@@ -119,6 +120,17 @@ export const routes = [
     },
     props: (route) => ({
       publisherid: route.params.publisherid
+    })
+  },
+  {
+    path: "/mastergame/:mastergameid",
+    component: MasterGame,
+    name: "mastergame",
+    meta: {
+      title: "Master Game"
+    },
+    props: (route) => ({
+      mastergameid: route.params.mastergameid
     })
   }
 ];

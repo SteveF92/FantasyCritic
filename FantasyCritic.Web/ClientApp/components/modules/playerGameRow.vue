@@ -1,7 +1,9 @@
 <template>
   <tr v-bind:class="{ 'table-danger': game.counterPick }">
     <td>
-      <span>{{game.gameName}}</span>
+      <router-link v-if="game.linked" class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: game.masterGameID }}">{{game.gameName}}</router-link>
+      <span v-if="!game.linked">{{game.gameName}}</span>
+
       <span v-if="game.counterPick" class="counter-pick-text">
         (Counter-Pick)
       </span>

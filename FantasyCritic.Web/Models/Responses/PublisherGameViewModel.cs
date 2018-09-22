@@ -35,6 +35,7 @@ namespace FantasyCritic.Web.Models.Responses
             if (publisherGame.MasterGame.HasValue)
             {
                 Released = publisherGame.MasterGame.Value.IsReleased(clock);
+                MasterGameID = publisherGame.MasterGame.Value.MasterGameID;
             }
 
             WillRelease = publisherGame.WillRelease();
@@ -48,6 +49,7 @@ namespace FantasyCritic.Web.Models.Responses
         public DateTime? ReleaseDate { get; }
         public decimal? FantasyPoints { get; }
         public decimal? CriticScore { get; }
+        public Guid MasterGameID { get; }
 
         public bool Linked { get; }
         public bool Released { get; }

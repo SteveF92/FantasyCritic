@@ -27,6 +27,14 @@ html {
     padding: 0 15px;
 }
 
+.table-danger td a {
+    color: white !important;
+}
+
+.table-danger td a:hover {
+    color: #cccccc !important;
+}
+
 tr.table-primary, tr.table-primary th, tr.table-primary td {
     background-color: #DF691A;
 }
