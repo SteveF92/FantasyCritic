@@ -17,16 +17,22 @@ namespace FantasyCritic.Web.Models.Responses
             EstimatedReleaseDate = masterGame.EstimatedReleaseDate;
             ReleaseDate = masterGame.ReleaseDate;
             CriticScore = masterGame.CriticScore;
-            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x)).ToList();
+            AveragedScore = masterGame.AveragedScore;
+            EligibilityLevel = masterGame.EligibilityLevel;
+            OpenCriticID = masterGame.OpenCriticID;
+            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, EligibilityLevel)).ToList();
         }
 
-        public MasterGameViewModel(MasterSubGame masterSubGame)
+        public MasterGameViewModel(MasterSubGame masterSubGame, int eligibilityLevel)
         {
             MasterGameID = masterSubGame.MasterGameID;
             GameName = masterSubGame.GameName;
             EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
             ReleaseDate = masterSubGame.ReleaseDate;
             CriticScore = masterSubGame.CriticScore;
+            AveragedScore = false;
+            EligibilityLevel = eligibilityLevel;
+            OpenCriticID = masterSubGame.OpenCriticID;
             SubGames = null;
         }
 
@@ -35,6 +41,9 @@ namespace FantasyCritic.Web.Models.Responses
         public string EstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public decimal? CriticScore { get; }
+        public bool AveragedScore { get; }
+        public int EligibilityLevel { get; }
+        public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameViewModel> SubGames { get; }
     }
 }

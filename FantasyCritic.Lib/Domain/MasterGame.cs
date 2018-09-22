@@ -63,6 +63,24 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
+        public bool AveragedScore
+        {
+            get
+            {
+                if (_criticScore.HasValue)
+                {
+                    return false;
+                }
+
+                if (!SubGames.Any(x => x.CriticScore.HasValue))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
         public int MinimumReleaseYear { get; }
         public int EligibilityLevel { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
