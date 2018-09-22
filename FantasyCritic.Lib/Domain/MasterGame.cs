@@ -64,6 +64,11 @@ namespace FantasyCritic.Lib.Domain
 
         public bool IsReleased(IClock clock)
         {
+            if (SubGames.Any(x => x.IsReleased(clock)))
+            {
+                return true;
+            }
+
             if (!ReleaseDate.HasValue)
             {
                 return false;
