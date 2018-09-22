@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Domain
     public class LeagueYearAddParameters
     {
         public LeagueYearAddParameters(League league, int draftGames, int waiverGames, int counterPicks, decimal estimatedCriticScore, int year,
-            EligibilitySystem eligibilitySystem, DraftSystem draftSystem, WaiverSystem waiverSystem, ScoringSystem scoringSystem)
+            int eligibilityLevel, DraftSystem draftSystem, WaiverSystem waiverSystem, ScoringSystem scoringSystem)
         {
             League = league;
             DraftGames = draftGames;
@@ -17,7 +17,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicks = counterPicks;
             EstimatedCriticScore = estimatedCriticScore;
             Year = year;
-            EligibilitySystem = eligibilitySystem;
+            EligibilityLevel = eligibilityLevel;
             DraftSystem = draftSystem;
             WaiverSystem = waiverSystem;
             ScoringSystem = scoringSystem;
@@ -29,7 +29,7 @@ namespace FantasyCritic.Lib.Domain
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
         public int Year { get; }
-        public EligibilitySystem EligibilitySystem { get; }
+        public int EligibilityLevel { get; }
         public DraftSystem DraftSystem { get; }
         public WaiverSystem WaiverSystem { get; }
         public ScoringSystem ScoringSystem { get; }

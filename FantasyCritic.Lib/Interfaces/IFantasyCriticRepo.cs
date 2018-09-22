@@ -36,7 +36,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);
         Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame);
         Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame);
-        Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem);
 
         Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year);
         Task UpdateFantasyPoints(Dictionary<Guid, decimal?> publisherGameScores);

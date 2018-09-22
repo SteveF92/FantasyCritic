@@ -36,7 +36,7 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> LeagueOptions()
         {
             IReadOnlyList<int> openYears = await _fantasyCriticService.GetOpenYears();
-            LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, EligibilitySystem.GetAllPossibleValues(), DraftSystem.GetAllPossibleValues(),
+            LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
                 WaiverSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues());
 
             return Ok(viewModel);

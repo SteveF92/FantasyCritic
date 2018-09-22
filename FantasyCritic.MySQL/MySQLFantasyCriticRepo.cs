@@ -416,24 +416,6 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem)
-        {
-            var query = new
-            {
-                masterGameID = masterGame.MasterGameID,
-                eligibilitySystem = eligibilitySystem.Value
-            };
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                dynamic entity = await connection.QueryFirstOrDefaultAsync<dynamic>(
-                    "select * from tblmastergameeligibility where EligibilitySystem = @eligibilitySystem and MasterGameID = @masterGameID;",
-                    query);
-
-                return entity != null;
-            }
-        }
-
         private Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
         {
             var userAddObject = new

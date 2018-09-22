@@ -17,6 +17,7 @@ namespace FantasyCritic.MySQL.Entities
         public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
         public int MinimumReleaseYear { get; set; }
+        public int EligibilityLevel { get; set; }
 
         public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames)
         {
@@ -26,7 +27,7 @@ namespace FantasyCritic.MySQL.Entities
                 releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
             }
 
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, subGames.ToList());
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, EligibilityLevel, subGames.ToList());
         }
     }
 }

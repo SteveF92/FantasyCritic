@@ -264,7 +264,7 @@ namespace FantasyCritic.Lib.Services
             LeagueOptions yearOptions = leagueYear.Value.Options;
             if (request.MasterGame.HasValue)
             {
-                bool eligible = await GameIsEligible(request.MasterGame.Value, yearOptions.EligibilitySystem);
+                bool eligible = request.MasterGame.Value.IsEligible(yearOptions.EligibilityLevel);
                 if (!eligible)
                 {
                     Result.Fail("That game is not eligible under this league's settings.");
@@ -329,17 +329,6 @@ namespace FantasyCritic.Lib.Services
             }
 
             return Result.Ok();
-        }
-
-        private async Task<bool> GameIsEligible(MasterGame masterGame, EligibilitySystem eligibilitySystem)
-        {
-            if (eligibilitySystem.Equals(EligibilitySystem.Unlimited))
-            {
-                return true;
-            }
-
-            bool eligible = await _fantasyCriticRepo.GameIsEligible(masterGame, eligibilitySystem);
-            return eligible;
         }
     }
 }

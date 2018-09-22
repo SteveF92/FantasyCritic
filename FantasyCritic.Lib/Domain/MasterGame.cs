@@ -10,7 +10,8 @@ namespace FantasyCritic.Lib.Domain
     {
         private readonly decimal? _criticScore;
 
-        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear)
+        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
+            int minimumReleaseYear, int eligibilityLevel)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -19,10 +20,12 @@ namespace FantasyCritic.Lib.Domain
             OpenCriticID = openCriticID;
             _criticScore = criticScore;
             MinimumReleaseYear = minimumReleaseYear;
+            EligibilityLevel = eligibilityLevel;
             SubGames = new List<MasterSubGame>();
         }
 
-        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear, IReadOnlyList<MasterSubGame> subGames)
+        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
+            int minimumReleaseYear, int eligibilityLevel, IReadOnlyList<MasterSubGame> subGames)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -31,6 +34,7 @@ namespace FantasyCritic.Lib.Domain
             OpenCriticID = openCriticID;
             _criticScore = criticScore;
             MinimumReleaseYear = minimumReleaseYear;
+            EligibilityLevel = eligibilityLevel;
             SubGames = subGames;
         }
 
@@ -60,6 +64,7 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public int MinimumReleaseYear { get; }
+        public int EligibilityLevel { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
 
         public bool IsReleased(IClock clock)
@@ -85,5 +90,10 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public override string ToString() => GameName;
+
+        public bool IsEligible(int eligibilityLevel)
+        {
+            return EligibilityLevel <= eligibilityLevel;
+        }
     }
 }
