@@ -25,7 +25,7 @@
         <tr class="minimal-game-row">
           <td id="total-description">
             <span id="total-description-text">
-              Total Fantasy Score
+              Total Fantasy Points
             </span>
           </td>
           <td id="total-column" class="table-success" colspan="2">{{publisher.totalFantasyPoints | score}}</td>

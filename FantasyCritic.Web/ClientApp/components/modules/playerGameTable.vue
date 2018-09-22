@@ -6,7 +6,7 @@
                     <th scope="col">Game Name</th>
                     <th scope="col">Release Date</th>
                     <th scope="col">Critic Score</th>
-                    <th scope="col">Fantasy Score</th>
+                    <th scope="col">Fantasy Points</th>
                 </tr>
             </thead>
             <tbody>
@@ -19,7 +19,7 @@
               <tr>
                 <td id="total-description">
                   <span id="total-description-text">
-                    Total Fantasy Score
+                    Total Fantasy Points
                   </span>
                 </td>
                 <td></td>
