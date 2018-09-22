@@ -24,7 +24,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), null, 84.8095m, 2018);
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), null, 84.8095m, 2018, 0);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
             decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
@@ -40,7 +40,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 94.8125m, 2018);
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 94.8125m, 2018, 0);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
             decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
@@ -56,7 +56,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018);
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018, 0);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
             decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
@@ -72,7 +72,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2018);
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2018, 0);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
             decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
@@ -88,7 +88,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2019);
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2019, 0);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, null, masterGame, 2018);
 
             decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
@@ -104,7 +104,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018);
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018, 0);
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, true, null, masterGame, 2018);
 
             decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
