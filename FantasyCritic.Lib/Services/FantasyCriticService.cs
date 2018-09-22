@@ -264,7 +264,7 @@ namespace FantasyCritic.Lib.Services
             LeagueOptions yearOptions = leagueYear.Value.Options;
             if (request.MasterGame.HasValue)
             {
-                bool eligible = request.MasterGame.Value.IsEligible(yearOptions.EligibilityLevel);
+                bool eligible = request.MasterGame.Value.IsEligible(yearOptions.MaximumEligibilityLevel);
                 if (!eligible)
                 {
                     Result.Fail("That game is not eligible under this league's settings.");
