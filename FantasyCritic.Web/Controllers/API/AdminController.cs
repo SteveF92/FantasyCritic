@@ -34,6 +34,15 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
+        {
+            MasterGame masterGame = viewModel.ToDomain();
+            await _fantasyCriticService.CreateMasterGame(masterGame);
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RefreshCriticInfo()
         {
             var masterGames = await _fantasyCriticService.GetMasterGames();

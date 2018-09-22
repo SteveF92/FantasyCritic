@@ -39,5 +39,6 @@ namespace FantasyCritic.Lib.Interfaces
 
         Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year);
         Task UpdateFantasyPoints(Dictionary<Guid, decimal?> publisherGameScores);
+        Task CreateMasterGame(MasterGame masterGame);
     }
 }

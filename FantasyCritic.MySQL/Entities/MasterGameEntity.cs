@@ -10,6 +10,23 @@ namespace FantasyCritic.MySQL.Entities
 {
     internal class MasterGameEntity
     {
+        public MasterGameEntity()
+        {
+
+        }
+
+        public MasterGameEntity(MasterGame masterGame)
+        {
+            MasterGameID = masterGame.MasterGameID;
+            GameName = masterGame.GameName;
+            EstimatedReleaseDate = masterGame.EstimatedReleaseDate;
+            ReleaseDate = masterGame.ReleaseDate?.ToDateTimeUnspecified();
+            OpenCriticID = masterGame.OpenCriticID;
+            CriticScore = masterGame.CriticScore;
+            MinimumReleaseYear = masterGame.MinimumReleaseYear;
+            EligibilityLevel = masterGame.EligibilityLevel;
+        }
+
         public Guid MasterGameID { get; set; }
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }

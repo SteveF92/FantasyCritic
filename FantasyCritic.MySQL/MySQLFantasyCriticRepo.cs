@@ -106,6 +106,18 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task CreateMasterGame(MasterGame masterGame)
+        {
+            var entity = new MasterGameEntity(masterGame);
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblmastergame(MasterGameID,GameName,EstimatedReleaseDate,ReleaseDate,OpenCriticID,CriticScore,MinimumReleaseYear,EligibilityLevel) VALUES " +
+                    "(@MasterGameID,@GameName,@EstimatedReleaseDate,@ReleaseDate,@OpenCriticID,@CriticScore,@MinimumReleaseYear,@EligibilityLevel);",
+                    entity);
+            }
+        }
+
         public async Task CreateLeague(League league, int initialYear, LeagueOptions options)
         {
             LeagueEntity entity = new LeagueEntity(league);

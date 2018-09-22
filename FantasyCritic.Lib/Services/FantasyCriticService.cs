@@ -49,6 +49,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueYears(year);
         }
 
+        public Task CreateMasterGame(MasterGame masterGame)
+        {
+            return _fantasyCriticRepo.CreateMasterGame(masterGame);
+        }
+
         public async Task<League> CreateLeague(LeagueCreationParameters parameters)
         {
             LeagueOptions options = new LeagueOptions(parameters);
