@@ -37,10 +37,8 @@
             <hr />
 
             <div class="form-group col-md-10">
-                <label for="eligibilitySystem" class="control-label">Eligibility System</label>
-                <select class="form-control" v-model="selectedLeagueOptions.eligibilitySystem" id="eligibilitySystem">
-                    <option v-for="eligibilitySystem in possibleLeagueOptions.eligibilitySystems" v-bind:value="eligibilitySystem">{{ eligibilitySystem }}</option>
-                </select>
+                <label for="maximumEligibilityLevel" class="control-label">Maximum Eligibility Level</label>
+                <input v-model="selectedLeagueOptions.maximumEligibilityLevel" id="maximumEligibilityLevel" name="maximumEligibilityLevel" type="text" class="form-control input" />
             </div>
             <div class="form-group col-md-10">
                 <label for="draftSystem" class="control-label">Draft System</label>
@@ -84,7 +82,7 @@ export default {
                     counterPicks: "",
                     estimatedCriticScore: "",
                     initialYear: "",
-                    eligibilitySystem: "",
+                    maximumEligibilityLevel: "",
                     draftSystem: "",
                     waiverSystem: "",
                     scoringSystem: ""

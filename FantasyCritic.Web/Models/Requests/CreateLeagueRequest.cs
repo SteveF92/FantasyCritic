@@ -20,7 +20,7 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public int InitialYear { get; set; }
         [Required]
-        public int EligibilityLevel { get; set; }
+        public int MaximumEligibilityLevel { get; set; }
         [Required]
         public string DraftSystem { get; set; }
         [Required]
@@ -35,7 +35,7 @@ namespace FantasyCritic.Web.Models.Requests
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, DraftGames, WaiverGames, CounterPicks,
-                EstimatedCriticScore, InitialYear, EligibilityLevel, draftSystem, waiverSystem, scoringSystem);
+                EstimatedCriticScore, InitialYear, MaximumEligibilityLevel, draftSystem, waiverSystem, scoringSystem);
             return parameters;
         }
     }
