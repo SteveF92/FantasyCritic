@@ -27,14 +27,17 @@ namespace FantasyCritic.Web.Controllers.API
     public class AccountController : Controller
     {
         private readonly FantasyCriticUserManager _userManager;
+        private readonly FantasyCriticRoleManager _roleManager;
         private readonly SignInManager<FantasyCriticUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly ITokenService _tokenService;
 
-        public AccountController(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager, IEmailSender emailSender, ILogger<AccountController> logger, ITokenService tokenService)
+        public AccountController(FantasyCriticUserManager userManager, FantasyCriticRoleManager roleManager, SignInManager<FantasyCriticUser> signInManager, 
+            IEmailSender emailSender, ILogger<AccountController> logger, ITokenService tokenService)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
@@ -171,17 +174,21 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var usersClaims = new[]
+            var roles = await _userManager.GetRolesAsync(user);
+            var usersClaims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
             };
+
+            foreach (var role in roles)
+            {
+                usersClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var jwtToken = _tokenService.GenerateAccessToken(usersClaims);
             var refreshToken = _tokenService.GenerateRefreshToken();
-
             await _userManager.AddRefreshToken(user, refreshToken);
-
             var jwtString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
             return new ObjectResult(new

@@ -3,9 +3,14 @@ using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
+using FantasyCritic.MySQL.Entities;
+using MySql.Data.MySqlClient;
 
 namespace FantasyCritic.MySQL
 {
@@ -33,9 +38,20 @@ namespace FantasyCritic.MySQL
             throw new NotImplementedException();
         }
 
-        public Task<FantasyCriticRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        public async Task<FantasyCriticRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync(cancellationToken);
+
+                var userResult = await connection.QueryAsync<FantasyCriticRoleEntity>(
+                    @"select * from tblrole WHERE NormalizedName = @normalizedRoleName",
+                    new { normalizedRoleName });
+                var entity = userResult.SingleOrDefault();
+                return entity?.ToDomain();
+            }
         }
 
         public Task<string> GetNormalizedRoleNameAsync(FantasyCriticRole role, CancellationToken cancellationToken)

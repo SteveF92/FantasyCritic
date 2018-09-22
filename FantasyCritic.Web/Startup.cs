@@ -56,6 +56,7 @@ namespace FantasyCritic.Web
             services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
             services.AddScoped<FantasyCriticUserManager>();
+            services.AddScoped<FantasyCriticRoleManager>();
             services.AddScoped<FantasyCriticService>();
 
             services.AddTransient<IEmailSender>(factory => sendGridEmailSender);

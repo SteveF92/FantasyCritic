@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly FantasyCriticUserManager _userManager;
@@ -36,13 +36,6 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RefreshCriticInfo()
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
-            if (!isAdmin)
-            {
-                return StatusCode(403);
-            }
-
             var masterGames = await _fantasyCriticService.GetMasterGames();
             masterGames = masterGames.Where(x => x.GameName.Contains("Walking")).ToList();
             foreach (var masterGame in masterGames)
@@ -80,13 +73,6 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> UpdateFantasyPoints([FromBody] UpdateFantasyPointsRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
-            if (!isAdmin)
-            {
-                return StatusCode(403);
-            }
-            
             await _fantasyCriticService.UpdateFantasyPoints(request.Year);
 
             return Ok();
