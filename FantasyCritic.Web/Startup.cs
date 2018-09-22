@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -135,7 +136,11 @@ namespace FantasyCritic.Web
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            app.UseRewriter(new RewriteOptions()
+                .AddRedirectToWww()
+                .AddRedirectToHttps()
+            );
+
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
