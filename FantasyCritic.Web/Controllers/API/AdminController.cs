@@ -37,7 +37,6 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> RefreshCriticInfo()
         {
             var masterGames = await _fantasyCriticService.GetMasterGames();
-            masterGames = masterGames.Where(x => x.GameName.Contains("Walking")).ToList();
             foreach (var masterGame in masterGames)
             {
                 if (!masterGame.OpenCriticID.HasValue)
