@@ -17,13 +17,11 @@
         </form>
       </div>
       <br />
-      <div>
-        <div v-if="!showAddGame">
-          <b-button variant="info" class="nav-link" v-on:click="showAddGameForm">Add Publisher Game</b-button>
-        </div>
-        <div v-if="showAddGame">
-          <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:claim-game-success="showGameClaimed"></managerClaimGameForm>
-        </div>
+      <div v-if="leagueYear">
+        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'">Add Publisher Game</b-button>
+        <b-modal id="claimGameForm" ref="claimGameFormRef" title="Add Publisher Game" hide-footer>
+          <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:claim-game-success="gameClaimed"></managerClaimGameForm>
+        </b-modal>
       </div>
     </div>
   </div>
@@ -48,9 +46,6 @@
       ManagerClaimGameForm
     },
     methods: {
-      showAddGameForm() {
-        this.showAddGame = true;
-      },
       acceptInvite() {
         var model = {
           leagueID: this.leagueID
@@ -95,8 +90,8 @@
             this.errorInfo = "Cannot find a player with that email address."
           });
       },
-      showGameClaimed(gameName, publisher) {
-        this.showAddGame = false;
+      gameClaimed(gameName, publisher) {
+        this.$refs.claimGameFormRef.hide();
         var claimInfo = {
           gameName,
           publisher

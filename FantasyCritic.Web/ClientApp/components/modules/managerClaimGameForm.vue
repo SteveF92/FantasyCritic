@@ -1,41 +1,40 @@
 <template>
-    <div>
-        <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
-            <div class="form-group">
-                <label for="claimGameName" class="control-label">Game Name</label>
-                <div class="input-group">
-                    <input v-model="claimGameName" id="claimGameName" name="claimGameName" type="text" class="form-control input" />
-                    <span class="input-group-btn">
-                        <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
-                    </span>
-                </div>
-                <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
-                <div v-if="claimMasterGame">
-                    Selected Game: {{claimMasterGame.gameName}}
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="claimPublisher" class="control-label">Publisher</label>
-                <b-form-select v-model="claimPublisher">
-                    <option v-for="publisher in publishers" v-bind:value="publisher">
-                        {{ publisher.publisherName }}
-                    </option>
-                </b-form-select>
-            </div>
-
-            <b-form-group>
-                <b-form-radio-group id="gameType"
-                                    buttons
-                                    v-model="claimGameType"
-                                    :options="claimGameTypes" />
-            </b-form-group>
-
-            <div class="form-group col-2">
-                <input type="submit" class="btn btn-primary" value="Add game to publisher" />
-            </div>
-        </form>
-    </div>
+  <div>
+    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
+      <div class="form-group">
+        <label for="claimGameName" class="control-label">Game Name</label>
+        <div class="input-group">
+          <input v-model="claimGameName" id="claimGameName" name="claimGameName" type="text" class="form-control input" />
+          <span class="input-group-btn">
+            <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+          </span>
+        </div>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
+        <div v-if="claimMasterGame">
+          Selected Game: {{claimMasterGame.gameName}}
+        </div>
+      </div>
+    </form>
+    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
+      <div class="form-group">
+        <label for="claimPublisher" class="control-label">Publisher</label>
+        <b-form-select v-model="claimPublisher">
+          <option v-for="publisher in publishers" v-bind:value="publisher">
+            {{ publisher.publisherName }}
+          </option>
+        </b-form-select>
+      </div>
+      <b-form-group>
+        <b-form-radio-group id="gameType"
+                            buttons
+                            v-model="claimGameType"
+                            :options="claimGameTypes" />
+      </b-form-group>
+      <div>
+        <input type="submit" class="btn btn-primary add-game-button" value="Add game to publisher" />
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -108,5 +107,9 @@
             }
         }
     }
-
 </script>
+<style scoped>
+.add-game-button{
+  width: 100%;
+}
+</style>
