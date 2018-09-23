@@ -28,14 +28,14 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public string ScoringSystem { get; set; }
 
-        public LeagueCreationParameters ToDomain(FantasyCriticUser manager)
+        public LeagueCreationParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             WaiverSystem waiverSystem = Lib.Enums.WaiverSystem.FromValue(WaiverSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, DraftGames, WaiverGames, CounterPicks,
-                EstimatedCriticScore, InitialYear, MaximumEligibilityLevel, draftSystem, waiverSystem, scoringSystem);
+                EstimatedCriticScore, InitialYear, maximumEligibilityLevel, draftSystem, waiverSystem, scoringSystem);
             return parameters;
         }
     }

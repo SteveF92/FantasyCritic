@@ -36,8 +36,9 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> LeagueOptions()
         {
             IReadOnlyList<int> openYears = await _fantasyCriticService.GetOpenYears();
+            IReadOnlyList<EligibilityLevel> eligibilityLevels = await _fantasyCriticService.GetEligibilityLevels();
             LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
-                WaiverSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues());
+                WaiverSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), eligibilityLevels);
 
             return Ok(viewModel);
         }
@@ -162,7 +163,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            LeagueCreationParameters domainRequest = request.ToDomain(currentUser);
+            EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(request.MaximumEligibilityLevel);
+            LeagueCreationParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel);
             await _fantasyCriticService.CreateLeague(domainRequest);
 
             return Ok();

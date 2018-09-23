@@ -24,7 +24,7 @@ namespace FantasyCritic.MySQL.Entities
             OpenCriticID = masterGame.OpenCriticID;
             CriticScore = masterGame.CriticScore;
             MinimumReleaseYear = masterGame.MinimumReleaseYear;
-            EligibilityLevel = masterGame.EligibilityLevel;
+            EligibilityLevel = masterGame.EligibilityLevel.Level;
         }
 
         public Guid MasterGameID { get; set; }
@@ -36,7 +36,7 @@ namespace FantasyCritic.MySQL.Entities
         public int MinimumReleaseYear { get; set; }
         public int EligibilityLevel { get; set; }
 
-        public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames)
+        public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel)
         {
             LocalDate? releaseDate = null;
             if (ReleaseDate.HasValue)
@@ -44,7 +44,7 @@ namespace FantasyCritic.MySQL.Entities
                 releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
             }
 
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, EligibilityLevel, subGames.ToList());
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel, subGames.ToList());
         }
     }
 }

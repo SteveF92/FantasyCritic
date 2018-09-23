@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain
         private readonly decimal? _criticScore;
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            int minimumReleaseYear, int eligibilityLevel)
+            int minimumReleaseYear, EligibilityLevel eligibilityLevel)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -25,7 +25,7 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            int minimumReleaseYear, int eligibilityLevel, IReadOnlyList<MasterSubGame> subGames)
+            int minimumReleaseYear, EligibilityLevel eligibilityLevel, IReadOnlyList<MasterSubGame> subGames)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -82,7 +82,7 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public int MinimumReleaseYear { get; }
-        public int EligibilityLevel { get; }
+        public EligibilityLevel EligibilityLevel { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
 
         public bool IsReleased(IClock clock)
@@ -109,9 +109,9 @@ namespace FantasyCritic.Lib.Domain
 
         public override string ToString() => GameName;
 
-        public bool IsEligible(int eligibilityLevel)
+        public bool IsEligible(EligibilityLevel eligibilityLevel)
         {
-            return EligibilityLevel <= eligibilityLevel;
+            return EligibilityLevel.Level <= eligibilityLevel.Level;
         }
     }
 }

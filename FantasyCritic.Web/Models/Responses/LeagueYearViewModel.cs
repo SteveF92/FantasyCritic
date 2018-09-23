@@ -17,7 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             WaiverGames = leagueYear.Options.WaiverGames;
             CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
-            MaximumEligibilityLevel = leagueYear.Options.MaximumEligibilityLevel;
+            MaximumEligibilityLevel = new EligibilityLevelViewModel(leagueYear.Options.MaximumEligibilityLevel, false);
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             WaiverSystem = leagueYear.Options.WaiverSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
@@ -31,7 +31,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int WaiverGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
-        public int MaximumEligibilityLevel { get; }
+        public EligibilityLevelViewModel MaximumEligibilityLevel { get; }
         public string DraftSystem { get; }
         public string WaiverSystem { get; }
         public string ScoringSystem { get; }

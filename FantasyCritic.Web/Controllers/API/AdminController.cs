@@ -36,7 +36,8 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
         {
-            MasterGame masterGame = viewModel.ToDomain();
+            EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(viewModel.EligibilityLevel);
+            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel);
             await _fantasyCriticService.CreateMasterGame(masterGame);
 
             return Ok();

@@ -235,6 +235,16 @@ namespace FantasyCritic.Lib.Services
             return playersInLeague.Any(x => x.UserID == user.UserID);
         }
 
+        public Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel)
+        {
+            return _fantasyCriticRepo.GetEligibilityLevel(eligibilityLevel);
+        }
+
+        public Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
+        {
+            return _fantasyCriticRepo.GetEligibilityLevels();
+        }
+
         private async Task<bool> UserIsInvited(League league, FantasyCriticUser inviteUser)
         {
             var playersInvited = await GetOutstandingInvitees(league);

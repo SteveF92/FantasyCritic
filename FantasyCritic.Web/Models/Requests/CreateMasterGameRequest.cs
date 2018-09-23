@@ -21,9 +21,9 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public int EligibilityLevel { get; set; }
 
-        public MasterGame ToDomain()
+        public MasterGame ToDomain(EligibilityLevel eligibilityLevel)
         {
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, MinimumReleaseYear, EligibilityLevel);
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, MinimumReleaseYear, eligibilityLevel);
             return masterGame;
         }
     }
