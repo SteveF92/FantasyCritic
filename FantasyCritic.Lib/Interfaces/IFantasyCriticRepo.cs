@@ -42,5 +42,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task CreateMasterGame(MasterGame masterGame);
         Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels();
         Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel);
+        Task<Result> RemovePublisherGame(Guid publisherGameID);
     }
 }

@@ -129,6 +129,19 @@ namespace FantasyCritic.MySQL
             return eligbilityLevel.Single(x => x.Level == eligibilityLevel);
         }
 
+        public async Task<Result> RemovePublisherGame(Guid publisherGameID)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var removed = await connection.ExecuteAsync("delete from tblpublishergame where PublisherGameID = @publisherGameID;", new { publisherGameID });
+                if (removed == 1)
+                {
+                    return Result.Ok();
+                }
+                return Result.Fail("Removing game failed.");
+            }
+        }
+
         public async Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
         {
             if (_eligibilityLevels != null)

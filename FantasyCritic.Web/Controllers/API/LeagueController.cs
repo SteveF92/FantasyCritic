@@ -26,7 +26,8 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IClock _clock;
 
-        public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IClock clock)
+        public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService,
+            IClock clock)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
@@ -87,7 +88,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             bool isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
-            var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, inviteesToLeague, userIsInvitedToLeague);
+            var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, inviteesToLeague,
+                userIsInvitedToLeague);
             return Ok(leagueViewModel);
         }
 
@@ -110,7 +112,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return Unauthorized();
             }
 
-            var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var publishersInLeague =
+                await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League,
+                    leagueYear.Value.Year);
 
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, publishersInLeague, _clock);
             return Ok(leagueViewModel);
@@ -138,7 +142,7 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest("League is not playing that year.");
             }
-            
+
             var requstedPlayerIsInLeague = playersInLeague.Any(x => x.UserID == publisher.Value.User.UserID);
             if (!requstedPlayerIsInLeague)
             {
@@ -163,7 +167,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(request.MaximumEligibilityLevel);
+            EligibilityLevel eligibilityLevel =
+                await _fantasyCriticService.GetEligibilityLevel(request.MaximumEligibilityLevel);
             LeagueCreationParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel);
             await _fantasyCriticService.CreateLeague(domainRequest);
 
@@ -315,9 +320,46 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID.Value);
             }
 
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.Waiver, request.CounterPick, masterGame);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName,
+                request.Waiver, request.CounterPick, masterGame);
 
             Result result = await _fantasyCriticService.ClaimGame(domainRequest);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemovePublisherGame([FromBody] GameRemoveRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            Result result = await _fantasyCriticService.RemovePublisherGame(request.PublisherGameID);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);

@@ -345,5 +345,10 @@ namespace FantasyCritic.Lib.Services
 
             return Result.Ok();
         }
+
+        public Task<Result> RemovePublisherGame(Guid publisherGameID)
+        {
+            return _fantasyCriticRepo.RemovePublisherGame(publisherGameID);
+        }
     }
 }
