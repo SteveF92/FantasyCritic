@@ -24,6 +24,6 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<string> DraftSystems { get; }
         public IReadOnlyList<string> WaiverSystems { get; }
         public IReadOnlyList<string> ScoringSystems { get; }
-        public IReadOnlyList<EligibilityLevelViewModel> EligibilityLevels{ get; }
+        public IReadOnlyList<EligibilityLevelViewModel> EligibilityLevels { get; }
     }
 }
