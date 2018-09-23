@@ -24,7 +24,7 @@
           <b-button variant="info" class="nav-link" v-on:click="showAddGameForm">Add Publisher Game</b-button>
         </div>
         <div v-if="showAddGame">
-          <managerClaimGameForm :publishers="leagueYear.publishers" v-on:claim-game-success="showGameClaimed"></managerClaimGameForm>
+          <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:claim-game-success="showGameClaimed"></managerClaimGameForm>
         </div>
       </div>
     </div>

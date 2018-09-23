@@ -9,7 +9,7 @@
                         <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
                     </span>
                 </div>
-                <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possibleGames="possibleMasterGames"></possibleMasterGamesTable>
+                <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
                 <div v-if="claimMasterGame">
                     Selected Game: {{claimMasterGame.gameName}}
                 </div>
@@ -60,7 +60,7 @@
         components: {
             PossibleMasterGamesTable
         },
-        props: ['publishers'],
+        props: ['publishers', 'maximumEligibilityLevel'],
         methods: {
             searchGame() {
                 axios
