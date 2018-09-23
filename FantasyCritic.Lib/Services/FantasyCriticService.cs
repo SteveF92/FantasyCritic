@@ -167,20 +167,20 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetPublisher(publisherID);
         }
 
-        public async Task<Result> ClaimGame(ClaimGameDomainRequest request)
+        public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request)
         {
             PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.Waiver, request.CounterPick, null, request.MasterGame, request.Publisher.Year);
 
-            Result claimResult = await CanClaimGame(request);
+            ClaimResult claimResult = await CanClaimGame(request);
 
-            if (claimResult.IsFailure)
+            if (!claimResult.Success)
             {
                 return claimResult;
             }
 
             await _fantasyCriticRepo.AddPublisherGame(request.Publisher, playerGame);
 
-            return Result.Ok();
+            return claimResult;
         }
 
         public async Task UpdateFantasyPoints(int year)
@@ -251,23 +251,23 @@ namespace FantasyCritic.Lib.Services
             return playersInvited.Any(x => x.UserID == inviteUser.UserID);
         }
 
-        private async Task<Result> CanClaimGame(ClaimGameDomainRequest request)
+        private async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request)
         {
             bool isInLeague = await UserIsInLeague(request.Publisher.League, request.Publisher.User);
             if (!isInLeague)
             {
-                return Result.Fail("User is not in that league.");
+                return new ClaimResult(false, "User is not in that league.", false);
             }
 
             if (!request.Publisher.League.Years.Contains(request.Publisher.Year))
             {
-                return Result.Fail("League is not active for that year.");
+                return new ClaimResult(false, "League is not active for that year.", false);
             }
 
             var openYears = await GetOpenYears();
             if (!openYears.Contains(request.Publisher.Year))
             {
-                return Result.Fail("That year is not open for play");
+                return new ClaimResult(false, "That year is not open for play", false);
             }
 
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
@@ -282,7 +282,7 @@ namespace FantasyCritic.Lib.Services
                 bool eligible = request.MasterGame.Value.IsEligible(yearOptions.MaximumEligibilityLevel);
                 if (!eligible)
                 {
-                    Result.Fail("That game is not eligible under this league's settings.");
+                    return new ClaimResult(false, "That game is not eligible under this league's settings.", true);
                 }
             }
 
@@ -300,14 +300,14 @@ namespace FantasyCritic.Lib.Services
             {
                 if (gameAlreadyClaimed)
                 {
-                    return Result.Fail("Cannot draft a game that someone already has.");
+                    return new ClaimResult(false, "Cannot draft a game that someone already has.", false);
                 }
 
                 int leagueDraftGames = yearOptions.DraftGames;
                 int userDraftGames = thisPlayersGames.Count(x => !x.Waiver && !x.CounterPick);
                 if (userDraftGames == leagueDraftGames)
                 {
-                    return Result.Fail("User's draft spaces are filled.");
+                    return new ClaimResult(false, "User's draft spaces are filled.", false);
                 }
             }
 
@@ -315,14 +315,14 @@ namespace FantasyCritic.Lib.Services
             {
                 if (gameAlreadyClaimed)
                 {
-                    return Result.Fail("Cannot waiver claim a game that someone already has.");
+                    return new ClaimResult(false, "Cannot waiver claim a game that someone already has.", false);
                 }
 
                 int leagueWaiverGames = yearOptions.WaiverGames;
                 int userWaiverGames = thisPlayersGames.Count(x => x.Waiver);
                 if (userWaiverGames == leagueWaiverGames)
                 {
-                    return Result.Fail("User's waiver spaces are filled.");
+                    return new ClaimResult(false, "User's waiver spaces are filled.", false);
                 }
             }
 
@@ -334,16 +334,16 @@ namespace FantasyCritic.Lib.Services
                 int userCounterPicks = thisPlayersGames.Count(x => x.CounterPick);
                 if (userCounterPicks == leagueCounterPicks)
                 {
-                    return Result.Fail("User's counter pick spaces are filled.");
+                    return new ClaimResult(false, "User's counter pick spaces are filled.", false);
                 }
 
                 if (!otherPlayerHasDraftGame)
                 {
-                    return Result.Fail("Cannot counterpick a game that no other player has drafted.");
+                    return new ClaimResult(false, "Cannot counterpick a game that no other player is publishing.", false);
                 }
             }
 
-            return Result.Ok();
+            return new ClaimResult(true, null, false);
         }
 
         public Task<Result> RemovePublisherGame(Guid publisherGameID)

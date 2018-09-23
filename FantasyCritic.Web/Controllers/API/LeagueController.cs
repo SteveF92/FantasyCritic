@@ -323,13 +323,10 @@ namespace FantasyCritic.Web.Controllers.API
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName,
                 request.Waiver, request.CounterPick, masterGame);
 
-            Result result = await _fantasyCriticService.ClaimGame(domainRequest);
-            if (result.IsFailure)
-            {
-                return BadRequest(result.Error);
-            }
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
+            var viewModel = new ManagerClaimResultViewModel(result);
 
-            return Ok();
+            return Ok(viewModel);
         }
 
         [HttpPost]

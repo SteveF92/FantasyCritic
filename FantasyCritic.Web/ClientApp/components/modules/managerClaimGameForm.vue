@@ -33,6 +33,10 @@
       <div>
         <input type="submit" class="btn btn-primary add-game-button" value="Add game to publisher" />
       </div>
+      <div v-if="claimResult && !claimResult.success" class="alert claim-error" v-bind:class="{ 'alert-danger': !claimResult.overridable, 'alert-warning': claimResult.overridable }">
+        <h4 class="alert-heading">Warning!</h4>
+        <p class="mb-0">{{claimResult.error}}</p>
+      </div>
     </form>
   </div>
 </template>
@@ -48,6 +52,7 @@
                 claimPublisher: null,
                 claimMasterGame: null,
                 claimGameType: null,
+                claimResult: null,
                 claimGameTypes: [
                     'Draft',
                     'CounterPick',
@@ -94,7 +99,11 @@
 
                 axios
                     .post('/api/league/ManagerClaimGame', request)
-                    .then(response => {
+                  .then(response => {
+                        this.claimResult = response.data;
+                        if (!this.claimResult.success) {
+                          return;
+                        }
                         this.$emit('claim-game-success', gameName, this.claimPublisher.publisherName);
                         this.claimGameName = null;
                         this.claimPublisher = null;
@@ -103,7 +112,7 @@
                         this.possibleMasterGames = [];
                     })
                     .catch(response => {
-
+                      
                     });
             }
         }
@@ -112,5 +121,8 @@
 <style scoped>
 .add-game-button{
   width: 100%;
+}
+.claim-error{
+  margin-top: 10px;
 }
 </style>
