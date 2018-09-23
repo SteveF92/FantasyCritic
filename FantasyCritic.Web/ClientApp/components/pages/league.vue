@@ -4,10 +4,6 @@
       {{errorInfo}}
     </div>
 
-    <div v-if="invitedEmail" class="alert alert-success" role="alert">
-      Sucessfully sent invite to {{ invitedEmail }}!
-    </div>
-
     <div class="row">
       <h2>{{ league.leagueName }}</h2>
       <b-form-select v-model="activeYear" :options="league.years" class="year-selector" />
@@ -33,7 +29,7 @@
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-6 col-12">
-        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed($event)" v-on:playerInvited="playerInvited($event)"></leagueActions>
+        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed($event)" v-on:playerInvited="playerInvited($event)" v-on:gameRemoved="gameRemoved($event)"></leagueActions>
       </div>
     </div>
     
@@ -70,10 +66,7 @@
                 errorInfo: "",
                 league: null,
                 leagueYear: null,
-                invitedEmail: "",
-                activeYear: null,
-                claimGameName: "",
-                claimPublisher: ""
+                activeYear: null
             }
         },
         props: ['leagueid', 'year'],
@@ -129,6 +122,14 @@
           gameClaimed(claimInfo) {
             this.fetchLeagueYear();
             let toast = this.$toasted.show(claimInfo.gameName + ' added to ' + claimInfo.publisher, {
+              theme: "primary",
+              position: "top-right",
+              duration: 5000
+            });
+          },
+          gameRemoved(removeInfo) {
+            this.fetchLeagueYear();
+            let toast = this.$toasted.show(removeInfo.gameName + ' removed from ' + removeInfo.publisherName, {
               theme: "primary",
               position: "top-right",
               duration: 5000

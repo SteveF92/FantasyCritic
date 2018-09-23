@@ -30,12 +30,25 @@
       </div>
       <br />
 
-      <div>
+      <div v-if="leagueYear">
         <form class="form-horizontal" v-on:submit.prevent="removePublisherGame">
           <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game">
             <div class="form-group">
-              <label for="inviteEmail" class="control-label">Email Address</label>
-              <input v-model="inviteEmail" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
+              <label for="claimPublisher" class="control-label">Publisher</label>
+              <b-form-select v-model="removeGamePublisher">
+                <option v-for="publisher in leagueYear.publishers" v-bind:value="publisher">
+                  {{ publisher.publisherName }}
+                </option>
+              </b-form-select>
+              <div v-if="removeGamePublisher">
+                <label for="removeGame" class="control-label">Game</label>
+                <b-form-select v-model="removeGame">
+                  <option v-for="publisherGame in removeGamePublisher.games" v-bind:value="publisherGame">
+                    {{ publisherGame.gameName }}
+                  </option>
+                </b-form-select>
+              </div>
+              
             </div>
             <div slot="modal-footer">
               <input type="submit" class="btn btn-primary" value="Remove" />
@@ -57,9 +70,10 @@
       return {
         showAddGame: false,
         inviteEmail: "",
-        invitedEmail: "",
         claimGameName: "",
-        claimPublisher: ""
+        claimPublisher: "",
+        removeGamePublisher: null,
+        removeGame: null
       }
     },
     props: ['league', 'leagueYear'],
@@ -102,10 +116,9 @@
         axios
           .post('/api/league/InvitePlayer', model)
           .then(response => {
+            this.$emit('playerInvited', this.inviteEmail);
             this.showInvitePlayer = false;
-            this.invitedEmail = this.inviteEmail;
             this.inviteEmail = "";
-            this.$emit('playerInvited', this.invitedEmail);
           })
           .catch(response => {
             this.errorInfo = "Cannot find a player with that email address."
@@ -113,6 +126,24 @@
       },
       removePublisherGame() {
         this.$refs.removePublisherGameRef.hide();
+        var model = {
+          publisherGameID: this.removeGame.publisherGameID,
+          publisherID: this.removeGamePublisher.publisherID
+        };
+        var removeInfo = {
+          gameName: this.removeGame.gameName,
+          publisherName: this.removeGamePublisher.publisherName
+        };
+        axios
+          .post('/api/league/RemovePublisherGame', model)
+          .then(response => {
+            this.$emit('gameRemoved', removeInfo);
+            this.removeGamePublisher = null;
+            this.removeGame = null;
+          })
+          .catch(response => {
+            this.errorInfo = "Cannot find a player with that email address."
+          });
       },
       gameClaimed(gameName, publisher) {
         this.$refs.claimGameFormRef.hide();

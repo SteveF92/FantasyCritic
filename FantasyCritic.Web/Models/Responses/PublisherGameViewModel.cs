@@ -12,6 +12,7 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public PublisherGameViewModel(PublisherGame publisherGame, IClock clock)
         {
+            PublisherGameID = publisherGame.PublisherGameID;
             GameName = publisherGame.GameName;
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
 
@@ -41,6 +42,7 @@ namespace FantasyCritic.Web.Models.Responses
             WillRelease = publisherGame.WillRelease();
         }
 
+        public Guid PublisherGameID { get; }
         public string GameName { get; }
         public DateTime Timestamp { get; }
         public bool Waiver { get; }

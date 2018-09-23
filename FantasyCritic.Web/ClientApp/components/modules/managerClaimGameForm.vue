@@ -100,6 +100,7 @@
                         this.claimPublisher = null;
                         this.claimMasterGame = null;
                         this.claimGameType = null;
+                        this.possibleMasterGames = [];
                     })
                     .catch(response => {
 
