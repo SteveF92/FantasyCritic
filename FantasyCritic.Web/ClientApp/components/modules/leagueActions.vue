@@ -2,8 +2,13 @@
   <div>
     <div v-if="league.isManager">
       <h4>Manager Actions</h4>
-      <div>
+      <div class="btn-group publisher-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'">Invite a Player</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'">Add Publisher Game</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'">Remove Publisher Game</b-button>
+      </div>
+
+      <div>
         <form class="form-horizontal" v-on:submit.prevent="invitePlayer">
           <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player">
             <div class="form-group">
@@ -17,12 +22,28 @@
         </form>
       </div>
       <br />
+
       <div v-if="leagueYear">
-        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'">Add Publisher Game</b-button>
         <b-modal id="claimGameForm" ref="claimGameFormRef" title="Add Publisher Game" hide-footer>
           <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:claim-game-success="gameClaimed"></managerClaimGameForm>
         </b-modal>
       </div>
+      <br />
+
+      <div>
+        <form class="form-horizontal" v-on:submit.prevent="removePublisherGame">
+          <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game">
+            <div class="form-group">
+              <label for="inviteEmail" class="control-label">Email Address</label>
+              <input v-model="inviteEmail" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
+            </div>
+            <div slot="modal-footer">
+              <input type="submit" class="btn btn-primary" value="Remove" />
+            </div>
+          </b-modal>
+        </form>
+      </div>
+
     </div>
   </div>
 </template>
@@ -90,6 +111,9 @@
             this.errorInfo = "Cannot find a player with that email address."
           });
       },
+      removePublisherGame() {
+        this.$refs.removePublisherGameRef.hide();
+      },
       gameClaimed(gameName, publisher) {
         this.$refs.claimGameFormRef.hide();
         var claimInfo = {
@@ -101,3 +125,8 @@
     }
   }
 </script>
+<style scoped>
+.publisher-actions button{
+  margin-right: 5px;
+}
+</style>
