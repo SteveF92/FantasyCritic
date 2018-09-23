@@ -2,7 +2,7 @@
   <div>
     <div v-if="league.isManager">
       <h4>Manager Actions</h4>
-      <div class="btn-group publisher-actions" role="group" aria-label="Basic example">
+      <div class="publisher-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'">Invite a Player</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'">Add Publisher Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'">Remove Publisher Game</b-button>
@@ -127,6 +127,7 @@
 </script>
 <style scoped>
 .publisher-actions button{
-  margin-right: 5px;
+  margin-bottom: 5px;
+  width: 210px;
 }
 </style>
