@@ -33,7 +33,7 @@
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-6 col-12">
-        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed($event)"></leagueActions>
+        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed($event)" v-on:playerInvited="playerInvited($event)"></leagueActions>
       </div>
     </div>
     
@@ -129,6 +129,14 @@
           gameClaimed(claimInfo) {
             this.fetchLeagueYear();
             let toast = this.$toasted.show(claimInfo.gameName + ' added to ' + claimInfo.publisher, {
+              theme: "primary",
+              position: "top-right",
+              duration: 5000
+            });
+          },
+          playerInvited(inviteEmail) {
+            this.fetchLeague();
+            let toast = this.$toasted.show('Invite was sent to ' + inviteEmail, {
               theme: "primary",
               position: "top-right",
               duration: 5000

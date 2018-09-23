@@ -3,20 +3,18 @@
     <div v-if="league.isManager">
       <h4>Manager Actions</h4>
       <div>
-        <div v-if="!showInvitePlayer">
-          <b-button variant="info" class="nav-link" v-on:click="showInvitePlayerForm">Invite a Player</b-button>
-        </div>
-        <div v-if="showInvitePlayer">
-          <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="invitePlayer">
+        <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'">Invite a Player</b-button>
+        <form class="form-horizontal" v-on:submit.prevent="invitePlayer">
+          <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player">
             <div class="form-group">
               <label for="inviteEmail" class="control-label">Email Address</label>
               <input v-model="inviteEmail" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
             </div>
-            <div class="form-group">
+            <div slot="modal-footer">
               <input type="submit" class="btn btn-primary" value="Send Invite" />
             </div>
-          </form>
-        </div>
+          </b-modal>
+        </form>
       </div>
       <br />
       <div>
@@ -33,11 +31,11 @@
 <script>
   import Vue from "vue";
   import ManagerClaimGameForm from "components/modules/managerClaimGameForm";
+  import axios from "axios";
 
   export default {
     data() {
       return {
-        showInvitePlayer: false,
         showAddGame: false,
         inviteEmail: "",
         invitedEmail: "",
@@ -50,9 +48,6 @@
       ManagerClaimGameForm
     },
     methods: {
-      showInvitePlayerForm() {
-        this.showInvitePlayer = true;
-      },
       showAddGameForm() {
         this.showAddGame = true;
       },
@@ -83,8 +78,9 @@
           });
       },
       invitePlayer() {
+        this.$refs.invitePlayerRef.hide();
         var model = {
-          leagueID: this.leagueID,
+          leagueID: this.league.leagueID,
           inviteEmail: this.inviteEmail
         };
         axios
@@ -93,7 +89,7 @@
             this.showInvitePlayer = false;
             this.invitedEmail = this.inviteEmail;
             this.inviteEmail = "";
-            this.fetchLeague();
+            this.$emit('playerInvited', this.invitedEmail);
           })
           .catch(response => {
             this.errorInfo = "Cannot find a player with that email address."
