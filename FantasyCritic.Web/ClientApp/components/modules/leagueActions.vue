@@ -33,7 +33,7 @@
 
       <div v-if="leagueYear">
         <b-modal id="associateGameForm" ref="associateGameFormRef" title="Associate Publisher Game" hide-footer>
-          <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:claim-game-success="gameClaimed"></managerClaimGameForm>
+          <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:associate-game-success="gameAssociated"></managerAssociateGameForm>
         </b-modal>
       </div>
       <br />
@@ -71,6 +71,7 @@
 <script>
   import Vue from "vue";
   import ManagerClaimGameForm from "components/modules/managerClaimGameForm";
+  import ManagerAssociateGameForm from "components/modules/managerAssociateGameForm";
   import axios from "axios";
 
   export default {
@@ -86,7 +87,8 @@
     },
     props: ['league', 'leagueYear'],
     components: {
-      ManagerClaimGameForm
+      ManagerClaimGameForm,
+      ManagerAssociateGameForm
     },
     methods: {
       acceptInvite() {
@@ -160,6 +162,10 @@
           publisher
         }
         this.$emit('gameClaimed', claimInfo);
+      },
+      gameAssociated(gameName) {
+        this.$refs.claimGameFormRef.hide();
+        this.$emit('gameAssociated', gameName);
       }
     }
   }

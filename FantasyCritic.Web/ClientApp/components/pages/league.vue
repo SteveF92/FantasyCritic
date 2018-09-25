@@ -29,7 +29,7 @@
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-6 col-12">
-        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed($event)" v-on:playerInvited="playerInvited($event)" v-on:gameRemoved="gameRemoved($event)"></leagueActions>
+        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed($event)" v-on:playerInvited="playerInvited($event)" v-on:gameRemoved="gameRemoved($event)" v-on:gameAssociated="gameAssociated($event)"></leagueActions>
       </div>
     </div>
     
@@ -130,6 +130,14 @@
           gameRemoved(removeInfo) {
             this.fetchLeagueYear();
             let toast = this.$toasted.show(removeInfo.gameName + ' removed from ' + removeInfo.publisherName, {
+              theme: "primary",
+              position: "top-right",
+              duration: 5000
+            });
+          },
+          gameAssociated(associationInfo) {
+            this.fetchLeagueYear();
+            let toast = this.$toasted.show(associationInfo.gameName + ' sucessfully associated.', {
               theme: "primary",
               position: "top-right",
               duration: 5000
