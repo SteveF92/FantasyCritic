@@ -167,6 +167,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetPublisher(publisherID);
         }
 
+        public Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID)
+        {
+            return _fantasyCriticRepo.GetPublisherGame(publisherGameID);
+        }
+
         public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request)
         {
             PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.Waiver, request.CounterPick, null, request.MasterGame, request.Publisher.Year);
@@ -454,9 +459,9 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        public Task<Result> RemovePublisherGame(Guid publisherGameID)
+        public Task<Result> RemovePublisherGame(PublisherGame publisherGame)
         {
-            return _fantasyCriticRepo.RemovePublisherGame(publisherGameID);
+            return _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
         }
     }
 }

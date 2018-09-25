@@ -409,7 +409,13 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            Result result = await _fantasyCriticService.RemovePublisherGame(request.PublisherGameID);
+            Maybe<PublisherGame> publisherGame = await _fantasyCriticService.GetPublisherGame(request.PublisherGameID);
+            if (publisherGame.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Result result = await _fantasyCriticService.RemovePublisherGame(publisherGame.Value);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);

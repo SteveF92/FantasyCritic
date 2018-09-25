@@ -347,6 +347,41 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID)
+        {
+            var query = new
+            {
+                publisherGameID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                PublisherGameEntity gameEntity = await connection.QueryFirstOrDefaultAsync<PublisherGameEntity>(
+                    "select * from tblpublishergame where tblpublishergame.PublisherGameID = @publisherGameID;",
+                    query);
+
+                if (gameEntity is null)
+                {
+                    return Maybe<PublisherGame>.None;
+                }
+
+                var publisher = await GetPublisher(gameEntity.PublisherID);
+                if (publisher.HasNoValue)
+                {
+                    throw new Exception($"Publisher cannot be found: {gameEntity.PublisherID}");
+                }
+
+                Maybe<MasterGame> masterGame = null;
+                if (gameEntity.MasterGameID.HasValue)
+                {
+                    masterGame = await GetMasterGame(gameEntity.MasterGameID.Value);
+                }
+
+                PublisherGame publisherGame = gameEntity.ToDomain(masterGame.Value, publisher.Value.Year);
+                return publisherGame;
+            }
+        }
+
         public async Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
         {
             var query = new

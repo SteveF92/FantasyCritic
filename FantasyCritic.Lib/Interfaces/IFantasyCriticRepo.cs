@@ -26,6 +26,7 @@ namespace FantasyCritic.Lib.Interfaces
 
         Task<Maybe<Publisher>> GetPublisher(Guid publisherID);
         Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user);
+        Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID);
         Task CreatePublisher(Publisher publisher);
         Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year);
         Task AddPublisherGame(Publisher publisher, PublisherGame publisherGame);
