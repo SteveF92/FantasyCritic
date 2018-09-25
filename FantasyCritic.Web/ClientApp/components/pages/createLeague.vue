@@ -158,6 +158,6 @@ export default {
   margin-bottom: 40px;
 }
 .eligibility-section {
-  height: 350px;
+  margin-bottom: 10px;
 }
 </style>
