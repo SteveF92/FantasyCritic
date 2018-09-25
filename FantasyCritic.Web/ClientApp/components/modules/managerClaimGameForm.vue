@@ -34,8 +34,11 @@
         <input type="submit" class="btn btn-primary add-game-button" value="Add game to publisher" />
       </div>
       <div v-if="claimResult && !claimResult.success" class="alert claim-error" v-bind:class="{ 'alert-danger': !claimResult.overridable, 'alert-warning': claimResult.overridable }">
-        <h4 class="alert-heading">Warning!</h4>
-        <p class="mb-0">{{claimResult.error}}</p>
+        <h4 class="alert-heading" v-if="claimResult.overridable">Warning!</h4>
+        <h4 class="alert-heading" v-if="!claimResult.overridable">Error!</h4>
+        <ul>
+          <li v-for="error in claimResult.errors">{{error}}</li>
+        </ul>
       </div>
     </form>
   </div>

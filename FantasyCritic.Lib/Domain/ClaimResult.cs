@@ -8,15 +8,15 @@ namespace FantasyCritic.Lib.Domain
 {
     public class ClaimResult
     {
-        public ClaimResult(bool success, string error, bool overridable)
+        public ClaimResult(List<ClaimError> errors)
         {
-            Success = success;
-            Error = error;
-            Overridable = overridable;
+            Success = !errors.Any();
+            Errors = errors;
+            Overridable = errors.All(x => x.Overridable);
         }
 
         public bool Success { get; }
-        public string Error { get; }
+        public IReadOnlyList<ClaimError> Errors { get; }
         public bool Overridable { get; }
     }
 }

@@ -253,21 +253,22 @@ namespace FantasyCritic.Lib.Services
 
         private async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request)
         {
+            List<ClaimError> claimErrors = new List<ClaimError>();
             bool isInLeague = await UserIsInLeague(request.Publisher.League, request.Publisher.User);
             if (!isInLeague)
             {
-                return new ClaimResult(false, "User is not in that league.", false);
+                claimErrors.Add(new ClaimError("User is not in that league.", false));
             }
 
             if (!request.Publisher.League.Years.Contains(request.Publisher.Year))
             {
-                return new ClaimResult(false, "League is not active for that year.", false);
+                claimErrors.Add(new ClaimError("League is not active for that year.", false));
             }
 
             var openYears = await GetOpenYears();
             if (!openYears.Contains(request.Publisher.Year))
             {
-                return new ClaimResult(false, "That year is not open for play", false);
+                claimErrors.Add(new ClaimError("That year is not open for play", false));
             }
 
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
@@ -279,10 +280,23 @@ namespace FantasyCritic.Lib.Services
             LeagueOptions yearOptions = leagueYear.Value.Options;
             if (request.MasterGame.HasValue)
             {
-                bool eligible = request.MasterGame.Value.IsEligible(yearOptions.MaximumEligibilityLevel);
+                MasterGame masterGame = request.MasterGame.Value;
+                bool eligible = masterGame.IsEligible(yearOptions.MaximumEligibilityLevel);
                 if (!eligible)
                 {
-                    return new ClaimResult(false, "That game is not eligible under this league's settings.", true);
+                    claimErrors.Add(new ClaimError("That game is not eligible under this league's settings.", true));
+                }
+
+                bool released = masterGame.IsReleased(_clock);
+                if (released)
+                {
+                    claimErrors.Add(new ClaimError("That game has already been released.", true));
+                }
+
+                bool hasScore = masterGame.CriticScore.HasValue;
+                if (hasScore)
+                {
+                    claimErrors.Add(new ClaimError("That game already has a score.", true));
                 }
             }
 
@@ -300,14 +314,14 @@ namespace FantasyCritic.Lib.Services
             {
                 if (gameAlreadyClaimed)
                 {
-                    return new ClaimResult(false, "Cannot draft a game that someone already has.", false);
+                    claimErrors.Add(new ClaimError("Cannot draft a game that someone already has.", false));
                 }
 
                 int leagueDraftGames = yearOptions.DraftGames;
                 int userDraftGames = thisPlayersGames.Count(x => !x.Waiver && !x.CounterPick);
                 if (userDraftGames == leagueDraftGames)
                 {
-                    return new ClaimResult(false, "User's draft spaces are filled.", false);
+                    claimErrors.Add(new ClaimError("User's draft spaces are filled.", false));
                 }
             }
 
@@ -315,14 +329,14 @@ namespace FantasyCritic.Lib.Services
             {
                 if (gameAlreadyClaimed)
                 {
-                    return new ClaimResult(false, "Cannot waiver claim a game that someone already has.", false);
+                    claimErrors.Add(new ClaimError("Cannot waiver claim a game that someone already has.", false));
                 }
 
                 int leagueWaiverGames = yearOptions.WaiverGames;
                 int userWaiverGames = thisPlayersGames.Count(x => x.Waiver);
                 if (userWaiverGames == leagueWaiverGames)
                 {
-                    return new ClaimResult(false, "User's waiver spaces are filled.", false);
+                    claimErrors.Add(new ClaimError("User's waiver spaces are filled.", false));
                 }
             }
 
@@ -334,16 +348,16 @@ namespace FantasyCritic.Lib.Services
                 int userCounterPicks = thisPlayersGames.Count(x => x.CounterPick);
                 if (userCounterPicks == leagueCounterPicks)
                 {
-                    return new ClaimResult(false, "User's counter pick spaces are filled.", false);
+                    claimErrors.Add(new ClaimError("User's counter pick spaces are filled.", false));
                 }
 
                 if (!otherPlayerHasDraftGame)
                 {
-                    return new ClaimResult(false, "Cannot counterpick a game that no other player is publishing.", false);
+                    claimErrors.Add(new ClaimError("Cannot counterpick a game that no other player is publishing.", false));
                 }
             }
 
-            return new ClaimResult(true, null, false);
+            return new ClaimResult(claimErrors);
         }
 
         public Task<Result> RemovePublisherGame(Guid publisherGameID)

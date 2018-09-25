@@ -12,12 +12,12 @@ namespace FantasyCritic.Web.Models.Responses
         public ManagerClaimResultViewModel(ClaimResult domain)
         {
             Success = domain.Success;
-            Error = domain.Error;
+            Errors = domain.Errors.Select(x => x.Error).ToList();
             Overridable = domain.Overridable;
         }
 
         public bool Success { get; }
-        public string Error { get; }
+        public IReadOnlyList<string> Errors { get; }
         public bool Overridable { get; }
     }
 }
