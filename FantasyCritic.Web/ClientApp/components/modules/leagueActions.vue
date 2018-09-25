@@ -40,7 +40,7 @@
 
       <div v-if="leagueYear">
         <form class="form-horizontal" v-on:submit.prevent="removePublisherGame">
-          <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game">
+          <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer>
             <div class="form-group">
               <label for="claimPublisher" class="control-label">Publisher</label>
               <b-form-select v-model="removeGamePublisher">
@@ -56,10 +56,14 @@
                   </option>
                 </b-form-select>
               </div>
-
             </div>
-            <div slot="modal-footer">
+
+            <div>
               <input type="submit" class="btn btn-primary" value="Remove" />
+              <div v-if="errorInfo" class="alert alert-danger remove-error">
+                <h4 class="alert-heading">Error!</h4>
+                <p>{{errorInfo}}</p>
+              </div>
             </div>
           </b-modal>
         </form>
@@ -82,7 +86,8 @@
         claimGameName: "",
         claimPublisher: "",
         removeGamePublisher: null,
-        removeGame: null
+        removeGame: null,
+        errorInfo: ""
       }
     },
     props: ['league', 'leagueYear'],
@@ -135,7 +140,6 @@
           });
       },
       removePublisherGame() {
-        this.$refs.removePublisherGameRef.hide();
         var model = {
           publisherGameID: this.removeGame.publisherGameID,
           publisherID: this.removeGamePublisher.publisherID
@@ -147,12 +151,13 @@
         axios
           .post('/api/league/RemovePublisherGame', model)
           .then(response => {
+            this.$refs.removePublisherGameRef.hide();
             this.$emit('gameRemoved', removeInfo);
             this.removeGamePublisher = null;
             this.removeGame = null;
           })
           .catch(response => {
-            this.errorInfo = "Cannot find a player with that email address."
+            this.errorInfo = response.response.data;
           });
       },
       gameClaimed(gameName, publisher) {
@@ -174,5 +179,9 @@
 .publisher-actions button{
   margin-bottom: 5px;
   width: 210px;
+}
+
+.remove-error{
+  margin-top: 15px;
 }
 </style>
