@@ -39,6 +39,13 @@
         <ul>
           <li v-for="error in claimResult.errors">{{error}}</li>
         </ul>
+
+        <div class="form-check" v-if="claimResult.overridable">
+          <label class="form-check-label override-warning">
+            Do you want to override these warnings?
+          </label>
+          <input class="form-check-input" type="checkbox" v-model="claimOverride">
+        </div>
       </div>
     </form>
   </div>
@@ -56,6 +63,7 @@
                 claimMasterGame: null,
                 claimGameType: null,
                 claimResult: null,
+                claimOverride: false,
                 claimGameTypes: [
                     'Draft',
                     'CounterPick',
@@ -97,7 +105,8 @@
                     gameName: gameName,
                     waiver: waiver,
                     counterPick: counterPick,
-                    masterGameID: masterGameID
+                    masterGameID: masterGameID,
+                    managerOverride: this.claimOverride
                 };
 
                 axios
@@ -112,6 +121,7 @@
                         this.claimPublisher = null;
                         this.claimMasterGame = null;
                         this.claimGameType = null;
+                        this.claimOverride = false;
                         this.possibleMasterGames = [];
                     })
                     .catch(response => {
@@ -130,5 +140,8 @@
 }
 .game-search-input{
   margin-bottom: 15px;
+}
+.override-warning {
+  margin-right: 30px;
 }
 </style>

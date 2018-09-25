@@ -357,7 +357,13 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            return new ClaimResult(claimErrors);
+            var result = new ClaimResult(claimErrors);
+            if (result.Overridable && request.ManagerOverride)
+            {
+                return new ClaimResult(new List<ClaimError>());
+            }
+
+            return result;
         }
 
         public Task<Result> RemovePublisherGame(Guid publisherGameID)

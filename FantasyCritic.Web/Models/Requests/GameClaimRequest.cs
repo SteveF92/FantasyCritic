@@ -13,5 +13,6 @@ namespace FantasyCritic.Web.Models.Requests
         public bool Waiver { get; set; }
         public bool CounterPick { get; set; }
         public Guid? MasterGameID { get; set; }
+        public bool ManagerOverride { get; set; }
     }
 }
