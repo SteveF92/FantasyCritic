@@ -9,6 +9,12 @@ namespace FantasyCritic.Lib.Extensions
 {
     public static class PlayerGameExtensions
     {
+        public static bool ContainsGame(this IEnumerable<PublisherGame> games, MasterGame game)
+        {
+            bool containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGameID == x.MasterGame.Value.MasterGameID);
+            return containsGame;
+        }
+
         public static bool ContainsGame(this IEnumerable<PublisherGame> games, PublisherGame game)
         {
             bool containsGame;

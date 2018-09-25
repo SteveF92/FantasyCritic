@@ -268,22 +268,9 @@ namespace FantasyCritic.Lib.Services
         private async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
-            bool isInLeague = await UserIsInLeague(request.Publisher.League, request.Publisher.User);
-            if (!isInLeague)
-            {
-                claimErrors.Add(new ClaimError("User is not in that league.", false));
-            }
 
-            if (!request.Publisher.League.Years.Contains(request.Publisher.Year))
-            {
-                claimErrors.Add(new ClaimError("League is not active for that year.", false));
-            }
-
-            var openYears = await GetOpenYears();
-            if (!openYears.Contains(request.Publisher.Year))
-            {
-                claimErrors.Add(new ClaimError("That year is not open for play", false));
-            }
+            var basicErrors = await GetBasicErrors(request.Publisher.League, request.Publisher);
+            claimErrors.AddRange(basicErrors);
 
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
             if (leagueYear.HasNoValue)
@@ -366,22 +353,80 @@ namespace FantasyCritic.Lib.Services
 
         private async Task<ClaimResult> CanAssociateGame(AssociateGameDomainRequest request)
         {
+            List<ClaimError> associationErrors = new List<ClaimError>();
+
+            var basicErrors = await GetBasicErrors(request.Publisher.League, request.Publisher);
+            associationErrors.AddRange(basicErrors);
+
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
             IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame);
-            var claimResult = new ClaimResult(masterGameErrors);
+            associationErrors.AddRange(masterGameErrors);
 
-            if (claimResult.Overridable && request.ManagerOverride)
+            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
+            IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.Year == leagueYear.Value.Year).ToList();
+            IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != request.Publisher.User.UserID).ToList();
+
+            IReadOnlyList<PublisherGame> gamesForYear = publishersForYear.SelectMany(x => x.PublisherGames).ToList();
+            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
+
+            bool gameAlreadyClaimed = gamesForYear.ContainsGame(request.MasterGame);
+
+            if (!request.PublisherGame.Waiver && !request.PublisherGame.CounterPick)
             {
-                await _fantasyCriticRepo.AssociatePublisherGame(request.Publisher, request.PublisherGame, request.MasterGame);
+                if (gameAlreadyClaimed)
+                {
+                    associationErrors.Add(new ClaimError("Cannot draft a game that someone already has.", false));
+                }
+            }
+
+            if (request.PublisherGame.Waiver)
+            {
+                if (gameAlreadyClaimed)
+                {
+                    associationErrors.Add(new ClaimError("Cannot waiver claim a game that someone already has.", false));
+                }
+            }
+
+            if (request.PublisherGame.CounterPick)
+            {
+                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick && !x.Waiver).ContainsGame(request.MasterGame);
+                if (!otherPlayerHasDraftGame)
+                {
+                    associationErrors.Add(new ClaimError("Cannot counterpick a game that no other player is publishing.", false));
+                }
+            }
+
+            var result = new ClaimResult(associationErrors);
+            if (result.Overridable && request.ManagerOverride)
+            {
                 return new ClaimResult(new List<ClaimError>());
             }
-            if (!claimResult.Success)
+
+            return result;
+        }
+
+        private async Task<IReadOnlyList<ClaimError>> GetBasicErrors(League league, Publisher publisher)
+        {
+            List<ClaimError> claimErrors = new List<ClaimError>();
+
+            bool isInLeague = await UserIsInLeague(league, publisher.User);
+            if (!isInLeague)
             {
-                return claimResult;
+                claimErrors.Add(new ClaimError("User is not in that league.", false));
             }
 
-            await _fantasyCriticRepo.AssociatePublisherGame(request.Publisher, request.PublisherGame, request.MasterGame);
-            return claimResult;
+            if (!league.Years.Contains(publisher.Year))
+            {
+                claimErrors.Add(new ClaimError("League is not active for that year.", false));
+            }
+
+            var openYears = await GetOpenYears();
+            if (!openYears.Contains(publisher.Year))
+            {
+                claimErrors.Add(new ClaimError("That year is not open for play", false));
+            }
+
+            return claimErrors;
         }
 
         private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueOptions yearOptions, MasterGame masterGame)
