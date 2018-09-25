@@ -21,6 +21,7 @@ namespace FantasyCritic.Web.Models.Responses
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             WaiverSystem = leagueYear.Options.WaiverSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
+            UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
             Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock)).ToList();
             Standings = publishers.OrderByDescending(x => x.TotalFantasyPoints).Select(x => new StandingViewModel(x, leagueYear.Options.ScoringSystem, leagueYear.Options.EstimatedCriticScore)).ToList();
         }
@@ -35,6 +36,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string DraftSystem { get; }
         public string WaiverSystem { get; }
         public string ScoringSystem { get; }
+        public bool UnlinkedGameExists { get; }
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
         public IReadOnlyList<StandingViewModel> Standings { get; }
     }

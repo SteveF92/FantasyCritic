@@ -5,6 +5,7 @@
       <div class="publisher-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'">Invite a Player</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'">Add Publisher Game</b-button>
+        <b-button variant="info" class="nav-link" v-if="leagueYear && leagueYear.unlinkedGameExists" v-b-modal="'associateGameForm'">Associate Unlinked Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'">Remove Publisher Game</b-button>
       </div>
 
@@ -31,6 +32,13 @@
       <br />
 
       <div v-if="leagueYear">
+        <b-modal id="associateGameForm" ref="associateGameFormRef" title="Associate Publisher Game" hide-footer>
+          <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:claim-game-success="gameClaimed"></managerClaimGameForm>
+        </b-modal>
+      </div>
+      <br />
+
+      <div v-if="leagueYear">
         <form class="form-horizontal" v-on:submit.prevent="removePublisherGame">
           <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game">
             <div class="form-group">
@@ -48,7 +56,7 @@
                   </option>
                 </b-form-select>
               </div>
-              
+
             </div>
             <div slot="modal-footer">
               <input type="submit" class="btn btn-primary" value="Remove" />
