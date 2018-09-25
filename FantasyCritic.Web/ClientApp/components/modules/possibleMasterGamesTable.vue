@@ -1,5 +1,5 @@
 <template>
-    <table class="table">
+    <table class="table table-sm table-responsive-sm">
         <thead>
           <tr>
             <th>Game Name</th>

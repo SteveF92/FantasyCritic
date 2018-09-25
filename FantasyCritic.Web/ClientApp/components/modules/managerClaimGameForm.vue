@@ -3,7 +3,7 @@
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="claimGameName" class="control-label">Game Name</label>
-        <div class="input-group">
+        <div class="input-group game-search-input">
           <input v-model="claimGameName" id="claimGameName" name="claimGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
@@ -124,5 +124,8 @@
 }
 .claim-error{
   margin-top: 10px;
+}
+.game-search-input{
+  margin-bottom: 15px;
 }
 </style>
