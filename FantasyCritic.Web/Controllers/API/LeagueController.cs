@@ -330,6 +330,59 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> ManagerAssociateGame([FromBody] AssociateGameRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            var claimUser = await _userManager.FindByIdAsync(publisher.Value.User.UserID.ToString());
+            if (claimUser == null)
+            {
+                return BadRequest();
+            }
+
+            var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.PublisherGameID == request.PublisherGameID);
+            if (publisherGame == null)
+            {
+                return BadRequest();
+            }
+
+            Maybe<MasterGame> masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID);
+            if (masterGame.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            AssociateGameDomainRequest domainRequest = new AssociateGameDomainRequest(publisher.Value, publisherGame, masterGame.Value, request.ManagerOverride);
+
+            ClaimResult result = await _fantasyCriticService.AssociateGame(domainRequest);
+            var viewModel = new ManagerClaimResultViewModel(result);
+
+            return Ok(viewModel);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RemovePublisherGame([FromBody] GameRemoveRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);

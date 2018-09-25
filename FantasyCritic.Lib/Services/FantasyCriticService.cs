@@ -183,6 +183,20 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
+        public async Task<ClaimResult> AssociateGame(AssociateGameDomainRequest request)
+        {
+            ClaimResult claimResult = await CanAssociateGame(request);
+
+            if (!claimResult.Success)
+            {
+                return claimResult;
+            }
+
+            await _fantasyCriticRepo.AssociatePublisherGame(request.Publisher, request.PublisherGame, request.MasterGame);
+
+            return claimResult;
+        }
+
         public async Task UpdateFantasyPoints(int year)
         {
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
@@ -280,24 +294,8 @@ namespace FantasyCritic.Lib.Services
             LeagueOptions yearOptions = leagueYear.Value.Options;
             if (request.MasterGame.HasValue)
             {
-                MasterGame masterGame = request.MasterGame.Value;
-                bool eligible = masterGame.IsEligible(yearOptions.MaximumEligibilityLevel);
-                if (!eligible)
-                {
-                    claimErrors.Add(new ClaimError("That game is not eligible under this league's settings.", true));
-                }
-
-                bool released = masterGame.IsReleased(_clock);
-                if (released)
-                {
-                    claimErrors.Add(new ClaimError("That game has already been released.", true));
-                }
-
-                bool hasScore = masterGame.CriticScore.HasValue;
-                if (hasScore)
-                {
-                    claimErrors.Add(new ClaimError("That game already has a score.", true));
-                }
+                var masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame.Value);
+                claimErrors.AddRange(masterGameErrors);
             }
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
@@ -364,6 +362,51 @@ namespace FantasyCritic.Lib.Services
             }
 
             return result;
+        }
+
+        private async Task<ClaimResult> CanAssociateGame(AssociateGameDomainRequest request)
+        {
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
+            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame);
+            var claimResult = new ClaimResult(masterGameErrors);
+
+            if (claimResult.Overridable && request.ManagerOverride)
+            {
+                await _fantasyCriticRepo.AssociatePublisherGame(request.Publisher, request.PublisherGame, request.MasterGame);
+                return new ClaimResult(new List<ClaimError>());
+            }
+            if (!claimResult.Success)
+            {
+                return claimResult;
+            }
+
+            await _fantasyCriticRepo.AssociatePublisherGame(request.Publisher, request.PublisherGame, request.MasterGame);
+            return claimResult;
+        }
+
+        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueOptions yearOptions, MasterGame masterGame)
+        {
+            List<ClaimError> claimErrors = new List<ClaimError>();
+
+            bool eligible = masterGame.IsEligible(yearOptions.MaximumEligibilityLevel);
+            if (!eligible)
+            {
+                claimErrors.Add(new ClaimError("That game is not eligible under this league's settings.", true));
+            }
+
+            bool released = masterGame.IsReleased(_clock);
+            if (released)
+            {
+                claimErrors.Add(new ClaimError("That game has already been released.", true));
+            }
+
+            bool hasScore = masterGame.CriticScore.HasValue;
+            if (hasScore)
+            {
+                claimErrors.Add(new ClaimError("That game already has a score.", true));
+            }
+
+            return claimErrors;
         }
 
         public Task<Result> RemovePublisherGame(Guid publisherGameID)

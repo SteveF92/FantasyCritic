@@ -386,6 +386,19 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tblpublishergame set MasterGameID = @masterGameID where PublisherGameID = @publisherGameID",
+                    new
+                    {
+                        masterGameID = masterGame.MasterGameID,
+                        publisherGameID = publisherGame.PublisherGameID
+                    });
+            }
+        }
+
         public async Task<IReadOnlyList<int>> GetOpenYears()
         {
             using (var connection = new MySqlConnection(_connectionString))
