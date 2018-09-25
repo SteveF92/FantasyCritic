@@ -415,7 +415,13 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            Result result = await _fantasyCriticService.RemovePublisherGame(publisherGame.Value);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Result result = await _fantasyCriticService.RemovePublisherGame(leagueYear.Value, publisher.Value, publisherGame.Value);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);

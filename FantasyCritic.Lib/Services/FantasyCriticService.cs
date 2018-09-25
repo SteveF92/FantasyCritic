@@ -459,9 +459,20 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        public Task<Result> RemovePublisherGame(PublisherGame publisherGame)
+        public async Task<Result> RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
         {
-            return _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
+            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.League, publisher.Year);
+            IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.Year == leagueYear.Year).ToList();
+            IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != publisher.User.UserID).ToList();
+            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
+
+            bool otherPlayerHasCounterpick = otherPlayersGames.Where(x => x.CounterPick).ContainsGame(publisherGame);
+            if (otherPlayerHasCounterpick)
+            {
+                return Result.Fail("Can't remove a publisher game that another player has as a counterpick.");
+            }
+
+            return await _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
         }
     }
 }
