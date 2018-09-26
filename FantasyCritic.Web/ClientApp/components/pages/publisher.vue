@@ -12,7 +12,7 @@
 <script>
     import Vue from "vue";
     import axios from "axios";
-    import PlayerGameTable from "components/modules/playerGameTable";
+    import PlayerGameTable from "components/modules/gameTables/playerGameTable";
 
     export default {
         data() {

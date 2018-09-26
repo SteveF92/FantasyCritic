@@ -37,8 +37,8 @@
 </template>
 <script>
     import Vue from "vue";
-    import MinimalPlayerGameRow from "components/modules/minimalPlayerGameRow";
-    import MinimalBlankPlayerGameRow from "components/modules/minimalBlankPlayerGameRow";
+    import MinimalPlayerGameRow from "components/modules/gameTables/minimalPlayerGameRow";
+    import MinimalBlankPlayerGameRow from "components/modules/gameTables/minimalBlankPlayerGameRow";
 
     export default {
         components: {
