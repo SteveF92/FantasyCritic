@@ -121,7 +121,7 @@
           },
           gameClaimed(claimInfo) {
             this.fetchLeagueYear();
-            let toast = this.$toasted.show(claimInfo.gameName + ' added to ' + claimInfo.publisher, {
+            let toast = this.$toasted.show(claimInfo.gameName + ' added to ' + claimInfo.publisherName, {
               theme: "primary",
               position: "top-right",
               duration: 5000

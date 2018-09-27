@@ -5,35 +5,21 @@
       <div class="publisher-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'">Invite a Player</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'">Add Publisher Game</b-button>
-        <b-button variant="info" class="nav-link" v-if="leagueYear && leagueYear.unlinkedGameExists" v-b-modal="'associateGameForm'">Associate Unlinked Game</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'">Associate Unlinked Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'">Remove Publisher Game</b-button>
       </div>
 
-      <div>
-        <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" hide-footer>
-          <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
-        </b-modal>
-      </div>
+      <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
       <br />
 
       <div v-if="leagueYear">
-        <b-modal id="claimGameForm" ref="claimGameFormRef" title="Add Publisher Game" hide-footer>
-          <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
-        </b-modal>
-      </div>
-      <br />
-
-      <div v-if="leagueYear">
-        <b-modal id="associateGameForm" ref="associateGameFormRef" title="Associate Publisher Game" hide-footer>
-          <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
-        </b-modal>
-      </div>
-      <br />
-
-      <div v-if="leagueYear">
+        <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
+        <br />
+        <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
+        <br />
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
+        <br />
       </div>
-
     </div>
   </div>
 </template>
@@ -87,23 +73,15 @@
       },
       
       playerInvited(inviteEmail) {
-        this.$refs.invitePlayerRef.hide();
         this.$emit('playerInvited', inviteEmail);
       },
-      gameClaimed(gameName, publisher) {
-        this.$refs.claimGameFormRef.hide();
-        var claimInfo = {
-          gameName,
-          publisher
-        }
+      gameClaimed(claimInfo) {
         this.$emit('gameClaimed', claimInfo);
       },
       gameAssociated(gameName) {
-        this.$refs.claimGameFormRef.hide();
         this.$emit('gameAssociated', gameName);
       },
       gameRemoved(removeInfo) {
-        
         this.$emit('gameRemoved', removeInfo);
       }
     }

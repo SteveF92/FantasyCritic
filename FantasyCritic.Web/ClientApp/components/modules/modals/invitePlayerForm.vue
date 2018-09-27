@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player">
     <form class="form-horizontal" v-on:submit.prevent="invitePlayer">
       <div class="form-group">
         <label for="inviteEmail" class="control-label">Email Address</label>
@@ -9,7 +9,7 @@
     <div slot="modal-footer">
       <input type="submit" class="btn btn-primary" value="Send Invite" />
     </div>
-  </div>
+  </b-modal>
 </template>
 <script>
   import Vue from "vue";
@@ -32,6 +32,7 @@
         axios
           .post('/api/league/InvitePlayer', model)
           .then(response => {
+            this.$refs.invitePlayerRef.hide();
             this.$emit('playerInvited', this.inviteEmail);
             this.showInvitePlayer = false;
             this.inviteEmail = "";

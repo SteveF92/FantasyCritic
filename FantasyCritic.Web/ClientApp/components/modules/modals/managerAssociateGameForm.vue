@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <b-modal id="associateGameForm" ref="associateGameFormRef" title="Associate Publisher Game" hide-footer>
     <div class="form-group">
       <label for="associatePublisher" class="control-label">Publisher</label>
       <b-form-select v-model="associatePublisher">
@@ -53,7 +53,7 @@
         </div>
       </div>
     </form>
-  </div>
+  </b-modal>
 </template>
 
 <script>
@@ -103,7 +103,8 @@
                           return;
                         }
 
-                    this.$emit('gameAssociated', this.associateMasterGame);
+                      this.$refs.associateGameFormRef.hide();
+                      this.$emit('gameAssociated', this.associateMasterGame);
                       this.associateGameName = "";
                       this.associatePublisher = null;
                       this.associateMasterGame = null;

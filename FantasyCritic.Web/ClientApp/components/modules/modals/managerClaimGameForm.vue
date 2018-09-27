@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <b-modal id="claimGameForm" ref="claimGameFormRef" title="Add Publisher Game" hide-footer>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="claimGameName" class="control-label">Game Name</label>
@@ -48,7 +48,7 @@
         </div>
       </div>
     </form>
-  </div>
+  </b-modal>
 </template>
 
 <script>
@@ -112,17 +112,22 @@
                 axios
                     .post('/api/league/ManagerClaimGame', request)
                   .then(response => {
-                        this.claimResult = response.data;
-                        if (!this.claimResult.success) {
-                          return;
-                        }
-                        this.$emit('gameClaimed', gameName, this.claimPublisher.publisherName);
-                        this.claimGameName = null;
-                        this.claimPublisher = null;
-                        this.claimMasterGame = null;
-                        this.claimGameType = null;
-                        this.claimOverride = false;
-                        this.possibleMasterGames = [];
+                      this.claimResult = response.data;
+                      if (!this.claimResult.success) {
+                        return;
+                      }
+                      this.$refs.claimGameFormRef.hide();
+                      var claimInfo = {
+                        gameName,
+                        publisherName: this.claimPublisher.publisherName
+                      };
+                      this.$emit('gameClaimed', claimInfo);
+                      this.claimGameName = null;
+                      this.claimPublisher = null;
+                      this.claimMasterGame = null;
+                      this.claimGameType = null;
+                      this.claimOverride = false;
+                      this.possibleMasterGames = [];
                     })
                     .catch(response => {
                       
