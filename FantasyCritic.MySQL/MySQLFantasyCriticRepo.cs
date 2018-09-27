@@ -377,7 +377,7 @@ namespace FantasyCritic.MySQL
                     masterGame = await GetMasterGame(gameEntity.MasterGameID.Value);
                 }
 
-                PublisherGame publisherGame = gameEntity.ToDomain(masterGame.Value, publisher.Value.Year);
+                PublisherGame publisherGame = gameEntity.ToDomain(masterGame, publisher.Value.Year);
                 return publisherGame;
             }
         }
