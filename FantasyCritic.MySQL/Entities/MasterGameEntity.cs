@@ -35,6 +35,8 @@ namespace FantasyCritic.MySQL.Entities
         public decimal? CriticScore { get; set; }
         public int MinimumReleaseYear { get; set; }
         public int EligibilityLevel { get; set; }
+        public bool YearlyInstallment { get; set; }
+        public bool EarlyAccess { get; set; }
 
         public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel)
         {
