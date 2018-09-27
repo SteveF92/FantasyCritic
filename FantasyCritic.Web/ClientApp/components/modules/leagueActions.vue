@@ -31,34 +31,7 @@
       <br />
 
       <div v-if="leagueYear">
-        <form class="form-horizontal" v-on:submit.prevent="removePublisherGame">
-          <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer>
-            <div class="form-group">
-              <label for="claimPublisher" class="control-label">Publisher</label>
-              <b-form-select v-model="removeGamePublisher">
-                <option v-for="publisher in leagueYear.publishers" v-bind:value="publisher">
-                  {{ publisher.publisherName }}
-                </option>
-              </b-form-select>
-              <div v-if="removeGamePublisher">
-                <label for="removeGame" class="control-label">Game</label>
-                <b-form-select v-model="removeGame">
-                  <option v-for="publisherGame in removeGamePublisher.games" v-bind:value="publisherGame">
-                    {{ publisherGame.gameName }}
-                  </option>
-                </b-form-select>
-              </div>
-            </div>
-
-            <div>
-              <input type="submit" class="btn btn-primary" value="Remove" />
-              <div v-if="errorInfo" class="alert alert-danger remove-error">
-                <h4 class="alert-heading">Error!</h4>
-                <p>{{errorInfo}}</p>
-              </div>
-            </div>
-          </b-modal>
-        </form>
+        <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
       </div>
 
     </div>
@@ -69,16 +42,12 @@
   import ManagerClaimGameForm from "components/modules/modals/managerClaimGameForm";
   import ManagerAssociateGameForm from "components/modules/modals/managerAssociateGameForm";
   import InvitePlayerForm from "components/modules/modals/invitePlayerForm";
+  import RemoveGameForm from "components/modules/modals/removeGameForm";
   import axios from "axios";
 
   export default {
     data() {
       return {
-        showAddGame: false,
-        claimGameName: "",
-        claimPublisher: "",
-        removeGamePublisher: null,
-        removeGame: null,
         errorInfo: ""
       }
     },
@@ -86,7 +55,8 @@
     components: {
       ManagerClaimGameForm,
       ManagerAssociateGameForm,
-      InvitePlayerForm
+      InvitePlayerForm,
+      RemoveGameForm
     },
     methods: {
       acceptInvite() {
@@ -115,27 +85,7 @@
 
           });
       },
-      removePublisherGame() {
-        var model = {
-          publisherGameID: this.removeGame.publisherGameID,
-          publisherID: this.removeGamePublisher.publisherID
-        };
-        var removeInfo = {
-          gameName: this.removeGame.gameName,
-          publisherName: this.removeGamePublisher.publisherName
-        };
-        axios
-          .post('/api/league/RemovePublisherGame', model)
-          .then(response => {
-            this.$refs.removePublisherGameRef.hide();
-            this.$emit('gameRemoved', removeInfo);
-            this.removeGamePublisher = null;
-            this.removeGame = null;
-          })
-          .catch(response => {
-            this.errorInfo = response.response.data;
-          });
-      },
+      
       playerInvited(inviteEmail) {
         this.$refs.invitePlayerRef.hide();
         this.$emit('playerInvited', inviteEmail);
@@ -151,6 +101,10 @@
       gameAssociated(gameName) {
         this.$refs.claimGameFormRef.hide();
         this.$emit('gameAssociated', gameName);
+      },
+      gameRemoved(removeInfo) {
+        
+        this.$emit('gameRemoved', removeInfo);
       }
     }
   }
