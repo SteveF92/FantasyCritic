@@ -74,8 +74,8 @@
 </template>
 <script>
   import Vue from "vue";
-  import ManagerClaimGameForm from "components/modules/managerClaimGameForm";
-  import ManagerAssociateGameForm from "components/modules/managerAssociateGameForm";
+  import ManagerClaimGameForm from "components/modules/modals/managerClaimGameForm";
+  import ManagerAssociateGameForm from "components/modules/modals/managerAssociateGameForm";
   import axios from "axios";
 
   export default {
