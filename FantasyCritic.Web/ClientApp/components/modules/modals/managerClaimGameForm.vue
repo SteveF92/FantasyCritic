@@ -116,7 +116,7 @@
                         if (!this.claimResult.success) {
                           return;
                         }
-                        this.$emit('claim-game-success', gameName, this.claimPublisher.publisherName);
+                        this.$emit('gameClaimed', gameName, this.claimPublisher.publisherName);
                         this.claimGameName = null;
                         this.claimPublisher = null;
                         this.claimMasterGame = null;

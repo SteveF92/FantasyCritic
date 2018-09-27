@@ -103,7 +103,7 @@
                           return;
                         }
 
-                      this.$emit('associate-game-success', this.associateMasterGame);
+                    this.$emit('gameAssociated', this.associateMasterGame);
                       this.associateGameName = "";
                       this.associatePublisher = null;
                       this.associateMasterGame = null;

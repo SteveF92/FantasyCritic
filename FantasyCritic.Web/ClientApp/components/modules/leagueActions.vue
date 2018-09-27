@@ -10,30 +10,22 @@
       </div>
 
       <div>
-        <form class="form-horizontal" v-on:submit.prevent="invitePlayer">
-          <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player">
-            <div class="form-group">
-              <label for="inviteEmail" class="control-label">Email Address</label>
-              <input v-model="inviteEmail" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
-            </div>
-            <div slot="modal-footer">
-              <input type="submit" class="btn btn-primary" value="Send Invite" />
-            </div>
-          </b-modal>
-        </form>
+        <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" hide-footer>
+          <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
+        </b-modal>
       </div>
       <br />
 
       <div v-if="leagueYear">
         <b-modal id="claimGameForm" ref="claimGameFormRef" title="Add Publisher Game" hide-footer>
-          <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:claim-game-success="gameClaimed"></managerClaimGameForm>
+          <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
         </b-modal>
       </div>
       <br />
 
       <div v-if="leagueYear">
         <b-modal id="associateGameForm" ref="associateGameFormRef" title="Associate Publisher Game" hide-footer>
-          <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:associate-game-success="gameAssociated"></managerAssociateGameForm>
+          <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
         </b-modal>
       </div>
       <br />
@@ -76,13 +68,13 @@
   import Vue from "vue";
   import ManagerClaimGameForm from "components/modules/modals/managerClaimGameForm";
   import ManagerAssociateGameForm from "components/modules/modals/managerAssociateGameForm";
+  import InvitePlayerForm from "components/modules/modals/invitePlayerForm";
   import axios from "axios";
 
   export default {
     data() {
       return {
         showAddGame: false,
-        inviteEmail: "",
         claimGameName: "",
         claimPublisher: "",
         removeGamePublisher: null,
@@ -93,7 +85,8 @@
     props: ['league', 'leagueYear'],
     components: {
       ManagerClaimGameForm,
-      ManagerAssociateGameForm
+      ManagerAssociateGameForm,
+      InvitePlayerForm
     },
     methods: {
       acceptInvite() {
@@ -122,23 +115,6 @@
 
           });
       },
-      invitePlayer() {
-        this.$refs.invitePlayerRef.hide();
-        var model = {
-          leagueID: this.league.leagueID,
-          inviteEmail: this.inviteEmail
-        };
-        axios
-          .post('/api/league/InvitePlayer', model)
-          .then(response => {
-            this.$emit('playerInvited', this.inviteEmail);
-            this.showInvitePlayer = false;
-            this.inviteEmail = "";
-          })
-          .catch(response => {
-            this.errorInfo = "Cannot find a player with that email address."
-          });
-      },
       removePublisherGame() {
         var model = {
           publisherGameID: this.removeGame.publisherGameID,
@@ -159,6 +135,10 @@
           .catch(response => {
             this.errorInfo = response.response.data;
           });
+      },
+      playerInvited(inviteEmail) {
+        this.$refs.invitePlayerRef.hide();
+        this.$emit('playerInvited', inviteEmail);
       },
       gameClaimed(gameName, publisher) {
         this.$refs.claimGameFormRef.hide();

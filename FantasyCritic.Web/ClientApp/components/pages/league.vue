@@ -29,7 +29,7 @@
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-6 col-12">
-        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed($event)" v-on:playerInvited="playerInvited($event)" v-on:gameRemoved="gameRemoved($event)" v-on:gameAssociated="gameAssociated($event)"></leagueActions>
+        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited" v-on:gameRemoved="gameRemoved" v-on:gameAssociated="gameAssociated"></leagueActions>
       </div>
     </div>
     
