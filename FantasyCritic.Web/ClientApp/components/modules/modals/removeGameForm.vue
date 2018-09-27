@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form class="form-horizontal" v-on:submit.prevent="removePublisherGame">
+    <form class="form-horizontal" v-on:submit.prevent="removePublisherGame" hide-footer>
       <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer>
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
@@ -19,8 +19,8 @@
           </div>
         </div>
 
-        <div>
-          <input type="submit" class="btn btn-primary" value="Remove" />
+        <div v-if="removeGame">
+          <input type="submit" class="btn btn-primary add-game-button" value="Remove Game" />
           <div v-if="errorInfo" class="alert alert-danger remove-error">
             <h4 class="alert-heading">Error!</h4>
             <p>{{errorInfo}}</p>
@@ -68,3 +68,21 @@
     }
   }
 </script>
+<style scoped>
+
+.add-game-button {
+  width: 100%;
+}
+
+.claim-error {
+  margin-top: 10px;
+}
+
+.game-search-input {
+  margin-bottom: 15px;
+}
+
+.remove-error {
+  margin-top: 15px;
+}
+</style>

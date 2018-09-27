@@ -92,8 +92,4 @@
   margin-bottom: 5px;
   width: 210px;
 }
-
-.remove-error{
-  margin-top: 15px;
-}
 </style>
