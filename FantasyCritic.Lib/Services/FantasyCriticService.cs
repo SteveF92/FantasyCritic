@@ -444,6 +444,18 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's settings.", true));
             }
 
+            bool earlyAccessEligible = (!masterGame.EarlyAccess || yearOptions.AllowEarlyAccess);
+            if (!earlyAccessEligible)
+            {
+                claimErrors.Add(new ClaimError("That game is not eligible under this league's early access settings.", true));
+            }
+
+            bool yearlyInstallmentEligible = (!masterGame.YearlyInstallment || yearOptions.AllowYearlyInstallments);
+            if (!yearlyInstallmentEligible)
+            {
+                claimErrors.Add(new ClaimError("That game is not eligible under this league's yearly installment settings.", true));
+            }
+
             bool released = masterGame.IsReleased(_clock);
             if (released)
             {

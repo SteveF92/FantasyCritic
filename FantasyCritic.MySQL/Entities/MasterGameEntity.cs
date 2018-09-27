@@ -25,6 +25,8 @@ namespace FantasyCritic.MySQL.Entities
             CriticScore = masterGame.CriticScore;
             MinimumReleaseYear = masterGame.MinimumReleaseYear;
             EligibilityLevel = masterGame.EligibilityLevel.Level;
+            YearlyInstallment = masterGame.YearlyInstallment;
+            EarlyAccess = masterGame.EarlyAccess;
         }
 
         public Guid MasterGameID { get; set; }
