@@ -167,8 +167,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            EligibilityLevel eligibilityLevel =
-                await _fantasyCriticService.GetEligibilityLevel(request.MaximumEligibilityLevel);
+            EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(request.MaximumEligibilityLevel);
             LeagueCreationParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel);
             await _fantasyCriticService.CreateLeague(domainRequest);
 

@@ -67,6 +67,22 @@
                 <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
               </ul>
             </div>
+
+            <div>
+              <h4>Other Options</h4>
+              <div>
+                <b-form-checkbox id="yearly-checkbox"
+                                 v-model="selectedLeagueOptions.allowYearlyInstallments">
+                  <span class="checkbox-label">Allow Yearly Installments (IE Yealy Sports Franchises)</span>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox id="early-access-checkbox"
+                                 v-model="selectedLeagueOptions.allowEarlyAccess">
+                  <span class="checkbox-label">Allow Early Access Games</span>
+                </b-form-checkbox>
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
@@ -95,6 +111,8 @@ export default {
                 estimatedCriticScore: "",
                 initialYear: "",
                 maximumEligibilityLevel: 0,
+                allowYearlyInstallments: true,
+                allowEarlyAccess: false,
                 draftSystem: "",
                 waiverSystem: "",
                 scoringSystem: ""
@@ -131,7 +149,8 @@ export default {
             axios
                 .get('/api/League/LeagueOptions')
                 .then(response => {
-                    this.possibleLeagueOptions = response.data;
+                  this.possibleLeagueOptions = response.data;
+                  this.selectedLeagueOptions.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
                 })
                 .catch(returnedError => (this.error = returnedError));
         },
@@ -160,4 +179,7 @@ export default {
 .eligibility-section {
   margin-bottom: 10px;
 }
+  .checkbox-label {
+    padding-left: 25px;
+  }
 </style>

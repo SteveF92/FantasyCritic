@@ -18,6 +18,7 @@ namespace FantasyCritic.Web.Models.Responses
             WaiverSystems = waiverSystems.Select(x => x.Value).ToList();
             ScoringSystems = scoringSystems.Select(x => x.Name).ToList();
             EligibilityLevels = eligibilityLevels.Select(x => new EligibilityLevelViewModel(x, true)).ToList();
+            DefaultMaximumEligibilityLevel = 2;
         }
 
         public IReadOnlyList<int> OpenYears { get; }
@@ -25,5 +26,6 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<string> WaiverSystems { get; }
         public IReadOnlyList<string> ScoringSystems { get; }
         public IReadOnlyList<EligibilityLevelViewModel> EligibilityLevels { get; }
+        public int DefaultMaximumEligibilityLevel { get; }
     }
 }
