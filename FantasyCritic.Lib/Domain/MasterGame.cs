@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain
         private readonly decimal? _criticScore;
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            int minimumReleaseYear, EligibilityLevel eligibilityLevel)
+            int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -21,11 +21,13 @@ namespace FantasyCritic.Lib.Domain
             _criticScore = criticScore;
             MinimumReleaseYear = minimumReleaseYear;
             EligibilityLevel = eligibilityLevel;
+            YearlyInstallment = yearlyInstallment;
+            EarlyAccess = earlyAccess;
             SubGames = new List<MasterSubGame>();
         }
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            int minimumReleaseYear, EligibilityLevel eligibilityLevel, IReadOnlyList<MasterSubGame> subGames)
+            int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, IReadOnlyList<MasterSubGame> subGames)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -35,6 +37,8 @@ namespace FantasyCritic.Lib.Domain
             _criticScore = criticScore;
             MinimumReleaseYear = minimumReleaseYear;
             EligibilityLevel = eligibilityLevel;
+            YearlyInstallment = yearlyInstallment;
+            EarlyAccess = earlyAccess;
             SubGames = subGames;
         }
 
@@ -43,6 +47,8 @@ namespace FantasyCritic.Lib.Domain
         public string EstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
+        public bool YearlyInstallment { get; }
+        public bool EarlyAccess { get; }
 
         public decimal? CriticScore
         {

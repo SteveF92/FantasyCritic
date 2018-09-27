@@ -20,10 +20,14 @@ namespace FantasyCritic.Web.Models.Requests
         public int MinimumReleaseYear { get; set; }
         [Required]
         public int EligibilityLevel { get; set; }
+        [Required]
+        public bool YearlyInstallment { get; set; }
+        [Required]
+        public bool EarlyAccess { get; set; }
 
         public MasterGame ToDomain(EligibilityLevel eligibilityLevel)
         {
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, MinimumReleaseYear, eligibilityLevel);
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, MinimumReleaseYear, eligibilityLevel, YearlyInstallment, EarlyAccess);
             return masterGame;
         }
     }
