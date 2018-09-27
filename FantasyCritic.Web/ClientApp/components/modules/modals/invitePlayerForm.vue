@@ -7,7 +7,7 @@
       </div>
     </form>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Send Invite" />
+      <input type="submit" class="btn btn-primary" value="Send Invite" :disabled="!emailIsValid"/>
     </div>
   </b-modal>
 </template>
@@ -20,6 +20,12 @@
       return {
         inviteEmail: "",
         errorInfo: ""
+      }
+    },
+    computed: {
+      emailIsValid() {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(this.inviteEmail).toLowerCase());
       }
     },
     props: ['league'],
