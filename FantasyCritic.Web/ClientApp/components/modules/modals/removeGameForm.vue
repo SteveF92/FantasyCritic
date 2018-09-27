@@ -1,7 +1,7 @@
 <template>
   <div>
     <form class="form-horizontal" v-on:submit.prevent="removePublisherGame" hide-footer>
-      <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer>
+      <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer @hidden="clearData">
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
           <b-form-select v-model="removeGamePublisher">
@@ -65,6 +65,10 @@
             this.errorInfo = response.response.data;
           });
       },
+      clearData() {
+        this.removeGamePublisher = null;
+        this.removeGame = null;
+      }
     }
   }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="claimGameForm" ref="claimGameFormRef" title="Add Publisher Game" hide-footer>
+  <b-modal id="claimGameForm" ref="claimGameFormRef" title="Add Publisher Game" hide-footer @hidden="clearData">
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="claimGameName" class="control-label">Game Name</label>
@@ -132,6 +132,14 @@
                     .catch(response => {
                       
                     });
+            },
+            clearData() {
+              this.claimGameName = null;
+              this.claimPublisher = null;
+              this.claimMasterGame = null;
+              this.claimGameType = null;
+              this.claimOverride = false;
+              this.possibleMasterGames = [];
             }
         }
     }

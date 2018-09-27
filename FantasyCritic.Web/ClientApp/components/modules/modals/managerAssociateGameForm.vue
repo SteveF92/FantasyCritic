@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="associateGameForm" ref="associateGameFormRef" title="Associate Publisher Game" hide-footer>
+  <b-modal id="associateGameForm" ref="associateGameFormRef" title="Associate Publisher Game" hide-footer @hidden="clearData">
     <div class="form-group">
       <label for="associatePublisher" class="control-label">Publisher</label>
       <b-form-select v-model="associatePublisher">
@@ -115,6 +115,14 @@
                     .catch(response => {
                       
                     });
+            },
+            clearData() {
+              this.associateGameName = "";
+              this.associatePublisher = null;
+              this.associateMasterGame = null;
+              this.associatePublisherGame = null;
+              this.associateOverride = false;
+              this.possibleMasterGames = [];
             }
         }
     }
