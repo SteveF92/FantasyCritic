@@ -54,6 +54,7 @@ namespace FantasyCritic.MySQL
         public async Task<IdentityResult> UpdateAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            user.SecurityStamp = Guid.NewGuid().ToString();
 
             //Not updating password or email confirmed as that breaks password change. Use the SetPasswordHash.
             FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);
