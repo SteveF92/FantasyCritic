@@ -116,7 +116,8 @@
                       
                     });
             },
-            clearData() {
+          clearData() {
+              this.associateResult = null;
               this.associateGameName = "";
               this.associatePublisher = null;
               this.associateMasterGame = null;

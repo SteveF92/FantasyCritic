@@ -139,6 +139,7 @@
                     });
             },
             clearData() {
+              this.claimResult = null;
               this.claimGameName = null;
               this.claimPublisher = null;
               this.claimMasterGame = null;
