@@ -40,9 +40,10 @@ namespace FantasyCritic.Web
             var keyString = Configuration["Tokens:Key"];
             var issuer = Configuration["Tokens:Issuer"];
             var audience = Configuration["Tokens:Audience"];
+            IClock clock = SystemClock.Instance;
 
             // Add application services.
-            var userStore = new MySQLFantasyCriticUserStore(connectionString);
+            var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString, userStore);
             var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
@@ -63,7 +64,7 @@ namespace FantasyCritic.Web
             services.AddTransient<IEmailSender>(factory => sendGridEmailSender);
             services.AddTransient<ISMSSender, SMSSender>();
             services.AddTransient<ITokenService>(factory => tokenService);
-            services.AddTransient<IClock>(factory => SystemClock.Instance);
+            services.AddTransient<IClock>(factory => clock);
             services.AddHttpClient<IOpenCriticService, OpenCriticService>();
 
             services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>

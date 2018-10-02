@@ -9,16 +9,19 @@ using FantasyCritic.MySQL.Entities;
 using MySql.Data.MySqlClient;
 using System;
 using System.Linq;
+using NodaTime;
 
 namespace FantasyCritic.MySQL
 {
     public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore, IReadOnlyFantasyCriticUserStore
     {
         private readonly string _connectionString;
+        private readonly IClock _clock;
 
-        public MySQLFantasyCriticUserStore(string connectionString)
+        public MySQLFantasyCriticUserStore(string connectionString, IClock clock)
         {
             _connectionString = connectionString;
+            _clock = clock;
         }
 
         public async Task<IdentityResult> CreateAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -30,8 +33,8 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbluser(UserID,UserName,NormalizedUserName,RealName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,EmailConfirmed) VALUES " +
-                    "(@UserID,@UserName,@NormalizedUserName,@RealName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@EmailConfirmed)",
+                    "insert into tbluser(UserID,UserName,NormalizedUserName,RealName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
+                    "(@UserID,@UserName,@NormalizedUserName,@RealName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
                     entity);
             }
 
@@ -55,6 +58,8 @@ namespace FantasyCritic.MySQL
         {
             cancellationToken.ThrowIfCancellationRequested();
             user.SecurityStamp = Guid.NewGuid().ToString();
+            user.UpdateLastUsedCredentials(_clock.GetCurrentInstant());
+            await RemoveAllRefreshTokens(user);
 
             //Not updating password or email confirmed as that breaks password change. Use the SetPasswordHash.
             FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);

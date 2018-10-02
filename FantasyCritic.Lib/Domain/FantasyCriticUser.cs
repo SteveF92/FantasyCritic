@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
     public class FantasyCriticUser
     {
         public FantasyCriticUser(Guid userID, string userName, string normalizedUserName, string realName, string emailAddress, 
-            string normalizedEmailAddress, bool emailConfirmed, string securityStamp, string passwordHash)
+            string normalizedEmailAddress, bool emailConfirmed, string securityStamp, string passwordHash, Instant lastChangedCredentials)
         {
             UserID = userID;
             UserName = userName;
@@ -20,6 +21,7 @@ namespace FantasyCritic.Lib.Domain
             EmailConfirmed = emailConfirmed;
             SecurityStamp = securityStamp;
             PasswordHash = passwordHash;
+            LastChangedCredentials = lastChangedCredentials;
         }
 
         public Guid UserID { get; set; }
@@ -40,5 +42,11 @@ namespace FantasyCritic.Lib.Domain
 
         public string PasswordHash { get; set; }
 
+        public Instant LastChangedCredentials { get; set; }
+
+        public void UpdateLastUsedCredentials(Instant currentInstant)
+        {
+            LastChangedCredentials = currentInstant;
+        }
     }
 }
