@@ -46,10 +46,12 @@
         </ul>
 
         <div class="form-check" v-if="associateResult.overridable">
-          <label class="form-check-label override-warning">
-            Do you want to override these warnings?
-          </label>
-          <input class="form-check-input" type="checkbox" v-model="associateOverride">
+          <span>
+            <label class="form-check-label">
+              Do you want to override these warnings?
+            </label>
+            <input class="form-check-input override-checkbox" type="checkbox" v-model="associateOverride">
+          </span>
         </div>
       </div>
     </form>
@@ -138,7 +140,8 @@
 .game-search-input{
   margin-bottom: 15px;
 }
-.override-warning {
-  margin-right: 30px;
+.override-checkbox {
+  margin-left: 10px;
+  margin-top: 8px;
 }
 </style>
