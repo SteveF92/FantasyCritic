@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
 {
@@ -32,9 +33,10 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly ITokenService _tokenService;
+        private readonly IClock _clock;
 
         public AccountController(FantasyCriticUserManager userManager, FantasyCriticRoleManager roleManager, SignInManager<FantasyCriticUser> signInManager, 
-            IEmailSender emailSender, ILogger<AccountController> logger, ITokenService tokenService)
+            IEmailSender emailSender, ILogger<AccountController> logger, ITokenService tokenService, IClock clock)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -42,6 +44,7 @@ namespace FantasyCritic.Web.Controllers.API
             _emailSender = emailSender;
             _logger = logger;
             _tokenService = tokenService;
+            _clock = clock;
         }
 
         public async Task<ActionResult> CurrentUser()
@@ -67,7 +70,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.RealName, model.EmailAddress, model.EmailAddress, false, Guid.NewGuid().ToString(), "");
+            var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.RealName, model.EmailAddress, model.EmailAddress, false, Guid.NewGuid().ToString(), "", _clock.GetCurrentInstant());
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {

@@ -56,6 +56,7 @@ export default {
               .then(response => { resolve(response) });
           })
           .catch(error => {
+            context.commit("clearUserAndToken");
             reject();
           });
       });

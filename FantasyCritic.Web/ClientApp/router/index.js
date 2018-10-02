@@ -58,6 +58,11 @@ router.beforeEach(function (toRoute, fromRoute, next) {
           store.commit("setRedirect", toRoute.path);
           next({ name: 'login' });
         }
+      })
+      .catch(() => {
+        console.log("Router error");
+        context.commit("clearUserAndToken");
+        next({ name: 'login' });
       });
   }
 

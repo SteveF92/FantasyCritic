@@ -28,9 +28,7 @@ axios.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
   const originalRequest = error.config;
-  if (error.response.status === 401 && !originalRequest._retry) {
-    originalRequest._retry = true;
-
+  if (error.response.status === 401 && error.response.data !== "No Retry") {
     var oldToken = localStorage.getItem("jwt_token");
     var refreshToken = localStorage.getItem("refresh_token");
     var refreshRequest = {
@@ -48,6 +46,8 @@ axios.interceptors.response.use(function (response) {
       });
   }
 
+  store.commit("clearUserAndToken");
+  router.push({ name: 'login' });
   return Promise.reject(error);
 });
 

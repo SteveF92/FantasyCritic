@@ -11,6 +11,7 @@ using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
 {
@@ -45,6 +46,18 @@ namespace FantasyCritic.Web.Controllers.API
             if (!refreshTokens.Contains(request.RefreshToken))
             {
                 return BadRequest();
+            }
+
+            string issuedTimeString = principal.Claims.FirstOrDefault(x => x.Type == "nbf")?.Value;
+            if (issuedTimeString == null)
+            {
+                return BadRequest("Invalid JWT.");
+            }
+
+            Instant issuedTime = Instant.FromUnixTimeSeconds(Convert.ToInt64(issuedTimeString));
+            if (issuedTime < user.LastChangedCredentials)
+            {
+                return StatusCode(401, "No Retry");
             }
 
             var newJwtToken = _tokenService.GenerateAccessToken(principal.Claims);
