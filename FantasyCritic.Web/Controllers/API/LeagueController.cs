@@ -175,6 +175,31 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> EditLeagueYearSettings([FromBody] EditLeagueYearRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser == null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(request.MaximumEligibilityLevel);
+            EditLeagueYearParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel);
+            Result result = await _fantasyCriticService.EditLeague(domainRequest);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> InvitePlayer([FromBody] InviteRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);

@@ -177,6 +177,20 @@ namespace FantasyCritic.MySQL
             await AddPlayerToLeague(league, league.LeagueManager);
         }
 
+        public async Task EditLeague(League league, int year, LeagueOptions options)
+        {
+            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "update tblleagueyear SET DraftGames = @DraftGames, WaiverGames = @WaiverGames, CounterPicks = @CounterPicks, EstimatedCriticScore = @EstimatedCriticScore, " +
+                    "MaximumEligibilityLevel = @MaximumEligibilityLevel, AllowYearlyInstallments = @AllowYearlyInstallments, AllowEarlyAccess = @AllowEarlyAccess, DraftSystem = @DraftSystem, " +
+                    "WaiverSystem = @WaiverSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year",
+                    leagueYearEntity);
+            }
+        }
+
         public async Task AddNewLeagueYear(League league, int year, LeagueOptions options)
         {
             LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options);

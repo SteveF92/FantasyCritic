@@ -40,6 +40,20 @@ namespace FantasyCritic.Lib.Domain
             ScoringSystem = parameters.ScoringSystem;
         }
 
+        public LeagueOptions(EditLeagueYearParameters parameters)
+        {
+            DraftGames = parameters.DraftGames;
+            WaiverGames = parameters.WaiverGames;
+            CounterPicks = parameters.CounterPicks;
+            EstimatedCriticScore = parameters.EstimatedCriticScore;
+            MaximumEligibilityLevel = parameters.MaximumEligibilityLevel;
+            AllowYearlyInstallments = parameters.AllowYearlyInstallments;
+            AllowEarlyAccess = parameters.AllowEarlyAccess;
+            DraftSystem = parameters.DraftSystem;
+            WaiverSystem = parameters.WaiverSystem;
+            ScoringSystem = parameters.ScoringSystem;
+        }
+
         public int DraftGames { get; }
         public int WaiverGames { get; }
         public int CounterPicks { get; }

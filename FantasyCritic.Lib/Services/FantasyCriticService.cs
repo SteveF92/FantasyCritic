@@ -63,6 +63,46 @@ namespace FantasyCritic.Lib.Services
             return newLeague;
         }
 
+        public async Task<Result> EditLeague(EditLeagueYearParameters parameters)
+        {
+            LeagueOptions options = new LeagueOptions(parameters);
+
+            var league = await GetLeagueByID(parameters.LeagueID);
+            if (league.HasNoValue)
+            {
+                throw new Exception($"League cannot be found: {parameters.LeagueID}");
+            }
+
+            var leagueYear = await GetLeagueYear(league.Value.LeagueID, parameters.Year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception($"League year cannot be found: {parameters.LeagueID}|{parameters.Year}");
+            }
+
+            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(league.Value, parameters.Year);
+
+            int maxDraftGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick && !x.Waiver)).Max();
+            int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).Max();
+            int maxWaiverGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.Waiver)).Max();
+
+            if (maxDraftGames > options.DraftGames)
+            {
+                return Result.Fail($"Cannot reduce number of draft games to {options.DraftGames} as a publisher has {maxDraftGames} draft games currently.");
+            }
+            if (maxCounterPicks > options.CounterPicks)
+            {
+                return Result.Fail($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
+            }
+            if (maxWaiverGames > options.WaiverGames)
+            {
+                return Result.Fail($"Cannot reduce number of waiver games to {options.WaiverGames} as a publisher has {maxWaiverGames} waiver games currently.");
+            }
+
+            await _fantasyCriticRepo.EditLeague(league.Value, parameters.Year, options);
+
+            return Result.Ok();
+        }
+
         public Task AddNewLeagueYear(League league, int year, LeagueOptions options)
         {
             return _fantasyCriticRepo.AddNewLeagueYear(league, year, options);
