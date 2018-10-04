@@ -9,6 +9,10 @@
       <b-form-select v-model="activeYear" :options="league.years" class="year-selector" />
     </div>
 
+    <div v-if="league">
+      <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: year }}">Edit League Settings</router-link>
+    </div>
+
     <div v-if="league.outstandingInvite">
       You have been invited to join this league. Do you wish to join?
       <div class="row">

@@ -174,8 +174,34 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        public async Task<IActionResult> GetLeagueYearOptions(Guid leagueID, int year)
+        {
+            Maybe<League> league = await _fantasyCriticService.GetLeagueByID(leagueID);
+            if (league.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Something went really wrong, no options are set up for this league.");
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
+            bool userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
+            if (!userIsInLeague)
+            {
+                return Unauthorized();
+            }
+
+            var leagueViewModel = new LeagueYearSettingsViewModel(league.Value, leagueYear.Value);
+            return Ok(leagueViewModel);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> EditLeagueYearSettings([FromBody] EditLeagueYearRequest request)
+        public async Task<IActionResult> EditLeagueYearSettings([FromBody] LeagueYearSettingsViewModel request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             if (currentUser == null)

@@ -6,12 +6,31 @@ using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Web.Models.Requests
 {
-    public class EditLeagueYearRequest
+    public class LeagueYearSettingsViewModel
     {
+        public LeagueYearSettingsViewModel(League league, LeagueYear leagueYear)
+        {
+            LeagueID = league.LeagueID;
+            Year = leagueYear.Year;
+            LeagueName = league.LeagueName;
+            DraftGames = leagueYear.Options.DraftGames;
+            WaiverGames = leagueYear.Options.WaiverGames;
+            CounterPicks = leagueYear.Options.CounterPicks;
+            EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
+            MaximumEligibilityLevel = leagueYear.Options.MaximumEligibilityLevel.Level;
+            AllowYearlyInstallments = leagueYear.Options.AllowYearlyInstallments;
+            AllowEarlyAccess = leagueYear.Options.AllowEarlyAccess;
+            DraftSystem = leagueYear.Options.DraftSystem.Value;
+            WaiverSystem = leagueYear.Options.WaiverSystem.Value;
+            ScoringSystem = leagueYear.Options.ScoringSystem.Name;
+        }
+
         [Required]
         public Guid LeagueID { get; set; }
         [Required]
         public int Year { get; set; }
+        [Required]
+        public string LeagueName { get; set; }
         [Required]
         public int DraftGames { get; set; }
         [Required]

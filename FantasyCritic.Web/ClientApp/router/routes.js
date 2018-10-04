@@ -6,6 +6,7 @@ import Contact from "components/pages/contact";
 import ManageUser from "components/pages/manageUser";
 import CreateLeague from "components/pages/createLeague";
 import League from "components/pages/league";
+import EditLeague from "components/pages/editLeague";
 import Publisher from "components/pages/publisher";
 import MasterGame from "components/pages/masterGame";
 import ConfirmEmail from "components/pages/confirmEmail";
@@ -105,6 +106,18 @@ export const routes = [
     name: "league",
     meta: {
       title: "League"
+    },
+    props: (route) => ({
+      leagueid: route.params.leagueid,
+      year: route.params.year
+    })
+  },
+  {
+    path: "/editLeague/:leagueid/:year",
+    component: EditLeague,
+    name: "editLeague",
+    meta: {
+      title: "Edit League"
     },
     props: (route) => ({
       leagueid: route.params.leagueid,
