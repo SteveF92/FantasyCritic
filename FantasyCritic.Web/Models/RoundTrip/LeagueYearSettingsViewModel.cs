@@ -8,6 +8,11 @@ namespace FantasyCritic.Web.Models.Requests
 {
     public class LeagueYearSettingsViewModel
     {
+        public LeagueYearSettingsViewModel()
+        {
+
+        }
+
         public LeagueYearSettingsViewModel(League league, LeagueYear leagueYear)
         {
             LeagueID = league.LeagueID;

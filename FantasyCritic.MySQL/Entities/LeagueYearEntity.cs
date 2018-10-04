@@ -27,6 +27,8 @@ namespace FantasyCritic.MySQL.Entities
             EstimatedCriticScore = options.EstimatedCriticScore;
 
             MaximumEligibilityLevel = options.MaximumEligibilityLevel.Level;
+            AllowYearlyInstallments = options.AllowYearlyInstallments;
+            AllowEarlyAccess = options.AllowEarlyAccess;
             DraftSystem = options.DraftSystem.Value;
             WaiverSystem = options.WaiverSystem.Value;
             ScoringSystem = options.ScoringSystem.Name;

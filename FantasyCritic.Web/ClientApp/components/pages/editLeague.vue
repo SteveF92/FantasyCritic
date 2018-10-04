@@ -76,7 +76,7 @@
 
         <div class="form-group">
           <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-primary" value="Create League" />
+            <input type="submit" class="btn btn-primary" value="Edit League Settings" />
           </div>
         </div>
       </form>
@@ -141,12 +141,12 @@ export default {
       },
       postRequest() {
           axios
-              .post('/api/league/EditLeague', this.selectedLeagueOptions)
-              .then(this.responseHandler)
-              .catch(this.catchHandler);
+            .post('/api/league/EditLeagueYearSettings', this.selectedLeagueOptions)
+            .then(this.responseHandler)
+            .catch(this.catchHandler);
       },
       responseHandler(response) {
-          this.$router.push({ name: "home" });
+        this.$router.push({ name: 'league', params: { leagueid: this.leagueid, year: this.year } });
       },
       catchHandler(returnedError) {
         this.errorInfo = returnedError;
