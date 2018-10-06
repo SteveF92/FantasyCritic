@@ -63,23 +63,17 @@ namespace FantasyCritic.Lib.Services
             return newLeague;
         }
 
-        public async Task<Result> EditLeague(EditLeagueYearParameters parameters)
+        public async Task<Result> EditLeague(League league, EditLeagueYearParameters parameters)
         {
             LeagueOptions options = new LeagueOptions(parameters);
 
-            var league = await GetLeagueByID(parameters.LeagueID);
-            if (league.HasNoValue)
-            {
-                throw new Exception($"League cannot be found: {parameters.LeagueID}");
-            }
-
-            var leagueYear = await GetLeagueYear(league.Value.LeagueID, parameters.Year);
+            var leagueYear = await GetLeagueYear(league.LeagueID, parameters.Year);
             if (leagueYear.HasNoValue)
             {
                 throw new Exception($"League year cannot be found: {parameters.LeagueID}|{parameters.Year}");
             }
 
-            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(league.Value, parameters.Year);
+            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(league, parameters.Year);
 
             int maxDraftGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick && !x.Waiver)).Max();
             int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).Max();
@@ -98,7 +92,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail($"Cannot reduce number of waiver games to {options.WaiverGames} as a publisher has {maxWaiverGames} waiver games currently.");
             }
 
-            await _fantasyCriticRepo.EditLeague(league.Value, parameters.Year, options);
+            await _fantasyCriticRepo.EditLeague(league, parameters.Year, options);
 
             return Result.Ok();
         }
