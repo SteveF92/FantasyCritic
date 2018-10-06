@@ -46,5 +46,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels();
         Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel);
         Task<Result> RemovePublisherGame(Guid publisherGameID);
+        Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
     }
 }

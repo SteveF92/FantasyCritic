@@ -142,6 +142,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tblpublishergame SET ManualCriticScore = @manualCriticScore where PublisherGameID = @publisherGameID;", 
+                    new { publisherGameID = publisherGame.PublisherGameID, manualCriticScore });
+            }
+        }
+
         public async Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
         {
             if (_eligibilityLevels != null)

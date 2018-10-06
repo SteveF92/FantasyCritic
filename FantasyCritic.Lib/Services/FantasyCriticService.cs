@@ -520,5 +520,10 @@ namespace FantasyCritic.Lib.Services
 
             return await _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
         }
+
+        public Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)
+        {
+            return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
+        }
     }
 }

@@ -275,5 +275,49 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ManuallyScorePublisherGame([FromBody] ManualPublisherGameScoreRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            Maybe<PublisherGame> publisherGame = await _fantasyCriticService.GetPublisherGame(request.PublisherGameID);
+            if (publisherGame.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            await _fantasyCriticService.ManuallyScoreGame(publisherGame.Value, request.ManualCriticScore);
+
+            return Ok();
+        }
     }
 }
