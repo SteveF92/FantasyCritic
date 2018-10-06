@@ -8,7 +8,6 @@
       <h2>{{ league.leagueName }}</h2>
       <b-form-select v-model="activeYear" :options="league.years" class="year-selector" />
     </div>
-
     <div v-if="league">
       <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: year }}">Edit League Settings</router-link>
     </div>
@@ -33,14 +32,9 @@
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-6 col-12">
-        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited" v-on:gameRemoved="gameRemoved" v-on:gameAssociated="gameAssociated"></leagueActions>
-      </div>
-    </div>
-    
-    <div v-if="leagueYear">
-      <h3>Summary</h3>
-      <div class="league-summary">
-        <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
+        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited"
+                       v-on:gameRemoved="gameRemoved" v-on:gameAssociated="gameAssociated"
+                       v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></leagueActions>
       </div>
     </div>
 
@@ -51,6 +45,13 @@
           {{ player.userName }}
         </li>
       </ul>
+    </div>
+
+    <div v-if="leagueYear">
+      <h3>Summary</h3>
+      <div class="league-summary">
+        <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
+      </div>
     </div>
 
   </div>
@@ -140,6 +141,22 @@
           gameAssociated(associationInfo) {
             this.fetchLeagueYear();
             let toast = this.$toasted.show(associationInfo.gameName + ' sucessfully associated.', {
+              theme: "primary",
+              position: "top-right",
+              duration: 5000
+            });
+          },
+          gameManuallyScored(manualScoreInfo) {
+            this.fetchLeagueYear();
+            let toast = this.$toasted.show(manualScoreInfo.gameName + ' was given a score of ' + manualScoreInfo.score + '.', {
+              theme: "primary",
+              position: "top-right",
+              duration: 5000
+            });
+          },
+          manualScoreRemoved(gameName) {
+            this.fetchLeagueYear();
+            let toast = this.$toasted.show(gameName + "'s manual score was removed.", {
               theme: "primary",
               position: "top-right",
               duration: 5000

@@ -7,6 +7,7 @@
         <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'">Add Publisher Game</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'">Associate Unlinked Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'">Remove Publisher Game</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'">Set a Score Manually</b-button>
       </div>
 
       <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
@@ -19,6 +20,8 @@
         <br />
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <br />
+        <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
+        <br />
       </div>
     </div>
   </div>
@@ -29,6 +32,7 @@
   import ManagerAssociateGameForm from "components/modules/modals/managerAssociateGameForm";
   import InvitePlayerForm from "components/modules/modals/invitePlayerForm";
   import RemoveGameForm from "components/modules/modals/removeGameForm";
+  import ManuallyScoreGameForm from "components/modules/modals/manuallyScoreGameForm";
   import axios from "axios";
 
   export default {
@@ -42,7 +46,8 @@
       ManagerClaimGameForm,
       ManagerAssociateGameForm,
       InvitePlayerForm,
-      RemoveGameForm
+      RemoveGameForm,
+      ManuallyScoreGameForm
     },
     methods: {
       acceptInvite() {
@@ -83,6 +88,12 @@
       },
       gameRemoved(removeInfo) {
         this.$emit('gameRemoved', removeInfo);
+      },
+      gameManuallyScored(manualScoreInfo) {
+        this.$emit('gameManuallyScored', manualScoreInfo);
+      },
+      manualScoreRemoved(gameName) {
+        this.$emit('manualScoreRemoved', gameName);
       }
     }
   }
