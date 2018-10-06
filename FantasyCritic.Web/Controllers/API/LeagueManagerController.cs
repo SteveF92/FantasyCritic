@@ -277,7 +277,18 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> ManuallyScorePublisherGame([FromBody] ManualPublisherGameScoreRequest request)
+        public Task<IActionResult> ManuallyScorePublisherGame([FromBody] ManualPublisherGameScoreRequest request)
+        {
+            return UpdateManualCriticScore(request.PublisherID, request.PublisherGameID, request.ManualCriticScore);
+        }
+
+        [HttpPost]
+        public Task<IActionResult> RemoveManualPublisherGameScore([FromBody] ManualPublisherGameScoreRequest request)
+        {
+            return UpdateManualCriticScore(request.PublisherID, request.PublisherGameID, null);
+        }
+
+        public async Task<IActionResult> UpdateManualCriticScore(Guid publisherID, Guid publisherGameID, decimal? manualCriticScore)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
@@ -286,7 +297,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            var publisher = await _fantasyCriticService.GetPublisher(publisherID);
             if (publisher.HasNoValue)
             {
                 return BadRequest();
@@ -303,7 +314,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            Maybe<PublisherGame> publisherGame = await _fantasyCriticService.GetPublisherGame(request.PublisherGameID);
+            Maybe<PublisherGame> publisherGame = await _fantasyCriticService.GetPublisherGame(publisherGameID);
             if (publisherGame.HasNoValue)
             {
                 return BadRequest();
@@ -315,7 +326,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            await _fantasyCriticService.ManuallyScoreGame(publisherGame.Value, request.ManualCriticScore);
+            await _fantasyCriticService.ManuallyScoreGame(publisherGame.Value, manualCriticScore);
 
             return Ok();
         }

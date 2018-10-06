@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Web.Models.Requests
 {
-    public class ManualPublisherGameScoreRequest
+    public class RemoveManualPublisherGameScoreRequest
     {
         [Required]
         public Guid PublisherID { get; set; }
         [Required]
         public Guid PublisherGameID { get; set; }
-        [Required]
-        public decimal ManualCriticScore { get; set; }
     }
 }
