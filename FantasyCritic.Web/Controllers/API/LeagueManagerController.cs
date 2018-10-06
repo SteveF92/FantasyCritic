@@ -128,26 +128,6 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePublisher([FromBody] CreatePublisherRequest request)
-        {
-            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
-            if (league.HasNoValue)
-            {
-                return BadRequest();
-            }
-
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(league.Value, currentUser);
-            if (!userIsInLeague)
-            {
-                return Forbid();
-            }
-
-            await _fantasyCriticService.CreatePublisher(league.Value, request.Year, currentUser, request.PublisherName);
-            return Ok();
-        }
-
-        [HttpPost]
         public async Task<IActionResult> ManagerClaimGame([FromBody] ClaimGameRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
