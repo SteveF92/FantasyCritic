@@ -21,7 +21,8 @@ namespace FantasyCritic.Web.Models.Responses
 
             FantasyPoints = publisherGame.FantasyPoints;
 
-            if (publisherGame.MasterGame.HasValue)
+            Linked = publisherGame.MasterGame.HasValue;
+            if (Linked)
             {
                 GameName = publisherGame.MasterGame.Value.GameName;
                 EstimatedReleaseDate = publisherGame.MasterGame.Value.EstimatedReleaseDate;
@@ -29,14 +30,16 @@ namespace FantasyCritic.Web.Models.Responses
                 {
                     ReleaseDate = publisherGame.MasterGame.Value.ReleaseDate.Value.ToDateTimeUnspecified();
                 }
-                CriticScore = publisherGame.MasterGame.Value.CriticScore;
-            }
 
-            Linked = publisherGame.MasterGame.HasValue;
-            if (publisherGame.MasterGame.HasValue)
-            {
+                CriticScore = publisherGame.MasterGame.Value.CriticScore;
                 Released = publisherGame.MasterGame.Value.IsReleased(clock);
                 MasterGameID = publisherGame.MasterGame.Value.MasterGameID;
+
+                if (publisherGame.ManualCriticScore.HasValue)
+                {
+                    CriticScore = publisherGame.ManualCriticScore;
+                    ManualCriticScore = true;
+                }
             }
 
             WillRelease = publisherGame.WillRelease();
@@ -56,5 +59,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool Linked { get; }
         public bool Released { get; }
         public bool WillRelease { get; }
+        public bool ManualCriticScore { get; }
     }
 }
