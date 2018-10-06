@@ -214,7 +214,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request)
         {
-            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.Waiver, request.CounterPick, null, request.MasterGame, request.Publisher.Year);
+            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.Waiver, request.CounterPick, null, null, request.MasterGame, request.Publisher.Year);
 
             ClaimResult claimResult = await CanClaimGame(request);
 
