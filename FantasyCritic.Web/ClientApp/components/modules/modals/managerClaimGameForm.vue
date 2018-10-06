@@ -117,7 +117,7 @@
                 };
 
                 axios
-                    .post('/api/league/ManagerClaimGame', request)
+                  .post('/api/leagueManager/ManagerClaimGame', request)
                   .then(response => {
                       this.claimResult = response.data;
                       if (!this.claimResult.success) {

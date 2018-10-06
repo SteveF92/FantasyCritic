@@ -54,7 +54,7 @@
           publisherName: this.removeGamePublisher.publisherName
         };
         axios
-          .post('/api/league/RemovePublisherGame', model)
+          .post('/api/leagueManager/RemovePublisherGame', model)
           .then(response => {
             this.$refs.removePublisherGameRef.hide();
             this.$emit('gameRemoved', removeInfo);

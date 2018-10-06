@@ -141,7 +141,7 @@ export default {
       },
       postRequest() {
           axios
-            .post('/api/league/EditLeagueYearSettings', this.selectedLeagueOptions)
+            .post('/api/leagueManager/EditLeagueYearSettings', this.selectedLeagueOptions)
             .then(this.responseHandler)
             .catch(this.catchHandler);
       },

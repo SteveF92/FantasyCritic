@@ -60,7 +60,6 @@
     import Vue from "vue";
     import axios from "axios";
     import LeagueGameSummary from "components/modules/leagueGameSummary";
-    import ManagerClaimGameForm from "components/modules/managerClaimGameForm";
     import LeagueYearStandings from "components/modules/leagueYearStandings";
     import LeagueActions from "components/modules/leagueActions";
 
@@ -76,7 +75,6 @@
         props: ['leagueid', 'year'],
         components: {
             LeagueGameSummary,
-            ManagerClaimGameForm,
             LeagueYearStandings,
             LeagueActions
         },

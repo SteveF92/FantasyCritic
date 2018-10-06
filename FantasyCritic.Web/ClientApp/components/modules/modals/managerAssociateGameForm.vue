@@ -98,7 +98,7 @@
                 };
 
                 axios
-                  .post('/api/league/ManagerAssociateGame', request)
+                  .post('/api/leagueManager/ManagerAssociateGame', request)
                   .then(response => {
                       this.associateResult = response.data;
                       if (!this.associateResult.success) {

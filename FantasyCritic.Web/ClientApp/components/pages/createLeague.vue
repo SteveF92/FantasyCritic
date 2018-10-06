@@ -156,7 +156,7 @@ export default {
         },
         postRequest() {
             axios
-                .post('/api/league/createLeague', this.selectedLeagueOptions)
+                .post('/api/leagueManager/createLeague', this.selectedLeagueOptions)
                 .then(this.responseHandler)
                 .catch(this.catchHandler);
         },

@@ -36,7 +36,7 @@
           inviteEmail: this.inviteEmail
         };
         axios
-          .post('/api/league/InvitePlayer', model)
+          .post('/api/leagueManager/InvitePlayer', model)
           .then(response => {
             this.$refs.invitePlayerRef.hide();
             this.$emit('playerInvited', this.inviteEmail);
