@@ -28,6 +28,12 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
                 return null;
             }
 
+            decimal? possibleManualScore = publisherGame.ManualCriticScore;
+            if (possibleManualScore.HasValue)
+            {
+                return GetPointsForScore(publisherGame, possibleManualScore.Value);
+            }
+
             decimal? possibleCriticScore = publisherGame.MasterGame.Value.CriticScore;
             if (!possibleCriticScore.HasValue)
             {

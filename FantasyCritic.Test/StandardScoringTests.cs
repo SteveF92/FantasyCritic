@@ -35,6 +35,22 @@ namespace FantasyCritic.Test
         }
 
         [Test]
+        public void ManualScoreTest()
+        {
+            Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
+            Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
+            IClock fakeClock = new FakeClock(nowTime);
+            ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
+
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), null, null, 2018, StandardEligibilityLevel, false, false);
+            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), "", pickupTime, false, false, 83.8095m, null, masterGame, 2018);
+
+            decimal? fantasyPoints = standardScoring.GetPointsForGame(testGame, fakeClock);
+
+            Assert.AreEqual(13.8095m, fantasyPoints);
+        }
+
+        [Test]
         public void Over90ScoreTest()
         {
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
