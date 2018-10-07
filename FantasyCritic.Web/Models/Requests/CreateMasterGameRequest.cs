@@ -24,10 +24,12 @@ namespace FantasyCritic.Web.Models.Requests
         public bool YearlyInstallment { get; set; }
         [Required]
         public bool EarlyAccess { get; set; }
+        [Required]
+        public string BoxartFileName { get; set; }
 
         public MasterGame ToDomain(EligibilityLevel eligibilityLevel)
         {
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, MinimumReleaseYear, eligibilityLevel, YearlyInstallment, EarlyAccess);
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, MinimumReleaseYear, eligibilityLevel, YearlyInstallment, EarlyAccess, BoxartFileName);
             return masterGame;
         }
     }

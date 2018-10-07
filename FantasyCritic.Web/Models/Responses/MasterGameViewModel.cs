@@ -21,6 +21,7 @@ namespace FantasyCritic.Web.Models.Responses
             EligibilityLevel = new EligibilityLevelViewModel(masterGame.EligibilityLevel, false);
             OpenCriticID = masterGame.OpenCriticID;
             SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, masterGame.EligibilityLevel)).ToList();
+            BoxartFileName = masterGame.BoxartFileName;
         }
 
         public MasterGameViewModel(MasterSubGame masterSubGame, EligibilityLevel eligibilityLevel)
@@ -45,5 +46,6 @@ namespace FantasyCritic.Web.Models.Responses
         public EligibilityLevelViewModel EligibilityLevel { get; }
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameViewModel> SubGames { get; }
+        public string BoxartFileName { get; }
     }
 }
