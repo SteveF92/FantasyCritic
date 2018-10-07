@@ -337,7 +337,7 @@ namespace FantasyCritic.Lib.Services
             LeagueOptions yearOptions = leagueYear.Value.Options;
             if (request.MasterGame.HasValue)
             {
-                var masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame.Value);
+                var masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame.Value, leagueYear.Value.Year);
                 claimErrors.AddRange(masterGameErrors);
             }
 
@@ -415,7 +415,7 @@ namespace FantasyCritic.Lib.Services
             associationErrors.AddRange(basicErrors);
 
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
-            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame);
+            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame, leagueYear.Value.Year);
             associationErrors.AddRange(masterGameErrors);
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
@@ -485,7 +485,7 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueOptions yearOptions, MasterGame masterGame)
+        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueOptions yearOptions, MasterGame masterGame, int year)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
@@ -511,6 +511,18 @@ namespace FantasyCritic.Lib.Services
             if (released)
             {
                 claimErrors.Add(new ClaimError("That game has already been released.", true));
+            }
+
+            if (masterGame.ReleaseDate.HasValue)
+            {
+                if (released && masterGame.ReleaseDate.Value.Year < year)
+                {
+                    claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
+                }
+                else if (!released && masterGame.ReleaseDate.Value.Year > year)
+                {
+                    claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
+                }
             }
 
             bool hasScore = masterGame.CriticScore.HasValue;
