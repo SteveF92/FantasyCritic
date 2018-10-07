@@ -178,8 +178,8 @@ namespace FantasyCritic.MySQL
                     entity);
 
                 await connection.ExecuteAsync(
-                    "insert into tblleagueyear(LeagueID,Year,DraftGames,WaiverGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
-                    "(@LeagueID,@Year,@DraftGames,@WaiverGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@WaiverSystem,@ScoringSystem);",
+                    "insert into tblleagueyear(LeagueID,Year,DraftGames,AcquisitionGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,AcquisitionSystem,ScoringSystem) VALUES " +
+                    "(@LeagueID,@Year,@DraftGames,@AcquisitionGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@AcquisitionSystem,@ScoringSystem);",
                     leagueYearEntity);
             }
 
@@ -193,9 +193,9 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "update tblleagueyear SET DraftGames = @DraftGames, WaiverGames = @WaiverGames, CounterPicks = @CounterPicks, EstimatedCriticScore = @EstimatedCriticScore, " +
+                    "update tblleagueyear SET DraftGames = @DraftGames, AcquisitionGames = @AcquisitionGames, CounterPicks = @CounterPicks, EstimatedCriticScore = @EstimatedCriticScore, " +
                     "MaximumEligibilityLevel = @MaximumEligibilityLevel, AllowYearlyInstallments = @AllowYearlyInstallments, AllowEarlyAccess = @AllowEarlyAccess, DraftSystem = @DraftSystem, " +
-                    "WaiverSystem = @WaiverSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year",
+                    "AcquisitionSystem = @AcquisitionSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year",
                     leagueYearEntity);
             }
         }
@@ -206,8 +206,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblleagueyear(LeagueID,Year,DraftGames,WaiverGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,WaiverSystem,ScoringSystem) VALUES " +
-                    "(@LeagueID,@Year,@DraftGames,@WaiverGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@WaiverSystem,@ScoringSystem);",
+                    "insert into tblleagueyear(LeagueID,Year,DraftGames,AcquisitionGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,AcquisitionSystem,ScoringSystem) VALUES " +
+                    "(@LeagueID,@Year,@DraftGames,@AcquisitionGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@AcquisitionSystem,@ScoringSystem);",
                     leagueYearEntity);
             }
         }
@@ -438,8 +438,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,Waiver,CounterPick,FantasyPoints,MasterGameID) VALUES " +
-                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@Waiver,@CounterPick,@FantasyPoints,@MasterGameID);",
+                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,Acquisition,CounterPick,FantasyPoints,MasterGameID) VALUES " +
+                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@Acquisition,@CounterPick,@FantasyPoints,@MasterGameID);",
                     entity);
             }
         }

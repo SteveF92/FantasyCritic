@@ -14,12 +14,12 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
             DraftGames = leagueYear.Options.DraftGames;
-            WaiverGames = leagueYear.Options.WaiverGames;
+            AcquisitionGames = leagueYear.Options.AcquisitionGames;
             CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
             MaximumEligibilityLevel = new EligibilityLevelViewModel(leagueYear.Options.MaximumEligibilityLevel, false);
             DraftSystem = leagueYear.Options.DraftSystem.Value;
-            WaiverSystem = leagueYear.Options.WaiverSystem.Value;
+            AcquisitionSystem = leagueYear.Options.AcquisitionSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
             Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock)).ToList();
@@ -29,12 +29,12 @@ namespace FantasyCritic.Web.Models.Responses
         public Guid LeagueID { get; }
         public int Year { get; }
         public int DraftGames { get; }
-        public int WaiverGames { get; }
+        public int AcquisitionGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
         public EligibilityLevelViewModel MaximumEligibilityLevel { get; }
         public string DraftSystem { get; }
-        public string WaiverSystem { get; }
+        public string AcquisitionSystem { get; }
         public string ScoringSystem { get; }
         public bool UnlinkedGameExists { get; }
         public IReadOnlyList<PublisherViewModel> Publishers { get; }

@@ -8,14 +8,14 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueCreationParameters
     {
-        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int draftGames, int waiverGames, int counterPicks, 
+        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int draftGames, int acquisitionGames, int counterPicks, 
             decimal estimatedCriticScore, int initialYear, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
-            bool allowEarlyAccess, DraftSystem draftSystem, WaiverSystem waiverSystem, ScoringSystem scoringSystem)
+            bool allowEarlyAccess, DraftSystem draftSystem, AcquisitionSystem acquisitionSystem, ScoringSystem scoringSystem)
         {
             Manager = manager;
             LeagueName = leagueName;
             DraftGames = draftGames;
-            WaiverGames = waiverGames;
+            AcquisitionGames = acquisitionGames;
             CounterPicks = counterPicks;
             EstimatedCriticScore = estimatedCriticScore;
             InitialYear = initialYear;
@@ -23,14 +23,14 @@ namespace FantasyCritic.Lib.Domain
             AllowEarlyAccess = allowEarlyAccess;
             MaximumEligibilityLevel = maximumEligibilityLevel;
             DraftSystem = draftSystem;
-            WaiverSystem = waiverSystem;
+            AcquisitionSystem = acquisitionSystem;
             ScoringSystem = scoringSystem;
         }
 
         public FantasyCriticUser Manager { get; }
         public string LeagueName { get; }
         public int DraftGames { get; }
-        public int WaiverGames { get; }
+        public int AcquisitionGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
         public int InitialYear { get; }
@@ -38,7 +38,7 @@ namespace FantasyCritic.Lib.Domain
         public bool AllowYearlyInstallments { get; set; }
         public bool AllowEarlyAccess { get; set; }
         public DraftSystem DraftSystem { get; }
-        public WaiverSystem WaiverSystem { get; }
+        public AcquisitionSystem AcquisitionSystem { get; }
         public ScoringSystem ScoringSystem { get; }
     }
 }

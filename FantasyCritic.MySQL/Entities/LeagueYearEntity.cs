@@ -22,7 +22,7 @@ namespace FantasyCritic.MySQL.Entities
             Year = year;
 
             DraftGames = options.DraftGames;
-            WaiverGames = options.WaiverGames;
+            AcquisitionGames = options.AcquisitionGames;
             CounterPicks = options.CounterPicks;
             EstimatedCriticScore = options.EstimatedCriticScore;
 
@@ -30,31 +30,31 @@ namespace FantasyCritic.MySQL.Entities
             AllowYearlyInstallments = options.AllowYearlyInstallments;
             AllowEarlyAccess = options.AllowEarlyAccess;
             DraftSystem = options.DraftSystem.Value;
-            WaiverSystem = options.WaiverSystem.Value;
+            AcquisitionSystem = options.AcquisitionSystem.Value;
             ScoringSystem = options.ScoringSystem.Name;
         }
 
         public Guid LeagueID { get; set; }
         public int Year { get; set; }
         public int DraftGames { get; set; }
-        public int WaiverGames { get; set; }
+        public int AcquisitionGames { get; set; }
         public int CounterPicks { get; set; }
         public decimal EstimatedCriticScore { get; set; }
         public int MaximumEligibilityLevel { get; set; }
         public bool AllowYearlyInstallments { get; set; }
         public bool AllowEarlyAccess { get; set; }
         public string DraftSystem { get; set; }
-        public string WaiverSystem { get; set; }
+        public string AcquisitionSystem { get; set; }
         public string ScoringSystem { get; set; }
 
         public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
-            WaiverSystem waiverSystem = Lib.Enums.WaiverSystem.FromValue(WaiverSystem);
+            AcquisitionSystem acquisitionSystem = Lib.Enums.AcquisitionSystem.FromValue(AcquisitionSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            LeagueOptions options = new LeagueOptions(DraftGames, WaiverGames, CounterPicks, EstimatedCriticScore,
-                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, waiverSystem, scoringSystem);
+            LeagueOptions options = new LeagueOptions(DraftGames, AcquisitionGames, CounterPicks, EstimatedCriticScore,
+                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, acquisitionSystem, scoringSystem);
 
             return new LeagueYear(league, Year, options);
         }

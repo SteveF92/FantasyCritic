@@ -39,7 +39,7 @@ namespace FantasyCritic.Web.Controllers.API
             IReadOnlyList<int> openYears = await _fantasyCriticService.GetOpenYears();
             IReadOnlyList<EligibilityLevel> eligibilityLevels = await _fantasyCriticService.GetEligibilityLevels();
             LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
-                WaiverSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), eligibilityLevels);
+                AcquisitionSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), eligibilityLevels);
 
             return Ok(viewModel);
         }

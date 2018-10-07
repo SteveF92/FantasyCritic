@@ -16,7 +16,7 @@ namespace FantasyCritic.Web.Models.Responses
             GameName = publisherGame.GameName;
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
 
-            Waiver = publisherGame.Waiver;
+            Acquisition = publisherGame.Acquisition;
             CounterPick = publisherGame.CounterPick;
 
             FantasyPoints = publisherGame.FantasyPoints;
@@ -48,7 +48,7 @@ namespace FantasyCritic.Web.Models.Responses
         public Guid PublisherGameID { get; }
         public string GameName { get; }
         public DateTime Timestamp { get; }
-        public bool Waiver { get; }
+        public bool Acquisition { get; }
         public bool CounterPick { get; }
         public string EstimatedReleaseDate { get; }
         public DateTime? ReleaseDate { get; }

@@ -31,7 +31,7 @@
             var options = {
               draftSlots: this.leagueYear.draftGames,
               counterPickSlots: this.leagueYear.counterPicks,
-              waiverSlots: this.leagueYear.waiverGames
+              acquisitionSlots: this.leagueYear.acquisitionGames
             };
 
             return options;

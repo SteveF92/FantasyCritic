@@ -12,8 +12,8 @@
             <tbody>
               <playerGameRow v-for="game in draftGames" :game="game"></playerGameRow>
               <blankPlayerGameRow v-for="blankSpace in draftFiller"></blankPlayerGameRow>
-              <playerGameRow v-for="game in waiverGames" :game="game"></playerGameRow>
-              <blankPlayerGameRow v-for="blankSpace in waiverFiller"></blankPlayerGameRow>
+              <playerGameRow v-for="game in acquisitionGames" :game="game"></playerGameRow>
+              <blankPlayerGameRow v-for="blankSpace in acquisitionFiller"></blankPlayerGameRow>
               <playerGameRow v-for="game in counterPicks" :game="game"></playerGameRow>
               <blankPlayerGameRow v-for="blankSpace in counterPickFiller"></blankPlayerGameRow>
               <tr>
@@ -43,13 +43,13 @@
         props: ['publisher', 'options'],
         computed: {
           draftGames() {
-            return _.filter(this.publisher.games, { 'counterPick': false, 'waiver': false });
+            return _.filter(this.publisher.games, { 'counterPick': false, 'acquisition': false });
           },
           counterPicks() {
             return _.filter(this.publisher.games, { 'counterPick': true });
           },
-          waiverGames() {
-            return _.filter(this.publisher.games, { 'waiver': true });
+          acquisitionGames() {
+            return _.filter(this.publisher.games, { 'acquisition': true });
           },
           draftFiller() {
             var numberDrafted = this.draftGames.length;
@@ -61,9 +61,9 @@
             var openSlots = this.options.counterPickSlots - numberCounterPicked;
             return openSlots;
           },
-          waiverFiller() {
-            var numberWaiverClaimed = this.waiverGames.length;
-            var openSlots = this.options.waiverSlots - numberWaiverClaimed;
+          acquisitionFiller() {
+            var numberAcquisitionClaimed = this.acquisitionGames.length;
+            var openSlots = this.options.acquisitionSlots - numberAcquisitionClaimed;
             return openSlots;
           }
         }

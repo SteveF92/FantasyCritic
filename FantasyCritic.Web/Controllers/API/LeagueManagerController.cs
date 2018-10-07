@@ -181,7 +181,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName,
-                request.Waiver, request.CounterPick, request.ManagerOverride, masterGame);
+                request.Acquisition, request.CounterPick, request.ManagerOverride, masterGame);
 
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
             var viewModel = new ManagerClaimResultViewModel(result);

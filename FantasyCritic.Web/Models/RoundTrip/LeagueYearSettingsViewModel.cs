@@ -19,14 +19,14 @@ namespace FantasyCritic.Web.Models.Requests
             Year = leagueYear.Year;
             LeagueName = league.LeagueName;
             DraftGames = leagueYear.Options.DraftGames;
-            WaiverGames = leagueYear.Options.WaiverGames;
+            AcquisitionGames = leagueYear.Options.AcquisitionGames;
             CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
             MaximumEligibilityLevel = leagueYear.Options.MaximumEligibilityLevel.Level;
             AllowYearlyInstallments = leagueYear.Options.AllowYearlyInstallments;
             AllowEarlyAccess = leagueYear.Options.AllowEarlyAccess;
             DraftSystem = leagueYear.Options.DraftSystem.Value;
-            WaiverSystem = leagueYear.Options.WaiverSystem.Value;
+            AcquisitionSystem = leagueYear.Options.AcquisitionSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
         }
 
@@ -39,7 +39,7 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public int DraftGames { get; set; }
         [Required]
-        public int WaiverGames { get; set; }
+        public int AcquisitionGames { get; set; }
         [Required]
         public int CounterPicks { get; set; }
         [Required]
@@ -53,18 +53,18 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public string DraftSystem { get; set; }
         [Required]
-        public string WaiverSystem { get; set; }
+        public string AcquisitionSystem { get; set; }
         [Required]
         public string ScoringSystem { get; set; }
 
         public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
-            WaiverSystem waiverSystem = Lib.Enums.WaiverSystem.FromValue(WaiverSystem);
+            AcquisitionSystem acquisitionSystem = Lib.Enums.AcquisitionSystem.FromValue(AcquisitionSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, DraftGames, WaiverGames, CounterPicks,
-                EstimatedCriticScore, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, waiverSystem, scoringSystem);
+            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, DraftGames, AcquisitionGames, CounterPicks,
+                EstimatedCriticScore, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, acquisitionSystem, scoringSystem);
             return parameters;
         }
     }

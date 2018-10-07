@@ -69,7 +69,7 @@
                 claimGameTypes: [
                     'Draft',
                     'CounterPick',
-                    'Waiver'
+                    'Acquisition'
                 ],
                 possibleMasterGames: []
             }
@@ -100,7 +100,7 @@
                     gameName = this.claimMasterGame.gameName;
                 }
 
-                var waiver = (this.claimGameType === "Waiver");
+                var acquisition = (this.claimGameType === "Acquisition");
                 var counterPick = (this.claimGameType === "CounterPick");
                 var masterGameID = null;
                 if (this.claimMasterGame !== null) {
@@ -110,7 +110,7 @@
                 var request = {
                     publisherID: this.claimPublisher.publisherID,
                     gameName: gameName,
-                    waiver: waiver,
+                    acquisition: acquisition,
                     counterPick: counterPick,
                     masterGameID: masterGameID,
                     managerOverride: this.claimOverride

@@ -18,8 +18,8 @@
       <tbody>
         <minimalPlayerGameRow v-for="game in draftGames" :game="game"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in draftFiller"></minimalBlankPlayerGameRow>
-        <minimalPlayerGameRow v-for="game in waiverGames" :game="game"></minimalPlayerGameRow>
-        <minimalBlankPlayerGameRow v-for="blankSpace in waiverFiller"></minimalBlankPlayerGameRow>
+        <minimalPlayerGameRow v-for="game in acquisitionGames" :game="game"></minimalPlayerGameRow>
+        <minimalBlankPlayerGameRow v-for="blankSpace in acquisitionFiller"></minimalBlankPlayerGameRow>
         <minimalPlayerGameRow v-for="game in counterPicks" :game="game"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
         <tr class="minimal-game-row">
@@ -51,13 +51,13 @@
                 return this.publisher.games;
             },
             draftGames() {
-                return _.filter(this.games, { 'counterPick': false, 'waiver': false });
+                return _.filter(this.games, { 'counterPick': false, 'acquisition': false });
             },
             counterPicks() {
                 return _.filter(this.games, { 'counterPick': true });
             },
-            waiverGames() {
-                return _.filter(this.games, { 'waiver': true });
+            acquisitionGames() {
+                return _.filter(this.games, { 'acquisition': true });
             },
             draftFiller() {
                 var numberDrafted = this.draftGames.length;
@@ -69,9 +69,9 @@
                 var openSlots = this.options.counterPickSlots - numberCounterPicked;
                 return openSlots;
             },
-            waiverFiller() {
-                var numberWaiverClaimed = this.waiverGames.length;
-                var openSlots = this.options.waiverSlots - numberWaiverClaimed;
+            acquisitionFiller() {
+                var numberAcquisitionClaimed = this.acquisitionGames.length;
+                var openSlots = this.options.acquisitionSlots - numberAcquisitionClaimed;
                 return openSlots;
             }
         }

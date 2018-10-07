@@ -11,11 +11,11 @@ namespace FantasyCritic.Web.Models.Responses
     public class LeagueOptionsViewModel
     {
         public LeagueOptionsViewModel(IEnumerable<int> openYears, IEnumerable<DraftSystem> draftSystems,
-            IEnumerable<WaiverSystem> waiverSystems, IEnumerable<ScoringSystem> scoringSystems, IEnumerable<EligibilityLevel> eligibilityLevels)
+            IEnumerable<AcquisitionSystem> acquisitionSystems, IEnumerable<ScoringSystem> scoringSystems, IEnumerable<EligibilityLevel> eligibilityLevels)
         {
             OpenYears = openYears.ToList();
             DraftSystems = draftSystems.Select(x => x.Value).ToList();
-            WaiverSystems = waiverSystems.Select(x => x.Value).ToList();
+            AcquisitionSystems = acquisitionSystems.Select(x => x.Value).ToList();
             ScoringSystems = scoringSystems.Select(x => x.Name).ToList();
             EligibilityLevels = eligibilityLevels.Select(x => new EligibilityLevelViewModel(x, true)).ToList();
             DefaultMaximumEligibilityLevel = 2;
@@ -23,7 +23,7 @@ namespace FantasyCritic.Web.Models.Responses
 
         public IReadOnlyList<int> OpenYears { get; }
         public IReadOnlyList<string> DraftSystems { get; }
-        public IReadOnlyList<string> WaiverSystems { get; }
+        public IReadOnlyList<string> AcquisitionSystems { get; }
         public IReadOnlyList<string> ScoringSystems { get; }
         public IReadOnlyList<EligibilityLevelViewModel> EligibilityLevels { get; }
         public int DefaultMaximumEligibilityLevel { get; }
