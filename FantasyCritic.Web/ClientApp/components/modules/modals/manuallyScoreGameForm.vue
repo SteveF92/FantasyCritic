@@ -66,13 +66,6 @@
         }
 
         return "Set Manual Score";
-      },
-      existingManualGameScore() {
-        if (manuallyScoreGame.manualCriticScore) {
-          return manuallyScoreGame.criticScore;
-        }
-
-        return null;
       }
     },
     methods: {
@@ -124,6 +117,11 @@
         this.manuallyScoreGame = null;
         this.manualScore = null;
         this.removeManualScore = false;
+      }
+    },
+    watch: {
+      manuallyScoreGame: function(val, oldVal) {
+          this.manualScore = val.criticScore;
       }
     }
   }

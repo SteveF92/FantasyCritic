@@ -15,6 +15,9 @@
       <span v-if="!game.willRelease && game.linked" class="game-status">
         Will not Release
       </span>
+      <span v-if="game.manualCriticScore && game.linked" class="game-status">
+        Manually Scored
+      </span>
     </td>
     <td class="score-column">{{game.criticScore | score}}</td>
     <td class="score-column">{{game.fantasyPoints | score}}</td>
