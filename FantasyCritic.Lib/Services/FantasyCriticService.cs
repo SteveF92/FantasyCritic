@@ -257,6 +257,23 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.UpdateFantasyPoints(publisherGameScores);
         }
 
+        public async Task UpdateFantasyPoints(LeagueYear leagueYear)
+        {
+            Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
+
+            var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            foreach (var publisher in publishersInLeague)
+            {
+                foreach (var publisherGame in publisher.PublisherGames)
+                {
+                    decimal? fantasyPoints = leagueYear.Options.ScoringSystem.GetPointsForGame(publisherGame, _clock);
+                    publisherGameScores.Add(publisherGame.PublisherGameID, fantasyPoints);
+                }
+            }
+
+            await _fantasyCriticRepo.UpdateFantasyPoints(publisherGameScores);
+        }
+
         public  Task<IReadOnlyList<int>> GetOpenYears()
         {
             return _fantasyCriticRepo.GetOpenYears();
