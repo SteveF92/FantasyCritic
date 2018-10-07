@@ -1,7 +1,7 @@
 <template>
   <div v-if="masterGame">
     <h2>{{masterGame.gameName}}</h2>
-    <img :src="boxartLink" alt="Cover Image">
+    <img v-if="masterGame.boxartFileName" :src="boxartLink" alt="Cover Image">
     <p>
       <strong>Release Date: </strong>
       <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
