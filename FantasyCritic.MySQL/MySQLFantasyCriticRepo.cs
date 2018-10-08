@@ -151,6 +151,67 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task CreateAcquisitionBid(AcquisitionBid currentBid)
+        {
+            var entity = new AcquisitionBidEntity(currentBid);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblacquisitionbid(BidID,PublisherID,MasterGameID,Timestamp,Priority,BidAmount,Successful) VALUES " +
+                    "(@BidID,@PublisherID,@MasterGameID,@Timestamp,@Priority,@BidAmount,@Successful);",
+                    entity);
+            }
+        }
+
+        public async Task RemoveAcquisitionBid(AcquisitionBid acquisitionBid)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("delete from tblacquisitionbid where BidID = @bidID", new {acquisitionBid.BidID});
+                await connection.ExecuteAsync("update tblacquisitionbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority", 
+                    new { publisherID = acquisitionBid.Publisher.PublisherID, oldPriority = acquisitionBid.Priority });
+            }
+        }
+
+        public async Task<IReadOnlyList<AcquisitionBid>> GetActiveAcquisitionBids(Publisher publisher)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var bidEntities = await connection.QueryAsync<AcquisitionBidEntity>("select * from tblacquisitionbid where PublisherID = @publisherID and Successful is NULL",
+                    new { publisherID = publisher.PublisherID });
+
+                List<AcquisitionBid> domainBids = new List<AcquisitionBid>();
+                foreach (var bidEntity in bidEntities)
+                {
+                    var masterGame = await GetMasterGame(bidEntity.MasterGameID);
+
+                    AcquisitionBid domain = bidEntity.ToDomain(publisher, masterGame.Value);
+                    domainBids.Add(domain);
+                }
+
+                return domainBids;
+            }
+        }
+
+        public async Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var bidEntity = await connection.QuerySingleOrDefaultAsync<AcquisitionBidEntity>("select * from tblacquisitionbid where BidID = @bidID", new { bidID });
+                if (bidEntity == null)
+                {
+                    return Maybe<AcquisitionBid>.None;
+                }
+
+                var publisher = await GetPublisher(bidEntity.PublisherID);
+                var masterGame = await GetMasterGame(bidEntity.MasterGameID);
+
+                AcquisitionBid domain = bidEntity.ToDomain(publisher.Value, masterGame.Value);
+                return domain;
+            }
+        }
+
         public async Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
         {
             if (_eligibilityLevels != null)

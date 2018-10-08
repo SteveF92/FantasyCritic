@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class Publisher
     {
-        public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, int? draftPosition, IEnumerable<PublisherGame> publisherGames)
+        public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, int? draftPosition, IEnumerable<PublisherGame> publisherGames, int budget)
         {
             PublisherID = publisherID;
             League = league;
@@ -18,6 +18,7 @@ namespace FantasyCritic.Lib.Domain
             PublisherName = publisherName;
             DraftPosition = draftPosition;
             PublisherGames = publisherGames.ToList();
+            Budget = budget;
         }
 
         public Guid PublisherID { get; }
@@ -27,6 +28,7 @@ namespace FantasyCritic.Lib.Domain
         public string PublisherName { get; }
         public int? DraftPosition { get; }
         public IReadOnlyList<PublisherGame> PublisherGames { get; }
+        public int Budget { get; }
 
         public decimal? AverageCriticScore
         {

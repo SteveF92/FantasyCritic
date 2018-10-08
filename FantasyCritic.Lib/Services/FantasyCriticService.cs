@@ -106,7 +106,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName)
         {
-            Publisher publisher = new Publisher(Guid.NewGuid(), league, user, year, publisherName, null, new List<PublisherGame>());
+            Publisher publisher = new Publisher(Guid.NewGuid(), league, user, year, publisherName, null, new List<PublisherGame>(), 100);
             await _fantasyCriticRepo.CreatePublisher(publisher);
             return publisher;
         }
@@ -238,9 +238,49 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
-        public Task<Result> MakeAcquisitionBid(Publisher publisher, MasterGame masterGame, int bidAmount)
+        public async Task<ClaimResult> MakeAcquisitionBid(Publisher publisher, MasterGame masterGame, int bidAmount)
         {
-            throw new NotImplementedException();
+            if (bidAmount > publisher.Budget)
+            {
+                return new ClaimResult(new List<ClaimError>(){new ClaimError("You do not have enough budget to make that bid.", false)});
+            }
+
+            IReadOnlyList<AcquisitionBid> acquisitionBids = await _fantasyCriticRepo.GetActiveAcquisitionBids(publisher);
+            bool alreadyBidFor = acquisitionBids.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
+            if (alreadyBidFor)
+            {
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) });
+            }
+
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, true, false, false, masterGame);
+            var claimResult = await CanClaimGame(claimRequest);
+            if (!claimResult.Success)
+            {
+                return claimResult;
+            }
+
+            var nextPriority = acquisitionBids.Count + 1;
+
+            AcquisitionBid currentBid = new AcquisitionBid(Guid.NewGuid(), publisher, masterGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
+            await _fantasyCriticRepo.CreateAcquisitionBid(currentBid);
+
+            return claimResult;
+        }
+
+        public Task<Maybe<AcquisitionBid>> GetAcquistionBid(Guid bidID)
+        {
+            return _fantasyCriticRepo.GetAcquisitionBid(bidID);
+        }
+
+        public async Task<Result> RemoveAcquisitionBid(AcquisitionBid bid)
+        {
+            if (bid.Successful != null)
+            {
+                return Result.Fail("Bid has already been processed");
+            }
+
+            await _fantasyCriticRepo.RemoveAcquisitionBid(bid);
+            return Result.Ok();
         }
 
         public async Task UpdateFantasyPoints(int year)

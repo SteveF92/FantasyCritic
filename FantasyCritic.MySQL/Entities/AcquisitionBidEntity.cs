@@ -3,11 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain;
+using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
 {
     public class AcquisitionBidEntity
     {
+        public AcquisitionBidEntity()
+        {
+            
+        }
+
+        public AcquisitionBidEntity(AcquisitionBid domain)
+        {
+            BidID = domain.BidID;
+            PublisherID = domain.Publisher.PublisherID;
+            MasterGameID = domain.MasterGame.MasterGameID;
+            Timestamp = domain.Timestamp.ToDateTimeUtc();
+            Priority = domain.Priority;
+            BidAmount = domain.BidAmount;
+            Sucessful = domain.Successful;
+        }
+
         public Guid BidID { get; set; }
         public Guid PublisherID { get; set; }
         public Guid MasterGameID { get; set; }
@@ -15,5 +33,11 @@ namespace FantasyCritic.MySQL.Entities
         public int Priority { get; set; }
         public int BidAmount { get; set; }
         public bool? Sucessful { get; set; }
+
+        public AcquisitionBid ToDomain(Publisher publisher, MasterGame masterGame)
+        {
+            Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
+            return new AcquisitionBid(BidID, publisher, masterGame, BidAmount, Priority, instant, Sucessful);
+        }
     }
 }

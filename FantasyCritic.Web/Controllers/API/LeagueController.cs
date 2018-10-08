@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Services;
@@ -277,10 +278,50 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That master game does not exist.");
             }
             
-            Result bidResult = await _fantasyCriticService.MakeAcquisitionBid(publisher.Value, masterGame.Value, request.BidAmount);
-            if (bidResult.IsFailure)
+            ClaimResult bidResult = await _fantasyCriticService.MakeAcquisitionBid(publisher.Value, masterGame.Value, request.BidAmount);
+            var viewModel = new AcquisitionBidResultViewModel(bidResult);
+
+            return Ok(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAcquisitionBid([FromBody] AcquisitionBidDeleteRequest request)
+        {
+            if (!ModelState.IsValid)
             {
-                return BadRequest(bidResult.Error);
+                return BadRequest();
+            }
+
+            var maybeBid = await _fantasyCriticService.GetAcquistionBid(request.BidID);
+            if (maybeBid.HasNoValue)
+            {
+                return BadRequest("That bid does not exist.");
+            }
+
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(publisher.Value.League, currentUser);
+            bool userIsPublisher = (currentUser.UserID == publisher.Value.User.UserID);
+            if (!userIsInLeague || !userIsPublisher)
+            {
+                return Forbid();
+            }
+
+            AcquisitionBid bid = maybeBid.Value;
+            if (bid.Publisher.PublisherID != request.PublisherID)
+            {
+                return BadRequest("That bid was not made by you.");
+            }
+
+            Result result = await _fantasyCriticService.RemoveAcquisitionBid(bid);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
             }
 
             return Ok();
