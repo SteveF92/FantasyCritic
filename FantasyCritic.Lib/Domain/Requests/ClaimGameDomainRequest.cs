@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 
-namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.Domain.Requests
 {
     public class ClaimGameDomainRequest
     {

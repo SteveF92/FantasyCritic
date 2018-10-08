@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 

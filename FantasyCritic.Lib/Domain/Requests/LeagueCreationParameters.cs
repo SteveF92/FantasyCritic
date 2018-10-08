@@ -1,24 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 
-namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.Domain.Requests
 {
-    public class EditLeagueYearParameters
+    public class LeagueCreationParameters
     {
-        public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int draftGames, int acquisitionGames, int counterPicks, 
-            decimal estimatedCriticScore, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
+        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int draftGames, int acquisitionGames, int counterPicks, 
+            decimal estimatedCriticScore, int initialYear, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
             bool allowEarlyAccess, DraftSystem draftSystem, AcquisitionSystem acquisitionSystem, ScoringSystem scoringSystem)
         {
             Manager = manager;
-            LeagueID = leagueID;
-            Year = year;
+            LeagueName = leagueName;
             DraftGames = draftGames;
             AcquisitionGames = acquisitionGames;
             CounterPicks = counterPicks;
             EstimatedCriticScore = estimatedCriticScore;
+            InitialYear = initialYear;
             AllowYearlyInstallments = allowYearlyInstallments;
             AllowEarlyAccess = allowEarlyAccess;
             MaximumEligibilityLevel = maximumEligibilityLevel;
@@ -28,12 +25,12 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public FantasyCriticUser Manager { get; }
-        public Guid LeagueID { get; }
-        public int Year { get; }
+        public string LeagueName { get; }
         public int DraftGames { get; }
         public int AcquisitionGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
+        public int InitialYear { get; }
         public EligibilityLevel MaximumEligibilityLevel { get; }
         public bool AllowYearlyInstallments { get; set; }
         public bool AllowEarlyAccess { get; set; }

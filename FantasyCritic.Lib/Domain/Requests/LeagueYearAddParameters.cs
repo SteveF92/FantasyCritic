@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 
-namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.Domain.Requests
 {
     public class LeagueYearAddParameters
     {
