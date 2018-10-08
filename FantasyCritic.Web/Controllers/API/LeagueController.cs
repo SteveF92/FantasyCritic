@@ -248,5 +248,42 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> MakeAcquisitionBid([FromBody] AcquisitionBidRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(publisher.Value.League, currentUser);
+            bool userIsPublisher = (currentUser.UserID == publisher.Value.User.UserID);
+            if (!userIsInLeague || !userIsPublisher)
+            {
+                return Forbid();
+            }
+
+            var masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID);
+            if (masterGame.HasNoValue)
+            {
+                return BadRequest("That master game does not exist.");
+            }
+            
+            Result bidResult = await _fantasyCriticService.MakeAcquisitionBid(publisher.Value, masterGame.Value, request.BidAmount);
+            if (bidResult.IsFailure)
+            {
+                return BadRequest(bidResult.Error);
+            }
+
+            return Ok();
+        }
     }
 }

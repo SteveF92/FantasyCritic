@@ -236,6 +236,11 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
+        public Task<Result> MakeAcquisitionBid(Publisher publisher, MasterGame masterGame, int bidAmount)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task UpdateFantasyPoints(int year)
         {
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
