@@ -194,6 +194,11 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public Task<Maybe<AcquisitionBid>> GetTopPriorityActiveBid(Publisher publisher)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
         {
             using (var connection = new MySqlConnection(_connectionString))

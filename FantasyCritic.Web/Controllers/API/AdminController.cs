@@ -86,5 +86,13 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ProcessAcquisitions([FromBody] ProcessAcquisitionsRequest request)
+        {
+            await _fantasyCriticService.ProcessAcquisitions(request.Year);
+
+            return Ok();
+        }
     }
 }

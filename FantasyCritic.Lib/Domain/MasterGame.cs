@@ -6,7 +6,7 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class MasterGame
+    public class MasterGame : IEquatable<MasterGame>
     {
         private readonly decimal? _criticScore;
 
@@ -121,6 +121,26 @@ namespace FantasyCritic.Lib.Domain
         public bool IsEligible(EligibilityLevel eligibilityLevel)
         {
             return EligibilityLevel.Level <= eligibilityLevel.Level;
+        }
+
+        public bool Equals(MasterGame other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return MasterGameID.Equals(other.MasterGameID);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((MasterGame) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return MasterGameID.GetHashCode();
         }
     }
 }
