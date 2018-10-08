@@ -292,7 +292,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var maybeBid = await _fantasyCriticService.GetAcquistionBid(request.BidID);
+            var maybeBid = await _fantasyCriticService.GetAcquisitionBid(request.BidID);
             if (maybeBid.HasNoValue)
             {
                 return BadRequest("That bid does not exist.");

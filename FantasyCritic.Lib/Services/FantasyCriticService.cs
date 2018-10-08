@@ -267,7 +267,7 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
-        public Task<Maybe<AcquisitionBid>> GetAcquistionBid(Guid bidID)
+        public Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
         {
             return _fantasyCriticRepo.GetAcquisitionBid(bidID);
         }
