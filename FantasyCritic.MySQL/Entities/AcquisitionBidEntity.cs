@@ -23,7 +23,7 @@ namespace FantasyCritic.MySQL.Entities
             Timestamp = domain.Timestamp.ToDateTimeUtc();
             Priority = domain.Priority;
             BidAmount = domain.BidAmount;
-            Sucessful = domain.Successful;
+            Successful = domain.Successful;
         }
 
         public Guid BidID { get; set; }
@@ -32,12 +32,12 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime Timestamp { get; set; }
         public int Priority { get; set; }
         public int BidAmount { get; set; }
-        public bool? Sucessful { get; set; }
+        public bool? Successful { get; set; }
 
         public AcquisitionBid ToDomain(Publisher publisher, MasterGame masterGame)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            return new AcquisitionBid(BidID, publisher, masterGame, BidAmount, Priority, instant, Sucessful);
+            return new AcquisitionBid(BidID, publisher, masterGame, BidAmount, Priority, instant, Successful);
         }
     }
 }
