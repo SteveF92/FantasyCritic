@@ -12,6 +12,7 @@ using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL.Entities;
+using MoreLinq;
 using MySql.Data.MySqlClient;
 
 namespace FantasyCritic.MySQL
@@ -194,9 +195,33 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task<Maybe<AcquisitionBid>> GetTopPriorityActiveBid(Publisher publisher)
+        public async Task<Maybe<AcquisitionBid>> GetTopPriorityActiveBid(Publisher publisher)
         {
-            throw new NotImplementedException();
+            var activeBids = await GetActiveAcquisitionBids(publisher);
+            if (!activeBids.Any())
+            {
+                return Maybe<AcquisitionBid>.None;
+            }
+
+            return activeBids.MinBy(x => x.Priority).First();
+        }
+
+        public async Task MarkBidStatus(AcquisitionBid bid, bool success)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tblacquisitionbid SET Successful = @success where BidID = @bidID;",
+                    new { bidID = bid.BidID, success });
+            }
+        }
+
+        public async Task SpendBudget(Publisher publisher, uint bidAmount)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tblpublisher SET Budget = Budget - @bidAmount where PublisherID = @publisherID;",
+                    new { publisherID = publisher.PublisherID, bidAmount });
+            }
         }
 
         public async Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)

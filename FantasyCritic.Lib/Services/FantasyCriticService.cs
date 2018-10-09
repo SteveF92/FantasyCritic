@@ -661,13 +661,17 @@ namespace FantasyCritic.Lib.Services
             return topPriorityActiveBids;
         }
 
-        private Task ProcessSuccessfulAndFailedBids(AcquisitionBid successBid, IEnumerable<AcquisitionBid> failedBids)
+        private async Task ProcessSuccessfulAndFailedBids(AcquisitionBid successBid, IEnumerable<AcquisitionBid> failedBids)
         {
-            //Mark successful bid success
-            //Add game to publisher
-            //Subtract budget
-            //Mark failures as failure
-            throw new NotImplementedException();
+            await _fantasyCriticRepo.MarkBidStatus(successBid, true);
+            PublisherGame newPublisherGame = new PublisherGame(Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), true, false, null, null, successBid.MasterGame, successBid.Publisher.Year);
+            await _fantasyCriticRepo.AddPublisherGame(successBid.Publisher, newPublisherGame);
+            await _fantasyCriticRepo.SpendBudget(successBid.Publisher, successBid.BidAmount);
+
+            foreach (var failedBid in failedBids)
+            {
+                await _fantasyCriticRepo.MarkBidStatus(failedBid, false);
+            }
         }
     }
 }

@@ -47,10 +47,13 @@ namespace FantasyCritic.Lib.Interfaces
         Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel);
         Task<Result> RemovePublisherGame(Guid publisherGameID);
         Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
+
         Task CreateAcquisitionBid(AcquisitionBid currentBid);
         Task RemoveAcquisitionBid(AcquisitionBid bid);
         Task<IReadOnlyList<AcquisitionBid>> GetActiveAcquisitionBids(Publisher publisher);
         Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID);
         Task<Maybe<AcquisitionBid>> GetTopPriorityActiveBid(Publisher publisher);
+        Task MarkBidStatus(AcquisitionBid bid, bool success);
+        Task SpendBudget(Publisher successBidPublisher, uint successBidBidAmount);
     }
 }
