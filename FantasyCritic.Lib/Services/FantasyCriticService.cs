@@ -239,7 +239,7 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
-        public async Task<ClaimResult> MakeAcquisitionBid(Publisher publisher, MasterGame masterGame, int bidAmount)
+        public async Task<ClaimResult> MakeAcquisitionBid(Publisher publisher, MasterGame masterGame, uint bidAmount)
         {
             if (bidAmount > publisher.Budget)
             {

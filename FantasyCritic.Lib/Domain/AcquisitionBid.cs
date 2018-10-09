@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class AcquisitionBid
     {
-        public AcquisitionBid(Guid bidID, Publisher publisher, MasterGame masterGame, int bidAmount, int priority, Instant timestamp, bool? successful)
+        public AcquisitionBid(Guid bidID, Publisher publisher, MasterGame masterGame, uint bidAmount, int priority, Instant timestamp, bool? successful)
         {
             BidID = bidID;
             Publisher = publisher;
@@ -23,7 +23,7 @@ namespace FantasyCritic.Lib.Domain
         public Guid BidID { get; }
         public Publisher Publisher { get; }
         public MasterGame MasterGame { get; }
-        public int BidAmount { get; }
+        public uint BidAmount { get; }
         public int Priority { get; }
         public Instant Timestamp { get; }
         public bool? Successful { get; }

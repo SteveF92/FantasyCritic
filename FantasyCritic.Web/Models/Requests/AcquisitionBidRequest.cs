@@ -14,6 +14,6 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public Guid MasterGameID { get; set; }
         [Required]
-        public int BidAmount { get; set; }
+        public uint BidAmount { get; set; }
     }
 }

@@ -31,7 +31,7 @@ namespace FantasyCritic.MySQL.Entities
         public Guid MasterGameID { get; set; }
         public DateTime Timestamp { get; set; }
         public int Priority { get; set; }
-        public int BidAmount { get; set; }
+        public uint BidAmount { get; set; }
         public bool? Successful { get; set; }
 
         public AcquisitionBid ToDomain(Publisher publisher, MasterGame masterGame)
