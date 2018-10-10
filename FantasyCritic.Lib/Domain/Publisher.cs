@@ -7,7 +7,7 @@ using FantasyCritic.Lib.Domain.ScoringSystems;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class Publisher
+    public class Publisher : IEquatable<Publisher>
     {
         public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, int? draftPosition, IEnumerable<PublisherGame> publisherGames, int budget)
         {
@@ -68,6 +68,26 @@ namespace FantasyCritic.Lib.Domain
         public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, decimal estimatedCriticScore)
         {
             return PublisherGames.Sum(x => x.GetProjectedFantasyPoints(scoringSystem, estimatedCriticScore));
+        }
+
+        public bool Equals(Publisher other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return PublisherID.Equals(other.PublisherID);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Publisher) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return PublisherID.GetHashCode();
         }
     }
 }

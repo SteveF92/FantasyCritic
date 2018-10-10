@@ -614,59 +614,86 @@ namespace FantasyCritic.Lib.Services
 
         private async Task ProcessAcquisitionsForLeagueYear(LeagueYear leagueYear)
         {
-            var topPriorityActiveBids = await GetTopPriorityActiveBids(leagueYear);
-            if (!topPriorityActiveBids.Any())
+            var allActiveBids = await GetActiveBids(leagueYear);
+            if (!allActiveBids.Any())
             {
                 return;
             }
 
-            var groupedByGame = topPriorityActiveBids.GroupBy(x => x.MasterGame);
-            foreach (var gameGroup in groupedByGame)
-            {
-                AcquisitionBid bestBid;
-                var bestBids = gameGroup.MaxBy(x => x.BidAmount);
-                if (bestBids.Count() == 1)
-                {
-                    bestBid = bestBids.First();
-                }
-                else
-                {
-                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.Publisher.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, leagueYear.Options.EstimatedCriticScore));
-                    bestBid = bestBidsByProjectedScore.First();
-                }
+            var winnableBids = GetWinnableBids(allActiveBids, leagueYear.Options);
+            var winningBids = GetWinningBids(winnableBids);
 
-                var failedBids = gameGroup.Where(x => x.BidID != bestBid.BidID);
-                await ProcessSuccessfulAndFailedBids(bestBid, failedBids);
-            }
+            var takenGames = winningBids.Select(x => x.MasterGame);
+            var losingBids = allActiveBids.Except(winningBids).Where(x => takenGames.Contains(x.MasterGame));
+
+            await ProcessSuccessfulAndFailedBids(winningBids, losingBids);
 
             //When we are done, we run again.
-            //This allows us to get the new highest priorities
             //This will repeat until there are no active bids.
             await ProcessAcquisitionsForLeagueYear(leagueYear);
         }
 
-        private async Task<IReadOnlyList<AcquisitionBid>> GetTopPriorityActiveBids(LeagueYear leagueYear)
+        private async Task<IReadOnlyList<AcquisitionBid>> GetActiveBids(LeagueYear leagueYear)
         {
-            List<AcquisitionBid> topPriorityActiveBids = new List<AcquisitionBid>();
+            List<AcquisitionBid> activeBids = new List<AcquisitionBid>();
             var publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             foreach (var publisher in publishers)
             {
-                var topPriorityBid = await _fantasyCriticRepo.GetTopPriorityActiveBid(publisher);
-                if (topPriorityBid.HasValue)
-                {
-                    topPriorityActiveBids.Add(topPriorityBid.Value);
-                }
+                var bidsForPublisher = await _fantasyCriticRepo.GetActiveAcquisitionBids(publisher);
+                activeBids.AddRange(bidsForPublisher);
             }
 
-            return topPriorityActiveBids;
+            return activeBids;
         }
 
-        private async Task ProcessSuccessfulAndFailedBids(AcquisitionBid successBid, IEnumerable<AcquisitionBid> failedBids)
+        private IReadOnlyList<AcquisitionBid> GetWinnableBids(IEnumerable<AcquisitionBid> activeBidsForLeagueYear, LeagueOptions options)
         {
-            await _fantasyCriticRepo.MarkBidStatus(successBid, true);
-            PublisherGame newPublisherGame = new PublisherGame(Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), true, false, null, null, successBid.MasterGame, successBid.Publisher.Year);
-            await _fantasyCriticRepo.AddPublisherGame(successBid.Publisher, newPublisherGame);
-            await _fantasyCriticRepo.SpendBudget(successBid.Publisher, successBid.BidAmount);
+            List<AcquisitionBid> winnableBids = new List<AcquisitionBid>();
+
+            var enoughBudgetBids = activeBidsForLeagueYear.Where(x => x.BidAmount <= x.Publisher.Budget);
+            var groupedByGame = enoughBudgetBids.GroupBy(x => x.MasterGame);
+            foreach (var gameGroup in groupedByGame)
+            {
+                AcquisitionBid bestBid;
+                if (gameGroup.Count() == 1)
+                {
+                    bestBid = gameGroup.First();
+                }
+                else
+                {
+                    var bestBids = gameGroup.MaxBy(x => x.BidAmount);
+                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.Publisher.GetProjectedFantasyPoints(options.ScoringSystem, options.EstimatedCriticScore));
+                    bestBid = bestBidsByProjectedScore.First();
+                }
+
+                winnableBids.Add(bestBid);
+            }
+
+            return winnableBids;
+        }
+
+        private IReadOnlyList<AcquisitionBid> GetWinningBids(IEnumerable<AcquisitionBid> winnableBids)
+        {
+            List<AcquisitionBid> winningBids = new List<AcquisitionBid>();
+            var groupedByPublisher = winnableBids.GroupBy(x => x.Publisher);
+            foreach (var publisherGroup in groupedByPublisher)
+            {
+                AcquisitionBid winningBid = publisherGroup.MinBy(x => x.Priority).First();
+                winningBids.Add(winningBid);
+            }
+
+            return winningBids;
+        }
+
+        private async Task ProcessSuccessfulAndFailedBids(IEnumerable<AcquisitionBid> successBids, IEnumerable<AcquisitionBid> failedBids)
+        {
+            foreach (var successBid in successBids)
+            {
+                await _fantasyCriticRepo.MarkBidStatus(successBid, true);
+                PublisherGame newPublisherGame = new PublisherGame(Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), true, false, null, null, successBid.MasterGame, successBid.Publisher.Year);
+                await _fantasyCriticRepo.AddPublisherGame(successBid.Publisher, newPublisherGame);
+                await _fantasyCriticRepo.SpendBudget(successBid.Publisher, successBid.BidAmount);
+            }
 
             foreach (var failedBid in failedBids)
             {
