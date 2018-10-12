@@ -31,7 +31,12 @@
       <div v-if="leagueYear" class="col-lg-6 col-12">
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
-      <div class="col-lg-6 col-12">
+      <div class="col-lg-3 col-12">
+        <playerActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited"
+                       v-on:gameRemoved="gameRemoved" v-on:gameAssociated="gameAssociated"
+                       v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></playerActions>
+      </div>
+      <div class="col-lg-3 col-12">
         <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited"
                        v-on:gameRemoved="gameRemoved" v-on:gameAssociated="gameAssociated"
                        v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></leagueActions>
@@ -62,6 +67,7 @@
     import axios from "axios";
     import LeagueGameSummary from "components/modules/leagueGameSummary";
     import LeagueYearStandings from "components/modules/leagueYearStandings";
+    import PlayerActions from "components/modules/playerActions";
     import LeagueActions from "components/modules/leagueActions";
 
     export default {
@@ -77,7 +83,8 @@
         components: {
             LeagueGameSummary,
             LeagueYearStandings,
-            LeagueActions
+            LeagueActions,
+            PlayerActions
         },
         methods: {
             fetchLeague() {
