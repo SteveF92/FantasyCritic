@@ -32,9 +32,7 @@
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-3 col-12">
-        <playerActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited"
-                       v-on:gameRemoved="gameRemoved" v-on:gameAssociated="gameAssociated"
-                       v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></playerActions>
+        <playerActions :league="league" :leagueYear="leagueYear" v-on:gameBid="gameBid"></playerActions>
       </div>
       <div class="col-lg-3 col-12">
         <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited"
@@ -172,6 +170,14 @@
           playerInvited(inviteEmail) {
             this.fetchLeague();
             let toast = this.$toasted.show('Invite was sent to ' + inviteEmail, {
+              theme: "primary",
+              position: "top-right",
+              duration: 5000
+            });
+          },
+          gameBid(bidInfo) {
+            this.fetchLeague();
+            let toast = this.$toasted.show('Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.', {
               theme: "primary",
               position: "top-right",
               duration: 5000

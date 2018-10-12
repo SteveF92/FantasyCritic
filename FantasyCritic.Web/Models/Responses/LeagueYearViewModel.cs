@@ -9,7 +9,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueYearViewModel
     {
-        public LeagueYearViewModel(LeagueYear leagueYear, IEnumerable<Publisher> publishers, IClock clock)
+        public LeagueYearViewModel(LeagueYear leagueYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, IClock clock)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -24,6 +24,12 @@ namespace FantasyCritic.Web.Models.Responses
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
             Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock)).ToList();
             Standings = publishers.OrderByDescending(x => x.TotalFantasyPoints).Select(x => new StandingViewModel(x, leagueYear.Options.ScoringSystem, leagueYear.Options.EstimatedCriticScore)).ToList();
+
+            var userPublisher = publishers.SingleOrDefault(x => x.User.UserID == currentUser.UserID);
+            if (!(userPublisher is null))
+            {
+                UserPublisher = new PublisherViewModel(userPublisher, clock);
+            }
         }
 
         public Guid LeagueID { get; }
@@ -39,5 +45,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool UnlinkedGameExists { get; }
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
         public IReadOnlyList<StandingViewModel> Standings { get; }
+        public PublisherViewModel UserPublisher { get; }
     }
 }
