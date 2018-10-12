@@ -20,6 +20,7 @@ namespace FantasyCritic.Web.Models.Responses
             Games = publisher.PublisherGames.OrderBy(x => x.Timestamp).Select(x => new PublisherGameViewModel(x, clock)).ToList();
             AverageCriticScore = publisher.AverageCriticScore;
             TotalFantasyPoints = publisher.TotalFantasyPoints;
+            Budget = publisher.Budget;
         }
 
         public Guid PublisherID { get; }
@@ -32,5 +33,6 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<PublisherGameViewModel> Games { get; }
         public decimal? AverageCriticScore { get; }
         public decimal TotalFantasyPoints { get; }
+        public int Budget { get; }
     }
 }

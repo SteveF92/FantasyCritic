@@ -5,6 +5,7 @@
         <h5>
             <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>
         </h5>
+        <p>Budget: {{publisher.budget | money}}</p>
         <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options"></playerGameTable>
     </div>
 </template>
