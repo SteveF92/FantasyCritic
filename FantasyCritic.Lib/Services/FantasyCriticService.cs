@@ -268,6 +268,11 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
+        public Task<IReadOnlyList<AcquisitionBid>> GetActiveAcquistitionBids(Publisher publisher)
+        {
+            return _fantasyCriticRepo.GetActiveAcquisitionBids(publisher);
+        }
+
         public Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
         {
             return _fantasyCriticRepo.GetAcquisitionBid(bidID);

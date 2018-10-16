@@ -326,5 +326,26 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpGet("{publisherID}")]
+        public async Task<IActionResult> CurrentBids(Guid publisherID)
+        {
+            Maybe<Publisher> publisher = await _fantasyCriticService.GetPublisher(publisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser.UserID != publisher.Value.User.UserID)
+            {
+                return Forbid();
+            }
+
+            var bids = await _fantasyCriticService.GetActiveAcquistitionBids(publisher.Value);
+
+            var viewModels = bids.Select(x => new AcquisitionBidViewModel(x));
+            return Ok(viewModels);
+        }
     }
 }
