@@ -10,8 +10,6 @@ namespace FantasyCritic.Web.Models.Requests
     public class AcquisitionBidDeleteRequest
     {
         [Required]
-        public Guid PublisherID { get; set; }
-        [Required]
         public Guid BidID { get; set; }
     }
 }

@@ -15,7 +15,7 @@
           <td>{{bid.bidAmount | money}}</td>
           <td>{{bid.priority}}</td>
           <td>
-            <b-button variant="danger" size="sm">Cancel</b-button>
+            <b-button variant="danger" size="sm" v-on:click="cancelBid(bid.bidID)">Cancel</b-button>
           </td>
         </tr>
       </tbody>
@@ -29,7 +29,19 @@
     export default {
         props: ['currentBids'],
         methods: {
+          cancelBid(bidID) {
+            var model = {
+              bidID
+            };
+            axios
+              .post('/api/league/DeleteAcquisitionBid', model)
+              .then(response => {
+                this.$emit('bidCanceled');
+              })
+              .catch(response => {
 
+              });
+          }
         }
     }
 </script>

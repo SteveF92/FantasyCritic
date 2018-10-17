@@ -10,7 +10,7 @@
       <br />
       <div v-if="leagueYear">
         <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
-        <currentBidsForm :currentBids="currentBids"></currentBidsForm>
+        <currentBidsForm :currentBids="currentBids"  v-on:bidCanceled="bidCanceled"></currentBidsForm>
       </div>
     </div>
   </div>
@@ -35,6 +35,9 @@
     methods: {
       gameBid(bidInfo) {
         this.$emit('gameBid', bidInfo);
+      },
+      bidCanceled() {
+        this.$emit('bidCanceled');
       }
     }
   }

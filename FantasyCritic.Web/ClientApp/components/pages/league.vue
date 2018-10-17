@@ -32,7 +32,7 @@
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-3 col-12">
-        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" v-on:gameBid="gameBid"></playerActions>
+        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" v-on:gameBid="gameBid" v-on:bidCanceled="bidCanceled"></playerActions>
       </div>
       <div class="col-lg-3 col-12">
         <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited"
@@ -194,6 +194,9 @@
               position: "top-right",
               duration: 5000
             });
+          },
+          bidCanceled() {
+            this.fetchLeagueYear();
           }
         },
         mounted() {

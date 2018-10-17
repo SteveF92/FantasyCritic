@@ -298,26 +298,16 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That bid does not exist.");
             }
 
-            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
-            if (publisher.HasNoValue)
-            {
-                return BadRequest();
-            }
-
+            var publisher = maybeBid.Value.Publisher;
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(publisher.Value.League, currentUser);
-            bool userIsPublisher = (currentUser.UserID == publisher.Value.User.UserID);
+            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(publisher.League, currentUser);
+            bool userIsPublisher = (currentUser.UserID == publisher.User.UserID);
             if (!userIsInLeague || !userIsPublisher)
             {
                 return Forbid();
             }
 
             AcquisitionBid bid = maybeBid.Value;
-            if (bid.Publisher.PublisherID != request.PublisherID)
-            {
-                return BadRequest("That bid was not made by you.");
-            }
-
             Result result = await _fantasyCriticService.RemoveAcquisitionBid(bid);
             if (result.IsFailure)
             {
