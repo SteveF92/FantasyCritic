@@ -24,21 +24,22 @@
 </template>
 <script>
   import EligibilityBadge from "components/modules/eligibilityBadge";
-    export default {
-        data() {
-            return {
-                selectedMasterGame: null
-            }
+
+  export default {
+    data() {
+      return {
+          selectedMasterGame: null
+      }
     },
     components: {
       EligibilityBadge
     },
     props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
     methods: {
-        selectGame(game) {
-            this.selectedMasterGame = game;
-            this.$emit('input', this.selectedMasterGame);
-        }
+      selectGame(game) {
+          this.selectedMasterGame = game;
+          this.$emit('input', this.selectedMasterGame);
+      }
     }
-    }
+  }
 </script>

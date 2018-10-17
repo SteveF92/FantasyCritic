@@ -344,7 +344,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var bids = await _fantasyCriticService.GetActiveAcquistitionBids(publisher.Value);
 
-            var viewModels = bids.Select(x => new AcquisitionBidViewModel(x));
+            var viewModels = bids.Select(x => new AcquisitionBidViewModel(x)).OrderBy(x => x.Priority);
             return Ok(viewModels);
         }
     }

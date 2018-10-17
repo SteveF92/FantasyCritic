@@ -32,7 +32,7 @@
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-3 col-12">
-        <playerActions :league="league" :leagueYear="leagueYear" v-on:gameBid="gameBid"></playerActions>
+        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" v-on:gameBid="gameBid"></playerActions>
       </div>
       <div class="col-lg-3 col-12">
         <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited"
@@ -74,7 +74,8 @@
                 errorInfo: "",
                 league: null,
                 leagueYear: null,
-                activeYear: null
+                activeYear: null,
+                currentBids: []
             }
         },
         props: ['leagueid', 'year'],
@@ -97,9 +98,20 @@
                 axios
                     .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.activeYear)
                     .then(response => {
-                        this.leagueYear = response.data;
+                      this.leagueYear = response.data;
+                      this.fetchCurrentBids();
                     })
-                    .catch(returnedError => (this.error = returnedError));
+                  .catch(returnedError => (this.error = returnedError));
+            },
+            fetchCurrentBids() {
+              axios
+                .get('/api/league/CurrentBids/' + this.leagueYear.userPublisher.publisherID)
+                .then(response => {
+                  this.currentBids = response.data;
+                })
+                .catch(response => {
+
+                });
             },
             acceptInvite() {
                 var model = {
@@ -176,7 +188,7 @@
             });
           },
           gameBid(bidInfo) {
-            this.fetchLeague();
+            this.fetchLeagueYear();
             let toast = this.$toasted.show('Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.', {
               theme: "primary",
               position: "top-right",
