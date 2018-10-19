@@ -28,12 +28,13 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime Timestamp { get; set; }
         public string ActionType { get; set; }
         public Guid MasterGameID { get; set; }
+        public string GameName { get; set; }
         public bool ManagerAction { get; set; }
 
         public LeagueAction ToDomain(Publisher publisher, MasterGame masterGame)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            return new LeagueAction(publisher, instant, ActionType, masterGame, ManagerAction);
+            return new LeagueAction(publisher, instant, ActionType, masterGame, GameName, ManagerAction);
         }
     }
 }
