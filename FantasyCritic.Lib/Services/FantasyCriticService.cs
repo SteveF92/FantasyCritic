@@ -368,6 +368,47 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetEligibilityLevels();
         }
 
+        public async Task<Result> RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
+        {
+            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.League, publisher.Year);
+            IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.Year == leagueYear.Year).ToList();
+            IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != publisher.User.UserID).ToList();
+            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
+
+            bool otherPlayerHasCounterpick = otherPlayersGames.Where(x => x.CounterPick).ContainsGame(publisherGame);
+            if (otherPlayerHasCounterpick)
+            {
+                return Result.Fail("Can't remove a publisher game that another player has as a counterpick.");
+            }
+
+            return await _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
+        }
+
+        public Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)
+        {
+            return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
+        }
+
+        public async Task ProcessAcquisitions(int year)
+        {
+            var leagueYears = await GetLeagueYears(year);
+            foreach (var leagueYear in leagueYears)
+            {
+                await ProcessAcquisitionsForLeagueYear(leagueYear);
+            }
+        }
+
+        public async Task CreateLeagueAction(Publisher publisher, string actionType, MasterGame masterGame, bool managerAction)
+        {
+            LeagueAction action = new LeagueAction(publisher, _clock.GetCurrentInstant(), actionType, masterGame, managerAction);
+            await _fantasyCriticRepo.AddLeagueAction(action);
+        }
+
+        public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
+        {
+            return _fantasyCriticRepo.GetLeagueActions(leagueYear);
+        }
+
         private async Task<bool> UserIsInvited(League league, FantasyCriticUser inviteUser)
         {
             var playersInvited = await GetOutstandingInvitees(league);
@@ -585,47 +626,6 @@ namespace FantasyCritic.Lib.Services
             }
 
             return claimErrors;
-        }
-
-        public async Task<Result> RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
-        {
-            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.League, publisher.Year);
-            IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.Year == leagueYear.Year).ToList();
-            IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != publisher.User.UserID).ToList();
-            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
-
-            bool otherPlayerHasCounterpick = otherPlayersGames.Where(x => x.CounterPick).ContainsGame(publisherGame);
-            if (otherPlayerHasCounterpick)
-            {
-                return Result.Fail("Can't remove a publisher game that another player has as a counterpick.");
-            }
-
-            return await _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
-        }
-
-        public Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)
-        {
-            return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
-        }
-
-        public async Task ProcessAcquisitions(int year)
-        {
-            var leagueYears = await GetLeagueYears(year);
-            foreach (var leagueYear in leagueYears)
-            {
-                await ProcessAcquisitionsForLeagueYear(leagueYear);
-            }
-        }
-
-        public async Task CreateLeagueAction(Publisher publisher, string actionType, MasterGame masterGame, bool managerAction)
-        {
-            LeagueAction action = new LeagueAction(publisher, _clock.GetCurrentInstant(), actionType, masterGame, managerAction);
-            await _fantasyCriticRepo.AddLeagueAction(action);
-        }
-
-        public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
-        {
-            return _fantasyCriticRepo.GetLeagueActions(leagueYear);
         }
 
         private async Task ProcessAcquisitionsForLeagueYear(LeagueYear leagueYear)
