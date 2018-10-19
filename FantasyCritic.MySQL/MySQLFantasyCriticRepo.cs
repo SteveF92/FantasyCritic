@@ -224,6 +224,45 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task AddLeagueAction(LeagueAction action)
+        {
+            LeagueActionEntity entity = new LeagueActionEntity(action);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblleagueaction(PublisherID,Timestamp,ActionType,MasterGameID,ManagerAction) VALUES " +
+                    "(@PublisherID,@Timestamp,@ActionType,@MasterGameID,@ManagerAction);", entity);
+            }
+        }
+
+        public async Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var entities = await connection.QueryAsync<LeagueActionEntity>(
+                    "select * from tblleagueaction " +                          
+                    "join tblpublisher on (tblleagueaction.PublisherID = tblpublisher.PublisherID) " +
+                    "where tblpublisher.LeagueID = @leagueID and tblPublisher.Year = @leagueYear;",
+                    new
+                    {
+                    leagueID = leagueYear.League.LeagueID,
+                    leagueYear = leagueYear.Year
+                    });
+
+                List<LeagueAction> leagueActions = new List<LeagueAction>();
+                foreach (var entity in entities)
+                {
+                    Publisher publisher = (await GetPublisher(entity.PublisherID)).Value;
+                    MasterGame masterGame = (await GetMasterGame(entity.MasterGameID)).Value;
+                    LeagueAction leagueAction = entity.ToDomain(publisher, masterGame);
+                    leagueActions.Add(leagueAction);
+                }
+
+                return leagueActions;
+            }
+        }
+
         public async Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
         {
             using (var connection = new MySqlConnection(_connectionString))

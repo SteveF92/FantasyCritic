@@ -617,6 +617,17 @@ namespace FantasyCritic.Lib.Services
             }
         }
 
+        public async Task CreateLeagueAction(Publisher publisher, string actionType, MasterGame masterGame, bool managerAction)
+        {
+            LeagueAction action = new LeagueAction(publisher, _clock.GetCurrentInstant(), actionType, masterGame, managerAction);
+            await _fantasyCriticRepo.AddLeagueAction(action);
+        }
+
+        public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
+        {
+            return _fantasyCriticRepo.GetLeagueActions(leagueYear);
+        }
+
         private async Task ProcessAcquisitionsForLeagueYear(LeagueYear leagueYear)
         {
             var allActiveBids = await GetActiveBids(leagueYear);

@@ -55,5 +55,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<Maybe<AcquisitionBid>> GetTopPriorityActiveBid(Publisher publisher);
         Task MarkBidStatus(AcquisitionBid bid, bool success);
         Task SpendBudget(Publisher successBidPublisher, uint successBidBidAmount);
+        Task AddLeagueAction(LeagueAction action);
+        Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
     }
 }
