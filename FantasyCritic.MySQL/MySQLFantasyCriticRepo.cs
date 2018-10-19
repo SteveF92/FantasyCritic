@@ -220,8 +220,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblleagueaction(PublisherID,Timestamp,ActionType,MasterGameID,ManagerAction) VALUES " +
-                    "(@PublisherID,@Timestamp,@ActionType,@MasterGameID,@ManagerAction);", entity);
+                    "insert into tblleagueaction(PublisherID,Timestamp,ActionType,Description,ManagerAction) VALUES " +
+                    "(@PublisherID,@Timestamp,@ActionType,@Description,@ManagerAction);", entity);
             }
         }
 

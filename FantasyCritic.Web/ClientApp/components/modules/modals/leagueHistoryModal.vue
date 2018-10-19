@@ -5,8 +5,8 @@
         <tr class="table-secondary">
           <th scope="col">Publisher</th>
           <th scope="col">Time</th>
-          <th scope="col">Action</th>
-          <th scope="col">Game</th>
+          <th scope="col">Action Type</th>
+          <th scope="col">Description</th>
           <th scope="col">Manager Action?</th>
         </tr>
       </thead>
@@ -15,7 +15,7 @@
           <td>{{leagueAction.publisher.publisherName}}</td>
           <td>{{leagueAction.timestamp}}</td>
           <td>{{leagueAction.actionType}}</td>
-          <td>{{leagueAction.masterGame.gameName}}</td>
+          <td>{{leagueAction.description}}</td>
           <td>{{leagueAction.managerAction}}</td>
         </tr>
       </tbody>
