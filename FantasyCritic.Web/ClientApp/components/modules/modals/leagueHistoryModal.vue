@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="leagueActionsModal" ref="leagueActionsModalRef" title="League History" hide-footer>
+  <b-modal id="leagueActionsModal" ref="leagueActionsModalRef" title="League History" size="lg" hide-footer>
     <table class="table table-sm table-responsive-sm table-bordered">
       <thead>
         <tr class="table-secondary">
