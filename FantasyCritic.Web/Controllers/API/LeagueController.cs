@@ -143,6 +143,7 @@ namespace FantasyCritic.Web.Controllers.API
             var leagueActions = await _fantasyCriticService.GetLeagueActions(leagueYear.Value);
 
             var viewModels = leagueActions.Select(x => new LeagueActionViewModel(x, _clock));
+            viewModels = viewModels.OrderByDescending(x => x.Timestamp);
             return Ok(viewModels);
         }
 

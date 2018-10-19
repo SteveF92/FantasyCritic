@@ -5,12 +5,13 @@
       <div class="player-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'bidGameForm'">Bid on a Game</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'currentBidsForm'">Current Bids</b-button>
-        <b-button variant="info" class="nav-link">See League History</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'leagueActionsModal'">See League History</b-button>
       </div>
       <br />
       <div v-if="leagueYear">
         <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
         <currentBidsForm :currentBids="currentBids"  v-on:bidCanceled="bidCanceled"></currentBidsForm>
+        <leagueHistoryModal :leagueActions="leagueActions"></leagueHistoryModal>
       </div>
     </div>
   </div>
@@ -20,6 +21,7 @@
   import axios from "axios";
   import BidGameForm from "components/modules/modals/bidGameForm";
   import CurrentBidsForm from "components/modules/modals/currentBidsForm";
+  import LeagueHistoryModal from "components/modules/modals/leagueHistoryModal";
 
   export default {
     data() {
@@ -27,10 +29,11 @@
         errorInfo: ""
       }
     },
-    props: ['league', 'leagueYear', 'currentBids'],
+    props: ['league', 'leagueYear', 'currentBids', 'leagueActions'],
     components: {
       BidGameForm,
-      CurrentBidsForm
+      CurrentBidsForm,
+      LeagueHistoryModal
     },
     methods: {
       gameBid(bidInfo) {

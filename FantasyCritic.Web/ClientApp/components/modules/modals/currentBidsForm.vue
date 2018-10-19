@@ -4,13 +4,13 @@
       <thead>
         <tr class="table-secondary">
           <th scope="col" class="game-column">Game</th>
-          <th scope="col" class="score-column">Bid Amount</th>
-          <th scope="col" class="score-column">Priority</th>
-          <th scope="col" class="score-column">Cancel</th>
+          <th scope="col">Bid Amount</th>
+          <th scope="col">Priority</th>
+          <th scope="col">Cancel</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="bid in currentBids" class="minimal-game-row">
+        <tr v-for="bid in currentBids">
           <td>{{bid.masterGame.gameName}}</td>
           <td>{{bid.bidAmount | money}}</td>
           <td>{{bid.priority}}</td>

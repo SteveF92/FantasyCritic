@@ -75,7 +75,8 @@
                 league: null,
                 leagueYear: null,
                 activeYear: null,
-                currentBids: []
+                currentBids: [],
+                leagueActions: []
             }
         },
         props: ['leagueid', 'year'],
@@ -100,8 +101,17 @@
                     .then(response => {
                       this.leagueYear = response.data;
                       this.fetchCurrentBids();
+                      this.fetchLeagueActions();
                     })
                   .catch(returnedError => (this.error = returnedError));
+            },
+            fetchLeagueActions() {
+              axios
+                .get('/api/League/GetLeagueActions?leagueID=' + this.leagueid + '&year=' + this.activeYear)
+                .then(response => {
+                  this.leagueActions = response.data;
+                })
+                .catch(returnedError => (this.error = returnedError));
             },
             fetchCurrentBids() {
               axios

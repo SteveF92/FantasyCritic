@@ -10,6 +10,11 @@ namespace FantasyCritic.MySQL.Entities
 {
     internal class LeagueActionEntity
     {
+        public LeagueActionEntity()
+        {
+
+        }
+
         public LeagueActionEntity(LeagueAction action)
         {
             PublisherID = action.Publisher.PublisherID;
