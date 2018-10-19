@@ -15,14 +15,14 @@ namespace FantasyCritic.Web.Models.Responses
             Publisher = new PublisherViewModel(leagueAction.Publisher, clock);
             Timestamp = leagueAction.Timestamp.ToDateTimeUtc();
             ActionType = leagueAction.ActionType;
-            MasterGame = new MasterGameViewModel(leagueAction.MasterGame);
+            Description = leagueAction.Description;
             ManagerAction = leagueAction.ManagerAction;
         }
 
         public PublisherViewModel Publisher { get; }
         public DateTime Timestamp { get; }
         public string ActionType { get; }
-        public MasterGameViewModel MasterGame { get; }
+        public string Description { get; }
         public bool ManagerAction { get; }
     }
 }

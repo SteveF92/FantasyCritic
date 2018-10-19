@@ -20,21 +20,20 @@ namespace FantasyCritic.MySQL.Entities
             PublisherID = action.Publisher.PublisherID;
             Timestamp = action.Timestamp.ToDateTimeUtc();
             ActionType = action.ActionType;
-            MasterGameID = action.MasterGame.MasterGameID;
+            Description = action.Description;
             ManagerAction = action.ManagerAction;
         }
 
         public Guid PublisherID { get; set; }
         public DateTime Timestamp { get; set; }
         public string ActionType { get; set; }
-        public Guid MasterGameID { get; set; }
-        public string GameName { get; set; }
+        public string Description { get; set; }
         public bool ManagerAction { get; set; }
 
-        public LeagueAction ToDomain(Publisher publisher, MasterGame masterGame)
+        public LeagueAction ToDomain(Publisher publisher)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            return new LeagueAction(publisher, instant, ActionType, masterGame, GameName, ManagerAction);
+            return new LeagueAction(publisher, instant, ActionType, Description, ManagerAction);
         }
     }
 }

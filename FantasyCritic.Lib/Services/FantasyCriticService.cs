@@ -220,7 +220,7 @@ namespace FantasyCritic.Lib.Services
                 return claimResult;
             }
 
-            LeagueAction leagueAction = new LeagueAction(request.Publisher, _clock.GetCurrentInstant(), "Publisher Game Claimed", playerGame, true);
+            LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant());
             await _fantasyCriticRepo.AddLeagueAction(leagueAction);
 
             await _fantasyCriticRepo.AddPublisherGame(request.Publisher, playerGame);
@@ -237,7 +237,7 @@ namespace FantasyCritic.Lib.Services
                 return claimResult;
             }
 
-            LeagueAction leagueAction = new LeagueAction(request.Publisher, _clock.GetCurrentInstant(), "Publisher Game Associated", request.MasterGame, true);
+            LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant());
             await _fantasyCriticRepo.AddLeagueAction(leagueAction);
 
             await _fantasyCriticRepo.AssociatePublisherGame(request.Publisher, request.PublisherGame, request.MasterGame);
@@ -390,7 +390,8 @@ namespace FantasyCritic.Lib.Services
             var result = await _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
             if (result.IsSuccess)
             {
-                LeagueAction leagueAction = new LeagueAction(publisher, _clock.GetCurrentInstant(), "Publisher Game Removed", publisherGame, true);
+                RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisher, publisherGame);
+                LeagueAction leagueAction = new LeagueAction(removeGameRequest, _clock.GetCurrentInstant());
                 await _fantasyCriticRepo.AddLeagueAction(leagueAction);
             }
 
@@ -719,7 +720,7 @@ namespace FantasyCritic.Lib.Services
                 await _fantasyCriticRepo.AddPublisherGame(successBid.Publisher, newPublisherGame);
                 await _fantasyCriticRepo.SpendBudget(successBid.Publisher, successBid.BidAmount);
 
-                LeagueAction leagueAction = new LeagueAction(successBid.Publisher, _clock.GetCurrentInstant(), "Acquisition successful", successBid.MasterGame, false);
+                LeagueAction leagueAction = new LeagueAction(successBid, _clock.GetCurrentInstant());
                 await _fantasyCriticRepo.AddLeagueAction(leagueAction);
             }
 
@@ -727,7 +728,7 @@ namespace FantasyCritic.Lib.Services
             {
                 await _fantasyCriticRepo.MarkBidStatus(failedBid.AcquisitionBid, false);
 
-                LeagueAction leagueAction = new LeagueAction(failedBid.AcquisitionBid.Publisher, _clock.GetCurrentInstant(), $"Acquisition failed - {failedBid.FailureReason}", failedBid.AcquisitionBid.MasterGame, false);
+                LeagueAction leagueAction = new LeagueAction(failedBid, _clock.GetCurrentInstant());
                 await _fantasyCriticRepo.AddLeagueAction(leagueAction);
             }
         }

@@ -235,16 +235,15 @@ namespace FantasyCritic.MySQL
                     "where tblpublisher.LeagueID = @leagueID and tblPublisher.Year = @leagueYear;",
                     new
                     {
-                    leagueID = leagueYear.League.LeagueID,
-                    leagueYear = leagueYear.Year
+                        leagueID = leagueYear.League.LeagueID,
+                        leagueYear = leagueYear.Year
                     });
 
                 List<LeagueAction> leagueActions = new List<LeagueAction>();
                 foreach (var entity in entities)
                 {
                     Publisher publisher = (await GetPublisher(entity.PublisherID)).Value;
-                    MasterGame masterGame = (await GetMasterGame(entity.MasterGameID)).Value;
-                    LeagueAction leagueAction = entity.ToDomain(publisher, masterGame);
+                    LeagueAction leagueAction = entity.ToDomain(publisher);
                     leagueActions.Add(leagueAction);
                 }
 

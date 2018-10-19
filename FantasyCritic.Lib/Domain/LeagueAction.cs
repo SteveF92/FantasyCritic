@@ -3,55 +3,71 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain.Requests;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
     public class LeagueAction
     {
-        public LeagueAction(Publisher publisher, Instant timestamp, string actionType, MasterGame masterGame, string gameName, bool managerAction)
+        public LeagueAction(Publisher publisher, Instant timestamp, string actionType, string description, bool managerAction)
         {
             Publisher = publisher;
             Timestamp = timestamp;
             ActionType = actionType;
-            MasterGame = masterGame;
-            GameName = gameName;
+            Description = description;
             ManagerAction = managerAction;
         }
 
-        public LeagueAction(Publisher publisher, Instant timestamp, string actionType, MasterGame masterGame, bool managerAction)
+        public LeagueAction(ClaimGameDomainRequest action, Instant timestamp)
         {
-            Publisher = publisher;
             Timestamp = timestamp;
-            ActionType = actionType;
-            MasterGame = masterGame;
-            GameName = masterGame.GameName;
-            ManagerAction = managerAction;
+            Publisher = action.Publisher;
+            ActionType = "Publisher Game Claimed";
+            Description = $"Claimed game: '{action.GameName}'";
+            ManagerAction = true;
         }
 
-        public LeagueAction(Publisher publisher, Instant timestamp, string actionType, PublisherGame publisherGame, bool managerAction)
+        public LeagueAction(AssociateGameDomainRequest action, Instant timestamp)
         {
-            Publisher = publisher;
             Timestamp = timestamp;
-            ActionType = actionType;
-            if (publisherGame.MasterGame.HasValue)
-            {
-                MasterGame = publisherGame.MasterGame.Value;
-                GameName = publisherGame.MasterGame.Value.GameName;
-            }
-            else
-            {
-                MasterGame = null;
-                GameName = publisherGame.GameName;
-            }
-            ManagerAction = managerAction;
+            Publisher = action.Publisher;
+            ActionType = "Publisher Game Associated";
+            Description = $"Associated publisher game '{action.PublisherGame.GameName}' with master game '{action.MasterGame.GameName}'";
+            ManagerAction = true;
+        }
+
+        public LeagueAction(RemoveGameDomainRequest action, Instant timestamp)
+        {
+            Timestamp = timestamp;
+            Publisher = action.Publisher;
+            ActionType = "Publisher Game Removed";
+            Description = $"Removed game: '{action.PublisherGame.GameName}'";
+            ManagerAction = true;
+        }
+
+        public LeagueAction(AcquisitionBid action, Instant timestamp)
+        {
+            Timestamp = timestamp;
+            Publisher = action.Publisher;
+            ActionType = "Acquisition Successful";
+            Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}";
+            ManagerAction = false;
+        }
+
+        public LeagueAction(FailedAcquisitionBid action, Instant timestamp)
+        {
+            Timestamp = timestamp;
+            Publisher = action.AcquisitionBid.Publisher;
+            ActionType = "Acquisition Failed";
+            Description = $"Tried to acquire game '{action.AcquisitionBid.MasterGame.GameName}' with a bid of ${action.AcquisitionBid.BidAmount}. Failure reason: {action.FailureReason}";
+            ManagerAction = false;
         }
 
         public Publisher Publisher { get; }
         public Instant Timestamp { get; }
         public string ActionType { get; }
-        public MasterGame MasterGame { get; }
-        public string GameName { get; }
+        public string Description { get; }
         public bool ManagerAction { get; }
     }
 }
