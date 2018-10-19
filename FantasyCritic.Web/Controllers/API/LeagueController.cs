@@ -121,6 +121,31 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(leagueViewModel);
         }
 
+        public async Task<IActionResult> GetLeagueActions(Guid leagueID, int year)
+        {
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Something went really wrong, no options are set up for this league.");
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
+            bool userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
+
+            var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(leagueYear.Value.League);
+            bool userIsInvitedToLeague = inviteesToLeague.Any(x => x.UserID == currentUser.UserID);
+            if (!userIsInLeague && !userIsInvitedToLeague)
+            {
+                return Unauthorized();
+            }
+
+            var leagueActions = await _fantasyCriticService.GetLeagueActions(leagueYear.Value);
+
+            var viewModels = leagueActions.Select(x => new LeagueActionViewModel(x, _clock));
+            return Ok(viewModels);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPublisher(Guid id)
         {
