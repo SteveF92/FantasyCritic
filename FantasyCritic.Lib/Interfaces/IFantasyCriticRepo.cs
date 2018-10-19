@@ -52,7 +52,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task RemoveAcquisitionBid(AcquisitionBid bid);
         Task<IReadOnlyList<AcquisitionBid>> GetActiveAcquisitionBids(Publisher publisher);
         Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID);
-        Task<Maybe<AcquisitionBid>> GetTopPriorityActiveBid(Publisher publisher);
         Task MarkBidStatus(AcquisitionBid bid, bool success);
         Task SpendBudget(Publisher successBidPublisher, uint successBidBidAmount);
         Task AddLeagueAction(LeagueAction action);

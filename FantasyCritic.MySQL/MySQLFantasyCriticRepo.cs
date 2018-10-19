@@ -195,17 +195,6 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<Maybe<AcquisitionBid>> GetTopPriorityActiveBid(Publisher publisher)
-        {
-            var activeBids = await GetActiveAcquisitionBids(publisher);
-            if (!activeBids.Any())
-            {
-                return Maybe<AcquisitionBid>.None;
-            }
-
-            return activeBids.MinBy(x => x.Priority).First();
-        }
-
         public async Task MarkBidStatus(AcquisitionBid bid, bool success)
         {
             using (var connection = new MySqlConnection(_connectionString))
