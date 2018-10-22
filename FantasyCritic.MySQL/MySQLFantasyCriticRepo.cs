@@ -575,12 +575,12 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<int>> GetOpenYears()
+        public async Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var results = await connection.QueryAsync<int>("select tblsupportedyear.Year from tblsupportedyear where OpenForCreation = true");
-                return results.ToList();
+                var results = await connection.QueryAsync<SupportedYearEntity>("select * from tblsupportedyear;");
+                return results.Select(x => x.ToDomain()).ToList();
             }
         }
 

@@ -33,7 +33,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddPublisherGame(Publisher publisher, PublisherGame publisherGame);
         Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
 
-        Task<IReadOnlyList<int>> GetOpenYears();
+        Task<IReadOnlyList<SupportedYear>> GetSupportedYears();
 
         Task<IReadOnlyList<MasterGame>> GetMasterGames();
         Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);

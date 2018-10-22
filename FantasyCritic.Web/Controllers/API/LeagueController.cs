@@ -37,7 +37,8 @@ namespace FantasyCritic.Web.Controllers.API
 
         public async Task<IActionResult> LeagueOptions()
         {
-            IReadOnlyList<int> openYears = await _fantasyCriticService.GetOpenYears();
+            var supportedYears = await _fantasyCriticService.GetSupportedYears();
+            var openYears = supportedYears.Where(x => x.OpenForCreation).Select(x => x.Year);
             IReadOnlyList<EligibilityLevel> eligibilityLevels = await _fantasyCriticService.GetEligibilityLevels();
             LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
                 AcquisitionSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), eligibilityLevels);

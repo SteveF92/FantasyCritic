@@ -333,9 +333,9 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.UpdateFantasyPoints(publisherGameScores);
         }
 
-        public  Task<IReadOnlyList<int>> GetOpenYears()
+        public  Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
-            return _fantasyCriticRepo.GetOpenYears();
+            return _fantasyCriticRepo.GetSupportedYears();
         }
 
         public Task<IReadOnlyList<MasterGame>> GetMasterGames()
@@ -578,7 +578,7 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError("League is not active for that year.", false));
             }
 
-            var openYears = await GetOpenYears();
+            var openYears = (await GetSupportedYears()).Where(x => x.OpenForPlay).Select(x => x.Year);
             if (!openYears.Contains(publisher.Year))
             {
                 claimErrors.Add(new ClaimError("That year is not open for play", false));
