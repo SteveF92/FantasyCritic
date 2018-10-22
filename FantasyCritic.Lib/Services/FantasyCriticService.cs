@@ -644,18 +644,24 @@ namespace FantasyCritic.Lib.Services
                 return;
             }
 
-            var insufficientFundsBids = allActiveBids.Where(x => x.BidAmount > x.Publisher.Budget).Select(x => new FailedAcquisitionBid(x, "Not enough budget."));
+            var insufficientFundsBids = allActiveBids.Where(x => x.BidAmount > x.Publisher.Budget);
             var winnableBids = GetWinnableBids(allActiveBids, leagueYear.Options);
             var winningBids = GetWinningBids(winnableBids);
 
             var takenGames = winningBids.Select(x => x.MasterGame);
-            var losingBids = allActiveBids.Except(winningBids).Where(x => takenGames.Contains(x.MasterGame)).Select(x => new FailedAcquisitionBid(x, "Publisher was outbid."));
+            var losingBids = allActiveBids
+                .Except(winningBids)
+                .Except(insufficientFundsBids)
+                .Where(x => takenGames.Contains(x.MasterGame))
+                .Select(x => new FailedAcquisitionBid(x, "Publisher was outbid."));
 
-            var failedBids = losingBids.Concat(insufficientFundsBids);
+            var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedAcquisitionBid(x, "Not enough budget."));
+            var failedBids = losingBids.Concat(insufficientFundsBidFailures);
             await ProcessSuccessfulAndFailedBids(winningBids, failedBids);
 
             //When we are done, we run again.
             //This will repeat until there are no active bids.
+            await Task.Delay(5);
             await ProcessAcquisitionsForLeagueYear(leagueYear);
         }
 
