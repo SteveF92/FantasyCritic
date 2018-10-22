@@ -1,5 +1,7 @@
 using System;
+using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -7,6 +9,8 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
 using FantasyCritic.SendGrid;
 using FantasyCritic.Web.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +24,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
+using SystemClock = NodaTime.SystemClock;
 
 namespace FantasyCritic.Web
 {
@@ -82,7 +87,12 @@ namespace FantasyCritic.Web
             })
                 .AddDefaultTokenProviders();
 
-            services.ConfigureApplicationCookie(opt => { opt.ExpireTimeSpan = TimeSpan.FromMinutes(validMinutes); });
+            services.ConfigureApplicationCookie(opt =>
+            {
+                opt.ExpireTimeSpan = TimeSpan.FromMinutes(validMinutes);
+                opt.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, opt.Events.OnRedirectToAccessDenied);
+                opt.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, opt.Events.OnRedirectToLogin);
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(cfg =>
@@ -155,5 +165,18 @@ namespace FantasyCritic.Web
                     defaults: new { controller = "Home", action = "Index" });
             });
         }
+
+        private static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector)
+        {
+            return context => {
+                if (!context.Request.Path.StartsWithSegments("/api"))
+                {
+                    return existingRedirector(context);
+                }
+                context.Response.StatusCode = (int)statusCode;
+                return Task.CompletedTask;
+            };
+        }
+            
     }
 }
