@@ -579,7 +579,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var results = await connection.QueryAsync<int>("select tblsupportedyear.Year from tblsupportedyear where OpenForPlay = true");
+                var results = await connection.QueryAsync<int>("select tblsupportedyear.Year from tblsupportedyear where OpenForCreation = true");
                 return results.ToList();
             }
         }
