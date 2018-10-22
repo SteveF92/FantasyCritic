@@ -9,10 +9,11 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueYearViewModel
     {
-        public LeagueYearViewModel(LeagueYear leagueYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, IClock clock)
+        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, IClock clock)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
+            SupportedYear = new SupportedYearViewModel(supportedYear);
             DraftGames = leagueYear.Options.DraftGames;
             AcquisitionGames = leagueYear.Options.AcquisitionGames;
             CounterPicks = leagueYear.Options.CounterPicks;
@@ -34,6 +35,7 @@ namespace FantasyCritic.Web.Models.Responses
 
         public Guid LeagueID { get; }
         public int Year { get; }
+        public SupportedYearViewModel SupportedYear { get; }
         public int DraftGames { get; }
         public int AcquisitionGames { get; }
         public int CounterPicks { get; }

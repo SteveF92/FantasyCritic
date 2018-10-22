@@ -8,6 +8,15 @@
       <h2>{{ league.leagueName }}</h2>
       <b-form-select v-model="activeYear" :options="league.years" class="year-selector" />
     </div>
+    <div v-if="leagueYear && !leagueYear.supportedYear.openForPlay" class="alert alert-warning">
+      <h2>
+        This year is not yet ready to be played!
+      </h2>
+      <h4>
+        {{leagueYear.year}} will be open for play on {{formatDate(leagueYear.supportedYear.startDate)}}.
+      </h4>
+    </div>
+
     <div v-if="league">
       <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: year }}">Edit League Settings</router-link>
     </div>
@@ -61,6 +70,7 @@
 <script>
     import Vue from "vue";
     import axios from "axios";
+    import moment from "moment";
     import LeagueGameSummary from "components/modules/leagueGameSummary";
     import LeagueYearStandings from "components/modules/leagueYearStandings";
     import PlayerActions from "components/modules/playerActions";
@@ -85,6 +95,9 @@
             PlayerActions
         },
         methods: {
+            formatDate(date) {
+              return moment(date).format('MMMM Do, YYYY');
+            },
             fetchLeague() {
                 axios
                     .get('/api/League/GetLeague/' + this.leagueid)

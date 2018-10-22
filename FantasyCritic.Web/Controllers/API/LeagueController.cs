@@ -118,7 +118,9 @@ namespace FantasyCritic.Web.Controllers.API
                 await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League,
                     leagueYear.Value.Year);
 
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, publishersInLeague, currentUser, _clock);
+            var supportedYear = (await _fantasyCriticService.GetSupportedYears()).Single(x => x.Year == leagueYear.Value.Year);
+
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock);
             return Ok(leagueViewModel);
         }
 
