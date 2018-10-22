@@ -32,12 +32,10 @@
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-3 col-12">
-        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" v-on:gameBid="gameBid" v-on:bidCanceled="bidCanceled"></playerActions>
+        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" v-on:actionTaken="actionTaken"></playerActions>
       </div>
       <div class="col-lg-3 col-12">
-        <leagueActions :league="league" :leagueYear="leagueYear" v-on:gameClaimed="gameClaimed" v-on:playerInvited="playerInvited"
-                       v-on:gameRemoved="gameRemoved" v-on:gameAssociated="gameAssociated"
-                       v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></leagueActions>
+        <leagueActions :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueActions>
       </div>
     </div>
 
@@ -149,64 +147,18 @@
 
                     });
           },
-          gameClaimed(claimInfo) {
-            this.fetchLeagueYear();
-            let toast = this.$toasted.show(claimInfo.gameName + ' added to ' + claimInfo.publisherName, {
+          actionTaken(actionInfo) {
+            if (actionInfo.fetchLeagueYear) {
+              this.fetchLeagueYear();
+            }
+            if (actionInfo.fetchLeague) {
+              this.fetchLeague();
+            }
+            let toast = this.$toasted.show(actionInfo.message, {
               theme: "primary",
               position: "top-right",
               duration: 5000
             });
-          },
-          gameRemoved(removeInfo) {
-            this.fetchLeagueYear();
-            let toast = this.$toasted.show(removeInfo.gameName + ' removed from ' + removeInfo.publisherName, {
-              theme: "primary",
-              position: "top-right",
-              duration: 5000
-            });
-          },
-          gameAssociated(associationInfo) {
-            this.fetchLeagueYear();
-            let toast = this.$toasted.show(associationInfo.gameName + ' sucessfully associated.', {
-              theme: "primary",
-              position: "top-right",
-              duration: 5000
-            });
-          },
-          gameManuallyScored(manualScoreInfo) {
-            this.fetchLeagueYear();
-            let toast = this.$toasted.show(manualScoreInfo.gameName + ' was given a score of ' + manualScoreInfo.score + '.', {
-              theme: "primary",
-              position: "top-right",
-              duration: 5000
-            });
-          },
-          manualScoreRemoved(gameName) {
-            this.fetchLeagueYear();
-            let toast = this.$toasted.show(gameName + "'s manual score was removed.", {
-              theme: "primary",
-              position: "top-right",
-              duration: 5000
-            });
-          },
-          playerInvited(inviteEmail) {
-            this.fetchLeague();
-            let toast = this.$toasted.show('Invite was sent to ' + inviteEmail, {
-              theme: "primary",
-              position: "top-right",
-              duration: 5000
-            });
-          },
-          gameBid(bidInfo) {
-            this.fetchLeagueYear();
-            let toast = this.$toasted.show('Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.', {
-              theme: "primary",
-              position: "top-right",
-              duration: 5000
-            });
-          },
-          bidCanceled() {
-            this.fetchLeagueYear();
           }
         },
         mounted() {

@@ -76,24 +76,48 @@
 
           });
       },
-      
       playerInvited(inviteEmail) {
-        this.$emit('playerInvited', inviteEmail);
+        let actionInfo = {
+          message: 'Invite was sent to ' + inviteEmail,
+          fetchLeagueYear: true,
+          fetchLeague: true
+        };
+        this.$emit('actionTaken', actionInfo);
       },
       gameClaimed(claimInfo) {
-        this.$emit('gameClaimed', claimInfo);
+        let actionInfo = {
+          message: claimInfo.gameName + ' added to ' + claimInfo.publisherName,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
       },
       gameAssociated(gameName) {
-        this.$emit('gameAssociated', gameName);
+        let actionInfo = {
+          message: gameName + ' sucessfully associated.',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
       },
       gameRemoved(removeInfo) {
-        this.$emit('gameRemoved', removeInfo);
+        let actionInfo = {
+          message: removeInfo.gameName + ' removed from ' + removeInfo.publisherName,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
       },
       gameManuallyScored(manualScoreInfo) {
-        this.$emit('gameManuallyScored', manualScoreInfo);
+        let actionInfo = {
+          message: manualScoreInfo.gameName + ' was given a score of ' + manualScoreInfo.score + '.',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
       },
       manualScoreRemoved(gameName) {
-        this.$emit('manualScoreRemoved', gameName);
+        let actionInfo = {
+          message: gameName + "'s manual score was removed.",
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
       }
     }
   }

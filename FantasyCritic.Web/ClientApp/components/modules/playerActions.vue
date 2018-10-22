@@ -37,10 +37,18 @@
     },
     methods: {
       gameBid(bidInfo) {
-        this.$emit('gameBid', bidInfo);
+        let actionInfo = {
+          message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
       },
-      bidCanceled() {
-        this.$emit('bidCanceled');
+      bidCanceled(bidInfo) {
+        let actionInfo = {
+          message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
       }
     }
   }
