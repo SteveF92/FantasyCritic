@@ -16,7 +16,7 @@ namespace FantasyCritic.Web.Extensions
         {
             string emailAddress = user.EmailAddress;
             string emailSubject = "FantasyCritic - Confirm your email address.";
-            string link = $"{baseURL}/#/confirmEmail?UserID={user.UserID}&Code={UrlEncoder.Default.Encode(confirmCode)}";
+            string link = $"{baseURL}/confirmEmail?UserID={user.UserID}&Code={UrlEncoder.Default.Encode(confirmCode)}";
             string emailBody = $"Please use this link to confirm your FantasyCritic account:\n {link}";
 
             await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
@@ -26,7 +26,7 @@ namespace FantasyCritic.Web.Extensions
         {
             string emailAddress = user.EmailAddress;
             string emailSubject = "FantasyCritic - Reset Your Password.";
-            string link = $"{baseURL}/#/resetPassword?Code={UrlEncoder.Default.Encode(resetCode)}";
+            string link = $"{baseURL}/resetPassword?Code={UrlEncoder.Default.Encode(resetCode)}";
             string emailBody = $"Please use this code to reset your account password:\n {link}";
 
             await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);

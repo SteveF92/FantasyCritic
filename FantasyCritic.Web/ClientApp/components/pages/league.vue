@@ -136,7 +136,7 @@
             },
             acceptInvite() {
                 var model = {
-                    leagueID: this.leagueID
+                    leagueID: this.league.leagueID
                 };
                 axios
                     .post('/api/league/AcceptInvite', model)
