@@ -78,9 +78,9 @@ namespace FantasyCritic.Lib.Services
 
             IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(league, parameters.Year);
 
-            int maxDraftGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick && !x.Acquisition)).Max();
-            int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).Max();
-            int maxAcquisitionGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.Acquisition)).Max();
+            int maxDraftGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick && !x.Acquisition)).DefaultIfEmpty(0).Max();
+            int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).DefaultIfEmpty(0).Max();
+            int maxAcquisitionGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.Acquisition)).DefaultIfEmpty(0).Max();
 
             if (maxDraftGames > options.DraftGames)
             {
