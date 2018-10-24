@@ -31,6 +31,10 @@
       </div>
     </div>
 
+    <div v-if="leagueYear && !leagueYear.userPublisher">
+      You need to create your publisher for this year.
+    </div>
+
     <div>
       <h3>League Manager</h3>
       {{ league.leagueManager.userName }}
