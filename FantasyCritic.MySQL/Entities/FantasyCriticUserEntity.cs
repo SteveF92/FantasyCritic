@@ -23,7 +23,7 @@ namespace FantasyCritic.MySQL.Entities
             EmailAddress = user.EmailAddress;
             NormalizedEmailAddress = user.NormalizedEmailAddress;
             EmailConfirmed = user.EmailConfirmed;
-            SecurityStamp = Guid.Parse(user.SecurityStamp);
+            SecurityStamp = user.SecurityStamp;
             PasswordHash = user.PasswordHash;
             LastChangedCredentials = user.LastChangedCredentials.ToDateTimeUtc();
         }
@@ -35,14 +35,14 @@ namespace FantasyCritic.MySQL.Entities
         public string EmailAddress { get; set; }
         public string NormalizedEmailAddress { get; set; }
         public bool EmailConfirmed { get; set; }
-        public Guid SecurityStamp { get; set; }
+        public string SecurityStamp { get; set; }
         public string PasswordHash { get; set; }
         public DateTime LastChangedCredentials { get; set; }
 
         public FantasyCriticUser ToDomain()
         {
             Instant instant = LocalDateTime.FromDateTime(LastChangedCredentials).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            FantasyCriticUser domain = new FantasyCriticUser(UserID, UserName, NormalizedUserName, RealName, EmailAddress, NormalizedUserName, EmailConfirmed, SecurityStamp.ToString(), PasswordHash, instant);
+            FantasyCriticUser domain = new FantasyCriticUser(UserID, UserName, NormalizedUserName, RealName, EmailAddress, NormalizedUserName, EmailConfirmed, SecurityStamp, PasswordHash, instant);
             return domain;
         }
     }

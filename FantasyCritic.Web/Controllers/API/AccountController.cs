@@ -70,7 +70,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.RealName, model.EmailAddress, model.EmailAddress, false, Guid.NewGuid().ToString(), "", _clock.GetCurrentInstant());
+            var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.RealName, model.EmailAddress, model.EmailAddress, false, "", "", _clock.GetCurrentInstant());
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
