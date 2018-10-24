@@ -17,7 +17,7 @@
       </h4>
     </div>
 
-    <div v-if="league">
+    <div v-if="league && league.isManager">
       <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: year }}">Edit League Settings</router-link>
     </div>
 
