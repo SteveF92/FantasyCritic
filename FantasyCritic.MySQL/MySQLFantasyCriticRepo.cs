@@ -251,6 +251,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task ChangePublisherName(Publisher publisher, string publisherName)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tblpublisher SET PublisherName = @publisherName where PublisherID = @publisherID;",
+                    new { publisherID = publisher.PublisherID, publisherName });
+            }
+        }
+
         public async Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
         {
             using (var connection = new MySqlConnection(_connectionString))

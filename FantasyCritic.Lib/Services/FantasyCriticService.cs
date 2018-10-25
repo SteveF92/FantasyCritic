@@ -738,5 +738,10 @@ namespace FantasyCritic.Lib.Services
                 await _fantasyCriticRepo.AddLeagueAction(leagueAction);
             }
         }
+
+        public Task ChangePublisherName(Publisher publisher, string publisherName)
+        {
+            return _fantasyCriticRepo.ChangePublisherName(publisher, publisherName);
+        }
     }
 }

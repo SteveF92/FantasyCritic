@@ -235,29 +235,57 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePublisher([FromBody] CreatePublisherRequest request)
+        public async Task<IActionResult> CreatePublisher([FromBody] ChangePublisherNameRequest request)
         {
-            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
-            if (league.HasNoValue)
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
             {
                 return BadRequest();
             }
 
+            var league = publisher.Value.League;
+            var year = publisher.Value.Year;
+
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(league.Value, currentUser);
+            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(league, currentUser);
             if (!userIsInLeague)
             {
                 return Forbid();
             }
 
-            var currentPublishers = await _fantasyCriticService.GetPublishersInLeagueForYear(league.Value, request.Year);
+            var currentPublishers = await _fantasyCriticService.GetPublishersInLeagueForYear(league, year);
             var publisherForUser = currentPublishers.SingleOrDefault(x => x.User.UserID == currentUser.UserID);
             if (publisherForUser != null)
             {
                 return BadRequest("You have already created a publisher for this this league/year.");
             }
 
-            await _fantasyCriticService.CreatePublisher(league.Value, request.Year, currentUser, request.PublisherName);
+            await _fantasyCriticService.CreatePublisher(league, year, currentUser, request.PublisherName);
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePublisherName([FromBody] ChangePublisherNameRequest request)
+        {
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(publisher.Value.League, currentUser);
+            if (!userIsInLeague)
+            {
+                return Forbid();
+            }
+
+            if (publisher.Value.User.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            await _fantasyCriticService.ChangePublisherName(publisher.Value, request.PublisherName);
             return Ok();
         }
 

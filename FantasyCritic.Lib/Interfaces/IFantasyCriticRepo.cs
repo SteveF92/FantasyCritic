@@ -56,5 +56,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task SpendBudget(Publisher successBidPublisher, uint successBidBidAmount);
         Task AddLeagueAction(LeagueAction action);
         Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
+        Task ChangePublisherName(Publisher publisher, string publisherName);
     }
 }
