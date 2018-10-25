@@ -201,5 +201,33 @@ namespace FantasyCritic.Web.Controllers.API
                 expiration = jwtToken.ValidTo
             });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            if (request.NewPassword != request.ConfirmNewPassword)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
     }
 }
