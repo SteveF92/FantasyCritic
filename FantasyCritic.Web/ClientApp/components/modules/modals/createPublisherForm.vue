@@ -42,7 +42,7 @@
             this.publisherName = "";
           })
           .catch(response => {
-            this.errorInfo = "Cannot find a player with that email address."
+            
           });
       },
       clearData() {
