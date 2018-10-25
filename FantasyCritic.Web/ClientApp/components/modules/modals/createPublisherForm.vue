@@ -1,11 +1,11 @@
 <template>
   <b-modal id="createPublisher" ref="createPublisherRef" title="Create Publisher" @hidden="clearData">
-    <form class="form-horizontal">
+    <div class="form-horizontal">
       <div class="form-group">
         <label for="publisherName" class="control-label">Publisher Name</label>
         <input v-model="publisherName" id="publisherName" name="publisherName" type="text" class="form-control input" />
       </div>
-    </form>
+    </div>
     <div slot="modal-footer">
       <input type="submit" class="btn btn-primary" value="Create Publisher" v-on:click="createPublisher" :disabled="!publisherName"/>
     </div>

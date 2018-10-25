@@ -1,11 +1,11 @@
 <template>
   <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData">
-    <form class="form-horizontal">
+    <div class="form-horizontal">
       <div class="form-group">
         <label for="inviteEmail" class="control-label">Email Address</label>
         <input v-model="inviteEmail" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
       </div>
-    </form>
+    </div>
     <div slot="modal-footer">
       <input type="submit" class="btn btn-primary" value="Send Invite" v-on:click="invitePlayer" :disabled="!emailIsValid"/>
     </div>
