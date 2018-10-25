@@ -33,6 +33,8 @@
 
     <div v-if="leagueYear && !leagueYear.userPublisher">
       You need to create your publisher for this year.
+      <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
+      <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
     </div>
 
     <div>
@@ -78,6 +80,7 @@
     import LeagueGameSummary from "components/modules/leagueGameSummary";
     import LeagueYearStandings from "components/modules/leagueYearStandings";
     import PlayerActions from "components/modules/playerActions";
+    import CreatePublisherForm from "components/modules/modals/createPublisherForm";
     import LeagueActions from "components/modules/leagueActions";
 
     export default {
@@ -96,7 +99,8 @@
             LeagueGameSummary,
             LeagueYearStandings,
             LeagueActions,
-            PlayerActions
+            PlayerActions,
+            CreatePublisherForm
         },
         methods: {
             formatDate(date) {

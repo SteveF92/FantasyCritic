@@ -437,8 +437,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblpublisher(LeagueID,Year,UserID,PublisherName) VALUES " +
-                    "(@LeagueID,@Year,@UserID,@PublisherName);",
+                    "insert into tblpublisher(PublisherID,PublisherName,LeagueID,Year,UserID,DraftPosition,Budget) VALUES " +
+                    "(@PublisherID,@PublisherName,@LeagueID,@Year,@UserID,@DraftPosition,@Budget);",
                     entity);
             }
         }

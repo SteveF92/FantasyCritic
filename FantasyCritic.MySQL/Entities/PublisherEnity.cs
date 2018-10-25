@@ -22,6 +22,7 @@ namespace FantasyCritic.MySQL.Entities
             Year = publisher.Year;
             UserID = publisher.User.UserID;
             DraftPosition = publisher.DraftPosition;
+            Budget = publisher.Budget;
         }
 
         public Guid PublisherID { get; set; }

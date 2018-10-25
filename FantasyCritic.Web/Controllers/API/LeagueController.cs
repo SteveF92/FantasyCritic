@@ -250,6 +250,13 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
+            var currentPublishers = await _fantasyCriticService.GetPublishersInLeagueForYear(league.Value, request.Year);
+            var publisherForUser = currentPublishers.SingleOrDefault(x => x.User.UserID == currentUser.UserID);
+            if (publisherForUser != null)
+            {
+                return BadRequest("You have already created a publisher for this this league/year.");
+            }
+
             await _fantasyCriticService.CreatePublisher(league.Value, request.Year, currentUser, request.PublisherName);
             return Ok();
         }
