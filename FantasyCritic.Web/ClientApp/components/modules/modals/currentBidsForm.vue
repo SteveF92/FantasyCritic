@@ -37,10 +37,10 @@
               .post('/api/league/DeleteAcquisitionBid', model)
               .then(response => {
                 var bidInfo = {
-                  gameName: bid.bidMasterGame.gameName,
+                  gameName: bid.masterGame.gameName,
                   bidAmount: bid.bidAmount
                 };
-                this.$emit('gameBid', bidInfo);
+                this.$emit('bidCanceled', bidInfo);
               })
               .catch(response => {
 
