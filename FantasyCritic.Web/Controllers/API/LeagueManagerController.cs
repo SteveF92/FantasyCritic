@@ -58,6 +58,35 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> ChangeLeagueName([FromBody] ChangeLeagueNameRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser == null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Unauthorized();
+            }
+
+            await _fantasyCriticService.ChangeLeagueName(league.Value, request.LeagueName);
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> EditLeagueYearSettings([FromBody] LeagueYearSettingsViewModel request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);

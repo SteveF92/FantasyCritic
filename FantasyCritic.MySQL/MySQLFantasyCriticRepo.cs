@@ -260,6 +260,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task ChangeLeagueName(League league, string leagueName)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tblleague SET LeagueName = @leagueName where LeagueID = @leagueID;",
+                    new { leagueID = league.LeagueID, leagueName });
+            }
+        }
+
         public async Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
         {
             using (var connection = new MySqlConnection(_connectionString))
