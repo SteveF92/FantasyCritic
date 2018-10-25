@@ -8,6 +8,7 @@
         <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'">Associate Unlinked Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'">Remove Publisher Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'">Set a Score Manually</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'changeLeagueNameForm'">Change League Name</b-button>
       </div>
 
       <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
@@ -15,25 +16,24 @@
 
       <div v-if="leagueYear">
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
-        <br />
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
-        <br />
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
-        <br />
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
-        <br />
+        <changeLeagueNameForm :league="league" v-on:leagueNameChanged="leagueNameChanged"></changeLeagueNameForm>
       </div>
     </div>
   </div>
 </template>
 <script>
   import Vue from "vue";
+  import axios from "axios";
+
   import ManagerClaimGameForm from "components/modules/modals/managerClaimGameForm";
   import ManagerAssociateGameForm from "components/modules/modals/managerAssociateGameForm";
   import InvitePlayerForm from "components/modules/modals/invitePlayerForm";
   import RemoveGameForm from "components/modules/modals/removeGameForm";
   import ManuallyScoreGameForm from "components/modules/modals/manuallyScoreGameForm";
-  import axios from "axios";
+  import ChangeLeagueNameForm from "components/modules/modals/changeLeagueNameForm";
 
   export default {
     data() {
@@ -47,7 +47,8 @@
       ManagerAssociateGameForm,
       InvitePlayerForm,
       RemoveGameForm,
-      ManuallyScoreGameForm
+      ManuallyScoreGameForm,
+      ChangeLeagueNameForm
     },
     methods: {
       acceptInvite() {
@@ -115,6 +116,14 @@
       manualScoreRemoved(gameName) {
         let actionInfo = {
           message: gameName + "'s manual score was removed.",
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      leagueNameChanged(changeInfo) {
+        let actionInfo = {
+          message: 'League name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
+          fetchLeague: true,
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
