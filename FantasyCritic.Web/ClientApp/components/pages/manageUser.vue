@@ -1,17 +1,35 @@
 <template>
-    <div>
-        <h2>Manage User Account</h2>
-        <hr />
-        <b-button variant="info" v-if="!accountConfirmed" v-on:click="sendConfirmationEmail">Resend Confirmation Email</b-button>
-    </div>
+  <div>
+    <h2>Manage User Account</h2>
+    <hr />
+
+    <dl class="row">
+      <dt class="col-sm-3">Username</dt>
+      <dd class="col-sm-9">{{userInfo.userName}}</dd>
+
+      <dt class="col-sm-3">Email Address</dt>
+      <dd class="col-sm-9">
+        {{userInfo.emailAddress}}
+        <b-button variant="info" v-if="!userInfo.emailConfirmed" v-on:click="sendConfirmationEmail">Resend Confirmation Email</b-button>
+      </dd>
+
+      <dt class="col-sm-3">Real Name</dt>
+      <dd class="col-sm-9">{{userInfo.realName}}</dd>
+
+      <dt class="col-sm-3">Password</dt>
+      <dd class="col-sm-9">
+        <b-button variant="info">Change Password</b-button>
+      </dd>
+    </dl>
+  </div>
 </template>
 <script>
     import axios from 'axios';
 
     export default {
         computed: {
-            accountConfirmed() {
-                return this.$store.getters.userInfo.emailConfirmed;
+            userInfo() {
+                return this.$store.getters.userInfo;
             }
         },
         methods: {
