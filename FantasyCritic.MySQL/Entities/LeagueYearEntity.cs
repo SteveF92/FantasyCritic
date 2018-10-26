@@ -16,7 +16,7 @@ namespace FantasyCritic.MySQL.Entities
 
         }
 
-        public LeagueYearEntity(League league, int year, LeagueOptions options)
+        public LeagueYearEntity(League league, int year, LeagueOptions options, bool playStarted)
         {
             LeagueID = league.LeagueID;
             Year = year;
@@ -32,6 +32,7 @@ namespace FantasyCritic.MySQL.Entities
             DraftSystem = options.DraftSystem.Value;
             AcquisitionSystem = options.AcquisitionSystem.Value;
             ScoringSystem = options.ScoringSystem.Name;
+            PlayStarted = playStarted;
         }
 
         public Guid LeagueID { get; set; }
@@ -46,6 +47,7 @@ namespace FantasyCritic.MySQL.Entities
         public string DraftSystem { get; set; }
         public string AcquisitionSystem { get; set; }
         public string ScoringSystem { get; set; }
+        public bool PlayStarted { get; set; }
 
         public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel)
         {
@@ -56,7 +58,7 @@ namespace FantasyCritic.MySQL.Entities
             LeagueOptions options = new LeagueOptions(DraftGames, AcquisitionGames, CounterPicks, EstimatedCriticScore,
                 maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, acquisitionSystem, scoringSystem);
 
-            return new LeagueYear(league, Year, options);
+            return new LeagueYear(league, Year, options, PlayStarted);
         }
     }
 }
