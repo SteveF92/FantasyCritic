@@ -4,10 +4,10 @@
       <h4>Manager Actions</h4>
       <div class="publisher-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'">Invite a Player</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'">Add Publisher Game</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'">Associate Unlinked Game</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'">Remove Publisher Game</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'">Set a Score Manually</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-if="leagueYear.playStarted">Add Publisher Game</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-if="leagueYear.playStarted">Associate Unlinked Game</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStarted">Remove Publisher Game</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'" v-if="leagueYear.playStarted">Set a Score Manually</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'changeLeagueNameForm'">Change League Name</b-button>
       </div>
 
