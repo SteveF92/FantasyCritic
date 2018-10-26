@@ -9,7 +9,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueYearViewModel
     {
-        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, IClock clock)
+        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, IClock clock, bool readyToPlay)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -31,6 +31,9 @@ namespace FantasyCritic.Web.Models.Responses
             {
                 UserPublisher = new PublisherViewModel(userPublisher, clock);
             }
+
+            ReadyToPlay = readyToPlay;
+            PlayStarted = leagueYear.PlayStarted;
         }
 
         public Guid LeagueID { get; }
@@ -48,5 +51,7 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
         public IReadOnlyList<StandingViewModel> Standings { get; }
         public PublisherViewModel UserPublisher { get; }
+        public bool PlayStarted { get; }
+        public bool ReadyToPlay { get; }
     }
 }

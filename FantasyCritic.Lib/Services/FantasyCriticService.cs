@@ -748,5 +748,15 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.ChangeLeagueName(league, leagueName);
         }
+
+        public bool LeagueIsReadyToPlay(SupportedYear supportedYear, IEnumerable<Publisher> publishersInLeague)
+        {
+            if (supportedYear.OpenForPlay && publishersInLeague.Count() >= 2)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

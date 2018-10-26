@@ -114,13 +114,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return Unauthorized();
             }
 
-            var publishersInLeague =
-                await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League,
-                    leagueYear.Value.Year);
-
+            var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
             var supportedYear = (await _fantasyCriticService.GetSupportedYears()).Single(x => x.Year == leagueYear.Value.Year);
 
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock);
+            bool readyToPlay = _fantasyCriticService.LeagueIsReadyToPlay(supportedYear, publishersInLeague);
+
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock, readyToPlay);
             return Ok(leagueViewModel);
         }
 
