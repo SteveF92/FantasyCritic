@@ -758,5 +758,10 @@ namespace FantasyCritic.Lib.Services
 
             return false;
         }
+
+        public Task StartPlay(LeagueYear leagueYear)
+        {
+            return _fantasyCriticRepo.StartPlay(leagueYear);
+        }
     }
 }

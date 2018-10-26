@@ -115,7 +115,11 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
-            var supportedYear = (await _fantasyCriticService.GetSupportedYears()).Single(x => x.Year == leagueYear.Value.Year);
+            var supportedYear = (await _fantasyCriticService.GetSupportedYears()).SingleOrDefault(x => x.Year == year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
 
             bool readyToPlay = _fantasyCriticService.LeagueIsReadyToPlay(supportedYear, publishersInLeague);
 

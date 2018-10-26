@@ -269,6 +269,20 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task StartPlay(LeagueYear leagueYear)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "update tblleagueyear SET PlayStarted = 1 WHERE LeagueID = @leagueID and Year = @year",
+                    new
+                    {
+                        leagueID = leagueYear.League.LeagueID,
+                        year = leagueYear.Year
+                    });
+            }
+        }
+
         public async Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -314,8 +328,8 @@ namespace FantasyCritic.MySQL
                     entity);
 
                 await connection.ExecuteAsync(
-                    "insert into tblleagueyear(LeagueID,Year,DraftGames,AcquisitionGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,AcquisitionSystem,ScoringSystem) VALUES " +
-                    "(@LeagueID,@Year,@DraftGames,@AcquisitionGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@AcquisitionSystem,@ScoringSystem);",
+                    "insert into tblleagueyear(LeagueID,Year,DraftGames,AcquisitionGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,AcquisitionSystem,ScoringSystem,PlayStarted) VALUES " +
+                    "(@LeagueID,@Year,@DraftGames,@AcquisitionGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@AcquisitionSystem,@ScoringSystem,@PlayStarted);",
                     leagueYearEntity);
             }
 

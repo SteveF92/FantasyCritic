@@ -344,7 +344,7 @@ namespace FantasyCritic.Web.Controllers.API
             return UpdateManualCriticScore(request.PublisherID, request.PublisherGameID, null);
         }
 
-        public async Task<IActionResult> UpdateManualCriticScore(Guid publisherID, Guid publisherGameID, decimal? manualCriticScore)
+        private async Task<IActionResult> UpdateManualCriticScore(Guid publisherID, Guid publisherGameID, decimal? manualCriticScore)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
@@ -384,6 +384,51 @@ namespace FantasyCritic.Web.Controllers.API
 
             await _fantasyCriticService.ManuallyScoreGame(publisherGame.Value, manualCriticScore);
             await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StartPlay([FromBody] StartPlayRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Unauthorized();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var supportedYear = (await _fantasyCriticService.GetSupportedYears()).SingleOrDefault(x => x.Year == request.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            bool readyToPlay = _fantasyCriticService.LeagueIsReadyToPlay(supportedYear, publishersInLeague);
+            if (!readyToPlay)
+            {
+                return BadRequest();
+            }
+
+            await _fantasyCriticService.StartPlay(leagueYear.Value);
 
             return Ok();
         }

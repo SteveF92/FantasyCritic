@@ -37,7 +37,7 @@
     </div>
     <div v-if="leagueYear && !leagueYear.playStarted && leagueYear.readyToPlay" class="alert alert-success">
       Things are all set to get started!
-      <b-button variant="primary" class="mx-2">Start Drafting!</b-button>
+      <b-button variant="primary" v-on:click="startPlay" class="mx-2">Start Drafting!</b-button>
     </div>
 
     <div>
@@ -170,20 +170,35 @@
                     .catch(response => {
 
                     });
-          },
-          actionTaken(actionInfo) {
-            if (actionInfo.fetchLeagueYear) {
-              this.fetchLeagueYear();
+            },
+            startPlay() {
+              var model = {
+                leagueID: this.league.leagueID,
+                year: this.leagueYear.year
+              };
+              axios
+                .post('/api/leagueManager/startplay', model)
+                .then(response => {
+                  this.fetchLeague();
+                  this.fetchLeagueYear();
+                })
+                .catch(response => {
+
+                });
+            },
+            actionTaken(actionInfo) {
+              if (actionInfo.fetchLeagueYear) {
+                this.fetchLeagueYear();
+              }
+              if (actionInfo.fetchLeague) {
+                this.fetchLeague();
+              }
+              let toast = this.$toasted.show(actionInfo.message, {
+                theme: "primary",
+                position: "top-right",
+                duration: 5000
+              });
             }
-            if (actionInfo.fetchLeague) {
-              this.fetchLeague();
-            }
-            let toast = this.$toasted.show(actionInfo.message, {
-              theme: "primary",
-              position: "top-right",
-              duration: 5000
-            });
-          }
         },
         mounted() {
             this.activeYear = this.year;
