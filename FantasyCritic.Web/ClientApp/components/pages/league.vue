@@ -30,11 +30,14 @@
         </div>
       </div>
     </div>
-
     <div v-if="leagueYear && !leagueYear.userPublisher">
       You need to create your publisher for this year.
       <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
       <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
+    </div>
+    <div v-if="leagueYear && !leagueYear.playStarted && leagueYear.readyToPlay" class="alert alert-success">
+      Things are all set to get started!
+      <b-button variant="primary" class="mx-2">Start Drafting!</b-button>
     </div>
 
     <div>
