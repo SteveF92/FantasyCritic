@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-    <div v-if="leagueYear && !leagueYear.userPublisher">
+    <div v-if="leagueYear && !leagueYear.userPublisher && !league.outstandingInvite">
       You need to create your publisher for this year.
       <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
       <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>

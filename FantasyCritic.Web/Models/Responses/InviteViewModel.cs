@@ -13,9 +13,11 @@ namespace FantasyCritic.Web.Models.Responses
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
+            ActiveYear = league.Years.Max();
         }
 
         public Guid LeagueID { get; }
         public string LeagueName { get; }
+        public int ActiveYear { get; }
     }
 }
