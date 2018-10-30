@@ -328,6 +328,16 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.League.LeagueID, publisher.Value.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+            if (!leagueYear.Value.PlayStarted)
+            {
+                return BadRequest("Play has not started for that year.");
+            }
+
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(publisher.Value.League, currentUser);
             bool userIsPublisher = (currentUser.UserID == publisher.Value.User.UserID);

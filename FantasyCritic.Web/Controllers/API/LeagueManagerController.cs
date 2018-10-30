@@ -194,6 +194,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            if (!leagueYear.Value.PlayStarted)
+            {
+                return BadRequest("Play has not started for that year.");
+            }
+
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
                 return Forbid();
@@ -247,6 +252,11 @@ namespace FantasyCritic.Web.Controllers.API
             if (leagueYear.HasNoValue)
             {
                 return BadRequest();
+            }
+
+            if (!leagueYear.Value.PlayStarted)
+            {
+                return BadRequest("Play has not started for that year.");
             }
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
@@ -333,9 +343,25 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public Task<IActionResult> ManuallyScorePublisherGame([FromBody] ManualPublisherGameScoreRequest request)
+        public async Task<IActionResult> ManuallyScorePublisherGame([FromBody] ManualPublisherGameScoreRequest request)
         {
-            return UpdateManualCriticScore(request.PublisherID, request.PublisherGameID, request.ManualCriticScore);
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.League.LeagueID, publisher.Value.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+            if (!leagueYear.Value.PlayStarted)
+            {
+                return BadRequest("Play has not started for that year.");
+            }
+
+            return await UpdateManualCriticScore(request.PublisherID, request.PublisherGameID, request.ManualCriticScore);
         }
 
         [HttpPost]
