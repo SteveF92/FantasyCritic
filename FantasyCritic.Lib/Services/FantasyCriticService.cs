@@ -773,7 +773,7 @@ namespace FantasyCritic.Lib.Services
 
             if (!supportedYear.OpenForPlay)
             {
-                errors.Add("This year is not yet open for play.");
+                errors.Add($"This year is not yet open for play. It will become available on {supportedYear.StartDate}.");
             }
 
             return new PlayStatus(!errors.Any(), leagueYear.PlayStarted, errors);

@@ -8,13 +8,14 @@
       <h2>{{ league.leagueName }}</h2>
       <b-form-select v-model="activeYear" :options="league.years" class="year-selector" />
     </div>
-    <div v-if="leagueYear && !leagueYear.supportedYear.openForPlay" class="alert alert-warning">
-      <h2>
-        This year is not yet ready to be played!
-      </h2>
-      <h4>
-        {{leagueYear.year}} will be open for play on {{formatDate(leagueYear.supportedYear.startDate)}}.
-      </h4>
+
+    <div v-if="leagueYear && !leagueYear.playStatus.ready" class="alert alert-warning">
+      <h3>
+        This year is not active yet!
+      </h3>
+      <ul>
+        <li v-for="error in leagueYear.playStatus.errors">{{error}}</li>
+      </ul>
     </div>
 
     <div v-if="league && league.isManager">
@@ -35,9 +36,13 @@
       <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
       <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
     </div>
-    <div v-if="leagueYear && !leagueYear.playStarted && leagueYear.readyToPlay" class="alert alert-success">
-      Things are all set to get started!
-      <b-button variant="primary" v-on:click="startPlay" class="mx-2">Start Drafting!</b-button>
+    <div v-if="leagueYear && !leagueYear.playStatus.started && leagueYear.playStatus.ready" class="alert alert-success">
+      <span v-if="league.isManager">
+        Things are all set to get started! <b-button variant="primary" v-on:click="startPlay" class="mx-2">Start Drafting!</b-button>
+      </span>
+      <span v-if="!league.isManager">
+        Things are all set to get started! Your league manager can choose when to begin the draft.
+      </span>
     </div>
 
     <div>
