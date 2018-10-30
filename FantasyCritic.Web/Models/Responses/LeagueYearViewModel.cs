@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Results;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueYearViewModel
     {
-        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, IClock clock)
+        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, IClock clock, PlayStatus playStatus)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -32,7 +33,7 @@ namespace FantasyCritic.Web.Models.Responses
                 UserPublisher = new PublisherViewModel(userPublisher, clock);
             }
 
-            PlayStarted = leagueYear.PlayStarted;
+            PlayStatus = new PlayStatusViewModel(playStatus);
         }
 
         public Guid LeagueID { get; }
@@ -50,6 +51,6 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
         public IReadOnlyList<StandingViewModel> Standings { get; }
         public PublisherViewModel UserPublisher { get; }
-        public bool PlayStarted { get; }
+        public PlayStatusViewModel PlayStatus { get; }
     }
 }

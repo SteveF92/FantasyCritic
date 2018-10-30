@@ -121,7 +121,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock);
+            PlayStatus playStatus = await _fantasyCriticService.GetPlayStatus(leagueYear.Value, publishersInLeague, usersInLeague);
+
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock, playStatus);
             return Ok(leagueViewModel);
         }
 

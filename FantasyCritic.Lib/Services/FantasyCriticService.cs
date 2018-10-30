@@ -749,6 +749,36 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ChangeLeagueName(league, leagueName);
         }
 
+        public async Task<PlayStatus> GetPlayStatus(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> usersInLeague)
+        {
+            if (leagueYear.PlayStarted)
+            {
+                return new PlayStatus(true, true, new List<string>());
+            }
+
+            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+            var supportedYear = supportedYears.Single(x => x.Year == leagueYear.Year);
+
+            List<string> errors = new List<string>();
+
+            if (usersInLeague.Count() < 2)
+            {
+                errors.Add("You need to have at least two players in the league.");
+            }
+
+            if (publishersInLeague.Count() != usersInLeague.Count())
+            {
+                errors.Add("Not every player has created a publisher.");
+            }
+
+            if (!supportedYear.OpenForPlay)
+            {
+                errors.Add("This year is not yet open for play.");
+            }
+
+            return new PlayStatus(!errors.Any(), leagueYear.PlayStarted, errors);
+        }
+
         public bool LeagueIsReadyToPlay(SupportedYear supportedYear, IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
         {
             if (publishersInLeague.Count() != usersInLeague.Count())
