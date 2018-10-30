@@ -448,7 +448,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            bool readyToPlay = _fantasyCriticService.LeagueIsReadyToPlay(supportedYear, publishersInLeague);
+            var usersInLeague = await _fantasyCriticService.GetUsersInLeague(league.Value);
+
+            bool readyToPlay = _fantasyCriticService.LeagueIsReadyToPlay(supportedYear, publishersInLeague, usersInLeague);
             if (!readyToPlay)
             {
                 return BadRequest();

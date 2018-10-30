@@ -121,9 +121,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            bool readyToPlay = _fantasyCriticService.LeagueIsReadyToPlay(supportedYear, publishersInLeague);
-
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock, readyToPlay);
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock);
             return Ok(leagueViewModel);
         }
 
