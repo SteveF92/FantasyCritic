@@ -39,7 +39,6 @@
               fetchLeagueYear: true
             };
             this.$emit('publisherNameChanged', actionInfo);
-            this.newPublisherName = "";
           })
           .catch(response => {
           });
