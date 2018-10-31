@@ -162,7 +162,7 @@ namespace FantasyCritic.Web.Controllers.API
                 var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
                 if (leagueYear.Value.PlayStarted)
                 {
-                    return BadRequest("You can't remove a player from a league that has already started playing");
+                    return BadRequest("You can't add a player to a league that has already started playing");
                 }
             }
 
