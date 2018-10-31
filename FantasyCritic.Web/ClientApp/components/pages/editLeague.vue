@@ -62,7 +62,7 @@
             <div>
               <b-form-checkbox id="yearly-checkbox"
                                v-model="selectedLeagueOptions.allowYearlyInstallments">
-                <span class="checkbox-label">Allow Yearly Installments (IE Yealy Sports Franchises)</span>
+                <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
               </b-form-checkbox>
             </div>
             <div>
