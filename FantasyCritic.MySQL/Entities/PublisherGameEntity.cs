@@ -42,7 +42,6 @@ namespace FantasyCritic.MySQL.Entities
         public decimal? ManualCriticScore { get; set; }
         public decimal? FantasyPoints { get; set; }
         public Guid? MasterGameID { get; set; }
-        public int? WinningBid { get; set; }
 
         public PublisherGame ToDomain(Maybe<MasterGame> masterGame, int leagueYear)
         {
