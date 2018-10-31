@@ -232,7 +232,7 @@ namespace FantasyCritic.MySQL
                 var entities = await connection.QueryAsync<LeagueActionEntity>(
                     "select * from tblleagueaction " +                          
                     "join tblpublisher on (tblleagueaction.PublisherID = tblpublisher.PublisherID) " +
-                    "where tblpublisher.LeagueID = @leagueID and tblPublisher.Year = @leagueYear;",
+                    "where tblpublisher.LeagueID = @leagueID and tblpublisher.Year = @leagueYear;",
                     new
                     {
                         leagueID = leagueYear.League.LeagueID,
