@@ -9,10 +9,6 @@
                 <input v-model="userName" id="userName" name="userName" type="text" class="form-control input" />
             </div>
             <div class="form-group col-md-10">
-                <label for="realName" class="control-label">Real name (optional)</label>
-                <input v-model="realName" id="realName" name="realName" type="text" class="form-control input" />
-            </div>
-            <div class="form-group col-md-10">
                 <label for="emailAddress" class="control-label">Email</label>
                 <input v-model="emailAddress" id="emailAddress" name="emailAddress" type="text" class="form-control input" />
             </div>
@@ -41,7 +37,6 @@
         data() {
             return {
                 userName: "",
-                realName: "",
                 emailAddress: "",
                 password: "",
                 confirmPassword: "",
@@ -53,7 +48,6 @@
             register() {
                 var model = {
                     userName: this.userName,
-                    realName: this.realName,
                     emailAddress: this.emailAddress,
                     password: this.password,
                     confirmPassword: this.confirmPassword

@@ -33,8 +33,8 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbluser(UserID,UserName,NormalizedUserName,RealName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
-                    "(@UserID,@UserName,@NormalizedUserName,@RealName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
+                    "insert into tbluser(UserID,UserName,NormalizedUserName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
+                    "(@UserID,@UserName,@NormalizedUserName,,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
                     entity);
             }
 
@@ -65,7 +65,6 @@ namespace FantasyCritic.MySQL
             FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);
             string sql = $@"UPDATE tbluser SET UserName = @{nameof(FantasyCriticUserEntity.UserName)}, " +
                          $"NormalizedUserName = @{nameof(FantasyCriticUserEntity.NormalizedUserName)}, " +
-                         $"RealName = @{nameof(FantasyCriticUserEntity.RealName)}, " +
                          $"EmailAddress = @{nameof(FantasyCriticUserEntity.EmailAddress)}, " +
                          $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +
                          $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +

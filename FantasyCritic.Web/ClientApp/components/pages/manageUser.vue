@@ -13,9 +13,6 @@
         <b-button variant="info" v-if="!userInfo.emailConfirmed" v-on:click="sendConfirmationEmail">Resend Confirmation Email</b-button>
       </dd>
 
-      <dt class="col-sm-3">Real Name</dt>
-      <dd class="col-sm-9">{{userInfo.realName}}</dd>
-
       <dt class="col-sm-3">Password</dt>
       <dd class="col-sm-9">
         <b-button variant="info" v-b-modal="'changePasswordForm'">Change Password</b-button>

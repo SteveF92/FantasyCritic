@@ -9,13 +9,12 @@ namespace FantasyCritic.Lib.Domain
 {
     public class FantasyCriticUser
     {
-        public FantasyCriticUser(Guid userID, string userName, string normalizedUserName, string realName, string emailAddress, 
+        public FantasyCriticUser(Guid userID, string userName, string normalizedUserName, string emailAddress, 
             string normalizedEmailAddress, bool emailConfirmed, string securityStamp, string passwordHash, Instant lastChangedCredentials)
         {
             UserID = userID;
             UserName = userName;
             NormalizedUserName = normalizedUserName;
-            RealName = realName;
             EmailAddress = emailAddress;
             NormalizedEmailAddress = normalizedEmailAddress;
             EmailConfirmed = emailConfirmed;
@@ -29,8 +28,6 @@ namespace FantasyCritic.Lib.Domain
         public string UserName { get; set; }
 
         public string NormalizedUserName { get; set; }
-
-        public string RealName { get; set; }
 
         public string EmailAddress { get; set; }
 
