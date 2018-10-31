@@ -462,6 +462,16 @@ namespace FantasyCritic.MySQL
             return DeleteInvite(league, inviteUser);
         }
 
+        public Task RemovePublisher(Publisher publisher)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task CreatePublisher(Publisher publisher)
         {
             var entity = new PublisherEnity(publisher);

@@ -25,6 +25,9 @@ namespace FantasyCritic.Lib.Interfaces
         Task AcceptInvite(League league, FantasyCriticUser inviteUser);
         Task DeclineInvite(League league, FantasyCriticUser inviteUser);
 
+        Task RemovePublisher(Publisher publisherValue);
+        Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
+
         Task<Maybe<Publisher>> GetPublisher(Guid publisherID);
         Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user);
         Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID);

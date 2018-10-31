@@ -16,6 +16,7 @@ using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NLog.Web.LayoutRenderers;
 using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
@@ -171,6 +172,59 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest(result.Error);
             }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemovePlayer([FromBody] PlayerRemoveRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Unauthorized();
+            }
+
+            if (league.Value.LeagueManager.UserID == request.UserID)
+            {
+                return BadRequest("Can't remove the league manager.");
+            }
+
+            var removeUser = await _userManager.FindByIdAsync(request.UserID.ToString());
+            if (removeUser == null)
+            {
+                return BadRequest();
+            }
+
+            var playersInLeague = await _fantasyCriticService.GetUsersInLeague(league.Value);
+            bool userIsInLeague = playersInLeague.Any(x => x.UserID == removeUser.UserID);
+            if (!userIsInLeague)
+            {
+                return BadRequest("That user is not in that league.");
+            }
+
+            foreach (var year in league.Value.Years)
+            {
+                var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
+                if (leagueYear.Value.PlayStarted)
+                {
+                    return BadRequest("You can't remove a player from a league that has already started playing");
+                }
+            }
+
+            await _fantasyCriticService.RemovePlayerFromLeague(league.Value, removeUser);
 
             return Ok();
         }

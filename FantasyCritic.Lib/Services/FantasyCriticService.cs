@@ -184,6 +184,20 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
+        public async Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
+        {
+            foreach (var year in league.Years)
+            {
+                var publisher = await GetPublisher(league, year, removeUser);
+                if (publisher.HasValue)
+                {
+                    await _fantasyCriticRepo.RemovePublisher(publisher.Value);
+                }
+            }
+
+            await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
+        }
+
         public Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(League league)
         {
             return _fantasyCriticRepo.GetOutstandingInvitees(league);
