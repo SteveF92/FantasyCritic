@@ -157,6 +157,15 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            foreach (var year in league.Value.Years)
+            {
+                var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
+                if (leagueYear.Value.PlayStarted)
+                {
+                    return BadRequest("You can't remove a player from a league that has already started playing");
+                }
+            }
+
             Result result = await _fantasyCriticService.InviteUser(league.Value, inviteUser);
             if (result.IsFailure)
             {
