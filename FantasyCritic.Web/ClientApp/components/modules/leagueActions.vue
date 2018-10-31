@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="league.isManager">
+    <div v-if="league.isManager && leagueYear">
       <h4>Manager Actions</h4>
       <div class="publisher-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'">Invite a Player</b-button>
