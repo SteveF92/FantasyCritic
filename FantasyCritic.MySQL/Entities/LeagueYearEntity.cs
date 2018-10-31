@@ -22,7 +22,7 @@ namespace FantasyCritic.MySQL.Entities
             Year = year;
 
             DraftGames = options.DraftGames;
-            AcquisitionGames = options.AcquisitionGames;
+            PickupGames = options.PickupGames;
             CounterPicks = options.CounterPicks;
             EstimatedCriticScore = options.EstimatedCriticScore;
 
@@ -30,7 +30,7 @@ namespace FantasyCritic.MySQL.Entities
             AllowYearlyInstallments = options.AllowYearlyInstallments;
             AllowEarlyAccess = options.AllowEarlyAccess;
             DraftSystem = options.DraftSystem.Value;
-            AcquisitionSystem = options.AcquisitionSystem.Value;
+            PickupSystem = options.PickupSystem.Value;
             ScoringSystem = options.ScoringSystem.Name;
             PlayStarted = playStarted;
         }
@@ -38,25 +38,25 @@ namespace FantasyCritic.MySQL.Entities
         public Guid LeagueID { get; set; }
         public int Year { get; set; }
         public int DraftGames { get; set; }
-        public int AcquisitionGames { get; set; }
+        public int PickupGames { get; set; }
         public int CounterPicks { get; set; }
         public decimal EstimatedCriticScore { get; set; }
         public int MaximumEligibilityLevel { get; set; }
         public bool AllowYearlyInstallments { get; set; }
         public bool AllowEarlyAccess { get; set; }
         public string DraftSystem { get; set; }
-        public string AcquisitionSystem { get; set; }
+        public string PickupSystem { get; set; }
         public string ScoringSystem { get; set; }
         public bool PlayStarted { get; set; }
 
         public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
-            AcquisitionSystem acquisitionSystem = Lib.Enums.AcquisitionSystem.FromValue(AcquisitionSystem);
+            PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            LeagueOptions options = new LeagueOptions(DraftGames, AcquisitionGames, CounterPicks, EstimatedCriticScore,
-                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, acquisitionSystem, scoringSystem);
+            LeagueOptions options = new LeagueOptions(DraftGames, PickupGames, CounterPicks, EstimatedCriticScore,
+                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, pickupSystem, scoringSystem);
 
             return new LeagueYear(league, Year, options, PlayStarted);
         }

@@ -29,7 +29,7 @@
                 var options = {
                     draftSlots: this.leagueYear.draftGames,
                     counterPickSlots: this.leagueYear.counterPicks,
-                    acquisitionSlots: this.leagueYear.acquisitionGames
+                    pickupSlots: this.leagueYear.pickupGames
                 };
 
                 return options;

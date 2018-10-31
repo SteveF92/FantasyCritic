@@ -34,7 +34,7 @@
               bidID: bid.bidID
             };
             axios
-              .post('/api/league/DeleteAcquisitionBid', model)
+              .post('/api/league/DeletePickupBid', model)
               .then(response => {
                 var bidInfo = {
                   gameName: bid.masterGame.gameName,

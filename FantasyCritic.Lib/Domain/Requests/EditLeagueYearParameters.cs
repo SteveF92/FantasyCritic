@@ -6,22 +6,22 @@ namespace FantasyCritic.Lib.Domain.Requests
 {
     public class EditLeagueYearParameters
     {
-        public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int draftGames, int acquisitionGames, int counterPicks, 
+        public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int draftGames, int pickupGames, int counterPicks, 
             decimal estimatedCriticScore, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
-            bool allowEarlyAccess, DraftSystem draftSystem, AcquisitionSystem acquisitionSystem, ScoringSystem scoringSystem)
+            bool allowEarlyAccess, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem)
         {
             Manager = manager;
             LeagueID = leagueID;
             Year = year;
             DraftGames = draftGames;
-            AcquisitionGames = acquisitionGames;
+            PickupGames = pickupGames;
             CounterPicks = counterPicks;
             EstimatedCriticScore = estimatedCriticScore;
             AllowYearlyInstallments = allowYearlyInstallments;
             AllowEarlyAccess = allowEarlyAccess;
             MaximumEligibilityLevel = maximumEligibilityLevel;
             DraftSystem = draftSystem;
-            AcquisitionSystem = acquisitionSystem;
+            PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
         }
 
@@ -29,14 +29,14 @@ namespace FantasyCritic.Lib.Domain.Requests
         public Guid LeagueID { get; }
         public int Year { get; }
         public int DraftGames { get; }
-        public int AcquisitionGames { get; }
+        public int PickupGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
         public EligibilityLevel MaximumEligibilityLevel { get; }
         public bool AllowYearlyInstallments { get; set; }
         public bool AllowEarlyAccess { get; set; }
         public DraftSystem DraftSystem { get; }
-        public AcquisitionSystem AcquisitionSystem { get; }
+        public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }
     }
 }

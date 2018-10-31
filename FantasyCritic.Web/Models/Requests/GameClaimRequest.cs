@@ -10,7 +10,7 @@ namespace FantasyCritic.Web.Models.Requests
     {
         public Guid PublisherID { get; set; }
         public string GameName { get; set; }
-        public bool Acquisition { get; set; }
+        public bool Pickup { get; set; }
         public bool CounterPick { get; set; }
         public Guid? MasterGameID { get; set; }
         public bool ManagerOverride { get; set; }

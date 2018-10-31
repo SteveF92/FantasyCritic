@@ -41,7 +41,7 @@ namespace FantasyCritic.Web.Controllers.API
             var openYears = supportedYears.Where(x => x.OpenForCreation).Select(x => x.Year);
             IReadOnlyList<EligibilityLevel> eligibilityLevels = await _fantasyCriticService.GetEligibilityLevels();
             LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
-                AcquisitionSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), eligibilityLevels);
+                PickupSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), eligibilityLevels);
 
             return Ok(viewModel);
         }
@@ -315,7 +315,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> MakeAcquisitionBid([FromBody] AcquisitionBidRequest request)
+        public async Task<IActionResult> MakePickupBid([FromBody] PickupBidRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -352,21 +352,21 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That master game does not exist.");
             }
             
-            ClaimResult bidResult = await _fantasyCriticService.MakeAcquisitionBid(publisher.Value, masterGame.Value, request.BidAmount);
-            var viewModel = new AcquisitionBidResultViewModel(bidResult);
+            ClaimResult bidResult = await _fantasyCriticService.MakePickupBid(publisher.Value, masterGame.Value, request.BidAmount);
+            var viewModel = new PickupBidResultViewModel(bidResult);
 
             return Ok(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteAcquisitionBid([FromBody] AcquisitionBidDeleteRequest request)
+        public async Task<IActionResult> DeletePickupBid([FromBody] PickupBidDeleteRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var maybeBid = await _fantasyCriticService.GetAcquisitionBid(request.BidID);
+            var maybeBid = await _fantasyCriticService.GetPickupBid(request.BidID);
             if (maybeBid.HasNoValue)
             {
                 return BadRequest("That bid does not exist.");
@@ -381,8 +381,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            AcquisitionBid bid = maybeBid.Value;
-            Result result = await _fantasyCriticService.RemoveAcquisitionBid(bid);
+            PickupBid bid = maybeBid.Value;
+            Result result = await _fantasyCriticService.RemovePickupBid(bid);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);
@@ -408,7 +408,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var bids = await _fantasyCriticService.GetActiveAcquistitionBids(publisher.Value);
 
-            var viewModels = bids.Select(x => new AcquisitionBidViewModel(x)).OrderBy(x => x.Priority);
+            var viewModels = bids.Select(x => new PickupBidViewModel(x)).OrderBy(x => x.Priority);
             return Ok(viewModels);
         }
     }

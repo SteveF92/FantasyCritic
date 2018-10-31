@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Web.Models.Requests
 {
-    public class AcquisitionBidDeleteRequest
+    public class PickupBidDeleteRequest
     {
         [Required]
         public Guid BidID { get; set; }

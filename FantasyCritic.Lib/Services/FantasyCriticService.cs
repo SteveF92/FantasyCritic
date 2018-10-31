@@ -78,9 +78,9 @@ namespace FantasyCritic.Lib.Services
 
             IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(league, parameters.Year);
 
-            int maxDraftGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick && !x.Acquisition)).DefaultIfEmpty(0).Max();
+            int maxDraftGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick && !x.Pickup)).DefaultIfEmpty(0).Max();
             int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).DefaultIfEmpty(0).Max();
-            int maxAcquisitionGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.Acquisition)).DefaultIfEmpty(0).Max();
+            int maxPickupGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.Pickup)).DefaultIfEmpty(0).Max();
 
             if (maxDraftGames > options.DraftGames)
             {
@@ -90,9 +90,9 @@ namespace FantasyCritic.Lib.Services
             {
                 return Result.Fail($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
             }
-            if (maxAcquisitionGames > options.AcquisitionGames)
+            if (maxPickupGames > options.PickupGames)
             {
-                return Result.Fail($"Cannot reduce number of acquisition games to {options.AcquisitionGames} as a publisher has {maxAcquisitionGames} acquisition games currently.");
+                return Result.Fail($"Cannot reduce number of pickup games to {options.PickupGames} as a publisher has {maxPickupGames} pickup games currently.");
             }
 
             await _fantasyCriticRepo.EditLeague(league, parameters.Year, options);
@@ -211,7 +211,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request)
         {
-            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.Acquisition, request.CounterPick, null, null, request.MasterGame, request.Publisher.Year);
+            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.Pickup, request.CounterPick, null, null, request.MasterGame, request.Publisher.Year);
 
             ClaimResult claimResult = await CanClaimGame(request);
 
@@ -245,15 +245,15 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
-        public async Task<ClaimResult> MakeAcquisitionBid(Publisher publisher, MasterGame masterGame, uint bidAmount)
+        public async Task<ClaimResult> MakePickupBid(Publisher publisher, MasterGame masterGame, uint bidAmount)
         {
             if (bidAmount > publisher.Budget)
             {
                 return new ClaimResult(new List<ClaimError>(){new ClaimError("You do not have enough budget to make that bid.", false)});
             }
 
-            IReadOnlyList<AcquisitionBid> acquisitionBids = await _fantasyCriticRepo.GetActiveAcquisitionBids(publisher);
-            bool alreadyBidFor = acquisitionBids.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
+            IReadOnlyList<PickupBid> pickupBids = await _fantasyCriticRepo.GetActivePickupBids(publisher);
+            bool alreadyBidFor = pickupBids.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
             if (alreadyBidFor)
             {
                 return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) });
@@ -266,32 +266,32 @@ namespace FantasyCritic.Lib.Services
                 return claimResult;
             }
 
-            var nextPriority = acquisitionBids.Count + 1;
+            var nextPriority = pickupBids.Count + 1;
 
-            AcquisitionBid currentBid = new AcquisitionBid(Guid.NewGuid(), publisher, masterGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
-            await _fantasyCriticRepo.CreateAcquisitionBid(currentBid);
+            PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, masterGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
+            await _fantasyCriticRepo.CreatePickupBid(currentBid);
 
             return claimResult;
         }
 
-        public Task<IReadOnlyList<AcquisitionBid>> GetActiveAcquistitionBids(Publisher publisher)
+        public Task<IReadOnlyList<PickupBid>> GetActiveAcquistitionBids(Publisher publisher)
         {
-            return _fantasyCriticRepo.GetActiveAcquisitionBids(publisher);
+            return _fantasyCriticRepo.GetActivePickupBids(publisher);
         }
 
-        public Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
+        public Task<Maybe<PickupBid>> GetPickupBid(Guid bidID)
         {
-            return _fantasyCriticRepo.GetAcquisitionBid(bidID);
+            return _fantasyCriticRepo.GetPickupBid(bidID);
         }
 
-        public async Task<Result> RemoveAcquisitionBid(AcquisitionBid bid)
+        public async Task<Result> RemovePickupBid(PickupBid bid)
         {
             if (bid.Successful != null)
             {
                 return Result.Fail("Bid has already been processed");
             }
 
-            await _fantasyCriticRepo.RemoveAcquisitionBid(bid);
+            await _fantasyCriticRepo.RemovePickupBid(bid);
             return Result.Ok();
         }
 
@@ -403,12 +403,12 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
         }
 
-        public async Task ProcessAcquisitions(int year)
+        public async Task ProcessPickups(int year)
         {
             var leagueYears = await GetLeagueYears(year);
             foreach (var leagueYear in leagueYears)
             {
-                await ProcessAcquisitionsForLeagueYear(leagueYear);
+                await ProcessPickupsForLeagueYear(leagueYear);
             }
         }
 
@@ -453,7 +453,7 @@ namespace FantasyCritic.Lib.Services
 
             bool gameAlreadyClaimed = gamesForYear.ContainsGame(request);
 
-            if (!request.Acquisition && !request.CounterPick)
+            if (!request.Pickup && !request.CounterPick)
             {
                 if (gameAlreadyClaimed)
                 {
@@ -461,31 +461,31 @@ namespace FantasyCritic.Lib.Services
                 }
 
                 int leagueDraftGames = yearOptions.DraftGames;
-                int userDraftGames = thisPlayersGames.Count(x => !x.Acquisition && !x.CounterPick);
+                int userDraftGames = thisPlayersGames.Count(x => !x.Pickup && !x.CounterPick);
                 if (userDraftGames == leagueDraftGames)
                 {
                     claimErrors.Add(new ClaimError("User's draft spaces are filled.", false));
                 }
             }
 
-            if (request.Acquisition)
+            if (request.Pickup)
             {
                 if (gameAlreadyClaimed)
                 {
-                    claimErrors.Add(new ClaimError("Cannot acquisition claim a game that someone already has.", false));
+                    claimErrors.Add(new ClaimError("Cannot pickup claim a game that someone already has.", false));
                 }
 
-                int leagueAcquisitionGames = yearOptions.AcquisitionGames;
-                int userAcquisitionGames = thisPlayersGames.Count(x => x.Acquisition);
-                if (userAcquisitionGames == leagueAcquisitionGames)
+                int leaguePickupGames = yearOptions.PickupGames;
+                int userPickupGames = thisPlayersGames.Count(x => x.Pickup);
+                if (userPickupGames == leaguePickupGames)
                 {
-                    claimErrors.Add(new ClaimError("User's acquisition spaces are filled.", false));
+                    claimErrors.Add(new ClaimError("User's pickup spaces are filled.", false));
                 }
             }
 
             if (request.CounterPick)
             {
-                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick && !x.Acquisition).ContainsGame(request);
+                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick && !x.Pickup).ContainsGame(request);
 
                 int leagueCounterPicks = yearOptions.CounterPicks;
                 int userCounterPicks = thisPlayersGames.Count(x => x.CounterPick);
@@ -529,7 +529,7 @@ namespace FantasyCritic.Lib.Services
 
             bool gameAlreadyClaimed = gamesForYear.ContainsGame(request.MasterGame);
 
-            if (!request.PublisherGame.Acquisition && !request.PublisherGame.CounterPick)
+            if (!request.PublisherGame.Pickup && !request.PublisherGame.CounterPick)
             {
                 if (gameAlreadyClaimed)
                 {
@@ -537,17 +537,17 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            if (request.PublisherGame.Acquisition)
+            if (request.PublisherGame.Pickup)
             {
                 if (gameAlreadyClaimed)
                 {
-                    associationErrors.Add(new ClaimError("Cannot acquisition claim a game that someone already has.", false));
+                    associationErrors.Add(new ClaimError("Cannot pickup claim a game that someone already has.", false));
                 }
             }
 
             if (request.PublisherGame.CounterPick)
             {
-                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick && !x.Acquisition).ContainsGame(request.MasterGame);
+                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick && !x.Pickup).ContainsGame(request.MasterGame);
                 if (!otherPlayerHasDraftGame)
                 {
                     associationErrors.Add(new ClaimError("Cannot counterpick a game that no other player is publishing.", false));
@@ -636,7 +636,7 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        private async Task ProcessAcquisitionsForLeagueYear(LeagueYear leagueYear)
+        private async Task ProcessPickupsForLeagueYear(LeagueYear leagueYear)
         {
             var allActiveBids = await GetActiveBids(leagueYear);
             if (!allActiveBids.Any())
@@ -653,40 +653,40 @@ namespace FantasyCritic.Lib.Services
                 .Except(winningBids)
                 .Except(insufficientFundsBids)
                 .Where(x => takenGames.Contains(x.MasterGame))
-                .Select(x => new FailedAcquisitionBid(x, "Publisher was outbid."));
+                .Select(x => new FailedPickupBid(x, "Publisher was outbid."));
 
-            var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedAcquisitionBid(x, "Not enough budget."));
+            var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget."));
             var failedBids = losingBids.Concat(insufficientFundsBidFailures);
             await ProcessSuccessfulAndFailedBids(winningBids, failedBids);
 
             //When we are done, we run again.
             //This will repeat until there are no active bids.
             await Task.Delay(5);
-            await ProcessAcquisitionsForLeagueYear(leagueYear);
+            await ProcessPickupsForLeagueYear(leagueYear);
         }
 
-        private async Task<IReadOnlyList<AcquisitionBid>> GetActiveBids(LeagueYear leagueYear)
+        private async Task<IReadOnlyList<PickupBid>> GetActiveBids(LeagueYear leagueYear)
         {
-            List<AcquisitionBid> activeBids = new List<AcquisitionBid>();
+            List<PickupBid> activeBids = new List<PickupBid>();
             var publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             foreach (var publisher in publishers)
             {
-                var bidsForPublisher = await _fantasyCriticRepo.GetActiveAcquisitionBids(publisher);
+                var bidsForPublisher = await _fantasyCriticRepo.GetActivePickupBids(publisher);
                 activeBids.AddRange(bidsForPublisher);
             }
 
             return activeBids;
         }
 
-        private IReadOnlyList<AcquisitionBid> GetWinnableBids(IEnumerable<AcquisitionBid> activeBidsForLeagueYear, LeagueOptions options)
+        private IReadOnlyList<PickupBid> GetWinnableBids(IEnumerable<PickupBid> activeBidsForLeagueYear, LeagueOptions options)
         {
-            List<AcquisitionBid> winnableBids = new List<AcquisitionBid>();
+            List<PickupBid> winnableBids = new List<PickupBid>();
 
             var enoughBudgetBids = activeBidsForLeagueYear.Where(x => x.BidAmount <= x.Publisher.Budget);
             var groupedByGame = enoughBudgetBids.GroupBy(x => x.MasterGame);
             foreach (var gameGroup in groupedByGame)
             {
-                AcquisitionBid bestBid;
+                PickupBid bestBid;
                 if (gameGroup.Count() == 1)
                 {
                     bestBid = gameGroup.First();
@@ -704,20 +704,20 @@ namespace FantasyCritic.Lib.Services
             return winnableBids;
         }
 
-        private IReadOnlyList<AcquisitionBid> GetWinningBids(IEnumerable<AcquisitionBid> winnableBids)
+        private IReadOnlyList<PickupBid> GetWinningBids(IEnumerable<PickupBid> winnableBids)
         {
-            List<AcquisitionBid> winningBids = new List<AcquisitionBid>();
+            List<PickupBid> winningBids = new List<PickupBid>();
             var groupedByPublisher = winnableBids.GroupBy(x => x.Publisher);
             foreach (var publisherGroup in groupedByPublisher)
             {
-                AcquisitionBid winningBid = publisherGroup.MinBy(x => x.Priority).First();
+                PickupBid winningBid = publisherGroup.MinBy(x => x.Priority).First();
                 winningBids.Add(winningBid);
             }
 
             return winningBids;
         }
 
-        private async Task ProcessSuccessfulAndFailedBids(IEnumerable<AcquisitionBid> successBids, IEnumerable<FailedAcquisitionBid> failedBids)
+        private async Task ProcessSuccessfulAndFailedBids(IEnumerable<PickupBid> successBids, IEnumerable<FailedPickupBid> failedBids)
         {
             foreach (var successBid in successBids)
             {
@@ -732,7 +732,7 @@ namespace FantasyCritic.Lib.Services
 
             foreach (var failedBid in failedBids)
             {
-                await _fantasyCriticRepo.MarkBidStatus(failedBid.AcquisitionBid, false);
+                await _fantasyCriticRepo.MarkBidStatus(failedBid.PickupBid, false);
 
                 LeagueAction leagueAction = new LeagueAction(failedBid, _clock.GetCurrentInstant());
                 await _fantasyCriticRepo.AddLeagueAction(leagueAction);

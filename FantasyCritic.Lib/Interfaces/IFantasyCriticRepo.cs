@@ -48,11 +48,11 @@ namespace FantasyCritic.Lib.Interfaces
         Task<Result> RemovePublisherGame(Guid publisherGameID);
         Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
 
-        Task CreateAcquisitionBid(AcquisitionBid currentBid);
-        Task RemoveAcquisitionBid(AcquisitionBid bid);
-        Task<IReadOnlyList<AcquisitionBid>> GetActiveAcquisitionBids(Publisher publisher);
-        Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID);
-        Task MarkBidStatus(AcquisitionBid bid, bool success);
+        Task CreatePickupBid(PickupBid currentBid);
+        Task RemovePickupBid(PickupBid bid);
+        Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
+        Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);
+        Task MarkBidStatus(PickupBid bid, bool success);
         Task SpendBudget(Publisher successBidPublisher, uint successBidBidAmount);
         Task AddLeagueAction(LeagueAction action);
         Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);

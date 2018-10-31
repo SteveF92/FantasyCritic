@@ -13,7 +13,7 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public int DraftGames { get; set; }
         [Required]
-        public int AcquisitionGames { get; set; }
+        public int PickupGames { get; set; }
         [Required]
         public int CounterPicks { get; set; }
         [Required]
@@ -29,18 +29,18 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public string DraftSystem { get; set; }
         [Required]
-        public string AcquisitionSystem { get; set; }
+        public string PickupSystem { get; set; }
         [Required]
         public string ScoringSystem { get; set; }
 
         public LeagueCreationParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
-            AcquisitionSystem acquisitionSystem = Lib.Enums.AcquisitionSystem.FromValue(AcquisitionSystem);
+            PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, DraftGames, AcquisitionGames, CounterPicks,
-                EstimatedCriticScore, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, acquisitionSystem, scoringSystem);
+            LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, DraftGames, PickupGames, CounterPicks,
+                EstimatedCriticScore, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, pickupSystem, scoringSystem);
             return parameters;
         }
     }

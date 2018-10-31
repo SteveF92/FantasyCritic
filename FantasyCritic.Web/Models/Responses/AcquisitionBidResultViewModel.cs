@@ -7,9 +7,9 @@ using FantasyCritic.Lib.Domain.Results;
 
 namespace FantasyCritic.Web.Models.Responses
 {
-    public class AcquisitionBidResultViewModel
+    public class PickupBidResultViewModel
     {
-        public AcquisitionBidResultViewModel(ClaimResult domain)
+        public PickupBidResultViewModel(ClaimResult domain)
         {
             Success = domain.Success;
             Errors = domain.Errors.Select(x => x.Error).ToList();

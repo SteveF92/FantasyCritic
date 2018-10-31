@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class FailedAcquisitionBid
+    public class FailedPickupBid
     {
-        public FailedAcquisitionBid(AcquisitionBid acquisitionBid, string failureReason)
+        public FailedPickupBid(PickupBid pickupBid, string failureReason)
         {
-            AcquisitionBid = acquisitionBid;
+            PickupBid = pickupBid;
             FailureReason = failureReason;
         }
 
-        public AcquisitionBid AcquisitionBid { get; }
+        public PickupBid PickupBid { get; }
         public string FailureReason { get; }
     }
 }

@@ -3,16 +3,16 @@ using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Web.Models.Responses
 {
-    public class AcquisitionBidViewModel
+    public class PickupBidViewModel
     {
-        public AcquisitionBidViewModel(AcquisitionBid acquisitionBid)
+        public PickupBidViewModel(PickupBid pickupBid)
         {
-            BidID = acquisitionBid.BidID;
-            BidAmount = acquisitionBid.BidAmount;
-            Priority = acquisitionBid.Priority;
-            Timestamp = acquisitionBid.Timestamp.ToDateTimeUtc();
-            Successful = acquisitionBid.Successful;
-            MasterGame = new MasterGameViewModel(acquisitionBid.MasterGame);
+            BidID = pickupBid.BidID;
+            BidAmount = pickupBid.BidAmount;
+            Priority = pickupBid.Priority;
+            Timestamp = pickupBid.Timestamp.ToDateTimeUtc();
+            Successful = pickupBid.Successful;
+            MasterGame = new MasterGameViewModel(pickupBid.MasterGame);
         }
 
         public Guid BidID { get; }

@@ -12,12 +12,12 @@ namespace FantasyCritic.Lib.Domain
     {
         private readonly int _leagueYear;
 
-        public PublisherGame(Guid publisherGameID, string gameName, Instant timestamp, bool acquisition, bool counterPick, decimal? manualCriticScore, decimal? fantasyPoints, Maybe<MasterGame> masterGame, int leagueYear)
+        public PublisherGame(Guid publisherGameID, string gameName, Instant timestamp, bool pickup, bool counterPick, decimal? manualCriticScore, decimal? fantasyPoints, Maybe<MasterGame> masterGame, int leagueYear)
         {
             PublisherGameID = publisherGameID;
             GameName = gameName;
             Timestamp = timestamp;
-            Acquisition = acquisition;
+            Pickup = pickup;
             CounterPick = counterPick;
             ManualCriticScore = manualCriticScore;
             FantasyPoints = fantasyPoints;
@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Domain
         public Guid PublisherGameID { get; }
         public string GameName { get; }
         public Instant Timestamp { get; }
-        public bool Acquisition { get; }
+        public bool Pickup { get; }
         public bool CounterPick { get; }
         public decimal? ManualCriticScore { get; }
         public decimal? FantasyPoints { get; }

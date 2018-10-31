@@ -75,7 +75,7 @@
                 };
 
                 axios
-                  .post('/api/league/MakeAcquisitionBid', request)
+                  .post('/api/league/MakePickupBid', request)
                   .then(response => {
                       this.bidResult = response.data;
                       if (!this.bidResult.success) {

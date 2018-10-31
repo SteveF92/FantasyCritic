@@ -46,21 +46,21 @@ namespace FantasyCritic.Lib.Domain
             ManagerAction = true;
         }
 
-        public LeagueAction(AcquisitionBid action, Instant timestamp)
+        public LeagueAction(PickupBid action, Instant timestamp)
         {
             Timestamp = timestamp;
             Publisher = action.Publisher;
-            ActionType = "Acquisition Successful";
+            ActionType = "Pickup Successful";
             Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}";
             ManagerAction = false;
         }
 
-        public LeagueAction(FailedAcquisitionBid action, Instant timestamp)
+        public LeagueAction(FailedPickupBid action, Instant timestamp)
         {
             Timestamp = timestamp;
-            Publisher = action.AcquisitionBid.Publisher;
-            ActionType = "Acquisition Failed";
-            Description = $"Tried to acquire game '{action.AcquisitionBid.MasterGame.GameName}' with a bid of ${action.AcquisitionBid.BidAmount}. Failure reason: {action.FailureReason}";
+            Publisher = action.PickupBid.Publisher;
+            ActionType = "Pickup Failed";
+            Description = $"Tried to acquire game '{action.PickupBid.MasterGame.GameName}' with a bid of ${action.PickupBid.BidAmount}. Failure reason: {action.FailureReason}";
             ManagerAction = false;
         }
 

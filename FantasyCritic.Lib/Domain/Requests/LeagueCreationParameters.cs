@@ -5,14 +5,14 @@ namespace FantasyCritic.Lib.Domain.Requests
 {
     public class LeagueCreationParameters
     {
-        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int draftGames, int acquisitionGames, int counterPicks, 
+        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int draftGames, int pickupGames, int counterPicks, 
             decimal estimatedCriticScore, int initialYear, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
-            bool allowEarlyAccess, DraftSystem draftSystem, AcquisitionSystem acquisitionSystem, ScoringSystem scoringSystem)
+            bool allowEarlyAccess, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem)
         {
             Manager = manager;
             LeagueName = leagueName;
             DraftGames = draftGames;
-            AcquisitionGames = acquisitionGames;
+            PickupGames = pickupGames;
             CounterPicks = counterPicks;
             EstimatedCriticScore = estimatedCriticScore;
             InitialYear = initialYear;
@@ -20,14 +20,14 @@ namespace FantasyCritic.Lib.Domain.Requests
             AllowEarlyAccess = allowEarlyAccess;
             MaximumEligibilityLevel = maximumEligibilityLevel;
             DraftSystem = draftSystem;
-            AcquisitionSystem = acquisitionSystem;
+            PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
         }
 
         public FantasyCriticUser Manager { get; }
         public string LeagueName { get; }
         public int DraftGames { get; }
-        public int AcquisitionGames { get; }
+        public int PickupGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
         public int InitialYear { get; }
@@ -35,7 +35,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public bool AllowYearlyInstallments { get; set; }
         public bool AllowEarlyAccess { get; set; }
         public DraftSystem DraftSystem { get; }
-        public AcquisitionSystem AcquisitionSystem { get; }
+        public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }
     }
 }

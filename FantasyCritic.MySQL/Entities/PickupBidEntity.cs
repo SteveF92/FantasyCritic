@@ -8,14 +8,14 @@ using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
 {
-    public class AcquisitionBidEntity
+    public class PickupBidEntity
     {
-        public AcquisitionBidEntity()
+        public PickupBidEntity()
         {
             
         }
 
-        public AcquisitionBidEntity(AcquisitionBid domain)
+        public PickupBidEntity(PickupBid domain)
         {
             BidID = domain.BidID;
             PublisherID = domain.Publisher.PublisherID;
@@ -34,10 +34,10 @@ namespace FantasyCritic.MySQL.Entities
         public uint BidAmount { get; set; }
         public bool? Successful { get; set; }
 
-        public AcquisitionBid ToDomain(Publisher publisher, MasterGame masterGame)
+        public PickupBid ToDomain(Publisher publisher, MasterGame masterGame)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            return new AcquisitionBid(BidID, publisher, masterGame, BidAmount, Priority, instant, Successful);
+            return new PickupBid(BidID, publisher, masterGame, BidAmount, Priority, instant, Successful);
         }
     }
 }

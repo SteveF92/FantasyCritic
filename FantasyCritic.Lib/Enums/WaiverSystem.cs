@@ -4,13 +4,13 @@ using System.Text;
 
 namespace FantasyCritic.Lib.Enums
 {
-    public class AcquisitionSystem : TypeSafeEnum<AcquisitionSystem>
+    public class PickupSystem : TypeSafeEnum<PickupSystem>
     {
         // Define values here.
-        public static readonly AcquisitionSystem Manual = new AcquisitionSystem("Manual");
+        public static readonly PickupSystem Manual = new PickupSystem("Manual");
 
         // Constructor is private: values are defined within this class only!
-        private AcquisitionSystem(string value)
+        private PickupSystem(string value)
             : base(value)
         {
 

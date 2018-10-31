@@ -11,8 +11,8 @@
           <input v-model="selectedLeagueOptions.draftGames" id="draftGames" name="draftGames" type="text" class="form-control input" />
         </div>
         <div class="form-group col-md-10">
-          <label for="acquisitionGames" class="control-label">Number of Acquisition Games</label>
-          <input v-model="selectedLeagueOptions.acquisitionGames" id="acquisitionGames" name="acquisitionGames" type="text" class="form-control input" />
+          <label for="pickupGames" class="control-label">Number of Pickup Games</label>
+          <input v-model="selectedLeagueOptions.pickupGames" id="pickupGames" name="pickupGames" type="text" class="form-control input" />
         </div>
         <div class="form-group col-md-10">
           <label for="counterPicks" class="control-label">Number of Counter Picks</label>
@@ -33,9 +33,9 @@
           </select>
         </div>
         <div class="form-group col-md-10">
-          <label for="acquisitionSystem" class="control-label">Acquisition System</label>
-          <select class="form-control" v-model="selectedLeagueOptions.acquisitionSystem" id="acquisitionSystem">
-            <option v-for="acquisitionSystem in possibleLeagueOptions.acquisitionSystems" v-bind:value="acquisitionSystem">{{ acquisitionSystem }}</option>
+          <label for="pickupSystem" class="control-label">Pickup System</label>
+          <select class="form-control" v-model="selectedLeagueOptions.pickupSystem" id="pickupSystem">
+            <option v-for="pickupSystem in possibleLeagueOptions.pickupSystems" v-bind:value="pickupSystem">{{ pickupSystem }}</option>
           </select>
         </div>
         <div class="form-group col-md-10">

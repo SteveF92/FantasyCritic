@@ -152,42 +152,42 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task CreateAcquisitionBid(AcquisitionBid currentBid)
+        public async Task CreatePickupBid(PickupBid currentBid)
         {
-            var entity = new AcquisitionBidEntity(currentBid);
+            var entity = new PickupBidEntity(currentBid);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblacquisitionbid(BidID,PublisherID,MasterGameID,Timestamp,Priority,BidAmount,Successful) VALUES " +
+                    "insert into tblpickupbid(BidID,PublisherID,MasterGameID,Timestamp,Priority,BidAmount,Successful) VALUES " +
                     "(@BidID,@PublisherID,@MasterGameID,@Timestamp,@Priority,@BidAmount,@Successful);",
                     entity);
             }
         }
 
-        public async Task RemoveAcquisitionBid(AcquisitionBid acquisitionBid)
+        public async Task RemovePickupBid(PickupBid pickupBid)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("delete from tblacquisitionbid where BidID = @bidID", new {acquisitionBid.BidID});
-                await connection.ExecuteAsync("update tblacquisitionbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority", 
-                    new { publisherID = acquisitionBid.Publisher.PublisherID, oldPriority = acquisitionBid.Priority });
+                await connection.ExecuteAsync("delete from tblpickupbid where BidID = @bidID", new {pickupBid.BidID});
+                await connection.ExecuteAsync("update tblpickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority", 
+                    new { publisherID = pickupBid.Publisher.PublisherID, oldPriority = pickupBid.Priority });
             }
         }
 
-        public async Task<IReadOnlyList<AcquisitionBid>> GetActiveAcquisitionBids(Publisher publisher)
+        public async Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var bidEntities = await connection.QueryAsync<AcquisitionBidEntity>("select * from tblacquisitionbid where PublisherID = @publisherID and Successful is NULL",
+                var bidEntities = await connection.QueryAsync<PickupBidEntity>("select * from tblpickupbid where PublisherID = @publisherID and Successful is NULL",
                     new { publisherID = publisher.PublisherID });
 
-                List<AcquisitionBid> domainBids = new List<AcquisitionBid>();
+                List<PickupBid> domainBids = new List<PickupBid>();
                 foreach (var bidEntity in bidEntities)
                 {
                     var masterGame = await GetMasterGame(bidEntity.MasterGameID);
 
-                    AcquisitionBid domain = bidEntity.ToDomain(publisher, masterGame.Value);
+                    PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value);
                     domainBids.Add(domain);
                 }
 
@@ -195,11 +195,11 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task MarkBidStatus(AcquisitionBid bid, bool success)
+        public async Task MarkBidStatus(PickupBid bid, bool success)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("update tblacquisitionbid SET Successful = @success where BidID = @bidID;",
+                await connection.ExecuteAsync("update tblpickupbid SET Successful = @success where BidID = @bidID;",
                     new { bidID = bid.BidID, success });
             }
         }
@@ -283,20 +283,20 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<Maybe<AcquisitionBid>> GetAcquisitionBid(Guid bidID)
+        public async Task<Maybe<PickupBid>> GetPickupBid(Guid bidID)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var bidEntity = await connection.QuerySingleOrDefaultAsync<AcquisitionBidEntity>("select * from tblacquisitionbid where BidID = @bidID", new { bidID });
+                var bidEntity = await connection.QuerySingleOrDefaultAsync<PickupBidEntity>("select * from tblpickupbid where BidID = @bidID", new { bidID });
                 if (bidEntity == null)
                 {
-                    return Maybe<AcquisitionBid>.None;
+                    return Maybe<PickupBid>.None;
                 }
 
                 var publisher = await GetPublisher(bidEntity.PublisherID);
                 var masterGame = await GetMasterGame(bidEntity.MasterGameID);
 
-                AcquisitionBid domain = bidEntity.ToDomain(publisher.Value, masterGame.Value);
+                PickupBid domain = bidEntity.ToDomain(publisher.Value, masterGame.Value);
                 return domain;
             }
         }
@@ -328,8 +328,8 @@ namespace FantasyCritic.MySQL
                     entity);
 
                 await connection.ExecuteAsync(
-                    "insert into tblleagueyear(LeagueID,Year,DraftGames,AcquisitionGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,AcquisitionSystem,ScoringSystem,PlayStarted) VALUES " +
-                    "(@LeagueID,@Year,@DraftGames,@AcquisitionGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@AcquisitionSystem,@ScoringSystem,@PlayStarted);",
+                    "insert into tblleagueyear(LeagueID,Year,DraftGames,PickupGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,PickupSystem,ScoringSystem,PlayStarted) VALUES " +
+                    "(@LeagueID,@Year,@DraftGames,@PickupGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStarted);",
                     leagueYearEntity);
             }
 
@@ -343,9 +343,9 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "update tblleagueyear SET DraftGames = @DraftGames, AcquisitionGames = @AcquisitionGames, CounterPicks = @CounterPicks, EstimatedCriticScore = @EstimatedCriticScore, " +
+                    "update tblleagueyear SET DraftGames = @DraftGames, PickupGames = @PickupGames, CounterPicks = @CounterPicks, EstimatedCriticScore = @EstimatedCriticScore, " +
                     "MaximumEligibilityLevel = @MaximumEligibilityLevel, AllowYearlyInstallments = @AllowYearlyInstallments, AllowEarlyAccess = @AllowEarlyAccess, DraftSystem = @DraftSystem, " +
-                    "AcquisitionSystem = @AcquisitionSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year",
+                    "PickupSystem = @PickupSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year",
                     leagueYearEntity);
             }
         }
@@ -356,8 +356,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblleagueyear(LeagueID,Year,DraftGames,AcquisitionGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,AcquisitionSystem,ScoringSystem) VALUES " +
-                    "(@LeagueID,@Year,@DraftGames,@AcquisitionGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@AcquisitionSystem,@ScoringSystem);",
+                    "insert into tblleagueyear(LeagueID,Year,DraftGames,PickupGames,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,PickupSystem,ScoringSystem) VALUES " +
+                    "(@LeagueID,@Year,@DraftGames,@PickupGames,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@PickupSystem,@ScoringSystem);",
                     leagueYearEntity);
             }
         }
@@ -588,8 +588,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,Acquisition,CounterPick,FantasyPoints,MasterGameID) VALUES " +
-                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@Acquisition,@CounterPick,@FantasyPoints,@MasterGameID);",
+                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,Pickup,CounterPick,FantasyPoints,MasterGameID) VALUES " +
+                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@Pickup,@CounterPick,@FantasyPoints,@MasterGameID);",
                     entity);
             }
         }

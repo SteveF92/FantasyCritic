@@ -88,9 +88,9 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessAcquisitions([FromBody] ProcessAcquisitionsRequest request)
+        public async Task<IActionResult> ProcessPickups([FromBody] ProcessPickupsRequest request)
         {
-            await _fantasyCriticService.ProcessAcquisitions(request.Year);
+            await _fantasyCriticService.ProcessPickups(request.Year);
 
             return Ok();
         }

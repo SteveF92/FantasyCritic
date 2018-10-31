@@ -7,9 +7,9 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class AcquisitionBid : IEquatable<AcquisitionBid>
+    public class PickupBid : IEquatable<PickupBid>
     {
-        public AcquisitionBid(Guid bidID, Publisher publisher, MasterGame masterGame, uint bidAmount, int priority, Instant timestamp, bool? successful)
+        public PickupBid(Guid bidID, Publisher publisher, MasterGame masterGame, uint bidAmount, int priority, Instant timestamp, bool? successful)
         {
             BidID = bidID;
             Publisher = publisher;
@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Domain
         public Instant Timestamp { get; }
         public bool? Successful { get; }
 
-        public bool Equals(AcquisitionBid other)
+        public bool Equals(PickupBid other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -40,7 +40,7 @@ namespace FantasyCritic.Lib.Domain
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((AcquisitionBid) obj);
+            return Equals((PickupBid) obj);
         }
 
         public override int GetHashCode()

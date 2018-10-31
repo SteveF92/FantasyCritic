@@ -20,14 +20,14 @@ namespace FantasyCritic.Web.Models.Requests
             Year = leagueYear.Year;
             LeagueName = league.LeagueName;
             DraftGames = leagueYear.Options.DraftGames;
-            AcquisitionGames = leagueYear.Options.AcquisitionGames;
+            PickupGames = leagueYear.Options.PickupGames;
             CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
             MaximumEligibilityLevel = leagueYear.Options.MaximumEligibilityLevel.Level;
             AllowYearlyInstallments = leagueYear.Options.AllowYearlyInstallments;
             AllowEarlyAccess = leagueYear.Options.AllowEarlyAccess;
             DraftSystem = leagueYear.Options.DraftSystem.Value;
-            AcquisitionSystem = leagueYear.Options.AcquisitionSystem.Value;
+            PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
         }
 
@@ -40,7 +40,7 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public int DraftGames { get; set; }
         [Required]
-        public int AcquisitionGames { get; set; }
+        public int PickupGames { get; set; }
         [Required]
         public int CounterPicks { get; set; }
         [Required]
@@ -54,18 +54,18 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public string DraftSystem { get; set; }
         [Required]
-        public string AcquisitionSystem { get; set; }
+        public string PickupSystem { get; set; }
         [Required]
         public string ScoringSystem { get; set; }
 
         public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
-            AcquisitionSystem acquisitionSystem = Lib.Enums.AcquisitionSystem.FromValue(AcquisitionSystem);
+            PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, DraftGames, AcquisitionGames, CounterPicks,
-                EstimatedCriticScore, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, acquisitionSystem, scoringSystem);
+            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, DraftGames, PickupGames, CounterPicks,
+                EstimatedCriticScore, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, pickupSystem, scoringSystem);
             return parameters;
         }
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Web.Models.Requests
 {
-    public class ProcessAcquisitionsRequest
+    public class ProcessPickupsRequest
     {
         public int Year { get; set; }
     }
