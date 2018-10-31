@@ -391,7 +391,7 @@ namespace FantasyCritic.MySQL
                 };
 
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select tblleague. * from tblleague join tblleaguehasuser on (tblleague.LeagueID = tblleaguehasuser.LeagueID) where tblleaguehasuser.UserID = @userID;", queryObject);
+                    "select tblleague.* from tblleague join tblleaguehasuser on (tblleague.LeagueID = tblleaguehasuser.LeagueID) where tblleaguehasuser.UserID = @userID;", queryObject);
             }
 
             IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
@@ -462,14 +462,21 @@ namespace FantasyCritic.MySQL
             return DeleteInvite(league, inviteUser);
         }
 
-        public Task RemovePublisher(Publisher publisher)
+        public async Task RemovePublisher(Publisher publisher)
         {
-            throw new NotImplementedException();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("delete from tblpublisher where PublisherID = @publisherID;", new {publisherID = publisher.PublisherID});
+            }
         }
 
-        public Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
+        public async Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
         {
-            throw new NotImplementedException();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                string sql = "delete from tblleaguehasuser where LeagueID = @leagueID and UserID = @userID;";
+                await connection.ExecuteAsync(sql, new { leagueID = league.LeagueID, userID = removeUser.UserID });
+            }
         }
 
         public async Task CreatePublisher(Publisher publisher)
