@@ -800,18 +800,37 @@ namespace FantasyCritic.MySQL
 
         public async Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions)
         {
+            int tempPosition = draftPositions.Select(x => x.Value).Max() + 1;
             using (var connection = new MySqlConnection(_connectionString))
             {
-                foreach (var draftPosition in draftPositions)
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync("update tblpublisher set DraftPosition = @draftPosition where PublisherID = @publisherID",
-                        new
-                        {
-                            publisherID = draftPosition.Key.PublisherID,
-                            draftPosition = draftPosition.Value
-                        });
+                    foreach (var draftPosition in draftPositions)
+                    {
+                        await connection.ExecuteAsync(
+                            "update tblpublisher set DraftPosition = @draftPosition where PublisherID = @publisherID",
+                            new
+                            {
+                                publisherID = draftPosition.Key.PublisherID,
+                                draftPosition = tempPosition
+                            }, transaction);
+                        tempPosition++;
+                    }
+
+                    foreach (var draftPosition in draftPositions)
+                    {
+                        await connection.ExecuteAsync(
+                            "update tblpublisher set DraftPosition = @draftPosition where PublisherID = @publisherID",
+                            new
+                            {
+                                publisherID = draftPosition.Key.PublisherID,
+                                draftPosition = draftPosition.Value
+                            }, transaction);
+                    }
+
+                    transaction.Commit();
                 }
-                
             }
         }
     }

@@ -843,7 +843,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("Not setting all publishers.");
             }
 
-            var requiredNumbers = Enumerable.Range(1, publishersCount);
+            var requiredNumbers = Enumerable.Range(1, publishersCount).ToList();
             var requestedDraftNumbers = draftPositions.Select(x => x.Value);
             bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedDraftNumbers);
             if (!allRequiredPresent)
