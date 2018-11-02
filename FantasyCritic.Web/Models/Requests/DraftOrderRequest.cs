@@ -10,6 +10,6 @@ namespace FantasyCritic.Web.Models.Requests
     {
         public Guid LeagueID { get; set; }
         public int Year { get; set; }
-        public Dictionary<Guid, int> PublisherDraftPositions { get; set; }
+        public List<Guid> PublisherDraftPositions { get; set; }
     }
 }

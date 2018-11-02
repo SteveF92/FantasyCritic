@@ -565,14 +565,16 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             List<KeyValuePair<Publisher, int>> draftPositions = new List<KeyValuePair<Publisher, int>>();
-            foreach (var requestPublisher in request.PublisherDraftPositions)
+            for (var index = 0; index < request.PublisherDraftPositions.Count; index++)
             {
-                var publisher = publishersInLeague.SingleOrDefault(x => x.PublisherID == requestPublisher.Key);
+                var requestPublisher = request.PublisherDraftPositions[index];
+                var publisher = publishersInLeague.SingleOrDefault(x => x.PublisherID == requestPublisher);
                 if (publisher is null)
                 {
                     return BadRequest();
                 }
-                draftPositions.Add(new KeyValuePair<Publisher, int>(publisher, requestPublisher.Value));
+
+                draftPositions.Add(new KeyValuePair<Publisher, int>(publisher, index + 1));
             }
 
             var result = await _fantasyCriticService.SetDraftOrder(leagueYear.Value, draftPositions);
