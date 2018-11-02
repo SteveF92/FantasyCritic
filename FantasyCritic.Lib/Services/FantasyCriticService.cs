@@ -799,14 +799,9 @@ namespace FantasyCritic.Lib.Services
             return new PlayStatus(!errors.Any(), leagueYear.PlayStarted, errors);
         }
 
-        public bool LeagueIsReadyToPlay(SupportedYear supportedYear, IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
+        public bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
         {
             if (publishersInLeague.Count() != usersInLeague.Count())
-            {
-                return false;
-            }
-
-            if (!supportedYear.OpenForPlay)
             {
                 return false;
             }
@@ -819,9 +814,45 @@ namespace FantasyCritic.Lib.Services
             return true;
         }
 
+        public bool LeagueIsReadyToPlay(SupportedYear supportedYear, IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
+        {
+            if (!LeagueIsReadyToSetDraftOrder(publishersInLeague, usersInLeague))
+            {
+                return false;
+            }
+
+            if (!supportedYear.OpenForPlay)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public Task StartPlay(LeagueYear leagueYear)
         {
             return _fantasyCriticRepo.StartPlay(leagueYear);
+        }
+
+        public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IEnumerable<KeyValuePair<Publisher, int>> draftPositions)
+        {
+            var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            int publishersCount = publishersInLeague.Count;
+            if (publishersCount != draftPositions.Count())
+            {
+                return Result.Fail("Not setting all publishers.");
+            }
+
+            var requiredNumbers = Enumerable.Range(1, publishersCount);
+            var requestedDraftNumbers = draftPositions.Select(x => x.Value);
+            bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedDraftNumbers);
+            if (!allRequiredPresent)
+            {
+                return Result.Fail("Some of the positions are not valid.");
+            }
+
+            await _fantasyCriticRepo.SetDraftOrder(draftPositions);
+            return Result.Ok();
         }
     }
 }

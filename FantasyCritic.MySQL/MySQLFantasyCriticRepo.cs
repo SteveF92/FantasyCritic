@@ -797,5 +797,22 @@ namespace FantasyCritic.MySQL
                 return domainGames;
             }
         }
+
+        public async Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                foreach (var draftPosition in draftPositions)
+                {
+                    await connection.ExecuteAsync("update tblpublisher set DraftPosition = @draftPosition where PublisherID = @publisherID",
+                        new
+                        {
+                            publisherID = draftPosition.Key.PublisherID,
+                            draftPosition = draftPosition.Value
+                        });
+                }
+                
+            }
+        }
     }
 }

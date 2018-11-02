@@ -523,5 +523,57 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SetDraftOrder([FromBody] DraftOrderRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Unauthorized();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (leagueYear.Value.PlayStarted)
+            {
+                return BadRequest();
+            }
+
+            var usersInLeague = await _fantasyCriticService.GetUsersInLeague(league.Value);
+            var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var readyToSetDraftOrder = _fantasyCriticService.LeagueIsReadyToSetDraftOrder(publishersInLeague, usersInLeague);
+            if (!readyToSetDraftOrder)
+            {
+                return BadRequest();
+            }
+
+            List<KeyValuePair<Publisher, int>> draftPositions = new List<KeyValuePair<Publisher, int>>();
+            foreach (var publisher in publishersInLeague)
+            {
+                var requestPublisher = request.PublisherDraftPositions.Single(x => x.Key == publisher.PublisherID);
+                draftPositions.Add(new KeyValuePair<Publisher, int>(publisher, requestPublisher.Value));
+            }
+
+            await _fantasyCriticService.SetDraftOrder(leagueYear.Value, draftPositions);
+
+            return Ok();
+        }
     }
 }

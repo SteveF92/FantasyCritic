@@ -62,5 +62,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task ChangePublisherName(Publisher publisher, string publisherName);
         Task ChangeLeagueName(League league, string leagueName);
         Task StartPlay(LeagueYear leagueYear);
+        Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions);
     }
 }
