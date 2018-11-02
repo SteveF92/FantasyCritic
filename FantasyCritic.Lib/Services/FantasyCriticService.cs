@@ -105,9 +105,15 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.AddNewLeagueYear(league, year, options);
         }
 
-        public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName)
+        public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName, IEnumerable<Publisher> existingPublishers)
         {
-            Publisher publisher = new Publisher(Guid.NewGuid(), league, user, year, publisherName, null, new List<PublisherGame>(), 100);
+            int draftPosition = 1;
+            if (!existingPublishers.Any())
+            {
+                draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
+            }
+
+            Publisher publisher = new Publisher(Guid.NewGuid(), league, user, year, publisherName, draftPosition, new List<PublisherGame>(), 100);
             await _fantasyCriticRepo.CreatePublisher(publisher);
             return publisher;
         }

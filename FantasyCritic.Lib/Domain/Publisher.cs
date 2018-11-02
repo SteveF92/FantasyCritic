@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class Publisher : IEquatable<Publisher>
     {
-        public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, int? draftPosition, IEnumerable<PublisherGame> publisherGames, int budget)
+        public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, int draftPosition, IEnumerable<PublisherGame> publisherGames, int budget)
         {
             PublisherID = publisherID;
             League = league;
@@ -26,7 +26,7 @@ namespace FantasyCritic.Lib.Domain
         public FantasyCriticUser User { get; }
         public int Year { get; }
         public string PublisherName { get; }
-        public int? DraftPosition { get; }
+        public int DraftPosition { get; }
         public IReadOnlyList<PublisherGame> PublisherGames { get; }
         public int Budget { get; }
 

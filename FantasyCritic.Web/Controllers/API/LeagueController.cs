@@ -260,7 +260,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You have already created a publisher for this this league/year.");
             }
 
-            await _fantasyCriticService.CreatePublisher(league.Value, request.Year, currentUser, request.PublisherName);
+            await _fantasyCriticService.CreatePublisher(league.Value, request.Year, currentUser, request.PublisherName, currentPublishers);
             return Ok();
         }
 
