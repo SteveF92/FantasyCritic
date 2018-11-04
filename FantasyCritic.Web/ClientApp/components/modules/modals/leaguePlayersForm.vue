@@ -20,7 +20,7 @@
           <td v-if="player.publisher">{{player.publisher.budget}}</td>
           <td v-else></td>
           <td v-if="showRemove">
-            <b-button variant="danger" size="sm" v-on:click="cancelBid(bid)">Remove</b-button>
+            <b-button variant="danger" size="sm" v-on:click="removePlayer(player)">Remove</b-button>
           </td>
         </tr>
       </tbody>
@@ -39,23 +39,23 @@
           }
         },
         methods: {
-          //cancelBid(bid) {
-          //  var model = {
-          //    bidID: bid.bidID
-          //  };
-          //  axios
-          //    .post('/api/league/DeletePickupBid', model)
-          //    .then(response => {
-          //      var bidInfo = {
-          //        gameName: bid.masterGame.gameName,
-          //        bidAmount: bid.bidAmount
-          //      };
-          //      this.$emit('bidCanceled', bidInfo);
-          //    })
-          //    .catch(response => {
+          removePlayer(player) {
+            var model = {
+              leagueID: this.league.leagueID,
+              userID: player.user.userID
+            };
+            axios
+              .post('/api/leagueManager/RemovePlayer', model)
+              .then(response => {
+                var removeInfo = {
+                  userName: player.user.userName
+                };
+                this.$emit('playerRemoved', removeInfo);
+              })
+              .catch(response => {
 
-          //    });
-          //}
+              });
+          }
         }
     }
 </script>

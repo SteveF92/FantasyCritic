@@ -67,7 +67,7 @@
       },
       playerRemoved(removeInfo) {
         let actionInfo = {
-          message: changeInfo.user.userName + ' has been removed from the league.',
+          message: removeInfo.userName + ' has been removed from the league.',
           fetchLeague: true,
           fetchLeagueYear: true
         };
