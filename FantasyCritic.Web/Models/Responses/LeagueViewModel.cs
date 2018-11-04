@@ -19,7 +19,7 @@ namespace FantasyCritic.Web.Models.Responses
         }
 
         public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUser> players,
-            IEnumerable<FantasyCriticUser> invitedPlayers, bool outstandingInvite)
+            IEnumerable<FantasyCriticUser> invitedPlayers, bool outstandingInvite, bool neverStarted)
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
@@ -30,6 +30,7 @@ namespace FantasyCritic.Web.Models.Responses
             OutstandingInvite = outstandingInvite;
             Players = players.Select(x => new PlayerViewModel(league, x)).ToList();
             InvitedPlayers = invitedPlayers.Select(x => new PlayerViewModel(league, x)).ToList();
+            NeverStarted = neverStarted;
         }
 
         public Guid LeagueID { get; }
@@ -41,5 +42,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool OutstandingInvite { get; }
         public IReadOnlyList<int> Years { get; }
         public int ActiveYear { get; }
+        public bool NeverStarted { get; }
     }
 }

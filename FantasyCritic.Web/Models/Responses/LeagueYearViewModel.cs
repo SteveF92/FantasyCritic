@@ -34,12 +34,14 @@ namespace FantasyCritic.Web.Models.Responses
             }
 
             List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
+            bool allPublishersMade = true;
             foreach (var user in users)
             {
                 var publisher = publishers.SingleOrDefault(x => x.User.UserID == user.UserID);
                 if (publisher is null)
                 {
                     playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user));
+                    allPublishersMade = false;
                 }
                 else
                 {
@@ -47,7 +49,15 @@ namespace FantasyCritic.Web.Models.Responses
                 }
             }
 
-            Players = playerVMs;
+            if (allPublishersMade)
+            {
+                Players = playerVMs.OrderBy(x => x.Publisher.DraftPosition).ToList();
+            }
+            else
+            {
+                Players = playerVMs;
+            }
+
             PlayStatus = new PlayStatusViewModel(playStatus);
         }
 

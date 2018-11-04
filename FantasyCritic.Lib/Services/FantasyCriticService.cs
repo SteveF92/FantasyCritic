@@ -108,7 +108,7 @@ namespace FantasyCritic.Lib.Services
         public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName, IEnumerable<Publisher> existingPublishers)
         {
             int draftPosition = 1;
-            if (!existingPublishers.Any())
+            if (existingPublishers.Any())
             {
                 draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
             }

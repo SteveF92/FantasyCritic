@@ -89,9 +89,19 @@ namespace FantasyCritic.Web.Controllers.API
                 return Unauthorized();
             }
 
+            bool neverStarted = true;
+            foreach (var year in league.Value.Years)
+            {
+                var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
+                if (leagueYear.Value.PlayStarted)
+                {
+                    neverStarted = false;
+                }
+            }
+
             bool isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
             var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, inviteesToLeague,
-                userIsInvitedToLeague);
+                userIsInvitedToLeague, neverStarted);
             return Ok(leagueViewModel);
         }
 

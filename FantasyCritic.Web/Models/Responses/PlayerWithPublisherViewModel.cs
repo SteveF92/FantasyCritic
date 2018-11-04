@@ -12,16 +12,16 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user)
         {
-            Player = new PlayerViewModel(leagueYear.League, user);
+            User = new PlayerViewModel(leagueYear.League, user);
         }
 
         public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, IClock clock)
         {
-            Player = new PlayerViewModel(leagueYear.League, user);
+            User = new PlayerViewModel(leagueYear.League, user);
             Publisher = new PublisherViewModel(publisher, clock);
         }
 
-        public PlayerViewModel Player { get; }
+        public PlayerViewModel User { get; }
         public PublisherViewModel Publisher { get; }
     }
 }

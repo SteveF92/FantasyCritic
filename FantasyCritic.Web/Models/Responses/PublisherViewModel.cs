@@ -29,7 +29,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string LeagueName { get; }
         public string PlayerName { get; }
         public int Year { get; }
-        public int? DraftPosition { get; }
+        public int DraftPosition { get; }
         public IReadOnlyList<PublisherGameViewModel> Games { get; }
         public decimal? AverageCriticScore { get; }
         public decimal TotalFantasyPoints { get; }
