@@ -52,6 +52,7 @@ namespace FantasyCritic.Web.Models.Responses
             if (allPublishersMade)
             {
                 Players = playerVMs.OrderBy(x => x.Publisher.DraftPosition).ToList();
+                ReadyToSetDraftOrder = true;
             }
             else
             {
@@ -78,5 +79,6 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<StandingViewModel> Standings { get; }
         public PublisherViewModel UserPublisher { get; }
         public PlayStatusViewModel PlayStatus { get; }
+        public bool ReadyToSetDraftOrder { get; }
     }
 }

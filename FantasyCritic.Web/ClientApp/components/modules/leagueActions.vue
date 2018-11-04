@@ -4,6 +4,7 @@
       <h4>Manager Actions</h4>
       <div class="publisher-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'">Invite a Player</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'editDraftOrderForm'" v-if="leagueYear.readyToSetDraftOrder && !leagueYear.playStatus.started">Edit Draft Order</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-if="leagueYear.playStatus.started">Add Publisher Game</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-if="leagueYear.playStatus.started">Associate Unlinked Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStatus.started">Remove Publisher Game</b-button>
@@ -15,6 +16,7 @@
       <br />
 
       <div v-if="leagueYear">
+        <editDraftOrderForm :leagueYear="leagueYear"></editDraftOrderForm>
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
@@ -34,6 +36,7 @@
   import RemoveGameForm from "components/modules/modals/removeGameForm";
   import ManuallyScoreGameForm from "components/modules/modals/manuallyScoreGameForm";
   import ChangeLeagueNameForm from "components/modules/modals/changeLeagueNameForm";
+  import EditDraftOrderForm from "components/modules/modals/editDraftOrderForm";
 
   export default {
     data() {
@@ -48,7 +51,8 @@
       InvitePlayerForm,
       RemoveGameForm,
       ManuallyScoreGameForm,
-      ChangeLeagueNameForm
+      ChangeLeagueNameForm,
+      EditDraftOrderForm
     },
     methods: {
       acceptInvite() {
@@ -124,6 +128,13 @@
         let actionInfo = {
           message: 'League name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
           fetchLeague: true,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      draftOrderEdited() {
+        let actionInfo = {
+          message: 'Draft order has been changed',
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
