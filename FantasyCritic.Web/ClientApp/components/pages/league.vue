@@ -38,12 +38,14 @@
     </div>
     <div v-if="leagueYear && !leagueYear.playStatus.started && leagueYear.playStatus.ready" class="alert alert-success">
       <span v-if="league.isManager">
-        Things are all set to get started! <b-button variant="primary" v-on:click="startPlay" class="mx-2">Start Drafting!</b-button>
+        Things are all set to get started! <b-button variant="primary" v-b-modal="'startPlay'" class="mx-2">Start Drafting!</b-button>
+        <startPlayModal v-on:playStarted="startPlay"></startPlayModal>
       </span>
       <span v-if="!league.isManager">
         Things are all set to get started! Your league manager can choose when to begin the draft.
       </span>
     </div>
+
 
     <div>
       <h3>League Manager</h3>
@@ -90,6 +92,7 @@
     import PlayerActions from "components/modules/playerActions";
     import CreatePublisherForm from "components/modules/modals/createPublisherForm";
     import LeagueActions from "components/modules/leagueActions";
+    import StartPlayModal from "components/modules/modals/startPlayModal";
 
     export default {
         data() {
@@ -108,7 +111,8 @@
             LeagueYearStandings,
             LeagueActions,
             PlayerActions,
-            CreatePublisherForm
+            CreatePublisherForm,
+            StartPlayModal
         },
         methods: {
             formatDate(date) {
