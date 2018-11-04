@@ -3,7 +3,7 @@
     <div v-if="league.isManager && leagueYear">
       <h4>Manager Actions</h4>
       <div class="publisher-actions" role="group" aria-label="Basic example">
-        <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'">Invite a Player</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'" v-if="!leagueYear.playStatus.started">Invite a Player</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'editDraftOrderForm'" v-if="leagueYear.readyToSetDraftOrder && !leagueYear.playStatus.started">Edit Draft Order</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-if="leagueYear.playStatus.started">Add Publisher Game</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-if="leagueYear.playStatus.started">Associate Unlinked Game</b-button>
