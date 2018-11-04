@@ -123,7 +123,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             PlayStatus playStatus = await _fantasyCriticService.GetPlayStatus(leagueYear.Value, publishersInLeague, usersInLeague);
 
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock, playStatus);
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock, playStatus, usersInLeague);
             return Ok(leagueViewModel);
         }
 

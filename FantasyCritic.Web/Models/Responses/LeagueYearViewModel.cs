@@ -10,7 +10,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueYearViewModel
     {
-        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, IClock clock, PlayStatus playStatus)
+        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, IClock clock, PlayStatus playStatus, IEnumerable<FantasyCriticUser> users)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -33,6 +33,21 @@ namespace FantasyCritic.Web.Models.Responses
                 UserPublisher = new PublisherViewModel(userPublisher, clock);
             }
 
+            List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
+            foreach (var user in users)
+            {
+                var publisher = publishers.SingleOrDefault(x => x.User.UserID == user.UserID);
+                if (publisher is null)
+                {
+                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user));
+                }
+                else
+                {
+                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock));
+                }
+            }
+
+            Players = playerVMs;
             PlayStatus = new PlayStatusViewModel(playStatus);
         }
 
@@ -48,6 +63,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string PickupSystem { get; }
         public string ScoringSystem { get; }
         public bool UnlinkedGameExists { get; }
+        public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
         public IReadOnlyList<StandingViewModel> Standings { get; }
         public PublisherViewModel UserPublisher { get; }
