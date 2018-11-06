@@ -55,8 +55,8 @@
                 return _.filter(this.games, { 'counterPick': true });
             },
             standardFiller() {
-                var numberDrafted = this.standardGames.length;
-                var openSlots = this.options.standardGames - numberStandardGames;
+                var numberStandardGames = this.standardGames.length;
+                var openSlots = this.options.standardGameSlots - numberStandardGames;
                 return openSlots;
             },
             counterPickFiller() {

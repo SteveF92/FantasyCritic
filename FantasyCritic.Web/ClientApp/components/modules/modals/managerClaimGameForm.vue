@@ -29,7 +29,7 @@
           <label class="form-check-label">
             Counterpick
           </label>
-          <input class="form-check-input override-checkbox" type="checkbox" v-model="claimCounterpick">
+          <input class="form-check-input override-checkbox" type="checkbox" v-model="claimCounterPick">
         </span>
       </div>
       <div>
