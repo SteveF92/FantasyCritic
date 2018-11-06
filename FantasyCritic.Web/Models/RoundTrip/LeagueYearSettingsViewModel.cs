@@ -20,7 +20,7 @@ namespace FantasyCritic.Web.Models.Requests
             Year = leagueYear.Year;
             LeagueName = league.LeagueName;
             StandardGames = leagueYear.Options.StandardGames;
-            DraftGames = leagueYear.Options.DraftGames;
+            GamesToDraft = leagueYear.Options.GamesToDraft;
             CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
             MaximumEligibilityLevel = leagueYear.Options.MaximumEligibilityLevel.Level;
@@ -40,7 +40,7 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public int StandardGames { get; set; }
         [Required]
-        public int DraftGames { get; set; }
+        public int GamesToDraft { get; set; }
         [Required]
         public int PickupGames { get; set; }
         [Required]
@@ -66,7 +66,7 @@ namespace FantasyCritic.Web.Models.Requests
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, DraftGames, PickupGames, CounterPicks,
+            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, GamesToDraft, PickupGames, CounterPicks,
                 EstimatedCriticScore, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, pickupSystem, scoringSystem);
             return parameters;
         }

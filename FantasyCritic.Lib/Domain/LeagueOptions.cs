@@ -11,12 +11,12 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
-        public LeagueOptions(int standardGames, int draftGames, int counterPicks, decimal estimatedCriticScore, 
+        public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, decimal estimatedCriticScore, 
             EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, bool allowEarlyAccess,
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem)
         {
             StandardGames = standardGames;
-            DraftGames = draftGames;
+            GamesToDraft = gamesToDraft;
             CounterPicks = counterPicks;
             EstimatedCriticScore = estimatedCriticScore;
             MaximumEligibilityLevel = maximumEligibilityLevel;
@@ -30,7 +30,7 @@ namespace FantasyCritic.Lib.Domain
         public LeagueOptions(LeagueCreationParameters parameters)
         {
             StandardGames = parameters.StandardGames;
-            DraftGames = parameters.DraftGames;
+            GamesToDraft = parameters.GamesToDraft;
             CounterPicks = parameters.CounterPicks;
             EstimatedCriticScore = parameters.EstimatedCriticScore;
             MaximumEligibilityLevel = parameters.MaximumEligibilityLevel;
@@ -44,7 +44,7 @@ namespace FantasyCritic.Lib.Domain
         public LeagueOptions(EditLeagueYearParameters parameters)
         {
             StandardGames = parameters.StandardGames;
-            DraftGames = parameters.DraftGames;
+            GamesToDraft = parameters.GamesToDraft;
             CounterPicks = parameters.CounterPicks;
             EstimatedCriticScore = parameters.EstimatedCriticScore;
             MaximumEligibilityLevel = parameters.MaximumEligibilityLevel;
@@ -56,7 +56,7 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public int StandardGames { get; }
-        public int DraftGames { get; }
+        public int GamesToDraft { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
         public bool AllowYearlyInstallments { get; }
