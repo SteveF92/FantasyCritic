@@ -12,8 +12,8 @@
         </div>
 
         <div class="form-group col-md-10">
-          <label for="draftGames" class="control-label">Number of Draft Games</label>
-          <input v-model="selectedLeagueOptions.draftGames" id="draftGames" name="draftGames" type="text" class="form-control input" />
+          <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
+          <input v-model="selectedLeagueOptions.gamesToDraft" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
         </div>
 
         <div class="form-group col-md-10">
