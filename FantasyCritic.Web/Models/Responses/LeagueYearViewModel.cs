@@ -15,8 +15,8 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
             SupportedYear = new SupportedYearViewModel(supportedYear);
+            TotalGames = leagueYear.Options.TotalGames;
             DraftGames = leagueYear.Options.DraftGames;
-            PickupGames = leagueYear.Options.PickupGames;
             CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
             MaximumEligibilityLevel = new EligibilityLevelViewModel(leagueYear.Options.MaximumEligibilityLevel, false);
@@ -65,8 +65,8 @@ namespace FantasyCritic.Web.Models.Responses
         public Guid LeagueID { get; }
         public int Year { get; }
         public SupportedYearViewModel SupportedYear { get; }
+        public int TotalGames { get; }
         public int DraftGames { get; }
-        public int PickupGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
         public EligibilityLevelViewModel MaximumEligibilityLevel { get; }

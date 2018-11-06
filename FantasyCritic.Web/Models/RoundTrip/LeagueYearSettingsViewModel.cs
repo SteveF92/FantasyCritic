@@ -19,8 +19,8 @@ namespace FantasyCritic.Web.Models.Requests
             LeagueID = league.LeagueID;
             Year = leagueYear.Year;
             LeagueName = league.LeagueName;
+            TotalGames = leagueYear.Options.TotalGames;
             DraftGames = leagueYear.Options.DraftGames;
-            PickupGames = leagueYear.Options.PickupGames;
             CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
             MaximumEligibilityLevel = leagueYear.Options.MaximumEligibilityLevel.Level;
@@ -37,6 +37,8 @@ namespace FantasyCritic.Web.Models.Requests
         public int Year { get; set; }
         [Required]
         public string LeagueName { get; set; }
+        [Required]
+        public int TotalGames { get; set; }
         [Required]
         public int DraftGames { get; set; }
         [Required]

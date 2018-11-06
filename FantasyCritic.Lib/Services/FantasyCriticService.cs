@@ -78,21 +78,16 @@ namespace FantasyCritic.Lib.Services
 
             IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(league, parameters.Year);
 
-            int maxDraftGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick && !x.Pickup)).DefaultIfEmpty(0).Max();
+            int maxDraftGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick)).DefaultIfEmpty(0).Max();
             int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).DefaultIfEmpty(0).Max();
-            int maxPickupGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.Pickup)).DefaultIfEmpty(0).Max();
 
-            if (maxDraftGames > options.DraftGames)
+            if (maxDraftGames > options.TotalGames)
             {
-                return Result.Fail($"Cannot reduce number of draft games to {options.DraftGames} as a publisher has {maxDraftGames} draft games currently.");
+                return Result.Fail($"Cannot reduce number of games to {options.TotalGames} as a publisher has {maxDraftGames} draft games currently.");
             }
             if (maxCounterPicks > options.CounterPicks)
             {
                 return Result.Fail($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
-            }
-            if (maxPickupGames > options.PickupGames)
-            {
-                return Result.Fail($"Cannot reduce number of pickup games to {options.PickupGames} as a publisher has {maxPickupGames} pickup games currently.");
             }
 
             await _fantasyCriticRepo.EditLeague(league, parameters.Year, options);
@@ -231,7 +226,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request)
         {
-            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.Pickup, request.CounterPick, null, null, request.MasterGame, request.Publisher.Year);
+            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null, request.MasterGame, request.Publisher.Year);
 
             ClaimResult claimResult = await CanClaimGame(request);
 
@@ -279,7 +274,7 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) });
             }
 
-            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, true, false, false, masterGame);
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame);
             var claimResult = await CanClaimGame(claimRequest);
             if (!claimResult.Success)
             {
@@ -473,39 +468,24 @@ namespace FantasyCritic.Lib.Services
 
             bool gameAlreadyClaimed = gamesForYear.ContainsGame(request);
 
-            if (!request.Pickup && !request.CounterPick)
+            if (!request.CounterPick)
             {
                 if (gameAlreadyClaimed)
                 {
-                    claimErrors.Add(new ClaimError("Cannot draft a game that someone already has.", false));
+                    claimErrors.Add(new ClaimError("Cannot claim a game that someone already has.", false));
                 }
 
-                int leagueDraftGames = yearOptions.DraftGames;
-                int userDraftGames = thisPlayersGames.Count(x => !x.Pickup && !x.CounterPick);
+                int leagueDraftGames = yearOptions.TotalGames;
+                int userDraftGames = thisPlayersGames.Count(x => !x.CounterPick);
                 if (userDraftGames == leagueDraftGames)
                 {
-                    claimErrors.Add(new ClaimError("User's draft spaces are filled.", false));
-                }
-            }
-
-            if (request.Pickup)
-            {
-                if (gameAlreadyClaimed)
-                {
-                    claimErrors.Add(new ClaimError("Cannot pickup claim a game that someone already has.", false));
-                }
-
-                int leaguePickupGames = yearOptions.PickupGames;
-                int userPickupGames = thisPlayersGames.Count(x => x.Pickup);
-                if (userPickupGames == leaguePickupGames)
-                {
-                    claimErrors.Add(new ClaimError("User's pickup spaces are filled.", false));
+                    claimErrors.Add(new ClaimError("User's game spaces are filled.", false));
                 }
             }
 
             if (request.CounterPick)
             {
-                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick && !x.Pickup).ContainsGame(request);
+                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick).ContainsGame(request);
 
                 int leagueCounterPicks = yearOptions.CounterPicks;
                 int userCounterPicks = thisPlayersGames.Count(x => x.CounterPick);
@@ -549,7 +529,7 @@ namespace FantasyCritic.Lib.Services
 
             bool gameAlreadyClaimed = gamesForYear.ContainsGame(request.MasterGame);
 
-            if (!request.PublisherGame.Pickup && !request.PublisherGame.CounterPick)
+            if (!request.PublisherGame.CounterPick)
             {
                 if (gameAlreadyClaimed)
                 {
@@ -557,17 +537,9 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            if (request.PublisherGame.Pickup)
-            {
-                if (gameAlreadyClaimed)
-                {
-                    associationErrors.Add(new ClaimError("Cannot pickup claim a game that someone already has.", false));
-                }
-            }
-
             if (request.PublisherGame.CounterPick)
             {
-                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick && !x.Pickup).ContainsGame(request.MasterGame);
+                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick).ContainsGame(request.MasterGame);
                 if (!otherPlayerHasDraftGame)
                 {
                     associationErrors.Add(new ClaimError("Cannot counterpick a game that no other player is publishing.", false));
@@ -742,7 +714,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var successBid in successBids)
             {
                 await _fantasyCriticRepo.MarkBidStatus(successBid, true);
-                PublisherGame newPublisherGame = new PublisherGame(Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), true, false, null, null, successBid.MasterGame, successBid.Publisher.Year);
+                PublisherGame newPublisherGame = new PublisherGame(Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), false, null, null, successBid.MasterGame, successBid.Publisher.Year);
                 await _fantasyCriticRepo.AddPublisherGame(successBid.Publisher, newPublisherGame);
                 await _fantasyCriticRepo.SpendBudget(successBid.Publisher, successBid.BidAmount);
 
