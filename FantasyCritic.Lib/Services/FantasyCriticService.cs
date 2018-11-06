@@ -78,12 +78,12 @@ namespace FantasyCritic.Lib.Services
 
             IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(league, parameters.Year);
 
-            int maxDraftGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick)).DefaultIfEmpty(0).Max();
+            int maxStandardGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick)).DefaultIfEmpty(0).Max();
             int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).DefaultIfEmpty(0).Max();
 
-            if (maxDraftGames > options.TotalGames)
+            if (maxStandardGames > options.StandardGames)
             {
-                return Result.Fail($"Cannot reduce number of games to {options.TotalGames} as a publisher has {maxDraftGames} draft games currently.");
+                return Result.Fail($"Cannot reduce number of standard games to {options.StandardGames} as a publisher has {maxStandardGames} draft games currently.");
             }
             if (maxCounterPicks > options.CounterPicks)
             {
@@ -475,7 +475,7 @@ namespace FantasyCritic.Lib.Services
                     claimErrors.Add(new ClaimError("Cannot claim a game that someone already has.", false));
                 }
 
-                int leagueDraftGames = yearOptions.TotalGames;
+                int leagueDraftGames = yearOptions.StandardGames;
                 int userDraftGames = thisPlayersGames.Count(x => !x.CounterPick);
                 if (userDraftGames == leagueDraftGames)
                 {

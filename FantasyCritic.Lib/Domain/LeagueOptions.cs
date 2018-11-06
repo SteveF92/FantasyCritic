@@ -11,11 +11,11 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
-        public LeagueOptions(int totalGames, int draftGames, int counterPicks, decimal estimatedCriticScore, 
+        public LeagueOptions(int standardGames, int draftGames, int counterPicks, decimal estimatedCriticScore, 
             EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, bool allowEarlyAccess,
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem)
         {
-            TotalGames = totalGames;
+            StandardGames = standardGames;
             DraftGames = draftGames;
             CounterPicks = counterPicks;
             EstimatedCriticScore = estimatedCriticScore;
@@ -29,7 +29,7 @@ namespace FantasyCritic.Lib.Domain
 
         public LeagueOptions(LeagueCreationParameters parameters)
         {
-            TotalGames = parameters.TotalGames;
+            StandardGames = parameters.StandardGames;
             DraftGames = parameters.DraftGames;
             CounterPicks = parameters.CounterPicks;
             EstimatedCriticScore = parameters.EstimatedCriticScore;
@@ -43,7 +43,7 @@ namespace FantasyCritic.Lib.Domain
 
         public LeagueOptions(EditLeagueYearParameters parameters)
         {
-            TotalGames = parameters.TotalGames;
+            StandardGames = parameters.StandardGames;
             DraftGames = parameters.DraftGames;
             CounterPicks = parameters.CounterPicks;
             EstimatedCriticScore = parameters.EstimatedCriticScore;
@@ -55,7 +55,7 @@ namespace FantasyCritic.Lib.Domain
             ScoringSystem = parameters.ScoringSystem;
         }
 
-        public int TotalGames { get; }
+        public int StandardGames { get; }
         public int DraftGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }

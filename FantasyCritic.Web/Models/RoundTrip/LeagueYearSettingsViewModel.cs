@@ -19,7 +19,7 @@ namespace FantasyCritic.Web.Models.Requests
             LeagueID = league.LeagueID;
             Year = leagueYear.Year;
             LeagueName = league.LeagueName;
-            TotalGames = leagueYear.Options.TotalGames;
+            StandardGames = leagueYear.Options.StandardGames;
             DraftGames = leagueYear.Options.DraftGames;
             CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
@@ -38,7 +38,7 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public string LeagueName { get; set; }
         [Required]
-        public int TotalGames { get; set; }
+        public int StandardGames { get; set; }
         [Required]
         public int DraftGames { get; set; }
         [Required]

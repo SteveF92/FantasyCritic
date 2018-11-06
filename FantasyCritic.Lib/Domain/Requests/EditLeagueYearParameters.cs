@@ -6,14 +6,14 @@ namespace FantasyCritic.Lib.Domain.Requests
 {
     public class EditLeagueYearParameters
     {
-        public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int totalGames, int draftGames, int counterPicks, 
+        public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int standardGames, int draftGames, int counterPicks, 
             decimal estimatedCriticScore, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
             bool allowEarlyAccess, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem)
         {
             Manager = manager;
             LeagueID = leagueID;
             Year = year;
-            TotalGames = totalGames;
+            StandardGames = standardGames;
             DraftGames = draftGames;
             CounterPicks = counterPicks;
             EstimatedCriticScore = estimatedCriticScore;
@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public FantasyCriticUser Manager { get; }
         public Guid LeagueID { get; }
         public int Year { get; }
-        public int TotalGames { get; }
+        public int StandardGames { get; }
         public int DraftGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }

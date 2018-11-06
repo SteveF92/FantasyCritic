@@ -15,7 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
             SupportedYear = new SupportedYearViewModel(supportedYear);
-            TotalGames = leagueYear.Options.TotalGames;
+            StandardGames = leagueYear.Options.StandardGames;
             DraftGames = leagueYear.Options.DraftGames;
             CounterPicks = leagueYear.Options.CounterPicks;
             EstimatedCriticScore = leagueYear.Options.EstimatedCriticScore;
@@ -65,7 +65,7 @@ namespace FantasyCritic.Web.Models.Responses
         public Guid LeagueID { get; }
         public int Year { get; }
         public SupportedYearViewModel SupportedYear { get; }
-        public int TotalGames { get; }
+        public int StandardGames { get; }
         public int DraftGames { get; }
         public int CounterPicks { get; }
         public decimal EstimatedCriticScore { get; }
