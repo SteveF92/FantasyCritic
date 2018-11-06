@@ -7,13 +7,15 @@
         <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>
 
         <div class="form-group col-md-10">
+          <label for="pickupGames" class="control-label">Total Number of Games</label>
+          <input v-model="selectedLeagueOptions.totalGames" id="totalGames" name="totalGames" type="text" class="form-control input" />
+        </div>
+
+        <div class="form-group col-md-10">
           <label for="draftGames" class="control-label">Number of Draft Games</label>
           <input v-model="selectedLeagueOptions.draftGames" id="draftGames" name="draftGames" type="text" class="form-control input" />
         </div>
-        <div class="form-group col-md-10">
-          <label for="pickupGames" class="control-label">Number of Pickup Games</label>
-          <input v-model="selectedLeagueOptions.pickupGames" id="pickupGames" name="pickupGames" type="text" class="form-control input" />
-        </div>
+
         <div class="form-group col-md-10">
           <label for="counterPicks" class="control-label">Number of Counter Picks</label>
           <input v-model="selectedLeagueOptions.counterPicks" id="counterPicks" name="counterPicks" type="text" class="form-control input" />

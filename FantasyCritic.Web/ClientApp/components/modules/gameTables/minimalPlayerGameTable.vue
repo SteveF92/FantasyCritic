@@ -16,10 +16,8 @@
         </tr>
       </thead>
       <tbody>
-        <minimalPlayerGameRow v-for="game in draftGames" :game="game"></minimalPlayerGameRow>
-        <minimalBlankPlayerGameRow v-for="blankSpace in draftFiller"></minimalBlankPlayerGameRow>
-        <minimalPlayerGameRow v-for="game in pickupGames" :game="game"></minimalPlayerGameRow>
-        <minimalBlankPlayerGameRow v-for="blankSpace in pickupFiller"></minimalBlankPlayerGameRow>
+        <minimalPlayerGameRow v-for="game in standardGames" :game="game"></minimalPlayerGameRow>
+        <minimalBlankPlayerGameRow v-for="blankSpace in standardFiller"></minimalBlankPlayerGameRow>
         <minimalPlayerGameRow v-for="game in counterPicks" :game="game"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
         <tr class="minimal-game-row">
@@ -50,28 +48,20 @@
             games() {
                 return this.publisher.games;
             },
-            draftGames() {
-                return _.filter(this.games, { 'counterPick': false, 'pickup': false });
+            standardGames() {
+                return _.filter(this.games, { 'counterPick': false });
             },
             counterPicks() {
                 return _.filter(this.games, { 'counterPick': true });
             },
-            pickupGames() {
-                return _.filter(this.games, { 'pickup': true });
-            },
-            draftFiller() {
-                var numberDrafted = this.draftGames.length;
-                var openSlots = this.options.draftSlots - numberDrafted;
+            standardFiller() {
+                var numberDrafted = this.standardGames.length;
+                var openSlots = this.options.standardGames - numberStandardGames;
                 return openSlots;
             },
             counterPickFiller() {
                 var numberCounterPicked = this.counterPicks.length;
                 var openSlots = this.options.counterPickSlots - numberCounterPicked;
-                return openSlots;
-            },
-            pickupFiller() {
-                var numberPickupClaimed = this.pickupGames.length;
-                var openSlots = this.options.pickupSlots - numberPickupClaimed;
                 return openSlots;
             }
         }

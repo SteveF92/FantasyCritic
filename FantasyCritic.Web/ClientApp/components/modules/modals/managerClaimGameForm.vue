@@ -24,12 +24,14 @@
           </option>
         </b-form-select>
       </div>
-      <b-form-group>
-        <b-form-radio-group id="gameType"
-                            buttons
-                            v-model="claimGameType"
-                            :options="claimGameTypes" />
-      </b-form-group>
+      <div class="form-check">
+        <span>
+          <label class="form-check-label">
+            Counterpick
+          </label>
+          <input class="form-check-input override-checkbox" type="checkbox" v-model="claimCounterpick">
+        </span>
+      </div>
       <div>
         <input type="submit" class="btn btn-primary add-game-button" value="Add game to publisher" v-if="formIsValid" />
       </div>
@@ -66,11 +68,7 @@
                 claimGameType: null,
                 claimResult: null,
                 claimOverride: false,
-                claimGameTypes: [
-                    'Draft',
-                    'CounterPick',
-                    'Pickup'
-                ],
+                claimCounterPick: false,
                 possibleMasterGames: []
             }
         },
@@ -79,7 +77,7 @@
         },
         computed: {
           formIsValid() {
-            return (this.claimGameName && this.claimPublisher && this.claimGameType);
+            return (this.claimGameName && this.claimPublisher);
           }
         },
         props: ['publishers', 'maximumEligibilityLevel'],
@@ -100,8 +98,6 @@
                     gameName = this.claimMasterGame.gameName;
                 }
 
-                var pickup = (this.claimGameType === "Pickup");
-                var counterPick = (this.claimGameType === "CounterPick");
                 var masterGameID = null;
                 if (this.claimMasterGame !== null) {
                     masterGameID = this.claimMasterGame.masterGameID;
@@ -110,8 +106,7 @@
                 var request = {
                     publisherID: this.claimPublisher.publisherID,
                     gameName: gameName,
-                    pickup: pickup,
-                    counterPick: counterPick,
+                    counterPick: this.claimCounterPick,
                     masterGameID: masterGameID,
                     managerOverride: this.claimOverride
                 };
@@ -132,7 +127,7 @@
                       this.claimGameName = null;
                       this.claimPublisher = null;
                       this.claimMasterGame = null;
-                      this.claimGameType = null;
+                      this.claimCounterPick = false;
                       this.claimOverride = false;
                       this.possibleMasterGames = [];
                     })
@@ -145,7 +140,7 @@
               this.claimGameName = null;
               this.claimPublisher = null;
               this.claimMasterGame = null;
-              this.claimGameType = null;
+              this.claimCounterPick = false;
               this.claimOverride = false;
               this.possibleMasterGames = [];
             }
