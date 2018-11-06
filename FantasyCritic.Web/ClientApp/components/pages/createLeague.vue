@@ -12,7 +12,7 @@
 
           <div class="form-group col-md-10">
             <label for="pickupGames" class="control-label">Total Number of Games</label>
-            <input v-model="selectedLeagueOptions.totalGames" id="totalGames" name="totalGames" type="text" class="form-control input" />
+            <input v-model="selectedLeagueOptions.standardGames" id="standardGames" name="standardGames" type="text" class="form-control input" />
           </div>
 
           <div class="form-group col-md-10">
@@ -107,7 +107,7 @@ export default {
             possibleLeagueOptions: null,
             selectedLeagueOptions: {
                 leagueName: "",
-                totalGames: "",
+                standardGames: "",
                 draftGames: "",
                 counterPicks: "",
                 estimatedCriticScore: "",

@@ -27,7 +27,7 @@
             },
             options() {
                 var options = {
-                    standardGameSlots: this.leagueYear.totalGames,
+                    standardGameSlots: this.leagueYear.standardGames,
                     counterPickSlots: this.leagueYear.counterPicks
                 };
 
