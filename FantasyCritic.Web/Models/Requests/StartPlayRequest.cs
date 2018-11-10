@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Web.Models.Requests
 {
-    public class StartPlayRequest
+    public class StartDraftRequest
     {
         [Required]
         public Guid LeagueID { get; set; }

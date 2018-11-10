@@ -477,7 +477,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> StartPlay([FromBody] StartPlayRequest request)
+        public async Task<IActionResult> StartDraft([FromBody] StartDraftRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
@@ -518,7 +518,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            await _fantasyCriticService.StartPlay(leagueYear.Value);
+            await _fantasyCriticService.StartDraft(leagueYear.Value);
 
             return Ok();
         }

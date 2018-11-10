@@ -814,9 +814,9 @@ namespace FantasyCritic.Lib.Services
             return true;
         }
 
-        public Task StartPlay(LeagueYear leagueYear)
+        public Task StartDraft(LeagueYear leagueYear)
         {
-            return _fantasyCriticRepo.StartPlay(leagueYear);
+            return _fantasyCriticRepo.StartDraft(leagueYear);
         }
 
         public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IEnumerable<KeyValuePair<Publisher, int>> draftPositions)

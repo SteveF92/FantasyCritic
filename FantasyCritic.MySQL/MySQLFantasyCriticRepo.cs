@@ -269,12 +269,12 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task StartPlay(LeagueYear leagueYear)
+        public async Task StartDraft(LeagueYear leagueYear)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "update tblleagueyear SET PlayStarted = 1 WHERE LeagueID = @leagueID and Year = @year",
+                    $"update tblleagueyear SET PlayStatus = '{PlayStatus.DraftingStandard.Value}' WHERE LeagueID = @leagueID and Year = @year",
                     new
                     {
                         leagueID = leagueYear.League.LeagueID,
