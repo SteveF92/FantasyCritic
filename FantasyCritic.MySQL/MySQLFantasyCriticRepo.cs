@@ -833,5 +833,10 @@ namespace FantasyCritic.MySQL
                 }
             }
         }
+
+        public Task<InProgessDraft> GetInProgressDraft(LeagueYear leagueYear)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

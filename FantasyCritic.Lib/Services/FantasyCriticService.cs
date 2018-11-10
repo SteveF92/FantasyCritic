@@ -839,5 +839,64 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.SetDraftOrder(draftPositions);
             return Result.Ok();
         }
+
+        public async Task<Maybe<Publisher>> GetNextDraftPublisher(LeagueYear leagueYear)
+        {
+            if (!leagueYear.PlayStatus.DraftIsActive)
+            {
+                return Maybe<Publisher>.None;
+            }
+
+            InProgessDraft inProgessDraft = await _fantasyCriticRepo.GetInProgressDraft(leagueYear);
+            if (leagueYear.PlayStatus.Equals(PlayStatus.DraftingStandard))
+            {
+                var publishersWithLowestNumberOfGames = inProgessDraft.StandardGames.MinBy(x => x.Value.Count);
+                var allPlayersHaveSameNumberOfGames = inProgessDraft.StandardGames.Select(x => x.Value.Count).Distinct().Count() == 1;
+                var maxNumberOfGames = inProgessDraft.StandardGames.Max(x => x.Value.Count);
+                var roundNumber = maxNumberOfGames;
+                if (allPlayersHaveSameNumberOfGames)
+                {
+                    roundNumber++;
+                }
+
+                bool roundNumberIsOdd = (roundNumber % 2 != 0);
+                if (roundNumberIsOdd)
+                {
+                    var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderBy(x => x.Key.DraftPosition);
+                    var firstPublisherOdd = sortedPublishersOdd.First();
+                    return firstPublisherOdd.Key;
+                }
+                //Else round is even
+                var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderByDescending(x => x.Key.DraftPosition);
+                var firstPublisherEven = sortedPublishersEven.First();
+                return firstPublisherEven.Key;
+            }
+            if (leagueYear.PlayStatus.Equals(PlayStatus.DraftingCounterpicks))
+            {
+                //DO COUNTERPICKS
+                var publishersWithLowestNumberOfGames = inProgessDraft.CounterPicks.MinBy(x => x.Value.Count);
+                var allPlayersHaveSameNumberOfGames = inProgessDraft.CounterPicks.Select(x => x.Value.Count).Distinct().Count() == 1;
+                var maxNumberOfGames = inProgessDraft.CounterPicks.Max(x => x.Value.Count);
+                var roundNumber = maxNumberOfGames;
+                if (allPlayersHaveSameNumberOfGames)
+                {
+                    roundNumber++;
+                }
+
+                bool roundNumberIsOdd = (roundNumber % 2 != 0);
+                if (roundNumberIsOdd)
+                {
+                    var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderByDescending(x => x.Key.DraftPosition);
+                    var firstPublisherOdd = sortedPublishersOdd.First();
+                    return firstPublisherOdd.Key;
+                }
+                //Else round is even
+                var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderBy(x => x.Key.DraftPosition);
+                var firstPublisherEven = sortedPublishersEven.First();
+                return firstPublisherEven.Key;
+            }
+
+            return Maybe<Publisher>.None;
+        }
     }
 }

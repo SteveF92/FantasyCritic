@@ -132,8 +132,9 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             StartDraftResult startDraftResult = await _fantasyCriticService.GetStartDraftResult(leagueYear.Value, publishersInLeague, usersInLeague);
+            Maybe<Publisher> nextDraftPublisher = await _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value);
 
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock, leagueYear.Value.PlayStatus, startDraftResult, usersInLeague);
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock, leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher);
             return Ok(leagueViewModel);
         }
 
