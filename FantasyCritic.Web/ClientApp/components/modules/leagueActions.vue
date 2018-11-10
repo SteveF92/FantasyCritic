@@ -3,12 +3,12 @@
     <div v-if="league.isManager && leagueYear">
       <h4>Manager Actions</h4>
       <div class="publisher-actions" role="group" aria-label="Basic example">
-        <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'" v-if="!leagueYear.playStatus.started">Invite a Player</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'editDraftOrderForm'" v-if="leagueYear.readyToSetDraftOrder && !leagueYear.playStatus.started">Edit Draft Order</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-if="leagueYear.playStatus.started">Add Publisher Game</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-if="leagueYear.playStatus.started">Associate Unlinked Game</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStatus.started">Remove Publisher Game</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'" v-if="leagueYear.playStatus.started">Set a Score Manually</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'" v-if="!leagueYear.playStatus.playStarted">Invite a Player</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'editDraftOrderForm'" v-if="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">Edit Draft Order</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-if="leagueYear.playStatus.draftFinished">Add Publisher Game</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-if="leagueYear.playStatus.draftFinished">Associate Unlinked Game</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Remove Publisher Game</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Set a Score Manually</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'changeLeagueNameForm'">Change League Name</b-button>
       </div>
 

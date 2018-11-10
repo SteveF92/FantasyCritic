@@ -9,12 +9,12 @@
       <b-form-select v-model="activeYear" :options="league.years" class="year-selector" />
     </div>
 
-    <div v-if="leagueYear && !leagueYear.playStatus.ready" class="alert alert-warning">
+    <div v-if="leagueYear && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
       <h3>
         This year is not active yet!
       </h3>
       <ul>
-        <li v-for="error in leagueYear.playStatus.errors">{{error}}</li>
+        <li v-for="error in leagueYear.playStatus.startDraftErrors">{{error}}</li>
       </ul>
     </div>
 
@@ -36,7 +36,7 @@
       <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
       <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
     </div>
-    <div v-if="leagueYear && !leagueYear.playStatus.started && leagueYear.playStatus.ready" class="alert alert-success">
+    <div v-if="leagueYear && !leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft" class="alert alert-success">
       <span v-if="league.isManager">
         Things are all set to get started! <b-button variant="primary" v-b-modal="'startPlay'" class="mx-2">Start Drafting!</b-button>
         <startPlayModal v-on:playStarted="startPlay"></startPlayModal>

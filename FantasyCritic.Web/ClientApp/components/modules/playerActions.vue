@@ -4,9 +4,9 @@
       <h4>Player Actions</h4>
       <div class="player-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'leaguePlayersForm'">See Players</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'bidGameForm'" v-if="leagueYear.playStatus.started">Bid on a Game</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'currentBidsForm'" v-if="leagueYear.playStatus.started">Current Bids</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'leagueActionsModal'" v-if="leagueYear.playStatus.started">See League History</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'bidGameForm'" v-if="leagueYear.playStatus.draftFinished">Bid on a Game</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'currentBidsForm'" v-if="leagueYear.playStatus.draftFinished">Current Bids</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'leagueActionsModal'" v-if="leagueYear.playStatus.draftFinished">See League History</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'changePublisherNameForm'">Change Publisher Name</b-button>
       </div>
       <br />
