@@ -57,18 +57,30 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.CreateMasterGame(masterGame);
         }
 
-        public async Task<League> CreateLeague(LeagueCreationParameters parameters)
+        public async Task<Result<League>> CreateLeague(LeagueCreationParameters parameters)
         {
             LeagueOptions options = new LeagueOptions(parameters);
+
+            var validateOptions = options.Validate();
+            if (validateOptions.IsFailure)
+            {
+                return Result.Fail<League>(validateOptions.Error);
+            }
+
             IEnumerable<int> years = new List<int>() { parameters.InitialYear };
             League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, years);
             await _fantasyCriticRepo.CreateLeague(newLeague, parameters.InitialYear, options);
-            return newLeague;
+            return Result.Ok(newLeague);
         }
 
         public async Task<Result> EditLeague(League league, EditLeagueYearParameters parameters)
         {
             LeagueOptions options = new LeagueOptions(parameters);
+            var validateOptions = options.Validate();
+            if (validateOptions.IsFailure)
+            {
+                return Result.Fail(validateOptions.Error);
+            }
 
             var leagueYear = await GetLeagueYear(league.LeagueID, parameters.Year);
             if (leagueYear.HasNoValue)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
@@ -65,5 +66,20 @@ namespace FantasyCritic.Lib.Domain
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }
+
+        public Result Validate()
+        {
+            if (GamesToDraft > StandardGames)
+            {
+                return Result.Fail("Can't draft more than the total number of standard games.");
+            }
+
+            if (CounterPicks > StandardGames)
+            {
+                return Result.Fail("Can't have more counter picks than standard games.");
+            }
+
+            return Result.Ok();
+        }
     }
 }
