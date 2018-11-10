@@ -161,7 +161,7 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var year in league.Value.Years)
             {
                 var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
-                if (leagueYear.Value.PlayStarted)
+                if (leagueYear.Value.PlayStatus.PlayStarted)
                 {
                     return BadRequest("You can't add a player to a league that has already started playing");
                 }
@@ -218,7 +218,7 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var year in league.Value.Years)
             {
                 var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
-                if (leagueYear.Value.PlayStarted)
+                if (leagueYear.Value.PlayStatus.PlayStarted)
                 {
                     return BadRequest("You can't remove a player from a league that has already started playing");
                 }
@@ -257,9 +257,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (!leagueYear.Value.PlayStarted)
+            if (!leagueYear.Value.PlayStatus.DraftFinished)
             {
-                return BadRequest("Play has not started for that year.");
+                return BadRequest("You can't manually manage games until you draft.");
             }
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
@@ -316,9 +316,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (!leagueYear.Value.PlayStarted)
+            if (!leagueYear.Value.PlayStatus.DraftFinished)
             {
-                return BadRequest("Play has not started for that year.");
+                return BadRequest("You cannot manually associate games until you draft.");
             }
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
@@ -418,9 +418,9 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest();
             }
-            if (!leagueYear.Value.PlayStarted)
+            if (!leagueYear.Value.PlayStatus.DraftFinished)
             {
-                return BadRequest("Play has not started for that year.");
+                return BadRequest("You cannot manually score a game until after you draft.");
             }
 
             return await UpdateManualCriticScore(request.PublisherID, request.PublisherGameID, request.ManualCriticScore);
@@ -550,7 +550,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (leagueYear.Value.PlayStarted)
+            if (!leagueYear.Value.PlayStatus.DraftFinished)
             {
                 return BadRequest();
             }

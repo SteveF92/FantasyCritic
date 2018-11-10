@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain.Results
 {
-    public class PlayStatus
+    public class StartDraftResult
     {
-        public PlayStatus(bool ready, bool started, IEnumerable<string> errors)
+        public StartDraftResult(bool ready, IEnumerable<string> errors)
         {
             Ready = ready;
-            Started = started;
             Errors = errors;
         }
 
         public bool Ready { get; }
-        public bool Started { get; }
         public IEnumerable<string> Errors { get; }
+
     }
 }

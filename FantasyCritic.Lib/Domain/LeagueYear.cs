@@ -3,22 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Lib.Domain
 {
     public class LeagueYear
     {
-        public LeagueYear(League league, int year, LeagueOptions options, bool playStarted)
+        public LeagueYear(League league, int year, LeagueOptions options, PlayStatus playStatus)
         {
             League = league;
             Year = year;
             Options = options;
-            PlayStarted = playStarted;
+            PlayStatus = playStatus;
         }
 
         public League League { get; }
         public int Year { get; }
         public LeagueOptions Options { get; }
-        public bool PlayStarted { get; }
+        public PlayStatus PlayStatus { get; }
     }
 }

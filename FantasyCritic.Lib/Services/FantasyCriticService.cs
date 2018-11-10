@@ -102,7 +102,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
             }
 
-            await _fantasyCriticRepo.EditLeague(league, parameters.Year, options);
+            await _fantasyCriticRepo.EditLeagueYear(leagueYear.Value);
 
             return Result.Ok();
         }
@@ -753,11 +753,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ChangeLeagueName(league, leagueName);
         }
 
-        public async Task<PlayStatus> GetPlayStatus(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> usersInLeague)
+        public async Task<StartDraftResult> GetStartDraftResult(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> usersInLeague)
         {
-            if (leagueYear.PlayStarted)
+            if (leagueYear.PlayStatus.PlayStarted)
             {
-                return new PlayStatus(true, true, new List<string>());
+                return new StartDraftResult(true, new List<string>());
             }
 
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
@@ -780,8 +780,9 @@ namespace FantasyCritic.Lib.Services
                 errors.Add($"This year is not yet open for play. It will become available on {supportedYear.StartDate}.");
             }
 
-            return new PlayStatus(!errors.Any(), leagueYear.PlayStarted, errors);
+            return new StartDraftResult(!errors.Any(), errors);
         }
+
 
         public bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
         {

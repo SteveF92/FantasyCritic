@@ -318,7 +318,7 @@ namespace FantasyCritic.MySQL
         public async Task CreateLeague(League league, int initialYear, LeagueOptions options)
         {
             LeagueEntity entity = new LeagueEntity(league);
-            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear, options, false);
+            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear, options, PlayStatus.NotStartedDraft);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -336,9 +336,9 @@ namespace FantasyCritic.MySQL
             await AddPlayerToLeague(league, league.LeagueManager);
         }
 
-        public async Task EditLeague(League league, int year, LeagueOptions options)
+        public async Task EditLeagueYear(LeagueYear leagueYear)
         {
-            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options, false);
+            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.PlayStatus);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -352,7 +352,7 @@ namespace FantasyCritic.MySQL
 
         public async Task AddNewLeagueYear(League league, int year, LeagueOptions options)
         {
-            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options, false);
+            LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options, PlayStatus.NotStartedDraft);
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(

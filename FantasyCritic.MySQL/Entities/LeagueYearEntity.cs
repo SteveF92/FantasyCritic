@@ -16,7 +16,7 @@ namespace FantasyCritic.MySQL.Entities
 
         }
 
-        public LeagueYearEntity(League league, int year, LeagueOptions options, bool playStarted)
+        public LeagueYearEntity(League league, int year, LeagueOptions options, PlayStatus playStatus)
         {
             LeagueID = league.LeagueID;
             Year = year;
@@ -32,7 +32,7 @@ namespace FantasyCritic.MySQL.Entities
             DraftSystem = options.DraftSystem.Value;
             PickupSystem = options.PickupSystem.Value;
             ScoringSystem = options.ScoringSystem.Name;
-            PlayStarted = playStarted;
+            PlayStatus = playStatus.Value;
         }
 
         public Guid LeagueID { get; set; }
@@ -47,7 +47,7 @@ namespace FantasyCritic.MySQL.Entities
         public string DraftSystem { get; set; }
         public string PickupSystem { get; set; }
         public string ScoringSystem { get; set; }
-        public bool PlayStarted { get; set; }
+        public string PlayStatus { get; set; }
 
         public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel)
         {
@@ -58,7 +58,7 @@ namespace FantasyCritic.MySQL.Entities
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, EstimatedCriticScore,
                 maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, pickupSystem, scoringSystem);
 
-            return new LeagueYear(league, Year, options, PlayStarted);
+            return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus));
         }
     }
 }

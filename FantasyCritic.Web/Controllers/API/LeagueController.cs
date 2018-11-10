@@ -93,7 +93,7 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var year in league.Value.Years)
             {
                 var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
-                if (leagueYear.Value.PlayStarted)
+                if (leagueYear.Value.PlayStatus.PlayStarted)
                 {
                     neverStarted = false;
                 }
@@ -131,9 +131,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            PlayStatus playStatus = await _fantasyCriticService.GetPlayStatus(leagueYear.Value, publishersInLeague, usersInLeague);
+            StartDraftResult startDraftResult = await _fantasyCriticService.GetStartDraftResult(leagueYear.Value, publishersInLeague, usersInLeague);
 
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock, playStatus, usersInLeague);
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, _clock, leagueYear.Value.PlayStatus, startDraftResult, usersInLeague);
             return Ok(leagueViewModel);
         }
 
@@ -343,7 +343,7 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest();
             }
-            if (!leagueYear.Value.PlayStarted)
+            if (!leagueYear.Value.PlayStatus.PlayStarted)
             {
                 return BadRequest("Play has not started for that year.");
             }
