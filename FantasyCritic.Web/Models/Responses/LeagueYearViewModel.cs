@@ -51,17 +51,18 @@ namespace FantasyCritic.Web.Models.Responses
                 }
             }
 
+            bool readyToSetDraftOrder = false;
             if (allPublishersMade)
             {
                 Players = playerVMs.OrderBy(x => x.Publisher.DraftPosition).ToList();
-                ReadyToSetDraftOrder = true;
+                readyToSetDraftOrder = true;
             }
             else
             {
                 Players = playerVMs;
             }
 
-            PlayStatus = new PlayStatusViewModel(playStatus, startDraftResult.Ready, startDraftResult.Errors);
+            PlayStatus = new PlayStatusViewModel(playStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors);
         }
 
         public Guid LeagueID { get; }
@@ -81,6 +82,5 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<StandingViewModel> Standings { get; }
         public PublisherViewModel UserPublisher { get; }
         public PlayStatusViewModel PlayStatus { get; }
-        public bool ReadyToSetDraftOrder { get; }
     }
 }
