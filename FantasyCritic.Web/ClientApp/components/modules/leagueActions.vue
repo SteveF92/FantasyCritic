@@ -5,6 +5,7 @@
       <div class="publisher-actions" role="group" aria-label="Basic example">
         <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'" v-if="!leagueYear.playStatus.playStarted">Invite a Player</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'editDraftOrderForm'" v-if="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">Edit Draft Order</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'managerDraftGameForm'" v-if="leagueYear.playStatus.draftIsActive">Draft Game - Manager</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-if="leagueYear.playStatus.draftFinished">Add Publisher Game</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-if="leagueYear.playStatus.draftFinished">Associate Unlinked Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Remove Publisher Game</b-button>
@@ -18,6 +19,7 @@
       <div v-if="leagueYear">
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
+        <managerDraftGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameDrafted="gameDrafted"></managerDraftGameForm>
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
@@ -31,6 +33,7 @@
   import axios from "axios";
 
   import ManagerClaimGameForm from "components/modules/modals/managerClaimGameForm";
+  import ManagerDraftGameForm from "components/modules/modals/managerDraftGameForm";
   import ManagerAssociateGameForm from "components/modules/modals/managerAssociateGameForm";
   import InvitePlayerForm from "components/modules/modals/invitePlayerForm";
   import RemoveGameForm from "components/modules/modals/removeGameForm";
@@ -47,6 +50,7 @@
     props: ['league', 'leagueYear'],
     components: {
       ManagerClaimGameForm,
+      ManagerDraftGameForm,
       ManagerAssociateGameForm,
       InvitePlayerForm,
       RemoveGameForm,
@@ -92,6 +96,13 @@
       gameClaimed(claimInfo) {
         let actionInfo = {
           message: claimInfo.gameName + ' added to ' + claimInfo.publisherName,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      gameDrafted(draftInfo) {
+        let actionInfo = {
+          message: draftInfo.gameName + ' drafted by ' + draftInfo.publisherName,
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);

@@ -47,7 +47,10 @@
       </span>
     </div>
     <div v-if="leagueYear && leagueYear.playStatus.draftIsActive" class="alert alert-info">
-        The draft is currently in progress!
+      <div>The draft is currently in progress!</div>
+      <div>
+        Next to draft: <strong>{{nextPublisherUp.publisherName}}</strong>
+      </div>
     </div>
 
     <div>
@@ -116,6 +119,12 @@
             PlayerActions,
             CreatePublisherForm,
             StartDraftModal
+        },
+        computed: {
+          nextPublisherUp() {
+            let next = _.find(this.leagueYear.publishers, ['nextToDraft', true]);
+            return next;
+          }
         },
         methods: {
             formatDate(date) {
