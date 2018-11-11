@@ -63,6 +63,5 @@ namespace FantasyCritic.Lib.Interfaces
         Task ChangeLeagueName(League league, string leagueName);
         Task StartDraft(LeagueYear leagueYear);
         Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions);
-        Task<InProgessDraft> GetInProgressDraft(LeagueYear leagueYear);
     }
 }

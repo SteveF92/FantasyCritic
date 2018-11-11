@@ -847,12 +847,12 @@ namespace FantasyCritic.Lib.Services
                 return Maybe<Publisher>.None;
             }
 
-            InProgessDraft inProgessDraft = await _fantasyCriticRepo.GetInProgressDraft(leagueYear);
+            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             if (leagueYear.PlayStatus.Equals(PlayStatus.DraftingStandard))
             {
-                var publishersWithLowestNumberOfGames = inProgessDraft.StandardGames.MinBy(x => x.Value.Count);
-                var allPlayersHaveSameNumberOfGames = inProgessDraft.StandardGames.Select(x => x.Value.Count).Distinct().Count() == 1;
-                var maxNumberOfGames = inProgessDraft.StandardGames.Max(x => x.Value.Count);
+                var publishersWithLowestNumberOfGames = publishers.MinBy(x => x.PublisherGames.Count(y => !y.CounterPick));
+                var allPlayersHaveSameNumberOfGames = publishers.Select(x => x.PublisherGames.Count(y => !y.CounterPick)).Distinct().Count() == 1;
+                var maxNumberOfGames = publishers.Max(x => x.PublisherGames.Count(y => !y.CounterPick));
                 var roundNumber = maxNumberOfGames;
                 if (allPlayersHaveSameNumberOfGames)
                 {
@@ -862,21 +862,22 @@ namespace FantasyCritic.Lib.Services
                 bool roundNumberIsOdd = (roundNumber % 2 != 0);
                 if (roundNumberIsOdd)
                 {
-                    var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderBy(x => x.Key.DraftPosition);
+                    var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderBy(x => x.DraftPosition);
                     var firstPublisherOdd = sortedPublishersOdd.First();
-                    return firstPublisherOdd.Key;
+                    return firstPublisherOdd;
                 }
                 //Else round is even
-                var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderByDescending(x => x.Key.DraftPosition);
+                var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderByDescending(x => x.DraftPosition);
                 var firstPublisherEven = sortedPublishersEven.First();
-                return firstPublisherEven.Key;
+                return firstPublisherEven;
             }
             if (leagueYear.PlayStatus.Equals(PlayStatus.DraftingCounterpicks))
             {
                 //DO COUNTERPICKS
-                var publishersWithLowestNumberOfGames = inProgessDraft.CounterPicks.MinBy(x => x.Value.Count);
-                var allPlayersHaveSameNumberOfGames = inProgessDraft.CounterPicks.Select(x => x.Value.Count).Distinct().Count() == 1;
-                var maxNumberOfGames = inProgessDraft.CounterPicks.Max(x => x.Value.Count);
+                var publishersWithLowestNumberOfGames = publishers.MinBy(x => x.PublisherGames.Count(y => y.CounterPick));
+                var allPlayersHaveSameNumberOfGames = publishers.Select(x => x.PublisherGames.Count(y => y.CounterPick)).Distinct().Count() == 1;
+                var maxNumberOfGames = publishers.Max(x => x.PublisherGames.Count(y => y.CounterPick));
+
                 var roundNumber = maxNumberOfGames;
                 if (allPlayersHaveSameNumberOfGames)
                 {
@@ -886,14 +887,14 @@ namespace FantasyCritic.Lib.Services
                 bool roundNumberIsOdd = (roundNumber % 2 != 0);
                 if (roundNumberIsOdd)
                 {
-                    var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderByDescending(x => x.Key.DraftPosition);
+                    var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderByDescending(x => x.DraftPosition);
                     var firstPublisherOdd = sortedPublishersOdd.First();
-                    return firstPublisherOdd.Key;
+                    return firstPublisherOdd;
                 }
                 //Else round is even
-                var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderBy(x => x.Key.DraftPosition);
+                var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderBy(x => x.DraftPosition);
                 var firstPublisherEven = sortedPublishersEven.First();
-                return firstPublisherEven.Key;
+                return firstPublisherEven;
             }
 
             return Maybe<Publisher>.None;
