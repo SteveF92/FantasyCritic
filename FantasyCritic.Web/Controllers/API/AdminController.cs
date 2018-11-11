@@ -45,6 +45,19 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> BatchCreateMasterGame([FromBody] List<MinimalCreateMasterGameRequest> request)
+        {
+            foreach (var singleGame in request)
+            {
+                EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(0);
+                MasterGame masterGame = singleGame.ToDomain(eligibilityLevel);
+                await _fantasyCriticService.CreateMasterGame(masterGame);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RefreshCriticInfo()
         {
             var masterGames = await _fantasyCriticService.GetMasterGames();
