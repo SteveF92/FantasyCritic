@@ -555,7 +555,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (!leagueYear.Value.PlayStatus.DraftFinished)
+            if (leagueYear.Value.PlayStatus.PlayStarted)
             {
                 return BadRequest();
             }

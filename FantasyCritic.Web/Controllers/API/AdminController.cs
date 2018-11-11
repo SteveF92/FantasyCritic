@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -77,6 +78,40 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetOpenCriticGames([FromBody] OpenCriticSearchRequest request)
+        {
+            int id = request.MinimumOpenCriticID;
+            var masterGames = await _fantasyCriticService.GetMasterGames();
+            while (true)
+            {
+                var openCriticGame = await _openCriticService.GetOpenCriticGame(id);
+                if (openCriticGame.HasNoValue)
+                {
+                    return Ok();
+                }
+
+                if (masterGames.Any(x => x.OpenCriticID.HasValue && x.OpenCriticID.Value == id))
+                {
+                    id++;
+                    continue;
+                }
+
+                EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(0);
+                int minimumReleaseYear = 2018;
+                if (openCriticGame.Value.ReleaseDate.HasValue)
+                {
+                    minimumReleaseYear = openCriticGame.Value.ReleaseDate.Value.Year;
+                }
+
+                MasterGame masterGame = new MasterGame(Guid.NewGuid(), openCriticGame.Value.Name, openCriticGame.Value.ReleaseDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), openCriticGame.Value.ReleaseDate,
+                    id, openCriticGame.Value.Score, minimumReleaseYear, eligibilityLevel, false, false, "");
+                await _fantasyCriticService.CreateMasterGame(masterGame);
+
+                id++;
+            }
         }
 
         [HttpPost]

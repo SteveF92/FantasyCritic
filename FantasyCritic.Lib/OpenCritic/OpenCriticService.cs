@@ -61,6 +61,15 @@ namespace FantasyCritic.Lib.OpenCritic
                 var openCriticGame = new OpenCriticGame(parsedResult, earliestReleaseDate);
                 return openCriticGame;
             }
+            catch (HttpRequestException httpEx)
+            {
+                if (httpEx.Message == "Response status code does not indicate success: 404 (Not Found).")
+                {
+                    return Maybe<OpenCriticGame>.None;
+                }
+                _logger.LogError(httpEx, $"Getting an open critic game failed: {openCriticGameID}");
+                throw;
+            }
             catch (Exception e)
             {
                 _logger.LogError(e, $"Getting an open critic game failed: {openCriticGameID}");
