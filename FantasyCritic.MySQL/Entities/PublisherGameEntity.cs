@@ -26,6 +26,10 @@ namespace FantasyCritic.MySQL.Entities
             ManualCriticScore = publisherGame.ManualCriticScore;
             FantasyPoints = publisherGame.FantasyPoints;
 
+            DraftPosition = publisherGame.DraftPosition;
+            OverallDraftPosition = publisherGame.OverallDraftPosition;
+            Finalized = publisherGame.Finalized;
+
             if (publisherGame.MasterGame.HasValue)
             {
                 MasterGameID = publisherGame.MasterGame.Value.MasterGameID;
@@ -40,11 +44,14 @@ namespace FantasyCritic.MySQL.Entities
         public decimal? ManualCriticScore { get; set; }
         public decimal? FantasyPoints { get; set; }
         public Guid? MasterGameID { get; set; }
+        public int? DraftPosition { get; set; }
+        public int? OverallDraftPosition { get; set; }
+        public bool Finalized { get; set; }
 
         public PublisherGame ToDomain(Maybe<MasterGame> masterGame, int leagueYear)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            PublisherGame domain = new PublisherGame(PublisherGameID, GameName, instant, CounterPick, ManualCriticScore, FantasyPoints, masterGame, leagueYear);
+            PublisherGame domain = new PublisherGame(PublisherGameID, GameName, instant, CounterPick, ManualCriticScore, FantasyPoints, masterGame, DraftPosition, OverallDraftPosition, Finalized, leagueYear);
             return domain;
         }
     }

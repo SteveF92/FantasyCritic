@@ -238,7 +238,8 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request)
         {
-            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null, request.MasterGame, request.Publisher.Year);
+            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null, request.MasterGame, 
+                request.DraftPosition, request.OverallDraftPosition, request.Finalized, request.Publisher.Year);
 
             ClaimResult claimResult = await CanClaimGame(request);
 
@@ -286,7 +287,7 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) });
             }
 
-            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame);
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null, true);
             var claimResult = await CanClaimGame(claimRequest);
             if (!claimResult.Success)
             {
@@ -726,7 +727,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var successBid in successBids)
             {
                 await _fantasyCriticRepo.MarkBidStatus(successBid, true);
-                PublisherGame newPublisherGame = new PublisherGame(Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), false, null, null, successBid.MasterGame, successBid.Publisher.Year);
+                PublisherGame newPublisherGame = new PublisherGame(Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), false, null, null, successBid.MasterGame, null, null, true, successBid.Publisher.Year);
                 await _fantasyCriticRepo.AddPublisherGame(successBid.Publisher, newPublisherGame);
                 await _fantasyCriticRepo.SpendBudget(successBid.Publisher, successBid.BidAmount);
 

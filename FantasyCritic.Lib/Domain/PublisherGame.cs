@@ -12,7 +12,8 @@ namespace FantasyCritic.Lib.Domain
     {
         private readonly int _leagueYear;
 
-        public PublisherGame(Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, decimal? fantasyPoints, Maybe<MasterGame> masterGame, int leagueYear)
+        public PublisherGame(Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, decimal? fantasyPoints, 
+            Maybe<MasterGame> masterGame, int? draftPosition, int? overallDraftPosition, bool finalized, int leagueYear)
         {
             PublisherGameID = publisherGameID;
             GameName = gameName;
@@ -21,6 +22,9 @@ namespace FantasyCritic.Lib.Domain
             ManualCriticScore = manualCriticScore;
             FantasyPoints = fantasyPoints;
             MasterGame = masterGame;
+            DraftPosition = draftPosition;
+            OverallDraftPosition = overallDraftPosition;
+            Finalized = finalized;
             _leagueYear = leagueYear;
         }
 
@@ -31,6 +35,9 @@ namespace FantasyCritic.Lib.Domain
         public decimal? ManualCriticScore { get; }
         public decimal? FantasyPoints { get; }
         public Maybe<MasterGame> MasterGame { get; }
+        public int? DraftPosition { get; }
+        public int? OverallDraftPosition { get; }
+        public bool Finalized { get; }
 
         public bool WillRelease()
         {

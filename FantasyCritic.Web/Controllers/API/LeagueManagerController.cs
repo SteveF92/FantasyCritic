@@ -279,7 +279,7 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID.Value);
             }
 
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, null, null, true);
 
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
             var viewModel = new ManagerClaimResultViewModel(result);
@@ -588,6 +588,79 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ManagerDraftGame([FromBody] ManagerDraftGameRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (!leagueYear.Value.PlayStatus.DraftIsActive)
+            {
+                return BadRequest("You can't draft a game if the draft isn't active.");
+            }
+
+            var nextPublisher = await _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value);
+            if (nextPublisher.HasNoValue)
+            {
+                return BadRequest("There are no spots open to draft.");
+            }
+
+            if (!nextPublisher.Value.Equals(publisher.Value))
+            {
+                return BadRequest("That publisher is not next up for drafting.");
+            }
+
+            Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+            if (request.MasterGameID.HasValue)
+            {
+                masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID.Value);
+            }
+
+            int? publisherPosition = null;
+            int? overallPosition = null;
+            var draftPhase = await _fantasyCriticService.GetDraftPhase(leagueYear.Value);
+            if (draftPhase.Equals(DraftPhase.StandardGames))
+            {
+                publisherPosition = publisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
+                var publishers = await _fantasyCriticService.GetPublishersInLeagueForYear(league.Value, leagueYear.Value.Year);
+                overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
+            }
+
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition, false);
+
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
+            var viewModel = new ManagerClaimResultViewModel(result);
+
+            return Ok(viewModel);
         }
     }
 }
