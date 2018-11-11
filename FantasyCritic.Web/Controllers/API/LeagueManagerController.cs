@@ -653,6 +653,19 @@ namespace FantasyCritic.Web.Controllers.API
                 publisherPosition = publisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
                 var publishers = await _fantasyCriticService.GetPublishersInLeagueForYear(league.Value, leagueYear.Value.Year);
                 overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
+
+                if (request.CounterPick)
+                {
+                    return BadRequest("Not drafting counterpicks now.");
+                }
+            }
+
+            if (draftPhase.Equals(DraftPhase.Counterpicks))
+            {
+                if (!request.CounterPick)
+                {
+                    return BadRequest("Not drafting standard games now.");
+                }
             }
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition, false);
