@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="startPlay" ref="startPlayRef" title="Warning!" @ok="startPlay">
+  <b-modal id="startDraft" ref="startDraftRef" title="Warning!" @ok="startDraft">
     Warning! Once you start drafting, you can no longer add or remove players, and the draft order is locked in.
   </b-modal>
 </template>
@@ -9,9 +9,9 @@
 
   export default {
     methods: {
-      startPlay() {
-        this.$refs.startPlayRef.hide();
-        this.$emit('playStarted');
+      startDraft() {
+        this.$refs.startDraftRef.hide();
+        this.$emit('draftStarted');
       }
     }
   }

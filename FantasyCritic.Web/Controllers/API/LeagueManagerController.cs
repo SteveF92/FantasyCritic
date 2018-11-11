@@ -503,6 +503,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            if (!leagueYear.Value.PlayStatus.Equals(PlayStatus.NotStartedDraft))
+            {
+                return BadRequest();
+            }
+
             var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
             var supportedYear = (await _fantasyCriticService.GetSupportedYears()).SingleOrDefault(x => x.Year == request.Year);
             if (supportedYear is null)

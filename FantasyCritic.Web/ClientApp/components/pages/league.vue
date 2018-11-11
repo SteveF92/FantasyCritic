@@ -36,16 +36,19 @@
       <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
       <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
     </div>
+
     <div v-if="leagueYear && !leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft" class="alert alert-success">
       <span v-if="league.isManager">
-        Things are all set to get started! <b-button variant="primary" v-b-modal="'startPlay'" class="mx-2">Start Drafting!</b-button>
-        <startPlayModal v-on:playStarted="startPlay"></startPlayModal>
+        Things are all set to get started! <b-button variant="primary" v-b-modal="'startDraft'" class="mx-2">Start Drafting!</b-button>
+        <startDraftModal v-on:draftStarted="startDraft"></startDraftModal>
       </span>
       <span v-if="!league.isManager">
         Things are all set to get started! Your league manager can choose when to begin the draft.
       </span>
     </div>
-
+    <div v-if="leagueYear && leagueYear.playStatus.draftIsActive" class="alert alert-info">
+        The draft is currently in progress!
+    </div>
 
     <div>
       <h3>League Manager</h3>
@@ -92,7 +95,7 @@
     import PlayerActions from "components/modules/playerActions";
     import CreatePublisherForm from "components/modules/modals/createPublisherForm";
     import LeagueActions from "components/modules/leagueActions";
-    import StartPlayModal from "components/modules/modals/startPlayModal";
+    import StartDraftModal from "components/modules/modals/startDraftModal";
 
     export default {
         data() {
@@ -112,7 +115,7 @@
             LeagueActions,
             PlayerActions,
             CreatePublisherForm,
-            StartPlayModal
+            StartDraftModal
         },
         methods: {
             formatDate(date) {
@@ -180,13 +183,13 @@
 
                     });
             },
-            startPlay() {
+            startDraft() {
               var model = {
                 leagueID: this.league.leagueID,
                 year: this.leagueYear.year
               };
               axios
-                .post('/api/leagueManager/startplay', model)
+                .post('/api/leagueManager/startDraft', model)
                 .then(response => {
                   this.fetchLeague();
                   this.fetchLeagueYear();
