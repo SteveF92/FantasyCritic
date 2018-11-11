@@ -274,7 +274,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    $"update tblleagueyear SET PlayStatus = '{PlayStatus.DraftingStandard.Value}' WHERE LeagueID = @leagueID and Year = @year",
+                    $"update tblleagueyear SET PlayStatus = '{PlayStatus.Drafting.Value}' WHERE LeagueID = @leagueID and Year = @year",
                     new
                     {
                         leagueID = leagueYear.League.LeagueID,
