@@ -1,5 +1,5 @@
 <template>
-  <div class="player-table">
+  <div class="player-table" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
     <table class="table table-bordered table-striped">
       <thead>
         <tr class="table-primary">
@@ -77,6 +77,12 @@
     border-style: solid;
     margin-bottom: 10px;
   }
+  .publisher-is-next {
+    border-color: #5CB85C;
+  }
+  .publisher-is-next table thead tr.table-primary th {
+    background-color: #ED9D2B;
+  }
   .player-table table {
     margin-bottom: 0px;
   }
@@ -90,6 +96,7 @@
     height: 35px;
     padding: 5px;
   }
+  
   .type-column {
     width: 30px;
     text-align: center;
