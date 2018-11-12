@@ -60,8 +60,6 @@
         </div>
       </div>
     </div>
-    
-      
 
     <div>
       <h3>League Manager</h3>
@@ -76,7 +74,7 @@
         <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" v-on:actionTaken="actionTaken"></playerActions>
       </div>
       <div class="col-lg-3 col-12">
-        <leagueActions :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueActions>
+        <leagueActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
       </div>
     </div>
 

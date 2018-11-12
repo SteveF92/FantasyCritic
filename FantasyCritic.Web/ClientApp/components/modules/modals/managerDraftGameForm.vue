@@ -68,11 +68,8 @@
           formIsValid() {
             return (this.draftGameName);
           },
-          nextPublisherUp() {
-            return _.find(this.publishers, ['nextToDraft', true]);
-          }
         },
-        props: ['publishers', 'maximumEligibilityLevel'],
+        props: ['nextPublisherUp', 'maximumEligibilityLevel'],
         methods: {
             searchGame() {
                 axios

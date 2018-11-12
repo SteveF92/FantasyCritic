@@ -19,7 +19,7 @@
       <div v-if="leagueYear">
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
-        <managerDraftGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameDrafted="gameDrafted"></managerDraftGameForm>
+        <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="gameDrafted"></managerDraftGameForm>
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
@@ -47,7 +47,7 @@
         errorInfo: ""
       }
     },
-    props: ['league', 'leagueYear'],
+    props: ['league', 'leagueYear', 'nextPublisherUp'],
     components: {
       ManagerClaimGameForm,
       ManagerDraftGameForm,
