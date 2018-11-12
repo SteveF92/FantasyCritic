@@ -722,5 +722,42 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UndoLastDraftAction([FromBody] UndoLastDraftActionRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Unauthorized();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (!leagueYear.Value.PlayStatus.Equals(PlayStatus.DraftPaused))
+            {
+                return BadRequest("Can only undo when the draft is paused.");
+            }
+
+            await _fantasyCriticService.UndoLastDraftAction(leagueYear.Value);
+
+            return Ok();
+        }
     }
 }

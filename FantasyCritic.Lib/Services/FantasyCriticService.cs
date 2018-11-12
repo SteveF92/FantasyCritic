@@ -404,7 +404,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
         {
-            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.League, publisher.Year);
+            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.Year == leagueYear.Year).ToList();
             IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != publisher.User.UserID).ToList();
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
@@ -823,6 +823,17 @@ namespace FantasyCritic.Lib.Services
         public Task SetDraftPause(LeagueYear leagueYear, bool pause)
         {
             return _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
+        }
+
+        public async Task UndoLastDraftAction(LeagueYear leagueYear)
+        {
+            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            var publisherGames = publishers.SelectMany(x => x.PublisherGames);
+            var newestGame = publisherGames.MaxBy(x => x.Timestamp).Single();
+
+            var publisher = publishers.Single(x => x.PublisherGames.ContainsGame(newestGame));
+
+            await RemovePublisherGame(leagueYear, publisher, newestGame);
         }
 
         public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IEnumerable<KeyValuePair<Publisher, int>> draftPositions)
