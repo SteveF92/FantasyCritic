@@ -8,6 +8,7 @@ using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
 using FantasyCritic.SendGrid;
+using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -126,6 +127,8 @@ namespace FantasyCritic.Web
                 {
                     options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
                 });
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -163,6 +166,11 @@ namespace FantasyCritic.Web
                 routes.MapSpaFallbackRoute(
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
+            });
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<UpdateHub>("/updatehub");
             });
         }
 
