@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="setPause" ref="setPauseRef" title="Warning!" @ok="setPause">
+  <b-modal id="setPauseModal" ref="setPauseModalRef" title="Warning!" @ok="setPause">
     <div v-if="!paused">
       Do you wish to pause the draft? No one will be able to draft any games while the draft is paused.
     </div>
@@ -16,7 +16,7 @@
     props: ['paused'],
     methods: {
       setPause() {
-        this.$refs.setPauseRef.hide();
+        this.$refs.setPauseModalRef.hide();
         let pauseInfo = {
           pause: !this.paused
         }

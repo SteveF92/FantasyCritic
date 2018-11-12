@@ -2,33 +2,41 @@
   <div>
     <div v-if="league.isManager && leagueYear">
       <h4>Manager Actions</h4>
-      <div class="publisher-actions" role="group" aria-label="Basic example">
+      <div class="publisher-actions" role="group">
+
         <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'" v-if="!leagueYear.playStatus.playStarted">Invite a Player</b-button>
+        <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
+
         <b-button variant="info" class="nav-link" v-b-modal="'editDraftOrderForm'" v-if="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">Edit Draft Order</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'managerDraftGameForm'" v-if="leagueYear.playStatus.draftIsActive">Draft Game - Manager</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-if="leagueYear.playStatus.draftFinished">Add Publisher Game</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-if="leagueYear.playStatus.draftFinished">Associate Unlinked Game</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Remove Publisher Game</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Set a Score Manually</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'changeLeagueNameForm'">Change League Name</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'setPause'" v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
+        <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
+
+        <b-button id="managerDraftButton" variant="info" class="nav-link" v-b-modal="'managerDraftGameForm'" v-if="leagueYear.playStatus.draftIsActive">Draft Game - Manager</b-button>
+        <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="gameDrafted"></managerDraftGameForm>
+
+        <b-button id="managerUndoButton" variant="warning" class="nav-link" v-b-modal="'undoLastDraftActionModal'" v-if="leagueYear.playStatus.draftIsPaused">Undo Last Drafted Game</b-button>
+        <undoLastDraftActionModal v-on:undoLastDraftAction="undoLastDraftAction"></undoLastDraftActionModal>
+
+        <b-button id="managerPauseButton" variant="warning" class="nav-link" v-b-modal="'setPauseModal'" v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
           <span v-if="leagueYear.playStatus.draftIsActive">Pause Draft</span>
           <span v-if="leagueYear.playStatus.draftIsPaused">Resume Draft</span>
         </b-button>
-      </div>
+        <setPauseModal v-on:setPause="setPause" :paused="leagueYear.playStatus.draftIsPaused"></setPauseModal>
 
-      <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
-      <br />
-
-      <div v-if="leagueYear">
-        <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
+        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-if="leagueYear.playStatus.draftFinished">Add Publisher Game</b-button>
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
-        <managerDraftGameForm v-if="leagueYear.playStatus.draftIsActive" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="gameDrafted"></managerDraftGameForm>
+
+        <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-if="leagueYear.playStatus.draftFinished">Associate Unlinked Game</b-button>
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
+
+        <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Remove Publisher Game</b-button>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
+
+        <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Set a Score Manually</b-button>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
+
+        <b-button variant="warning" class="nav-link" v-b-modal="'changeLeagueNameForm'">Change League Name</b-button>
         <changeLeagueNameForm :league="league" v-on:leagueNameChanged="leagueNameChanged"></changeLeagueNameForm>
-        <setPauseModal v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused" v-on:setPause="setPause" :paused="leagueYear.playStatus.draftIsPaused"></setPauseModal>
+
       </div>
     </div>
   </div>
@@ -46,6 +54,7 @@
   import ChangeLeagueNameForm from "components/modules/modals/changeLeagueNameForm";
   import EditDraftOrderForm from "components/modules/modals/editDraftOrderForm";
   import SetPauseModal from "components/modules/modals/setPauseModal";
+  import UndoLastDraftActionModal from "components/modules/modals/undoLastDraftActionModal";
 
   export default {
     data() {
@@ -63,7 +72,8 @@
       ManuallyScoreGameForm,
       ChangeLeagueNameForm,
       EditDraftOrderForm,
-      SetPauseModal
+      SetPauseModal,
+      UndoLastDraftActionModal
     },
     methods: {
       acceptInvite() {
@@ -107,6 +117,25 @@
             }
             let actionInfo = {
               message: pauseMessage,
+              fetchLeague: true,
+              fetchLeagueYear: true
+            };
+            this.$emit('actionTaken', actionInfo);
+          })
+          .catch(response => {
+
+          });
+      },
+      undoLastDraftAction(pauseInfo) {
+        var model = {
+          leagueID: this.league.leagueID,
+          year: this.leagueYear.year
+        };
+        axios
+          .post('/api/leagueManager/UndoLastDraftAction', model)
+          .then(response => {
+            let actionInfo = {
+              message: 'Last action was undone.',
               fetchLeagueYear: true
             };
             this.$emit('actionTaken', actionInfo);
