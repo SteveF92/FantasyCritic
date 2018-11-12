@@ -675,5 +675,52 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok(viewModel);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SetDraftPause([FromBody] DraftPauseRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Unauthorized();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (request.Pause)
+            {
+                if (!leagueYear.Value.PlayStatus.Equals(PlayStatus.Drafting))
+                {
+                    return BadRequest();
+                }
+            }
+            if (!request.Pause)
+            {
+                if (!leagueYear.Value.PlayStatus.Equals(PlayStatus.DraftPaused))
+                {
+                    return BadRequest();
+                }
+            }
+
+            await _fantasyCriticService.SetDraftPause(leagueYear.Value, request.Pause);
+
+            return Ok();
+        }
     }
 }

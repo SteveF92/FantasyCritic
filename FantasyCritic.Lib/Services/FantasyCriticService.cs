@@ -820,6 +820,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.StartDraft(leagueYear);
         }
 
+        public Task SetDraftPause(LeagueYear leagueYear, bool pause)
+        {
+            return _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
+        }
+
         public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IEnumerable<KeyValuePair<Publisher, int>> draftPositions)
         {
             var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);

@@ -283,6 +283,28 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task SetDraftPause(LeagueYear leagueYear, bool pause)
+        {
+            string sql;
+            if (pause)
+            {
+                sql = $"update tblleagueyear SET PlayStatus = '{PlayStatus.DraftPaused.Value}' WHERE LeagueID = @leagueID and Year = @year";
+            }
+            else
+            {
+                sql = $"update tblleagueyear SET PlayStatus = '{PlayStatus.Drafting.Value}' WHERE LeagueID = @leagueID and Year = @year";
+            }
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql,
+                    new
+                    {
+                        leagueID = leagueYear.League.LeagueID,
+                        year = leagueYear.Year
+                    });
+            }
+        }
+
         public async Task<Maybe<PickupBid>> GetPickupBid(Guid bidID)
         {
             using (var connection = new MySqlConnection(_connectionString))
