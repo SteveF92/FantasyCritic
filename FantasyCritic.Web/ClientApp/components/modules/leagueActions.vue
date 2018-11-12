@@ -11,8 +11,10 @@
         <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Remove Publisher Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Set a Score Manually</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'changeLeagueNameForm'">Change League Name</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'setPause'" v-if="leagueYear.playStatus.draftIsActive">Pause Draft</b-button>
-        <b-button variant="warning" class="nav-link" v-b-modal="'setPause'" v-if="leagueYear.playStatus.draftIsPaused">Resume Draft</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'setPause'" v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
+          <span v-if="leagueYear.playStatus.draftIsActive">Pause Draft</span>
+          <span v-if="leagueYear.playStatus.draftIsPaused">Resume Draft</span>
+        </b-button>
       </div>
 
       <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
@@ -99,7 +101,15 @@
         axios
           .post('/api/leagueManager/SetDraftPause', model)
           .then(response => {
-            this.fetchLeagueYear();
+            let pauseMessage = "Draft has been paused.";
+            if (!pauseInfo.pause) {
+              pauseMessage = "Draft has been un-paused."
+            }
+            let actionInfo = {
+              message: pauseMessage,
+              fetchLeagueYear: true
+            };
+            this.$emit('actionTaken', actionInfo);
           })
           .catch(response => {
 

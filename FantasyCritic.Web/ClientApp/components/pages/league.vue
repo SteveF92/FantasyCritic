@@ -46,10 +46,9 @@
         Things are all set to get started! Your league manager can choose when to begin the draft.
       </span>
     </div>
-    <div v-if="leagueYear && leagueYear.playStatus.draftIsPause">
-        <div class="alert alert-warning">
+    <div v-if="leagueYear && leagueYear.playStatus.draftIsPaused">
+        <div class="alert alert-danger">
           <div>The draft has been paused. Speak to your league manager for details.</div>
-          <div>Next to draft: <strong>{{nextPublisherUp.publisherName}}</strong></div>
         </div>
     </div>
     <div v-if="leagueYear && leagueYear.playStatus.draftIsActive && nextPublisherUp">

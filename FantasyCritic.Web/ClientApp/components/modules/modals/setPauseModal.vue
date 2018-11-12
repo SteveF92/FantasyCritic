@@ -17,8 +17,8 @@
     methods: {
       setPause() {
         this.$refs.setPauseRef.hide();
-        let pauseInfo = new {
-          pause: !paused
+        let pauseInfo = {
+          pause: !this.paused
         }
         this.$emit('setPause', pauseInfo);
       }
