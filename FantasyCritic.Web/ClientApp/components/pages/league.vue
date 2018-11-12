@@ -66,12 +66,12 @@
       {{ league.leagueManager.userName }}
     </div>
 
-    <div class="row">
-      <div v-if="leagueYear" class="col-lg-6 col-12">
+    <div class="row" v-if="leagueYear">
+      <div class="col-lg-6 col-12">
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-3 col-12">
-        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" v-on:actionTaken="actionTaken"></playerActions>
+        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="nextPublisherUp.publisherID === leagueYear.userPublisher.publisherID" v-on:actionTaken="actionTaken"></playerActions>
       </div>
       <div class="col-lg-3 col-12">
         <leagueActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
@@ -421,6 +422,91 @@ namespace FantasyCritic.Web.Controllers.API
 
             var viewModels = bids.Select(x => new PickupBidViewModel(x)).OrderBy(x => x.Priority);
             return Ok(viewModels);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DraftGame([FromBody] DraftGameRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser.UserID != publisher.Value.User.UserID)
+            {
+                return Forbid();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (!leagueYear.Value.PlayStatus.DraftIsActive)
+            {
+                return BadRequest("You can't draft a game if the draft isn't active.");
+            }
+
+            var nextPublisher = await _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value);
+            if (nextPublisher.HasNoValue)
+            {
+                return BadRequest("There are no spots open to draft.");
+            }
+
+            if (!nextPublisher.Value.Equals(publisher.Value))
+            {
+                return BadRequest("That publisher is not next up for drafting.");
+            }
+
+            Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+            if (request.MasterGameID.HasValue)
+            {
+                masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID.Value);
+            }
+
+            int? publisherPosition = null;
+            int? overallPosition = null;
+            var draftPhase = await _fantasyCriticService.GetDraftPhase(leagueYear.Value);
+            if (draftPhase.Equals(DraftPhase.StandardGames))
+            {
+                publisherPosition = publisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
+                var publishers = await _fantasyCriticService.GetPublishersInLeagueForYear(league.Value, leagueYear.Value.Year);
+                overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
+
+                if (request.CounterPick)
+                {
+                    return BadRequest("Not drafting counterpicks now.");
+                }
+            }
+
+            if (draftPhase.Equals(DraftPhase.Counterpicks))
+            {
+                if (!request.CounterPick)
+                {
+                    return BadRequest("Not drafting standard games now.");
+                }
+            }
+
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, masterGame, publisherPosition, overallPosition, false);
+
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
+            var viewModel = new PlayerClaimResultViewModel(result);
+
+            return Ok(viewModel);
         }
     }
 }

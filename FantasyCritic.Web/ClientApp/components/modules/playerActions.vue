@@ -3,6 +3,7 @@
     <div v-if="leagueYear && leagueYear.userPublisher">
       <h4>Player Actions</h4>
       <div class="player-actions" role="group" aria-label="Basic example">
+        <b-button variant="info" class="nav-link" v-b-modal="'playerDraftGameForm'" v-if="leagueYear.playStatus.draftIsActive" :disabled="!userIsNextInDraft">Draft Game</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'leaguePlayersForm'">See Players</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'bidGameForm'" v-if="leagueYear.playStatus.draftFinished">Bid on a Game</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'currentBidsForm'" v-if="leagueYear.playStatus.draftFinished">Current Bids</b-button>
@@ -12,6 +13,7 @@
       <br />
       <div v-if="leagueYear">
         <leaguePlayersForm :players="leagueYear.players" :league="league" v-on:playerRemoved="playerRemoved"></leaguePlayersForm>
+        <playerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :userPublisher="leagueYear.userPublisher" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
         <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
         <currentBidsForm :currentBids="currentBids" v-on:bidCanceled="bidCanceled"></currentBidsForm>
         <leagueHistoryModal :leagueActions="leagueActions"></leagueHistoryModal>
@@ -28,6 +30,7 @@
   import LeagueHistoryModal from "components/modules/modals/leagueHistoryModal";
   import ChangePublisherNameForm from "components/modules/modals/changePublisherNameForm";
   import LeaguePlayersForm from "components/modules/modals/leaguePlayersForm";
+  import PlayerDraftGameForm from "components/modules/modals/playerDraftGameForm";
 
   export default {
     data() {
@@ -35,13 +38,14 @@
         errorInfo: ""
       }
     },
-    props: ['league', 'leagueYear', 'currentBids', 'leagueActions'],
+    props: ['league', 'leagueYear', 'currentBids', 'leagueActions', 'userIsNextInDraft'],
     components: {
       BidGameForm,
       CurrentBidsForm,
       LeagueHistoryModal,
       ChangePublisherNameForm,
-      LeaguePlayersForm
+      LeaguePlayersForm,
+      PlayerDraftGameForm
     },
     methods: {
       gameBid(bidInfo) {
@@ -69,6 +73,13 @@
         let actionInfo = {
           message: removeInfo.userName + ' has been removed from the league.',
           fetchLeague: true,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      gameDrafted(draftInfo) {
+        let actionInfo = {
+          message: 'You have drafted: ' + draftInfo.gameName,
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
