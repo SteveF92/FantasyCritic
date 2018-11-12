@@ -46,12 +46,22 @@
         Things are all set to get started! Your league manager can choose when to begin the draft.
       </span>
     </div>
-    <div v-if="leagueYear && leagueYear.playStatus.draftIsActive" class="alert alert-info">
-      <div>The draft is currently in progress!</div>
-      <div>
-        Next to draft: <strong>{{nextPublisherUp.publisherName}}</strong>
+    <div v-if="leagueYear && leagueYear.playStatus.draftIsActive">
+      <div v-if="nextPublisherUp.publisherID !== leagueYear.userPublisher.publisherID">
+        <div class="alert alert-info">
+          <div>The draft is currently in progress!</div>
+          <div>Next to draft: <strong>{{nextPublisherUp.publisherName}}</strong></div>
+        </div>
+      </div>
+      <div v-else>
+        <div class="alert alert-success">
+          <div>The draft is currently in progress!</div>
+          <div><strong>It is your turn to draft!</strong></div>
+        </div>
       </div>
     </div>
+    
+      
 
     <div>
       <h3>League Manager</h3>
