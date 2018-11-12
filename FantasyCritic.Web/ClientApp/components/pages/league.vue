@@ -46,8 +46,8 @@
         Things are all set to get started! Your league manager can choose when to begin the draft.
       </span>
     </div>
-    <div v-if="leagueYear && leagueYear.playStatus.draftIsActive">
-      <div v-if="nextPublisherUp.publisherID !== leagueYear.userPublisher.publisherID">
+    <div v-if="leagueYear && leagueYear.playStatus.draftIsActive && nextPublisherUp">
+      <div v-if="!userIsNextInDraft">
         <div class="alert alert-info">
           <div>The draft is currently in progress!</div>
           <div>Next to draft: <strong>{{nextPublisherUp.publisherName}}</strong></div>
@@ -66,12 +66,12 @@
       {{ league.leagueManager.userName }}
     </div>
 
-    <div class="row" v-if="leagueYear">
+    <div class="row" v-if="leagueYear && leagueYear.userPublisher">
       <div class="col-lg-6 col-12">
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
       <div class="col-lg-3 col-12">
-        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="nextPublisherUp.publisherID === leagueYear.userPublisher.publisherID" v-on:actionTaken="actionTaken"></playerActions>
+        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="userIsNextInDraft" v-on:actionTaken="actionTaken"></playerActions>
       </div>
       <div class="col-lg-3 col-12">
         <leagueActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
@@ -132,6 +132,13 @@
           nextPublisherUp() {
             let next = _.find(this.leagueYear.publishers, ['nextToDraft', true]);
             return next;
+          },
+          userIsNextInDraft() {
+            if (this.nextPublisherUp) {
+              return this.nextPublisherUp.publisherID === this.leagueYear.userPublisher.publisherID
+            }
+
+            return false;
           }
         },
         methods: {
