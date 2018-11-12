@@ -4,34 +4,34 @@
       <h4>Manager Actions</h4>
       <div class="publisher-actions" role="group">
 
-        <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'" v-if="!leagueYear.playStatus.playStarted">Invite a Player</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'invitePlayer'" v-show="!leagueYear.playStatus.playStarted">Invite a Player</b-button>
         <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
 
-        <b-button variant="info" class="nav-link" v-b-modal="'editDraftOrderForm'" v-if="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">Edit Draft Order</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">Edit Draft Order</b-button>
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
 
-        <b-button id="managerDraftButton" variant="info" class="nav-link" v-b-modal="'managerDraftGameForm'" v-if="leagueYear.playStatus.draftIsActive">Draft Game - Manager</b-button>
+        <b-button id="managerDraftButton" variant="info" class="nav-link" v-b-modal="'managerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive">Draft Game - Manager</b-button>
         <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="gameDrafted"></managerDraftGameForm>
 
-        <b-button id="managerUndoButton" variant="warning" class="nav-link" v-b-modal="'undoLastDraftActionModal'" v-if="leagueYear.playStatus.draftIsPaused">Undo Last Drafted Game</b-button>
+        <b-button id="managerUndoButton" variant="warning" class="nav-link" v-b-modal="'undoLastDraftActionModal'" v-show="leagueYear.playStatus.draftIsPaused">Undo Last Drafted Game</b-button>
         <undoLastDraftActionModal v-on:undoLastDraftAction="undoLastDraftAction"></undoLastDraftActionModal>
 
-        <b-button id="managerPauseButton" variant="warning" class="nav-link" v-b-modal="'setPauseModal'" v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
-          <span v-if="leagueYear.playStatus.draftIsActive">Pause Draft</span>
-          <span v-if="leagueYear.playStatus.draftIsPaused">Resume Draft</span>
+        <b-button id="managerPauseButton" variant="warning" class="nav-link" v-b-modal="'setPauseModal'" v-show="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
+          <span v-show="leagueYear.playStatus.draftIsActive">Pause Draft</span>
+          <span v-show="leagueYear.playStatus.draftIsPaused">Resume Draft</span>
         </b-button>
         <setPauseModal v-on:setPause="setPause" :paused="leagueYear.playStatus.draftIsPaused"></setPauseModal>
 
-        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-if="leagueYear.playStatus.draftFinished">Add Publisher Game</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'claimGameForm'" v-show="leagueYear.playStatus.draftFinished">Add Publisher Game</b-button>
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
 
-        <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-if="leagueYear.playStatus.draftFinished">Associate Unlinked Game</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'associateGameForm'" v-show="leagueYear.playStatus.draftFinished">Associate Unlinked Game</b-button>
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
 
-        <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Remove Publisher Game</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-show="leagueYear.playStatus.draftFinished">Remove Publisher Game</b-button>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
 
-        <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Set a Score Manually</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'" v-show="leagueYear.playStatus.draftFinished">Set a Score Manually</b-button>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
 
         <b-button variant="warning" class="nav-link" v-b-modal="'changeLeagueNameForm'">Change League Name</b-button>
