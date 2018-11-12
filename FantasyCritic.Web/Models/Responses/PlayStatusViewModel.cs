@@ -17,6 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             ReadyToDraft = readyToDraft;
             PlayStarted = domain.PlayStarted;
             DraftIsActive = domain.DraftIsActive;
+            DraftIsPaused = domain.DraftIsPaused;
             DraftFinished = domain.DraftFinished;
             StartDraftErrors = startDraftErrors.ToList();
         }
@@ -26,6 +27,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool ReadyToDraft { get; }
         public bool PlayStarted { get; }
         public bool DraftIsActive { get; }
+        public bool DraftIsPaused { get; }
         public bool DraftFinished { get; }
         public IReadOnlyList<string> StartDraftErrors { get; }
     }

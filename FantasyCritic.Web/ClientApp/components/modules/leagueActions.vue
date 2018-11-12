@@ -11,6 +11,8 @@
         <b-button variant="warning" class="nav-link" v-b-modal="'removePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Remove Publisher Game</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'manuallyScorePublisherGame'" v-if="leagueYear.playStatus.draftFinished">Set a Score Manually</b-button>
         <b-button variant="warning" class="nav-link" v-b-modal="'changeLeagueNameForm'">Change League Name</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'setPause'" v-if="leagueYear.playStatus.draftIsActive">Pause Draft</b-button>
+        <b-button variant="warning" class="nav-link" v-b-modal="'setPause'" v-if="leagueYear.playStatus.draftIsPaused">Resume Draft</b-button>
       </div>
 
       <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
@@ -24,6 +26,7 @@
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
         <changeLeagueNameForm :league="league" v-on:leagueNameChanged="leagueNameChanged"></changeLeagueNameForm>
+        <setPauseModal v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused" v-on:setPause="setPause" :paused="leagueYear.playStatus.draftIsPaused"></setPauseModal>
       </div>
     </div>
   </div>
@@ -40,6 +43,7 @@
   import ManuallyScoreGameForm from "components/modules/modals/manuallyScoreGameForm";
   import ChangeLeagueNameForm from "components/modules/modals/changeLeagueNameForm";
   import EditDraftOrderForm from "components/modules/modals/editDraftOrderForm";
+  import SetPauseModal from "components/modules/modals/setPauseModal";
 
   export default {
     data() {
@@ -56,7 +60,8 @@
       RemoveGameForm,
       ManuallyScoreGameForm,
       ChangeLeagueNameForm,
-      EditDraftOrderForm
+      EditDraftOrderForm,
+      SetPauseModal
     },
     methods: {
       acceptInvite() {
@@ -80,6 +85,21 @@
           .post('/api/league/DeclineInvite', model)
           .then(response => {
             this.$router.push({ name: "home" });
+          })
+          .catch(response => {
+
+          });
+      },
+      setPause(pauseInfo) {
+        var model = {
+          leagueID: this.league.leagueID,
+          year: this.leagueYear.year,
+          pause: pauseInfo.pause
+        };
+        axios
+          .post('/api/leagueManager/SetDraftPause', model)
+          .then(response => {
+            this.fetchLeagueYear();
           })
           .catch(response => {
 
