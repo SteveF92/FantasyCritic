@@ -351,7 +351,7 @@ namespace FantasyCritic.MySQL
 
                 await connection.ExecuteAsync(
                     "insert into tblleagueyear(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,EstimatedCriticScore,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,PickupSystem,ScoringSystem,PlayStarted) VALUES " +
-                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStarted);",
+                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@EstimatedCriticScore,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStarted);",
                     leagueYearEntity);
             }
 
