@@ -106,6 +106,9 @@
     import Vue from "vue";
     import axios from "axios";
     import moment from "moment";
+    import { HubConnection } from '@aspnet/signalr';
+    import * as signalR from '@aspnet/signalr';
+
     import LeagueGameSummary from "components/modules/leagueGameSummary";
     import LeagueYearStandings from "components/modules/leagueYearStandings";
     import PlayerActions from "components/modules/playerActions";
@@ -121,7 +124,8 @@
                 leagueYear: null,
                 activeYear: null,
                 currentBids: [],
-                leagueActions: []
+                leagueActions: [],
+                hubConnection: null
             }
         },
         props: ['leagueid', 'year'],
@@ -245,6 +249,17 @@
             this.activeYear = this.year;
             this.fetchLeague();
             this.fetchLeagueYear();
+
+            let token = this.$store.getters.token;
+            this.hubConnection = new signalR.HubConnectionBuilder()
+              .withUrl("/updatehub", { accessTokenFactory: () => token })
+              .configureLogging(signalR.LogLevel.Error)
+              .build();
+
+            this.hubConnection.start().catch(err => console.error(err.toString()));
+            this.hubConnection.on('RefreshLeagueYear', data => {
+              this.fetchLeagueYear();
+            });
         },
         watch: {
             '$route'(to, from) {

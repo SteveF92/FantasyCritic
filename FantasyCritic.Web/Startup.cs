@@ -157,6 +157,11 @@ namespace FantasyCritic.Web
 
             app.UseStaticFiles();
 
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<UpdateHub>("/updatehub");
+            });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -165,12 +170,7 @@ namespace FantasyCritic.Web
 
                 routes.MapSpaFallbackRoute(
                     name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
-            });
-
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<UpdateHub>("/updatehub");
+                    defaults: new {controller = "Home", action = "Index"});
             });
         }
 
