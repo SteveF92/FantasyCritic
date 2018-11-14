@@ -34,7 +34,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
                     "insert into tbluser(UserID,UserName,NormalizedUserName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
-                    "(@UserID,@UserName,@NormalizedUserName,,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
+                    "(@UserID,@UserName,@NormalizedUserName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
                     entity);
             }
 
