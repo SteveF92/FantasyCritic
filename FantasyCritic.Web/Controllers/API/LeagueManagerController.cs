@@ -10,12 +10,14 @@ using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using NLog.Web.LayoutRenderers;
 using NodaTime;
 
@@ -28,13 +30,14 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IClock _clock;
+        private readonly IHubContext<UpdateHub> _hubcontext;
 
-        public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService,
-            IClock clock)
+        public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IClock clock, IHubContext<UpdateHub> hubcontext)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
             _clock = clock;
+            _hubcontext = hubcontext;
         }
 
         [HttpPost]
@@ -524,6 +527,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.StartDraft(leagueYear.Value);
+            await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }
@@ -672,6 +676,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
             var viewModel = new ManagerClaimResultViewModel(result);
+            await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok(viewModel);
         }
@@ -719,6 +724,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.SetDraftPause(leagueYear.Value, request.Pause);
+            await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }
@@ -756,6 +762,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.UndoLastDraftAction(leagueYear.Value);
+            await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }
