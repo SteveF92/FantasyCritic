@@ -10,7 +10,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PlayStatusViewModel
     {
-        public PlayStatusViewModel(PlayStatus domain, bool readyToSetDraftOrder, bool readyToDraft, IEnumerable<string> startDraftErrors)
+        public PlayStatusViewModel(PlayStatus domain, bool readyToSetDraftOrder, bool readyToDraft, IEnumerable<string> startDraftErrors, DraftPhase draftPhase)
         {
             PlayStatus = domain.Value;
             ReadyToSetDraftOrder = readyToSetDraftOrder;
@@ -20,6 +20,11 @@ namespace FantasyCritic.Web.Models.Responses
             DraftIsPaused = domain.DraftIsPaused;
             DraftFinished = domain.DraftFinished;
             StartDraftErrors = startDraftErrors.ToList();
+
+            if (draftPhase.Equals(DraftPhase.Counterpicks))
+            {
+                DraftingCounterPicks = true;
+            }
         }
 
         public string PlayStatus { get; }
@@ -29,6 +34,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool DraftIsActive { get; }
         public bool DraftIsPaused { get; }
         public bool DraftFinished { get; }
+        public bool DraftingCounterPicks { get; }
         public IReadOnlyList<string> StartDraftErrors { get; }
     }
 }

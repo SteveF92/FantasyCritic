@@ -54,13 +54,15 @@
     <div v-if="leagueYear && leagueYear.playStatus.draftIsActive && nextPublisherUp">
       <div v-if="!userIsNextInDraft">
         <div class="alert alert-info">
-          <div>The draft is currently in progress!</div>
+          <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
+          <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
           <div>Next to draft: <strong>{{nextPublisherUp.publisherName}}</strong></div>
         </div>
       </div>
       <div v-else>
         <div class="alert alert-success">
-          <div>The draft is currently in progress!</div>
+          <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
+          <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
           <div><strong>It is your turn to draft!</strong></div>
         </div>
       </div>
