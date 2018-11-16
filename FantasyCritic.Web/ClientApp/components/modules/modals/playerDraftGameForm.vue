@@ -29,7 +29,7 @@
         <div class="form-check" v-if="draftResult.overridable">
           <span>
             <label class="form-check-label">
-              These warnings can be overriden by your league manager.
+              Your league manager can override these warnings.
             </label>
           </span>
         </div>
