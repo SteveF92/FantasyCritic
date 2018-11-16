@@ -11,7 +11,7 @@
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
 
         <b-button id="managerDraftButton" variant="info" class="nav-link" v-b-modal="'managerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive">Draft Game - Manager</b-button>
-        <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="gameDrafted"></managerDraftGameForm>
+        <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="gameDrafted" v-if="leagueYear.playStatus.draftIsActive"></managerDraftGameForm>
 
         <b-button id="managerUndoButton" variant="warning" class="nav-link" v-b-modal="'undoLastDraftActionModal'" v-show="leagueYear.playStatus.draftIsPaused">Undo Last Drafted Game</b-button>
         <undoLastDraftActionModal v-on:undoLastDraftAction="undoLastDraftAction"></undoLastDraftActionModal>
