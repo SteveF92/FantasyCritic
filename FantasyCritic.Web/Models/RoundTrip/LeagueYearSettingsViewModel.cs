@@ -42,8 +42,6 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public int GamesToDraft { get; set; }
         [Required]
-        public int PickupGames { get; set; }
-        [Required]
         public int CounterPicks { get; set; }
         [Required]
         public decimal EstimatedCriticScore { get; set; }
@@ -66,7 +64,7 @@ namespace FantasyCritic.Web.Models.Requests
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, GamesToDraft, PickupGames, CounterPicks,
+            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,
                 EstimatedCriticScore, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, pickupSystem, scoringSystem);
             return parameters;
         }
