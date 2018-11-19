@@ -42,3 +42,7 @@ tr.table-primary, tr.table-primary th, tr.table-primary td {
 tr.table-secondary, tr.table-secondary th, tr.table-secondary td {
     background-color: #415262;
 }
+
+.modal-backdrop {
+    opacity: 0.6 !important;
+}
