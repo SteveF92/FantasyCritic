@@ -3,8 +3,8 @@
     <div v-if="leagueYear && leagueYear.userPublisher">
       <h4>Player Actions</h4>
       <div class="player-actions" role="group" aria-label="Basic example">
-        <b-button variant="info" class="nav-link" v-b-modal="'playerDraftGameForm'" v-if="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks" :disabled="!userIsNextInDraft">Draft Game</b-button>
-        <b-button variant="info" class="nav-link" v-b-modal="'playerDraftCounterPickForm'" v-if="leagueYear.playStatus.draftingCounterPicks" :disabled="!userIsNextInDraft">Draft Counter-Pick</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'playerDraftGameForm'" v-if="leagueYear.playStatus.draftIsActive" v-show="!leagueYear.playStatus.draftingCounterPicks" :disabled="!userIsNextInDraft">Draft Game</b-button>
+        <b-button variant="info" class="nav-link" v-b-modal="'playerDraftCounterPickForm'" v-if="leagueYear.playStatus.draftIsActive" v-show="leagueYear.playStatus.draftingCounterPicks" :disabled="!userIsNextInDraft">Draft Counter-Pick</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'leaguePlayersForm'">See Players</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'bidGameForm'" v-if="leagueYear.playStatus.draftFinished">Bid on a Game</b-button>
         <b-button variant="info" class="nav-link" v-b-modal="'currentBidsForm'" v-if="leagueYear.playStatus.draftFinished">Current Bids</b-button>

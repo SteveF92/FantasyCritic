@@ -971,5 +971,26 @@ namespace FantasyCritic.Lib.Services
 
             return availableCounterPicks;
         }
+
+        public async Task UpdateDraftState(LeagueYear leagueYear)
+        {
+            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+
+            int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
+            int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
+            if (standardGamesDrafted < numberOfStandardGamesToDraft)
+            {
+                return;
+            }
+
+            int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
+            int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
+            if (counterPicksDrafted < numberOfCounterPicksToDraft)
+            {
+                return;
+            }
+
+            await _fantasyCriticRepo.CompleteDraft(leagueYear);
+        }
     }
 }

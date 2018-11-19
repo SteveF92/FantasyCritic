@@ -675,6 +675,7 @@ namespace FantasyCritic.Web.Controllers.API
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition);
 
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
+            await _fantasyCriticService.UpdateDraftState(leagueYear.Value);
             var viewModel = new ManagerClaimResultViewModel(result);
             await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
 

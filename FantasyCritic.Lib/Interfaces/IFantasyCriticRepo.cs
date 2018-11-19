@@ -62,6 +62,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task ChangePublisherName(Publisher publisher, string publisherName);
         Task ChangeLeagueName(League league, string leagueName);
         Task StartDraft(LeagueYear leagueYear);
+        Task CompleteDraft(LeagueYear leagueYear);
         Task SetDraftPause(LeagueYear leagueYear, bool pause);
         Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions);
     }

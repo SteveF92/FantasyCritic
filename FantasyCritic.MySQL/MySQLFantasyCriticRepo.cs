@@ -14,6 +14,7 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL.Entities;
 using MoreLinq;
 using MySql.Data.MySqlClient;
+using NLog.Targets.Wrappers;
 
 namespace FantasyCritic.MySQL
 {
@@ -269,12 +270,22 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task StartDraft(LeagueYear leagueYear)
+        public Task StartDraft(LeagueYear leagueYear)
+        {
+            return SetDraftStatus(leagueYear, PlayStatus.Drafting);
+        }
+
+        public Task CompleteDraft(LeagueYear leagueYear)
+        {
+            return SetDraftStatus(leagueYear, PlayStatus.DraftFinal);
+        }
+
+        private async Task SetDraftStatus(LeagueYear leagueYear, PlayStatus playStatus)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    $"update tblleagueyear SET PlayStatus = '{PlayStatus.Drafting.Value}' WHERE LeagueID = @leagueID and Year = @year",
+                    $"update tblleagueyear SET PlayStatus = '{playStatus.Value}' WHERE LeagueID = @leagueID and Year = @year",
                     new
                     {
                         leagueID = leagueYear.League.LeagueID,
@@ -627,8 +638,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition,Finalized) VALUES " +
-                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition,@Finalized);",
+                    "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition) VALUES " +
+                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition);",
                     entity);
             }
         }
