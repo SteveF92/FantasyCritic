@@ -12,8 +12,9 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueYearViewModel
     {
-        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser,
-            IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> users, Maybe<Publisher> nextDraftPublisher, DraftPhase draftPhase)
+        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, Publisher userPublisher,
+            IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> users, Maybe<Publisher> nextDraftPublisher, DraftPhase draftPhase,
+            IEnumerable<PublisherGame> availableCounterPicks)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -30,7 +31,6 @@ namespace FantasyCritic.Web.Models.Responses
             Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock, nextDraftPublisher)).ToList();
             Standings = publishers.OrderByDescending(x => x.TotalFantasyPoints).Select(x => new StandingViewModel(x, leagueYear.Options.ScoringSystem, leagueYear.Options.EstimatedCriticScore)).ToList();
 
-            var userPublisher = publishers.SingleOrDefault(x => x.User.UserID == currentUser.UserID);
             if (!(userPublisher is null))
             {
                 UserPublisher = new PublisherViewModel(userPublisher, clock);
@@ -64,6 +64,7 @@ namespace FantasyCritic.Web.Models.Responses
             }
 
             PlayStatus = new PlayStatusViewModel(playStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
+            AvailableCounterPicks = availableCounterPicks.Select(x => new PublisherGameViewModel(x, clock)).ToList();
         }
 
         public Guid LeagueID { get; }
@@ -83,5 +84,6 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<StandingViewModel> Standings { get; }
         public PublisherViewModel UserPublisher { get; }
         public PlayStatusViewModel PlayStatus { get; }
+        public IReadOnlyList<PublisherGameViewModel> AvailableCounterPicks { get; }
     }
 }

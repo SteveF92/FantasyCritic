@@ -473,10 +473,9 @@ namespace FantasyCritic.Lib.Services
             }
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
-            IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.Year == leagueYear.Value.Year).ToList();
-            IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != request.Publisher.User.UserID).ToList();
+            IReadOnlyList<Publisher> otherPublishers = allPublishers.Where(x => x.User.UserID != request.Publisher.User.UserID).ToList();
 
-            IReadOnlyList<PublisherGame> gamesForYear = publishersForYear.SelectMany(x => x.PublisherGames).ToList();
+            IReadOnlyList<PublisherGame> gamesForYear = allPublishers.SelectMany(x => x.PublisherGames).ToList();
             IReadOnlyList<PublisherGame> thisPlayersGames = request.Publisher.PublisherGames;
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
 
@@ -499,6 +498,12 @@ namespace FantasyCritic.Lib.Services
 
             if (request.CounterPick)
             {
+                bool otherPlayerHasCounterPick = otherPlayersGames.Where(x => x.CounterPick).ContainsGame(request);
+                if (otherPlayerHasCounterPick)
+                {
+                    claimErrors.Add(new ClaimError("Cannot counter-pick a game that someone else has already counter-picked.", false));
+                }
+
                 bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick).ContainsGame(request);
 
                 int leagueCounterPicks = yearOptions.CounterPicks;
@@ -941,6 +946,30 @@ namespace FantasyCritic.Lib.Services
             }
 
             return DraftPhase.Complete;
+        }
+
+        public async Task<IReadOnlyList<PublisherGame>> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher userPublisher)
+        {
+            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            IReadOnlyList<Publisher> otherPublishers = allPublishers.Where(x => x.PublisherID != userPublisher.PublisherID).ToList();
+
+            IReadOnlyList<PublisherGame> gamesForYear = allPublishers.SelectMany(x => x.PublisherGames).ToList();
+            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
+
+            var alreadyCounterpicked = gamesForYear.Where(x => x.CounterPick).ToList();
+            List<PublisherGame> availableCounterPicks = new List<PublisherGame>();
+            foreach (var otherPlayerGame in otherPlayersGames)
+            {
+                bool playerHasCounterPick = alreadyCounterpicked.ContainsGame(otherPlayerGame);
+                if (playerHasCounterPick)
+                {
+                    continue;
+                }
+
+                availableCounterPicks.Add(otherPlayerGame);
+            }
+
+            return availableCounterPicks;
         }
     }
 }
