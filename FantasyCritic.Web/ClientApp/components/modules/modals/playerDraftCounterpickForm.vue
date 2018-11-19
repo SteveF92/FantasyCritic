@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="playerDraftGameForm" ref="playerDraftGameFormRef" title="Select Draft Game" hide-footer @hidden="clearData">
+  <b-modal id="playerDraftCounterPickForm" ref="playerDraftCounterPickFormRef" title="Select Counter-Pick" hide-footer @hidden="clearData">
     <form class="form-horizontal" v-on:submit.prevent="selectCounterPick" hide-footer>
         <div class="form-group">
             <label for="selectedCounterPick" class="control-label">Game</label>
@@ -32,7 +32,7 @@
               var request = {
                 publisherID: this.userPublisher.publisherID,
                 gameName: this.selectedCounterPick.gameName,
-                counterPick: this.draftCounterPick,
+                counterPick: true,
                 masterGameID: this.selectedCounterPick.masterGameID,
               };
 
@@ -43,9 +43,9 @@
                   if (!this.draftResult.success) {
                     return;
                   }
-                  this.$refs.playerDraftGameFormRef.hide();
+                  this.$refs.playerDraftCounterPickFormRef.hide();
                   var draftInfo = {
-                    gameName
+                    gameName: this.selectedCounterPick.gameName
                   };
                   this.$emit('counterPickDrafted', draftInfo);
                   this.selectedCounterPick = null;
