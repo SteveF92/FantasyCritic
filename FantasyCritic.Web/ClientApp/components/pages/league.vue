@@ -77,10 +77,10 @@
       <div class="col-lg-6 col-12">
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
       </div>
-      <div class="col-lg-3 col-12">
+      <div class="col-lg-3 col-sm-6 col-12">
         <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="userIsNextInDraft" v-on:actionTaken="actionTaken"></playerActions>
       </div>
-      <div class="col-lg-3 col-12">
+      <div class="col-lg-3 col-sm-6 col-12 ">
         <leagueActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
       </div>
     </div>
