@@ -30,9 +30,8 @@
         computed: {
           options() {
             var options = {
-              draftSlots: this.leagueYear.draftGames,
-              counterPickSlots: this.leagueYear.counterPicks,
-              pickupSlots: this.leagueYear.pickupGames
+                standardGameSlots: this.leagueYear.standardGames,
+                counterPickSlots: this.leagueYear.counterPicks
             };
 
             return options;
