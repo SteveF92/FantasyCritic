@@ -21,7 +21,7 @@ namespace FantasyCritic.Web.Models.Responses
             DraftFinished = domain.DraftFinished;
             StartDraftErrors = startDraftErrors.ToList();
 
-            if (draftPhase.Equals(DraftPhase.Counterpicks))
+            if (draftPhase.Equals(DraftPhase.CounterPicks))
             {
                 DraftingCounterPicks = true;
             }

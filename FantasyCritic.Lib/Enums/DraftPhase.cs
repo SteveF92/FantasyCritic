@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Enums
     {
         // Define values here.
         public static readonly DraftPhase StandardGames = new DraftPhase("StandardGames");
-        public static readonly DraftPhase Counterpicks = new DraftPhase("Counterpicks");
+        public static readonly DraftPhase CounterPicks = new DraftPhase("CounterPicks");
         public static readonly DraftPhase Complete = new DraftPhase("Complete");
 
         // Constructor is private: values are defined within this class only!

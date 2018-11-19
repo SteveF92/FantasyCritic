@@ -27,7 +27,7 @@
       <div class="form-check">
         <span>
           <label class="form-check-label">
-            Counterpick
+            CounterPick
           </label>
           <input class="form-check-input override-checkbox" type="checkbox" v-model="claimCounterPick">
         </span>

@@ -410,10 +410,10 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != publisher.User.UserID).ToList();
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
 
-            bool otherPlayerHasCounterpick = otherPlayersGames.Where(x => x.CounterPick).ContainsGame(publisherGame);
-            if (otherPlayerHasCounterpick)
+            bool otherPlayerHasCounterPick = otherPlayersGames.Where(x => x.CounterPick).ContainsGame(publisherGame);
+            if (otherPlayerHasCounterPick)
             {
-                return Result.Fail("Can't remove a publisher game that another player has as a counterpick.");
+                return Result.Fail("Can't remove a publisher game that another player has as a counterPick.");
             }
 
             var result = await _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
@@ -515,7 +515,7 @@ namespace FantasyCritic.Lib.Services
 
                 if (!otherPlayerHasDraftGame)
                 {
-                    claimErrors.Add(new ClaimError("Cannot counterpick a game that no other player is publishing.", false));
+                    claimErrors.Add(new ClaimError("Cannot counterPick a game that no other player is publishing.", false));
                 }
             }
 
@@ -561,7 +561,7 @@ namespace FantasyCritic.Lib.Services
                 bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick).ContainsGame(request.MasterGame);
                 if (!otherPlayerHasDraftGame)
                 {
-                    associationErrors.Add(new ClaimError("Cannot counterpick a game that no other player is publishing.", false));
+                    associationErrors.Add(new ClaimError("Cannot counterPick a game that no other player is publishing.", false));
                 }
             }
 
@@ -895,7 +895,7 @@ namespace FantasyCritic.Lib.Services
                 var firstPublisherEven = sortedPublishersEven.First();
                 return firstPublisherEven;
             }
-            if (phase.Equals(DraftPhase.Counterpicks))
+            if (phase.Equals(DraftPhase.CounterPicks))
             {
                 var publishersWithLowestNumberOfGames = publishers.MinBy(x => x.PublisherGames.Count(y => y.CounterPick));
                 var allPlayersHaveSameNumberOfGames = publishers.Select(x => x.PublisherGames.Count(y => y.CounterPick)).Distinct().Count() == 1;
@@ -938,11 +938,11 @@ namespace FantasyCritic.Lib.Services
                 return DraftPhase.StandardGames;
             }
 
-            int numberOfCounterpicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
-            int counterpicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
-            if (counterpicksDrafted < numberOfCounterpicksToDraft)
+            int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
+            int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
+            if (counterPicksDrafted < numberOfCounterPicksToDraft)
             {
-                return DraftPhase.Counterpicks;
+                return DraftPhase.CounterPicks;
             }
 
             return DraftPhase.Complete;
@@ -956,11 +956,11 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyList<PublisherGame> gamesForYear = allPublishers.SelectMany(x => x.PublisherGames).ToList();
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
 
-            var alreadyCounterpicked = gamesForYear.Where(x => x.CounterPick).ToList();
+            var alreadyCounterPicked = gamesForYear.Where(x => x.CounterPick).ToList();
             List<PublisherGame> availableCounterPicks = new List<PublisherGame>();
             foreach (var otherPlayerGame in otherPlayersGames)
             {
-                bool playerHasCounterPick = alreadyCounterpicked.ContainsGame(otherPlayerGame);
+                bool playerHasCounterPick = alreadyCounterPicked.ContainsGame(otherPlayerGame);
                 if (playerHasCounterPick)
                 {
                     continue;

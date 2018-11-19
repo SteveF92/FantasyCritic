@@ -26,7 +26,7 @@
               selectedCounterPick: null
             }
         },
-        props: ['userPublisher', 'availableCounterpicks'],
+        props: ['userPublisher', 'availableCounterPicks'],
         methods: {
             selectCounterPick() {
               var request = {
@@ -47,7 +47,7 @@
                   var draftInfo = {
                     gameName
                   };
-                  this.$emit('counterpickDrafted', draftInfo);
+                  this.$emit('counterPickDrafted', draftInfo);
                   this.selectedCounterPick = null;
                 })
                 .catch(response => {

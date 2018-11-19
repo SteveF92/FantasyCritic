@@ -497,11 +497,11 @@ namespace FantasyCritic.Web.Controllers.API
 
                 if (request.CounterPick)
                 {
-                    return BadRequest("Not drafting counterpicks now.");
+                    return BadRequest("Not drafting counterPicks now.");
                 }
             }
 
-            if (draftPhase.Equals(DraftPhase.Counterpicks))
+            if (draftPhase.Equals(DraftPhase.CounterPicks))
             {
                 if (!request.CounterPick)
                 {
