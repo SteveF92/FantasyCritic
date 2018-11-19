@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Domain.Requests
     public class ClaimGameDomainRequest
     {
         public ClaimGameDomainRequest(Publisher publisher, string gameName, bool counterPick, bool managerOverride, Maybe<MasterGame> masterGame, 
-            int? draftPosition, int? overallDraftPosition, bool finalized)
+            int? draftPosition, int? overallDraftPosition)
         {
             Publisher = publisher;
             GameName = gameName;
@@ -14,7 +14,6 @@ namespace FantasyCritic.Lib.Domain.Requests
             MasterGame = masterGame;
             DraftPosition = draftPosition;
             OverallDraftPosition = overallDraftPosition;
-            Finalized = finalized;
         }
 
         public Publisher Publisher { get; }
@@ -24,6 +23,5 @@ namespace FantasyCritic.Lib.Domain.Requests
         public Maybe<MasterGame> MasterGame { get; }
         public int? DraftPosition { get; }
         public int? OverallDraftPosition { get; }
-        public bool Finalized { get; }
     }
 }

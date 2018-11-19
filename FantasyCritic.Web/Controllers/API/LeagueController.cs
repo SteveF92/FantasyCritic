@@ -509,7 +509,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, masterGame, publisherPosition, overallPosition, false);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, masterGame, publisherPosition, overallPosition);
 
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
             var viewModel = new PlayerClaimResultViewModel(result);

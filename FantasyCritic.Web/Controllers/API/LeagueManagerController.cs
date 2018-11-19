@@ -282,7 +282,7 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID.Value);
             }
 
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, null, null, true);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, null, null);
 
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
             var viewModel = new ManagerClaimResultViewModel(result);
@@ -672,7 +672,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition, false);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition);
 
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
             var viewModel = new ManagerClaimResultViewModel(result);
