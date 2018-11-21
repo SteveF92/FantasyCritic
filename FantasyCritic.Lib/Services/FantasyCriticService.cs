@@ -972,7 +972,7 @@ namespace FantasyCritic.Lib.Services
             return availableCounterPicks;
         }
 
-        public async Task UpdateDraftState(LeagueYear leagueYear)
+        public async Task<bool> CompleteDraft(LeagueYear leagueYear)
         {
             IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
 
@@ -980,17 +980,18 @@ namespace FantasyCritic.Lib.Services
             int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
             if (standardGamesDrafted < numberOfStandardGamesToDraft)
             {
-                return;
+                return false;
             }
 
             int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
             int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
             if (counterPicksDrafted < numberOfCounterPicksToDraft)
             {
-                return;
+                return false;
             }
 
             await _fantasyCriticRepo.CompleteDraft(leagueYear);
+            return true;
         }
     }
 }

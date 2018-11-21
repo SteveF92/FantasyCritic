@@ -9,6 +9,10 @@
       <b-form-select v-model="activeYear" :options="league.years" class="year-selector" />
     </div>
 
+    <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">
+      The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!
+    </b-modal>
+
     <div v-if="leagueYear && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
       <h3>
         This year is not active yet!
@@ -47,9 +51,9 @@
       </span>
     </div>
     <div v-if="leagueYear && leagueYear.playStatus.draftIsPaused">
-        <div class="alert alert-danger">
-          <div>The draft has been paused. Speak to your league manager for details.</div>
-        </div>
+      <div class="alert alert-danger">
+        <div>The draft has been paused. Speak to your league manager for details.</div>
+      </div>
     </div>
     <div v-if="leagueYear && leagueYear.playStatus.draftIsActive && nextPublisherUp">
       <div v-if="!userIsNextInDraft">
@@ -261,6 +265,9 @@
             this.hubConnection.start().catch(err => console.error(err.toString()));
             this.hubConnection.on('RefreshLeagueYear', data => {
               this.fetchLeagueYear();
+            });
+            this.hubConnection.on('DraftFinished', data => {
+              this.$refs.draftFinishedModalRef.show();
             });
         },
         watch: {

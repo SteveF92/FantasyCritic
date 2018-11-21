@@ -29,6 +29,11 @@ namespace FantasyCritic.Web.Hubs
             await Clients.Group(GetGroupName(leagueYear)).SendAsync("RefreshLeagueYear");
         }
 
+        public async Task DraftFinished(LeagueYear leagueYear)
+        {
+            await Clients.Group(GetGroupName(leagueYear)).SendAsync("DraftFinished");
+        }
+
         public override async Task OnConnectedAsync()
         {
             var currentUser = await _userManager.FindByNameAsync(Context.User.Identity.Name);
