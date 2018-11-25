@@ -22,24 +22,6 @@
         </div>
         <hr />
 
-        <div class="form-group col-md-10">
-          <label for="draftSystem" class="control-label">Draft System</label>
-          <select class="form-control" v-model="selectedLeagueOptions.draftSystem" id="draftSystem">
-            <option v-for="draftSystem in possibleLeagueOptions.draftSystems" v-bind:value="draftSystem">{{ draftSystem }}</option>
-          </select>
-        </div>
-        <div class="form-group col-md-10">
-          <label for="pickupSystem" class="control-label">Pickup System</label>
-          <select class="form-control" v-model="selectedLeagueOptions.pickupSystem" id="pickupSystem">
-            <option v-for="pickupSystem in possibleLeagueOptions.pickupSystems" v-bind:value="pickupSystem">{{ pickupSystem }}</option>
-          </select>
-        </div>
-        <div class="form-group col-md-10">
-          <label for="scoringSystem" class="control-label">Scoring System</label>
-          <select class="form-control" v-model="selectedLeagueOptions.scoringSystem" id="scoringSystem">
-            <option v-for="scoringSystem in possibleLeagueOptions.scoringSystems" v-bind:value="scoringSystem">{{ scoringSystem }}</option>
-          </select>
-        </div>
         <div class="form-group col-md-10 eligibility-section">
           <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
           <vue-slider v-model="selectedLeagueOptions.maximumEligibilityLevel" :min="minimumEligibilityLevel" :max="maximumEligibilityLevel"
