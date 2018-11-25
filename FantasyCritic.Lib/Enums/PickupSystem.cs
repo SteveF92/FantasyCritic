@@ -8,6 +8,7 @@ namespace FantasyCritic.Lib.Enums
     {
         // Define values here.
         public static readonly PickupSystem Manual = new PickupSystem("Manual");
+        public static readonly PickupSystem Budget = new PickupSystem("Budget");
 
         // Constructor is private: values are defined within this class only!
         private PickupSystem(string value)
