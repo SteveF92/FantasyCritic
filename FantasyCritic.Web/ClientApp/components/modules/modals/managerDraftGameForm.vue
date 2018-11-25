@@ -1,5 +1,11 @@
 <template>
   <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" title="Select Draft Game" hide-footer @hidden="clearData">
+    <div class="form-group">
+      <label for="nextPublisherUp" class="control-label">Select the next game for publisher: </label>
+      <div>
+        <strong>{{nextPublisherUp.publisherName}} (UserName: {{nextPublisherUp.playerName}})</strong>
+      </div>
+    </div>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="draftGameName" class="control-label">Game Name</label>
@@ -16,12 +22,6 @@
       </div>
     </form>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
-      <div class="form-group">
-        <label for="nextPublisherUp" class="control-label">Publisher</label>
-        <div>
-          <strong>{{nextPublisherUp.publisherName}}</strong>
-        </div>
-      </div>
       <div>
         <input type="submit" class="btn btn-primary add-game-button" value="Add game to publisher" v-if="formIsValid" />
       </div>

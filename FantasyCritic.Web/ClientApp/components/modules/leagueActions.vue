@@ -16,7 +16,7 @@
         <b-button id="managerDraftCounterPickButton" variant="info" class="nav-link" v-b-modal="'managerDraftCounterPickForm'"
                   v-if="leagueYear.playStatus.draftIsActive" v-show="leagueYear.playStatus.draftingCounterPicks">Select Next Game</b-button>
         <managerDraftCounterPickForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :availableCounterPicks="leagueYear.availableCounterPicks"
-                                     :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="gameDrafted" v-if="leagueYear.playStatus.draftIsActive"></managerDraftCounterPickForm>
+                                     :nextPublisherUp="nextPublisherUp" v-on:counterPickDrafted="counterPickDrafted" v-if="leagueYear.playStatus.draftIsActive"></managerDraftCounterPickForm>
 
         <b-button id="managerUndoButton" variant="warning" class="nav-link" v-b-modal="'undoLastDraftActionModal'" v-show="leagueYear.playStatus.draftIsPaused">Undo Last Drafted Game</b-button>
         <undoLastDraftActionModal v-on:undoLastDraftAction="undoLastDraftAction"></undoLastDraftActionModal>
@@ -169,6 +169,13 @@
       gameDrafted(draftInfo) {
         let actionInfo = {
           message: draftInfo.gameName + ' drafted by ' + draftInfo.publisherName,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      counterPickDrafted(draftInfo) {
+        let actionInfo = {
+          message: draftInfo.gameName + ' selected as a counter pick by ' + draftInfo.publisherName,
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);

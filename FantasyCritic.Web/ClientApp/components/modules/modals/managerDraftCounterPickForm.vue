@@ -1,5 +1,11 @@
 <template>
   <b-modal id="managerDraftCounterPickForm" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" hide-footer @hidden="clearData">
+    <div class="form-group">
+      <label for="nextPublisherUp" class="control-label">Select the next counter pick for publisher: </label>
+      <div>
+        <strong>{{nextPublisherUp.publisherName}} (UserName: {{nextPublisherUp.playerName}})</strong>
+      </div>
+    </div>
     <form class="form-horizontal" v-on:submit.prevent="selectCounterPick" hide-footer>
       <div class="form-group">
         <label for="selectedCounterPick" class="control-label">Game</label>
@@ -45,9 +51,10 @@
                 if (!this.draftResult.success) {
                   return;
                 }
-                this.$refs.playerDraftCounterPickFormRef.hide();
+                this.$refs.managerDraftCounterPickFormRef.hide();
                 var draftInfo = {
-                  gameName: this.selectedCounterPick.gameName
+                  gameName: this.selectedCounterPick.gameName,
+                  publisherName: this.nextPublisherUp.publisherName
                 };
                 this.$emit('counterPickDrafted', draftInfo);
                 this.selectedCounterPick = null;
@@ -58,65 +65,7 @@
           },
           clearData() {
             this.selectedCounterPick = null;
-          },
-            searchGame() {
-                axios
-                    .get('/api/game/MasterGame?gameName=' + this.draftGameName)
-                    .then(response => {
-                        this.possibleMasterGames = response.data;
-                    })
-                    .catch(response => {
-
-                    });
-            },
-            addGame() {
-                var gameName = this.draftGameName;
-                if (this.draftMasterGame !== null) {
-                    gameName = this.draftMasterGame.gameName;
-                }
-
-                var masterGameID = null;
-                if (this.draftMasterGame !== null) {
-                    masterGameID = this.draftMasterGame.masterGameID;
-                }
-
-                var request = {
-                    publisherID: this.nextPublisherUp.publisherID,
-                    gameName: gameName,
-                    counterPick: true,
-                    masterGameID: masterGameID,
-                    managerOverride: this.draftOverride
-                };
-
-                axios
-                  .post('/api/leagueManager/ManagerDraftGame', request)
-                  .then(response => {
-                      this.draftResult = response.data;
-                      if (!this.draftResult.success) {
-                        return;
-                      }
-                      this.$refs.managerDraftCounterPickFormRef.hide();
-                      var draftInfo = {
-                        gameName,
-                        publisherName: this.nextPublisherUp.publisherName
-                      };
-                      this.$emit('gameDrafted', draftInfo);
-                      this.draftGameName = null;
-                      this.draftMasterGame = null;
-                      this.draftOverride = false;
-                      this.possibleMasterGames = [];
-                    })
-                    .catch(response => {
-                      
-                    });
-            },
-            clearData() {
-              this.draftResult = null;
-              this.draftGameName = null;
-              this.draftMasterGame = null;
-              this.draftOverride = false;
-              this.possibleMasterGames = [];
-            }
+          }
         }
     }
 </script>
