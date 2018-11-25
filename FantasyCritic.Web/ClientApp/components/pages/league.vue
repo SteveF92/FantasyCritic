@@ -52,7 +52,8 @@
     </div>
     <div v-if="leagueYear && leagueYear.playStatus.draftIsPaused">
       <div class="alert alert-danger">
-        <div>The draft has been paused. Speak to your league manager for details.</div>
+        <div v-show="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
+        <div v-show="league.isManager">The draft has been paused. You can undo games that have been drafted. Press 'Resume Draft' to go back to picking games.</div>
       </div>
     </div>
     <div v-if="leagueYear && leagueYear.playStatus.draftIsActive && nextPublisherUp">
