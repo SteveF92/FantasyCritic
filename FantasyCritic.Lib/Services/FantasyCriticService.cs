@@ -468,7 +468,7 @@ namespace FantasyCritic.Lib.Services
             LeagueOptions yearOptions = leagueYear.Value.Options;
             if (request.MasterGame.HasValue)
             {
-                var masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame.Value, leagueYear.Value.Year);
+                var masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame.Value, leagueYear.Value.Year, request.CounterPick);
                 claimErrors.AddRange(masterGameErrors);
             }
 
@@ -536,7 +536,7 @@ namespace FantasyCritic.Lib.Services
             associationErrors.AddRange(basicErrors);
 
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
-            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame, leagueYear.Value.Year);
+            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame, leagueYear.Value.Year, request.PublisherGame.CounterPick);
             associationErrors.AddRange(masterGameErrors);
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
@@ -598,7 +598,7 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueOptions yearOptions, MasterGame masterGame, int year)
+        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueOptions yearOptions, MasterGame masterGame, int year, bool counterPick)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
@@ -632,7 +632,7 @@ namespace FantasyCritic.Lib.Services
                 {
                     claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
                 }
-                else if (!released && masterGame.ReleaseDate.Value.Year > year)
+                else if (!released && masterGame.ReleaseDate.Value.Year > year && !counterPick)
                 {
                     claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
                 }
@@ -837,7 +837,7 @@ namespace FantasyCritic.Lib.Services
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
             var newestGame = publisherGames.MaxBy(x => x.Timestamp).Single();
 
-            var publisher = publishers.Single(x => x.PublisherGames.ContainsGame(newestGame));
+            var publisher = publishers.Single(x => x.PublisherGames.Select(y => y.PublisherGameID).Contains(newestGame.PublisherGameID));
 
             await RemovePublisherGame(leagueYear, publisher, newestGame);
         }
