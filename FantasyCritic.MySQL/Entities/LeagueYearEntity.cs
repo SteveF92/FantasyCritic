@@ -24,7 +24,6 @@ namespace FantasyCritic.MySQL.Entities
             StandardGames = options.StandardGames;
             GamesToDraft = options.GamesToDraft;
             CounterPicks = options.CounterPicks;
-            EstimatedCriticScore = options.EstimatedCriticScore;
 
             MaximumEligibilityLevel = options.MaximumEligibilityLevel.Level;
             AllowYearlyInstallments = options.AllowYearlyInstallments;
@@ -40,7 +39,6 @@ namespace FantasyCritic.MySQL.Entities
         public int StandardGames { get; set; }
         public int GamesToDraft { get; set; }
         public int CounterPicks { get; set; }
-        public decimal EstimatedCriticScore { get; set; }
         public int MaximumEligibilityLevel { get; set; }
         public bool AllowYearlyInstallments { get; set; }
         public bool AllowEarlyAccess { get; set; }
@@ -55,7 +53,7 @@ namespace FantasyCritic.MySQL.Entities
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, EstimatedCriticScore,
+            LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks,
                 maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, pickupSystem, scoringSystem);
 
             return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus));

@@ -6,7 +6,7 @@ namespace FantasyCritic.Lib.Domain.Requests
     public class LeagueCreationParameters
     {
         public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, 
-            decimal estimatedCriticScore, int initialYear, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
+            int initialYear, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
             bool allowEarlyAccess, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem)
         {
             Manager = manager;
@@ -14,7 +14,6 @@ namespace FantasyCritic.Lib.Domain.Requests
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
             CounterPicks = counterPicks;
-            EstimatedCriticScore = estimatedCriticScore;
             InitialYear = initialYear;
             AllowYearlyInstallments = allowYearlyInstallments;
             AllowEarlyAccess = allowEarlyAccess;
@@ -29,7 +28,6 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int StandardGames { get; }
         public int GamesToDraft { get; }
         public int CounterPicks { get; }
-        public decimal EstimatedCriticScore { get; }
         public int InitialYear { get; }
         public EligibilityLevel MaximumEligibilityLevel { get; }
         public bool AllowYearlyInstallments { get; set; }

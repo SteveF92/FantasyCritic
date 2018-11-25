@@ -145,9 +145,11 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 availableCounterPicks = await _fantasyCriticService.GetAvailableCounterPicks(leagueYear.Value, nextDraftPublisher.Value);
             }
+
+            LeagueWideValues leagueWideValues = await _fantasyCriticService.GetLeagueWideValues();
                 
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, userPublisher, _clock,
-                leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks);
+                leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks, leagueWideValues);
             return Ok(leagueViewModel);
         }
 

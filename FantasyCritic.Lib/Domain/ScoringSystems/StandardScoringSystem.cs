@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
     {
         public override string Name => "Standard";
 
-        protected override decimal? GetPointsInternal(PublisherGame publisherGame, IClock clock)
+        protected override decimal? GetPointsInternal(PublisherGame publisherGame, IClock clock, LeagueWideValues leagueWideValues)
         {
             if (publisherGame.MasterGame.HasNoValue)
             {
@@ -31,7 +31,7 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
             decimal? possibleManualScore = publisherGame.ManualCriticScore;
             if (possibleManualScore.HasValue)
             {
-                return GetPointsForScore(publisherGame, possibleManualScore.Value);
+                return GetPointsForScore(publisherGame, possibleManualScore.Value, leagueWideValues);
             }
 
             decimal? possibleCriticScore = publisherGame.MasterGame.Value.CriticScore;
@@ -40,27 +40,37 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
                 return 0m;
             }
 
-            return GetPointsForScore(publisherGame, possibleCriticScore.Value);
+            return GetPointsForScore(publisherGame, possibleCriticScore.Value, leagueWideValues);
         }
 
-        protected override decimal GetPointsForScore(PublisherGame publisherGame, decimal criticScore)
+        protected override decimal GetPointsForScore(PublisherGame publisherGame, decimal? criticScore, LeagueWideValues leagueWideValues)
         {
-            decimal fantasyPoints = 0m;
-            decimal criticPointsOver90 = (criticScore - 90);
-            if (criticPointsOver90 > 0)
+            if (criticScore.HasValue)
             {
-                fantasyPoints += criticPointsOver90;
-            }
+                decimal fantasyPoints = 0m;
+                decimal criticPointsOver90 = (criticScore.Value - 90);
+                if (criticPointsOver90 > 0)
+                {
+                    fantasyPoints += criticPointsOver90;
+                }
 
-            decimal criticPointsOver70 = (criticScore - 70);
-            fantasyPoints += criticPointsOver70;
+                decimal criticPointsOver70 = (criticScore.Value - 70);
+                fantasyPoints += criticPointsOver70;
+
+                if (publisherGame.CounterPick)
+                {
+                    fantasyPoints *= -1;
+                }
+
+                return fantasyPoints;
+            }
 
             if (publisherGame.CounterPick)
             {
-                fantasyPoints *= -1;
+                return leagueWideValues.AverageCounterPickPoints;
             }
 
-            return fantasyPoints;
+            return leagueWideValues.AverageStandardGamePoints;
         }
     }
 }

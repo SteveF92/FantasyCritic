@@ -65,9 +65,9 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, decimal estimatedCriticScore)
+        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, LeagueWideValues leagueWideValues)
         {
-            return PublisherGames.Sum(x => x.GetProjectedFantasyPoints(scoringSystem, estimatedCriticScore));
+            return PublisherGames.Sum(x => x.GetProjectedFantasyPoints(scoringSystem, leagueWideValues));
         }
 
         public bool Equals(Publisher other)

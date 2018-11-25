@@ -9,7 +9,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class StandingViewModel
     {
-        public StandingViewModel(Publisher publisher, ScoringSystem scoringSystem, decimal estimatedCriticScore)
+        public StandingViewModel(Publisher publisher, ScoringSystem scoringSystem, LeagueWideValues leagueWideValues)
         {
             PublisherID = publisher.PublisherID;
             LeagueID = publisher.League.LeagueID;
@@ -18,7 +18,7 @@ namespace FantasyCritic.Web.Models.Responses
             PlayerName = publisher.User.UserName;
             Year = publisher.Year;
             TotalFantasyPoints = publisher.TotalFantasyPoints;
-            ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(scoringSystem, estimatedCriticScore);
+            ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(scoringSystem, leagueWideValues);
         }
 
         public Guid PublisherID { get; }

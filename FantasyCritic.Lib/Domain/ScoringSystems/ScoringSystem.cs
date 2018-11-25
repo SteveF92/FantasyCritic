@@ -26,24 +26,24 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
             return new List<ScoringSystem>(){new StandardScoringSystem()};
         }
 
-        public decimal? GetPointsForGame(PublisherGame publisherGame, IClock clock)
+        public decimal? GetPointsForGame(PublisherGame publisherGame, IClock clock, LeagueWideValues leagueWideValues)
         {
-            return GetPointsInternal(publisherGame, clock);
+            return GetPointsInternal(publisherGame, clock, leagueWideValues);
         }
 
-        public decimal GetProjectedPointsForGame(PublisherGame publisherGame, decimal estimatedCriticScore)
+        public decimal GetProjectedPointsForGame(PublisherGame publisherGame, LeagueWideValues leagueWideValues)
         {
             if (publisherGame.FantasyPoints.HasValue)
             {
                 return publisherGame.FantasyPoints.Value;
             }
 
-            return GetPointsForScore(publisherGame, estimatedCriticScore);
+            return GetPointsForScore(publisherGame, null, leagueWideValues);
         }
 
         public abstract string Name { get; }
 
-        protected abstract decimal? GetPointsInternal(PublisherGame publisherGame, IClock clock);
-        protected abstract decimal GetPointsForScore(PublisherGame publisherGame, decimal criticScore);
+        protected abstract decimal? GetPointsInternal(PublisherGame publisherGame, IClock clock, LeagueWideValues leagueWideValues);
+        protected abstract decimal GetPointsForScore(PublisherGame publisherGame, decimal? criticScore, LeagueWideValues leagueWideValues);
     }
 }
