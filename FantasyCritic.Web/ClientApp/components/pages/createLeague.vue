@@ -27,10 +27,6 @@
           <hr />
 
           <div class="form-group col-md-10">
-            <label for="estimatedCriticScore" class="control-label">Estimated Game Score</label>
-            <input v-model="selectedLeagueOptions.estimatedCriticScore" id="estimatedCriticScore" name="estimatedCriticScore" type="text" class="form-control input" />
-          </div>
-          <div class="form-group col-md-10">
             <label for="intialYear" class="control-label">Year to Play</label>
             <select class="form-control" v-model="selectedLeagueOptions.initialYear" id="initialYear">
               <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
@@ -110,7 +106,6 @@ export default {
                 standardGames: "",
                 gamesToDraft: "",
                 counterPicks: "",
-                estimatedCriticScore: "",
                 initialYear: "",
                 maximumEligibilityLevel: 0,
                 allowYearlyInstallments: true,

@@ -23,12 +23,6 @@
         <hr />
 
         <div class="form-group col-md-10">
-          <label for="estimatedCriticScore" class="control-label">Estimated Game Score</label>
-          <input v-model="selectedLeagueOptions.estimatedCriticScore" id="estimatedCriticScore" name="estimatedCriticScore" type="text" class="form-control input" />
-        </div>
-        <hr />
-
-        <div class="form-group col-md-10">
           <label for="draftSystem" class="control-label">Draft System</label>
           <select class="form-control" v-model="selectedLeagueOptions.draftSystem" id="draftSystem">
             <option v-for="draftSystem in possibleLeagueOptions.draftSystems" v-bind:value="draftSystem">{{ draftSystem }}</option>
