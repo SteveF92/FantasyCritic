@@ -22,8 +22,6 @@ namespace FantasyCritic.Web.Models.Requests
         public int CounterPicks { get; set; }
 
         [Required]
-        public decimal EstimatedCriticScore { get; set; }
-        [Required]
         public int InitialYear { get; set; }
         [Required]
         public int MaximumEligibilityLevel { get; set; }

@@ -72,7 +72,6 @@ namespace FantasyCritic.Web.Models.Responses
         public int StandardGames { get; }
         public int GamesToDraft { get; }
         public int CounterPicks { get; }
-        public decimal EstimatedCriticScore { get; }
         public EligibilityLevelViewModel MaximumEligibilityLevel { get; }
         public string DraftSystem { get; }
         public string PickupSystem { get; }
