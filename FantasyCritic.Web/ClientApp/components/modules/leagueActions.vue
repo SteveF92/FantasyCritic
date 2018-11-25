@@ -10,8 +10,13 @@
         <b-button variant="info" class="nav-link" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">Edit Draft Order</b-button>
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
 
-        <b-button id="managerDraftButton" variant="info" class="nav-link" v-b-modal="'managerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive">Draft Game - Manager</b-button>
+        <b-button id="managerDraftButton" variant="info" class="nav-link" v-b-modal="'managerDraftGameForm'" v-if="leagueYear.playStatus.draftIsActive" v-show="!leagueYear.playStatus.draftingCounterPicks">Select Next Game</b-button>
         <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="gameDrafted" v-if="leagueYear.playStatus.draftIsActive"></managerDraftGameForm>
+
+        <b-button id="managerDraftCounterPickButton" variant="info" class="nav-link" v-b-modal="'managerDraftCounterPickForm'"
+                  v-if="leagueYear.playStatus.draftIsActive" v-show="leagueYear.playStatus.draftingCounterPicks">Select Next Game</b-button>
+        <managerDraftCounterPickForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :availableCounterPicks="leagueYear.availableCounterPicks"
+                                     :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="gameDrafted" v-if="leagueYear.playStatus.draftIsActive"></managerDraftCounterPickForm>
 
         <b-button id="managerUndoButton" variant="warning" class="nav-link" v-b-modal="'undoLastDraftActionModal'" v-show="leagueYear.playStatus.draftIsPaused">Undo Last Drafted Game</b-button>
         <undoLastDraftActionModal v-on:undoLastDraftAction="undoLastDraftAction"></undoLastDraftActionModal>
@@ -55,6 +60,7 @@
   import EditDraftOrderForm from "components/modules/modals/editDraftOrderForm";
   import SetPauseModal from "components/modules/modals/setPauseModal";
   import UndoLastDraftActionModal from "components/modules/modals/undoLastDraftActionModal";
+  import ManagerDraftCounterPickForm from "components/modules/modals/managerDraftCounterPickForm";
 
   export default {
     data() {
@@ -73,7 +79,8 @@
       ChangeLeagueNameForm,
       EditDraftOrderForm,
       SetPauseModal,
-      UndoLastDraftActionModal
+      UndoLastDraftActionModal,
+      ManagerDraftCounterPickForm
     },
     methods: {
       acceptInvite() {

@@ -948,10 +948,10 @@ namespace FantasyCritic.Lib.Services
             return DraftPhase.Complete;
         }
 
-        public async Task<IReadOnlyList<PublisherGame>> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher userPublisher)
+        public async Task<IReadOnlyList<PublisherGame>> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher)
         {
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
-            IReadOnlyList<Publisher> otherPublishers = allPublishers.Where(x => x.PublisherID != userPublisher.PublisherID).ToList();
+            IReadOnlyList<Publisher> otherPublishers = allPublishers.Where(x => x.PublisherID != nextDraftingPublisher.PublisherID).ToList();
 
             IReadOnlyList<PublisherGame> gamesForYear = allPublishers.SelectMany(x => x.PublisherGames).ToList();
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();

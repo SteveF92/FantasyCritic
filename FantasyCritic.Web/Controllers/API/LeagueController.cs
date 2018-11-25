@@ -140,8 +140,12 @@ namespace FantasyCritic.Web.Controllers.API
             DraftPhase draftPhase = await _fantasyCriticService.GetDraftPhase(leagueYear.Value);
 
             var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.UserID == currentUser.UserID);
-            IReadOnlyList<PublisherGame> availableCounterPicks = await _fantasyCriticService.GetAvailableCounterPicks(leagueYear.Value, userPublisher);
-
+            IReadOnlyList<PublisherGame> availableCounterPicks = new List<PublisherGame>();
+            if (nextDraftPublisher.HasValue)
+            {
+                availableCounterPicks = await _fantasyCriticService.GetAvailableCounterPicks(leagueYear.Value, nextDraftPublisher.Value);
+            }
+                
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks);
             return Ok(leagueViewModel);
