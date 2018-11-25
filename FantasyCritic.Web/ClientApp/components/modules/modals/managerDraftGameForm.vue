@@ -57,7 +57,6 @@
                 draftGameType: null,
                 draftResult: null,
                 draftOverride: false,
-                draftCounterPick: false,
                 possibleMasterGames: []
             }
         },
@@ -93,9 +92,9 @@
                 }
 
                 var request = {
-                  publisherID: this.nextPublisherUp.publisherID,
+                    publisherID: this.nextPublisherUp.publisherID,
                     gameName: gameName,
-                    counterPick: this.draftCounterPick,
+                    counterPick: false,
                     masterGameID: masterGameID,
                     managerOverride: this.draftOverride
                 };
@@ -115,7 +114,6 @@
                       this.$emit('gameDrafted', draftInfo);
                       this.draftGameName = null;
                       this.draftMasterGame = null;
-                      this.draftCounterPick = false;
                       this.draftOverride = false;
                       this.possibleMasterGames = [];
                     })
@@ -127,7 +125,6 @@
               this.draftResult = null;
               this.draftGameName = null;
               this.draftMasterGame = null;
-              this.draftCounterPick = false;
               this.draftOverride = false;
               this.possibleMasterGames = [];
             }
