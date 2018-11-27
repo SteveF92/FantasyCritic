@@ -23,22 +23,26 @@ namespace FantasyCritic.Web.Models.Responses
             Linked = publisherGame.MasterGame.HasValue;
             if (Linked)
             {
-                GameName = publisherGame.MasterGame.Value.GameName;
-                EstimatedReleaseDate = publisherGame.MasterGame.Value.EstimatedReleaseDate;
-                if (publisherGame.MasterGame.Value.ReleaseDate.HasValue)
+                GameName = publisherGame.MasterGame.Value.MasterGame.GameName;
+                EstimatedReleaseDate = publisherGame.MasterGame.Value.MasterGame.EstimatedReleaseDate;
+                if (publisherGame.MasterGame.Value.MasterGame.ReleaseDate.HasValue)
                 {
-                    ReleaseDate = publisherGame.MasterGame.Value.ReleaseDate.Value.ToDateTimeUnspecified();
+                    ReleaseDate = publisherGame.MasterGame.Value.MasterGame.ReleaseDate.Value.ToDateTimeUnspecified();
                 }
 
-                CriticScore = publisherGame.MasterGame.Value.CriticScore;
-                Released = publisherGame.MasterGame.Value.IsReleased(clock);
-                MasterGameID = publisherGame.MasterGame.Value.MasterGameID;
+                CriticScore = publisherGame.MasterGame.Value.MasterGame.CriticScore;
+                Released = publisherGame.MasterGame.Value.MasterGame.IsReleased(clock);
+                MasterGameID = publisherGame.MasterGame.Value.MasterGame.MasterGameID;
 
                 if (publisherGame.ManualCriticScore.HasValue)
                 {
                     CriticScore = publisherGame.ManualCriticScore;
                     ManualCriticScore = true;
                 }
+
+                PercentStandardGame = publisherGame.MasterGame.Value.PercentStandardGame;
+                PercentCounterPick = publisherGame.MasterGame.Value.PercentCounterPick;
+                AverageDraftPosition = publisherGame.MasterGame.Value.AverageDraftPosition;
             }
 
             WillRelease = publisherGame.WillRelease();
@@ -53,6 +57,9 @@ namespace FantasyCritic.Web.Models.Responses
         public decimal? FantasyPoints { get; }
         public decimal? CriticScore { get; }
         public Guid MasterGameID { get; }
+        public decimal PercentStandardGame { get; set; }
+        public decimal PercentCounterPick { get; set; }
+        public decimal AverageDraftPosition { get; set; }
 
         public bool Linked { get; }
         public bool Released { get; }
