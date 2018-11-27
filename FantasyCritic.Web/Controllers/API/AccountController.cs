@@ -203,14 +203,9 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        public async Task<IActionResult> ChangeUserName([FromBody] ChangeUserNameRequest request)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            if (request.NewPassword != request.ConfirmNewPassword)
             {
                 return BadRequest();
             }
@@ -221,7 +216,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+            user.UserName = request.NewUserName;
+            var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
                 return BadRequest();
