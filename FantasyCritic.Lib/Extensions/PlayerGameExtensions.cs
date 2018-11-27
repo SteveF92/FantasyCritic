@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Extensions
     {
         public static bool ContainsGame(this IEnumerable<PublisherGame> games, MasterGame game)
         {
-            bool containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGameID == x.MasterGame.Value.MasterGameID);
+            bool containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGameID == x.MasterGame.Value.MasterGame.MasterGameID);
             return containsGame;
         }
 
@@ -21,7 +21,7 @@ namespace FantasyCritic.Lib.Extensions
             bool containsGame;
             if (game.MasterGame.HasValue)
             {
-                containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGame.Value.MasterGameID == x.MasterGame.Value.MasterGameID);
+                containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGame.Value.MasterGame.MasterGameID == x.MasterGame.Value.MasterGame.MasterGameID);
             }
             else
             {
@@ -36,7 +36,7 @@ namespace FantasyCritic.Lib.Extensions
             bool containsGame;
             if (game.MasterGame.HasValue)
             {
-                containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGame.Value.MasterGameID == x.MasterGame.Value.MasterGameID);
+                containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGame.Value.MasterGameID == x.MasterGame.Value.MasterGame.MasterGameID);
             }
             else
             {

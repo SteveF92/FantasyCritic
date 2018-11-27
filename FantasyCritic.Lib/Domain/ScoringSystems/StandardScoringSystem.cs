@@ -23,7 +23,7 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
                 return 0m;
             }
 
-            if (!publisherGame.MasterGame.Value.IsReleased(clock))
+            if (!publisherGame.MasterGame.Value.MasterGame.IsReleased(clock))
             {
                 return null;
             }
@@ -34,7 +34,7 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
                 return GetPointsForScore(publisherGame, possibleManualScore.Value, leagueWideValues);
             }
 
-            decimal? possibleCriticScore = publisherGame.MasterGame.Value.CriticScore;
+            decimal? possibleCriticScore = publisherGame.MasterGame.Value.MasterGame.CriticScore;
             if (!possibleCriticScore.HasValue)
             {
                 return 0m;

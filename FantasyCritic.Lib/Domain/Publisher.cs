@@ -37,8 +37,8 @@ namespace FantasyCritic.Lib.Domain
                 List<decimal> gamesWithCriticScores = PublisherGames
                     .Where(x => !x.CounterPick)
                     .Where(x => x.MasterGame.HasValue)
-                    .Where(x => x.MasterGame.Value.CriticScore.HasValue)
-                    .Select(x => x.MasterGame.Value.CriticScore.Value)
+                    .Where(x => x.MasterGame.Value.MasterGame.CriticScore.HasValue)
+                    .Select(x => x.MasterGame.Value.MasterGame.CriticScore.Value)
                     .ToList();
 
                 if (gamesWithCriticScores.Count == 0)

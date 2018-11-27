@@ -594,10 +594,10 @@ namespace FantasyCritic.MySQL
                     throw new Exception($"Publisher cannot be found: {gameEntity.PublisherID}");
                 }
 
-                Maybe<MasterGame> masterGame = null;
+                Maybe<MasterGameYear> masterGame = null;
                 if (gameEntity.MasterGameID.HasValue)
                 {
-                    masterGame = await GetMasterGame(gameEntity.MasterGameID.Value);
+                    masterGame = await GetMasterGameYear(gameEntity.MasterGameID.Value, publisher.Value.Year);
                 }
 
                 PublisherGame publisherGame = gameEntity.ToDomain(masterGame, publisher.Value.Year);
@@ -703,6 +703,24 @@ namespace FantasyCritic.MySQL
                 EligibilityLevel eligibilityLevel = await GetEligibilityLevel(masterGame.EligibilityLevel);
                 MasterGame domain = masterGame.ToDomain(masterSubGames.Select(x => x.ToDomain()), eligibilityLevel);
                 return Maybe<MasterGame>.From(domain);
+            }
+        }
+
+        public async Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                MasterGameYearEntity masterGame = await connection.QuerySingleOrDefaultAsync<MasterGameYearEntity>("select * from vwmastergame where MasterGameID = @masterGameID and Year = @year", new { masterGameID, year });
+                if (masterGame == null)
+                {
+                    return Maybe<MasterGameYear>.None;
+                }
+
+                IEnumerable<MasterSubGameEntity> masterSubGames = await connection.QueryAsync<MasterSubGameEntity>("select * from tblmastersubgame where MasterGameID = @masterGameID", new { masterGameID });
+
+                EligibilityLevel eligibilityLevel = await GetEligibilityLevel(masterGame.EligibilityLevel);
+                MasterGameYear domain = masterGame.ToDomain(masterSubGames.Select(x => x.ToDomain()), eligibilityLevel, year);
+                return Maybe<MasterGameYear>.From(domain);
             }
         }
 
@@ -818,10 +836,10 @@ namespace FantasyCritic.MySQL
                 List<PublisherGame> domainGames = new List<PublisherGame>();
                 foreach (var entity in gameEntities)
                 {
-                    Maybe<MasterGame> masterGame = null;
+                    Maybe<MasterGameYear> masterGame = null;
                     if (entity.MasterGameID.HasValue)
                     {
-                        masterGame = await GetMasterGame(entity.MasterGameID.Value);
+                        masterGame = await GetMasterGameYear(entity.MasterGameID.Value, leagueYear);
                     }
 
                     domainGames.Add(entity.ToDomain(masterGame, leagueYear));

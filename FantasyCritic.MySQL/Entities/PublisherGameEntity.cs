@@ -30,7 +30,7 @@ namespace FantasyCritic.MySQL.Entities
             OverallDraftPosition = publisherGame.OverallDraftPosition;
             if (publisherGame.MasterGame.HasValue)
             {
-                MasterGameID = publisherGame.MasterGame.Value.MasterGameID;
+                MasterGameID = publisherGame.MasterGame.Value.MasterGame.MasterGameID;
             }
         }
 
@@ -45,7 +45,7 @@ namespace FantasyCritic.MySQL.Entities
         public int? DraftPosition { get; set; }
         public int? OverallDraftPosition { get; set; }
 
-        public PublisherGame ToDomain(Maybe<MasterGame> masterGame, int leagueYear)
+        public PublisherGame ToDomain(Maybe<MasterGameYear> masterGame, int leagueYear)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
             PublisherGame domain = new PublisherGame(PublisherGameID, GameName, instant, CounterPick, ManualCriticScore, FantasyPoints, masterGame, DraftPosition, OverallDraftPosition, leagueYear);

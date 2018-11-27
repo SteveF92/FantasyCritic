@@ -8,6 +8,12 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGameYear
     {
+        public MasterGameYear(MasterGame masterGame, int year)
+        {
+            MasterGame = masterGame;
+            Year = year;
+        }
+
         public MasterGameYear(MasterGame masterGame, int year, decimal percentStandardGame, decimal percentCounterPick, decimal averageDraftPosition)
         {
             MasterGame = masterGame;
