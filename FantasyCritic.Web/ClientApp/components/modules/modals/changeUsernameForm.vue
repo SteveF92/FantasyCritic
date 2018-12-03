@@ -29,20 +29,16 @@
     },
     methods: {
       changeUserName() {
-        var model = {
-          newUserName: this.newUserName
+        let changeInfo = {
+          newUserName: this.newUserName,
         };
-        axios
-          .post('/api/account/changeUserName', model)
-          .then(response => {
+        this.$store.dispatch("changeUserName", changeInfo)
+          .then(() => {
             this.$refs.changeUserNameRef.hide();
-            let changeInfo = {
-              newUserName: this.newUserName,
-            };
             this.$emit('userNameChanged', changeInfo);
             this.clearData();
           })
-          .catch(response => {
+          .catch(returnedError => {
           });
       },
       clearData() {

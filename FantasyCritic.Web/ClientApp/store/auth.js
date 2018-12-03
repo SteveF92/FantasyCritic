@@ -46,6 +46,24 @@ export default {
           });
       });
     },
+    changeUserName(context, changeInfo) {
+      return new Promise(function (resolve, reject) {
+        var model = {
+          newUserName: changeInfo.newUserName
+        };
+        axios
+          .post('/api/account/changeUserName', model)
+          .then((res) => {
+            context.commit("setTokenInfo", res.data);
+            context.commit("setRefreshToken", res.data.refreshToken);
+            context.dispatch("getUserInfo")
+              .then(response => { resolve(response) });
+          })
+          .catch(error => {
+            reject();
+          });
+      });
+    },
     refreshToken(context, creds) {
       return new Promise(function (resolve, reject) {
         axios.post("/api/token/refresh", creds)

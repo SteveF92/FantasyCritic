@@ -223,29 +223,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var roles = await _userManager.GetRolesAsync(user);
-            var usersClaims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-            };
-
-            foreach (var role in roles)
-            {
-                usersClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var jwtToken = _tokenService.GenerateAccessToken(usersClaims);
-            var refreshToken = _tokenService.GenerateRefreshToken();
-            await _userManager.AddRefreshToken(user, refreshToken);
-            var jwtString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
-
-            return new ObjectResult(new
-            {
-                token = jwtString,
-                refreshToken = refreshToken,
-                expiration = jwtToken.ValidTo
-            });
+            return await GetToken(user);
         }
 
         [HttpPost]
@@ -269,7 +247,34 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            return Ok();
+            return await GetToken(user);
+        }
+
+        private async Task<ObjectResult> GetToken(FantasyCriticUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var usersClaims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+            };
+
+            foreach (var role in roles)
+            {
+                usersClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var jwtToken = _tokenService.GenerateAccessToken(usersClaims);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+            await _userManager.AddRefreshToken(user, refreshToken);
+            var jwtString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+
+            return new ObjectResult(new
+            {
+                token = jwtString,
+                refreshToken = refreshToken,
+                expiration = jwtToken.ValidTo
+            });
         }
     }
 }
