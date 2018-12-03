@@ -5,7 +5,10 @@
 
     <dl class="row">
       <dt class="col-sm-3">Username</dt>
-      <dd class="col-sm-9">{{userInfo.userName}}</dd>
+      <dd class="col-sm-9">
+        {{userInfo.userName}}
+        <b-button variant="info" v-b-modal="'changeUserNameForm'">Change Username</b-button>
+      </dd>
 
       <dt class="col-sm-3">Email Address</dt>
       <dd class="col-sm-9">
@@ -19,16 +22,19 @@
       </dd>
     </dl>
     <changePasswordForm v-on:passwordChanged="passwordChanged"></changePasswordForm>
+    <changeUserNameForm v-on:userNameChanged="userNameChanged"></changeUserNameForm>
 
   </div>
 </template>
 <script>
   import axios from 'axios';
   import ChangePasswordForm from "components/modules/modals/changePasswordForm";
-  
+  import ChangeUserNameForm from "components/modules/modals/changeUserNameForm";
+
   export default {
     components: {
-      ChangePasswordForm
+      ChangePasswordForm,
+      ChangeUserNameForm
     },
     computed: {
         userInfo() {
@@ -57,6 +63,13 @@
           duration: 5000
         });
       },
+      userNameChanged(newUserNameInfo) {
+        let toast = this.$toasted.show("Your Username has been changed to " + newUserNameInfo.newUserName, {
+          theme: "primary",
+          position: "top-right",
+          duration: 5000
+        });
+      }
     }
   }
 </script>
