@@ -121,6 +121,28 @@ namespace FantasyCritic.Web.Controllers.API
 
         [HttpPost]
         [AllowAnonymous]
+        public async Task<IActionResult> SendChangeEmail([FromBody] SendChangeEmailRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(request.OldEmailAddress);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var code = await _userManager.GenerateChangeEmailTokenAsync(user, request.NewEmailAddress);
+            string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
+            await _emailSender.SendChangeEmail(user, code, baseURL);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
             if (!ModelState.IsValid)
@@ -135,6 +157,30 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var result = await _userManager.ResetPasswordAsync(user, request.Code, request.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(request.OldEmailAddress);
+            if (user == null)
+            {
+                return Ok();
+            }
+
+            var result = await _userManager.ChangeEmailAsync(user, request.NewEmailAddress, request.Code);
             if (!result.Succeeded)
             {
                 return BadRequest();

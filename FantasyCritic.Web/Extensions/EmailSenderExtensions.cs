@@ -27,7 +27,17 @@ namespace FantasyCritic.Web.Extensions
             string emailAddress = user.EmailAddress;
             string emailSubject = "FantasyCritic - Reset Your Password.";
             string link = $"{baseURL}/resetPassword?Code={UrlEncoder.Default.Encode(resetCode)}";
-            string emailBody = $"Please use this code to reset your account password:\n {link}";
+            string emailBody = $"Please use this link to reset your account password:\n {link}";
+
+            await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
+        }
+
+        public static async Task SendChangeEmail(this IEmailSender emailSender, FantasyCriticUser user, string resetCode, string baseURL)
+        {
+            string emailAddress = user.EmailAddress;
+            string emailSubject = "FantasyCritic - Change Your Email.";
+            string link = $"{baseURL}/changeEmail?Code={UrlEncoder.Default.Encode(resetCode)}";
+            string emailBody = $"Please use this link to change your account email:\n {link}";
 
             await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
         }
