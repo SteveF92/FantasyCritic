@@ -136,7 +136,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var code = await _userManager.GenerateChangeEmailTokenAsync(user, request.NewEmailAddress);
             string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
-            await _emailSender.SendChangeEmail(user, code, baseURL);
+            await _emailSender.SendChangeEmail(user, request.NewEmailAddress, code, baseURL);
 
             return Ok();
         }
@@ -185,6 +185,13 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest();
             }
+
+            user.EmailConfirmed = false;
+            await _userManager.UpdateAsync(user);
+
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
+            await _emailSender.SendConfirmationEmail(user, code, baseURL);
 
             return Ok();
         }

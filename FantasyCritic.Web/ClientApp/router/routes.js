@@ -12,6 +12,7 @@ import MasterGame from "components/pages/masterGame";
 import ConfirmEmail from "components/pages/confirmEmail";
 import ForgotPassword from "components/pages/forgotPassword";
 import ResetPassword from "components/pages/resetPassword";
+import ChangeEmail from "components/pages/changeEmail";
 
 export const routes = [
   {
@@ -47,6 +48,15 @@ export const routes = [
     meta: {
       title: "Reset Password",
       isPublic: true
+    }
+  },
+  {
+    path: "/changeEmail",
+    component: ChangeEmail,
+    name: "changeEmail",
+    meta: {
+      title: "Change Email",
+      isPublic: false
     }
   },
   {

@@ -32,11 +32,11 @@ namespace FantasyCritic.Web.Extensions
             await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
         }
 
-        public static async Task SendChangeEmail(this IEmailSender emailSender, FantasyCriticUser user, string resetCode, string baseURL)
+        public static async Task SendChangeEmail(this IEmailSender emailSender, FantasyCriticUser user, string newEmailAddress,string changeCode, string baseURL)
         {
             string emailAddress = user.EmailAddress;
             string emailSubject = "FantasyCritic - Change Your Email.";
-            string link = $"{baseURL}/changeEmail?Code={UrlEncoder.Default.Encode(resetCode)}";
+            string link = $"{baseURL}/changeEmail?NewEmailAddress={UrlEncoder.Default.Encode(newEmailAddress)}&Code={UrlEncoder.Default.Encode(changeCode)}";
             string emailBody = $"Please use this link to change your account email:\n {link}";
 
             await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
