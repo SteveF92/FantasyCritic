@@ -128,7 +128,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var user = await _userManager.FindByEmailAsync(request.OldEmailAddress);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
             if (user == null)
             {
                 return BadRequest();
@@ -174,7 +174,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var user = await _userManager.FindByEmailAsync(request.OldEmailAddress);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
             if (user == null)
             {
                 return Ok();

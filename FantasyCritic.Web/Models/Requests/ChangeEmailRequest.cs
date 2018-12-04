@@ -11,10 +11,6 @@ namespace FantasyCritic.Web.Models.Requests
     {
         [Required]
         [EmailAddress]
-        public string OldEmailAddress { get; set; }
-
-        [Required]
-        [EmailAddress]
         public string NewEmailAddress { get; set; }
 
         [Required]
