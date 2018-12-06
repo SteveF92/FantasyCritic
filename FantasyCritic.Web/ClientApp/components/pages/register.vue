@@ -13,7 +13,7 @@
                 <input v-model="emailAddress" id="emailAddress" name="emailAddress" type="text" class="form-control input" />
             </div>
             <div class="form-group col-md-10">
-                <label for="password" class="control-label">Password (Must be at least 12 characters)</label>
+                <label for="password" class="control-label">Password (Must be at least 8 characters)</label>
                 <input v-model="password" id="password" name="password" type="password" class="form-control input" />
             </div>
             <div class="form-group col-md-10">
