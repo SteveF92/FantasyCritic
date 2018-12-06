@@ -24,6 +24,7 @@
     "core-js": "^2.5.3",
     "lodash": "4.17.10",
     "moment": "2.22.2",
+    "vee-validate": "^2.1.4",
     "vue": "^2.5.16",
     "vue-router": "^2.8.1",
     "vue-server-renderer": "^2.5.16",
