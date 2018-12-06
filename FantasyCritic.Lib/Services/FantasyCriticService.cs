@@ -155,6 +155,15 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is already invited to this league.");
             }
 
+            IReadOnlyList<FantasyCriticUser> players = await GetUsersInLeague(league);
+            IReadOnlyList<FantasyCriticUser> outstandingInvites = await GetOutstandingInvitees(league);
+            int totalPlayers = players.Count + outstandingInvites.Count;
+
+            if (totalPlayers >= 14)
+            {
+                return Result.Fail("A league cannot have more than 14 players.");
+            }
+
             await _fantasyCriticRepo.SaveInvite(league, inviteUser);
 
             return Result.Ok();
