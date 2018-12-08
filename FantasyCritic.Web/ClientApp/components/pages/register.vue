@@ -3,28 +3,34 @@
         <h2>Register</h2>
         <hr />
         <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="register">
-            <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>
-            <div class="form-group col-md-10">
-                <label for="userName" class="control-label">User name</label>
-                <input v-model="userName" id="userName" name="userName" type="text" class="form-control input" />
+          <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>
+          <div class="form-group col-md-10">
+            <label for="userName" class="control-label">Username</label>
+            <input v-model="userName" v-validate="'required'" id="userName" name="userName" type="text" class="form-control input" />
+            <span>{{ errors.first('userName') }}</span>
+          </div>
+          <div class="form-group col-md-10">
+            <label for="emailAddress" class="control-label">Email</label>
+            <input v-model="emailAddress" v-validate="'required|email'" id="emailAddress" name="emailAddress" type="text" class="form-control input" />
+            <span>{{ errors.first('emailAddress') }}</span>
+          </div>
+          <div class="form-group col-md-10">
+            <label for="password" class="control-label">Password</label>
+            <input v-model="password" v-validate="'required|min:8'" name="password" type="password" class="form-control input" placeholder="Password" ref="password">
+            <span>{{ errors.first('password') }}</span>
+          </div>
+
+          <div class="form-group col-md-10">
+            <label for="confirmPassword" class="control-label">Confirm Password</label>
+            <input v-model="confirmPassword" v-validate="'required|confirmed:password'" name="confirmPassword" type="password" class="form-control input" placeholder="Password, Again" data-vv-as="password">
+            <span>{{ errors.first('confirmPassword') }}</span>
+          </div>
+
+          <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+              <input type="submit" class="btn btn-primary" value="Register" :disabled="!formIsValid" />
             </div>
-            <div class="form-group col-md-10">
-                <label for="emailAddress" class="control-label">Email</label>
-                <input v-model="emailAddress" id="emailAddress" name="emailAddress" type="text" class="form-control input" />
-            </div>
-            <div class="form-group col-md-10">
-                <label for="password" class="control-label">Password (Must be at least 8 characters)</label>
-                <input v-model="password" id="password" name="password" type="password" class="form-control input" />
-            </div>
-            <div class="form-group col-md-10">
-                <label for="cPassword" class="control-label">Confirm Password</label>
-                <input v-model="confirmPassword" id="cPassword" name="cPassword" type="password" class="form-control input" />
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" class="btn btn-primary" value="Register" />
-                </div>
-            </div>
+          </div>
         </form>
     </div>
 </template>
@@ -42,7 +48,11 @@
                 confirmPassword: "",
                 errorInfo: ""
             }
-
+        },
+        computed: {
+          formIsValid() {
+            return !Object.keys(this.fields).some(key => this.fields[key].invalid);
+          }
         },
         methods: {
             register() {
@@ -53,15 +63,13 @@
                     confirmPassword: this.confirmPassword
                 };
                 axios
-                    .post('/api/account/register', model)
-                    .then(this.responseHandler)
-                    .catch(this.catchHandler);
-            },
-            responseHandler(response) {
-                this.$router.push({ name: "login" });
-            },
-            catchHandler(returnedError) {
-
+                  .post('/api/account/register', model)
+                  .then(() => {
+                    this.$router.push({ name: "login" });
+                  })
+                  .catch(returnedError => {
+                    this.errorInfo = returnedError;
+                  });
             }
         }
     }

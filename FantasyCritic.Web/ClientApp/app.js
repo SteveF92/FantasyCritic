@@ -7,6 +7,7 @@ import { sync } from 'vuex-router-sync';
 import App from 'components/app-root';
 import { FontAwesomeIcon } from './icons';
 import Toasted from 'vue-toasted';
+import VeeValidate from 'vee-validate';
 
 import "./filters";
 
@@ -18,6 +19,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.js';
 
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
+Vue.use(VeeValidate);
 
 // Registration of global components
 Vue.component('icon', FontAwesomeIcon);
