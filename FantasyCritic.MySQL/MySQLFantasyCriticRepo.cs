@@ -389,8 +389,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblleagueyear(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,PickupSystem,ScoringSystem) VALUES " +
-                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@PickupSystem,@ScoringSystem);",
+                    "insert into tblleagueyear(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
+                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@MaximumEligibilityLevel,@AllowYearlyInstallments,@AllowEarlyAccess,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);",
                     leagueYearEntity);
             }
         }

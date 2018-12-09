@@ -3,7 +3,7 @@
     <b-modal id="addNewLeagueYear" ref="addNewLeagueYearRef" title="Start new Year">
       <div class="form-horizontal">
         <div class="form-group">
-          <label for="selectedYear" class="control-label">Year to Play</label>
+          <label for="selectedYear" class="control-label">New Year to Play</label>
           <select class="form-control" v-model="selectedYear" id="selectedYear">
             <option v-for="possibleYear in availableYears" v-bind:value="possibleYear">{{ possibleYear }}</option>
           </select>
@@ -30,7 +30,24 @@
     props: ['league'],
     methods: {
       addNewLeagueYear() {
-
+        var model = {
+          leagueID: this.league.leagueID,
+          year: this.selectedYear
+        };
+        axios
+          .post('/api/leagueManager/AddNewLeagueYear', model)
+          .then(response => {
+            this.$refs.addNewLeagueYearRef.hide();
+            let actionInfo = {
+              message: "A new year has been started",
+              fetchLeague: true,
+              fetchLeagueYear: true
+            };
+            this.$emit('actionTaken', actionInfo);
+          })
+          .catch(response => {
+            this.error = response;
+          });
       }
     },
     mounted() {
