@@ -6,7 +6,12 @@
 
     <div class="row">
       <h2>{{ league.leagueName }}</h2>
-      <b-form-select v-model="activeYear" :options="league.years" class="year-selector" />
+      <div class="year-selector">
+        <div class="new-year">Start new Year</div>
+        <div>
+          <b-form-select v-model="activeYear" :options="league.years" />
+        </div>
+      </div>
     </div>
 
     <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">
@@ -292,8 +297,15 @@
     left: 10%;
   }
   .year-selector {
-    width: 100px;
     position: absolute;
     right: 0px;
+  }
+  .year-selector div {
+    float:left;
+  }
+  .year-selector div.new-year {
+    float: left;
+    padding-top: 7px;
+    padding-right: 3px;
   }
 </style>
