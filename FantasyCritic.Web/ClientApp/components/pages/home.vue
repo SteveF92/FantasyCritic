@@ -1,6 +1,11 @@
 <template>
   <div>
     <h2>Welcome to Fantasy Critic!</h2>
+    <div class="alert alert-warning" v-show="!userInfo.emailConfirmed">
+      <div>Your email address has not been confirmed. You cannot accept league invites until you do so.</div>
+      <div>Check your email account for an email from us.</div>
+    </div>
+
     <div class="col-md-4">
       <b-button variant="primary" :to="{ name: 'createLeague' }" class="nav-link">Create a League</b-button>
 
@@ -8,7 +13,8 @@
         <h3>League Invites</h3>
         <ul>
           <li v-for="league in invitedLeagues">
-            <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+            <router-link v-show="userInfo.emailConfirmed" :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+            <div v-show="!userInfo.emailConfirmed">{{league.leagueName}}</div>
           </li>
         </ul>
         <hr />
@@ -66,6 +72,9 @@
             },
             noLeagues() {
                 return (!(this.anyPlayerLeagues || this.anyManagedLeagues || this.anyInvitedLeagues));
+            },
+            userInfo() {
+              return this.$store.getters.userInfo;
             }
         },
         methods: {

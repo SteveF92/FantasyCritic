@@ -254,6 +254,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            if (!currentUser.EmailConfirmed)
+            {
+                return BadRequest();
+            }
+
             Result result = await _fantasyCriticService.AcceptInvite(league.Value, currentUser);
             if (result.IsFailure)
             {
