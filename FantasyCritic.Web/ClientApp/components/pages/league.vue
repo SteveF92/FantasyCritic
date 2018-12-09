@@ -7,12 +7,15 @@
     <div class="row">
       <h2>{{ league.leagueName }}</h2>
       <div class="year-selector">
-        <div class="new-year">Start new Year</div>
+        <div>
+          <b-button variant="info" v-b-modal="'addNewLeagueYear'">Start new Year</b-button>
+        </div>
         <div>
           <b-form-select v-model="activeYear" :options="league.years" />
         </div>
       </div>
     </div>
+    <addNewLeagueYearForm :league="league"></addNewLeagueYearForm>
 
     <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">
       The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!
@@ -127,6 +130,7 @@
     import CreatePublisherForm from "components/modules/modals/createPublisherForm";
     import LeagueActions from "components/modules/leagueActions";
     import StartDraftModal from "components/modules/modals/startDraftModal";
+    import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
 
     export default {
         data() {
@@ -147,7 +151,8 @@
             LeagueActions,
             PlayerActions,
             CreatePublisherForm,
-            StartDraftModal
+            StartDraftModal,
+            AddNewLeagueYearForm
         },
         computed: {
           nextPublisherUp() {
@@ -302,10 +307,5 @@
   }
   .year-selector div {
     float:left;
-  }
-  .year-selector div.new-year {
-    float: left;
-    padding-top: 7px;
-    padding-right: 3px;
   }
 </style>
