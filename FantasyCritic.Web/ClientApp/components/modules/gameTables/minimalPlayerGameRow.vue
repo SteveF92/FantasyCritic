@@ -1,7 +1,16 @@
 <template>
   <tr class="minimal-game-row table-default" v-bind:class="{ 'table-danger': game.counterPick }">
     <td class="game-column">
-      <router-link v-if="game.linked" class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: game.masterGameID }}">{{game.gameName}}</router-link>
+      <popper trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
+        <div class="popper">
+          <masterGamePopover :mastergameid="game.masterGameID"></masterGamePopover>
+        </div>
+
+        <span slot="reference" class="text-primary fake-link">
+          {{game.gameName}}
+        </span>
+      </popper>
+
       <span v-if="!game.linked">{{game.gameName}}</span>
 
       <span v-if="game.counterPick" class="counter-pick-text">
@@ -24,17 +33,24 @@
   </tr>
 </template>
 <script>
-    import Vue from "vue";
-    import moment from "moment";
+  import Vue from "vue";
+  import moment from "moment";
+  import Popper from 'vue-popperjs';
+  import 'vue-popperjs/dist/css/vue-popper.css';
+  import MasterGamePopover from "components/modules/masterGamePopover";
 
-    export default {
-        props: ['game'],
-        computed: {
-            releaseDate() {
-                return moment(this.game.releaseDate).format('MMMM Do, YYYY');
-            }
+  export default {
+    components: {
+      'popper': Popper,
+      MasterGamePopover
+    },
+    props: ['game'],
+    computed: {
+        releaseDate() {
+            return moment(this.game.releaseDate).format('MMMM Do, YYYY');
         }
     }
+  }
 </script>
 <style scoped>
   .minimal-game-row td {
@@ -48,5 +64,10 @@
     float: right;
     color: #B1B1B1;
     font-style: italic;
+  }
+  .fake-link {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
   }
 </style>
