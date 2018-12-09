@@ -16,13 +16,13 @@
           </div>
           <div class="form-group col-md-10">
             <label for="password" class="control-label">Password</label>
-            <input v-model="password" v-validate="'required|min:8'" name="password" type="password" class="form-control input" placeholder="Password" ref="password">
+            <input v-model="password" v-validate="'required|min:8'" name="password" type="password" class="form-control input" ref="password">
             <span>{{ errors.first('password') }}</span>
           </div>
 
           <div class="form-group col-md-10">
             <label for="confirmPassword" class="control-label">Confirm Password</label>
-            <input v-model="confirmPassword" v-validate="'required|confirmed:password'" name="confirmPassword" type="password" class="form-control input" placeholder="Password, Again" data-vv-as="password">
+            <input v-model="confirmPassword" v-validate="'required|confirmed:password'" name="confirmPassword" type="password" class="form-control input" data-vv-as="password">
             <span>{{ errors.first('confirmPassword') }}</span>
           </div>
 
@@ -62,10 +62,9 @@
                     password: this.password,
                     confirmPassword: this.confirmPassword
                 };
-                axios
-                  .post('/api/account/register', model)
+                this.$store.dispatch("registerAccount", model)
                   .then(() => {
-                    this.$router.push({ name: "login" });
+                    this.$router.push({ name: "login", props: { accountCreated: true } });
                   })
                   .catch(returnedError => {
                     this.errorInfo = returnedError;

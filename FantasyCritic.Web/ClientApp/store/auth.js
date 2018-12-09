@@ -6,7 +6,8 @@ export default {
     jwt: null,
     expiration: null,
     redirect: "",
-    userInfo: {}
+    userInfo: {},
+    newAccountCreated: false
   },
   getters: {
     hasToken(state) {
@@ -29,7 +30,8 @@ export default {
     },
     token: (state) => state.jwt,
     redirect: (state) => state.redirect,
-    userInfo: (state) => state.userInfo
+    userInfo: (state) => state.userInfo,
+    newAccountCreated: (state) => state.newAccountCreated
   },
   actions: {
     doAuthentication(context, creds) {
@@ -40,6 +42,18 @@ export default {
             context.commit("setRefreshToken", res.data.refreshToken);
             context.dispatch("getUserInfo")
               .then(response => { resolve(response) });
+          })
+          .catch(error => {
+            reject();
+          });
+      });
+    },
+    registerAccount(context, creds) {
+      return new Promise(function (resolve, reject) {
+        axios.post('/api/account/register', creds)
+          .then(() => {
+            context.commit("newAccountCreated");
+            resolve();
           })
           .catch(error => {
             reject();
@@ -104,12 +118,14 @@ export default {
       state.jwt = tokenInfo.token;
       state.expiration = new Date(tokenInfo.expiration);
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + tokenInfo.token;
+      state.newAccountCreated = false;
     },
     setRefreshToken(state, refreshToken) {
       localStorage.setItem('refresh_token', refreshToken);
     },
     setUserInfo(state, userInfo) {
       state.userInfo = userInfo;
+      state.newAccountCreated = false;
     },
     clearUserAndToken(state) {
       localStorage.removeItem('jwt_token');
@@ -118,6 +134,10 @@ export default {
       state.expiration = null;
       delete axios.defaults.headers.common["Authorization"];
       state.userInfo = {};
+      state.newAccountCreated = false;
+    },
+    newAccountCreated(state) {
+      state.newAccountCreated = true;
     },
     setRedirect(state, path) {
       state.redirect = path;
