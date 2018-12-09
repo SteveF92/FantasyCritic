@@ -94,7 +94,7 @@
       <h5>Invited Players</h5>
       <ul>
         <li v-for="player in league.invitedPlayers">
-          {{ player.userName }}
+          {{ player }}
         </li>
       </ul>
     </div>

@@ -461,7 +461,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 return connection.ExecuteAsync(
-                    "insert into tblleagueinvite(LeagueID,UserID) VALUES (@leagueID, @emailAddress);",
+                    "insert into tblleagueinvite(LeagueID,EmailAddress) VALUES (@leagueID, @emailAddress);",
                     saveObject);
             }
         }
@@ -476,7 +476,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var results = await connection.QueryAsync<string>(
-                    "select EmailAddress where tblleagueinvite.LeagueID = @leagueID;",
+                    "select EmailAddress from tblleagueinvite where tblleagueinvite.LeagueID = @leagueID;",
                     query);
 
                 return results.ToList();

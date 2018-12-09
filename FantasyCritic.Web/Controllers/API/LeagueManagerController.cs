@@ -9,7 +9,9 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Web.Extensions;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
@@ -31,13 +33,15 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IClock _clock;
         private readonly IHubContext<UpdateHub> _hubcontext;
+        private readonly IEmailSender _emailSender;
 
-        public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IClock clock, IHubContext<UpdateHub> hubcontext)
+        public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IClock clock, IHubContext<UpdateHub> hubcontext, IEmailSender emailSender)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
             _clock = clock;
             _hubcontext = hubcontext;
+            _emailSender = emailSender;
         }
 
         [HttpPost]
@@ -229,12 +233,6 @@ namespace FantasyCritic.Web.Controllers.API
                 return Unauthorized();
             }
 
-            var inviteUser = await _userManager.FindByEmailAsync(request.InviteEmail);
-            if (inviteUser == null)
-            {
-                return BadRequest();
-            }
-
             foreach (var year in league.Value.Years)
             {
                 var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
@@ -244,7 +242,14 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            Result result = await _fantasyCriticService.InviteUser(league.Value, inviteUser);
+            FantasyCriticUser inviteUser = await _userManager.FindByEmailAsync(request.InviteEmail);
+            if (inviteUser is null)
+            {
+                string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
+                await _emailSender.SendInviteEmail(request.InviteEmail, league.Value.LeagueName, league.Value.LeagueManager, baseURL);
+            }
+
+            Result result = await _fantasyCriticService.InviteUser(league.Value, request.InviteEmail);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);

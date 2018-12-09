@@ -141,20 +141,24 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeaguesInvitedTo(user);
         }
 
-        public async Task<Result> InviteUser(League league, FantasyCriticUser inviteUser)
+        public async Task<Result> InviteUser(League league, string inviteEmail)
         {
-            bool userInLeague = await UserIsInLeague(league, inviteUser);
-            if (userInLeague)
-            {
-                return Result.Fail("User is already in league.");
-            }
-
-            bool userInvited = await UserIsInvited(league, inviteUser);
+            bool userInvited = await UserIsInvited(league, inviteEmail);
             if (userInvited)
             {
                 return Result.Fail("User is already invited to this league.");
             }
 
+            FantasyCriticUser inviteUser = await _userManager.FindByEmailAsync(inviteEmail);
+            if (inviteUser != null)
+            {
+                bool userInLeague = await UserIsInLeague(league, inviteUser);
+                if (userInLeague)
+                {
+                    return Result.Fail("User is already in league.");
+                }
+            }
+            
             IReadOnlyList<FantasyCriticUser> players = await GetUsersInLeague(league);
             IReadOnlyList<string> outstandingInvites = await GetOutstandingInvitees(league);
             int totalPlayers = players.Count + outstandingInvites.Count;
@@ -164,7 +168,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("A league cannot have more than 14 players.");
             }
 
-            await _fantasyCriticRepo.SaveInvite(league, inviteUser.EmailAddress);
+            await _fantasyCriticRepo.SaveInvite(league, inviteEmail);
 
             return Result.Ok();
         }
@@ -177,7 +181,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is already in league.");
             }
 
-            bool userInvited = await UserIsInvited(league, inviteUser);
+            bool userInvited = await UserIsInvited(league, inviteUser.EmailAddress);
             if (!userInvited)
             {
                 return Result.Fail("User is not invited to this league.");
@@ -196,7 +200,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is already in league.");
             }
 
-            bool userInvited = await UserIsInvited(league, inviteUser);
+            bool userInvited = await UserIsInvited(league, inviteUser.EmailAddress);
             if (!userInvited)
             {
                 return Result.Fail("User is not invited to this league.");
@@ -457,10 +461,10 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);
         }
 
-        private async Task<bool> UserIsInvited(League league, FantasyCriticUser inviteUser)
+        private async Task<bool> UserIsInvited(League league, string inviteEmail)
         {
             var playersInvited = await GetOutstandingInvitees(league);
-            return playersInvited.Any(x => x == inviteUser.EmailAddress);
+            return playersInvited.Any(x => x == inviteEmail);
         }
 
         private async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request)
