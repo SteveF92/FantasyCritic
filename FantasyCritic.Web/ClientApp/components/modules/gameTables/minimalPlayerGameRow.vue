@@ -70,4 +70,7 @@
     text-decoration: underline;
     cursor: pointer;
   }
+  .popper {
+    background: #415262;
+  }
 </style>

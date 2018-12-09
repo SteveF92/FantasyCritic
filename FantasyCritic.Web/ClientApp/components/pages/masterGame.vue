@@ -1,7 +1,7 @@
 <template>
   <div v-if="masterGame">
     <h2>{{masterGame.gameName}}</h2>
-    <img v-if="masterGame.boxartFileName" :src="boxartLink" alt="Cover Image">
+    <img :src="boxartLink" alt="Cover Image">
     <p>
       <strong>Release Date: </strong>
       <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
@@ -52,8 +52,11 @@
     props: ['mastergameid'],
     computed: {
       boxartLink() {
+        if (this.masterGame.boxartFileName) {
           return "https://s3.amazonaws.com/fantasy-critic-box-art/" + this.masterGame.boxartFileName;
         }
+        return "https://s3.amazonaws.com/fantasy-critic-box-art/noBoxArt.png";
+      }
     },
     methods: {
         releaseDate(game) {
