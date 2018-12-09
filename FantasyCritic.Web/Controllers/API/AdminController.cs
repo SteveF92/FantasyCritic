@@ -16,6 +16,7 @@ using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
 {
@@ -26,12 +27,14 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IOpenCriticService _openCriticService;
+        private readonly IClock _clock;
 
-        public AdminController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService)
+        public AdminController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService, IClock clock)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
             _openCriticService = openCriticService;
+            _clock = clock;
         }
 
         [HttpPost]
@@ -60,12 +63,23 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RefreshCriticInfo()
         {
+            var supportedYears = await _fantasyCriticService.GetSupportedYears();
             var masterGames = await _fantasyCriticService.GetMasterGames();
             foreach (var masterGame in masterGames)
             {
                 if (!masterGame.OpenCriticID.HasValue)
                 {
                     continue;
+                }
+
+                if (masterGame.IsReleased(_clock) && masterGame.ReleaseDate.HasValue)
+                {
+                    var year = masterGame.ReleaseDate.Value.Year;
+                    var supportedYear = supportedYears.Single(x => x.Year == year);
+                    if (supportedYear.Finished)
+                    {
+                        continue;
+                    }
                 }
 
                 var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID.Value);

@@ -22,7 +22,8 @@
       </span>
 
       <span v-if="!game.willRelease && game.linked" class="game-status">
-        Will not Release
+        <span v-show="!yearFinished">Will not Release</span>
+        <span v-show="yearFinished">Did not Release</span>
       </span>
       <span v-if="game.manualCriticScore && game.linked" class="game-status">
         Manually Scored
@@ -44,7 +45,7 @@
       'popper': Popper,
       MasterGamePopover
     },
-    props: ['game'],
+    props: ['game', 'yearFinished'],
     computed: {
         releaseDate() {
             return moment(this.game.releaseDate).format('MMMM Do, YYYY');

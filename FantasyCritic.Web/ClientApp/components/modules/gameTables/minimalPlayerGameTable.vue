@@ -16,9 +16,9 @@
         </tr>
       </thead>
       <tbody>
-        <minimalPlayerGameRow v-for="game in standardGames" :game="game"></minimalPlayerGameRow>
+        <minimalPlayerGameRow v-for="game in standardGames" :game="game" :yearFinished="yearFinished"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in standardFiller"></minimalBlankPlayerGameRow>
-        <minimalPlayerGameRow v-for="game in counterPicks" :game="game"></minimalPlayerGameRow>
+        <minimalPlayerGameRow v-for="game in counterPicks" :game="game" :yearFinished="yearFinished"></minimalPlayerGameRow>
         <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
         <tr class="minimal-game-row">
           <td id="total-description">
@@ -43,7 +43,7 @@
             MinimalPlayerGameRow,
             MinimalBlankPlayerGameRow
         },
-        props: ['publisher', 'options'],
+        props: ['publisher', 'options', 'yearFinished'],
         computed: {
             games() {
                 return this.publisher.games;
