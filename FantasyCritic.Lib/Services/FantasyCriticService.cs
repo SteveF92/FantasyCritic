@@ -156,7 +156,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             IReadOnlyList<FantasyCriticUser> players = await GetUsersInLeague(league);
-            IReadOnlyList<FantasyCriticUser> outstandingInvites = await GetOutstandingInvitees(league);
+            IReadOnlyList<string> outstandingInvites = await GetOutstandingInvitees(league);
             int totalPlayers = players.Count + outstandingInvites.Count;
 
             if (totalPlayers >= 14)
@@ -164,7 +164,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("A league cannot have more than 14 players.");
             }
 
-            await _fantasyCriticRepo.SaveInvite(league, inviteUser);
+            await _fantasyCriticRepo.SaveInvite(league, inviteUser.EmailAddress);
 
             return Result.Ok();
         }
@@ -221,7 +221,7 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
         }
 
-        public Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(League league)
+        public Task<IReadOnlyList<string>> GetOutstandingInvitees(League league)
         {
             return _fantasyCriticRepo.GetOutstandingInvitees(league);
         }
@@ -460,7 +460,7 @@ namespace FantasyCritic.Lib.Services
         private async Task<bool> UserIsInvited(League league, FantasyCriticUser inviteUser)
         {
             var playersInvited = await GetOutstandingInvitees(league);
-            return playersInvited.Any(x => x.UserID == inviteUser.UserID);
+            return playersInvited.Any(x => x == inviteUser.EmailAddress);
         }
 
         private async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request)

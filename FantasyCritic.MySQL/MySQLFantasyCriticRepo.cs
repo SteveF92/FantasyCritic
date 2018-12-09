@@ -435,14 +435,14 @@ namespace FantasyCritic.MySQL
         {
             var query = new
             {
-                userID = currentUser.UserID
+                email = currentUser.EmailAddress
             };
 
             IEnumerable<LeagueEntity> leagueEntities;
             using (var connection = new MySqlConnection(_connectionString))
             {
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select tblleague.* from tblleague join tblleagueinvite on (tblleague.LeagueID = tblleagueinvite.LeagueID) where tblleagueinvite.UserID = @userID;",
+                    "select tblleague.* from tblleague join tblleagueinvite on (tblleague.LeagueID = tblleagueinvite.LeagueID) where tblleagueinvite.EmailAddress = @email;",
                     query);
             }
 
@@ -450,23 +450,23 @@ namespace FantasyCritic.MySQL
             return leagues;
         }
 
-        public Task SaveInvite(League league, FantasyCriticUser user)
+        public Task SaveInvite(League league, string emailAddress)
         {
             var saveObject = new
             {
                 leagueID = league.LeagueID,
-                userID = user.UserID
+                emailAddress
             };
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 return connection.ExecuteAsync(
-                    "insert into tblleagueinvite(LeagueID,UserID) VALUES (@leagueID, @userID);",
+                    "insert into tblleagueinvite(LeagueID,UserID) VALUES (@leagueID, @emailAddress);",
                     saveObject);
             }
         }
 
-        public async Task<IReadOnlyList<FantasyCriticUser>> GetOutstandingInvitees(League league)
+        public async Task<IReadOnlyList<string>> GetOutstandingInvitees(League league)
         {
             var query = new
             {
@@ -475,24 +475,23 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var results = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    "select tbluser.* from tbluser join tblleagueinvite on (tbluser.UserID = tblleagueinvite.UserID) where tblleagueinvite.LeagueID = @leagueID;",
+                var results = await connection.QueryAsync<string>(
+                    "select EmailAddress where tblleagueinvite.LeagueID = @leagueID;",
                     query);
 
-                var users = results.Select(x => x.ToDomain()).ToList();
-                return users;
+                return results.ToList();
             }
         }
 
         public async Task AcceptInvite(League league, FantasyCriticUser inviteUser)
         {
             await AddPlayerToLeague(league, inviteUser);
-            await DeleteInvite(league, inviteUser);
+            await DeleteInvite(league, inviteUser.EmailAddress);
         }
 
         public Task DeclineInvite(League league, FantasyCriticUser inviteUser)
         {
-            return DeleteInvite(league, inviteUser);
+            return DeleteInvite(league, inviteUser.EmailAddress);
         }
 
         public async Task RemovePublisher(Publisher publisher)
@@ -779,18 +778,18 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        private async Task DeleteInvite(League league, FantasyCriticUser inviteUser)
+        private async Task DeleteInvite(League league, string emailAddress)
         {
             var deleteObject = new
             {
                 leagueID = league.LeagueID,
-                userID = inviteUser.UserID
+                emailAddress
             };
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "delete from tblleagueinvite where LeagueID = @leagueID and UserID = @userID;",
+                    "delete from tblleagueinvite where LeagueID = @leagueID and EmailAddress = @emailAddress;",
                     deleteObject);
             }
         }
