@@ -62,6 +62,49 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> AddNewLeagueYear([FromBody] NewLeagueYearRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Unauthorized();
+            }
+
+            if (league.Value.Years.Contains(request.Year))
+            {
+                return BadRequest();
+            }
+
+            var supportedYears = await _fantasyCriticService.GetSupportedYears();
+            if (!supportedYears.Select(x => x.Year).Contains(request.Year))
+            {
+                return BadRequest();
+            }
+
+            if (!league.Value.Years.Any())
+            {
+                throw new Exception("League has no initial year.");
+            }
+
+            var mostRecentYear = league.Value.Years.Max();
+            var mostRecentLeagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, mostRecentYear);
+            if (mostRecentLeagueYear.HasNoValue)
+            {
+                throw new Exception("Most recent league year could not be found");
+            }
+
+            await _fantasyCriticService.AddNewLeagueYear(league.Value, request.Year, mostRecentLeagueYear.Value.Options);
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> ChangeLeagueName([FromBody] ChangeLeagueNameRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
