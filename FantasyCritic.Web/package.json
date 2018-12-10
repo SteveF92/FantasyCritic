@@ -26,6 +26,7 @@
     "moment": "2.22.2",
     "vee-validate": "^2.1.4",
     "vue": "^2.5.16",
+    "vue-popperjs": "^1.6.1",
     "vue-router": "^2.8.1",
     "vue-server-renderer": "^2.5.16",
     "vue-slider-component": "^2.7.7",
