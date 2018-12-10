@@ -67,7 +67,6 @@
     font-style: italic;
   }
   .fake-link {
-    color: blue;
     text-decoration: underline;
     cursor: pointer;
   }

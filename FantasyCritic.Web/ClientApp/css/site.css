@@ -35,6 +35,14 @@ html {
     color: #cccccc !important;
 }
 
+.table-danger td span {
+    color: white !important;
+}
+
+.table-danger td span:hover {
+    color: #cccccc !important;
+}
+
 tr.table-primary, tr.table-primary th, tr.table-primary td {
     background-color: #DF691A;
 }
