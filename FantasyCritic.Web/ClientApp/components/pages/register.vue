@@ -2,7 +2,9 @@
     <div>
         <h2>Register</h2>
         <hr />
-        <registerForm></registerForm>
+        <div class="col-md-6">
+          <registerForm></registerForm>
+        </div>
     </div>
 </template>
 
