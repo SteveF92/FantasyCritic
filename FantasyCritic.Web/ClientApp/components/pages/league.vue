@@ -102,7 +102,8 @@
       <h5>Invited Players</h5>
       <ul>
         <li v-for="player in league.invitedPlayers">
-          {{ player }}
+          <span>{{ player }}</span>
+          <b-button v-if="league.isManager" variant="danger" v-on:click="rescindInvite(player)" class="mx-2">Rescind Invite</b-button>
         </li>
       </ul>
     </div>
@@ -202,6 +203,25 @@
                 .get('/api/league/CurrentBids/' + this.leagueYear.userPublisher.publisherID)
                 .then(response => {
                   this.currentBids = response.data;
+                })
+                .catch(response => {
+
+                });
+            },
+            rescindInvite(emailAddress) {
+              var model = {
+                leagueID: this.league.leagueID,
+                inviteEmail: emailAddress
+              };
+              axios
+                .post('/api/leagueManager/RescindInvite', model)
+                .then(response => {
+                  let actionInfo = {
+                    message: 'The invite to ' + emailAddress + ' has been rescinded.',
+                    fetchLeague: true,
+                    fetchLeagueYear: true
+                  };
+                  this.actionTaken(actionInfo);
                 })
                 .catch(response => {
 

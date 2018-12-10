@@ -173,6 +173,19 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
+        public async Task<Result> RescindInvite(League league, string inviteEmail)
+        {
+            bool userInvited = await UserIsInvited(league, inviteEmail);
+            if (!userInvited)
+            {
+                return Result.Fail("That email address has not been invited.");
+            }
+
+            await _fantasyCriticRepo.RescindInvite(league, inviteEmail);
+
+            return Result.Ok();
+        }
+
         public async Task<Result> AcceptInvite(League league, FantasyCriticUser inviteUser)
         {
             bool userInLeague = await UserIsInLeague(league, inviteUser);

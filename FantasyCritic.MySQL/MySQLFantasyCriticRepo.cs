@@ -466,6 +466,22 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public Task RescindInvite(League league, string emailAddress)
+        {
+            var deleteObject = new
+            {
+                leagueID = league.LeagueID,
+                emailAddress
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "delete from tblleagueinvite where LeagueID = @leagueID and EmailAddress = @emailAddress;",
+                    deleteObject);
+            }
+        }
+
         public async Task<IReadOnlyList<string>> GetOutstandingInvitees(League league)
         {
             var query = new
