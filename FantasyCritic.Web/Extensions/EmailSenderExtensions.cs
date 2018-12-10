@@ -42,10 +42,11 @@ namespace FantasyCritic.Web.Extensions
         {
             string emailAddress = user.EmailAddress;
             string emailSubject = "FantasyCritic - Reset Your Password.";
-            string link = $"{baseURL}/resetPassword?Code={UrlEncoder.Default.Encode(resetCode)}";
-            string emailBody = $"Please use this link to reset your account password:\n {link}";
 
-            await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
+            PasswordResetModel model = new PasswordResetModel(user, resetCode, baseURL);
+            var htmlResult = await GetHTMLString("PasswordReset.cshtml", model);
+
+            await emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
         }
 
         public static async Task SendChangeEmail(this IEmailSender emailSender, FantasyCriticUser user, string newEmailAddress, string changeCode, string baseURL)
