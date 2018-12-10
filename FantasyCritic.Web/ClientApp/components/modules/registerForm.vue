@@ -62,7 +62,7 @@
                 };
                 this.$store.dispatch("registerAccount", model)
                   .then(() => {
-                    this.$router.push({ name: "login", props: { accountCreated: true } });
+                    this.$router.push({ name: "login" });
                   })
                   .catch(returnedError => {
                     this.errorInfo = returnedError;
