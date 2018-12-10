@@ -1,7 +1,7 @@
 <template>
     <div>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="top-nav">
-            <router-link :to="{ name: 'home' }" class="navbar-brand" title="Fantasy Critic">Fantasy Critic</router-link>
+            <router-link :to="{ name: 'welcome' }" class="navbar-brand" title="Fantasy Critic">Fantasy Critic</router-link>
             <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation" style="">
                 <span class="navbar-toggler-icon"></span>
             </button>

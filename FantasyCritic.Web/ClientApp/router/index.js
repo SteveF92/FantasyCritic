@@ -15,8 +15,8 @@ router.beforeEach(function (toRoute, fromRoute, next) {
   if (toRoute.meta.title) {
     document.title = toRoute.meta.title + " - Fantasy Critic";
   }
-  if (toRoute.name === "login" && store.getters.tokenIsCurrent(new Date())) {
-    next({ path: "/" });
+  if (toRoute.meta.publicOnly && store.getters.tokenIsCurrent(new Date())) {
+    next({ path: "/home" });
     return;
   }
   if (toRoute.meta.isPublic) {

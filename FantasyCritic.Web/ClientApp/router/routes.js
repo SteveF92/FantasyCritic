@@ -1,3 +1,4 @@
+import Welcome from "components/pages/welcome";
 import Home from "components/pages/home";
 import Login from "components/pages/login";
 import Register from "components/pages/register";
@@ -17,10 +18,12 @@ import ChangeEmail from "components/pages/changeEmail";
 export const routes = [
   {
     path: "/",
-    component: Home,
-    name: "home",
+    component: Welcome,
+    name: "welcome",
     meta: {
-      title: "Home"
+      title: "Welcome",
+      isPublic: true,
+      publicOnly: true
     }
   },
   {
@@ -29,7 +32,16 @@ export const routes = [
     name: "login",
     meta: {
       title: "Login",
-      isPublic: true
+      isPublic: true,
+      publicOnly: true
+    }
+  },
+  {
+    path: "/home",
+    component: Home,
+    name: "home",
+    meta: {
+      title: "Home"
     }
   },
   {
@@ -38,7 +50,8 @@ export const routes = [
     name: "forgotPassword",
     meta: {
       title: "Forgot Password",
-      isPublic: true
+      isPublic: true,
+      publicOnly: true
     }
   },
   {
@@ -47,7 +60,8 @@ export const routes = [
     name: "resetPassword",
     meta: {
       title: "Reset Password",
-      isPublic: true
+      isPublic: true,
+      publicOnly: true
     }
   },
   {
@@ -65,7 +79,8 @@ export const routes = [
     name: "register",
     meta: {
       title: "Register",
-      isPublic: true
+      isPublic: true,
+      publicOnly: true
     }
   },
   {
