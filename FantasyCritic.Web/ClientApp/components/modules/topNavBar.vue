@@ -19,12 +19,6 @@
                     <div class="my-2 my-lg-0">
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item">
-                                <form class="form-inline my-2 my-lg-0">
-                                    <input class="form-control mr-sm-2" type="text" placeholder="Search">
-                                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                                </form>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link nav-icon" href="#">
                                   <icon icon="bell" />
                                 </a>
