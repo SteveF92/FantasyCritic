@@ -9,6 +9,7 @@
       <PackageReference Include="NLog.Web.AspNetCore" Version="4.5.4" />
       <PackageReference Include="NodaTime" Version="2.3.0" />
       <PackageReference Include="NodaTime.Serialization.JsonNet" Version="2.0.0" />
+      <PackageReference Include="RazorLight" Version="2.0.0-beta1" />
   </ItemGroup>
   <ItemGroup>
     <!-- Files not to show in IDE -->
@@ -23,6 +24,14 @@
     <ProjectReference Include="..\FantasyCritic.SendGrid\FantasyCritic.SendGrid.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Extensions\EmailSenderExtensions.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="EmailTemplates\ConfirmEmail.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

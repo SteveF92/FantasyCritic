@@ -1,25 +1,41 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Policy;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Web.Models.EmailTemplates;
+using RazorLight;
 
 namespace FantasyCritic.Web.Extensions
 {
     public static class EmailSenderExtensions
     {
+        private static async Task<string> GetHTMLString(string template, object model)
+        {
+            var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "EmailTemplates");
+            var engine = new RazorLightEngineBuilder()
+                .UseFilesystemProject(templateFilePath)
+                .UseMemoryCachingProvider()
+                .Build();
+            string htmlResult = await engine.CompileRenderAsync(template, model);
+            return htmlResult;
+        }
+
         public static async Task SendConfirmationEmail(this IEmailSender emailSender, FantasyCriticUser user, string confirmCode, string baseURL)
         {
             string emailAddress = user.EmailAddress;
             string emailSubject = "FantasyCritic - Confirm your email address.";
-            string link = $"{baseURL}/confirmEmail?UserID={user.UserID}&Code={UrlEncoder.Default.Encode(confirmCode)}";
-            string emailBody = $"Please use this link to confirm your FantasyCritic account:\n {link}";
+            ConfirmEmailModel model = new ConfirmEmailModel(user, confirmCode, baseURL);
 
-            await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
+            var htmlResult = await GetHTMLString("ConfirmEmail.cshtml", model);
+
+            await emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
         }
 
         public static async Task SendForgotPasswordEmail(this IEmailSender emailSender, FantasyCriticUser user, string resetCode, string baseURL)

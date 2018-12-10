@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Web", "Fantas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.SendGrid", "FantasyCritic.SendGrid\FantasyCritic.SendGrid.csproj", "{B5878FDB-C7D8-463B-8C13-5F0A7B731F51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.Test", "FantasyCritic.Test\FantasyCritic.Test.csproj", "{D64308FF-30AA-49A8-933C-71A3647C5EF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Test", "FantasyCritic.Test\FantasyCritic.Test.csproj", "{D64308FF-30AA-49A8-933C-71A3647C5EF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

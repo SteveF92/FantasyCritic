@@ -16,9 +16,7 @@ namespace FantasyCritic.SendGrid
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(InternalEmail, "FantasyCritic");
             var to = new EmailAddress(email);
-            var plainTextContent = message;
-            var htmlContent = "";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, "", message);
             var response = await client.SendEmailAsync(msg);
         }
     }
