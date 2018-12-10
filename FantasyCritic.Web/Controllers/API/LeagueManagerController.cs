@@ -246,7 +246,7 @@ namespace FantasyCritic.Web.Controllers.API
             if (inviteUser is null)
             {
                 string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
-                await _emailSender.SendInviteEmail(request.InviteEmail, league.Value.LeagueName, league.Value.LeagueManager, baseURL);
+                await _emailSender.SendInviteEmail(request.InviteEmail, league.Value, baseURL);
             }
 
             Result result = await _fantasyCriticService.InviteUser(league.Value, request.InviteEmail);

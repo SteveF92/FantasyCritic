@@ -60,14 +60,15 @@ namespace FantasyCritic.Web.Extensions
             await emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
         }
 
-        public static async Task SendInviteEmail(this IEmailSender emailSender, string inviteEmail, string leagueName, FantasyCriticUser leagueManager, string baseURL)
+        public static async Task SendInviteEmail(this IEmailSender emailSender, string inviteEmail, League league, string baseURL)
         {
             string emailAddress = inviteEmail;
             string emailSubject = "You have been invited to join a FantasyCritic league!";
-            string emailBody = $"You have been invited to join the league '{leagueName}' by user: '{leagueManager.UserName}' (Email Address:'{leagueManager.EmailAddress}') \n" +
-                               "Follow this link to go to the site to sign up and join the league: \n" + baseURL;
 
-            await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
+            LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
+            var htmlResult = await GetHTMLString("LeagueInvite.cshtml", model);
+
+            await emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
         }
     }
 }
