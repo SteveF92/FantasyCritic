@@ -12,7 +12,7 @@ namespace FantasyCritic.SendGrid
 
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY_FANTASY_CRITIC", EnvironmentVariableTarget.User);
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY_FANTASY_CRITIC", EnvironmentVariableTarget.Machine);
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(InternalEmail, "FantasyCritic");
             var to = new EmailAddress(email);

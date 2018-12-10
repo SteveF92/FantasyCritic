@@ -114,7 +114,8 @@ export const routes = [
     component: ConfirmEmail,
     name: "confirmEmail",
     meta: {
-      title: "Confirm Email"
+      title: "Confirm Email",
+      isPublic: true
     }
   },
   {
