@@ -53,10 +53,11 @@ namespace FantasyCritic.Web.Extensions
         {
             string emailAddress = user.EmailAddress;
             string emailSubject = "FantasyCritic - Change Your Email.";
-            string link = $"{baseURL}/changeEmail?NewEmailAddress={UrlEncoder.Default.Encode(newEmailAddress)}&Code={UrlEncoder.Default.Encode(changeCode)}";
-            string emailBody = $"Please use this link to change your account email:\n {link}";
 
-            await emailSender.SendEmailAsync(emailAddress, emailSubject, emailBody);
+            ChangeEmailModel model = new ChangeEmailModel(user, newEmailAddress, changeCode, baseURL);
+            var htmlResult = await GetHTMLString("ChangeEmail.cshtml", model);
+
+            await emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
         }
 
         public static async Task SendInviteEmail(this IEmailSender emailSender, string inviteEmail, string leagueName, FantasyCriticUser leagueManager, string baseURL)

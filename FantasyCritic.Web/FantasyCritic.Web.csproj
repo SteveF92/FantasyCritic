@@ -29,6 +29,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Update="EmailTemplates\ChangeEmail.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="EmailTemplates\PasswordReset.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
