@@ -57,7 +57,7 @@ namespace FantasyCritic.Web.Controllers.API
             Instant issuedTime = Instant.FromUnixTimeSeconds(Convert.ToInt64(issuedTimeString));
             if (issuedTime < user.LastChangedCredentials)
             {
-                return StatusCode(401, "No Retry");
+                return StatusCode(401);
             }
 
             var newJwtToken = _tokenService.GenerateAccessToken(principal.Claims);
