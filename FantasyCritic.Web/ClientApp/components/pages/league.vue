@@ -8,14 +8,14 @@
       <h2>{{ league.leagueName }}</h2>
       <div class="year-selector">
         <div>
-          <b-button variant="info" v-b-modal="'addNewLeagueYear'">Start new Year</b-button>
+          <b-button v-if="league.isManager" variant="info" v-b-modal="'addNewLeagueYear'">Start new Year</b-button>
         </div>
         <div>
           <b-form-select v-model="activeYear" :options="league.years" />
         </div>
       </div>
     </div>
-    <addNewLeagueYearForm :league="league" v-on:actionTaken="actionTaken"></addNewLeagueYearForm>
+    <addNewLeagueYearForm v-if="league.isManager" :league="league" v-on:actionTaken="actionTaken"></addNewLeagueYearForm>
 
     <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">
       The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!
@@ -30,7 +30,7 @@
       </ul>
     </div>
 
-    <div v-if="league && league.isManager">
+    <div v-if="league.isManager">
       <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: year }}">Edit League Settings</router-link>
     </div>
 
