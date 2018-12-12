@@ -87,7 +87,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var supportedYears = await _fantasyCriticService.GetSupportedYears();
@@ -108,7 +108,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (league.Value.Years.Contains(request.Year))
@@ -161,7 +161,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             await _fantasyCriticService.ChangeLeagueName(league.Value, request.LeagueName);
@@ -196,7 +196,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(request.MaximumEligibilityLevel);
@@ -230,7 +230,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             foreach (var year in league.Value.Years)
@@ -276,7 +276,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             Result result = await _fantasyCriticService.RescindInvite(league.Value, request.InviteEmail);
@@ -306,7 +306,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (league.Value.LeagueManager.UserID == request.UserID)
@@ -606,7 +606,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
@@ -659,7 +659,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
@@ -814,7 +814,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
@@ -862,7 +862,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);

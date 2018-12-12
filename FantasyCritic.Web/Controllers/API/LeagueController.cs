@@ -90,7 +90,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInvitedToLeague = inviteesToLeague.Any(x => x == currentUser.EmailAddress);
             if (!userIsInLeague && !userIsInvitedToLeague)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             bool neverStarted = true;
@@ -125,7 +125,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInvitedToLeague = inviteesToLeague.Any(x => x == currentUser.EmailAddress);
             if (!userIsInLeague && !userIsInvitedToLeague)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
@@ -169,7 +169,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInvitedToLeague = inviteesToLeague.Any(x => x == currentUser.EmailAddress);
             if (!userIsInLeague && !userIsInvitedToLeague)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var leagueActions = await _fantasyCriticService.GetLeagueActions(leagueYear.Value);
@@ -193,7 +193,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
             if (!userIsInLeague)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             bool leaguePlayingYear = publisher.Value.League.Years.Contains(publisher.Value.Year);
@@ -231,7 +231,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
             if (!userIsInLeague)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var leagueViewModel = new LeagueYearSettingsViewModel(league.Value, leagueYear.Value);
