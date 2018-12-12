@@ -13,6 +13,9 @@
         Consider supporting them on <a href="https://www.patreon.com/OpenCritic/">Patreon</a>.
       </p>
 
+      <p>If you want to follow updates about the site, join our <a href="https://www.reddit.com/r/fantasycritic/">subreddit</a>
+      and follow <a href="https://twitter.com/fantasy_critic">@fantasy_critic</a> on Twitter</p>
+
       <p>
         This site is open source. If you want to help work on features or fix bugs, contact me on <a href="https://github.com/SteveF92/FantasyCritic">GitHub</a>.
       </p>
