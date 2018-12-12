@@ -352,7 +352,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task UpdateFantasyPoints(int year)
         {
-            LeagueWideValues leagueWideValues = await GetLeagueWideValues();
+            SystemWideValues systemWideValues = await GetLeagueWideValues();
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
 
             IReadOnlyList<LeagueYear> activeLeagueYears = await GetLeagueYears(year);
@@ -363,7 +363,7 @@ namespace FantasyCritic.Lib.Services
                 {
                     foreach (var publisherGame in publisher.PublisherGames)
                     {
-                        decimal? fantasyPoints = leagueYear.Options.ScoringSystem.GetPointsForGame(publisherGame, _clock, leagueWideValues);
+                        decimal? fantasyPoints = leagueYear.Options.ScoringSystem.GetPointsForGame(publisherGame, _clock, systemWideValues);
                         publisherGameScores.Add(publisherGame.PublisherGameID, fantasyPoints);
                     }
                 }
@@ -375,14 +375,14 @@ namespace FantasyCritic.Lib.Services
         public async Task UpdateFantasyPoints(LeagueYear leagueYear)
         {
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
-            LeagueWideValues leagueWideValues = await GetLeagueWideValues();
+            SystemWideValues systemWideValues = await GetLeagueWideValues();
 
             var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             foreach (var publisher in publishersInLeague)
             {
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
-                    decimal? fantasyPoints = leagueYear.Options.ScoringSystem.GetPointsForGame(publisherGame, _clock, leagueWideValues);
+                    decimal? fantasyPoints = leagueYear.Options.ScoringSystem.GetPointsForGame(publisherGame, _clock, systemWideValues);
                     publisherGameScores.Add(publisherGame.PublisherGameID, fantasyPoints);
                 }
             }
@@ -683,10 +683,10 @@ namespace FantasyCritic.Lib.Services
                 return;
             }
 
-            LeagueWideValues leagueWideValues = await GetLeagueWideValues();
+            SystemWideValues systemWideValues = await GetLeagueWideValues();
 
             var insufficientFundsBids = allActiveBids.Where(x => x.BidAmount > x.Publisher.Budget);
-            var winnableBids = GetWinnableBids(allActiveBids, leagueYear.Options, leagueWideValues);
+            var winnableBids = GetWinnableBids(allActiveBids, leagueYear.Options, systemWideValues);
             var winningBids = GetWinningBids(winnableBids);
 
             var takenGames = winningBids.Select(x => x.MasterGame);
@@ -719,7 +719,7 @@ namespace FantasyCritic.Lib.Services
             return activeBids;
         }
 
-        private IReadOnlyList<PickupBid> GetWinnableBids(IEnumerable<PickupBid> activeBidsForLeagueYear, LeagueOptions options, LeagueWideValues leagueWideValues)
+        private IReadOnlyList<PickupBid> GetWinnableBids(IEnumerable<PickupBid> activeBidsForLeagueYear, LeagueOptions options, SystemWideValues systemWideValues)
         {
             List<PickupBid> winnableBids = new List<PickupBid>();
 
@@ -735,7 +735,7 @@ namespace FantasyCritic.Lib.Services
                 else
                 {
                     var bestBids = gameGroup.MaxBy(x => x.BidAmount);
-                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.Publisher.GetProjectedFantasyPoints(options.ScoringSystem, leagueWideValues));
+                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.Publisher.GetProjectedFantasyPoints(options.ScoringSystem, systemWideValues));
                     bestBid = bestBidsByProjectedScore.First();
                 }
 
@@ -1025,9 +1025,9 @@ namespace FantasyCritic.Lib.Services
             return true;
         }
 
-        public Task<LeagueWideValues> GetLeagueWideValues()
+        public Task<SystemWideValues> GetLeagueWideValues()
         {
-            return _fantasyCriticRepo.GetLeagueWideValues();
+            return _fantasyCriticRepo.GetSystemWideValues();
         }
     }
 }

@@ -52,9 +52,9 @@ namespace FantasyCritic.Lib.Domain
             return true;
         }
 
-        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, LeagueWideValues leagueWideValues)
+        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues)
         {
-            return scoringSystem.GetProjectedPointsForGame(this, leagueWideValues);
+            return scoringSystem.GetProjectedPointsForGame(this, systemWideValues);
         }
 
         public override string ToString() => GameName;

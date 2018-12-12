@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class LeagueWideValues
+    public class SystemWideValues
     {
-        public LeagueWideValues(decimal averageStandardGamePoints, decimal averageCounterPickPoints)
+        public SystemWideValues(decimal averageStandardGamePoints, decimal averageCounterPickPoints)
         {
             AverageStandardGamePoints = averageStandardGamePoints;
             AverageCounterPickPoints = averageCounterPickPoints;

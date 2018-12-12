@@ -900,11 +900,11 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<LeagueWideValues> GetLeagueWideValues()
+        public async Task<SystemWideValues> GetSystemWideValues()
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var result = await connection.QuerySingleAsync<LeagueWideValuesEntity>("select * from vwleaguewidevalues;");
+                var result = await connection.QuerySingleAsync<SystemWideValuesEntity>("select * from vwsystemwidevalues;");
                 return result.ToDomain();
             }
         }

@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
     {
         public override string Name => "Standard";
 
-        protected override decimal? GetPointsInternal(PublisherGame publisherGame, IClock clock, LeagueWideValues leagueWideValues)
+        protected override decimal? GetPointsInternal(PublisherGame publisherGame, IClock clock, SystemWideValues systemWideValues)
         {
             if (publisherGame.MasterGame.HasNoValue)
             {
@@ -31,7 +31,7 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
             decimal? possibleManualScore = publisherGame.ManualCriticScore;
             if (possibleManualScore.HasValue)
             {
-                return GetPointsForScore(publisherGame, possibleManualScore.Value, leagueWideValues);
+                return GetPointsForScore(publisherGame, possibleManualScore.Value, systemWideValues);
             }
 
             decimal? possibleCriticScore = publisherGame.MasterGame.Value.MasterGame.CriticScore;
@@ -40,10 +40,10 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
                 return 0m;
             }
 
-            return GetPointsForScore(publisherGame, possibleCriticScore.Value, leagueWideValues);
+            return GetPointsForScore(publisherGame, possibleCriticScore.Value, systemWideValues);
         }
 
-        protected override decimal GetPointsForScore(PublisherGame publisherGame, decimal? criticScore, LeagueWideValues leagueWideValues)
+        protected override decimal GetPointsForScore(PublisherGame publisherGame, decimal? criticScore, SystemWideValues systemWideValues)
         {
             if (criticScore.HasValue)
             {
@@ -67,10 +67,10 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
 
             if (publisherGame.CounterPick)
             {
-                return leagueWideValues.AverageCounterPickPoints;
+                return systemWideValues.AverageCounterPickPoints;
             }
 
-            return leagueWideValues.AverageStandardGamePoints;
+            return systemWideValues.AverageStandardGamePoints;
         }
     }
 }

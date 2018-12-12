@@ -7,14 +7,14 @@ using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.MySQL.Entities
 {
-    public class LeagueWideValuesEntity
+    public class SystemWideValuesEntity
     {
         public decimal AverageStandardGamePoints { get; set; }
         public decimal AverageCounterPickPoints { get; set; }
 
-        public LeagueWideValues ToDomain()
+        public SystemWideValues ToDomain()
         {
-            return new LeagueWideValues(AverageStandardGamePoints, AverageCounterPickPoints);
+            return new SystemWideValues(AverageStandardGamePoints, AverageCounterPickPoints);
         }
     }
 }
