@@ -17,7 +17,9 @@ fontawesome.library.add(
   // Brands
   require('@fortawesome/fontawesome-free-brands/faFontAwesome'),
   require('@fortawesome/fontawesome-free-brands/faMicrosoft'),
-  require('@fortawesome/fontawesome-free-brands/faVuejs')
+  require('@fortawesome/fontawesome-free-brands/faVuejs'),
+  require('@fortawesome/fontawesome-free-brands/faTwitterSquare'),
+  require('@fortawesome/fontawesome-free-brands/faRedditSquare')
 )
 
 export {

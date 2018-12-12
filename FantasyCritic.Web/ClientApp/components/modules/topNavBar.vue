@@ -15,39 +15,46 @@
                         <router-link :to="{ name: 'contact' }" class="nav-link" title="Contact">Contact</router-link>
                     </li>
                 </ul>
-                <div v-if="isAuth">
-                    <div class="my-2 my-lg-0">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item">
-                                <a class="nav-link nav-icon" href="#">
-                                  <icon icon="bell" />
-                                </a>
-                            </li>
-                            <li v-if="userName" class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                                    {{userName}}
-                                    <span class="caret"></span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
-                                    <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#" v-on:click="logout()">Log off</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div v-if="!isAuth">
-                    <div class="my-2 my-lg-0">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item">
-                                <b-button variant="primary" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
-                            </li>
-                            <li class="nav-item">
-                                <b-button variant="info" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
-                            </li>
-                        </ul>
-                    </div>
+                
+                <div class="my-2 my-lg-0">
+                  <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                      <a class="nav-link nav-icon" href="https://twitter.com/fantasy_critic">
+                        <icon :icon="['fab', 'twitter-square']" />
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link nav-icon" href="https://www.reddit.com/r/fantasycritic/">
+                        <icon :icon="['fab', 'reddit-square']" />
+                      </a>
+                    </li>
+                    <slot v-if="isAuth">
+                      <li class="nav-item">
+                        <a class="nav-link nav-icon" href="#">
+                          <icon icon="bell" />
+                        </a>
+                      </li>
+                      <li v-if="userName" class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                          {{userName}}
+                          <span class="caret"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
+                          <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="#" v-on:click="logout()">Log off</a>
+                        </div>
+                      </li>
+                    </slot>
+                    <slot v-else>
+                      <li class="nav-item">
+                        <b-button variant="primary" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
+                      </li>
+                      <li class="nav-item">
+                        <b-button variant="info" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
+                      </li>
+                    </slot>
+                  </ul>
                 </div>
             </div>
         </nav>
