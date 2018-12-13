@@ -19,12 +19,12 @@
                 <div class="my-2 my-lg-0">
                   <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                      <a class="nav-link nav-icon" href="https://twitter.com/fantasy_critic">
+                      <a class="nav-link nav-icon" href="https://twitter.com/fantasy_critic" target="_blank">
                         <icon :icon="['fab', 'twitter-square']" />
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link nav-icon" href="https://www.reddit.com/r/fantasycritic/">
+                      <a class="nav-link nav-icon" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
                         <icon :icon="['fab', 'reddit-square']" />
                       </a>
                     </li>
