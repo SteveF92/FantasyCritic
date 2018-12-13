@@ -26,7 +26,7 @@
       TopNavbar
     },
     mounted() {
-
+      this.$store.dispatch("getUserInfo");
     }
   };
 </script>

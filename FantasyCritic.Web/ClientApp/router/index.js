@@ -15,16 +15,9 @@ router.beforeEach(function (toRoute, fromRoute, next) {
   if (toRoute.meta.title) {
     document.title = toRoute.meta.title + " - Fantasy Critic";
   }
-  if (toRoute.meta.publicOnly && store.getters.tokenIsCurrent(new Date())) {
-    next({ path: "/home" });
-    return;
-  }
-  if (toRoute.meta.isPublic) {
-    next();
-    return;
-  }
 
-  if (!store.getters.hasToken) {
+  //Attempt to get local token if we don't have it in memory
+  if (!store.getters.tokenIsCurrent()) {
     var token = localStorage.getItem("jwt_token");
     if (token) {
       var expiration = localStorage.getItem("jwt_expiration");
@@ -36,15 +29,26 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     }
   }
 
-  if (!store.getters.hasToken) {
-    store.commit("setRedirect", toRoute.path);
-    next({ name: 'login' });
+  //If we are current, we're good to go
+  if (store.getters.tokenIsCurrent()) {
+    if (toRoute.meta.publicOnly) {
+      next({ path: "/home" });
+      return;
+    }
+    next();
     return;
   }
 
-  if (!store.getters.tokenIsCurrent(new Date())) {
-    var oldToken = localStorage.getItem("jwt_token");
-    var refreshToken = localStorage.getItem("refresh_token");
+  //If we're not current but the page is public, we're good.
+  if (toRoute.meta.isPublic) {
+    next();
+    return;
+  }
+
+  //If not current and not public, attempt refresh token.
+  var oldToken = localStorage.getItem("jwt_token");
+  var refreshToken = localStorage.getItem("refresh_token");
+  if (oldToken && refreshToken) {
     var refreshRequest = {
       token: oldToken,
       refreshToken: refreshToken
@@ -54,21 +58,23 @@ router.beforeEach(function (toRoute, fromRoute, next) {
       .then(() => {
         if (store.getters.tokenIsCurrent(new Date())) {
           next();
+          return;
         } else {
           store.commit("setRedirect", toRoute.path);
           next({ name: 'login' });
+          return;
         }
       })
       .catch(() => {
         console.log("Router error");
-        context.commit("clearUserAndToken");
+        store.commit("clearUserAndToken");
         next({ name: 'login' });
+        return;
       });
-  }
-
-  if (store.getters.tokenIsCurrent(new Date())) {
-    store.dispatch("getUserInfo")
-      .then(() => { next() });
+  } else {
+    store.commit("clearUserAndToken");
+    next({ name: 'login' });
+    return;
   }
 });
 

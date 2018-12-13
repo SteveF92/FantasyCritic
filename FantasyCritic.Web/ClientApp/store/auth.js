@@ -18,11 +18,12 @@ export default {
       return state.jwt;
     },
     tokenIsCurrent(state) {
-      return (now) => {
+      return () => {
         if (state.jwt === null || state.expiration === null) {
           return false;
         }
         var expire = state.expiration;
+        var now = new Date();
         var before = expire > now;
 
         return state.jwt && before;
