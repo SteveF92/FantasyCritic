@@ -70,9 +70,9 @@ namespace FantasyCritic.Lib.Domain
                 return Result.Fail("Can't draft more than the total number of standard games.");
             }
 
-            if (CounterPicks > StandardGames)
+            if (CounterPicks > GamesToDraft)
             {
-                return Result.Fail("Can't have more counter picks than standard games.");
+                return Result.Fail("Can't have more counter picks than drafted games.");
             }
 
             return Result.Ok();
