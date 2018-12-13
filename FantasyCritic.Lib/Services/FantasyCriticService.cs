@@ -265,8 +265,14 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request)
         {
+            Maybe<MasterGameYear> masterGameYear = Maybe<MasterGameYear>.None;
+            if (request.MasterGame.HasValue)
+            {
+                masterGameYear = new MasterGameYear(request.MasterGame.Value, request.Publisher.Year);
+            }
+
             PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null, 
-                new MasterGameYear(request.MasterGame.Value, request.Publisher.Year), request.DraftPosition, request.OverallDraftPosition, request.Publisher.Year);
+                masterGameYear, request.DraftPosition, request.OverallDraftPosition, request.Publisher.Year);
 
             ClaimResult claimResult = await CanClaimGame(request);
 
