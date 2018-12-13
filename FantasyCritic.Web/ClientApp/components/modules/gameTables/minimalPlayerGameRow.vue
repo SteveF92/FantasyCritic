@@ -1,7 +1,7 @@
 <template>
   <tr class="minimal-game-row table-default" v-bind:class="{ 'table-danger': game.counterPick }">
     <td class="game-column">
-      <popper trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
+      <popper v-if="game.linked" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
         <div class="popper">
           <masterGamePopover :mastergameid="game.masterGameID"></masterGamePopover>
         </div>
