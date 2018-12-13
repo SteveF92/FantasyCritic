@@ -26,7 +26,9 @@
       TopNavbar
     },
     mounted() {
-      this.$store.dispatch("getUserInfo");
+      if (this.$store.getters.tokenIsCurrent()) {
+        this.$store.dispatch("getUserInfo");
+      }
     }
   };
 </script>
