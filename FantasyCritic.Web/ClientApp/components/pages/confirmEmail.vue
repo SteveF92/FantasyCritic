@@ -1,42 +1,46 @@
 <template>
     <div>
-        <h2 v-if="!accountConfirmed">Confirm Email</h2>
-        <h2 v-if="accountConfirmed">Email Confirmation Successful</h2>
+        <div v-if="!accountConfirmed" class="alert alert-info">Confirming Email...</div>
+        <div v-if="accountConfirmed" class="alert alert-success">
+          <span>Email Confirmation Successful!</span>
+          <span>You will be redirected in a few seconds...</span>
+        </div>
     </div>
 </template>
 <script>
-    import axios from 'axios';
+  import axios from 'axios';
 
-    export default {
-        computed: {
-            accountConfirmed() {
-                return this.$store.getters.userInfo.emailConfirmed;
-            },
-            isAuth() {
-              return this.$store.getters.tokenIsCurrent(new Date());
-            }
-        },
-        mounted() {
-            let request = {
-                userID: this.$route.query.UserID,
-                code: this.$route.query.Code
-            };
-            axios
-                .post('/api/account/ConfirmEmail', request)
-                .then(response => {
-                  if (this.isAuth) {
-                    this.$store.dispatch("getUserInfo")
-                      .then(() => {
-                      })
-                      .catch(returnedError => {
-                      });
-                  } else {
-                    this.$router.push({ name: "login" });
-                  }    
-                })
-                .catch(response => {
+  export default {
+    computed: {
+      accountConfirmed() {
+          return this.$store.getters.userInfo.emailConfirmed;
+      },
+      isAuth() {
+        return this.$store.getters.tokenIsCurrent();
+      }
+    },
+    mounted() {
+      let request = {
+          userID: this.$route.query.UserID,
+          code: this.$route.query.Code
+      };
+      axios
+        .post('/api/account/ConfirmEmail', request)
+        .then(response => {
+          if (this.isAuth) {
+            this.$store.dispatch("getUserInfo")
+              .then(() => {
+                setTimeout(() => this.$router.push({ name: "home" }), 3000);
+              })
+              .catch(returnedError => {
+              });
+          } else {
+            setTimeout(() => this.$router.push({ name: "login" }), 3000); 
+          }    
+        })
+        .catch(response => {
 
-                });
-        }
+        });
     }
+  }
 </script>
