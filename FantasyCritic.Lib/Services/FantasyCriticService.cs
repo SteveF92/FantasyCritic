@@ -586,7 +586,7 @@ namespace FantasyCritic.Lib.Services
             {
                 if (gameAlreadyClaimed)
                 {
-                    associationErrors.Add(new ClaimError("Cannot draft a game that someone already has.", false));
+                    associationErrors.Add(new ClaimError("Cannot select a game that someone already has.", false));
                 }
             }
 
@@ -595,7 +595,7 @@ namespace FantasyCritic.Lib.Services
                 bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick).ContainsGame(request.MasterGame);
                 if (!otherPlayerHasDraftGame)
                 {
-                    associationErrors.Add(new ClaimError("Cannot counterPick a game that no other player is publishing.", false));
+                    associationErrors.Add(new ClaimError("Cannot counter pick a game that no other player is publishing.", false));
                 }
             }
 
