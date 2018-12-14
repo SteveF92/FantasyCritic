@@ -180,9 +180,9 @@
         };
         this.$emit('actionTaken', actionInfo);
       },
-      gameAssociated(gameName) {
+      gameAssociated(associateInfo) {
         let actionInfo = {
-          message: gameName + ' sucessfully associated.',
+          message: associateInfo.gameName + ' sucessfully associated.',
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
