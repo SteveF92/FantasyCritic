@@ -65,7 +65,7 @@
     export default {
         computed: {
             isAuth() {
-                return this.$store.getters.tokenIsCurrent(new Date());
+                return this.$store.getters.tokenIsCurrent();
             },
             userName() {
                 return this.$store.getters.userInfo.userName;

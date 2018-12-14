@@ -50,15 +50,13 @@ router.beforeEach(function (toRoute, fromRoute, next) {
 
     store.dispatch("refreshToken", refreshRequest)
       .then(() => {
-        if (store.getters.tokenIsCurrent(new Date())) {
-          if (store.getters.tokenIsCurrent()) {
-            if (toRoute.meta.publicOnly) {
-              next({ path: "/home" });
-              return;
-            }
-            next();
+        if (store.getters.tokenIsCurrent()) {
+          if (toRoute.meta.publicOnly) {
+            next({ path: "/home" });
             return;
           }
+          next();
+          return;
         } else {
           store.commit("setRedirect", toRoute.path);
           next({ name: 'login' });
