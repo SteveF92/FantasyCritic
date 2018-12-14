@@ -6,7 +6,7 @@ export default {
     jwt: null,
     expiration: null,
     redirect: "",
-    userInfo: {},
+    userInfo: null,
     newAccountCreated: false
   },
   getters: {

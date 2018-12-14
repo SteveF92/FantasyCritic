@@ -28,7 +28,7 @@
                         <icon :icon="['fab', 'reddit-square']" />
                       </a>
                     </li>
-                    <slot v-if="isAuth">
+                    <slot v-if="isAuth && hasUserInfo">
                       <!--<li class="nav-item">
                         <a class="nav-link nav-icon" href="#">
                           <icon icon="bell" />
@@ -64,12 +64,15 @@
 <script>
     export default {
         computed: {
-            isAuth() {
-                return this.$store.getters.tokenIsCurrent();
-            },
-            userName() {
-                return this.$store.getters.userInfo.userName;
-            },
+          isAuth() {
+              return this.$store.getters.tokenIsCurrent();
+          },
+          hasUserInfo() {
+            return this.$store.getters.userInfo;
+          },
+          userName() {
+              return this.$store.getters.userInfo.userName;
+          }
         },
         methods: {
             logout() {

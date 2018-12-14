@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Welcome to Fantasy Critic!</h2>
-    <div class="alert alert-warning" v-show="!userInfo.emailConfirmed">
+    <div class="alert alert-warning" v-show="userInfo && !userInfo.emailConfirmed">
       <div>Your email address has not been confirmed. You cannot accept league invites until you do so.</div>
       <div>Check your email account for an email from us.</div>
     </div>
@@ -40,7 +40,7 @@
         <hr />
       </div>
 
-      <div v-if="noLeagues">
+      <div v-if="!fetchingLeagues && noLeagues">
         You are not part of any leagues! Why not start one?
       </div>
     </div>
@@ -57,7 +57,8 @@
             return {
                 errorInfo: "",
                 myLeagues: [],
-                invitedLeagues: []
+                invitedLeagues: [],
+                fetchingLeagues: true
             }
         },
         computed: {
@@ -82,7 +83,8 @@
                 axios
                     .get('/api/League/MyLeagues')
                     .then(response => {
-                        this.myLeagues = response.data;
+                      this.myLeagues = response.data;
+                      this.fetchInvitedLeagues();
                     })
                     .catch(returnedError => (this.error = returnedError));
             },
@@ -90,14 +92,15 @@
                 axios
                     .get('/api/League/MyInvites')
                     .then(response => {
-                        this.invitedLeagues = response.data;
+                      this.invitedLeagues = response.data;
+                      this.fetchingLeagues = false;
                     })
                     .catch(returnedError => (this.error = returnedError));
             }
         },
         mounted() {
             this.fetchMyLeagues();
-            this.fetchInvitedLeagues();
+            
         }
     }
 </script>
