@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" title="Select Draft Game" hide-footer @hidden="clearData">
+  <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData">
     <div class="form-group">
       <label for="nextPublisherUp" class="control-label">Select the next game for publisher: </label>
       <div>
@@ -10,12 +10,28 @@
       <div class="form-group">
         <label for="draftGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input v-model="draftGameName" id="draftGameName" name="draftGameName" type="text" class="form-control input" />
+          <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
           </span>
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
+
+        <div v-show="searched && !draftMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+          <div class="row">
+            <span class="col-8" v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
+            <span class="col-8" v-show="possibleMasterGames.length === 0">No games were found.</span>
+            <b-button variant="primary" v-on:click="showUnlistedField" class="col-4" size="sm">Select unlisted game.</b-button>
+          </div>
+
+          <div v-if="showingUnlistedField">
+            <label for="draftUnlistedGame" class="control-label">Custom Game Name</label>
+            <div class="input-group game-search-input">
+              <input v-model="draftUnlistedGame" id="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
+            </div>
+          </div>
+
+        </div>
         <div v-if="draftMasterGame">
           Selected Game: {{draftMasterGame.gameName}}
         </div>
@@ -52,12 +68,15 @@
     export default {
         data() {
             return {
-                draftGameName: null,
+                searchGameName: null,
+                draftUnlistedGame: null,
                 draftMasterGame: null,
                 draftGameType: null,
                 draftResult: null,
                 draftOverride: false,
-                possibleMasterGames: []
+                possibleMasterGames: [],
+                searched: false,
+                showingUnlistedField: false
             }
         },
         components: {
@@ -65,25 +84,32 @@
         },
         computed: {
           formIsValid() {
-            return (this.draftGameName);
+            return (this.draftUnlistedGame || this.draftMasterGame);
           },
         },
         props: ['nextPublisherUp', 'maximumEligibilityLevel'],
         methods: {
             searchGame() {
                 axios
-                    .get('/api/game/MasterGame?gameName=' + this.draftGameName)
+                    .get('/api/game/MasterGame?gameName=' + this.searchGameName)
                     .then(response => {
-                        this.possibleMasterGames = response.data;
+                      this.possibleMasterGames = response.data;
+                      this.searched = true;
+                      this.draftMasterGame = null;
                     })
                     .catch(response => {
 
                     });
             },
+          showUnlistedField() {
+            this.showingUnlistedField = true;
+            },
             addGame() {
-                var gameName = this.draftGameName;
+                var gameName = "";
                 if (this.draftMasterGame !== null) {
-                    gameName = this.draftMasterGame.gameName;
+                  gameName = this.draftMasterGame.gameName;
+                } else if (this.draftUnlistedGame !== null) {
+                  gameName = this.draftUnlistedGame;
                 }
 
                 var masterGameID = null;
@@ -112,21 +138,22 @@
                         publisherName: this.nextPublisherUp.publisherName
                       };
                       this.$emit('gameDrafted', draftInfo);
-                      this.draftGameName = null;
-                      this.draftMasterGame = null;
-                      this.draftOverride = false;
-                      this.possibleMasterGames = [];
+                      this.clearData();
                     })
                     .catch(response => {
                       
                     });
             },
             clearData() {
-              this.draftResult = null;
-              this.draftGameName = null;
+              this.searchGameName = null;
+              this.draftUnlistedGame = null;
               this.draftMasterGame = null;
+              this.draftGameType = null;
+              this.draftResult = null;
               this.draftOverride = false;
               this.possibleMasterGames = [];
+              this.searched = false;
+              this.showingUnlistedField = false;
             }
         }
     }
