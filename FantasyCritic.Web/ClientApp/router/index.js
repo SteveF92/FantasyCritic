@@ -39,12 +39,6 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     return;
   }
 
-  //If we're not current but the page is public, we're good.
-  if (toRoute.meta.isPublic) {
-    next();
-    return;
-  }
-
   //If not current and not public, attempt refresh token.
   var oldToken = localStorage.getItem("jwt_token");
   var refreshToken = localStorage.getItem("refresh_token");
@@ -57,8 +51,14 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     store.dispatch("refreshToken", refreshRequest)
       .then(() => {
         if (store.getters.tokenIsCurrent(new Date())) {
-          next();
-          return;
+          if (store.getters.tokenIsCurrent()) {
+            if (toRoute.meta.publicOnly) {
+              next({ path: "/home" });
+              return;
+            }
+            next();
+            return;
+          }
         } else {
           store.commit("setRedirect", toRoute.path);
           next({ name: 'login' });
@@ -72,9 +72,14 @@ router.beforeEach(function (toRoute, fromRoute, next) {
         return;
       });
   } else {
-    store.commit("clearUserAndToken");
-    next({ name: 'login' });
-    return;
+    if (toRoute.meta.isPublic) {
+      next();
+      return;
+    } else {
+      store.commit("clearUserAndToken");
+      next({ name: 'login' });
+      return;
+    }
   }
 });
 
