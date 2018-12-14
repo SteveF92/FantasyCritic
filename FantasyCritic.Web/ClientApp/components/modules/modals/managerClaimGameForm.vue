@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="claimGameForm" ref="claimGameFormRef" title="Add Publisher Game" hide-footer @hidden="clearData">
+  <b-modal id="claimGameForm" ref="claimGameFormRef" size="lg" title="Add Publisher Game" hide-footer @hidden="clearData">
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="claimGameName" class="control-label">Game Name</label>
@@ -10,7 +10,6 @@
           </span>
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
-
 
         <div v-show="searched && !claimMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
@@ -151,7 +150,6 @@
                     };
                     this.$emit('gameClaimed', claimInfo);
                     this.clearData();
-
                   })
                   .catch(response => {
                       
@@ -159,6 +157,7 @@
           },
           showUnlistedField() {
             this.showingUnlistedField = true;
+            this.draftUnlistedGame = this.searchGameName;
           },
           clearData() {
             this.searchGameName = null;

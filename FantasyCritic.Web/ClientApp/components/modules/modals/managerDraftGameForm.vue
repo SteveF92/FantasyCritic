@@ -104,8 +104,9 @@
 
                     });
             },
-          showUnlistedField() {
-            this.showingUnlistedField = true;
+            showUnlistedField() {
+              this.showingUnlistedField = true;
+              this.draftUnlistedGame = this.searchGameName;
             },
             addGame() {
                 var gameName = "";
