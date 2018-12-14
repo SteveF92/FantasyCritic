@@ -80,27 +80,27 @@
         },
         methods: {
             fetchMyLeagues() {
-                axios
-                    .get('/api/League/MyLeagues')
-                    .then(response => {
-                      this.myLeagues = response.data;
-                      this.fetchInvitedLeagues();
-                    })
-                    .catch(returnedError => (this.error = returnedError));
+              axios
+                .get('/api/League/MyLeagues')
+                .then(response => {
+                  this.myLeagues = response.data;
+                  this.fetchingLeagues = false;
+                })
+                .catch(returnedError => (this.error = returnedError));
             },
             fetchInvitedLeagues() {
-                axios
-                    .get('/api/League/MyInvites')
-                    .then(response => {
-                      this.invitedLeagues = response.data;
-                      this.fetchingLeagues = false;
-                    })
-                    .catch(returnedError => (this.error = returnedError));
+              axios
+                .get('/api/League/MyInvites')
+                .then(response => {
+                  this.invitedLeagues = response.data;
+                  this.fetchMyLeagues();
+
+                })
+                .catch(returnedError => (this.error = returnedError));
             }
         },
         mounted() {
-            this.fetchMyLeagues();
-            
+          this.fetchInvitedLeagues();
         }
     }
 </script>
