@@ -29,6 +29,8 @@
             <div class="input-group game-search-input">
               <input v-model="draftUnlistedGame" id="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
             </div>
+            <div>Enter the full name of the game you want.</div>
+            <div>You as league manager can link this custom game with a "master game" later.</div>
           </div>
 
         </div>
@@ -95,6 +97,7 @@
                     .then(response => {
                       this.possibleMasterGames = response.data;
                       this.searched = true;
+                      this.showingUnlistedField = false;
                       this.draftMasterGame = null;
                     })
                     .catch(response => {
