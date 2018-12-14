@@ -1,15 +1,33 @@
 <template>
-  <b-modal id="playerDraftGameForm" ref="playerDraftGameFormRef" title="Select Draft Game" hide-footer @hidden="clearData">
+  <b-modal id="playerDraftGameForm" ref="playerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData">
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="draftGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input v-model="draftGameName" id="draftGameName" name="draftGameName" type="text" class="form-control input" />
+          <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
           </span>
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
+
+        <div v-show="searched && !draftMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+          <div class="row">
+            <span class="col-8" v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
+            <span class="col-8" v-show="possibleMasterGames.length === 0">No games were found.</span>
+            <b-button variant="primary" v-on:click="showUnlistedField" class="col-4" size="sm">Select unlisted game.</b-button>
+          </div>
+
+          <div v-if="showingUnlistedField">
+            <label for="draftUnlistedGame" class="control-label">Custom Game Name</label>
+            <div class="input-group game-search-input">
+              <input v-model="draftUnlistedGame" id="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
+            </div>
+            <div>Enter the full name of the game you want.</div>
+            <div>Your league manager can link this custom game with a "master game" later.</div>
+          </div>
+        </div>
+
         <div v-if="draftMasterGame">
           Selected Game: {{draftMasterGame.gameName}}
         </div>
@@ -45,13 +63,15 @@
     export default {
         data() {
             return {
-                draftGameName: null,
-                draftMasterGame: null,
-                draftGameType: null,
-                draftResult: null,
-                draftOverride: false,
-                draftCounterPick: false,
-                possibleMasterGames: []
+              searchGameName: null,
+              draftUnlistedGame: null,
+              draftMasterGame: null,
+              draftGameType: null,
+              draftResult: null,
+              draftOverride: false,
+              possibleMasterGames: [],
+              searched: false,
+              showingUnlistedField: false
             }
         },
         components: {
@@ -59,68 +79,78 @@
         },
         computed: {
           formIsValid() {
-            return (this.draftGameName);
+            return (this.draftUnlistedGame || this.draftMasterGame);
           }
         },
         props: ['userPublisher', 'maximumEligibilityLevel'],
         methods: {
-            searchGame() {
-                axios
-                    .get('/api/game/MasterGame?gameName=' + this.draftGameName)
-                    .then(response => {
-                        this.possibleMasterGames = response.data;
-                    })
-                    .catch(response => {
-
-                    });
-            },
-            addGame() {
-                var gameName = this.draftGameName;
-                if (this.draftMasterGame !== null) {
-                    gameName = this.draftMasterGame.gameName;
-                }
-
-                var masterGameID = null;
-                if (this.draftMasterGame !== null) {
-                    masterGameID = this.draftMasterGame.masterGameID;
-                }
-
-                var request = {
-                    publisherID: this.userPublisher.publisherID,
-                    gameName: gameName,
-                    counterPick: this.draftCounterPick,
-                    masterGameID: masterGameID,
-                    managerOverride: this.draftOverride
-                };
-
-                axios
-                  .post('/api/league/DraftGame', request)
+          searchGame() {
+              axios
+                  .get('/api/game/MasterGame?gameName=' + this.searchGameName)
                   .then(response => {
-                      this.draftResult = response.data;
-                      if (!this.draftResult.success) {
-                        return;
-                      }
-                      this.$refs.playerDraftGameFormRef.hide();
-                      var draftInfo = {
-                        gameName
-                      };
-                      this.$emit('gameDrafted', draftInfo);
-                      this.draftGameName = null;
-                      this.draftMasterGame = null;
-                      this.draftCounterPick = false;
-                      this.possibleMasterGames = [];
-                    })
-                    .catch(response => {
-                      
-                    });
-            },
-            clearData() {
-              this.draftResult = null;
-              this.draftGameName = null;
-              this.draftMasterGame = null;
-              this.draftCounterPick = false;
-              this.possibleMasterGames = [];
+                    this.possibleMasterGames = response.data;
+                    this.searched = true;
+                    this.showingUnlistedField = false;
+                    this.draftMasterGame = null;
+                  })
+                  .catch(response => {
+
+                  });
+          },
+          showUnlistedField() {
+            this.showingUnlistedField = true;
+            this.draftUnlistedGame = this.searchGameName;
+          },
+          addGame() {
+            var gameName = "";
+            if (this.draftMasterGame !== null) {
+              gameName = this.draftMasterGame.gameName;
+            } else if (this.draftUnlistedGame !== null) {
+              gameName = this.draftUnlistedGame;
             }
+
+            var masterGameID = null;
+            if (this.draftMasterGame !== null) {
+                masterGameID = this.draftMasterGame.masterGameID;
+            }
+
+            var request = {
+                publisherID: this.userPublisher.publisherID,
+                gameName: gameName,
+                counterPick: this.draftCounterPick,
+                masterGameID: masterGameID,
+                managerOverride: this.draftOverride
+            };
+
+            axios
+              .post('/api/league/DraftGame', request)
+              .then(response => {
+                  this.draftResult = response.data;
+                  if (!this.draftResult.success) {
+                    return;
+                  }
+                  this.$refs.playerDraftGameFormRef.hide();
+                  var draftInfo = {
+                    gameName
+                  };
+                  this.$emit('gameDrafted', draftInfo);
+                  this.clearData();
+                })
+                .catch(response => {
+                      
+                });
+          },
+          clearData() {
+            this.searchGameName = null;
+            this.draftUnlistedGame = null;
+            this.draftMasterGame = null;
+            this.draftGameType = null;
+            this.draftResult = null;
+            this.draftOverride = false;
+            this.possibleMasterGames = [];
+            this.searched = false;
+            this.showingUnlistedField = false;
+          }
         }
     }
 </script>
