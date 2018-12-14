@@ -1,13 +1,10 @@
 <template>
   <div>
-    <div class="mobile-summary">
-      <minimalPlayerGameTable v-for="publisher in publishers" :publisher="publisher" :options="options" :yearFinished="leagueYear.supportedYear.finished"></minimalPlayerGameTable>
-    </div>
-    <div class="desktop-summary">
-      <div class="row" v-for="i in Math.ceil(publishers.length / 2)">
-        <span v-for="publisher in publishers.slice((i - 1) * 2, i * 2)" class="minimalPlayerTable">
+    <div class="container-fluid">
+      <div class="row league-summary">
+        <div class="col-lg-6 col-md-12" v-for="publisher in publishers">
           <minimalPlayerGameTable :publisher="publisher" :options="options" :yearFinished="leagueYear.supportedYear.finished"></minimalPlayerGameTable>
-        </span>
+        </div>
       </div>
     </div>
   </div>
@@ -37,23 +34,9 @@
     }
 </script>
 <style>
-  .desktop-summary .minimalPlayerTable {
-    display: inline-block;
-    width: 50%;
-  }
-  .mobile-summary .minimalPlayerTable {
-    display: inline-block;
-    width: 100%;
-  }
-
-  @media only screen and (max-width: 992px) {
-    .desktop-summary {
-      display: none;
-    }
-  }
-  @media only screen and (min-width: 993px) {
-    .mobile-summary {
-      display: none;
-    }
+  .league-summary {
+    margin: auto;
+    width: 90%;
+    left: 5%;
   }
 </style>

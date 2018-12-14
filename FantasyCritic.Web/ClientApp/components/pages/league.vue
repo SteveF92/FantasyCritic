@@ -110,9 +110,7 @@
 
     <div v-if="leagueYear">
       <h3>Summary</h3>
-      <div class="league-summary">
-        <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
-      </div>
+      <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
     </div>
 
   </div>
@@ -316,11 +314,6 @@
     }
 </script>
 <style>
-  .league-summary {
-    margin: auto;
-    width: 80%;
-    left: 10%;
-  }
   .year-selector {
     position: absolute;
     right: 0px;
