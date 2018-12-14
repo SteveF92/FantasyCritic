@@ -29,11 +29,11 @@
                       </a>
                     </li>
                     <slot v-if="isAuth">
-                      <li class="nav-item">
+                      <!--<li class="nav-item">
                         <a class="nav-link nav-icon" href="#">
                           <icon icon="bell" />
                         </a>
-                      </li>
+                      </li>-->
                       <li v-if="userName" class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
                           {{userName}}
