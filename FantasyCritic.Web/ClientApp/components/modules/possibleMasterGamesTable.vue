@@ -11,9 +11,9 @@
         <tbody>
             <tr v-for="game in possibleGames">
               <td>
-                <popper trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
+                <popper :ref="'gamePopoverRef' + game.masterGameID" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
                   <div class="popper">
-                    <masterGamePopover :mastergameid="game.masterGameID"></masterGamePopover>
+                    <masterGamePopover :mastergameid="game.masterGameID" v-on:closePopover="closePopover"></masterGamePopover>
                   </div>
 
                   <span slot="reference" class="text-primary fake-link">
@@ -55,6 +55,10 @@
       selectGame(game) {
           this.selectedMasterGame = game;
           this.$emit('input', this.selectedMasterGame);
+      },
+      closePopover(mastergameid) {
+        let refName = 'gamePopoverRef' + mastergameid;
+        this.$refs[refName][0].doClose();
       }
     }
   }

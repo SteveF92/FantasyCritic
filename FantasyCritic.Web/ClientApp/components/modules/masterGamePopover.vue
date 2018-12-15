@@ -1,5 +1,6 @@
 <template>
   <div v-if="masterGame">
+    <div class="close-button fake-link" v-on:click="closePopover">X</div>
     <img :src="boxartLink" alt="Cover Image" class="game-image">
 
     <div class="game-description">
@@ -57,6 +58,9 @@
             this.masterGame = response.data;
           })
           .catch(returnedError => (this.error = returnedError));
+      },
+      closePopover() {
+        this.$emit('closePopover', this.mastergameid);
       }
     },
     mounted() {
@@ -76,5 +80,12 @@
   }
   .game-description{
     float:left;
+  }
+  .close-button {
+    float: right;
+  }
+  .fake-link {
+    text-decoration: underline;
+    cursor: pointer;
   }
 </style>
