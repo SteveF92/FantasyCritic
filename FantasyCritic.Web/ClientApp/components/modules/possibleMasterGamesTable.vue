@@ -28,7 +28,6 @@
   import EligibilityBadge from "components/modules/eligibilityBadge";
   import MasterGamePopover from "components/modules/masterGamePopover";
 
-
   export default {
     data() {
       return {

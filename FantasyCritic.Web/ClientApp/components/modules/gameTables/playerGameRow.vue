@@ -1,7 +1,7 @@
 <template>
   <tr v-bind:class="{ 'table-danger': game.counterPick }">
     <td>
-      <router-link v-if="game.linked" class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: game.masterGameID }}">{{game.gameName}}</router-link>
+      <masterGamePopover v-if="game.linked" :mastergameid="game.masterGameID"></masterGamePopover>
       <span v-if="!game.linked">{{game.gameName}}</span>
 
       <span v-if="game.counterPick" class="counter-pick-text">
@@ -23,17 +23,21 @@
   </tr>
 </template>
 <script>
-    import Vue from "vue";
-    import moment from "moment";
+  import Vue from "vue";
+  import moment from "moment";
+  import MasterGamePopover from "components/modules/masterGamePopover";
 
-    export default {
-      props: ['game'],
-      computed: {
-        releaseDate() {
-          return moment(this.game.releaseDate).format('MMMM Do, YYYY');
-        }
+  export default {
+    components: {
+      MasterGamePopover
+    },
+    props: ['game'],
+    computed: {
+      releaseDate() {
+        return moment(this.game.releaseDate).format('MMMM Do, YYYY');
       }
     }
+  }
 </script>
 <style scoped>
   tr {
