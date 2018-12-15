@@ -11,7 +11,7 @@
           <b-button v-if="league.isManager" variant="info" v-b-modal="'addNewLeagueYear'">Start new Year</b-button>
         </div>
         <div>
-          <b-form-select v-model="activeYear" :options="league.years" />
+          <b-form-select v-model="selectedYear" :options="league.years"/>
         </div>
       </div>
     </div>
@@ -117,201 +117,193 @@
 </template>
 
 <script>
-    import Vue from "vue";
-    import axios from "axios";
-    import moment from "moment";
-    import { HubConnection } from '@aspnet/signalr';
-    import * as signalR from '@aspnet/signalr';
+  import Vue from "vue";
+  import axios from "axios";
+  import moment from "moment";
+  import { HubConnection } from '@aspnet/signalr';
+  import * as signalR from '@aspnet/signalr';
 
-    import LeagueGameSummary from "components/modules/leagueGameSummary";
-    import LeagueYearStandings from "components/modules/leagueYearStandings";
-    import PlayerActions from "components/modules/playerActions";
-    import CreatePublisherForm from "components/modules/modals/createPublisherForm";
-    import LeagueActions from "components/modules/leagueActions";
-    import StartDraftModal from "components/modules/modals/startDraftModal";
-    import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
+  import LeagueGameSummary from "components/modules/leagueGameSummary";
+  import LeagueYearStandings from "components/modules/leagueYearStandings";
+  import PlayerActions from "components/modules/playerActions";
+  import CreatePublisherForm from "components/modules/modals/createPublisherForm";
+  import LeagueActions from "components/modules/leagueActions";
+  import StartDraftModal from "components/modules/modals/startDraftModal";
+  import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
 
-    export default {
-        data() {
-            return {
-                errorInfo: "",
-                league: null,
-                leagueYear: null,
-                activeYear: null,
-                currentBids: [],
-                leagueActions: [],
-                hubConnection: null
-            }
-        },
-        props: ['leagueid', 'year'],
-        components: {
-            LeagueGameSummary,
-            LeagueYearStandings,
-            LeagueActions,
-            PlayerActions,
-            CreatePublisherForm,
-            StartDraftModal,
-            AddNewLeagueYearForm
-        },
-        computed: {
-          nextPublisherUp() {
-            let next = _.find(this.leagueYear.publishers, ['nextToDraft', true]);
-            return next;
-          },
-          userIsNextInDraft() {
-            if (this.nextPublisherUp) {
-              return this.nextPublisherUp.publisherID === this.leagueYear.userPublisher.publisherID
-            }
+  export default {
+    data() {
+      return {
+        errorInfo: "",
+        league: null,
+        leagueYear: null,
+        currentBids: [],
+        leagueActions: [],
+        hubConnection: null
+      }
+    },
+    props: ['leagueid', 'year'],
+    components: {
+      LeagueGameSummary,
+      LeagueYearStandings,
+      LeagueActions,
+      PlayerActions,
+      CreatePublisherForm,
+      StartDraftModal,
+      AddNewLeagueYearForm
+    },
+    computed: {
+      nextPublisherUp() {
+        let next = _.find(this.leagueYear.publishers, ['nextToDraft', true]);
+        return next;
+      },
+      userIsNextInDraft() {
+        if (this.nextPublisherUp) {
+          return this.nextPublisherUp.publisherID === this.leagueYear.userPublisher.publisherID
+        }
 
-            return false;
-          }
-        },
-        methods: {
-            formatDate(date) {
-              return moment(date).format('MMMM Do, YYYY');
-            },
-            fetchLeague() {
-                axios
-                    .get('/api/League/GetLeague/' + this.leagueid)
-                    .then(response => {
-                        this.league = response.data;
-                    })
-                    .catch(returnedError => (this.error = returnedError));
-            },
-            fetchLeagueYear() {
-                axios
-                    .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.activeYear)
-                    .then(response => {
-                      this.leagueYear = response.data;
-                      this.fetchCurrentBids();
-                      this.fetchLeagueActions();
-                    })
-                  .catch(returnedError => (this.error = returnedError));
-            },
-            fetchLeagueActions() {
-              axios
-                .get('/api/League/GetLeagueActions?leagueID=' + this.leagueid + '&year=' + this.activeYear)
-                .then(response => {
-                  this.leagueActions = response.data;
-                })
-                .catch(returnedError => (this.error = returnedError));
-            },
-            fetchCurrentBids() {
-              axios
-                .get('/api/league/CurrentBids/' + this.leagueYear.userPublisher.publisherID)
-                .then(response => {
-                  this.currentBids = response.data;
-                })
-                .catch(response => {
+        return false;
+      }
+    },
+    methods: {
+      formatDate(date) {
+        return moment(date).format('MMMM Do, YYYY');
+      },
+      fetchLeague() {
+          axios
+              .get('/api/League/GetLeague/' + this.leagueid)
+              .then(response => {
+                  this.league = response.data;
+              })
+              .catch(returnedError => (this.error = returnedError));
+      },
+      fetchLeagueYear() {
+          axios
+              .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
+              .then(response => {
+                this.leagueYear = response.data;
+                this.fetchCurrentBids();
+                this.fetchLeagueActions();
+              })
+            .catch(returnedError => (this.error = returnedError));
+      },
+      fetchLeagueActions() {
+        axios
+          .get('/api/League/GetLeagueActions?leagueID=' + this.leagueid + '&year=' + this.year)
+          .then(response => {
+            this.leagueActions = response.data;
+          })
+          .catch(returnedError => (this.error = returnedError));
+      },
+      fetchCurrentBids() {
+        axios
+          .get('/api/league/CurrentBids/' + this.leagueYear.userPublisher.publisherID)
+          .then(response => {
+            this.currentBids = response.data;
+          })
+          .catch(response => {
 
-                });
-            },
-            rescindInvite(emailAddress) {
-              var model = {
-                leagueID: this.league.leagueID,
-                inviteEmail: emailAddress
-              };
-              axios
-                .post('/api/leagueManager/RescindInvite', model)
-                .then(response => {
-                  let actionInfo = {
-                    message: 'The invite to ' + emailAddress + ' has been rescinded.',
-                    fetchLeague: true,
-                    fetchLeagueYear: true
-                  };
-                  this.actionTaken(actionInfo);
-                })
-                .catch(response => {
+          });
+      },
+      rescindInvite(emailAddress) {
+        var model = {
+          leagueID: this.league.leagueID,
+          inviteEmail: emailAddress
+        };
+        axios
+          .post('/api/leagueManager/RescindInvite', model)
+          .then(response => {
+            let actionInfo = {
+              message: 'The invite to ' + emailAddress + ' has been rescinded.',
+              fetchLeague: true,
+              fetchLeagueYear: true
+            };
+            this.actionTaken(actionInfo);
+          })
+          .catch(response => {
 
-                });
-            },
-            acceptInvite() {
-                var model = {
-                    leagueID: this.league.leagueID
-                };
-                axios
-                    .post('/api/league/AcceptInvite', model)
-                    .then(response => {
-                        this.fetchLeague();
-                    })
-                    .catch(response => {
-
-                    });
-            },
-            declineInvite() {
-                var model = {
-                  leagueID: this.league.leagueID
-                };
-                axios
-                    .post('/api/league/DeclineInvite', model)
-                    .then(response => {
-                        this.$router.push({ name: "home" });
-                    })
-                    .catch(response => {
-
-                    });
-            },
-            startDraft() {
-              var model = {
-                leagueID: this.league.leagueID,
-                year: this.leagueYear.year
-              };
-              axios
-                .post('/api/leagueManager/startDraft', model)
-                .then(response => {
+          });
+      },
+      acceptInvite() {
+          var model = {
+              leagueID: this.league.leagueID
+          };
+          axios
+              .post('/api/league/AcceptInvite', model)
+              .then(response => {
                   this.fetchLeague();
-                  this.fetchLeagueYear();
-                })
-                .catch(response => {
+              })
+              .catch(response => {
 
-                });
-            },
-            actionTaken(actionInfo) {
-              if (actionInfo.fetchLeagueYear) {
-                this.fetchLeagueYear();
-              }
-              if (actionInfo.fetchLeague) {
-                this.fetchLeague();
-              }
-              let toast = this.$toasted.show(actionInfo.message, {
-                theme: "primary",
-                position: "top-right",
-                duration: 5000
               });
-            }
-        },
-        mounted() {
-            this.activeYear = this.year;
+      },
+      declineInvite() {
+          var model = {
+            leagueID: this.league.leagueID
+          };
+          axios
+            .post('/api/league/DeclineInvite', model)
+            .then(response => {
+                this.$router.push({ name: "home" });
+            })
+            .catch(response => {
+
+            });
+      },
+      startDraft() {
+        var model = {
+          leagueID: this.league.leagueID,
+          year: this.leagueYear.year
+        };
+        axios
+          .post('/api/leagueManager/startDraft', model)
+          .then(response => {
             this.fetchLeague();
             this.fetchLeagueYear();
+          })
+          .catch(response => {
 
-            let token = this.$store.getters.token;
-            this.hubConnection = new signalR.HubConnectionBuilder()
-              .withUrl("/updatehub", { accessTokenFactory: () => token })
-              .configureLogging(signalR.LogLevel.Error)
-              .build();
+          });
+      },
+      actionTaken(actionInfo) {
+        if (actionInfo.fetchLeagueYear) {
+          this.fetchLeagueYear();
+        }
+        if (actionInfo.fetchLeague) {
+          this.fetchLeague();
+        }
+        let toast = this.$toasted.show(actionInfo.message, {
+          theme: "primary",
+          position: "top-right",
+          duration: 5000
+        });
+      }
+    },
+    mounted() {
+      this.selectedYear = this.year;
+      this.fetchLeague();
+      this.fetchLeagueYear();
 
-            this.hubConnection.start().catch(err => console.error(err.toString()));
-            this.hubConnection.on('RefreshLeagueYear', data => {
-              this.fetchLeagueYear();
-            });
-            this.hubConnection.on('DraftFinished', data => {
-              this.$refs.draftFinishedModalRef.show();
-            });
-        },
-        watch: {
-            '$route'(to, from) {
-                this.fetchLeagueYear();
-            },
-            'activeYear'(oldVal, newVal) {
-                var parameters = {
-                    leagueid: this.leagueid,
-                    year: this.activeYear
-                };
-                this.$router.push({ name: "league", params: parameters });
-            }
+      let token = this.$store.getters.token;
+      this.hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/updatehub", { accessTokenFactory: () => token })
+        .configureLogging(signalR.LogLevel.Error)
+        .build();
+
+      this.hubConnection.start().catch(err => console.error(err.toString()));
+      this.hubConnection.on('RefreshLeagueYear', data => {
+        this.fetchLeagueYear();
+      });
+      this.hubConnection.on('DraftFinished', data => {
+        this.$refs.draftFinishedModalRef.show();
+      });
+    },
+    watch: {
+      '$route'(to, from) {
+          this.fetchLeagueYear();
         }
     }
+  }
 </script>
 <style>
   .year-selector {
