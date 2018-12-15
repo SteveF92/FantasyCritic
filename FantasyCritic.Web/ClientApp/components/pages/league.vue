@@ -11,7 +11,7 @@
           <b-button v-if="league.isManager" variant="info" v-b-modal="'addNewLeagueYear'">Start new Year</b-button>
         </div>
         <div>
-          <b-form-select v-model="selectedYear" :options="league.years"/>
+          <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear"/>
         </div>
       </div>
     </div>
@@ -277,6 +277,13 @@
           position: "top-right",
           duration: 5000
         });
+      },
+      changeLeagueYear(newVal) {
+        var parameters = {
+          leagueid: this.leagueid,
+          year: newVal
+        };
+        this.$router.push({ name: "league", params: parameters });
       }
     },
     mounted() {
