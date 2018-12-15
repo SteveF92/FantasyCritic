@@ -89,17 +89,18 @@
         props: ['userPublisher', 'maximumEligibilityLevel', 'isManager'],
         methods: {
           searchGame() {
-              axios
-                  .get('/api/game/MasterGame?gameName=' + this.searchGameName)
-                  .then(response => {
-                    this.possibleMasterGames = response.data;
-                    this.searched = true;
-                    this.showingUnlistedField = false;
-                    this.draftMasterGame = null;
-                  })
-                  .catch(response => {
+            this.possibleMasterGames = [];
+            axios
+                .get('/api/game/MasterGame?gameName=' + this.searchGameName)
+                .then(response => {
+                  this.possibleMasterGames = response.data;
+                  this.searched = true;
+                  this.showingUnlistedField = false;
+                  this.draftMasterGame = null;
+                })
+                .catch(response => {
 
-                  });
+                });
           },
           showUnlistedField() {
             this.showingUnlistedField = true;

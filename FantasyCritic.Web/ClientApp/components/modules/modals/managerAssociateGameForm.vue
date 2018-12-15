@@ -79,15 +79,16 @@
         },
         props: ['publishers', 'maximumEligibilityLevel'],
         methods: {
-            searchGame() {
-                axios
-                  .get('/api/game/MasterGame?gameName=' + this.associateGameName)
-                  .then(response => {
-                      this.possibleMasterGames = response.data;
-                  })
-                  .catch(response => {
+          searchGame() {
+          this.possibleMasterGames = [];
+              axios
+                .get('/api/game/MasterGame?gameName=' + this.associateGameName)
+                .then(response => {
+                    this.possibleMasterGames = response.data;
+                })
+                .catch(response => {
 
-                  });
+                });
             },
             associateGame() {
                 var request = {

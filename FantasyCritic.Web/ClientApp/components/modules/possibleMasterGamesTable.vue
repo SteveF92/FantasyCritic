@@ -10,7 +10,17 @@
         </thead>
         <tbody>
             <tr v-for="game in possibleGames">
-                <td>{{game.gameName}}</td>
+              <td>
+                <popper trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
+                  <div class="popper">
+                    <masterGamePopover :mastergameid="game.masterGameID"></masterGamePopover>
+                  </div>
+
+                  <span slot="reference" class="text-primary fake-link">
+                    {{game.gameName}}
+                  </span>
+                </popper>
+              </td>
                 <td>{{game.estimatedReleaseDate}}</td>
                 <td>
                   <eligibilityBadge :eligibilityLevel="game.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
@@ -24,6 +34,10 @@
 </template>
 <script>
   import EligibilityBadge from "components/modules/eligibilityBadge";
+  import Popper from 'vue-popperjs';
+  import 'vue-popperjs/dist/css/vue-popper.css';
+  import MasterGamePopover from "components/modules/masterGamePopover";
+
 
   export default {
     data() {
@@ -32,7 +46,9 @@
       }
     },
     components: {
-      EligibilityBadge
+      EligibilityBadge,
+      'popper': Popper,
+      MasterGamePopover
     },
     props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
     methods: {
@@ -43,3 +59,13 @@
     }
   }
 </script>
+<style scoped>
+  .fake-link {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .popper {
+    background: #415262;
+  }
+</style>

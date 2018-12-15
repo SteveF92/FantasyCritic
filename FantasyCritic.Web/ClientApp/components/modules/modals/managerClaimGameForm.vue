@@ -102,18 +102,19 @@
         },
         props: ['publishers', 'maximumEligibilityLevel'],
         methods: {
-            searchGame() {
-                axios
-                    .get('/api/game/MasterGame?gameName=' + this.searchGameName)
-                    .then(response => {
-                      this.possibleMasterGames = response.data;
-                      this.searched = true;
-                      this.showingUnlistedField = false;
-                      this.claimMasterGame = null;
-                    })
-                    .catch(response => {
+          searchGame() {
+            this.possibleMasterGames = [];
+            axios
+                .get('/api/game/MasterGame?gameName=' + this.searchGameName)
+                .then(response => {
+                  this.possibleMasterGames = response.data;
+                  this.searched = true;
+                  this.showingUnlistedField = false;
+                  this.claimMasterGame = null;
+                })
+                .catch(response => {
 
-                    });
+                });
             },
             addGame() {
               var gameName = "";
