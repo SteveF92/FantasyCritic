@@ -44,14 +44,13 @@
   export default {
     data() {
       return {
-        masterGame: null,
         error: ""
       }
     },
     components: {
       'popper': Popper,
     },
-    props: ['mastergameid'],
+    props: ['masterGame'],
     computed: {
       boxartLink() {
         if (this.masterGame.boxartFileName) {
@@ -67,24 +66,8 @@
       openCriticLink(game) {
         return "https://opencritic.com/game/" + game.openCriticID + "/";
       },
-      fetchMasterGame() {
-        axios
-          .get('/api/game/MasterGame/' + this.mastergameid)
-          .then(response => {
-            this.masterGame = response.data;
-          })
-          .catch(returnedError => (this.error = returnedError));
-      },
       closePopover() {
         this.$refs.gamePopoverRef.doClose();
-      }
-    },
-    mounted() {
-      this.fetchMasterGame();
-    },
-    watch: {
-      '$route'(to, from) {
-        this.fetchMasterGame();
       }
     }
   }

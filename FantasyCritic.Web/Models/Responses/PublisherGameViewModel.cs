@@ -32,7 +32,10 @@ namespace FantasyCritic.Web.Models.Responses
 
                 CriticScore = publisherGame.MasterGame.Value.MasterGame.CriticScore;
                 Released = publisherGame.MasterGame.Value.MasterGame.IsReleased(clock);
-                MasterGameID = publisherGame.MasterGame.Value.MasterGame.MasterGameID;
+                if (publisherGame.MasterGame.HasValue)
+                {
+                    MasterGame = new MasterGameViewModel(publisherGame.MasterGame.Value.MasterGame);
+                }
 
                 if (publisherGame.ManualCriticScore.HasValue)
                 {
@@ -56,7 +59,7 @@ namespace FantasyCritic.Web.Models.Responses
         public DateTime? ReleaseDate { get; }
         public decimal? FantasyPoints { get; }
         public decimal? CriticScore { get; }
-        public Guid MasterGameID { get; }
+        public MasterGameViewModel MasterGame { get; }
         public decimal PercentStandardGame { get; set; }
         public decimal PercentCounterPick { get; set; }
         public decimal AverageDraftPosition { get; set; }

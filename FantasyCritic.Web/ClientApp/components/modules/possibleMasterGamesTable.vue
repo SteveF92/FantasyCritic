@@ -11,7 +11,7 @@
         <tbody>
             <tr v-for="game in possibleGames">
               <td>
-                <masterGamePopover :mastergameid="game.masterGameID"></masterGamePopover>
+                <masterGamePopover :masterGame="game"></masterGamePopover>
               </td>
               <td>{{game.estimatedReleaseDate}}</td>
               <td>
