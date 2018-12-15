@@ -13,8 +13,8 @@
       </div>
       <br />
       <div v-if="leagueYear">
-        <leaguePlayersForm :players="leagueYear.players" :league="league" v-on:playerRemoved="playerRemoved"></leaguePlayersForm>
-        <playerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :userPublisher="leagueYear.userPublisher" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
+        <leaguePlayersForm :players="leagueYear.players" :league="league" v-on:playerRemoved="playerRemoved" ></leaguePlayersForm>
+        <playerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :userPublisher="leagueYear.userPublisher" :isManager="league.isManager" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
         <playerDraftCounterPickForm :userPublisher="leagueYear.userPublisher" :availableCounterPicks="leagueYear.availableCounterPicks" v-on:counterPickDrafted="counterPickDrafted"></playerDraftCounterPickForm>
         <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
         <currentBidsForm :currentBids="currentBids" v-on:bidCanceled="bidCanceled"></currentBidsForm>

@@ -24,7 +24,8 @@
               <input v-model="draftUnlistedGame" id="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
             </div>
             <div>Enter the full name of the game you want.</div>
-            <div>Your league manager can link this custom game with a "master game" later.</div>
+            <div v-show="!isManager">Your league manager can link this custom game with a "master game" later.</div>
+            <div v-show="isManager">You as league manager can link this custom game with a "master game" later.</div>
           </div>
         </div>
 
@@ -46,8 +47,11 @@
 
         <div class="form-check" v-if="draftResult.overridable">
           <span>
-            <label class="form-check-label">
-              Your league manager can override these warnings.
+            <label v-show="!isManager" class="form-check-label">Your league manager can override these warnings.</label>
+            <label v-show="isManager" class="form-check-label">
+              <span>You as league manager can override these warnings.</span>
+              <br />
+              <span>Use the "Select Next Game" button under "Manager Actions".</span>
             </label>
           </span>
         </div>
@@ -82,7 +86,7 @@
             return (this.draftUnlistedGame || this.draftMasterGame);
           }
         },
-        props: ['userPublisher', 'maximumEligibilityLevel'],
+        props: ['userPublisher', 'maximumEligibilityLevel', 'isManager'],
         methods: {
           searchGame() {
               axios
