@@ -11,31 +11,21 @@
         <tbody>
             <tr v-for="game in possibleGames">
               <td>
-                <popper :ref="'gamePopoverRef' + game.masterGameID" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
-                  <div class="popper">
-                    <masterGamePopover :mastergameid="game.masterGameID" v-on:closePopover="closePopover"></masterGamePopover>
-                  </div>
-
-                  <span slot="reference" class="text-primary fake-link">
-                    {{game.gameName}}
-                  </span>
-                </popper>
+                <masterGamePopover :mastergameid="game.masterGameID"></masterGamePopover>
               </td>
-                <td>{{game.estimatedReleaseDate}}</td>
-                <td>
-                  <eligibilityBadge :eligibilityLevel="game.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
-                </td>
-                <td>
-                    <b-button variant="info" v-on:click="selectGame(game)">Select</b-button>
-                </td>
+              <td>{{game.estimatedReleaseDate}}</td>
+              <td>
+                <eligibilityBadge :eligibilityLevel="game.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
+              </td>
+              <td>
+                  <b-button variant="info" v-on:click="selectGame(game)">Select</b-button>
+              </td>
             </tr>
         </tbody>
     </table>
 </template>
 <script>
   import EligibilityBadge from "components/modules/eligibilityBadge";
-  import Popper from 'vue-popperjs';
-  import 'vue-popperjs/dist/css/vue-popper.css';
   import MasterGamePopover from "components/modules/masterGamePopover";
 
 
@@ -47,7 +37,6 @@
     },
     components: {
       EligibilityBadge,
-      'popper': Popper,
       MasterGamePopover
     },
     props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
@@ -55,10 +44,6 @@
       selectGame(game) {
           this.selectedMasterGame = game;
           this.$emit('input', this.selectedMasterGame);
-      },
-      closePopover(mastergameid) {
-        let refName = 'gamePopoverRef' + mastergameid;
-        this.$refs[refName][0].doClose();
       }
     }
   }

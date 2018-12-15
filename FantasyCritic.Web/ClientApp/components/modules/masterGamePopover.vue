@@ -1,24 +1,35 @@
 <template>
-  <div v-if="masterGame">
-    <div class="close-button fake-link" v-on:click="closePopover">X</div>
-    <img :src="boxartLink" alt="Cover Image" class="game-image">
+  <div>
+    <div v-if="masterGame">
+      <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
+        <div class="popper">
 
-    <div class="game-description">
-      <h5>{{masterGame.gameName}}</h5>
-      <div>
-        <strong>Release Date: </strong>
-        <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
-        <span v-else>{{masterGame.estimatedReleaseDate}} (Estimated)</span>
-      </div>
-      <div>
-        <strong>Critic Score: </strong>
-        {{masterGame.criticScore | score(2)}}
-        <span v-if="masterGame.averagedScore">(Averaged Score)</span>
-      </div>
-      <div v-if="masterGame.openCriticID">
-        <a :href="openCriticLink(masterGame)" target="_blank">OpenCritic Link <icon icon="external-link-alt" size="xs" /></a>
-      </div>
-      <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}">View full details</router-link>
+          <div class="close-button fake-link" v-on:click="closePopover">X</div>
+          <img :src="boxartLink" alt="Cover Image" class="game-image">
+
+          <div class="game-description">
+            <h5>{{masterGame.gameName}}</h5>
+            <div>
+              <strong>Release Date: </strong>
+              <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
+              <span v-else>{{masterGame.estimatedReleaseDate}} (Estimated)</span>
+            </div>
+            <div>
+              <strong>Critic Score: </strong>
+              {{masterGame.criticScore | score(2)}}
+              <span v-if="masterGame.averagedScore">(Averaged Score)</span>
+            </div>
+            <div v-if="masterGame.openCriticID">
+              <a :href="openCriticLink(masterGame)" target="_blank">OpenCritic Link <icon icon="external-link-alt" size="xs" /></a>
+            </div>
+            <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}">View full details</router-link>
+          </div>
+        </div>
+
+        <span slot="reference" class="text-primary fake-link">
+          {{masterGame.gameName}}
+        </span>
+      </popper>
     </div>
   </div>
 </template>
@@ -27,6 +38,8 @@
   import Vue from "vue";
   import axios from "axios";
   import moment from "moment";
+  import Popper from 'vue-popperjs';
+  import 'vue-popperjs/dist/css/vue-popper.css';
 
   export default {
     data() {
@@ -34,6 +47,9 @@
         masterGame: null,
         error: ""
       }
+    },
+    components: {
+      'popper': Popper,
     },
     props: ['mastergameid'],
     computed: {
@@ -60,7 +76,7 @@
           .catch(returnedError => (this.error = returnedError));
       },
       closePopover() {
-        this.$emit('closePopover', this.mastergameid);
+        this.$refs.gamePopoverRef.doClose();
       }
     },
     mounted() {

@@ -1,15 +1,7 @@
 <template>
   <tr class="minimal-game-row table-default" v-bind:class="{ 'table-danger': game.counterPick }">
     <td class="game-column">
-      <popper v-if="game.linked" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
-        <div class="popper">
-          <masterGamePopover :mastergameid="game.masterGameID"></masterGamePopover>
-        </div>
-
-        <span slot="reference" class="text-primary fake-link">
-          {{game.gameName}}
-        </span>
-      </popper>
+      <masterGamePopover v-if="game.linked" :mastergameid="game.masterGameID"></masterGamePopover>
 
       <span v-if="!game.linked">{{game.gameName}}</span>
 
@@ -36,13 +28,10 @@
 <script>
   import Vue from "vue";
   import moment from "moment";
-  import Popper from 'vue-popperjs';
-  import 'vue-popperjs/dist/css/vue-popper.css';
   import MasterGamePopover from "components/modules/masterGamePopover";
 
   export default {
     components: {
-      'popper': Popper,
       MasterGamePopover
     },
     props: ['game', 'yearFinished'],
