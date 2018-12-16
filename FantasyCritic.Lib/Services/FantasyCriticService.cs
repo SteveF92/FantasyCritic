@@ -483,7 +483,7 @@ namespace FantasyCritic.Lib.Services
         private async Task<bool> UserIsInvited(League league, string inviteEmail)
         {
             var playersInvited = await GetOutstandingInvitees(league);
-            return playersInvited.Any(x => x == inviteEmail);
+            return playersInvited.Any(x => string.Equals(x, inviteEmail, StringComparison.OrdinalIgnoreCase));
         }
 
         private async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request)

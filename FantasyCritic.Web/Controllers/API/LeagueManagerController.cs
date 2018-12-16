@@ -242,14 +242,15 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            FantasyCriticUser inviteUser = await _userManager.FindByEmailAsync(request.InviteEmail);
+            string inviteEmail = request.InviteEmail.ToLower();
+            FantasyCriticUser inviteUser = await _userManager.FindByEmailAsync(inviteEmail);
             if (inviteUser is null)
             {
                 string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
-                await _emailSender.SendInviteEmail(request.InviteEmail, league.Value, baseURL);
+                await _emailSender.SendInviteEmail(inviteEmail, league.Value, baseURL);
             }
 
-            Result result = await _fantasyCriticService.InviteUser(league.Value, request.InviteEmail);
+            Result result = await _fantasyCriticService.InviteUser(league.Value, inviteEmail);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);

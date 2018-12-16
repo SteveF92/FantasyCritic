@@ -87,7 +87,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
 
             var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(league.Value);
-            bool userIsInvitedToLeague = inviteesToLeague.Any(x => x == currentUser.EmailAddress);
+            bool userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
             if (!userIsInLeague && !userIsInvitedToLeague)
             {
                 return Forbid();
@@ -122,7 +122,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
 
             var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(leagueYear.Value.League);
-            bool userIsInvitedToLeague = inviteesToLeague.Any(x => x == currentUser.EmailAddress);
+            bool userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
             if (!userIsInLeague && !userIsInvitedToLeague)
             {
                 return Forbid();
@@ -166,7 +166,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
 
             var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(leagueYear.Value.League);
-            bool userIsInvitedToLeague = inviteesToLeague.Any(x => x == currentUser.EmailAddress);
+            bool userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
             if (!userIsInLeague && !userIsInvitedToLeague)
             {
                 return Forbid();
