@@ -911,17 +911,63 @@ namespace FantasyCritic.MySQL
 
         public Task DeletePublisher(Publisher publisher)
         {
-            throw new NotImplementedException();
+            var deleteObject = new
+            {
+                publisherID = publisher.PublisherID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "delete from tblpublisher where PublisherID = @publisherID;",
+                    deleteObject);
+            }
         }
 
-        public Task DeleteLeagueYear(LeagueYear leagueYearValue)
+        public Task DeleteLeagueYear(LeagueYear leagueYear)
         {
-            throw new NotImplementedException();
+            var deleteObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "delete from tblleagueyear where LeagueID = @leagueID and Year = @year;",
+                    deleteObject);
+            }
         }
 
         public Task DeleteLeague(League league)
         {
-            throw new NotImplementedException();
+            var deleteObject = new
+            {
+                leagueID = league.LeagueID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "delete from tblleague where LeagueID = @leagueID;",
+                    deleteObject);
+            }
+        }
+
+        public Task DeleteLeagueActions(Publisher publisher)
+        {
+            var deleteObject = new
+            {
+                publisherID = publisher.PublisherID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "delete from tblleagueaction where PublisherID = @publisherID;",
+                    deleteObject);
+            }
         }
     }
 }

@@ -1050,6 +1050,18 @@ namespace FantasyCritic.Lib.Services
                 var publishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year);
                 foreach (var publisher in publishers)
                 {
+                    await _fantasyCriticRepo.DeleteLeagueActions(publisher);
+                    foreach (var game in publisher.PublisherGames)
+                    {
+                        await _fantasyCriticRepo.RemovePublisherGame(game.PublisherGameID);
+                    }
+
+                    var bids = await _fantasyCriticRepo.GetActivePickupBids(publisher);
+                    foreach (var bid in bids)
+                    {
+                        await _fantasyCriticRepo.RemovePickupBid(bid);
+                    }
+
                     await _fantasyCriticRepo.DeletePublisher(publisher);
                 }
 

@@ -70,7 +70,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task<SystemWideValues> GetSystemWideValues();
 
         Task DeletePublisher(Publisher publisher);
-        Task DeleteLeagueYear(LeagueYear leagueYearValue);
+        Task DeleteLeagueYear(LeagueYear leagueYear);
         Task DeleteLeague(League league);
+        Task DeleteLeagueActions(Publisher publisher);
     }
 }
