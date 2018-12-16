@@ -13,7 +13,10 @@
   export default {
     computed: {
       accountConfirmed() {
+        if (this.$store.getters.userInfo) {
           return this.$store.getters.userInfo.emailConfirmed;
+        }
+        return false;
       },
       isAuth() {
         return this.$store.getters.tokenIsCurrent();
