@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Responses;
@@ -23,6 +24,8 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
+        private static readonly int MaxDistance = 10;
+        private static readonly int MaxDistanceGames = 5;
 
         public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService)
         {
@@ -45,13 +48,22 @@ namespace FantasyCritic.Web.Controllers.API
 
         public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame(string gameName)
         {
-            var masterGames = await _fantasyCriticService.GetMasterGames();
-            List<MasterGameViewModel> viewModels = new List<MasterGameViewModel>();
+            IReadOnlyList<MasterGame> masterGames = await _fantasyCriticService.GetMasterGames();
+            IEnumerable<MasterGame> matchingMasterGames = new List<MasterGame>();
             if (!string.IsNullOrWhiteSpace(gameName))
             {
                 gameName = gameName.ToLower();
-                viewModels = masterGames.Where(x => x.GameName.ToLower().Contains(gameName)).Select(x => new MasterGameViewModel(x)).ToList();
+                var distances = masterGames
+                    .Select(x =>
+                        new Tuple<MasterGame, int>(x, Levenshtein.CalculateLevenshteinDistance(gameName, x.GameName)));
+
+                var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
+
+                matchingMasterGames = masterGames
+                    .Where(x => x.GameName.ToLower().Contains(gameName))
+                    .Concat(lowDistance).Distinct();
             }
+            List<MasterGameViewModel> viewModels = matchingMasterGames.Select(x => new MasterGameViewModel(x)).ToList();
 
             return viewModels;
         }
