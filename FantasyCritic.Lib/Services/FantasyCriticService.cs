@@ -1035,5 +1035,34 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.GetSystemWideValues();
         }
+
+        public async Task DeleteLeague(League league)
+        {
+            var invites = await _fantasyCriticRepo.GetOutstandingInvitees(league);
+            foreach (var invite in invites)
+            {
+                await _fantasyCriticRepo.RescindInvite(league, invite);
+            }
+
+            foreach (var year in league.Years)
+            {
+                var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
+                var publishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year);
+                foreach (var publisher in publishers)
+                {
+                    await _fantasyCriticRepo.DeletePublisher(publisher);
+                }
+
+                await _fantasyCriticRepo.DeleteLeagueYear(leagueYear.Value);
+            }
+
+            var users = await _fantasyCriticRepo.GetUsersInLeague(league);
+            foreach (var user in users)
+            {
+                await _fantasyCriticRepo.RemovePlayerFromLeague(league, user);
+            }
+
+            await _fantasyCriticRepo.DeleteLeague(league);
+        }
     }
 }

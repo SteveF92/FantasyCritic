@@ -908,5 +908,20 @@ namespace FantasyCritic.MySQL
                 return result.ToDomain();
             }
         }
+
+        public Task DeletePublisher(Publisher publisher)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteLeagueYear(LeagueYear leagueYearValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteLeague(League league)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

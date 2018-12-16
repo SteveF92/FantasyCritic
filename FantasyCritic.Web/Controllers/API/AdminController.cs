@@ -156,5 +156,18 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteLeague([FromBody] DeleteLeagueRequest request)
+        {
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            await _fantasyCriticService.DeleteLeague(league.Value);
+            return Ok();
+        }
     }
 }
