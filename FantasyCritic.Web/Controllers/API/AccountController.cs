@@ -70,7 +70,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var user = new FantasyCriticUser(Guid.NewGuid(), model.UserName, model.UserName, model.EmailAddress, model.EmailAddress, false, "", "", _clock.GetCurrentInstant());
+            var user = new FantasyCriticUser(Guid.NewGuid(), model.DisplayName, model.EmailAddress, model.EmailAddress, false, "", "", _clock.GetCurrentInstant());
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
@@ -225,7 +225,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(user.NormalizedEmailAddress, model.Password, false, false);
             if (!result.Succeeded)
             {
                 return BadRequest();
@@ -248,7 +248,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            user.UserName = request.NewUserName;
+            user.DisplayName = request.NewUserName;
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
@@ -263,7 +263,7 @@ namespace FantasyCritic.Web.Controllers.API
             var roles = await _userManager.GetRolesAsync(user);
             var usersClaims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, user.NormalizedEmailAddress),
                 new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
             };
 

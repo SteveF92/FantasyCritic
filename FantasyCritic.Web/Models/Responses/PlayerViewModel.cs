@@ -11,12 +11,12 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueID = league.LeagueID.ToString();
             LeagueName = league.LeagueName;
             UserID = user.UserID.ToString();
-            UserName = user.UserName;
+            DisplayName = user.DisplayName;
         }
 
         public string LeagueID { get; }
         public string LeagueName { get; }
         public string UserID { get; }
-        public string UserName { get; }
+        public string DisplayName { get; }
     }
 }

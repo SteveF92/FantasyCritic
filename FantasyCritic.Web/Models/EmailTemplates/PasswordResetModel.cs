@@ -12,11 +12,11 @@ namespace FantasyCritic.Web.Models.EmailTemplates
     {
         public PasswordResetModel(FantasyCriticUser user, string resetCode, string baseURL)
         {
-            Username = user.UserName;
+            DisplayName = user.DisplayName;
             Link = $"{baseURL}/resetPassword?Code={UrlEncoder.Default.Encode(resetCode)}";
         }
 
-        public string Username { get; }
+        public string DisplayName { get; }
         public string Link { get; }
     }
 }

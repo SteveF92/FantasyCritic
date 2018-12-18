@@ -15,7 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueID = publisher.League.LeagueID;
             PublisherName = publisher.PublisherName;
             LeagueName = publisher.League.LeagueName;
-            PlayerName = publisher.User.UserName;
+            PlayerName = publisher.User.DisplayName;
             Year = publisher.Year;
             TotalFantasyPoints = publisher.TotalFantasyPoints;
             ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(scoringSystem, systemWideValues);

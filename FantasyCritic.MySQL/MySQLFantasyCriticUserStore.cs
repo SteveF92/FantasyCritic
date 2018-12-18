@@ -33,7 +33,7 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbluser(UserID,UserName,NormalizedUserName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
+                    "insert into tbluser(UserID,DisplayName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
                     "(@UserID,@UserName,@NormalizedUserName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
                     entity);
             }
@@ -63,8 +63,7 @@ namespace FantasyCritic.MySQL
 
             //Not updating password or email confirmed as that breaks password change. Use the SetPasswordHash.
             FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);
-            string sql = $@"UPDATE tbluser SET UserName = @{nameof(FantasyCriticUserEntity.UserName)}, " +
-                         $"NormalizedUserName = @{nameof(FantasyCriticUserEntity.NormalizedUserName)}, " +
+            string sql = $@"UPDATE tbluser SET DisplayName = @{nameof(FantasyCriticUserEntity.DisplayName)}, " +
                          $"EmailAddress = @{nameof(FantasyCriticUserEntity.EmailAddress)}, " +
                          $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +
                          $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +
@@ -152,7 +151,7 @@ namespace FantasyCritic.MySQL
 
         public Task<string> GetNormalizedUserNameAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.NormalizedUserName);
+            return Task.FromResult(user.NormalizedEmailAddress);
         }
 
         public Task<string> GetPasswordHashAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -167,7 +166,7 @@ namespace FantasyCritic.MySQL
 
         public Task<string> GetUserNameAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.UserName);
+            return Task.FromResult(user.EmailAddress);
         }
 
         public Task<bool> HasPasswordAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -207,7 +206,7 @@ namespace FantasyCritic.MySQL
 
         public Task SetNormalizedUserNameAsync(FantasyCriticUser user, string normalizedName, CancellationToken cancellationToken)
         {
-            user.NormalizedUserName = normalizedName;
+            user.NormalizedEmailAddress = normalizedName;
             return Task.CompletedTask;
         }
 
@@ -219,7 +218,7 @@ namespace FantasyCritic.MySQL
 
         public Task SetUserNameAsync(FantasyCriticUser user, string userName, CancellationToken cancellationToken)
         {
-            user.UserName = userName;
+            user.EmailAddress = userName;
             return Task.CompletedTask;
         }
         

@@ -12,11 +12,11 @@ namespace FantasyCritic.Web.Models.EmailTemplates
     {
         public ConfirmEmailModel(FantasyCriticUser user, string confirmCode, string baseURL)
         {
-            Username = user.UserName;
+            DisplayName = user.DisplayName;
             Link = $"{baseURL}/confirmEmail?UserID={user.UserID}&Code={UrlEncoder.Default.Encode(confirmCode)}";
         }
 
-        public string Username { get; }
+        public string DisplayName { get; }
         public string Link { get; }
     }
 }
