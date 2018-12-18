@@ -7,7 +7,8 @@ export default {
     expiration: null,
     redirect: "",
     userInfo: null,
-    newAccountCreated: false
+    newAccountCreated: false,
+    isBusy: false
   },
   getters: {
     hasToken(state) {
@@ -32,7 +33,8 @@ export default {
     token: (state) => state.jwt,
     redirect: (state) => state.redirect,
     userInfo: (state) => state.userInfo,
-    newAccountCreated: (state) => state.newAccountCreated
+    newAccountCreated: (state) => state.newAccountCreated,
+    storeIsBusy: (state) => state.isBusy
   },
   actions: {
     doAuthentication(context, creds) {
@@ -95,11 +97,13 @@ export default {
       });
     },
     getUserInfo(context) {
+      context.commit("setBusy", true);
       return new Promise(function (resolve, reject) {
         axios
           .get("/api/account/CurrentUser")
           .then((res) => {
             context.commit("setUserInfo", res.data);
+            context.commit("setBusy", false);
             resolve();
           })
           .catch(() => reject());
@@ -136,6 +140,9 @@ export default {
       delete axios.defaults.headers.common["Authorization"];
       state.userInfo = {};
       state.newAccountCreated = false;
+    },
+    setBusy(state, isBusyFlag) {
+      state.isBusy = isBusyFlag;
     },
     newAccountCreated(state) {
       state.newAccountCreated = true;

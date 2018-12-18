@@ -28,31 +28,33 @@
                         <icon :icon="['fab', 'reddit-square']" />
                       </a>
                     </li>
-                    <slot v-if="isAuth && hasUserInfo">
-                      <!--<li class="nav-item">
-                        <a class="nav-link nav-icon" href="#">
-                          <icon icon="bell" />
-                        </a>
-                      </li>-->
-                      <li v-if="userName" class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                          {{userName}}
-                          <span class="caret"></span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
-                          <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
-                          <div class="dropdown-divider"></div>
-                          <a class="dropdown-item" href="#" v-on:click="logout()">Log off</a>
-                        </div>
-                      </li>
-                    </slot>
-                    <slot v-else>
-                      <li class="nav-item">
-                        <b-button variant="primary" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
-                      </li>
-                      <li class="nav-item">
-                        <b-button variant="info" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
-                      </li>
+                    <slot v-if="!storeIsBusy">
+                      <slot v-if="isAuth && hasUserInfo">
+                        <!--<li class="nav-item">
+                          <a class="nav-link nav-icon" href="#">
+                            <icon icon="bell" />
+                          </a>
+                        </li>-->
+                        <li v-if="userName" class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                            {{userName}}
+                            <span class="caret"></span>
+                          </a>
+                          <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
+                            <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" v-on:click="logout()">Log off</a>
+                          </div>
+                        </li>
+                      </slot>
+                      <slot v-else>
+                        <li class="nav-item">
+                          <b-button variant="primary" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
+                        </li>
+                        <li class="nav-item">
+                          <b-button variant="info" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
+                        </li>
+                      </slot>
                     </slot>
                   </ul>
                 </div>
@@ -71,7 +73,10 @@
             return this.$store.getters.userInfo;
           },
           userName() {
-              return this.$store.getters.userInfo.userName;
+            return this.$store.getters.userInfo.userName;
+          },
+          storeIsBusy() {
+            return this.$store.getters.storeIsBusy;
           }
         },
         methods: {
