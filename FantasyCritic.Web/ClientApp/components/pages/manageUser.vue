@@ -5,30 +5,30 @@
     <div v-if="changeEmailSent" class="alert alert-success">
       Check your existing email address for an email with instructions to change to your new email address.
     </div>
+    <div v-if="userInfo">
+      <dl class="row">
+        <dt class="col-sm-3">Display Name</dt>
+        <dd class="col-sm-9">
+          {{userInfo.displayName}}
+          <b-button variant="info" v-b-modal="'changeDisplayNameForm'">Change Display Name</b-button>
+        </dd>
 
-    <dl class="row">
-      <dt class="col-sm-3">Display Name</dt>
-      <dd class="col-sm-9">
-        {{userInfo.displayName}}
-        <b-button variant="info" v-b-modal="'changeDisplayNameForm'">Change Display Name</b-button>
-      </dd>
+        <dt class="col-sm-3">Email Address</dt>
+        <dd class="col-sm-9">
+          {{userInfo.emailAddress}}
+          <b-button variant="info" v-if="!userInfo.emailConfirmed" v-on:click="sendConfirmationEmail">Resend Confirmation Email</b-button>
+          <b-button variant="info" v-if="userInfo.emailConfirmed" v-b-modal="'changeEmailForm'">Change Email</b-button>
+        </dd>
 
-      <dt class="col-sm-3">Email Address</dt>
-      <dd class="col-sm-9">
-        {{userInfo.emailAddress}}
-        <b-button variant="info" v-if="!userInfo.emailConfirmed" v-on:click="sendConfirmationEmail">Resend Confirmation Email</b-button>
-        <b-button variant="info" v-if="userInfo.emailConfirmed" v-b-modal="'changeEmailForm'">Change Email</b-button>
-      </dd>
-
-      <dt class="col-sm-3">Password</dt>
-      <dd class="col-sm-9">
-        <b-button variant="info" v-b-modal="'changePasswordForm'">Change Password</b-button>
-      </dd>
-    </dl>
-    <changePasswordForm v-on:passwordChanged="passwordChanged"></changePasswordForm>
-    <changeemailAddressForm v-on:emailAddressChanged="emailAddressChanged"></changeemailAddressForm>
-    <changeEmailForm v-on:sentEmailChanged="sentEmailChanged"></changeEmailForm>
-
+        <dt class="col-sm-3">Password</dt>
+        <dd class="col-sm-9">
+          <b-button variant="info" v-b-modal="'changePasswordForm'">Change Password</b-button>
+        </dd>
+      </dl>
+      <changePasswordForm v-on:passwordChanged="passwordChanged"></changePasswordForm>
+      <changeDisplayNameForm v-on:diplayNameChanged="diplayNameChanged"></changeDisplayNameForm>
+      <changeEmailForm v-on:sentEmailChanged="sentEmailChanged"></changeEmailForm>
+    </div>
   </div>
 </template>
 <script>

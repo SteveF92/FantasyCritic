@@ -63,13 +63,13 @@ export default {
           });
       });
     },
-    changedisplayName(context, changeInfo) {
+    changeDisplayName(context, changeInfo) {
       return new Promise(function (resolve, reject) {
         var model = {
-          newdisplayName: changeInfo.newdisplayName
+          newDisplayName: changeInfo.newDisplayName
         };
         axios
-          .post('/api/account/changedisplayName', model)
+          .post('/api/account/ChangeDisplayName', model)
           .then((res) => {
             context.commit("setTokenInfo", res.data);
             context.commit("setRefreshToken", res.data.refreshToken);
