@@ -30,7 +30,7 @@
                 newEmailAddress: this.newEmailAddress,
                 code: this.code
               };
-              this.$store.dispatch("changeEmailAddress", changeInfo)
+              this.$store.dispatch("changeEmailAddress", model)
                 .then(() => {
                   this.$router.push({ name: "login" });
                 })
