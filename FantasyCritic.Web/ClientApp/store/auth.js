@@ -71,6 +71,23 @@ export default {
         axios
           .post('/api/account/ChangeDisplayName', model)
           .then((res) => {
+            context.dispatch("getUserInfo")
+              .then(response => { resolve(response) });
+          })
+          .catch(error => {
+            reject();
+          });
+      });
+    },
+    changeEmailAddress(context, changeInfo) {
+      return new Promise(function (resolve, reject) {
+        var model = {
+          newEmailAddress: changeInfo.newEmailAddress,
+          code: changeInfo.code
+        };
+        axios
+          .post('/api/account/ChangeEmail', model)
+          .then((res) => {
             context.commit("setTokenInfo", res.data);
             context.commit("setRefreshToken", res.data.refreshToken);
             context.dispatch("getUserInfo")

@@ -26,18 +26,16 @@
         },
         methods: {
             changeEmail() {
-                var model = {
-                  newEmailAddress: this.newEmailAddress,
-                  code: this.code
-                };
-                axios
-                  .post('/api/account/ChangeEmail', model)
-                  .then(response => {
-                      this.$router.push({ name: "login" });
-                  })
-                  .catch(response => {
-
-                  });
+              var model = {
+                newEmailAddress: this.newEmailAddress,
+                code: this.code
+              };
+              this.$store.dispatch("changeEmailAddress", changeInfo)
+                .then(() => {
+                  this.$router.push({ name: "login" });
+                })
+                .catch(returnedError => {
+                });
             }
         },
         mounted() {

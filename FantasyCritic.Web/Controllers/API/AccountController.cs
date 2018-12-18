@@ -193,7 +193,7 @@ namespace FantasyCritic.Web.Controllers.API
             string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
             await _emailSender.SendConfirmationEmail(user, code, baseURL);
 
-            return Ok();
+            return await GetToken(user);
         }
 
         [HttpPost]
@@ -255,7 +255,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            return await GetToken(user);
+            return Ok();
         }
 
         private async Task<ObjectResult> GetToken(FantasyCriticUser user)
