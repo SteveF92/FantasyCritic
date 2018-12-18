@@ -34,7 +34,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
                     "insert into tbluser(UserID,DisplayName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
-                    "(@UserID,@UserName,@NormalizedUserName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
+                    "(@UserID,@DisplayName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
                     entity);
             }
 
@@ -118,7 +118,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<FantasyCriticUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        public async Task<FantasyCriticUser> FindByNameAsync(string normalizedEmailAddress, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -127,8 +127,8 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
 
                 var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    @"select * from tbluser WHERE NormalizedUserName = @normalizedUserName",
-                    new { normalizedUserName });
+                    @"select * from tbluser WHERE NormalizedEmailAddress = @normalizedEmailAddress",
+                    new { normalizedEmailAddress });
                 var entity = userResult.SingleOrDefault();
                 return entity?.ToDomain();
             }
@@ -166,7 +166,7 @@ namespace FantasyCritic.MySQL
 
         public Task<string> GetUserNameAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.EmailAddress);
+            return Task.FromResult(user.NormalizedEmailAddress);
         }
 
         public Task<bool> HasPasswordAsync(FantasyCriticUser user, CancellationToken cancellationToken)

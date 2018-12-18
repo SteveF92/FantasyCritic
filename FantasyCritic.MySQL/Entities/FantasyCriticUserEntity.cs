@@ -28,7 +28,6 @@ namespace FantasyCritic.MySQL.Entities
 
         public Guid UserID { get; set; }
         public string DisplayName { get; set; }
-        public string NormalizedUserName { get; set; }
         public string EmailAddress { get; set; }
         public string NormalizedEmailAddress { get; set; }
         public bool EmailConfirmed { get; set; }
@@ -39,7 +38,7 @@ namespace FantasyCritic.MySQL.Entities
         public FantasyCriticUser ToDomain()
         {
             Instant instant = LocalDateTime.FromDateTime(LastChangedCredentials).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            FantasyCriticUser domain = new FantasyCriticUser(UserID, DisplayName, EmailAddress, NormalizedUserName, EmailConfirmed, SecurityStamp, PasswordHash, instant);
+            FantasyCriticUser domain = new FantasyCriticUser(UserID, DisplayName, EmailAddress, NormalizedEmailAddress, EmailConfirmed, SecurityStamp, PasswordHash, instant);
             return domain;
         }
     }
