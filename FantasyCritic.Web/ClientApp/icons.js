@@ -14,6 +14,9 @@ fontawesome.library.add(
   require('@fortawesome/fontawesome-free-solid/faBell'),
   require('@fortawesome/fontawesome-free-solid/faExternalLinkAlt'),
   require('@fortawesome/fontawesome-free-solid/faBars'),
+  require('@fortawesome/fontawesome-free-solid/faTrophy'),
+  require('@fortawesome/fontawesome-free-solid/faUserFriends'),
+  require('@fortawesome/fontawesome-free-solid/faListOl'),
   // Brands
   require('@fortawesome/fontawesome-free-brands/faFontAwesome'),
   require('@fortawesome/fontawesome-free-brands/faMicrosoft'),
