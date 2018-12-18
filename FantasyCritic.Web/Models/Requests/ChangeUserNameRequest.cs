@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Web.Models.Requests
 {
-    public class ChangeUserNameRequest
+    public class ChangeDisplayNameRequest
     {
         [Required]
-        public string NewUserName { get; set; }
+        public string NewDisplayName { get; set; }
     }
 }

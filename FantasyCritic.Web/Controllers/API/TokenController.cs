@@ -33,9 +33,9 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> Refresh([FromBody] TokenRefreshRequest request)
         {
             var principal = _tokenService.GetPrincipalFromExpiredToken(request.Token);
-            var username = principal.Identity.Name; //this is mapped to the Name claim by default
+            var emailAddress = principal.Identity.Name; //this is mapped to the Name claim by default
 
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(emailAddress);
 
             if (user == null)
             {
@@ -79,9 +79,9 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost, Authorize]
         public async Task<IActionResult> Revoke()
         {
-            var username = User.Identity.Name;
+            var emailAddress = User.Identity.Name;
 
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(emailAddress);
             if (user == null) return BadRequest();
 
             await _userManager.RemoveAllRefreshTokens(user);

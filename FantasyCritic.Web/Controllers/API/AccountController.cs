@@ -235,7 +235,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeUserName([FromBody] ChangeUserNameRequest request)
+        public async Task<IActionResult> ChangeDisplayName([FromBody] ChangeDisplayNameRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -248,7 +248,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            user.DisplayName = request.NewUserName;
+            user.DisplayName = request.NewDisplayName;
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
