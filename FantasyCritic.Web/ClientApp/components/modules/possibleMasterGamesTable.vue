@@ -13,7 +13,10 @@
               <td>
                 <masterGamePopover :masterGame="game"></masterGamePopover>
               </td>
-              <td>{{game.estimatedReleaseDate}}</td>
+              <td v-bind:class="{ 'text-danger': game.isReleased }" class="release-date">
+                <span>{{game.estimatedReleaseDate}}</span>
+                <span v-show="game.isReleased">(Released)</span>
+              </td>
               <td>
                 <eligibilityBadge :eligibilityLevel="game.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
               </td>
@@ -55,5 +58,9 @@
 
   .popper {
     background: #415262;
+  }
+
+  .release-date{
+    font-weight: bold;
   }
 </style>

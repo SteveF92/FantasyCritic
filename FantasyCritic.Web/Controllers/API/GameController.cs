@@ -15,6 +15,7 @@ using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
 {
@@ -24,13 +25,15 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
+        private readonly IClock _clock;
         private static readonly int MaxDistance = 10;
         private static readonly int MaxDistanceGames = 5;
 
-        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService)
+        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IClock clock)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
+            _clock = clock;
         }
 
         [HttpGet("{id}")]
@@ -42,7 +45,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
-            var viewModel = new MasterGameViewModel(masterGame.Value);
+            var viewModel = new MasterGameViewModel(masterGame.Value, _clock);
             return viewModel;
         }
 
@@ -63,7 +66,7 @@ namespace FantasyCritic.Web.Controllers.API
                     .Where(x => x.GameName.ToLower().Contains(gameName))
                     .Concat(lowDistance).Distinct();
             }
-            List<MasterGameViewModel> viewModels = matchingMasterGames.Select(x => new MasterGameViewModel(x)).ToList();
+            List<MasterGameViewModel> viewModels = matchingMasterGames.Select(x => new MasterGameViewModel(x, _clock)).ToList();
 
             return viewModels;
         }

@@ -34,7 +34,7 @@ namespace FantasyCritic.Web.Models.Responses
                 Released = publisherGame.MasterGame.Value.MasterGame.IsReleased(clock);
                 if (publisherGame.MasterGame.HasValue)
                 {
-                    MasterGame = new MasterGameViewModel(publisherGame.MasterGame.Value.MasterGame);
+                    MasterGame = new MasterGameViewModel(publisherGame.MasterGame.Value.MasterGame, clock);
                 }
 
                 if (publisherGame.ManualCriticScore.HasValue)

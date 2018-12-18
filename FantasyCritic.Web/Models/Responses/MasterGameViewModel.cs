@@ -10,26 +10,28 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class MasterGameViewModel
     {
-        public MasterGameViewModel(MasterGame masterGame)
+        public MasterGameViewModel(MasterGame masterGame, IClock clock)
         {
             MasterGameID = masterGame.MasterGameID;
             GameName = masterGame.GameName;
             EstimatedReleaseDate = masterGame.EstimatedReleaseDate;
             ReleaseDate = masterGame.ReleaseDate;
+            IsReleased = masterGame.IsReleased(clock);
             CriticScore = masterGame.CriticScore;
             AveragedScore = masterGame.AveragedScore;
             EligibilityLevel = new EligibilityLevelViewModel(masterGame.EligibilityLevel, false);
             OpenCriticID = masterGame.OpenCriticID;
-            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, masterGame.EligibilityLevel)).ToList();
+            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, masterGame.EligibilityLevel, clock)).ToList();
             BoxartFileName = masterGame.BoxartFileName;
         }
 
-        public MasterGameViewModel(MasterSubGame masterSubGame, EligibilityLevel eligibilityLevel)
+        public MasterGameViewModel(MasterSubGame masterSubGame, EligibilityLevel eligibilityLevel, IClock clock)
         {
             MasterGameID = masterSubGame.MasterGameID;
             GameName = masterSubGame.GameName;
             EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
             ReleaseDate = masterSubGame.ReleaseDate;
+            IsReleased = masterSubGame.IsReleased(clock);
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
             EligibilityLevel = new EligibilityLevelViewModel(eligibilityLevel, false);
@@ -41,6 +43,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
+        public bool IsReleased { get; }
         public decimal? CriticScore { get; }
         public bool AveragedScore { get; }
         public EligibilityLevelViewModel EligibilityLevel { get; }
