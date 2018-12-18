@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Forgot Password</h2>
-        <div v-if="showSent">Forgot password email has been sent. Please check your email.</div>
+        <div v-if="showSent" class="alert alert-success">Forgot password email has been sent. Please check your email.</div>
         <form v-on:submit.prevent="sendForgotPasswordRequest">
             <div class="form-group col-md-4">
                 <label for="emailAddress" class="control-label">Email Address</label>
