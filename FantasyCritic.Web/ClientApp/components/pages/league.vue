@@ -83,7 +83,7 @@
 
     <div>
       <h3>League Manager</h3>
-      {{ league.leagueManager.userName }}
+      {{ league.leagueManager.displayName }}
     </div>
 
     <div class="row" v-if="leagueYear && leagueYear.userPublisher">

@@ -3,7 +3,7 @@
     <div class="form-group">
       <label for="nextPublisherUp" class="control-label">Select the next game for publisher: </label>
       <div>
-        <strong>{{nextPublisherUp.publisherName}} (UserName: {{nextPublisherUp.playerName}})</strong>
+        <strong>{{nextPublisherUp.publisherName}} (Display Name: {{nextPublisherUp.playerName}})</strong>
       </div>
     </div>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">

@@ -3,15 +3,17 @@
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="register">
       <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>
       <div class="form-group">
-        <label for="userName" class="control-label">Username</label>
-        <input v-model="userName" v-validate="'required'" id="userName" name="userName" type="text" class="form-control input" />
-        <span>{{ errors.first('userName') }}</span>
-      </div>
-      <div class="form-group">
         <label for="emailAddress" class="control-label">Email</label>
         <input v-model="emailAddress" v-validate="'required|email'" id="emailAddress" name="emailAddress" type="text" class="form-control input" />
         <span>{{ errors.first('emailAddress') }}</span>
       </div>
+
+      <div class="form-group">
+        <label for="displayName" class="control-label">Display Name</label>
+        <input v-model="displayName" v-validate="'required'" id="displayName" name="displayName" type="text" class="form-control input" />
+        <span>{{ errors.first('emailAddress') }}</span>
+      </div>
+
       <div class="form-group">
         <label for="password" class="control-label">Password</label>
         <input v-model="password" v-validate="'required|min:8'" name="password" type="password" class="form-control input" ref="password">
@@ -40,11 +42,11 @@
     export default {
         data() {
             return {
-                userName: "",
-                emailAddress: "",
-                password: "",
-                confirmPassword: "",
-                errorInfo: ""
+              emailAddress: "",
+              displayName: "",
+              password: "",
+              confirmPassword: "",
+              errorInfo: ""
             }
         },
         computed: {
@@ -55,10 +57,10 @@
         methods: {
             register() {
                 var model = {
-                    userName: this.userName,
-                    emailAddress: this.emailAddress,
-                    password: this.password,
-                    confirmPassword: this.confirmPassword
+                  emailAddress: this.emailAddress,
+                  displayName: this.displayName,
+                  password: this.password,
+                  confirmPassword: this.confirmPassword
                 };
                 this.$store.dispatch("registerAccount", model)
                   .then(() => {

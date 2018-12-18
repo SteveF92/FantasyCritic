@@ -35,9 +35,9 @@
                             <icon icon="bell" />
                           </a>
                         </li>-->
-                        <li v-if="userName" class="nav-item dropdown">
+                        <li v-if="displayName" class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                            {{userName}}
+                            {{displayName}}
                             <span class="caret"></span>
                           </a>
                           <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
@@ -72,8 +72,8 @@
           hasUserInfo() {
             return this.$store.getters.userInfo;
           },
-          userName() {
-            return this.$store.getters.userInfo.userName;
+          displayName() {
+            return this.$store.getters.userInfo.displayName;
           },
           storeIsBusy() {
             return this.$store.getters.storeIsBusy;

@@ -3,7 +3,7 @@
     <div class="form-group">
       <label for="nextPublisherUp" class="control-label">Select the next counter pick for publisher: </label>
       <div>
-        <strong>{{nextPublisherUp.publisherName}} (UserName: {{nextPublisherUp.playerName}})</strong>
+        <strong>{{nextPublisherUp.publisherName}} (Display Name: {{nextPublisherUp.playerName}})</strong>
       </div>
     </div>
     <form class="form-horizontal" v-on:submit.prevent="selectCounterPick" hide-footer>

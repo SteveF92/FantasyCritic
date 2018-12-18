@@ -3,7 +3,7 @@
     <table class="table table-sm table-responsive-sm table-bordered">
       <thead>
         <tr class="table-secondary">
-          <th scope="col" class="game-column">User Name</th>
+          <th scope="col" class="game-column">Display Name</th>
           <th scope="col">Publisher Name</th>
           <th scope="col">Draft Position</th>
           <th scope="col">Budget</th>
@@ -12,7 +12,7 @@
       </thead>
       <tbody>
         <tr v-for="player in players">
-          <td>{{player.user.userName}}</td>
+          <td>{{player.user.displayName}}</td>
           <td v-if="player.publisher">{{player.publisher.publisherName}}</td>
           <td v-else class="not-created-publisher">Not Created Yet</td>
           <td v-if="player.publisher">{{player.publisher.draftPosition}}</td>
@@ -48,7 +48,7 @@
               .post('/api/leagueManager/RemovePlayer', model)
               .then(response => {
                 var removeInfo = {
-                  userName: player.user.userName
+                  emailAddress: player.user.emailAddress
                 };
                 this.$emit('playerRemoved', removeInfo);
               })

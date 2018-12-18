@@ -7,10 +7,10 @@
     </div>
 
     <dl class="row">
-      <dt class="col-sm-3">Username</dt>
+      <dt class="col-sm-3">Display Name</dt>
       <dd class="col-sm-9">
-        {{userInfo.userName}}
-        <b-button variant="info" v-b-modal="'changeUserNameForm'">Change Username</b-button>
+        {{userInfo.displayName}}
+        <b-button variant="info" v-b-modal="'changeDisplayNameForm'">Change Display Name</b-button>
       </dd>
 
       <dt class="col-sm-3">Email Address</dt>
@@ -26,7 +26,7 @@
       </dd>
     </dl>
     <changePasswordForm v-on:passwordChanged="passwordChanged"></changePasswordForm>
-    <changeUserNameForm v-on:userNameChanged="userNameChanged"></changeUserNameForm>
+    <changeemailAddressForm v-on:emailAddressChanged="emailAddressChanged"></changeemailAddressForm>
     <changeEmailForm v-on:sentEmailChanged="sentEmailChanged"></changeEmailForm>
 
   </div>
@@ -34,7 +34,7 @@
 <script>
   import axios from 'axios';
   import ChangePasswordForm from "components/modules/modals/changePasswordForm";
-  import ChangeUserNameForm from "components/modules/modals/changeUserNameForm";
+  import ChangeDisplayNameForm from "components/modules/modals/changeDisplayNameForm";
   import ChangeEmailForm from "components/modules/modals/changeEmailForm";
 
   export default {
@@ -45,7 +45,7 @@
     },
     components: {
       ChangePasswordForm,
-      ChangeUserNameForm,
+      ChangeDisplayNameForm,
       ChangeEmailForm
     },
     computed: {
@@ -75,8 +75,8 @@
           duration: 5000
         });
       },
-      userNameChanged(newUserNameInfo) {
-        let toast = this.$toasted.show("Your Username has been changed to " + newUserNameInfo.newUserName, {
+      diplayNameChanged(newDisplayNameInfo) {
+        let toast = this.$toasted.show("Your display name has been changed to " + newDisplayNameInfo.newDisplayName, {
           theme: "primary",
           position: "top-right",
           duration: 5000
