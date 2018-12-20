@@ -24,33 +24,12 @@ html {
 .container {
     width: auto;
     max-width: 680px;
-    padding: 0 15px;
+    padding: 0 15px; 
 }
 
-.table-danger td a {
-    color: white !important;
-}
+/*End Sticky Footer*/
 
-.table-danger td a:hover {
-    color: #cccccc !important;
-}
-
-.table-danger td span {
-    color: white !important;
-}
-
-.table-danger td span:hover {
-    color: #cccccc !important;
-}
-
-tr.table-primary, tr.table-primary th, tr.table-primary td {
-    background-color: #DF691A;
-}
-
-tr.table-secondary, tr.table-secondary th, tr.table-secondary td {
-    background-color: #415262;
-}
-
+/*My Custom Styles*/
 .modal-backdrop {
     opacity: 0.6 !important;
 }
