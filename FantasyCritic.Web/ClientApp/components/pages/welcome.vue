@@ -58,7 +58,7 @@
     <div class="row">
       <div class="feature-highlight col-3 offset-4">
         <icon icon="trophy" />
-        <span>Win big</span>
+        <span>Win big (bragging rights)</span>
       </div>
       <div class="feature-highlight col-3">
         <icon icon="dollar-sign" />
@@ -67,7 +67,7 @@
     </div>
     <div class="row">
       <div class="col-lg-6 col-md-12">
-        <h3>FAQ</h3>
+        <h3>Frequently Asked Questions</h3>
         <homeFaq></homeFaq>
       </div>
       <div class="col-lg-6 col-md-12">
