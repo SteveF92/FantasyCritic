@@ -1,6 +1,6 @@
 <template>
     <div>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="top-nav">
+        <nav class="navbar navbar-expand-lg" id="top-nav">
             <router-link :to="{ name: 'welcome' }" class="navbar-brand" title="Fantasy Critic">Fantasy Critic</router-link>
             <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation" style="">
                 <span class="navbar-toggler-icon"></span>
@@ -9,25 +9,25 @@
             <div class="navbar-collapse collapse" id="navbar-collapsible">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                  <router-link :to="{ name: 'about' }" class="nav-link" title="About">About</router-link>
+                  <router-link :to="{ name: 'about' }" class="nav-link top-nav-link" title="About">About</router-link>
                 </li>
                 <li class="nav-item">
-                  <router-link :to="{ name: 'faq' }" class="nav-link" title="FAQ">FAQ</router-link>
+                  <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link" title="FAQ">FAQ</router-link>
                 </li>
                 <li class="nav-item">
-                  <router-link :to="{ name: 'contact' }" class="nav-link" title="Contact">Contact</router-link>
+                  <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link" title="Contact">Contact</router-link>
                 </li>
               </ul>
                 
                 <div class="my-2 my-lg-0">
                   <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                      <a class="nav-link nav-icon" href="https://twitter.com/fantasy_critic" target="_blank">
+                      <a class="nav-icon" href="https://twitter.com/fantasy_critic" target="_blank">
                         <icon :icon="['fab', 'twitter-square']" />
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link nav-icon" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
+                      <a class="nav-icon" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
                         <icon :icon="['fab', 'reddit-square']" />
                       </a>
                     </li>
@@ -104,13 +104,16 @@
 }
 
 #top-nav {
-    max-height: 50px;
-    padding-bottom: 0;
+  max-height: 50px;
+  padding-bottom: 0;
+  background-color: #ffffff;
 }
 
 #navbar-collapsible {
     z-index: 10;
-    background-color: #4E5D6C;
 }
 
+a.top-nav-link {
+  color: black !important;
+}
 </style>

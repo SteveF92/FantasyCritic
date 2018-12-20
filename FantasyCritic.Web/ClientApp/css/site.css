@@ -33,3 +33,33 @@ html {
 .modal-backdrop {
     opacity: 0.6 !important;
 }
+
+body {
+    background-color: black;
+}
+
+a.btn {
+    border-radius: 0;
+    height: 40px;
+    color: white !important;
+    border: none;
+}
+
+.btn-primary {
+    background-color: #D6993A
+}
+.btn-secondary {
+    background-color: #414141
+}
+.btn-success {
+    background-color: #8DC63F
+}
+.btn-info {
+    background-color: #3AACD6
+}
+.btn-warning {
+    background-color: #D96B36
+}
+.btn-danger {
+    background-color: #AA1E1E
+}

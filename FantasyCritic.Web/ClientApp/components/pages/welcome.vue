@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="row">
+    <div class="row hero-area">
       <div class="col-lg-4 offset-lg-1 col-md-12">
         <h2>Fantasy Football...for video games!</h2>
         <p>
@@ -98,6 +98,9 @@
     }
 </script>
 <style scoped>
+  .hero-area {
+    background-color: #595959;
+  }
   .registration-area{
     float: right;
   }
