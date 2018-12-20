@@ -3,6 +3,7 @@ import Home from "components/pages/home";
 import Login from "components/pages/login";
 import Register from "components/pages/register";
 import About from "components/pages/about";
+import Faq from "components/pages/faq";
 import Contact from "components/pages/contact";
 import ManageUser from "components/pages/manageUser";
 import CreateLeague from "components/pages/createLeague";
@@ -89,6 +90,15 @@ export const routes = [
     name: "about",
     meta: {
       title: "About",
+      isPublic: true
+    }
+  },
+  {
+    path: "/faq",
+    component: Faq,
+    name: "faq",
+    meta: {
+      title: "Frequently Asked Questions",
       isPublic: true
     }
   },

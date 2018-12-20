@@ -7,14 +7,17 @@
             </button>
 
             <div class="navbar-collapse collapse" id="navbar-collapsible">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <router-link :to="{ name: 'about' }" class="nav-link" title="About">About</router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link :to="{ name: 'contact' }" class="nav-link" title="Contact">Contact</router-link>
-                    </li>
-                </ul>
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                  <router-link :to="{ name: 'about' }" class="nav-link" title="About">About</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link :to="{ name: 'faq' }" class="nav-link" title="FAQ">FAQ</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link :to="{ name: 'contact' }" class="nav-link" title="Contact">Contact</router-link>
+                </li>
+              </ul>
                 
                 <div class="my-2 my-lg-0">
                   <ul class="navbar-nav mr-auto">
