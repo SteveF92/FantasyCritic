@@ -17,6 +17,7 @@ fontawesome.library.add(
   require('@fortawesome/fontawesome-free-solid/faTrophy'),
   require('@fortawesome/fontawesome-free-solid/faUserFriends'),
   require('@fortawesome/fontawesome-free-solid/faListOl'),
+  require('@fortawesome/fontawesome-free-solid/faDollarSign'),
   // Brands
   require('@fortawesome/fontawesome-free-brands/faFontAwesome'),
   require('@fortawesome/fontawesome-free-brands/faMicrosoft'),

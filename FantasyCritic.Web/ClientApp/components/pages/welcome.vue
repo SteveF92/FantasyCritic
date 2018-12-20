@@ -44,6 +44,27 @@
         </div>
       </div>
     </div>
+    <h3>Features and Highlights</h3>
+    <div class="row">
+      <div class="feature-highlight col-3 offset-4">
+        <icon icon="user-friends" />
+        <span>Compete with your friends</span>
+      </div>
+      <div class="feature-highlight col-3">
+        <icon icon="list-ol" />
+        <span>Assemble your dream team</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="feature-highlight col-3 offset-4">
+        <icon icon="trophy" />
+        <span>Win big</span>
+      </div>
+      <div class="feature-highlight col-3">
+        <icon icon="dollar-sign" />
+        <span>Totally free</span>
+      </div>
+    </div>
   </div>
 </template>
 <script>
