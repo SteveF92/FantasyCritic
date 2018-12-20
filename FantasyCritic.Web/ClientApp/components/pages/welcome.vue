@@ -65,8 +65,18 @@
         <span>Totally free</span>
       </div>
     </div>
+    <div class="row">
+      <div class="col-lg-3 offset-lg-2 col-md-8 offset-md-2">
+        <h3>FAQ</h3>
+      </div>
+      <div class="col-lg-4 offset-lg-6 col-md-8 offset-md-2">
+        <h3>Recent Tweets</h3>
+        <a class="twitter-timeline" href="https://twitter.com/fantasy_critic?ref_src=twsrc%5Etfw">Tweets by fantasy_critic</a>
+      </div>
+    </div>
   </div>
 </template>
+
 <script>
     import Vue from 'vue';
     import axios from 'axios';
