@@ -26,7 +26,7 @@
 
     <div class="row">
       <div class="col-sm-12 col-md-4 offset-md-2">
-        Big picture!
+        <img src="/images/monitor-mock.png" />
       </div>
       <div class="col-sm-12 col-md-4">
         <h3>How to get Started</h3>
