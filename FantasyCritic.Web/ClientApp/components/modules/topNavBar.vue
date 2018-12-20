@@ -21,14 +21,14 @@
                 
                 <div class="my-2 my-lg-0">
                   <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
+                    <li class="nav-item top-nav-brand-icon">
                       <a class="nav-icon" href="https://twitter.com/fantasy_critic" target="_blank">
-                        <icon :icon="['fab', 'twitter-square']" />
+                        <icon :icon="['fab', 'twitter-square']" size="lg" />
                       </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item top-nav-brand-icon">
                       <a class="nav-icon" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-                        <icon :icon="['fab', 'reddit-square']" />
+                        <icon :icon="['fab', 'reddit-square']" size="lg" />
                       </a>
                     </li>
                     <slot v-if="!storeIsBusy">
@@ -116,4 +116,9 @@
 a.top-nav-link {
   color: black !important;
 }
+
+.top-nav-brand-icon {
+  margin-top: 3px;
+}
+
 </style>
