@@ -43,6 +43,8 @@ a.btn {
     height: 40px;
     color: white !important;
     border: none;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .btn-primary {
