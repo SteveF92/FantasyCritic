@@ -3,6 +3,15 @@
     <h2>Frequently Asked Questions</h2>
     <hr />
     <div class="col-lg-6 col-sm-12">
+      <h4>Something about the site is broken!</h4>
+      <p>
+        Sounds likely. We’re just getting started here at Fantasy Critic and there bound to be issues. The best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic">GitHub</a>.
+        Contacting me on Twitter or Reddit is also an option.
+      </p>
+      <h4>How can I follow updates for the site?</h4>
+      <p>
+        Follow me on twitter <a href="https://twitter.com/fantasy_critic">@fantasy_critic</a> and join our <a href="https://www.reddit.com/r/fantasycritic/">subreddit</a>.
+      </p>
       <h4>Why should I play FantasyCritic?</h4>
       <p>
         It’s a great catalyst for discussing video games with your friends, and gets everyone invested in checking out the year’s best video games.
@@ -204,6 +213,18 @@
           </ul>
         </li>
       </ul>
+      <h4>
+        I don't agree with your eligibility levels! My league is set to a maximum level of “Complete Remake” but I should be able
+        to take the new 'Mario & Luigi: Bowser's Inside Story' on 3DS.
+      </h4>
+      <p>
+        It's up to your league and ultimately up to your league manager. League managers can override the eligibility rules and assign
+        the game you want to your team. Your league should agree on whether or not they want to allow the exception, though.
+      </p>
+      <h4>What do I get if I win?</h4>
+      <p>
+        That’s totally up to your league. This site doesn’t provide any prizes. Look to fantasy sports for advice on how to structure any winnings you want to play for.
+      </p>
     </div>
   </div>
 </template>
