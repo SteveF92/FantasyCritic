@@ -69,6 +69,12 @@
       <div class="col-lg-6 col-md-12">
         <h3>Frequently Asked Questions</h3>
         <homeFaq></homeFaq>
+        <div class="alert alert-secondary">
+          <div class="d-flex">
+            <div class="mr-auto p-2">More Questions?</div>
+            <div><b-button class="faq-link mx-2" variant="info" :to="{ name: 'faq' }">View our full FAQ Page</b-button></div>
+          </div>
+        </div>
       </div>
       <div class="col-lg-6 col-md-12">
         <h3>Recent Tweets</h3>
@@ -93,7 +99,7 @@
 </script>
 <style scoped>
   .registration-area{
-    float:right;
+    float: right;
   }
   .welcome-area{
     background-color: grey;
