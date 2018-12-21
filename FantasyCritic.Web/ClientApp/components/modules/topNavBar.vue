@@ -54,10 +54,10 @@
                 </slot>
                 <slot v-else>
                   <li class="nav-item">
-                    <b-button variant="primary" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
+                    <b-button variant="info" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
                   </li>
                   <li class="nav-item">
-                    <b-button variant="info" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
+                    <b-button variant="primary" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
                   </li>
                 </slot>
               </slot>

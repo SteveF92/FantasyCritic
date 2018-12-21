@@ -38,7 +38,7 @@ body {
     background-color: black;
 }
 
-a.btn {
+a.btn, input.btn {
     border-radius: 0;
     height: 40px;
     color: white !important;
@@ -47,22 +47,22 @@ a.btn {
     text-transform: uppercase;
 }
 
-.btn-primary {
-    background-color: #D6993A
+.btn-primary, .btn-primary:disabled {
+    background-color: #D6993A;
 }
-.btn-secondary {
+.btn-secondary, .btn-secondary:disabled {
     background-color: #414141
 }
-.btn-success {
+.btn-success, .btn-success:disabled {
     background-color: #8DC63F
 }
-.btn-info {
+.btn-info, .btn-info:disabled {
     background-color: #3AACD6
 }
-.btn-warning {
+.btn-warning, .btn-warning:disabled {
     background-color: #D96B36
 }
-.btn-danger {
+.btn-danger, .btn-danger:disabled {
     background-color: #AA1E1E
 }
 
