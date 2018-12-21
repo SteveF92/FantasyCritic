@@ -46,25 +46,37 @@
 
         <div class="starting-steps">
           <div class="starting-step">
-            <font-awesome-layers class="fa-3x">
+            <font-awesome-layers class="fa-4x">
               <font-awesome-icon :icon="['far', 'circle']" />
               <font-awesome-icon icon="trophy" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
-            <span>Create a League</span>
+            <div class="starting-step-text">
+              <span class="step-number-text">Step 1:</span>
+              <br />
+              <span>Create a League</span>
+            </div>
           </div>
           <div class="starting-step">
-            <font-awesome-layers class="fa-3x">
+            <font-awesome-layers class="fa-4x">
               <font-awesome-icon :icon="['far', 'circle']" />
               <font-awesome-icon icon="user-friends" transform="shrink-9 left-2" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
-            <span>Invite your friends</span>
+            <div class="starting-step-text">
+              <span class="step-number-text">Step 2:</span>
+              <br />
+              <span>Invite your friends</span>
+            </div>
           </div>
           <div class="starting-step">
-            <font-awesome-layers class="fa-3x">
+            <font-awesome-layers class="fa-4x">
               <font-awesome-icon :icon="['far', 'circle']" />
               <font-awesome-icon icon="list-ol" transform="shrink-8" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
-            <span>Draft your roster</span>
+            <div class="starting-step-text">
+              <span class="step-number-text">Step 3:</span>
+              <br />
+              <span>Draft your roster</span>
+            </div>
           </div>
         </div>
       </div>
@@ -183,5 +195,20 @@
 
   .get-started-area{
     margin-top: 20px;
+  }
+
+  .starting-step {
+    display: flex; /* establish flex container */
+    flex-direction: row; /* make main axis vertical */
+  }
+
+  .starting-step-text{
+    margin-left: 10px;
+  }
+  .step-number-text {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: monospace;
+    font-size: 17px;
   }
 </style>
