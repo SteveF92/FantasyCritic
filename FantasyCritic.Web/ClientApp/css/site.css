@@ -94,6 +94,18 @@ p, span {
     color: white;
 }
 
+a {
+    color: #DF691A;
+}
+
+a:visited {
+    color: #DF691A;
+}
+
+a:hover {
+    color: #a04b13;
+}
+
 .danger-text {
     color: #AA1E1E;
 }

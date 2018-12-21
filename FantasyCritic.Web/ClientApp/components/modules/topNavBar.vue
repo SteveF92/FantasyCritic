@@ -25,12 +25,12 @@
             <ul class="navbar-nav mr-auto">
               <li class="nav-item top-nav-brand-icon">
                 <a class="nav-icon" href="https://twitter.com/fantasy_critic" target="_blank">
-                  <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" />
+                  <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" />
                 </a>
               </li>
               <li class="nav-item top-nav-brand-icon">
                 <a class="nav-icon" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-                  <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" />
+                  <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" :style="{ color: 'ff4500' }" />
                 </a>
               </li>
               <slot v-if="!storeIsBusy">
