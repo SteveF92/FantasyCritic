@@ -18,6 +18,8 @@ fontawesome.library.add(
   require('@fortawesome/fontawesome-free-solid/faUserFriends'),
   require('@fortawesome/fontawesome-free-solid/faListOl'),
   require('@fortawesome/fontawesome-free-solid/faDollarSign'),
+  require('@fortawesome/fontawesome-free-solid/faCircle'),
+  require('@fortawesome/fontawesome-free-solid/faCheck'),
   // Brands
   require('@fortawesome/fontawesome-free-brands/faFontAwesome'),
   require('@fortawesome/fontawesome-free-brands/faMicrosoft'),

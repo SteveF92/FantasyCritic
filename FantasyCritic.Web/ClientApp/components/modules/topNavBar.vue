@@ -38,7 +38,7 @@
                   <!--<li class="nav-item">
               <a class="nav-link nav-icon" href="#">
                 <icon icon="bell" />
-              </a>
+              </a> 
             </li>-->
                   <li v-if="displayName" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">

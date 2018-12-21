@@ -5,7 +5,7 @@ import router from './router/index';
 import store from './store';
 import { sync } from 'vuex-router-sync';
 import App from 'components/app-root';
-import { FontAwesomeIcon } from './icons';
+import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import Toasted from 'vue-toasted';
 import VeeValidate from 'vee-validate';
 
@@ -21,6 +21,8 @@ Vue.use(VeeValidate);
 
 // Registration of global components
 Vue.component('icon', FontAwesomeIcon);
+Vue.component('font-awesome-layers', FontAwesomeLayers);
+Vue.component('font-awesome-layers-text', FontAwesomeLayersText);
 Vue.prototype.$http = axios;
 sync(store, router);
 

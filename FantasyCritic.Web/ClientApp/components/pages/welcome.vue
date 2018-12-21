@@ -39,19 +39,31 @@
       <div class="col-lg-6 col-md-12 computer-image-area">
         <img src="/images/monitor-mock.png" class="computer-image" />
       </div>
-      <div class="col-lg-6 col-md-12">
-        <h3>How to get Started</h3>
-        <div class="starting-step">
-          <icon icon="trophy" />
-          <span>Create a League</span>
+      <div class="col-lg-6 col-md-12 get-started-area">
+        <div class="get-started-message">
+          <h3>How to get Started</h3>
         </div>
-        <div class="starting-step">
-          <icon icon="user-friends" />
-          <span>Invite your friends</span>
-        </div>
-        <div class="starting-step">
-          <icon icon="list-ol" />
-          <span>Draft your roster</span>
+
+        <div class="starting-steps">
+          <div class="starting-step">
+            <font-awesome-layers class="fa-lg">
+              <icon icon="circle" />
+              <icon icon="check" transform="shrink-6" :style="{ color: 'white' }" />
+            </font-awesome-layers>
+            <!--<font-awesome-layers>
+            <icon icon="circle" />
+            <icon icon="trophy" size="2x" :style="{ color: '#d6993a' }" />
+          </font-awesome-layers>-->
+            <span>Create a League</span>
+          </div>
+          <div class="starting-step">
+            <icon icon="user-friends" size="2x" :style="{ color: '#d6993a' }" />
+            <span>Invite your friends</span>
+          </div>
+          <div class="starting-step">
+            <icon icon="list-ol" size="2x" :style="{ color: '#d6993a' }" />
+            <span>Draft your roster</span>
+          </div>
         </div>
       </div>
     </div>
@@ -165,5 +177,9 @@
 
   .computer-image {
 
+  }
+
+  .get-started-area{
+    margin-top: 20px;
   }
 </style>
