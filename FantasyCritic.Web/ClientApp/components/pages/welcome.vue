@@ -81,27 +81,44 @@
         </div>
       </div>
     </div>
-    <h3>Features and Highlights</h3>
-    <div class="row">
-      <div class="feature-highlight col-3 offset-4">
-        <font-awesome-icon icon="user-friends" />
-        <span>Compete with your friends</span>
-      </div>
-      <div class="feature-highlight col-3">
-        <font-awesome-icon icon="list-ol" />
-        <span>Assemble your dream team</span>
+
+    <div class="features-area">
+      <h3 class="features-heading">Features and Highlights</h3>
+      <div class="feature-highlights-area">
+        <div class="feature-highlights">
+          <div class="feature-highlight shadowed">
+            <font-awesome-layers class="fa-4x">
+              <font-awesome-icon :icon="['far', 'circle']" />
+              <font-awesome-icon icon="user-friends" transform="shrink-9 left-2" :style="{ color: 'd6993a' }" />
+            </font-awesome-layers>
+            <span>Compete with your friends</span>
+          </div>
+          <div class="feature-highlight shadowed">
+            <font-awesome-layers class="fa-4x">
+              <font-awesome-icon :icon="['far', 'circle']" />
+              <font-awesome-icon icon="list-ol" transform="shrink-8" :style="{ color: 'd6993a' }" />
+            </font-awesome-layers>
+            <span>Assemble your dream team</span>
+          </div>
+          <div class="feature-highlight shadowed">
+            <font-awesome-layers class="fa-4x">
+              <font-awesome-icon :icon="['far', 'circle']" />
+              <font-awesome-icon icon="trophy" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
+            </font-awesome-layers>
+            <span>Win big (bragging rights)</span>
+          </div>
+          <div class="feature-highlight shadowed">
+            <font-awesome-layers class="fa-4x">
+              <font-awesome-icon :icon="['far', 'circle']" />
+              <font-awesome-icon icon="slash" transform="shrink-8" :style="{ color: 'd6993a' }" />
+              <font-awesome-icon icon="dollar-sign" transform="shrink-8" :style="{ color: 'd6993a' }" />
+            </font-awesome-layers>
+            <span>Totally free</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="row">
-      <div class="feature-highlight col-3 offset-4">
-        <font-awesome-icon icon="trophy" />
-        <span>Win big (bragging rights)</span>
-      </div>
-      <div class="feature-highlight col-3">
-        <font-awesome-icon icon="dollar-sign" />
-        <span>Totally free</span>
-      </div>
-    </div>
+
     <div class="row">
       <div class="col-lg-6 col-md-12">
         <h3>Frequently Asked Questions</h3>
@@ -210,5 +227,31 @@
     text-transform: uppercase;
     font-family: monospace;
     font-size: 17px;
+  }
+
+  .features-area {
+    background-color: #414141;
+  }
+
+  .features-heading {
+    text-align: center;
+  }
+
+  .feature-highlights-area {
+    display: flex; /* establish flex container */
+    justify-content: center; /* center items vertically, in this case */
+    align-items: center; /* center items horizontally, in this case */
+  }
+
+  .feature-highlights {
+    width: 40%;
+    min-width: 300px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .feature-highlight{
+    margin: 2px;
+    width: 300px;
   }
 </style>
