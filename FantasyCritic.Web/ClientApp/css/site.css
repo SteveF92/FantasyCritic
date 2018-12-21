@@ -48,22 +48,22 @@ a.btn, input.btn {
 }
 
 .btn-primary, .btn-primary:disabled {
-    background-color: #D6993A;
+    background-color: #D6993A !important;
 }
 .btn-secondary, .btn-secondary:disabled {
-    background-color: #414141
+    background-color: #414141 !important;
 }
 .btn-success, .btn-success:disabled {
-    background-color: #8DC63F
+    background-color: #8DC63F !important;
 }
 .btn-info, .btn-info:disabled {
-    background-color: #3AACD6
+    background-color: #3AACD6 !important;
 }
 .btn-warning, .btn-warning:disabled {
-    background-color: #D96B36
+    background-color: #D96B36 !important;
 }
 .btn-danger, .btn-danger:disabled {
-    background-color: #AA1E1E
+    background-color: #AA1E1E !important;
 }
 
 h1 {

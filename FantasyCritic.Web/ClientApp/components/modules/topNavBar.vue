@@ -102,12 +102,12 @@
 }
 
 .main-logo{
-  padding-bottom: 10px;
+  padding-bottom: 4px;
 }
 
 #top-nav {
-  max-height: 50px;
-  padding-bottom: 0;
+  max-height: 53px;
+  padding-bottom: 10px;
   background-color: #ffffff;
 }
 
@@ -124,5 +124,6 @@ a.top-nav-link {
 .top-nav-brand-icon {
   margin-top: 6px;
 }
+
 
 </style>

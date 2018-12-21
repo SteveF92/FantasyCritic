@@ -13,6 +13,7 @@ import "./filters";
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import 'bootswatch/dist/darkly/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 
 Vue.use(BootstrapVue);
