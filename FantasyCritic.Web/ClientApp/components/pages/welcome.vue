@@ -36,10 +36,10 @@
     </div>
 
     <div class="row">
-      <div class="col-sm-12 col-md-4 offset-md-2">
-        <img src="/images/monitor-mock.png" />
+      <div class="col-lg-6 col-md-12 computer-image-area">
+        <img src="/images/monitor-mock.png" class="computer-image" />
       </div>
-      <div class="col-sm-12 col-md-4">
+      <div class="col-lg-6 col-md-12">
         <h3>How to get Started</h3>
         <div class="starting-step">
           <icon icon="trophy" />
@@ -154,5 +154,16 @@
   }
   .welcome-message {
     width: 70%;
+  }
+
+  .computer-image-area {
+    display: flex; /* establish flex container */
+    flex-direction: column; /* make main axis vertical */
+    justify-content: center; /* center items vertically, in this case */
+    align-items: center; /* center items horizontally, in this case */
+  }
+
+  .computer-image {
+
   }
 </style>
