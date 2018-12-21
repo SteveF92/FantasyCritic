@@ -65,3 +65,25 @@ a.btn {
 .btn-danger {
     background-color: #AA1E1E
 }
+
+h1 {
+    color: white !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.39);
+    padding: 10px;
+}
+
+h2 {
+    color: #D6993A;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.39);
+    padding: 10px;
+}
+
+p.shadowed {
+    color: white;
+    background: rgba(0, 0, 0, 0.39);
+    padding: 10px;
+}

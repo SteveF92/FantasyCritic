@@ -1,13 +1,17 @@
 <template>
   <div>
     <div class="row hero-area">
-      <div class="col-lg-4 offset-lg-1 col-md-12">
-        <h2>Fantasy Football...for video games!</h2>
-        <p>
+      <div class="col-lg-6 col-md-12 hero-message">
+        <h1 class="hero-message-header">
+          Fantasy Football...
+          <br />
+          for video games!
+        </h1>
+        <p class="shadowed hero-message-details">
           Fantasy Critic is a game where you get to play as your own "fantasy" video game publisher. It's your job to choose the best reviewing games to publish!
         </p>
       </div>
-      <div class="col-lg-4 offset-lg-2 col-md-12">
+      <div class="col-lg-6 col-md-12">
         <h2>Sign up for free</h2>
 
         <registerForm></registerForm>
@@ -99,7 +103,18 @@
 </script>
 <style scoped>
   .hero-area {
-    background-color: #595959;
+    background-color: #414141;
+  }
+  .hero-message {
+    text-align: center
+  }
+  .hero-message-header {
+    
+    display: inline-block;
+  }
+  .hero-message-details {
+    width: 60%;
+    display: inline-block;
   }
   .registration-area{
     float: right;
