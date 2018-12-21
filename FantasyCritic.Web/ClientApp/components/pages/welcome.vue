@@ -131,9 +131,12 @@
         </div>
       </div>
       <div class="col-lg-6 col-md-12">
-        <h3>Recent Tweets</h3>
+        
         <div class="tweet-area">
-          <Timeline :id="'fantasy_critic'" :sourceType="'profile'" :options="{ theme: 'dark' }" />
+          <div class="tweet-timeline">
+            <h3>Recent Tweets</h3>
+            <Timeline :id="'fantasy_critic'" :sourceType="'profile'" :options="{ theme: 'dark' }" />
+          </div>
         </div>
       </div>
     </div>
@@ -259,8 +262,13 @@
     width: 300px;
   }
 
-  .tweet-area{
-    width: 70%;
-    text-align: center;
+  .tweet-area {
+    display: flex; /* establish flex container */
+    justify-content: center; /* center items vertically, in this case */
+    align-items: center; /* center items horizontally, in this case */
+  }
+
+  .tweet-timeline{
+    width: 80%;
   }
 </style>
