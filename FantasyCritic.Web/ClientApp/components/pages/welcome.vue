@@ -3,7 +3,7 @@
     <div class="row hero-area">
       <div class="col-lg-6 col-md-12 hero-message-area">
         <div class="hero-message">
-          <h1 class="hero-message-header">
+          <h1 class="hero-message-header shadowed">
             Fantasy Football...
             <br />
             for video games!
@@ -22,13 +22,17 @@
     </div>
 
     <div class="row welcome-area">
-      <div class="col-sm-12 col-md-4 offset-md-2 welcome-heading">Play free forever!</div>
-      <p class="col-sm-12 col-md-4 welcome-message">
-        FantasyCritic is like fantasy football...but for video games! You and several friends will create your own virtual video game “Publishers”,
-        and then you will assemble a roster of the games you believe will review the best. Similar to fantasy football, the players will alternate
-        picking games in a snake draft style to start the year. At the end of the year, the winner is the team with the best lineup of video games
-        based on scores from <a href="https://opencritic.com/">opencritic.com</a>.
-      </p>
+      <div class="col-lg-6 col-md-12 welcome-heading">
+        <h2>Play free forever!</h2>
+      </div>
+      <div class="col-lg-6 col-md-12">
+        <p class="welcome-message">
+          FantasyCritic is like fantasy football...but for video games! You and several friends will create your own virtual video game “Publishers”,
+          and then you will assemble a roster of the games you believe will review the best. Similar to fantasy football, the players will alternate
+          picking games in a snake draft style to start the year. At the end of the year, the winner is the team with the best lineup of video games
+          based on scores from <a href="https://opencritic.com/">opencritic.com</a>.
+        </p>
+      </div>
     </div>
 
     <div class="row">
@@ -135,11 +139,20 @@
     min-width: 400px;
   }
 
-  .welcome-area{
-    background-color: grey;
+  .welcome-area {
+    background-color: #4A4A4A;
   }
+
   .welcome-heading {
+    text-align: right;
+  }
+
+  .welcome-heading h2 {
+    color: black;
+    margin-top: 20px;
+    margin-right: 75px;
   }
   .welcome-message {
+    width: 70%;
   }
 </style>
