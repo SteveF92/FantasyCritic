@@ -13,10 +13,11 @@
           </p>
         </div>
       </div>
-      <div class="col-lg-6 col-md-12">
-        <h2>Sign up for free</h2>
-
-        <registerForm></registerForm>
+      <div class="col-lg-6 col-md-12 registration-area">
+        <div class="registration-box shadowed">
+          <h3>Sign up for free</h3>
+          <registerForm></registerForm>
+        </div>
       </div>
     </div>
 
@@ -108,7 +109,6 @@
     background-color: #414141;
   }
   .hero-message-area {
-    text-align: center
   }
   .hero-message {
     padding-top: 70px;
@@ -120,9 +120,16 @@
     width: 60%;
     display: inline-block;
   }
-  .registration-area{
-    float: right;
+
+  .registration-area {
+    padding-top: 35px;
+    padding-bottom: 35px;
   }
+  .registration-box {
+    display: inline-block;
+    width: 400px;
+  }
+
   .welcome-area{
     background-color: grey;
   }

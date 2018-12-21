@@ -67,7 +67,7 @@ a.btn {
 }
 
 h1 {
-    color: white !important;
+    color: white;
     font-weight: bold;
     text-transform: uppercase;
     background: rgba(0, 0, 0, 0.39);
@@ -82,8 +82,27 @@ h2 {
     padding: 10px;
 }
 
-p.shadowed {
+h3 {
     color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+label {
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+p, span {
+    color: white;
+}
+
+.danger-text {
+    color: #AA1E1E;
+}
+
+.shadowed {
     background: rgba(0, 0, 0, 0.39);
     padding: 10px;
 }
