@@ -91,21 +91,21 @@
               <font-awesome-icon :icon="['far', 'circle']" />
               <font-awesome-icon icon="user-friends" transform="shrink-9 left-2" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
-            <span>Compete with your friends</span>
+            <span class="feature-description">Compete with your friends</span>
           </div>
           <div class="feature-highlight shadowed">
             <font-awesome-layers class="fa-4x">
               <font-awesome-icon :icon="['far', 'circle']" />
               <font-awesome-icon icon="list-ol" transform="shrink-8" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
-            <span>Assemble your dream team</span>
+            <span class="feature-description">Assemble your dream team</span>
           </div>
           <div class="feature-highlight shadowed">
             <font-awesome-layers class="fa-4x">
               <font-awesome-icon :icon="['far', 'circle']" />
               <font-awesome-icon icon="trophy" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
-            <span>Win big (bragging rights)</span>
+            <span class="feature-description">Win big (bragging rights)</span>
           </div>
           <div class="feature-highlight shadowed">
             <font-awesome-layers class="fa-4x">
@@ -113,7 +113,7 @@
               <font-awesome-icon icon="slash" transform="shrink-8" :style="{ color: 'd6993a' }" />
               <font-awesome-icon icon="dollar-sign" transform="shrink-8" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
-            <span>Totally free</span>
+            <span class="feature-description">Totally free</span>
           </div>
         </div>
       </div>
@@ -126,7 +126,7 @@
         <div class="alert alert-secondary">
           <div class="d-flex">
             <div class="mr-auto p-2">More Questions?</div>
-            <div><b-button class="faq-link mx-2" variant="info" :to="{ name: 'faq' }">View our full FAQ Page</b-button></div>
+            <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our full FAQ Page</b-button>
           </div>
         </div>
       </div>
@@ -224,6 +224,7 @@
   .starting-step {
     display: flex; /* establish flex container */
     flex-direction: row; /* make main axis vertical */
+    margin-bottom: 25px;
   }
 
   .starting-step-text{
@@ -257,9 +258,17 @@
     flex-wrap: wrap;
   }
 
-  .feature-highlight{
+  .feature-highlight {
     margin: 2px;
     width: 300px;
+    display: flex; /* establish flex container */
+    align-items: center; /* center items horizontally, in this case */
+  }
+
+  .feature-description {
+    font-weight: bold;
+    padding-left: 7px;
+    vertical-align: middle;
   }
 
   .tweet-area {
