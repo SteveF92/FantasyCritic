@@ -109,16 +109,17 @@
     background-color: #414141;
   }
   .hero-message-area {
+    display: flex; /* establish flex container */
+    flex-direction: column; /* make main axis vertical */
+    justify-content: center; /* center items vertically, in this case */
+    align-items: center; /* center items horizontally, in this case */
   }
   .hero-message {
-    padding-top: 70px;
+    width: 60%;
   }
   .hero-message-header {
-    display: inline-block;
   }
   .hero-message-details {
-    width: 60%;
-    display: inline-block;
   }
 
   .registration-area {
