@@ -132,7 +132,9 @@
       </div>
       <div class="col-lg-6 col-md-12">
         <h3>Recent Tweets</h3>
-        <a class="twitter-timeline" href="https://twitter.com/fantasy_critic?ref_src=twsrc%5Etfw">Tweets by fantasy_critic</a>
+        <div class="tweet-area">
+          <Timeline :id="'fantasy_critic'" :sourceType="'profile'" :options="{ theme: 'dark' }" />
+        </div>
       </div>
     </div>
   </div>
@@ -143,11 +145,13 @@
     import axios from 'axios';
     import RegisterForm from "components/modules/registerForm";
     import HomeFaq from "components/modules/homeFaq";
+    import Timeline from 'vue-tweet-embed/timeline'
 
     export default {
       components: {
         RegisterForm,
-        HomeFaq
+        HomeFaq,
+        Timeline
       }
     }
 </script>
@@ -253,5 +257,10 @@
   .feature-highlight{
     margin: 2px;
     width: 300px;
+  }
+
+  .tweet-area{
+    width: 70%;
+    text-align: center;
   }
 </style>
