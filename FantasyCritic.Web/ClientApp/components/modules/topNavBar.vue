@@ -25,19 +25,19 @@
             <ul class="navbar-nav mr-auto">
               <li class="nav-item top-nav-brand-icon">
                 <a class="nav-icon" href="https://twitter.com/fantasy_critic" target="_blank">
-                  <icon :icon="['fab', 'twitter-square']" size="lg" />
+                  <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" />
                 </a>
               </li>
               <li class="nav-item top-nav-brand-icon">
                 <a class="nav-icon" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-                  <icon :icon="['fab', 'reddit-square']" size="lg" />
+                  <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" />
                 </a>
               </li>
               <slot v-if="!storeIsBusy">
                 <slot v-if="isAuth && hasUserInfo">
                   <!--<li class="nav-item">
               <a class="nav-link nav-icon" href="#">
-                <icon icon="bell" />
+                <font-awesome-icon icon="bell" />
               </a> 
             </li>-->
                   <li v-if="displayName" class="nav-item dropdown">

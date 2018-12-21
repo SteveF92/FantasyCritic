@@ -7,7 +7,7 @@
       <draggable class="list-group" element="ul" v-model="desiredDraftOrder" :options="dragOptions" @start="isDragging=true" @end="isDragging=false">
         <transition-group type="transition" :name="'flip-list'">
           <li class="list-group-item" v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition">
-            <icon icon="bars" />
+            <font-awesome-icon icon="bars" />
             <span class="badge">{{publisher.draftPosition}}</span>
             {{publisher.publisherName}}
           </li>

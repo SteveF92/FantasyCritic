@@ -20,7 +20,7 @@
               <span v-if="masterGame.averagedScore">(Averaged Score)</span>
             </div>
             <div v-if="masterGame.openCriticID">
-              <a :href="openCriticLink(masterGame)" target="_blank">OpenCritic Link <icon icon="external-link-alt" size="xs" /></a>
+              <a :href="openCriticLink(masterGame)" target="_blank">OpenCritic Link <font-awesome-icon icon="external-link-alt" size="xs" /></a>
             </div>
             <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}">View full details</router-link>
           </div>

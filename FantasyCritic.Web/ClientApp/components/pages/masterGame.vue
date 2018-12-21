@@ -13,7 +13,7 @@
       <span v-if="masterGame.averagedScore">(Averaged Score)</span>
     </p>
     <p v-if="masterGame.openCriticID">
-      <a :href="openCriticLink(masterGame)" target="_blank">Open Critic Link <icon icon="external-link-alt" size="xs" /></a>
+      <a :href="openCriticLink(masterGame)" target="_blank">Open Critic Link <font-awesome-icon icon="external-link-alt" size="xs" /></a>
     </p>
 
     <div v-if="masterGame.subGames && masterGame.subGames.length > 0">
@@ -30,7 +30,7 @@
           {{subGame.criticScore | score(2)}}
         </p>
         <p v-if="subGame.openCriticID">
-          <a :href="openCriticLink(subGame)" target="_blank">Open Critic Link <icon icon="external-link-alt" size="xs" /></a>
+          <a :href="openCriticLink(subGame)" target="_blank">Open Critic Link <font-awesome-icon icon="external-link-alt" size="xs" /></a>
         </p>
       </div>
     </div>

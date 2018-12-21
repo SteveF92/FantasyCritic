@@ -20,7 +20,7 @@ Vue.use(Toasted);
 Vue.use(VeeValidate);
 
 // Registration of global components
-Vue.component('icon', FontAwesomeIcon);
+Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.component('font-awesome-layers', FontAwesomeLayers);
 Vue.component('font-awesome-layers-text', FontAwesomeLayersText);
 Vue.prototype.$http = axios;

@@ -47,21 +47,21 @@
         <div class="starting-steps">
           <div class="starting-step">
             <font-awesome-layers class="fa-lg">
-              <icon icon="circle" />
-              <icon icon="check" transform="shrink-6" :style="{ color: 'white' }" />
+              <font-awesome-icon icon="circle" />
+              <font-awesome-icon icon="check" transform="shrink-6" :style="{ color: 'white' }" />
             </font-awesome-layers>
             <!--<font-awesome-layers>
-            <icon icon="circle" />
-            <icon icon="trophy" size="2x" :style="{ color: '#d6993a' }" />
+            <font-awesome-icon icon="circle" />
+            <font-awesome-icon icon="trophy" size="2x" :style="{ color: '#d6993a' }" />
           </font-awesome-layers>-->
             <span>Create a League</span>
           </div>
           <div class="starting-step">
-            <icon icon="user-friends" size="2x" :style="{ color: '#d6993a' }" />
+            <font-awesome-icon icon="user-friends" size="2x" :style="{ color: '#d6993a' }" />
             <span>Invite your friends</span>
           </div>
           <div class="starting-step">
-            <icon icon="list-ol" size="2x" :style="{ color: '#d6993a' }" />
+            <font-awesome-icon icon="list-ol" size="2x" :style="{ color: '#d6993a' }" />
             <span>Draft your roster</span>
           </div>
         </div>
@@ -70,21 +70,21 @@
     <h3>Features and Highlights</h3>
     <div class="row">
       <div class="feature-highlight col-3 offset-4">
-        <icon icon="user-friends" />
+        <font-awesome-icon icon="user-friends" />
         <span>Compete with your friends</span>
       </div>
       <div class="feature-highlight col-3">
-        <icon icon="list-ol" />
+        <font-awesome-icon icon="list-ol" />
         <span>Assemble your dream team</span>
       </div>
     </div>
     <div class="row">
       <div class="feature-highlight col-3 offset-4">
-        <icon icon="trophy" />
+        <font-awesome-icon icon="trophy" />
         <span>Win big (bragging rights)</span>
       </div>
       <div class="feature-highlight col-3">
-        <icon icon="dollar-sign" />
+        <font-awesome-icon icon="dollar-sign" />
         <span>Totally free</span>
       </div>
     </div>
