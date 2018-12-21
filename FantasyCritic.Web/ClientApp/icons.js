@@ -1,6 +1,7 @@
 import fontawesome from '@fortawesome/fontawesome'
 // Official documentation available at: https://github.com/FortAwesome/vue-fontawesome
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
+import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
+
 
 // If not present, it won't be visible within the application. Considering that you
 // don't want all the icons for no reason. This is a good way to avoid importing too many
@@ -20,6 +21,8 @@ fontawesome.library.add(
   require('@fortawesome/fontawesome-free-solid/faDollarSign'),
   require('@fortawesome/fontawesome-free-solid/faCircle'),
   require('@fortawesome/fontawesome-free-solid/faCheck'),
+  //Regular
+  require('@fortawesome/fontawesome-free-regular/faCircle'),
   // Brands
   require('@fortawesome/fontawesome-free-brands/faFontAwesome'),
   require('@fortawesome/fontawesome-free-brands/faMicrosoft'),
@@ -29,5 +32,7 @@ fontawesome.library.add(
 )
 
 export {
-  FontAwesomeIcon
+  FontAwesomeIcon,
+  FontAwesomeLayers,
+  FontAwesomeLayersText
 }

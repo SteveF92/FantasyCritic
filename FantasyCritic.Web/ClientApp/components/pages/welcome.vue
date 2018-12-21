@@ -46,22 +46,24 @@
 
         <div class="starting-steps">
           <div class="starting-step">
-            <font-awesome-layers class="fa-lg">
-              <font-awesome-icon icon="circle" />
-              <font-awesome-icon icon="check" transform="shrink-6" :style="{ color: 'white' }" />
+            <font-awesome-layers class="fa-3x">
+              <font-awesome-icon :icon="['far', 'circle']" />
+              <font-awesome-icon icon="trophy" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
-            <!--<font-awesome-layers>
-            <font-awesome-icon icon="circle" />
-            <font-awesome-icon icon="trophy" size="2x" :style="{ color: '#d6993a' }" />
-          </font-awesome-layers>-->
             <span>Create a League</span>
           </div>
           <div class="starting-step">
-            <font-awesome-icon icon="user-friends" size="2x" :style="{ color: '#d6993a' }" />
+            <font-awesome-layers class="fa-3x">
+              <font-awesome-icon :icon="['far', 'circle']" />
+              <font-awesome-icon icon="user-friends" transform="shrink-9 left-2" :style="{ color: 'd6993a' }" />
+            </font-awesome-layers>
             <span>Invite your friends</span>
           </div>
           <div class="starting-step">
-            <font-awesome-icon icon="list-ol" size="2x" :style="{ color: '#d6993a' }" />
+            <font-awesome-layers class="fa-3x">
+              <font-awesome-icon :icon="['far', 'circle']" />
+              <font-awesome-icon icon="list-ol" transform="shrink-8" :style="{ color: 'd6993a' }" />
+            </font-awesome-layers>
             <span>Draft your roster</span>
           </div>
         </div>
