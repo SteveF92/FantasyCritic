@@ -229,6 +229,6 @@
 <style scoped>
 .publisher-actions button{
   margin-bottom: 5px;
-  width: 210px;
+  min-width: 270px;
 }
 </style>

@@ -92,7 +92,7 @@ a:hover {
     padding: 10px;
 }
 
-a.btn, input.btn {
+a.btn, input.btn, button.btn {
     border-radius: 0;
     height: 40px;
     color: white;

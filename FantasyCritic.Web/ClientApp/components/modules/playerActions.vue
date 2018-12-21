@@ -99,8 +99,8 @@
   }
 </script>
 <style scoped>
-.player-actions button{
-  margin-bottom: 5px;
-  width: 210px;
-}
+  .player-actions button {
+    margin-bottom: 5px;
+    min-width: 270px;
+  }
 </style>
