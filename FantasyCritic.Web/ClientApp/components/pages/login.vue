@@ -22,7 +22,7 @@
           <div class="alert alert-danger" v-if="error">Login failed</div>
           <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-              <input type="submit" class="btn btn-default" value="Log in" />
+              <input type="submit" class="btn btn-primary" value="Log in" />
             </div>
           </div>
 
