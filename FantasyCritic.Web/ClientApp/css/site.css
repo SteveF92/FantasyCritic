@@ -84,13 +84,18 @@ h3 {
     text-transform: uppercase;
 }
 
+h4 {
+    color: white;
+    font-weight: bold;
+}
+
 label {
     color: white;
     font-weight: bold;
     text-transform: uppercase;
 }
 
-p, span {
+p, span, li, address, th, td {
     color: white;
 }
 
