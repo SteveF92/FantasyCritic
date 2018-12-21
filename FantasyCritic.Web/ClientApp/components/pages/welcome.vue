@@ -116,6 +116,7 @@
   }
   .hero-message {
     width: 60%;
+    min-width: 400px;
   }
   .hero-message-header {
   }
@@ -125,10 +126,13 @@
   .registration-area {
     padding-top: 35px;
     padding-bottom: 35px;
+    display: flex; /* establish flex container */
+    flex-direction: column; /* make main axis vertical */
+    align-items: center; /* center items horizontally, in this case */
   }
   .registration-box {
-    display: inline-block;
-    width: 400px;
+    width: 50%;
+    min-width: 400px;
   }
 
   .welcome-area{
