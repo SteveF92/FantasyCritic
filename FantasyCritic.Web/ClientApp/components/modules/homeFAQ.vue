@@ -2,7 +2,7 @@
   <div role="tablist">
     <b-card no-body class="mb-1">
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-btn block href="#" v-b-toggle.accordion1 variant="info">Why should I play FantasyCritic?</b-btn>
+        <b-btn block href="#" v-b-toggle.accordion1 variant="primary">Why should I play FantasyCritic?</b-btn>
       </b-card-header>
       <b-collapse id="accordion1" visible accordion="my-accordion" role="tabpanel">
         <b-card-body>
@@ -14,7 +14,7 @@
     </b-card>
     <b-card no-body class="mb-1">
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-btn block href="#" v-b-toggle.accordion2 variant="info">Does this cost money?</b-btn>
+        <b-btn block href="#" v-b-toggle.accordion2 variant="primary">Does this cost money?</b-btn>
       </b-card-header>
       <b-collapse id="accordion2" accordion="my-accordion" role="tabpanel">
         <b-card-body>
@@ -27,7 +27,7 @@
     </b-card>
     <b-card no-body class="mb-1">
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-btn block href="#" v-b-toggle.accordion3 variant="info">How many players can be in a league?</b-btn>
+        <b-btn block href="#" v-b-toggle.accordion3 variant="primary">How many players can be in a league?</b-btn>
       </b-card-header>
       <b-collapse id="accordion3" accordion="my-accordion" role="tabpanel">
         <b-card-body>
@@ -39,7 +39,7 @@
     </b-card>
     <b-card no-body class="mb-1">
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-btn block href="#" v-b-toggle.accordion4 variant="info">How long does a league last?</b-btn>
+        <b-btn block href="#" v-b-toggle.accordion4 variant="primary">How long does a league last?</b-btn>
       </b-card-header>
       <b-collapse id="accordion4" accordion="my-accordion" role="tabpanel">
         <b-card-body>
