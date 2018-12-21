@@ -31,7 +31,7 @@ html {
 
 /*My Custom Styles*/
 .modal-backdrop {
-    opacity: 0.6 !important;
+    opacity: 0.6;
 }
 
 body {
@@ -41,29 +41,29 @@ body {
 a.btn, input.btn {
     border-radius: 0;
     height: 40px;
-    color: white !important;
+    color: white;
     border: none;
     font-weight: bold;
     text-transform: uppercase;
 }
 
 .btn-primary, .btn-primary:disabled {
-    background-color: #D6993A !important;
+    background-color: #D6993A;
 }
 .btn-secondary, .btn-secondary:disabled {
-    background-color: #414141 !important;
+    background-color: #414141;
 }
 .btn-success, .btn-success:disabled {
-    background-color: #8DC63F !important;
+    background-color: #8DC63F;
 }
 .btn-info, .btn-info:disabled {
-    background-color: #3AACD6 !important;
+    background-color: #3AACD6;
 }
 .btn-warning, .btn-warning:disabled {
-    background-color: #D96B36 !important;
+    background-color: #D96B36;
 }
 .btn-danger, .btn-danger:disabled {
-    background-color: #AA1E1E !important;
+    background-color: #AA1E1E;
 }
 
 h1 {
