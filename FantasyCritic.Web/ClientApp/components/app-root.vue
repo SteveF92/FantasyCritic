@@ -47,4 +47,5 @@
 <style>
 @import '../css/footer.css';
 @import '../css/site.css';
+@import '../css/modal.css';
 </style>
