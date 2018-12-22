@@ -10,6 +10,8 @@ import Toasted from 'vue-toasted';
 import VeeValidate from 'vee-validate';
 
 import "./filters";
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+import 'bootstrap/dist/js/bootstrap.bundle.js';
 
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
