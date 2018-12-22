@@ -120,8 +120,10 @@
       }
     },
     watch: {
-      manuallyScoreGame: function(val, oldVal) {
+      manuallyScoreGame: function (val, oldVal) {
+        if (val) {
           this.manualScore = val.criticScore;
+        }
       }
     }
   }
