@@ -1,5 +1,6 @@
 body {
     background-color: black;
+    color: white;
 }
 
 h1, h2, h3, h4, h5 {
@@ -9,10 +10,6 @@ h1, h2, h3, h4, h5 {
 
 h2 {
     color: #D6993A;
-}
-
-p, span, li, address, th, td, h1, h3, h4, h5, label, dd, dt {
-    color: white;
 }
 
 label {
