@@ -74,7 +74,7 @@ module.exports = () => {
       })
     ] : [
       // Plugins that apply in production builds only
-      new webpack.optimize.UglifyJsPlugin(),
+      //new webpack.optimize.UglifyJsPlugin(),
       extractCSS,
       // Compress extracted CSS.
       new OptimizeCSSPlugin({
