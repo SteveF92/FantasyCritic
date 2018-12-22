@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="bidGameForm" ref="bidGameFormRef" title="Make a Bid" hide-footer @hidden="clearData">
+  <b-modal id="bidGameForm" ref="bidGameFormRef" size="lg" title="Make a Bid" hide-footer @hidden="clearData">
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="bidGameName" class="control-label">Game Name</label>

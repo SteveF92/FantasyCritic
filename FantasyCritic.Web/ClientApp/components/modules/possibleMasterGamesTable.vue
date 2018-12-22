@@ -1,7 +1,7 @@
 <template>
-    <table class="table table-sm table-responsive-sm">
+    <table class="table table-sm table-responsive-sm table-bordered table-striped">
         <thead>
-          <tr>
+          <tr class="table-primary">
             <th>Game Name</th>
             <th>Estimated Release Date</th>
             <th>Eligibility Level</th>
@@ -20,7 +20,7 @@
               <td>
                 <eligibilityBadge :eligibilityLevel="game.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
               </td>
-              <td>
+              <td class="select-cell">
                   <b-button variant="info" v-on:click="selectGame(game)">Select</b-button>
               </td>
             </tr>
@@ -62,5 +62,9 @@
 
   .release-date{
     font-weight: bold;
+  }
+
+  .select-cell {
+    text-align: center;
   }
 </style>

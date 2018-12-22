@@ -27,9 +27,8 @@
           </span>
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
-        <div v-if="associateMasterGame">
-          Selected Game: {{associateMasterGame.gameName}}
-        </div>
+
+        <label v-if="associateMasterGame" for="associateMasterGame" class="control-label">Selected Game: {{associateMasterGame.gameName}}</label>
       </div>
     </form>
 

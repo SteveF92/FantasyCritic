@@ -27,9 +27,7 @@
             <div>You as league manager can link this custom game with a "master game" later.</div>
           </div>
         </div>
-        <div v-if="claimMasterGame">
-          Selected Game: {{claimMasterGame.gameName}}
-        </div>
+        <label v-if="claimMasterGame" for="claimMasterGame" class="control-label">Selected Game: {{claimMasterGame.gameName}}</label>
       </div>
     </form>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">

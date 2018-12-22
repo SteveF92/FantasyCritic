@@ -29,9 +29,7 @@
           </div>
         </div>
 
-        <div v-if="draftMasterGame">
-          Selected Game: {{draftMasterGame.gameName}}
-        </div>
+        <label v-if="draftMasterGame" for="draftMasterGame" class="control-label">Selected Game: {{draftMasterGame.gameName}}</label>
       </div>
     </form>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
