@@ -9,18 +9,18 @@ $info: #3AACD6;
 $warning: #D96B36;
 $danger: #AA1E1E;
 
-$link-color: #DF691A;
-
 $card-bg: #414141;
 $modal-content-bg: #D4D4D4;
 
-
 $table-bg: #222222;
 $table-bg-accent: #333333;
-$alert-bg-level: 0.2;
+$table-bg-level: 0;
+$alert-bg-level: 0;
 
 .table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
     background-color: $table-bg-accent;
 }
 
-
+.table tbody tr > td.success {
+    background-color: $success;
+}

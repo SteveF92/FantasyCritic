@@ -21,6 +21,7 @@ fontawesome.library.add(
   require('@fortawesome/fontawesome-free-solid/faDollarSign'),
   require('@fortawesome/fontawesome-free-solid/faCircle'),
   require('@fortawesome/fontawesome-free-solid/faCheck'),
+  require('@fortawesome/fontawesome-free-solid/faInfoCircle'),
   //Regular
   require('@fortawesome/fontawesome-free-regular/faCircle'),
   // Brands

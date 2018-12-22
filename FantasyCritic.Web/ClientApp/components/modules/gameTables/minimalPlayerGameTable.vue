@@ -2,11 +2,20 @@
   <div class="player-table" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
     <table class="table table-bordered table-striped">
       <thead>
-        <tr class="table-primary">
+        <tr class="table-secondary">
           <th scope="col" colspan="4">
-            <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">{{ publisher.publisherName }}</router-link>
-            <br />
-            Player: {{publisher.playerName}}
+            <div class="publisher-player-names">
+              <span class="publisher-name">
+                <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">
+                  {{ publisher.publisherName }}
+                  <font-awesome-icon icon="info-circle" />
+                </router-link>
+                
+              </span>
+              <span class="player-name">
+                Player: {{publisher.playerName}}
+              </span>
+            </div>
           </th>
         </tr>
         <tr class="table-secondary">
@@ -26,7 +35,7 @@
               Total Fantasy Points
             </span>
           </td>
-          <td id="total-column" class="table-success" colspan="2">{{publisher.totalFantasyPoints | score}}</td>
+          <td id="total-column" class="success" colspan="2">{{publisher.totalFantasyPoints | score}}</td>
         </tr>
       </tbody>
     </table>
@@ -71,14 +80,14 @@
   .player-table {
     margin-left: 3px;
     margin-right: 7px;
-    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+
+  .publisher-is-next {
+    border-color: #5CB85C;
     border-color: #4E5D6C;
     border-width: 5px;
     border-style: solid;
-    margin-bottom: 10px;
-  }
-  .publisher-is-next {
-    border-color: #5CB85C;
   }
   .publisher-is-next table thead tr.table-primary th {
     background-color: #ED9D2B;
@@ -86,6 +95,24 @@
   .player-table table {
     margin-bottom: 0px;
   }
+
+  .publisher-player-names {
+    margin: 15px;
+    padding-bottom: 20px;
+    
+  }
+  .publisher-name {
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1.1em;
+    color: #D6993A;
+  }
+  .player-name {
+    float: right;
+    color: #D6993A;
+  }
+
 </style>
 <style>
   .player-table table thead tr th {
