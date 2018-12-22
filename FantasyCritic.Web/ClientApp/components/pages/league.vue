@@ -4,14 +4,14 @@
       {{errorInfo}}
     </div>
 
-    <div class="row">
+    <div class="row league-header">
       <h2>{{ league.leagueName }}</h2>
       <div class="year-selector">
         <div>
           <b-button v-if="league.isManager" variant="info" v-b-modal="'addNewLeagueYear'">Start new Year</b-button>
         </div>
         <div>
-          <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear"/>
+          <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear" />
         </div>
       </div>
     </div>
@@ -28,10 +28,6 @@
       <ul>
         <li v-for="error in leagueYear.playStatus.startDraftErrors">{{error}}</li>
       </ul>
-    </div>
-
-    <div v-if="league.isManager">
-      <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: year }}">Edit League Settings</router-link>
     </div>
 
     <div v-if="league.outstandingInvite">
@@ -81,10 +77,14 @@
       </div>
     </div>
 
-    <div>
-      <h3>League Manager</h3>
-      {{ league.leagueManager.displayName }}
+    <div class="league-manager-info">
+      <h5 class="league-manager-info-item">League Manager:</h5>
+      <span class="league-manager-info-item">{{ league.leagueManager.displayName }}</span>
+      <div class="league-manager-info-item" v-if="league.isManager">
+        <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: year }}">Edit League Settings</router-link>
+      </div>
     </div>
+    
 
     <div class="row" v-if="leagueYear && leagueYear.userPublisher">
       <div class="col-lg-6 col-12">
@@ -319,5 +319,15 @@
   }
   .year-selector div {
     float:left;
+  }
+  .league-header {
+    margin-left: 0px;
+  }
+  .league-manager-info {
+    display: flex;
+    flex-direction: row;
+  }
+  .league-manager-info-item {
+    margin-right: 5px;
   }
 </style>

@@ -2,7 +2,7 @@ body {
     background-color: black;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4, h5 {
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -11,7 +11,7 @@ h2 {
     color: #D6993A;
 }
 
-p, span, li, address, th, td, h1, h3, h4, label, dd, dt {
+p, span, li, address, th, td, h1, h3, h4, h5, label, dd, dt {
     color: white;
 }
 
