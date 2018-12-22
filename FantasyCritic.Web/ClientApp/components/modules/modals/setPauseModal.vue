@@ -1,11 +1,11 @@
 <template>
   <b-modal id="setPauseModal" ref="setPauseModalRef" title="Warning!" @ok="setPause">
-    <div v-if="!paused">
+    <p v-if="!paused">
       Do you wish to pause the draft? No one will be able to draft any games while the draft is paused.
-    </div>
-    <div v-if="paused">
+    </p>
+    <p v-if="paused">
       Do you wish to unpause the draft? Things will resume as normal.
-    </div>
+    </p>
   </b-modal>
 </template>
 <script>

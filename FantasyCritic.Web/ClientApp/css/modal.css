@@ -13,6 +13,10 @@
     opacity: 1;
 }
 
+.modal-body p {
+    color: black;
+}
+
 .modal-body label {
     color: black;
 }

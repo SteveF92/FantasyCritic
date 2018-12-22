@@ -2,9 +2,9 @@
   <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData">
     <div class="form-group">
       <label for="nextPublisherUp" class="control-label">Select the next game for publisher: </label>
-      <div>
+      <label>
         <strong>{{nextPublisherUp.publisherName}} (Display Name: {{nextPublisherUp.playerName}})</strong>
-      </div>
+      </label>
     </div>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">

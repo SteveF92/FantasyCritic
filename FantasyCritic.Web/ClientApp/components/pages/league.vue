@@ -18,7 +18,9 @@
     <addNewLeagueYearForm v-if="league.isManager" :league="league" v-on:actionTaken="actionTaken"></addNewLeagueYearForm>
 
     <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">
-      The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!
+      <p>
+        The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!
+      </p>
     </b-modal>
 
     <div v-if="leagueYear && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
