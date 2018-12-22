@@ -17,6 +17,7 @@ import 'bootswatch/dist/darkly/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 
 import './css/site.css'
+import './css/footer.css'
 
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
