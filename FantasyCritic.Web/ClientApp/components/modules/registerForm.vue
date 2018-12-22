@@ -5,25 +5,25 @@
       <div class="form-group">
         <label for="emailAddress" class="control-label">Email</label>
         <input v-model="emailAddress" v-validate="'required|email'" id="emailAddress" name="emailAddress" type="text" class="form-control input" />
-        <span class="danger-text">{{ errors.first('emailAddress') }}</span>
+        <span class="text-danger">{{ errors.first('emailAddress') }}</span>
       </div>
 
       <div class="form-group">
         <label for="displayName" class="control-label">Display Name</label>
         <input v-model="displayName" v-validate="'required'" id="displayName" name="displayName" type="text" class="form-control input" />
-        <span class="danger-text">{{ errors.first('displayName') }}</span>
+        <span class="text-danger">{{ errors.first('displayName') }}</span>
       </div>
 
       <div class="form-group">
         <label for="password" class="control-label">Password</label>
         <input v-model="password" v-validate="'required|min:8'" name="password" type="password" class="form-control input" ref="password">
-        <span class="danger-text">{{ errors.first('password') }}</span>
+        <span class="text-danger">{{ errors.first('password') }}</span>
       </div>
 
       <div class="form-group">
         <label for="confirmPassword" class="control-label">Confirm Password</label>
         <input v-model="confirmPassword" v-validate="'required|confirmed:password'" name="confirmPassword" type="password" class="form-control input" data-vv-as="password">
-        <span class="danger-text">{{ errors.first('confirmPassword') }}</span>
+        <span class="text-danger">{{ errors.first('confirmPassword') }}</span>
       </div>
 
       <div class="register-button-area">

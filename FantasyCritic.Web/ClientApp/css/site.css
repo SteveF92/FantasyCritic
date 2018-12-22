@@ -6,53 +6,17 @@ body {
     background-color: black;
 }
 
-h1 {
-    color: white;
+h1, h2, h3, h4 {
     font-weight: bold;
     text-transform: uppercase;
 }
 
 h2 {
     color: #D6993A;
-    font-weight: bold;
-    text-transform: uppercase;
 }
 
-h3 {
+p, span, li, address, th, td, h1, h3, h4, label {
     color: white;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-h4 {
-    color: white;
-    font-weight: bold;
-}
-
-label {
-    color: white;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-p, span, li, address, th, td {
-    color: white;
-}
-
-a {
-    color: #DF691A;
-}
-
-a:visited {
-    color: #DF691A;
-}
-
-a:hover {
-    color: #a04b13;
-}
-
-.danger-text {
-    color: #AA1E1E;
 }
 
 .shadowed {
@@ -67,24 +31,4 @@ a.btn, input.btn, button.btn {
     border: none;
     font-weight: bold;
     text-transform: uppercase;
-}
-
-.btn-primary, .btn-primary:disabled, .btn-primary:hover {
-    background-color: #D6993A;
-    color: white;
-}
-.btn-secondary, .btn-secondary:disabled, .btn-secondary:hover {
-    background-color: #414141;
-}
-.btn-success, .btn-success:disabled, .btn-success:hover {
-    background-color: #8DC63F;
-}
-.btn-info, .btn-info:disabled, .btn-info:hover {
-    background-color: #3AACD6;
-}
-.btn-warning, .btn-warning:disabled, .btn-warning:hover {
-    background-color: #D96B36;
-}
-.btn-danger, .btn-danger:disabled, .btn-danger:hover {
-    background-color: #AA1E1E;
 }
