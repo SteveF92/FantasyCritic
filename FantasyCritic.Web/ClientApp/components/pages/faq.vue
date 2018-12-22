@@ -100,12 +100,14 @@
         year you are playing, it is treated as getting a 70, and therefore 0 points. Some examples (for the year 2018):
       </p>
       <table class="table table-striped table-bordered">
-        <tbody>
-          <tr>
+        <thead>
+          <tr class="table-primary">
             <th>Game Name</th>
             <th>Open Critic Score</th>
             <th>Fantasy Points</th>
           </tr>
+        </thead>
+        <tbody>
           <tr>
             <td>Dragon Ball FighterZ</td>
             <td>86</td>
