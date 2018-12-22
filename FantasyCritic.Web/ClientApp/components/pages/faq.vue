@@ -101,7 +101,7 @@
       </p>
       <table class="table table-striped table-bordered">
         <thead>
-          <tr class="table-primary">
+          <tr class="bg-primary">
             <th>Game Name</th>
             <th>Open Critic Score</th>
             <th>Fantasy Points</th>

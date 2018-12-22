@@ -2,7 +2,7 @@
     <div class="player-table">
         <table class="table table-bordered table-striped">
             <thead>
-                <tr class="table-primary">
+                <tr class="bg-primary">
                     <th scope="col">Game Name</th>
                     <th scope="col">Release Date</th>
                     <th scope="col">Critic Score</th>

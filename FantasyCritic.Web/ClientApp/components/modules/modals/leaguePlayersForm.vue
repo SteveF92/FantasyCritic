@@ -2,7 +2,7 @@
   <b-modal id="leaguePlayersForm" ref="leaguePlayersFormRef" title="League Players" size="lg" hide-footer>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
-        <tr class="table-primary">
+        <tr class="bg-primary">
           <th scope="col" class="game-column">Display Name</th>
           <th scope="col">Publisher Name</th>
           <th scope="col">Draft Position</th>

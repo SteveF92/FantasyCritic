@@ -1,7 +1,7 @@
 <template>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
         <thead>
-          <tr class="table-primary">
+          <tr class="bg-primary">
             <th>Game Name</th>
             <th>Estimated Release Date</th>
             <th>Eligibility Level</th>

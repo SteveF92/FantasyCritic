@@ -2,7 +2,7 @@
   <b-modal id="currentBidsForm" ref="currentBidsFormRef" title="Current Bids" hide-footer>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
-        <tr class="table-primary">
+        <tr class="bg-primary">
           <th scope="col" class="game-column">Game</th>
           <th scope="col">Bid Amount</th>
           <th scope="col">Priority</th>

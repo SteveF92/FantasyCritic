@@ -2,7 +2,7 @@
   <div class="player-table" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
     <table class="table table-bordered table-striped">
       <thead>
-        <tr class="table-secondary">
+        <tr class="bg-secondary">
           <th scope="col" colspan="4">
             <div class="publisher-player-names">
               <span class="publisher-name">
@@ -18,7 +18,7 @@
             </div>
           </th>
         </tr>
-        <tr class="table-secondary">
+        <tr class="bg-secondary">
           <th scope="col" class="game-column">Game</th>
           <th scope="col" class="score-column">Critic</th>
           <th scope="col" class="score-column">Points</th>

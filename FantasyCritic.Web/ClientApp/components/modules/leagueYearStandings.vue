@@ -3,7 +3,7 @@
     <h3>Standings</h3>
     <table class="table table-bordered table-striped table-sm">
       <thead>
-        <tr class="table-primary">
+        <tr class="bg-primary">
           <th>Publisher</th>
           <th>Points (Projected)</th>
           <th>Points (Actual)</th>

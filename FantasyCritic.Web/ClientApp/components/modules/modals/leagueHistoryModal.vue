@@ -2,7 +2,7 @@
   <b-modal id="leagueActionsModal" ref="leagueActionsModalRef" title="League History" size="lg" hide-footer>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
-        <tr class="table-primary">
+        <tr class="bg-primary">
           <th scope="col">Publisher</th>
           <th scope="col">Time</th>
           <th scope="col">Action Type</th>
