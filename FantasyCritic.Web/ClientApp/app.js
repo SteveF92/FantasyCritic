@@ -11,13 +11,6 @@ import VeeValidate from 'vee-validate';
 
 import "./filters";
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
-import 'bootstrap/dist/js/bootstrap.bundle.js';
-
-import './css/site.css'
-import './css/footer.css'
-
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
 Vue.use(VeeValidate);
