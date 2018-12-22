@@ -33,6 +33,13 @@ a.btn, input.btn, button.btn {
     text-transform: uppercase;
 }
 
+div.alert {
+    border-radius: 0;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
 .text-danger {
     font-weight: bold;
 }

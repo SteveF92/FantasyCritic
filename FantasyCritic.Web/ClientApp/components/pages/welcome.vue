@@ -130,7 +130,7 @@
         </div>
       </div>
       <div class="col-lg-6 col-md-12">
-        
+
         <div class="tweet-area">
           <div class="tweet-timeline">
             <h3>Recent Tweets</h3>
