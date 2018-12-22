@@ -2,7 +2,7 @@
   <b-modal id="changeLeagueNameForm" ref="changeLeagueNameFormRef" title="Change League Name" @hidden="clearData">
     <div class="form-horizontal">
       <div class="form-group">
-        <label for="newleagueName" class="control-label">league Name</label>
+        <label for="newleagueName" class="control-label">League Name</label>
         <input v-model="newleagueName" id="newleagueName" name="newleagueName" type="text" class="form-control input" />
       </div>
     </div>

@@ -1,8 +1,8 @@
 <template>
   <b-modal id="currentBidsForm" ref="currentBidsFormRef" title="Current Bids" hide-footer>
-    <table class="table table-sm table-responsive-sm table-bordered">
+    <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
-        <tr class="table-secondary">
+        <tr class="table-primary">
           <th scope="col" class="game-column">Game</th>
           <th scope="col">Bid Amount</th>
           <th scope="col">Priority</th>
@@ -14,7 +14,7 @@
           <td>{{bid.masterGame.gameName}}</td>
           <td>{{bid.bidAmount | money}}</td>
           <td>{{bid.priority}}</td>
-          <td>
+          <td class="select-cell">
             <b-button variant="danger" size="sm" v-on:click="cancelBid(bid)">Cancel</b-button>
           </td>
         </tr>
@@ -50,5 +50,7 @@
     }
 </script>
 <style scoped>
-
+  .select-cell {
+    text-align: center;
+  }
 </style>
