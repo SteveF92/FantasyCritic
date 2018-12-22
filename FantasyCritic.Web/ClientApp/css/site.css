@@ -44,3 +44,8 @@ div.alert {
     font-weight: bold;
 }
 
+.custom-select {
+    border-radius: 0;
+    border: none;
+    height: 40px;
+}
