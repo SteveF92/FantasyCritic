@@ -117,7 +117,8 @@
             <div class="feature-highlight shadowed">
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="dollar-sign" transform="shrink-8" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="money-bill-alt" transform="shrink-8 left-2" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="slash" transform="shrink-6 left-2" />
               </font-awesome-layers>
               <span class="feature-description">Totally free</span>
             </div>

@@ -20,11 +20,13 @@ import {
   faUserPlus,
   faSignInAlt,
   faPlusCircle,
-  faMinusCircle
+  faMoneyBillAlt,
+  faMinusCircle,
+  faSlash
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
-  faCircle as regCircle
+  faCircle as regCircle,
 } from '@fortawesome/free-regular-svg-icons'
 
 import {
@@ -61,7 +63,9 @@ library.add(
   faTwitterSquare,
   faRedditSquare,
   regCircle,
-  solidCircle
+  solidCircle,
+  faSlash,
+  faMoneyBillAlt
   );
 
 export {
