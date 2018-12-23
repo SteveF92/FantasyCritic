@@ -2,7 +2,8 @@
     <div>
       <nav class="navbar navbar-expand navbar-light bg-white main-nav">
         <router-link :to="{ name: 'welcome' }" class="navbar-brand">
-          <img class="main-logo" src="/images/horizontal-logo.png" />
+          <img class="full-logo" src="/images/horizontal-logo.png" />
+          <img class="minimal-logo" src="/images/minimal-logo.png" />
         </router-link>
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
@@ -89,5 +90,17 @@
   .main-nav {
     padding-top: 0;
     padding-bottom: 0;
+  }
+
+  @media only screen and (max-width: 679px) {
+    .full-logo {
+      display: none;
+    }
+  }
+
+  @media only screen and (min-width: 680px) {
+    .minimal-logo {
+      display: none;
+    }
   }
 </style>
