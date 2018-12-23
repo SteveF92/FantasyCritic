@@ -30,12 +30,12 @@
         <div class="my-2 my-lg-0">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link top-nav-link optional-nav" href="https://twitter.com/fantasy_critic" target="_blank">
+              <a class="nav-link top-nav-link brand-nav" href="https://twitter.com/fantasy_critic" target="_blank">
                 <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" class="topnav-icon" />
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link top-nav-link optional-nav" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
+              <a class="nav-link top-nav-link brand-nav" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
                 <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" :style="{ color: 'ff4500' }" class="topnav-icon" />
               </a>
             </li>
@@ -56,14 +56,14 @@
               <slot v-else>
                 <li class="nav-item top-nav-button">
                   <b-button variant="info" :to="{ name: 'login' }" class="nav-link">
-                    <span class="full-nav">Log In</span>
-                    <font-awesome-icon class="minimal-nav" icon="sign-in-alt" />
+                    <span>Log In</span>
+                    <font-awesome-icon class="full-nav" icon="sign-in-alt" />
                   </b-button>
                 </li>
                 <li class="nav-item">
                   <b-button variant="primary" :to="{ name: 'register' }" class="nav-link">
-                    <span class="full-nav">Sign Up</span>
-                    <font-awesome-icon class="minimal-nav" icon="user-plus" />
+                    <span>Sign Up</span>
+                    <font-awesome-icon class="full-nav" icon="user-plus" />
                   </b-button>
                 </li>
               </slot>
@@ -133,9 +133,12 @@
     }
   }
 
-  @media only screen and (max-width: 370px) {
+  @media only screen and (max-width: 430px) {
     .topnav-icon {
       font-size: 15px;
+    }
+    .brand-nav {
+      display: none;
     }
   }
 

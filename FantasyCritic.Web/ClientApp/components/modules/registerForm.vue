@@ -27,7 +27,10 @@
       </div>
 
       <div class="register-button-area">
-        <input type="submit" class="btn btn-primary register-button" value="Register" :disabled="!formIsValid" />
+        <button type="submit" class="btn btn-primary register-button" :disabled="!formIsValid">
+          Sign Up
+          <font-awesome-icon icon="user-plus" />
+        </button>
       </div>
     </form>
   </div>
