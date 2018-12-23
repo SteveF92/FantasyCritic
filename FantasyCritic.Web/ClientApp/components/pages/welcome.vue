@@ -121,11 +121,20 @@
     <div class="row">
       <div class="col-lg-6 col-md-12">
         <h3>Frequently Asked Questions</h3>
-        <homeFaq></homeFaq>
-        <div class="alert alert-secondary">
-          <div class="d-flex">
-            <div class="mr-auto p-2">More Questions?</div>
-            <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our full FAQ Page</b-button>
+        <div class="full-welcome">
+          <homeFaq></homeFaq>
+          <div class="alert alert-secondary">
+            <div class="d-flex">
+              <div class="mr-auto p-2">More Questions?</div>
+              <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our full FAQ Page</b-button>
+            </div>
+          </div>
+        </div>
+        <div class="minimal-welcome">
+          <div class="alert alert-secondary">
+            <div class="d-flex">
+              <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our FAQ Page</b-button>
+            </div>
           </div>
         </div>
       </div>
@@ -158,6 +167,25 @@
     }
 </script>
 <style scoped>
+
+  @media only screen and (max-width: 679px) {
+    .full-welcome {
+      display: none;
+    }
+  }
+
+  @media only screen and (min-width: 680px) {
+    .minimal-welcome {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 992px) {
+    .computer-image {
+      display: none;
+    }
+  }
+
   .hero-message-area {
     display: flex; /* establish flex container */
     flex-direction: column; /* make main axis vertical */
@@ -165,8 +193,7 @@
     align-items: center; /* center items horizontally, in this case */
   }
   .hero-message {
-    width: 60%;
-    min-width: 400px;
+
   }
   .hero-message-header {
   }
@@ -181,8 +208,6 @@
     align-items: center; /* center items horizontally, in this case */
   }
   .registration-box {
-    width: 50%;
-    min-width: 400px;
   }
 
   .welcome-area {
@@ -276,6 +301,6 @@
   }
 
   .tweet-timeline{
-    width: 80%;
+
   }
 </style>
