@@ -219,11 +219,6 @@
     text-align: center;
   }
 
-  /*.welcome-heading h2 {
-    margin-top: 20px;
-    margin-right: 75px;
-  }*/
-
   .welcome-message {
     max-width: 700px;
   }
