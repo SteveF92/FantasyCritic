@@ -35,11 +35,11 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-lg-6 col-md-12 computer-image-area">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 computer-image-area">
         <img src="/images/monitor-mock.png" class="computer-image" />
       </div>
-      <div class="col-lg-6 col-md-12 get-started-area">
+      <div class="col-lg-6 col-8 get-started-area">
         <div class="get-started-message">
           <h3>How to get Started</h3>
         </div>
@@ -179,7 +179,7 @@
   }
 
   @media only screen and (max-width: 992px) {
-    .computer-image {
+    .computer-image-area {
       display: none;
     }
   }
@@ -228,20 +228,11 @@
     max-width: 700px;
   }
 
-  .computer-image-area {
-    display: flex; /* establish flex container */
-    flex-direction: column; /* make main axis vertical */
-    justify-content: center; /* center items vertically, in this case */
-    align-items: center; /* center items horizontally, in this case */
-    margin-top: 20px;
-    margin-bottom: 10px;
+  .computer-image-area{
+    text-align: center;
   }
 
-  .computer-image {
-
-  }
-
-  .get-started-area{
+  .get-started-area {
     margin-top: 20px;
   }
 
