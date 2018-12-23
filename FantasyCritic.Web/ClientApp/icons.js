@@ -34,7 +34,8 @@ import {
   faMicrosoft,
   faVuejs,
   faTwitterSquare,
-  faRedditSquare
+  faRedditSquare,
+  faGithubSquare
 } from '@fortawesome/free-brands-svg-icons'
 
 library.add(
@@ -65,7 +66,8 @@ library.add(
   regCircle,
   solidCircle,
   faSlash,
-  faMoneyBillAlt
+  faMoneyBillAlt,
+  faGithubSquare
   );
 
 export {

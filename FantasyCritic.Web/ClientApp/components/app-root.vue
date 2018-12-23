@@ -46,6 +46,12 @@
                 <span class="full-contact">r/fantasycritic</span>
               </a>
             </div>
+            <div>
+              <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">
+                <font-awesome-icon :icon="['fab', 'github-square']" size="lg" :style="{ color: 'ffffff' }" />
+                <span class="full-contact">GitHub</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
