@@ -1,25 +1,57 @@
 <template>
     <div>
-      <nav class="navbar navbar-expand navbar-light bg-white">
-        <a class="navbar-brand" href="#">Navbar</a>
+      <nav class="navbar navbar-expand navbar-light bg-white main-nav">
+        <router-link :to="{ name: 'welcome' }" class="navbar-brand">
+          <img class="main-logo" src="/images/horizontal-logo.png" />
+        </router-link>
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
+              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link" title="About">About</router-link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
+              <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link" title="FAQ">FAQ</router-link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
+              <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link" title="Contact">Contact</router-link>
             </li>
           </ul>
         </div>
         <div class="my-2 my-lg-0">
           <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
+            <li class="nav-item top-nav-brand-icon">
+              <a class="nav-icon" href="https://twitter.com/fantasy_critic" target="_blank">
+                <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" />
+              </a>
             </li>
+            <li class="nav-item top-nav-brand-icon">
+              <a class="nav-icon" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
+                <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" :style="{ color: 'ff4500' }" />
+              </a>
+            </li>
+            <slot v-if="!storeIsBusy">
+              <slot v-if="isAuth && hasUserInfo">
+                <li v-if="displayName" class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                    {{displayName}}
+                    <span class="caret"></span>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
+                    <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" v-on:click="logout()">Log off</a>
+                  </div>
+                </li>
+              </slot>
+              <slot v-else>
+                <li class="nav-item">
+                  <b-button variant="info" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
+                </li>
+                <li class="nav-item">
+                  <b-button variant="primary" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
+                </li>
+              </slot>
+            </slot>
           </ul>
         </div>
       </nav>
@@ -54,34 +86,8 @@
 </script>
 
 <style scoped>
-.navbar-nav .nav-item {
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.main-logo{
-  padding-bottom: 4px;
-}
-
-#top-nav {
-  max-height: 53px;
-  padding-bottom: 10px;
-  background-color: #ffffff;
-}
-
-#navbar-collapsible {
-    z-index: 10;
-}
-
-a.top-nav-link {
-  color: black !important;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.top-nav-brand-icon {
-  margin-top: 6px;
-}
-
-
+  .main-nav {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 </style>
