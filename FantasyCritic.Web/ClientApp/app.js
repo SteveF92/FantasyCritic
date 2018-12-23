@@ -5,19 +5,14 @@ import router from './router/index';
 import store from './store';
 import { sync } from 'vuex-router-sync';
 import App from 'components/app-root';
-//import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
+
+import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import Toasted from 'vue-toasted';
 import VeeValidate from 'vee-validate';
 
 import "./filters";
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
-
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
-
-library.add(faCoffee);
 
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
