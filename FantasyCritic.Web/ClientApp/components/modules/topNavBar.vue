@@ -21,7 +21,7 @@
             </li>
             <li class="nav-item">
               <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link optional-nav" title="Contact">
-                <span class="full-nav">About</span>
+                <span class="full-nav">Contact</span>
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="envelope" size="lg" />
               </router-link>
             </li>

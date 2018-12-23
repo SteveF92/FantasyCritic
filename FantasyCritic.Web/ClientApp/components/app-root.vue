@@ -12,7 +12,42 @@
     </div>
     <footer class="footer">
       <div class="container">
-        <span class="text-muted">Fantasy Critic - Alpha Version</span>
+        <div class="row justify-content-between">
+          <div col-md-4>
+            <img class="full-logo" src="/images/logo-white.png" />
+            <img class="small-logo" src="/images/small-logo-white.png" />
+          </div>
+          <div col-md-4>
+            <label>Navigation</label>
+            <div>
+              <router-link :to="{ name: 'about' }" title="About">
+                <font-awesome-icon class="minimal-nav topnav-icon" icon="info-circle" size="lg" />
+                About
+              </router-link>
+            </div>
+            <div>
+              <router-link :to="{ name: 'faq' }" title="FAQ">
+                <font-awesome-icon class="minimal-nav topnav-icon" icon="question-circle" size="lg" />
+                FAQ
+              </router-link>
+            </div>
+          </div>
+          <div col-md-4>
+            <label>Contact</label>
+            <div>
+              <a href="https://twitter.com/fantasy_critic">
+                <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" />
+                @fantasy_critic
+              </a>
+            </div>
+            <div>
+              <a href="https://www.reddit.com/r/fantasycritic/">
+                <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" :style="{ color: 'ff4500' }" />
+                r/fantasycritic
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   </div>
@@ -37,6 +72,65 @@
   [v-cloak] {
     display: none;
   }
+
+  html {
+    position: relative;
+    min-height: 100%;
+  }
+</style>
+
+<style scoped>
+  @media only screen and (max-width: 679px) {
+    .full-logo {
+      display: none;
+    }
+
+    #vue-app {
+      margin-bottom: 75px; /* Margin bottom by footer height */
+    }
+
+    .footer {
+      height: 75px; /* Set the fixed height of the footer here */
+    }
+
+    .container {
+      margin-bottom: 25px;
+    }
+  }
+
+  @media only screen and (min-width: 680px) {
+    .small-logo {
+      display: none;
+    }
+
+    #vue-app {
+      margin-bottom: 175px; /* Margin bottom by footer height */
+    }
+
+    .footer {
+      height: 175px; /* Set the fixed height of the footer here */
+    }
+  }
+
+  .footer {
+    position: absolute;
+    background-color: black;
+    bottom: 0;
+    width: 100%;
+    line-height: 30px; /* Vertically center the text there */
+  }
+
+  /* Custom page CSS
+-------------------------------------------------- */
+  /* Not required for template or sticky footer method. */
+
+  .container {
+    width: auto;
+    max-width: 1000px;
+    padding-left: 45px;
+    padding-right: 45px;
+  }
+
 </style>
 
 <style lang="scss">
@@ -45,7 +139,6 @@
 </style>
 
 <style>
-@import '../css/footer.css';
 @import '../css/site.css';
 @import '../css/modal.css';
 </style>
