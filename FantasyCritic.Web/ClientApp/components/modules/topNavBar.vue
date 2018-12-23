@@ -8,19 +8,19 @@
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link" title="About">
+              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link optional-nav" title="About">
                 <span class="full-nav">About</span>
                 <font-awesome-icon class="minimal-nav" icon="info-circle" size="lg" />
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link" title="FAQ">
+              <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link optional-nav" title="FAQ">
                 <span class="full-nav">FAQ</span>
                 <font-awesome-icon class="minimal-nav" icon="question-circle" size="lg" />
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link" title="Contact">
+              <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link optional-nav" title="Contact">
                 <span class="full-nav">About</span>
                 <font-awesome-icon class="minimal-nav" icon="envelope" size="lg" />
               </router-link>
@@ -30,12 +30,12 @@
         <div class="my-2 my-lg-0">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link top-nav-link" href="https://twitter.com/fantasy_critic" target="_blank">
+              <a class="nav-link top-nav-link optional-nav" href="https://twitter.com/fantasy_critic" target="_blank">
                 <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" />
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link top-nav-link" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
+              <a class="nav-link top-nav-link optional-nav" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
                 <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" :style="{ color: 'ff4500' }" />
               </a>
             </li>
@@ -123,6 +123,12 @@
 
   @media only screen and (min-width: 680px) {
     .minimal-logo {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 450px) {
+    .optional-nav {
       display: none;
     }
   }
