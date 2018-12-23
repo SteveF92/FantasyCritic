@@ -236,6 +236,11 @@
     text-align: center;
   }
 
+  .computer-image {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
   .get-started-area {
     margin-top: 20px;
   }
