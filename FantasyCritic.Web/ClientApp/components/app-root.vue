@@ -21,13 +21,13 @@
             <label>Navigation</label>
             <div>
               <router-link :to="{ name: 'about' }" title="About">
-                <font-awesome-icon class="minimal-nav topnav-icon" icon="info-circle" size="lg" />
+                <font-awesome-icon icon="info-circle" size="lg" />
                 About
               </router-link>
             </div>
             <div>
               <router-link :to="{ name: 'faq' }" title="FAQ">
-                <font-awesome-icon class="minimal-nav topnav-icon" icon="question-circle" size="lg" />
+                <font-awesome-icon icon="question-circle" size="lg" />
                 FAQ
               </router-link>
             </div>
@@ -35,15 +35,15 @@
           <div col-md-4>
             <label>Contact</label>
             <div>
-              <a href="https://twitter.com/fantasy_critic">
+              <a href="https://twitter.com/fantasy_critic" target="_blank">
                 <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" />
-                @fantasy_critic
+                <span class="full-contact">@fantasy_critic</span>
               </a>
             </div>
             <div>
-              <a href="https://www.reddit.com/r/fantasycritic/">
+              <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
                 <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" :style="{ color: 'ff4500' }" />
-                r/fantasycritic
+                <span class="full-contact">r/fantasycritic</span>
               </a>
             </div>
           </div>
@@ -80,6 +80,12 @@
 </style>
 
 <style scoped>
+  @media only screen and (max-width: 343px) {
+    .full-contact {
+      display: none;
+    }
+  }
+
   @media only screen and (max-width: 679px) {
     .full-logo {
       display: none;
@@ -94,7 +100,7 @@
     }
 
     .container {
-      margin-bottom: 25px;
+      padding-bottom: 25px;
     }
   }
 
@@ -126,9 +132,10 @@
 
   .container {
     width: auto;
-    max-width: 1000px;
+    max-width: 1200px;
     padding-left: 45px;
     padding-right: 45px;
+    background-color: black;
   }
 
 </style>
