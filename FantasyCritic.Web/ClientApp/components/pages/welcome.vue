@@ -141,7 +141,7 @@
         <div class="tweet-area">
           <div class="tweet-timeline">
             <h3>Recent Tweets</h3>
-            <Timeline :id="'fantasy_critic'" :sourceType="'profile'" :options="{ theme: 'dark' }" />
+            <Timeline :id="'fantasy_critic'" :sourceType="'profile'" :options="{ theme: 'dark', tweetLimit: '3' }" />
           </div>
         </div>
       </div>
@@ -299,7 +299,7 @@
   }
 
   .tweet-timeline{
-
+    width: 600px;
   }
 
   .faq-button {
