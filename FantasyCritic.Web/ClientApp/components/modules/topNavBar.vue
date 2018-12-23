@@ -127,13 +127,13 @@
     }
   }
 
-  @media only screen and (max-width: 300px) {
+  @media only screen and (max-width: 340px) {
     .optional-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 350px) {
+  @media only screen and (max-width: 370px) {
     .topnav-icon {
       font-size: 15px;
     }

@@ -3,6 +3,9 @@ body {
     color: white;
     background-image: url("/images/bg-geo-texture.png");
     background-repeat: repeat;
+    min-width: 250px;
+    width: auto !important;
+    width: 250px;
 }
 
 h1, h2, h3, h4, h5 {
