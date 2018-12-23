@@ -55,10 +55,16 @@
               </slot>
               <slot v-else>
                 <li class="nav-item top-nav-button">
-                  <b-button variant="info" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
+                  <b-button variant="info" :to="{ name: 'login' }" class="nav-link">
+                    <span class="full-nav">Log In</span>
+                    <font-awesome-icon class="minimal-nav" icon="sign-in-alt" />
+                  </b-button>
                 </li>
                 <li class="nav-item">
-                  <b-button variant="primary" :to="{ name: 'register' }" class="nav-link">Sign Up</b-button>
+                  <b-button variant="primary" :to="{ name: 'register' }" class="nav-link">
+                    <span class="full-nav">Sign Up</span>
+                    <font-awesome-icon class="minimal-nav" icon="user-plus" />
+                  </b-button>
                 </li>
               </slot>
             </slot>
