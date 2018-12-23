@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row hero-area">
-      <div class="col-lg-6 col-md-12 hero-message-area">
+      <div class="col-sm-5 offset-sm-1 col-12 hero-message-area">
         <div class="hero-message">
           <h1 class="hero-message-header shadowed">
             Fantasy Football...
@@ -13,7 +13,7 @@
           </p>
         </div>
       </div>
-      <div class="col-lg-6 col-md-12 registration-area">
+      <div class="col-sm-6 col-12 registration-area">
         <div class="registration-box shadowed">
           <h3>Sign up for free</h3>
           <registerForm></registerForm>
@@ -205,7 +205,10 @@
     flex-direction: column; /* make main axis vertical */
     align-items: center; /* center items horizontally, in this case */
   }
+
   .registration-box {
+    width: 100%;
+    max-width: 500px;
   }
 
   .welcome-area {
