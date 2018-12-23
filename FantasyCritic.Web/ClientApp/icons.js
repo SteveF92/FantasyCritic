@@ -25,6 +25,8 @@ fontawesome.library.add(
   require('@fortawesome/fontawesome-free-solid/faQuestionCircle'),
   require('@fortawesome/fontawesome-free-solid/faUserPlus'),
   require('@fortawesome/fontawesome-free-solid/faSignInAlt'),
+  require('@fortawesome/fontawesome-free-solid/faPlusCircle'),
+  require('@fortawesome/fontawesome-free-solid/faMinusCircle'),
   //Regular
   require('@fortawesome/fontawesome-free-regular/faCircle'),
   // Brands
