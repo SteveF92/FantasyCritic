@@ -1,6 +1,6 @@
 <template>
     <div>
-      <nav class="navbar navbar-expand navbar-light bg-white main-nav">
+      <nav class="navbar navbar-expand bg-white main-nav">
         <router-link :to="{ name: 'welcome' }" class="navbar-brand">
           <img class="full-logo" src="/images/horizontal-logo.png" />
           <img class="minimal-logo" src="/images/minimal-logo.png" />
@@ -54,7 +54,7 @@
                 </li>
               </slot>
               <slot v-else>
-                <li class="nav-item">
+                <li class="nav-item top-nav-button">
                   <b-button variant="info" :to="{ name: 'login' }" class="nav-link">Log in</b-button>
                 </li>
                 <li class="nav-item">
@@ -103,6 +103,10 @@
 
   .navbar-brand {
     margin-right: 3px;
+  }
+
+  .top-nav-button {
+    margin-right: 5px;
   }
 
   @media only screen and (max-width: 679px) {
