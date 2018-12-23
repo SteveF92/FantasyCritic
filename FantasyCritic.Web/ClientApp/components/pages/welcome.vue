@@ -22,10 +22,10 @@
     </div>
 
     <div class="row welcome-area">
-      <div class="col-lg-6 col-md-12 welcome-heading">
+      <div class="col-md-6 col-sm-12 welcome-heading">
         <h2>Play free forever!</h2>
       </div>
-      <div class="col-lg-6 col-md-12">
+      <div class="col-md-6 col-sm-12">
         <p class="welcome-message">
           FantasyCritic is like fantasy football...but for video games! You and several friends will create your own virtual video game “Publishers”,
           and then you will assemble a roster of the games you believe will review the best. Similar to fantasy football, the players will alternate
@@ -216,16 +216,16 @@
   }
 
   .welcome-heading {
-    text-align: right;
+    text-align: center;
   }
 
-  .welcome-heading h2 {
-    color: black;
+  /*.welcome-heading h2 {
     margin-top: 20px;
     margin-right: 75px;
-  }
+  }*/
+
   .welcome-message {
-    width: 70%;
+    max-width: 700px;
   }
 
   .computer-image-area {
