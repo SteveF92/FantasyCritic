@@ -158,9 +158,6 @@
     }
 </script>
 <style scoped>
-  .hero-area {
-    background-color: #414141;
-  }
   .hero-message-area {
     display: flex; /* establish flex container */
     flex-direction: column; /* make main axis vertical */
