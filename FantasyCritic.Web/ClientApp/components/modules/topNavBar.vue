@@ -10,19 +10,19 @@
             <li class="nav-item">
               <router-link :to="{ name: 'about' }" class="nav-link top-nav-link optional-nav" title="About">
                 <span class="full-nav">About</span>
-                <font-awesome-icon class="minimal-nav" icon="info-circle" size="lg" />
+                <font-awesome-icon class="minimal-nav topnav-icon" icon="info-circle" size="lg" />
               </router-link>
             </li>
             <li class="nav-item">
               <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link optional-nav" title="FAQ">
                 <span class="full-nav">FAQ</span>
-                <font-awesome-icon class="minimal-nav" icon="question-circle" size="lg" />
+                <font-awesome-icon class="minimal-nav topnav-icon" icon="question-circle" size="lg" />
               </router-link>
             </li>
             <li class="nav-item">
               <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link optional-nav" title="Contact">
                 <span class="full-nav">About</span>
-                <font-awesome-icon class="minimal-nav" icon="envelope" size="lg" />
+                <font-awesome-icon class="minimal-nav topnav-icon" icon="envelope" size="lg" />
               </router-link>
             </li>
           </ul>
@@ -31,12 +31,12 @@
           <ul class="navbar-nav">
             <li class="nav-item">
               <a class="nav-link top-nav-link optional-nav" href="https://twitter.com/fantasy_critic" target="_blank">
-                <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" />
+                <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" class="topnav-icon" />
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link top-nav-link optional-nav" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-                <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" :style="{ color: 'ff4500' }" />
+                <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" :style="{ color: 'ff4500' }" class="topnav-icon" />
               </a>
             </li>
             <slot v-if="!storeIsBusy">
@@ -127,9 +127,15 @@
     }
   }
 
-  @media only screen and (max-width: 450px) {
+  @media only screen and (max-width: 300px) {
     .optional-nav {
       display: none;
+    }
+  }
+
+  @media only screen and (max-width: 350px) {
+    .topnav-icon {
+      font-size: 15px;
     }
   }
 
