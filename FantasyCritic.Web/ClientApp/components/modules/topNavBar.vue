@@ -8,13 +8,22 @@
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link" title="About">About</router-link>
+              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link" title="About">
+                <span class="full-nav">About</span>
+                <font-awesome-icon class="minimal-nav" icon="info-circle" />
+              </router-link>
             </li>
             <li class="nav-item">
-              <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link" title="FAQ">FAQ</router-link>
+              <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link" title="FAQ">
+                <span class="full-nav">FAQ</span>
+                <font-awesome-icon class="minimal-nav" icon="question-circle" />
+              </router-link>
             </li>
             <li class="nav-item">
-              <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link" title="Contact">Contact</router-link>
+              <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link" title="Contact">
+                <span class="full-nav">About</span>
+                <font-awesome-icon class="minimal-nav" icon="envelope" />
+              </router-link>
             </li>
           </ul>
         </div>
@@ -100,6 +109,18 @@
 
   @media only screen and (min-width: 680px) {
     .minimal-logo {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 499px) {
+    .full-nav {
+      display: none;
+    }
+  }
+
+  @media only screen and (min-width: 500px) {
+    .minimal-nav {
       display: none;
     }
   }
