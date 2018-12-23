@@ -132,9 +132,7 @@
         </div>
         <div class="minimal-welcome">
           <div class="alert alert-secondary">
-            <div class="d-flex">
-              <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our FAQ Page</b-button>
-            </div>
+            <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our FAQ Page</b-button>
           </div>
         </div>
       </div>
@@ -302,5 +300,9 @@
 
   .tweet-timeline{
 
+  }
+
+  .faq-button {
+    text-align: center;
   }
 </style>
