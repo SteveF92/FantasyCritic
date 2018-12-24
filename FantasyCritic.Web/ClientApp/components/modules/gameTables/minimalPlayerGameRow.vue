@@ -51,6 +51,7 @@
   .counter-pick-text {
     color: #B1B1B1;
     font-style: italic;
+    margin-left: 3px;
   }
   .game-status {
     float: right;
