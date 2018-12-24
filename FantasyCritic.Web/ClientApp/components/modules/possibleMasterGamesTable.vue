@@ -11,7 +11,7 @@
         <tbody>
             <tr v-for="game in possibleGames">
               <td>
-                <masterGamePopover :masterGame="game"></masterGamePopover>
+                <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="game" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
               </td>
               <td v-bind:class="{ 'text-danger': game.isReleased }" class="release-date">
                 <span>{{game.estimatedReleaseDate}}</span>
@@ -34,7 +34,8 @@
   export default {
     data() {
       return {
-          selectedMasterGame: null
+        selectedMasterGame: null,
+        lastPopoverShown: null
       }
     },
     components: {
@@ -46,6 +47,13 @@
       selectGame(game) {
           this.selectedMasterGame = game;
           this.$emit('input', this.selectedMasterGame);
+      },
+      newPopoverShown(masterGame) {
+        this.$refs.gamePopoverWrapperRef.forEach(function (popover) {
+          if (popover.masterGame.masterGameID !== masterGame.masterGameID) {
+            popover.closePopover();
+          }
+        });
       }
     }
   }

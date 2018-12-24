@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="masterGame">
-      <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,0px' } }}">
+      <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,0px' } }}" v-on:show="newPopoverShown">
         <div class="popper">
           <div class="game-image-area">
             <img v-show="this.masterGame.boxartFileName" :src="boxartLink" alt="Cover Image" class="game-image">
@@ -75,6 +75,9 @@
       },
       closePopover() {
         this.$refs.gamePopoverRef.doClose();
+      },
+      newPopoverShown() {
+        this.$emit('newPopoverShown', this.masterGame);
       }
     }
   }
