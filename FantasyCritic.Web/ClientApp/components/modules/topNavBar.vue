@@ -30,6 +30,11 @@
         <div class="my-2 my-lg-0">
           <ul class="navbar-nav">
             <li class="nav-item">
+              <a class="nav-link top-nav-link brand-nav" href="https://www.facebook.com/fantasycritic" target="_blank">
+                <font-awesome-icon :icon="['fab', 'facebook-square']" size="lg" :style="{ color: '3b5998' }" class="topnav-icon" />
+              </a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link top-nav-link brand-nav" href="https://twitter.com/fantasy_critic" target="_blank">
                 <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" class="topnav-icon" />
               </a>

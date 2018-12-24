@@ -47,6 +47,12 @@
               </a>
             </div>
             <div>
+              <a href="https://www.facebook.com/fantasycritic" target="_blank">
+                <font-awesome-icon :icon="['fab', 'facebook-square']" size="lg" :style="{ color: '3b5998' }" />
+                <span class="full-contact">Facebook</span>
+              </a>
+            </div>
+            <div>
               <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">
                 <font-awesome-icon :icon="['fab', 'github-square']" size="lg" :style="{ color: 'ffffff' }" />
                 <span class="full-contact">GitHub</span>

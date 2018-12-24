@@ -38,7 +38,8 @@ import {
   faVuejs,
   faTwitterSquare,
   faRedditSquare,
-  faGithubSquare
+  faGithubSquare,
+  faFacebookSquare
 } from '@fortawesome/free-brands-svg-icons'
 
 library.add(
@@ -73,7 +74,8 @@ library.add(
   faGithubSquare,
   faGamepad,
   regSquare,
-  faTimes
+  faTimes,
+  faFacebookSquare
   );
 
 export {
