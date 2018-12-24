@@ -34,9 +34,11 @@
     }
 </script>
 <style>
-  .league-summary {
-    margin: auto;
-    width: 90%;
-    left: 5%;
+  @media only screen and (min-width: 1200px) {
+    .league-summary {
+      margin: auto;
+      width: 90%;
+      left: 5%;
+    }
   }
 </style>
