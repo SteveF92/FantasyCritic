@@ -76,7 +76,7 @@
       </p>
       <h4>How do the rosters work?	</h4>
       <p>
-        Each roster is made up of a number of “draft game”, “pickup games”, and “counter picks”. Draft games and pickup games are the games that you get points for.
+        Each roster is made up of a number of “draft games”, “pickup games”, and “counter picks”. Draft games and pickup games are the games that you get points for.
         Any one game can only be on one roster within a single league. Counter picks work a bit different and are described below.
       </p>
       <h4>What is a “draft game” vs a “pickup game”?</h4>
