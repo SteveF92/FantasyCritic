@@ -1,14 +1,18 @@
 <template>
   <div>
     <div v-if="masterGame">
-      <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,10px' } }}">
+      <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,0px' } }}">
         <div class="popper">
-
-          <div class="close-button fake-link" v-on:click="closePopover">X</div>
-          <img :src="boxartLink" alt="Cover Image" class="game-image">
+          <div class="game-image-area">
+            <img v-show="this.masterGame.boxartFileName" :src="boxartLink" alt="Cover Image" class="game-image">
+            <font-awesome-layers v-show="!this.masterGame.boxartFileName" class="fa-8x no-game-image">
+              <font-awesome-icon :icon="['far', 'square']" />
+              <font-awesome-layers-text transform="shrink-14" value="No boxart found" />
+            </font-awesome-layers>
+          </div>
 
           <div class="game-description">
-            <h5>{{masterGame.gameName}}</h5>
+            <h5 class="game-name">{{masterGame.gameName}}</h5>
             <div>
               <strong>Release Date: </strong>
               <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
@@ -20,9 +24,12 @@
               <span v-if="masterGame.averagedScore">(Averaged Score)</span>
             </div>
             <div v-if="masterGame.openCriticID">
-              <a :href="openCriticLink(masterGame)" target="_blank">OpenCritic Link <font-awesome-icon icon="external-link-alt" size="xs" /></a>
+              <a :href="openCriticLink(masterGame)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
             </div>
-            <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}">View full details</router-link>
+            <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}"><strong>View full details</strong></router-link>
+          </div>
+          <div class="close-button fake-link" v-on:click="closePopover">
+            <font-awesome-icon icon="times" size="lg" :style="{ color: 'd6993a' }"/>
           </div>
         </div>
 
@@ -56,7 +63,7 @@
         if (this.masterGame.boxartFileName) {
           return "https://s3.amazonaws.com/fantasy-critic-box-art/" + this.masterGame.boxartFileName;
         }
-        return "https://s3.amazonaws.com/fantasy-critic-box-art/noBoxArt.png";
+        return null;
       }
     },
     methods: {
@@ -73,18 +80,36 @@
   }
 </script>
 <style scoped>
+  .popper {
+    min-width: 370px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    background-color: #e6e6e6;
+  }
+  .game-image-area {
+
+  }
   .game-image {
-    float: left;
-    width: 125px;
+    max-width: 125px;
+    display: inline;
+  }
+  .no-game-image {
+
   }
   .game-description{
-    float:left;
+    margin-right: 20px;
   }
   .close-button {
-    float: right;
+    position: absolute;
+    right: 5px;
   }
   .fake-link {
     text-decoration: underline;
     cursor: pointer;
+  }
+
+  .game-name {
+    text-wrap: normal;
   }
 </style>

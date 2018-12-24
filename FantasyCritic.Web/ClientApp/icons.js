@@ -22,11 +22,14 @@ import {
   faPlusCircle,
   faMoneyBillAlt,
   faMinusCircle,
-  faSlash
+  faSlash,
+  faGamepad,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
   faCircle as regCircle,
+  faSquare as regSquare,
 } from '@fortawesome/free-regular-svg-icons'
 
 import {
@@ -67,7 +70,10 @@ library.add(
   solidCircle,
   faSlash,
   faMoneyBillAlt,
-  faGithubSquare
+  faGithubSquare,
+  faGamepad,
+  regSquare,
+  faTimes
   );
 
 export {
