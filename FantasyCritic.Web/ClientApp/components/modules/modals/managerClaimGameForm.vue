@@ -13,9 +13,9 @@
 
         <div v-show="searched && !claimMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
-            <span class="col-8" v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
-            <span class="col-8" v-show="possibleMasterGames.length === 0">No games were found.</span>
-            <b-button variant="primary" v-on:click="showUnlistedField" class="col-4" size="sm">Select unlisted game.</b-button>
+            <span class="col-12 col-md-7" v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
+            <span class="col-12 col-md-7" v-show="possibleMasterGames.length === 0">No games were found.</span>
+            <b-button variant="primary" v-on:click="showUnlistedField" size="sm" class="col-12 col-md-5">Select unlisted game.</b-button>
           </div>
 
           <div v-if="showingUnlistedField">
