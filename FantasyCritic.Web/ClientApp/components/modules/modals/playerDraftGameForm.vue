@@ -68,7 +68,6 @@
               searchGameName: null,
               draftUnlistedGame: null,
               draftMasterGame: null,
-              draftGameType: null,
               draftResult: null,
               draftOverride: false,
               possibleMasterGames: [],
@@ -147,12 +146,13 @@
             this.searchGameName = null;
             this.draftUnlistedGame = null;
             this.draftMasterGame = null;
-            this.draftGameType = null;
             this.draftResult = null;
             this.draftOverride = false;
             this.possibleMasterGames = [];
             this.searched = false;
             this.showingUnlistedField = false;
+            this.claimCounterPick = false;
+            this.claimPublisher = null;
           }
         }
     }

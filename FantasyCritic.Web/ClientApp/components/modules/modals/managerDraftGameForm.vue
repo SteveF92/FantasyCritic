@@ -51,7 +51,7 @@
 
         <div class="form-check" v-if="draftResult.overridable">
           <span>
-            <label class="form-check-label">
+            <label class="text-white">
               Do you want to override these warnings?
             </label>
             <input class="form-check-input override-checkbox" type="checkbox" v-model="draftOverride">
@@ -72,7 +72,6 @@
                 searchGameName: null,
                 draftUnlistedGame: null,
                 draftMasterGame: null,
-                draftGameType: null,
                 draftResult: null,
                 draftOverride: false,
                 possibleMasterGames: [],
@@ -152,12 +151,13 @@
               this.searchGameName = null;
               this.draftUnlistedGame = null;
               this.draftMasterGame = null;
-              this.draftGameType = null;
               this.draftResult = null;
               this.draftOverride = false;
               this.possibleMasterGames = [];
               this.searched = false;
               this.showingUnlistedField = false;
+              this.claimCounterPick = false;
+              this.claimPublisher = null;
             }
         }
     }

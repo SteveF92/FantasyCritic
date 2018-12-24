@@ -46,7 +46,7 @@
 
         <div class="form-check" v-if="associateResult.overridable">
           <span>
-            <label class="form-check-label">
+            <label class="text-white">
               Do you want to override these warnings?
             </label>
             <input class="form-check-input override-checkbox" type="checkbox" v-model="associateOverride">
@@ -126,6 +126,8 @@
               this.associatePublisherGame = null;
               this.associateOverride = false;
               this.possibleMasterGames = [];
+              this.claimCounterPick = false;
+              this.claimPublisher = null;
             }
         }
     }

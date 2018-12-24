@@ -59,7 +59,7 @@
 
         <div class="form-check" v-if="claimResult.overridable">
           <span>
-            <label class="form-check-label">
+            <label class="text-white">
               Do you want to override these warnings?
             </label>
             <input class="form-check-input override-checkbox" type="checkbox" v-model="claimOverride">
@@ -81,7 +81,6 @@
                 claimUnlistedGame: null,
                 claimPublisher: null,
                 claimMasterGame: null,
-                claimGameType: null,
                 claimResult: null,
                 claimOverride: false,
                 claimCounterPick: false,
@@ -162,12 +161,13 @@
             this.searchGameName = null;
             this.claimUnlistedGame = null;
             this.claimMasterGame = null;
-            this.claimGameType = null;
             this.claimResult = null;
             this.claimOverride = false;
             this.possibleMasterGames = [];
             this.searched = false;
             this.showingUnlistedField = false;
+            this.claimCounterPick = false;
+            this.claimPublisher = null;
           }
         }
     }
