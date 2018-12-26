@@ -5,12 +5,13 @@
     <div class="col-lg-6 col-sm-12">
       <h4>Something about the site is broken!</h4>
       <p>
-        Sounds likely. We’re just getting started here at Fantasy Critic and there bound to be issues. The best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic">GitHub</a>.
+        Sounds likely. We’re just getting started here at Fantasy Critic and there bound to be issues.
+        The best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">GitHub <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
         Contacting me on Twitter or Reddit is also an option.
       </p>
       <h4>How can I follow updates for the site?</h4>
       <p>
-        Follow me on twitter <a href="https://twitter.com/fantasy_critic">@fantasy_critic</a> and join our <a href="https://www.reddit.com/r/fantasycritic/">subreddit</a>.
+        Follow me on twitter <a href="https://twitter.com/fantasy_critic" target="_blank">@fantasy_critic <font-awesome-icon icon="external-link-alt" size="sm" /></a> and join our <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">subreddit <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
       </p>
       <h4>Why should I play FantasyCritic?</h4>
       <p>
@@ -94,7 +95,7 @@
       </p>
       <h4>How does scoring work?</h4>
       <p>
-        A game's score is based on it’s score from <a href="https://opencritic.com/">opencritic.com</a>. Your team will gain or lose points based upon how well your game reviews.
+        A game's score is based on it’s score from <a href="https://opencritic.com/" target="_blank">opencritic.com <font-awesome-icon icon="external-link-alt" size="sm" /></a>. Your team will gain or lose points based upon how well your game reviews.
         Only critic reviews are taken into account. For every point above a 70 on OpenCritic, your game gets you one point. For every point below 70,
         you lose one point. However, to really separate the cream of the crop, every point above 90 gets you <em>two</em> points. If a game doesn’t release in the
         year you are playing, it is treated as getting a 70, and therefore 0 points. Some examples (for the year 2018):
