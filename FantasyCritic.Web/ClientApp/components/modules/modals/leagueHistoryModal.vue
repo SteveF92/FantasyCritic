@@ -16,7 +16,7 @@
           <td>{{leagueAction.timestamp | date}}</td>
           <td>{{leagueAction.actionType}}</td>
           <td>{{leagueAction.description}}</td>
-          <td>{{leagueAction.managerAction}}</td>
+          <td>{{leagueAction.managerAction | yesNo}}</td>
         </tr>
       </tbody>
     </table>

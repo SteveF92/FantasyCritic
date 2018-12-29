@@ -35,3 +35,10 @@ Vue.filter('date', function(value) {
   }
   return "";
 });
+
+Vue.filter('yesNo', function (value) {
+  if (value) {
+    return "Yes";
+  }
+  return "No";
+});
