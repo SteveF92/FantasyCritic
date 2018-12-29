@@ -2,9 +2,9 @@
   <b-modal id="managerDraftCounterPickForm" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" hide-footer @hidden="clearData">
     <div class="form-group">
       <label for="nextPublisherUp" class="control-label">Select the next counter pick for publisher: </label>
-      <div>
+      <label>
         <strong>{{nextPublisherUp.publisherName}} (Display Name: {{nextPublisherUp.playerName}})</strong>
-      </div>
+      </label>
     </div>
     <form class="form-horizontal" v-on:submit.prevent="selectCounterPick" hide-footer>
       <div class="form-group">
@@ -41,7 +41,7 @@
               publisherID: this.nextPublisherUp.publisherID,
               gameName: this.selectedCounterPick.gameName,
               counterPick: true,
-              masterGameID: this.selectedCounterPick.masterGameID
+              masterGameID: this.selectedCounterPick.masterGame.masterGameID
             };
 
             axios

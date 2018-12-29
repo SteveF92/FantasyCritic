@@ -63,7 +63,7 @@ namespace FantasyCritic.Web.Models.Responses
             }
 
             PlayStatus = new PlayStatusViewModel(playStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
-            AvailableCounterPicks = availableCounterPicks.Select(x => new PublisherGameViewModel(x, clock)).ToList();
+            AvailableCounterPicks = availableCounterPicks.Select(x => new PublisherGameViewModel(x, clock)).OrderBy(x => x.GameName).ToList();
         }
 
         public Guid LeagueID { get; }

@@ -991,7 +991,7 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyList<Publisher> otherPublishers = allPublishers.Where(x => x.PublisherID != nextDraftingPublisher.PublisherID).ToList();
 
             IReadOnlyList<PublisherGame> gamesForYear = allPublishers.SelectMany(x => x.PublisherGames).ToList();
-            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
+            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick).ToList();
 
             var alreadyCounterPicked = gamesForYear.Where(x => x.CounterPick).ToList();
             List<PublisherGame> availableCounterPicks = new List<PublisherGame>();

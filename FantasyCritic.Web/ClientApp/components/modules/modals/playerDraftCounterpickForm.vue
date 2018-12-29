@@ -33,7 +33,7 @@
                 publisherID: this.userPublisher.publisherID,
                 gameName: this.selectedCounterPick.gameName,
                 counterPick: true,
-                masterGameID: this.selectedCounterPick.masterGameID,
+                masterGameID: this.selectedCounterPick.masterGame.masterGameID,
               };
 
               axios
