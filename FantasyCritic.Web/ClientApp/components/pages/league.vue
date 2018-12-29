@@ -47,7 +47,7 @@
       <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
     </div>
 
-    <div v-if="leagueYear && !leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft" class="alert alert-success">
+    <div v-if="leagueYear && !leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite" class="alert alert-success">
       <span v-if="league.isManager">
         Things are all set to get started! <b-button variant="primary" v-b-modal="'startDraft'" class="mx-2">Start Drafting!</b-button>
         <startDraftModal v-on:draftStarted="startDraft"></startDraftModal>
