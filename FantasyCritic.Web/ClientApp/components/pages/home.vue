@@ -5,43 +5,47 @@
       <div>Your email address has not been confirmed. You cannot accept league invites until you do so.</div>
       <div>Check your email account for an email from us.</div>
     </div>
+    <b-button variant="primary" :to="{ name: 'createLeague' }" class="create-league-button">Create a League</b-button>
 
-    <div class="col-md-4">
-      <b-button variant="primary" :to="{ name: 'createLeague' }" class="nav-link">Create a League</b-button>
+    <div class="row">
+      <div class="col-lg-6 col-md-12">
+        <div v-if="anyInvitedLeagues">
+          <h3>League Invites</h3>
+          <ul>
+            <li v-for="league in invitedLeagues">
+              <router-link v-show="userInfo.emailConfirmed" :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+              <div v-show="!userInfo.emailConfirmed">{{league.leagueName}}</div>
+            </li>
+          </ul>
+          <hr />
+        </div>
 
-      <div v-if="anyInvitedLeagues">
-        <h3>League Invites</h3>
-        <ul>
-          <li v-for="league in invitedLeagues">
-            <router-link v-show="userInfo.emailConfirmed" :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-            <div v-show="!userInfo.emailConfirmed">{{league.leagueName}}</div>
-          </li>
-        </ul>
-        <hr />
+        <div v-if="anyManagedLeagues">
+          <h3>Leagues I Manage</h3>
+          <ul>
+            <li v-for="league in myLeagues" v-if="league.isManager">
+              <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+            </li>
+          </ul>
+          <hr />
+        </div>
+
+        <div v-if="anyPlayerLeagues">
+          <h3>Leagues I Play In</h3>
+          <ul>
+            <li v-for="league in myLeagues" v-if="!league.isManager">
+              <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+            </li>
+          </ul>
+          <hr />
+        </div>
+
+        <div v-if="!fetchingLeagues && noLeagues">
+          You are not part of any leagues! Why not start one?
+        </div>
       </div>
-
-      <div v-if="anyManagedLeagues">
-        <h3>Leagues I Manage</h3>
-        <ul>
-          <li v-for="league in myLeagues" v-if="league.isManager">
-            <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-          </li>
-        </ul>
-        <hr />
-      </div>
-
-      <div v-if="anyPlayerLeagues">
-        <h3>Leagues I Play In</h3>
-        <ul>
-          <li v-for="league in myLeagues" v-if="!league.isManager">
-            <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-          </li>
-        </ul>
-        <hr />
-      </div>
-
-      <div v-if="!fetchingLeagues && noLeagues">
-        You are not part of any leagues! Why not start one?
+      <div class="col-lg-6 col-md-12">
+        <tweets></tweets>
       </div>
     </div>
   </div>
@@ -51,6 +55,7 @@
     import Vue from "vue";
     import axios from "axios";
     import _ from "lodash";
+    import Tweets from "components/modules/tweets";
 
     export default {
         data() {
@@ -60,6 +65,9 @@
                 invitedLeagues: [],
                 fetchingLeagues: true
             }
+        },
+        components: {
+          Tweets
         },
         computed: {
             anyManagedLeagues() {
@@ -104,3 +112,8 @@
         }
     }
 </script>
+<style scoped>
+  .create-league-button {
+    width: 430px;
+  }
+</style>

@@ -146,13 +146,7 @@
         </div>
       </div>
       <div class="col-lg-6 col-md-12">
-
-        <div class="tweet-area">
-          <div class="tweet-timeline">
-            <h3>Recent Tweets</h3>
-            <Timeline :id="'fantasy_critic'" :sourceType="'profile'" :options="{ theme: 'dark', tweetLimit: '3' }" />
-          </div>
-        </div>
+        <tweets></tweets>
       </div>
     </div>
   </div>
@@ -163,13 +157,13 @@
     import axios from 'axios';
     import RegisterForm from "components/modules/registerForm";
     import HomeFaq from "components/modules/homeFaq";
-    import Timeline from 'vue-tweet-embed/timeline'
+    import Tweets from "components/modules/tweets";
 
     export default {
       components: {
         RegisterForm,
         HomeFaq,
-        Timeline
+        Tweets
       }
     }
 </script>
@@ -286,16 +280,6 @@
     font-weight: bold;
     padding-left: 7px;
     vertical-align: middle;
-  }
-
-  .tweet-area {
-    display: flex; /* establish flex container */
-    justify-content: center; /* center items vertically, in this case */
-    align-items: center; /* center items horizontally, in this case */
-  }
-
-  .tweet-timeline{
-    width: 600px;
   }
 
   .faq-button {
