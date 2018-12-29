@@ -233,7 +233,8 @@
           axios
               .post('/api/league/AcceptInvite', model)
               .then(response => {
-                  this.fetchLeague();
+                this.fetchLeague();
+                this.fetchLeagueYear();
               })
               .catch(response => {
 
