@@ -1,9 +1,9 @@
 <template>
   <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" @hidden="clearData">
-    Drag and drop to change order.
-    <br />
-    <br />
-    <div class="fluid container">
+    <p>
+      Drag and drop to change order.
+    </p>
+    <div class="fluid container draft-order-editor">
       <draggable class="list-group" element="ul" v-model="desiredDraftOrder" :options="dragOptions" @start="isDragging=true" @end="isDragging=false">
         <transition-group type="transition" :name="'flip-list'">
           <li class="list-group-item" v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition">
@@ -87,6 +87,15 @@
   }
 </script>
 <style>
+  .draft-order-editor {
+    background-color: #414141;
+    border-radius: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
   .flip-list-move {
     transition: transform 0.5s;
   }
