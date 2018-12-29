@@ -140,8 +140,7 @@
         league: null,
         leagueYear: null,
         currentBids: [],
-        leagueActions: [],
-        hubConnection: null
+        leagueActions: []
       }
     },
     props: ['leagueid', 'year'],
@@ -287,26 +286,31 @@
           year: newVal
         };
         this.$router.push({ name: "league", params: parameters });
+      },
+      async startHubConnection() {
+        let token = this.$store.getters.token;
+        let hubConnection = new signalR.HubConnectionBuilder()
+          .withUrl("/updatehub", { accessTokenFactory: () => token })
+          .configureLogging(signalR.LogLevel.Error)
+          .build();
+
+        hubConnection.start().catch(err => console.error(err.toString()));
+        hubConnection.on('RefreshLeagueYear', data => {
+          this.fetchLeagueYear();
+        });
+        hubConnection.on('DraftFinished', data => {
+          this.$refs.draftFinishedModalRef.show();
+        });
+        hubConnection.onclose(async () => {
+          await startHubConnection();
+        })
       }
     },
-    mounted() {
+    async mounted() {
       this.selectedYear = this.year;
       this.fetchLeague();
       this.fetchLeagueYear();
-
-      let token = this.$store.getters.token;
-      this.hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/updatehub", { accessTokenFactory: () => token })
-        .configureLogging(signalR.LogLevel.Error)
-        .build();
-
-      this.hubConnection.start().catch(err => console.error(err.toString()));
-      this.hubConnection.on('RefreshLeagueYear', data => {
-        this.fetchLeagueYear();
-      });
-      this.hubConnection.on('DraftFinished', data => {
-        this.$refs.draftFinishedModalRef.show();
-      });
+      await this.startHubConnection();
     },
     watch: {
       '$route'(to, from) {
