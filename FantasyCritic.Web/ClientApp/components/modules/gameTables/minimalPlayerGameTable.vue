@@ -81,13 +81,14 @@
     margin-left: 3px;
     margin-right: 7px;
     margin-bottom: 10px;
+    padding: 5px;
   }
 
   .publisher-is-next {
-    border-color: #5CB85C;
-    border-color: #4E5D6C;
+    border-color: #45621d;
     border-width: 5px;
     border-style: solid;
+    padding: 0;
   }
   .publisher-is-next table thead tr.table-primary th {
     background-color: #ED9D2B;
