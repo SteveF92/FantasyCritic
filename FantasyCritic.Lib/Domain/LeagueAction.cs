@@ -19,13 +19,38 @@ namespace FantasyCritic.Lib.Domain
             ManagerAction = managerAction;
         }
 
-        public LeagueAction(ClaimGameDomainRequest action, Instant timestamp)
+        public LeagueAction(ClaimGameDomainRequest action, Instant timestamp, bool managerAction, bool draft)
         {
             Timestamp = timestamp;
             Publisher = action.Publisher;
-            ActionType = "Publisher Game Claimed";
-            Description = $"Claimed game: '{action.GameName}'";
-            ManagerAction = true;
+            if (draft)
+            {
+                if (action.CounterPick)
+                {
+                    ActionType = "Publisher Counterpick Drafted";
+                    Description = $"Drafted game: '{action.GameName}'";
+                }
+                else
+                {
+                    ActionType = "Publisher Game Drafted";
+                    Description = $"Drafted game: '{action.GameName}'";
+                }
+            }
+            else
+            {
+                if (action.CounterPick)
+                {
+                    ActionType = "Publisher Counterpick Claimed";
+                    Description = $"Claimed game: '{action.GameName}'";
+                }
+                else
+                {
+                    ActionType = "Publisher Game Claimed";
+                    Description = $"Claimed game: '{action.GameName}'";
+                }
+            }
+            
+            ManagerAction = managerAction;
         }
 
         public LeagueAction(AssociateGameDomainRequest action, Instant timestamp)

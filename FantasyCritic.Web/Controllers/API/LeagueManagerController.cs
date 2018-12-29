@@ -394,7 +394,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, null, null);
 
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, false);
             var viewModel = new ManagerClaimResultViewModel(result);
 
             await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
@@ -784,7 +784,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition);
 
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest);
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, true);
             bool draftCompleted = await _fantasyCriticService.CompleteDraft(leagueYear.Value);
             var viewModel = new ManagerClaimResultViewModel(result);
             await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);

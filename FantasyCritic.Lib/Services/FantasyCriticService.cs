@@ -263,7 +263,7 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetPublisherGame(publisherGameID);
         }
 
-        public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request)
+        public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft)
         {
             Maybe<MasterGameYear> masterGameYear = Maybe<MasterGameYear>.None;
             if (request.MasterGame.HasValue)
@@ -281,7 +281,7 @@ namespace FantasyCritic.Lib.Services
                 return claimResult;
             }
 
-            LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant());
+            LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft);
             await _fantasyCriticRepo.AddLeagueAction(leagueAction);
 
             await _fantasyCriticRepo.AddPublisherGame(request.Publisher, playerGame);
