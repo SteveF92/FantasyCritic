@@ -231,7 +231,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var entities = await connection.QueryAsync<LeagueActionEntity>(
-                    "select * from tblleagueaction " +                          
+                    "select tblleagueaction.PublisherID, tblleagueaction.Timestamp, tblleagueaction.ActionType, tblleagueaction.Description, tblleagueaction.ManagerAction from tblleagueaction " +                          
                     "join tblpublisher on (tblleagueaction.PublisherID = tblpublisher.PublisherID) " +
                     "where tblpublisher.LeagueID = @leagueID and tblpublisher.Year = @leagueYear;",
                     new
@@ -240,13 +240,9 @@ namespace FantasyCritic.MySQL
                         leagueYear = leagueYear.Year
                     });
 
-                List<LeagueAction> leagueActions = new List<LeagueAction>();
-                foreach (var entity in entities)
-                {
-                    Publisher publisher = (await GetPublisher(entity.PublisherID)).Value;
-                    LeagueAction leagueAction = entity.ToDomain(publisher);
-                    leagueActions.Add(leagueAction);
-                }
+                var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+
+                List<LeagueAction> leagueActions = entities.Select(x => x.ToDomain(publishersInLeague.Single(y => y.PublisherID == x.PublisherID))).ToList();
 
                 return leagueActions;
             }

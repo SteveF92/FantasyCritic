@@ -33,7 +33,8 @@ namespace FantasyCritic.MySQL.Entities
         public LeagueAction ToDomain(Publisher publisher)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            return new LeagueAction(publisher, instant, ActionType, Description, ManagerAction);
+            LeagueAction action = new LeagueAction(publisher, instant, ActionType, Description, ManagerAction);
+            return action;
         }
     }
 }
