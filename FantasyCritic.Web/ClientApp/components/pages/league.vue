@@ -96,7 +96,7 @@
         <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="userIsNextInDraft" v-on:actionTaken="actionTaken"></playerActions>
       </div>
       <div class="col-lg-3 col-sm-6 col-12 ">
-        <leagueActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
+        <managerActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></managerActions>
       </div>
     </div>
 
@@ -129,7 +129,7 @@
   import LeagueYearStandings from "components/modules/leagueYearStandings";
   import PlayerActions from "components/modules/playerActions";
   import CreatePublisherForm from "components/modules/modals/createPublisherForm";
-  import LeagueActions from "components/modules/leagueActions";
+  import ManagerActions from "components/modules/managerActions";
   import StartDraftModal from "components/modules/modals/startDraftModal";
   import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
 
@@ -147,7 +147,7 @@
     components: {
       LeagueGameSummary,
       LeagueYearStandings,
-      LeagueActions,
+      ManagerActions,
       PlayerActions,
       CreatePublisherForm,
       StartDraftModal,
