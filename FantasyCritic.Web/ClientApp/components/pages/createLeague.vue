@@ -6,15 +6,17 @@
           <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>
           <div class="form-group col-md-10">
             <label for="leagueName" class="control-label">League Name</label>
-            <input v-model="selectedLeagueOptions.leagueName" id="leagueName" name="leagueName" type="text" class="form-control input" />
+            <input v-model="selectedLeagueOptions.leagueName" v-validate="'required'" id="leagueName" name="leagueName" type="text" class="form-control input" />
+            <span class="text-danger">{{ errors.first('leagueName') }}</span>
           </div>
           <hr />
           <div class="form-group col-md-10">
             <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-            <input v-model="intendedNumberOfPlayers" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
+            <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
+            <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
           </div>
 
-          <div v-if="intendedNumberOfPlayers">
+          <div v-if="readyToChooseNumbers">
             <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
 
             <div class="form-group col-md-10">
@@ -117,6 +119,17 @@ export default {
       vueSlider
     },
     computed: {
+      readyToChooseNumbers() {
+        let leagueNameValid = this.fields['leagueName'] && this.fields['leagueName'].valid;
+        let intendedNumberOfPlayersValid = this.fields['intendedNumberOfPlayers'] && this.fields['intendedNumberOfPlayers'].valid;
+        return leagueNameValid && intendedNumberOfPlayersValid;
+      },
+      readyToChooseLevels() {
+        return this.intendedNumberOfPlayers && (!this.errors || !this.errors.items || this.errors.items.length === 0);
+      },
+      formIsValid() {
+        return !Object.keys(this.fields).some(key => this.fields[key].invalid);
+      },
       minimumEligibilityLevel() {
         return 0;
       },
