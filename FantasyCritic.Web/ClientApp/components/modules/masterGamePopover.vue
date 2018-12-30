@@ -91,7 +91,7 @@
     background-color: #e6e6e6;
   }
   .game-image-area {
-
+    margin-right: 5px;
   }
   .game-image {
     max-width: 125px;
