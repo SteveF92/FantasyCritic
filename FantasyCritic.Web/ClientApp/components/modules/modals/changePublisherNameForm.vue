@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="changePublisherNameForm" ref="changePublisherNameRef" title="Change Publisher Name" @hidden="clearData">
+  <b-modal id="changePublisherNameForm" ref="changePublisherNameRef" title="Change Publisher Name" @hidden="clearData" @show="clearData">
     <div class="form-horizontal">
       <div class="form-group">
         <label for="newPublisherName" class="control-label">Publisher Name</label>
