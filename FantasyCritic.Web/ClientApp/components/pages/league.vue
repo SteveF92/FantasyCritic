@@ -104,9 +104,7 @@
   import LeagueGameSummary from "components/modules/leagueGameSummary";
   import LeagueYearStandings from "components/modules/leagueYearStandings";
   import LeagueActions from "components/modules/leagueActions";
-  import PlayerActions from "components/modules/playerActions";
   import CreatePublisherForm from "components/modules/modals/createPublisherForm";
-  import ManagerActions from "components/modules/managerActions";
   import StartDraftModal from "components/modules/modals/startDraftModal";
 
   export default {
@@ -123,8 +121,6 @@
     components: {
       LeagueGameSummary,
       LeagueYearStandings,
-      ManagerActions,
-      PlayerActions,
       CreatePublisherForm,
       StartDraftModal,
       LeagueActions

@@ -116,7 +116,6 @@
   import CurrentBidsForm from "components/modules/modals/currentBidsForm";
   import LeagueHistoryModal from "components/modules/modals/leagueHistoryModal";
   import ChangePublisherNameForm from "components/modules/modals/changePublisherNameForm";
-  import LeaguePlayersForm from "components/modules/modals/leaguePlayersForm";
   import PlayerDraftGameForm from "components/modules/modals/playerDraftGameForm";
   import PlayerDraftCounterPickForm from "components/modules/modals/playerDraftCounterPickForm";
 
@@ -145,7 +144,6 @@
       CurrentBidsForm,
       LeagueHistoryModal,
       ChangePublisherNameForm,
-      LeaguePlayersForm,
       PlayerDraftGameForm,
       PlayerDraftCounterPickForm,
       ManagerClaimGameForm,
