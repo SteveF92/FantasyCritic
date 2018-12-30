@@ -99,7 +99,7 @@
 
     <div class="row" v-if="league && leagueYear && leagueYear.userPublisher">
       <div class="col-xl-2 col-lg-12">
-        <leagueActions :league="league" :leagueYear="leagueYear"></leagueActions>
+        <leagueActions :league="league" :leagueYear="leagueYear" :leagueActions="leagueActions"></leagueActions>
         <!--<playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="userIsNextInDraft" v-on:actionTaken="actionTaken"></playerActions>
         <managerActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></managerActions>-->
       </div>

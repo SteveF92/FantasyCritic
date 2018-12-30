@@ -68,3 +68,11 @@ div.alert {
     border: none;
     height: 40px;
 }
+
+.fake-link {
+    cursor: pointer !important;
+}
+
+.fake-link:hover {
+    text-decoration: underline !important;
+}

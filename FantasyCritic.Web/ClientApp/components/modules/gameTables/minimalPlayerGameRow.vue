@@ -58,10 +58,7 @@
     color: #B1B1B1;
     font-style: italic;
   }
-  .fake-link {
-    text-decoration: underline;
-    cursor: pointer;
-  }
+
   .popper {
     background: #415262;
   }

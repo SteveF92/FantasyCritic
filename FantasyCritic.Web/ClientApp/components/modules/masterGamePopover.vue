@@ -107,10 +107,6 @@
     position: absolute;
     right: 5px;
   }
-  .fake-link {
-    text-decoration: underline;
-    cursor: pointer;
-  }
 
   .game-name {
     text-wrap: normal;
