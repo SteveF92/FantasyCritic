@@ -83,32 +83,6 @@
       ManagerDraftCounterPickForm
     },
     methods: {
-      acceptInvite() {
-        var model = {
-          leagueID: this.leagueID
-        };
-        axios
-          .post('/api/league/AcceptInvite', model)
-          .then(response => {
-            this.fetchLeague();
-          })
-          .catch(response => {
-
-          });
-      },
-      declineInvite() {
-        var model = {
-          leagueID: this.leagueID
-        };
-        axios
-          .post('/api/league/DeclineInvite', model)
-          .then(response => {
-            this.$router.push({ name: "home" });
-          })
-          .catch(response => {
-
-          });
-      },
       setPause(pauseInfo) {
         var model = {
           leagueID: this.league.leagueID,
