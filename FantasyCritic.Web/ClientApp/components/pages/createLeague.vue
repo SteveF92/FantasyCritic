@@ -16,22 +16,25 @@
             <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
           </div>
 
-          <div v-if="readyToChooseNumbers">
+          <div v-if="readyToChooseNumbers()">
             <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
 
             <div class="form-group col-md-10">
               <label for="pickupGames" class="control-label">Total Number of Games</label>
-              <input v-model="standardGames" id="standardGames" name="standardGames" type="text" class="form-control input" />
+              <input v-model="standardGames" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
+              <span class="text-danger">{{ errors.first('standardGames') }}</span>
             </div>
 
             <div class="form-group col-md-10">
               <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
-              <input v-model="gamesToDraft" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
+              <input v-model="gamesToDraft" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
+              <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
             </div>
 
             <div class="form-group col-md-10">
               <label for="counterPicks" class="control-label">Number of Counter Picks</label>
-              <input v-model="counterPicks" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
+              <input v-model="counterPicks" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
+              <span class="text-danger">{{ errors.first('counterPicks') }}</span>
             </div>
             <hr />
 
@@ -44,10 +47,10 @@
             </div>
             <hr />
           </div>
-          <div v-if="readyToChooseLevels">
+          <div v-if="readyToChooseLevels()">
             <div class="form-group col-md-10 eligibility-section">
               <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
-              <vue-slider v-model="maximumEligibilityLevel" :min="minimumEligibilityLevel" :max="maximumEligibilityLevel"
+              <vue-slider v-model="maximumEligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
                           piecewise piecewise-label :piecewise-style="piecewiseStyle">
               </vue-slider>
               <div>
@@ -114,24 +117,13 @@ export default {
       vueSlider
     },
     computed: {
-      readyToChooseNumbers() {
-        let leagueNameValid = this.fields['leagueName'] && this.fields['leagueName'].valid;
-        let intendedNumberOfPlayersValid = this.fields['intendedNumberOfPlayers'] && this.fields['intendedNumberOfPlayers'].valid;
-        return leagueNameValid && intendedNumberOfPlayersValid;
-      },
-      readyToChooseLevels() {
-        let standardGamesValid = this.fields['standardGames'] && this.fields['standardGames'].valid;
-        let gamesToDraftValid = this.fields['gamesToDraft'] && this.fields['gamesToDraft'].valid;
-        let counterPicksValid = this.fields['counterPicks'] && this.fields['counterPicks'].valid;
-        return standardGamesValid && gamesToDraftValid && counterPicksValid && this.initialYear;
-      },
       formIsValid() {
         return !Object.keys(this.fields).some(key => this.fields[key].invalid);
       },
-      minimumEligibilityLevel() {
+      minimumPossibleEligibilityLevel() {
         return 0;
       },
-      maximumEligibilityLevel() {
+      maximumPossibleEligibilityLevel() {
         if (!this.possibleLeagueOptions.eligibilityLevels) {
           return 0;
         }
@@ -144,6 +136,17 @@ export default {
       }
     },
     methods: {
+        readyToChooseNumbers() {
+          let leagueNameValid = this.fields['leagueName'] && this.fields['leagueName'].valid;
+          let intendedNumberOfPlayersValid = this.fields['intendedNumberOfPlayers'] && this.fields['intendedNumberOfPlayers'].valid;
+          return leagueNameValid && intendedNumberOfPlayersValid;
+        },
+        readyToChooseLevels() {
+          let standardGamesValid = this.fields['standardGames'] && this.fields['standardGames'].valid;
+          let gamesToDraftValid = this.fields['gamesToDraft'] && this.fields['gamesToDraft'].valid;
+          let counterPicksValid = this.fields['counterPicks'] && this.fields['counterPicks'].valid;
+          return standardGamesValid && gamesToDraftValid && counterPicksValid && this.initialYear;
+        },
         fetchLeagueOptions() {
             axios
                 .get('/api/League/LeagueOptions')
@@ -168,16 +171,15 @@ export default {
             scoringSystem: "Standard"
 
           };
-            axios
-                .post('/api/leagueManager/createLeague', selectedLeagueOptions)
-                .then(this.responseHandler)
-                .catch(this.catchHandler);
-        },
-        responseHandler(response) {
-           this.$router.push({ name: "home" });
-        },
-        catchHandler(returnedError) {
-          this.errorInfo = returnedError;
+
+          axios
+            .post('/api/leagueManager/createLeague', selectedLeagueOptions)
+            .then(response => {
+              this.$router.push({ name: "home" });
+            })
+            .catch(returnedError => {
+              this.errorInfo = returnedError;
+            });
         }
     },
     watch: {
