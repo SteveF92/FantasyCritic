@@ -308,6 +308,7 @@
   }
   .publisher-image {
     text-align: center;
+    margin-top: 5px;
   }
   .actions-list {
     list-style: square;

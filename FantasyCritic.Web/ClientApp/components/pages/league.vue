@@ -98,13 +98,13 @@
     </div>
 
     <div class="row" v-if="league && leagueYear && leagueYear.userPublisher">
-      <div class="col-lg-2 col-md-12">
+      <div class="col-xl-2 col-lg-3 col-md-12">
         <leagueActions ref="leagueActionsRef" :league="league" :leagueYear="leagueYear" :leagueActions="leagueActions"
                        :currentBids="currentBids" :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
         <!--<playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="userIsNextInDraft" v-on:actionTaken="actionTaken"></playerActions>
         <managerActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></managerActions>-->
       </div>
-      <div class="col-lg-10 col-md-12">
+      <div class="col-xl-10 col-lg-9 col-md-12">
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
         <h3>Summary</h3>
         <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
