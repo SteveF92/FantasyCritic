@@ -7,7 +7,7 @@
             <img v-show="this.masterGame.boxartFileName" :src="boxartLink" alt="Cover Image" class="game-image">
             <font-awesome-layers v-show="!this.masterGame.boxartFileName" class="fa-8x no-game-image">
               <font-awesome-icon :icon="['far', 'square']" />
-              <font-awesome-layers-text transform="shrink-14" value="No boxart found" />
+              <font-awesome-layers-text transform="shrink-14" value="No image found" />
             </font-awesome-layers>
           </div>
 
@@ -88,27 +88,32 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    justify-content: space-evenly;
     background-color: #e6e6e6;
+    align-items: center;
   }
   .game-image-area {
-    margin-right: 5px;
   }
   .game-image {
-    max-width: 125px;
-    display: inline;
+    max-width: 150px;
+    max-height: 125px;
   }
   .no-game-image {
 
   }
   .game-description{
+    margin-left: 5px;
     margin-right: 20px;
   }
+
   .close-button {
     position: absolute;
     right: 5px;
+    top: 0px;
   }
 
   .game-name {
     text-wrap: normal;
+    text-align: center;
   }
 </style>
