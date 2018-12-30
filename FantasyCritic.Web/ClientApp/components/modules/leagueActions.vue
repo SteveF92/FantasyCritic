@@ -69,6 +69,9 @@
           <li class="fake-link action" v-b-modal="'manuallyScorePublisherGame'" v-show="leagueYear.playStatus.draftFinished">
             Score a Game Manually
           </li>
+          <li class="fake-link action">
+            <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit League Settings</router-link>
+          </li>
           <li class="fake-link action" v-b-modal="'changeLeagueNameForm'">
             Change League Name
           </li>

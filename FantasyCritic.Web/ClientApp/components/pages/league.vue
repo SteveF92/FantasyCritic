@@ -78,9 +78,6 @@
     <div class="league-manager-info">
       <h5 class="league-manager-info-item">League Manager:</h5>
       <span class="league-manager-info-item">{{ league.leagueManager.displayName }}</span>
-      <div class="league-manager-info-item" v-if="league.isManager">
-        <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: year }}">Edit League Settings</router-link>
-      </div>
     </div>
 
     <div class="row" v-if="league && leagueYear && leagueYear.userPublisher">
