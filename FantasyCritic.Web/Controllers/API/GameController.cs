@@ -49,6 +49,18 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModel;
         }
 
+        public async Task<ActionResult<MasterGameYearViewModel>> MasterGameYear(Guid id, int year)
+        {
+            Maybe<MasterGameYear> masterGame = await _fantasyCriticService.GetMasterGameYear(id, year);
+            if (masterGame.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new MasterGameYearViewModel(masterGame.Value, _clock);
+            return viewModel;
+        }
+
         public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame(string gameName)
         {
             IReadOnlyList<MasterGame> masterGames = await _fantasyCriticService.GetMasterGames();

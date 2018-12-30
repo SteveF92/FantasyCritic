@@ -411,6 +411,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetMasterGame(masterGameID);
         }
 
+        public Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year)
+        {
+            return _fantasyCriticRepo.GetMasterGameYear(masterGameID, year);
+        }
+
         public Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
         {
             return _fantasyCriticRepo.UpdateCriticStats(masterGame, openCriticGame);
