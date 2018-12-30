@@ -40,9 +40,11 @@
               <select class="form-control" v-model="selectedLeagueOptions.initialYear" id="initialYear">
                 <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
               </select>
+              <span class="text-danger">{{ errors.first('initialYear') }}</span>
             </div>
             <hr />
-
+          </div>
+          <div v-if="readyToChooseLevels">
             <div class="form-group col-md-10 eligibility-section">
               <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
               <vue-slider v-model="selectedLeagueOptions.maximumEligibilityLevel" :min="minimumEligibilityLevel" :max="maximumEligibilityLevel"
@@ -125,7 +127,10 @@ export default {
         return leagueNameValid && intendedNumberOfPlayersValid;
       },
       readyToChooseLevels() {
-        return this.intendedNumberOfPlayers && (!this.errors || !this.errors.items || this.errors.items.length === 0);
+        let standardGamesValid = this.fields['standardGames'] && this.fields['standardGames'].valid;
+        let gamesToDraftValid = this.fields['gamesToDraft'] && this.fields['gamesToDraft'].valid;
+        let counterPicksValid = this.fields['counterPicks'] && this.fields['counterPicks'].valid;
+        return standardGamesValid && gamesToDraftValid && counterPicksValid && this.selectedLeagueOptions.initialYear;
       },
       formIsValid() {
         return !Object.keys(this.fields).some(key => this.fields[key].invalid);
