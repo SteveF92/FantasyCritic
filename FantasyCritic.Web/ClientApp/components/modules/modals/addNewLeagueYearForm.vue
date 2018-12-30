@@ -38,12 +38,7 @@
           .post('/api/leagueManager/AddNewLeagueYear', model)
           .then(response => {
             this.$refs.addNewLeagueYearRef.hide();
-            let actionInfo = {
-              message: "A new year has been started",
-              fetchLeague: true,
-              fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
+            this.$emit('newYearAdded');
           })
           .catch(response => {
             this.error = response;

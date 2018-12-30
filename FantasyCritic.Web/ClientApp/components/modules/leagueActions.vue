@@ -72,6 +72,9 @@
           <li class="fake-link action" v-b-modal="'changeLeagueNameForm'">
             Change League Name
           </li>
+          <li class="fake-link action" v-b-modal="'addNewLeagueYear'">
+            Start New Year
+          </li>
         </ul>
       </div>
     </div>
@@ -85,6 +88,7 @@
       <leagueHistoryModal :leagueActions="leagueActions"></leagueHistoryModal>
       <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
+      <addNewLeagueYearForm :league="league" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
       <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
       <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
       <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
@@ -124,6 +128,7 @@
   import SetPauseModal from "components/modules/modals/setPauseModal";
   import UndoLastDraftActionModal from "components/modules/modals/undoLastDraftActionModal";
   import ManagerDraftCounterPickForm from "components/modules/modals/managerDraftCounterPickForm";
+  import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
 
   export default {
     data() {
@@ -150,7 +155,8 @@
       EditDraftOrderForm,
       SetPauseModal,
       UndoLastDraftActionModal,
-      ManagerDraftCounterPickForm
+      ManagerDraftCounterPickForm,
+      AddNewLeagueYearForm
     },
     methods: {
       gameBid(bidInfo) {
@@ -170,6 +176,14 @@
       publisherNameChanged(changeInfo) {
         let actionInfo = {
           message: 'Publisher name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      newYearAdded() {
+        let actionInfo = {
+          message: 'A new year has been started',
+          fetchLeague: true,
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);

@@ -8,14 +8,10 @@
       <h2>{{ league.leagueName }}</h2>
       <div class="year-selector">
         <div>
-          <b-button v-if="league.isManager" variant="info" v-b-modal="'addNewLeagueYear'">Start new Year</b-button>
-        </div>
-        <div>
           <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear" />
         </div>
       </div>
     </div>
-    <addNewLeagueYearForm v-if="league.isManager" :league="league" v-on:actionTaken="actionTaken"></addNewLeagueYearForm>
 
     <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">
       <p>
@@ -127,7 +123,6 @@
   import CreatePublisherForm from "components/modules/modals/createPublisherForm";
   import ManagerActions from "components/modules/managerActions";
   import StartDraftModal from "components/modules/modals/startDraftModal";
-  import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
 
   export default {
     data() {
@@ -147,7 +142,6 @@
       PlayerActions,
       CreatePublisherForm,
       StartDraftModal,
-      AddNewLeagueYearForm,
       LeagueActions
     },
     computed: {
