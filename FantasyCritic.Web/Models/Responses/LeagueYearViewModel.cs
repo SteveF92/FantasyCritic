@@ -5,6 +5,7 @@ using System.Transactions;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using NodaTime;
 
@@ -14,7 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, FantasyCriticUser currentUser, Publisher userPublisher,
             IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> users, Maybe<Publisher> nextDraftPublisher, DraftPhase draftPhase,
-            IEnumerable<PublisherGame> availableCounterPicks, SystemWideValues systemWideValues)
+            IEnumerable<PublisherGame> availableCounterPicks, ScoringSystem scoringSystem, SystemWideValues systemWideValues, IEnumerable<string> invitedPlayers)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -28,7 +29,6 @@ namespace FantasyCritic.Web.Models.Responses
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
             Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock, nextDraftPublisher)).ToList();
-            Standings = publishers.OrderByDescending(x => x.TotalFantasyPoints).Select(x => new StandingViewModel(x, leagueYear.Options.ScoringSystem, systemWideValues)).ToList();
 
             if (!(userPublisher is null))
             {
@@ -47,8 +47,14 @@ namespace FantasyCritic.Web.Models.Responses
                 }
                 else
                 {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, scoringSystem, systemWideValues));
                 }
+            }
+
+            foreach (var invitedPlayer in invitedPlayers)
+            {
+                allPublishersMade = false;
+                playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer));
             }
 
             bool readyToSetDraftOrder = false;
@@ -79,7 +85,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool UnlinkedGameExists { get; }
         public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
-        public IReadOnlyList<StandingViewModel> Standings { get; }
         public PublisherViewModel UserPublisher { get; }
         public PlayStatusViewModel PlayStatus { get; }
         public IReadOnlyList<PublisherGameViewModel> AvailableCounterPicks { get; }
