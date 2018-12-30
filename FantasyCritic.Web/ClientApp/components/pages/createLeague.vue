@@ -1,90 +1,92 @@
 <template>
-    <div>
-        <h2>Create a league</h2>
-        <hr />
-        <form v-if="possibleLeagueOptions" method="post" class="form-horizontal" role="form" v-on:submit.prevent="postRequest">
-          <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>
-          <div class="form-group col-md-10">
-            <label for="leagueName" class="control-label">League Name</label>
-            <input v-model="leagueName" v-validate="'required'" id="leagueName" name="leagueName" type="text" class="form-control input" />
-            <span class="text-danger">{{ errors.first('leagueName') }}</span>
-          </div>
-          <hr />
-          <div class="form-group col-md-10">
-            <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-            <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
-            <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
-          </div>
-
-          <div v-if="readyToChooseNumbers()">
-            <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
-
-            <div class="form-group col-md-10">
-              <label for="pickupGames" class="control-label">Total Number of Games</label>
-              <input v-model="standardGames" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
-              <span class="text-danger">{{ errors.first('standardGames') }}</span>
-            </div>
-
-            <div class="form-group col-md-10">
-              <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
-              <input v-model="gamesToDraft" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
-              <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
-            </div>
-
-            <div class="form-group col-md-10">
-              <label for="counterPicks" class="control-label">Number of Counter Picks</label>
-              <input v-model="counterPicks" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
-              <span class="text-danger">{{ errors.first('counterPicks') }}</span>
-            </div>
-            <hr />
-
-            <div class="form-group col-md-10">
-              <label for="intialYear" class="control-label">Year to Play</label>
-              <select class="form-control" v-model="initialYear" id="initialYear">
-                <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
-              </select>
-              <span class="text-danger">{{ errors.first('initialYear') }}</span>
-            </div>
-            <hr />
-          </div>
-          <div v-if="readyToChooseLevels()">
-            <div class="form-group col-md-10 eligibility-section">
-              <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
-              <vue-slider v-model="maximumEligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                          piecewise piecewise-label :piecewise-style="piecewiseStyle">
-              </vue-slider>
-              <div>
-                <h4>{{ selectedEligibilityLevel.name }}</h4>
-                <p>{{ selectedEligibilityLevel.description }}</p>
-                <p>Examples: </p>
-                <ul>
-                  <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-                </ul>
-              </div>
-
-              <div>
-                <h4>Other Options</h4>
-                <div>
-                  <b-form-checkbox id="yearly-checkbox" v-model="allowYearlyInstallments">
-                    <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
-                  </b-form-checkbox>
-                </div>
-                <div>
-                  <b-form-checkbox id="early-access-checkbox" v-model="allowEarlyAccess">
-                    <span class="checkbox-label">Allow Early Access Games</span>
-                  </b-form-checkbox>
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-md-offset-2 col-md-10">
-                <input type="submit" class="btn btn-primary" value="Create League" />
-              </div>
-            </div>
-          </div>
-          
-        </form>
+  <div>
+    <h2>Create a league</h2>
+    <hr />
+    <div class="alert alert-danger" v-show="errorInfo">
+      <h3>Error!</h3>
+      <p>{{errorInfo}}</p>
     </div>
+    <form v-if="possibleLeagueOptions" method="post" class="form-horizontal" role="form" v-on:submit.prevent="postRequest">
+      <div class="form-group col-md-10">
+        <label for="leagueName" class="control-label">League Name</label>
+        <input v-model="leagueName" v-validate="'required'" id="leagueName" name="leagueName" type="text" class="form-control input" />
+        <span class="text-danger">{{ errors.first('leagueName') }}</span>
+      </div>
+      <hr />
+      <div class="form-group col-md-10">
+        <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
+        <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
+        <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
+      </div>
+
+      <div v-if="readyToChooseNumbers()">
+        <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
+
+        <div class="form-group col-md-10">
+          <label for="pickupGames" class="control-label">Total Number of Games</label>
+          <input v-model="standardGames" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors.first('standardGames') }}</span>
+        </div>
+
+        <div class="form-group col-md-10">
+          <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
+          <input v-model="gamesToDraft" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
+        </div>
+
+        <div class="form-group col-md-10">
+          <label for="counterPicks" class="control-label">Number of Counter Picks</label>
+          <input v-model="counterPicks" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors.first('counterPicks') }}</span>
+        </div>
+        <hr />
+
+        <div class="form-group col-md-10">
+          <label for="intialYear" class="control-label">Year to Play</label>
+          <select class="form-control" v-model="initialYear" id="initialYear">
+            <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
+          </select>
+          <span class="text-danger">{{ errors.first('initialYear') }}</span>
+        </div>
+        <hr />
+      </div>
+      <div v-if="readyToChooseLevels()">
+        <div class="form-group col-md-10 eligibility-section">
+          <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
+          <vue-slider v-model="maximumEligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
+                      piecewise piecewise-label :piecewise-style="piecewiseStyle">
+          </vue-slider>
+          <div>
+            <h4>{{ selectedEligibilityLevel.name }}</h4>
+            <p>{{ selectedEligibilityLevel.description }}</p>
+            <p>Examples: </p>
+            <ul>
+              <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4>Other Options</h4>
+            <div>
+              <b-form-checkbox id="yearly-checkbox" v-model="allowYearlyInstallments">
+                <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
+              </b-form-checkbox>
+            </div>
+            <div>
+              <b-form-checkbox id="early-access-checkbox" v-model="allowEarlyAccess">
+                <span class="checkbox-label">Allow Early Access Games</span>
+              </b-form-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-primary" value="Create League" />
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 </template>
 <script>
 import Vue from "vue";
@@ -177,8 +179,9 @@ export default {
             .then(response => {
               this.$router.push({ name: "home" });
             })
-            .catch(returnedError => {
-              this.errorInfo = returnedError;
+            .catch(error => {
+              this.errorInfo = error.response.data;
+              window.scrollTo(0, 0);
             });
         }
     },
