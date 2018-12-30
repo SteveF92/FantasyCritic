@@ -9,67 +9,75 @@
             <input v-model="selectedLeagueOptions.leagueName" id="leagueName" name="leagueName" type="text" class="form-control input" />
           </div>
           <hr />
-
           <div class="form-group col-md-10">
-            <label for="pickupGames" class="control-label">Total Number of Games</label>
-            <input v-model="selectedLeagueOptions.standardGames" id="standardGames" name="standardGames" type="text" class="form-control input" />
+            <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
+            <input v-model="intendedNumberOfPlayers" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
           </div>
 
-          <div class="form-group col-md-10">
-            <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
-            <input v-model="selectedLeagueOptions.gamesToDraft" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
-          </div>
+          <div v-if="intendedNumberOfPlayers">
+            <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
 
-          <div class="form-group col-md-10">
-            <label for="counterPicks" class="control-label">Number of Counter Picks</label>
-            <input v-model="selectedLeagueOptions.counterPicks" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
-          </div>
-          <hr />
-
-          <div class="form-group col-md-10">
-            <label for="intialYear" class="control-label">Year to Play</label>
-            <select class="form-control" v-model="selectedLeagueOptions.initialYear" id="initialYear">
-              <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
-            </select>
-          </div>
-          <hr />
-
-          <div class="form-group col-md-10 eligibility-section">
-            <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
-            <vue-slider v-model="selectedLeagueOptions.maximumEligibilityLevel" :min="minimumEligibilityLevel" :max="maximumEligibilityLevel"
-                        piecewise piecewise-label :piecewise-style="piecewiseStyle">
-            </vue-slider>
-            <div>
-              <h4>{{ selectedEligibilityLevel.name }}</h4>
-              <p>{{ selectedEligibilityLevel.description }}</p>
-              <p>Examples: </p>
-              <ul>
-                <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-              </ul>
+            <div class="form-group col-md-10">
+              <label for="pickupGames" class="control-label">Total Number of Games</label>
+              <input v-model="selectedLeagueOptions.standardGames" id="standardGames" name="standardGames" type="text" class="form-control input" />
             </div>
 
-            <div>
-              <h4>Other Options</h4>
+            <div class="form-group col-md-10">
+              <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
+              <input v-model="selectedLeagueOptions.gamesToDraft" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
+            </div>
+
+            <div class="form-group col-md-10">
+              <label for="counterPicks" class="control-label">Number of Counter Picks</label>
+              <input v-model="selectedLeagueOptions.counterPicks" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
+            </div>
+            <hr />
+
+            <div class="form-group col-md-10">
+              <label for="intialYear" class="control-label">Year to Play</label>
+              <select class="form-control" v-model="selectedLeagueOptions.initialYear" id="initialYear">
+                <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
+              </select>
+            </div>
+            <hr />
+
+            <div class="form-group col-md-10 eligibility-section">
+              <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
+              <vue-slider v-model="selectedLeagueOptions.maximumEligibilityLevel" :min="minimumEligibilityLevel" :max="maximumEligibilityLevel"
+                          piecewise piecewise-label :piecewise-style="piecewiseStyle">
+              </vue-slider>
               <div>
-                <b-form-checkbox id="yearly-checkbox"
-                                 v-model="selectedLeagueOptions.allowYearlyInstallments">
-                  <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
-                </b-form-checkbox>
+                <h4>{{ selectedEligibilityLevel.name }}</h4>
+                <p>{{ selectedEligibilityLevel.description }}</p>
+                <p>Examples: </p>
+                <ul>
+                  <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
+                </ul>
               </div>
-              <div>
-                <b-form-checkbox id="early-access-checkbox"
-                                 v-model="selectedLeagueOptions.allowEarlyAccess">
-                  <span class="checkbox-label">Allow Early Access Games</span>
-                </b-form-checkbox>
-              </div>
-            </div>
-          </div>
 
-          <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-              <input type="submit" class="btn btn-primary" value="Create League" />
+              <div>
+                <h4>Other Options</h4>
+                <div>
+                  <b-form-checkbox id="yearly-checkbox"
+                                   v-model="selectedLeagueOptions.allowYearlyInstallments">
+                    <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
+                  </b-form-checkbox>
+                </div>
+                <div>
+                  <b-form-checkbox id="early-access-checkbox"
+                                   v-model="selectedLeagueOptions.allowEarlyAccess">
+                    <span class="checkbox-label">Allow Early Access Games</span>
+                  </b-form-checkbox>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-md-offset-2 col-md-10">
+                <input type="submit" class="btn btn-primary" value="Create League" />
+              </div>
             </div>
           </div>
+          
         </form>
     </div>
 </template>
@@ -81,20 +89,21 @@ import vueSlider from 'vue-slider-component';
 export default {
     data() {
         return {
-            errorInfo: "",
-            possibleLeagueOptions: null,
-            selectedLeagueOptions: {
-                leagueName: "",
-                standardGames: "",
-                gamesToDraft: "",
-                counterPicks: "",
-                initialYear: "",
-                maximumEligibilityLevel: 0,
-                allowYearlyInstallments: true,
-                allowEarlyAccess: false,
-                draftSystem: "Flexible",
-                pickupSystem: "Budget",
-                scoringSystem: "Standard"
+          errorInfo: "",
+          intendedNumberOfPlayers: "",
+          possibleLeagueOptions: null,
+          selectedLeagueOptions: {
+            leagueName: "",
+            standardGames: "",
+            gamesToDraft: "",
+            counterPicks: "",
+            initialYear: "",
+            maximumEligibilityLevel: 0,
+            allowYearlyInstallments: true,
+            allowEarlyAccess: false,
+            draftSystem: "Flexible",
+            pickupSystem: "Budget",
+            scoringSystem: "Standard"
           },
           piecewiseStyle: {
             "backgroundColor": "#ccc",
@@ -145,6 +154,17 @@ export default {
         catchHandler(returnedError) {
           this.errorInfo = returnedError;
         }
+    },
+    watch: {
+      intendedNumberOfPlayers: function (val) {
+        let recommendedNumberOfGames = 54;
+        this.selectedLeagueOptions.standardGames = Math.floor(recommendedNumberOfGames / val);
+        this.selectedLeagueOptions.gamesToDraft = Math.floor(this.selectedLeagueOptions.standardGames * (2 / 3));
+        this.selectedLeagueOptions.counterPicks = Math.floor(this.selectedLeagueOptions.gamesToDraft / 6);
+        if (this.selectedLeagueOptions.counterPicks === 0) {
+          this.selectedLeagueOptions.counterPicks = 1;
+        }
+      }
     },
     mounted() {
         this.fetchLeagueOptions();
