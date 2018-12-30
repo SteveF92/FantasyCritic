@@ -46,6 +46,7 @@ axios.interceptors.response.use(function (response) {
       return Promise.reject(error);
     }
   }
+  return Promise.reject(error);
 });
 
 const app = new Vue({
