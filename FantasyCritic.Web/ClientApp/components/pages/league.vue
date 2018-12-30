@@ -86,19 +86,6 @@
         <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: year }}">Edit League Settings</router-link>
       </div>
     </div>
-    
-
-    <div class="row" v-if="leagueYear && leagueYear.userPublisher">
-      <div class="col-lg-6 col-12">
-        <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
-      </div>
-      <div class="col-lg-3 col-sm-6 col-12">
-        <playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="userIsNextInDraft" v-on:actionTaken="actionTaken"></playerActions>
-      </div>
-      <div class="col-lg-3 col-sm-6 col-12 ">
-        <managerActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></managerActions>
-      </div>
-    </div>
 
     <div v-if="league.invitedPlayers.length > 0">
       <h5>Invited Players</h5>
@@ -110,11 +97,18 @@
       </ul>
     </div>
 
-    <div v-if="leagueYear">
-      <h3>Summary</h3>
-      <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
+    <div class="row" v-if="league && leagueYear && leagueYear.userPublisher">
+      <div class="col-xl-2 col-lg-12">
+        <leagueActions :league="league" :leagueYear="leagueYear"></leagueActions>
+        <!--<playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="userIsNextInDraft" v-on:actionTaken="actionTaken"></playerActions>
+        <managerActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></managerActions>-->
+      </div>
+      <div class="col-xl-10 col-lg-12">
+        <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
+        <h3>Summary</h3>
+        <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
+      </div>
     </div>
-
   </div>
 </template>
 
@@ -127,6 +121,7 @@
 
   import LeagueGameSummary from "components/modules/leagueGameSummary";
   import LeagueYearStandings from "components/modules/leagueYearStandings";
+  import LeagueActions from "components/modules/leagueActions";
   import PlayerActions from "components/modules/playerActions";
   import CreatePublisherForm from "components/modules/modals/createPublisherForm";
   import ManagerActions from "components/modules/managerActions";
@@ -151,7 +146,8 @@
       PlayerActions,
       CreatePublisherForm,
       StartDraftModal,
-      AddNewLeagueYearForm
+      AddNewLeagueYearForm,
+      LeagueActions
     },
     computed: {
       nextPublisherUp() {
