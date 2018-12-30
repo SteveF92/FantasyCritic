@@ -48,7 +48,7 @@
       }
     },
     mounted() {
-      this.newPublisherName = this.publisher.publisherName;
+      this.clearData();
     }
   }
 </script>

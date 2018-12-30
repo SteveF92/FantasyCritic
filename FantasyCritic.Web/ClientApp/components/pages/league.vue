@@ -98,12 +98,12 @@
     </div>
 
     <div class="row" v-if="league && leagueYear && leagueYear.userPublisher">
-      <div class="col-xl-2 col-lg-12">
-        <leagueActions :league="league" :leagueYear="leagueYear" :leagueActions="leagueActions"></leagueActions>
+      <div class="col-lg-2 col-md-12">
+        <leagueActions ref="leagueActionsRef" :league="league" :leagueYear="leagueYear" :leagueActions="leagueActions" :currentBids="currentBids" v-on:actionTaken="actionTaken"></leagueActions>
         <!--<playerActions :league="league" :leagueYear="leagueYear" :currentBids="currentBids" :leagueActions="leagueActions" :userIsNextInDraft="userIsNextInDraft" v-on:actionTaken="actionTaken"></playerActions>
         <managerActions :league="league" :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></managerActions>-->
       </div>
-      <div class="col-xl-10 col-lg-12">
+      <div class="col-lg-10 col-md-12">
         <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
         <h3>Summary</h3>
         <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
@@ -170,7 +170,7 @@
           axios
               .get('/api/League/GetLeague/' + this.leagueid)
               .then(response => {
-                  this.league = response.data;
+                this.league = response.data;
               })
               .catch(returnedError => (this.error = returnedError));
       },

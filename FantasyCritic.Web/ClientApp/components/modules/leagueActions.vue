@@ -7,17 +7,37 @@
       <h5>{{leagueYear.userPublisher.publisherName}}</h5>
       <span>User: {{leagueYear.userPublisher.playerName}}</span>
       <hr />
-      <h6>Drafting</h6>
       <h6>Game Bidding</h6>
+      <ul class="actions-list">
+        <li>
+          <a class="fake-link action" v-b-modal="'bidGameForm'" v-if="leagueYear.playStatus.draftFinished">
+            Make a bid
+          </a>
+        </li>
+        <li>
+          <a class="fake-link action" v-b-modal="'currentBidsForm'" v-if="leagueYear.playStatus.draftFinished">
+            See Current Bids
+          </a>
+        </li>
+      </ul>
+
       <h6>
-        <a class="fake-link action-info" v-b-modal="'leagueActionsModal'" v-if="leagueYear.playStatus.draftFinished">
+        <a class="fake-link action" v-b-modal="'leagueActionsModal'" v-if="leagueYear.playStatus.draftFinished">
           League History
+        </a>
+      </h6>
+      <h6>
+        <a class="fake-link action" v-b-modal="'changePublisherNameForm'">
+          Change Publisher Name
         </a>
       </h6>
       <h6>Manage League</h6>
     </div>
     <div>
       <leagueHistoryModal :leagueActions="leagueActions"></leagueHistoryModal>
+      <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
+      <currentBidsForm :currentBids="currentBids" v-on:bidCanceled="bidCanceled"></currentBidsForm>
+      <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
     </div>
   </div>
 </template>
@@ -36,7 +56,7 @@
         errorInfo: ""
       }
     },
-    props: ['league', 'leagueYear', 'leagueActions'],
+    props: ['league', 'leagueYear', 'leagueActions', 'currentBids'],
     components: {
       BidGameForm,
       CurrentBidsForm,
@@ -45,6 +65,51 @@
       LeaguePlayersForm,
       PlayerDraftGameForm,
       PlayerDraftCounterPickForm
+    },
+    methods: {
+      gameBid(bidInfo) {
+        let actionInfo = {
+          message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      bidCanceled(bidInfo) {
+        let actionInfo = {
+          message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      publisherNameChanged(changeInfo) {
+        let actionInfo = {
+          message: 'Publisher name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      playerRemoved(removeInfo) {
+        let actionInfo = {
+          message: removeInfo.displayName + ' has been removed from the league.',
+          fetchLeague: true,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      gameDrafted(draftInfo) {
+        let actionInfo = {
+          message: 'You have drafted: ' + draftInfo.gameName,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      counterPickDrafted(gameInfo) {
+        let actionInfo = {
+          message: 'You have selected ' + gameInfo.gameName + ' as a counter pick.',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      }
     }
   }
 </script>
@@ -59,7 +124,11 @@
   .publisher-image {
     text-align: center;
   }
-  .action-info {
+  .actions-list {
+    list-style: none;
+    padding-left: 10px;
+  }
+  .action {
     color: #D6993A !important;
   }
 </style>
