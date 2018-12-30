@@ -7,36 +7,56 @@
       <h5>{{leagueYear.userPublisher.publisherName}}</h5>
       <span>User: {{leagueYear.userPublisher.playerName}}</span>
       <hr />
-      <h6>Game Bidding</h6>
-      <ul class="actions-list">
-        <li>
-          <a class="fake-link action" v-b-modal="'bidGameForm'" v-if="leagueYear.playStatus.draftFinished">
-            Make a bid
-          </a>
-        </li>
-        <li>
-          <a class="fake-link action" v-b-modal="'currentBidsForm'" v-if="leagueYear.playStatus.draftFinished">
-            See Current Bids
-          </a>
-        </li>
-      </ul>
-
+      <h6>
+        <a class="fake-link action" v-b-modal="'playerDraftGameForm'" v-if="leagueYear.playStatus.draftIsActive" v-show="!leagueYear.playStatus.draftingCounterPicks" :disabled="!userIsNextInDraft">
+          Draft Game
+        </a>
+      </h6>
+      <h6>
+        <a class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-if="leagueYear.playStatus.draftIsActive" v-show="leagueYear.playStatus.draftingCounterPicks" :disabled="!userIsNextInDraft">
+          Draft Counterpick
+        </a>
+      </h6>
+      <div v-if="leagueYear.playStatus.draftFinished">
+        <h6>Game Bidding</h6>
+        <ul class="actions-list">
+          <li>
+            <a class="fake-link action" v-b-modal="'bidGameForm'">
+              Make a bid
+            </a>
+          </li>
+          <li>
+            <a class="fake-link action" v-b-modal="'currentBidsForm'">
+              See Current Bids
+            </a>
+          </li>
+        </ul>
+      </div>
       <h6>
         <a class="fake-link action" v-b-modal="'leagueActionsModal'" v-if="leagueYear.playStatus.draftFinished">
           League History
         </a>
       </h6>
+
       <h6>
         <a class="fake-link action" v-b-modal="'changePublisherNameForm'">
           Change Publisher Name
         </a>
       </h6>
-      <h6>Manage League</h6>
+
+      <div v-if="league.isManager">
+
+      </div>
+      <h5>Manage League</h5>
     </div>
     <div>
-      <leagueHistoryModal :leagueActions="leagueActions"></leagueHistoryModal>
+      <playerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :userPublisher="leagueYear.userPublisher" :isManager="league.isManager" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
+      <playerDraftCounterPickForm :userPublisher="leagueYear.userPublisher" :availableCounterPicks="leagueYear.availableCounterPicks" v-on:counterPickDrafted="counterPickDrafted"></playerDraftCounterPickForm>
+
       <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
       <currentBidsForm :currentBids="currentBids" v-on:bidCanceled="bidCanceled"></currentBidsForm>
+
+      <leagueHistoryModal :leagueActions="leagueActions"></leagueHistoryModal>
       <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
     </div>
   </div>
