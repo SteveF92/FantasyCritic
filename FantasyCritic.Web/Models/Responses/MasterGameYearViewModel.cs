@@ -21,11 +21,14 @@ namespace FantasyCritic.Web.Models.Responses
             AveragedScore = masterGame.MasterGame.AveragedScore;
             EligibilityLevel = new EligibilityLevelViewModel(masterGame.MasterGame.EligibilityLevel, false);
             OpenCriticID = masterGame.MasterGame.OpenCriticID;
-            SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame.MasterGame, clock)).ToList();
+            SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, clock)).ToList();
             BoxartFileName = masterGame.MasterGame.BoxartFileName;
+            PercentStandardGame = masterGame.PercentStandardGame;
+            PercentCounterPick = masterGame.PercentCounterPick;
+            AverageDraftPosition = masterGame.AverageDraftPosition;
         }
 
-        public MasterGameYearViewModel(MasterSubGame masterSubGame, MasterGame masterGame, IClock clock)
+        public MasterGameYearViewModel(MasterSubGame masterSubGame, MasterGameYear masterGame, IClock clock)
         {
             MasterGameID = masterSubGame.MasterGameID;
             GameName = masterSubGame.GameName;
@@ -34,9 +37,13 @@ namespace FantasyCritic.Web.Models.Responses
             IsReleased = masterSubGame.IsReleased(clock);
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
-            EligibilityLevel = new EligibilityLevelViewModel(masterGame.EligibilityLevel, false);
+            EligibilityLevel = new EligibilityLevelViewModel(masterGame.MasterGame.EligibilityLevel, false);
             OpenCriticID = masterSubGame.OpenCriticID;
             SubGames = null;
+
+            PercentStandardGame = masterGame.PercentStandardGame;
+            PercentCounterPick = masterGame.PercentCounterPick;
+            AverageDraftPosition = masterGame.AverageDraftPosition;
         }
 
         public Guid MasterGameID { get; }
@@ -50,5 +57,9 @@ namespace FantasyCritic.Web.Models.Responses
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameYearViewModel> SubGames { get; }
         public string BoxartFileName { get; }
+
+        public decimal PercentStandardGame { get; }
+        public decimal PercentCounterPick { get; }
+        public decimal AverageDraftPosition { get; }
     }
 }

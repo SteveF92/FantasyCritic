@@ -23,6 +23,20 @@
               {{masterGame.criticScore | score(2)}}
               <span v-if="masterGame.averagedScore">(Averaged Score)</span>
             </div>
+            <div v-show="masterGame.percentStandardGame">
+              <div>
+                <strong>Percent Published: </strong>
+                {{masterGame.percentStandardGame | percent}}
+              </div>
+              <div>
+                <strong>Percent Counterpicked: </strong>
+                {{masterGame.percentCounterPick | percent}}
+              </div>
+              <div>
+                <strong>Average Draft Position: </strong>
+                {{masterGame.averageDraftPosition}}
+              </div>
+            </div>
             <div v-if="masterGame.openCriticID">
               <a :href="openCriticLink(masterGame)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
             </div>
