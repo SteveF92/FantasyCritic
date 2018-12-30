@@ -17,7 +17,7 @@
           Draft Counterpick
         </li>
         <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">
-          Make a bid
+          Make a Bid
         </li>
         <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
           See Current Bids
@@ -51,11 +51,26 @@
         </div>
         <h5>Manage League</h5>
         <ul class="actions-list">
+          <li class="fake-link action" v-b-modal="'invitePlayer'" v-show="!leagueYear.playStatus.playStarted">
+            Invite a Player
+          </li>
+          <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">
+            Edit Draft Order
+          </li>
           <li class="fake-link action" v-b-modal="'claimGameForm'" v-show="leagueYear.playStatus.draftFinished">
             Add Publisher Game
           </li>
           <li class="fake-link action" v-b-modal="'associateGameForm'" v-show="leagueYear.playStatus.draftFinished">
             Associate Unlinked Game
+          </li>
+          <li class="fake-link action" v-b-modal="'removePublisherGame'" v-show="leagueYear.playStatus.draftFinished">
+            Remove Publisher Game
+          </li>
+          <li class="fake-link action" v-b-modal="'manuallyScorePublisherGame'" v-show="leagueYear.playStatus.draftFinished">
+            Score a Game Manually
+          </li>
+          <li class="fake-link action" v-b-modal="'changeLeagueNameForm'">
+            Change League Name
           </li>
         </ul>
       </div>
