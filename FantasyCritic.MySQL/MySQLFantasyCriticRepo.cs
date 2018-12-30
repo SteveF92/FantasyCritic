@@ -689,12 +689,32 @@ namespace FantasyCritic.MySQL
                 foreach (var entity in masterGameResults)
                 {
                     EligibilityLevel eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel);
-                    MasterGame domain =
-                        entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID),
+                    MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID),
                             eligibilityLevel);
                     masterGames.Add(domain);
                 }
                 
+                return masterGames;
+            }
+        }
+
+        public async Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from vwmastergame where Year = @year;", new {year});
+                var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tblmastersubgame;");
+
+                var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
+                List<MasterGameYear> masterGames = new List<MasterGameYear>();
+                foreach (var entity in masterGameResults)
+                {
+                    EligibilityLevel eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel);
+                    MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID),
+                            eligibilityLevel, year);
+                    masterGames.Add(domain);
+                }
+
                 return masterGames;
             }
         }

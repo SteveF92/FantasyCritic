@@ -97,12 +97,12 @@
             return ((this.claimUnlistedGame || this.claimMasterGame) && this.claimPublisher);
           }
         },
-        props: ['publishers', 'maximumEligibilityLevel'],
+        props: ['publishers', 'maximumEligibilityLevel', 'year'],
         methods: {
           searchGame() {
             this.possibleMasterGames = [];
             axios
-                .get('/api/game/MasterGame?gameName=' + this.searchGameName)
+                .get('/api/game/MasterGameYear?gameName=' + this.searchGameName + '&year=' + this.year)
                 .then(response => {
                   this.possibleMasterGames = response.data;
                   this.searched = true;

@@ -45,7 +45,7 @@ Vue.filter('yesNo', function (value) {
 
 Vue.filter('percent', function (value) {
   if (!value) {
-    return "N/A";
+    return "0%";
   }
   return (value * 100) + "%";
 });

@@ -49,6 +49,7 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModel;
         }
 
+        [HttpGet("{id}/{year}")]
         public async Task<ActionResult<MasterGameYearViewModel>> MasterGameYear(Guid id, int year)
         {
             Maybe<MasterGameYear> masterGame = await _fantasyCriticService.GetMasterGameYear(id, year);
@@ -79,6 +80,28 @@ namespace FantasyCritic.Web.Controllers.API
                     .Concat(lowDistance).Distinct();
             }
             List<MasterGameViewModel> viewModels = matchingMasterGames.Select(x => new MasterGameViewModel(x, _clock)).ToList();
+
+            return viewModels;
+        }
+
+        public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(string gameName, int year)
+        {
+            IReadOnlyList<MasterGameYear> masterGames = await _fantasyCriticService.GetMasterGameYears(year);
+            IEnumerable<MasterGameYear> matchingMasterGames = new List<MasterGameYear>();
+            if (!string.IsNullOrWhiteSpace(gameName))
+            {
+                gameName = gameName.ToLower();
+                var distances = masterGames
+                    .Select(x =>
+                        new Tuple<MasterGameYear, int>(x, Levenshtein.CalculateLevenshteinDistance(gameName, x.MasterGame.GameName)));
+
+                var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
+
+                matchingMasterGames = masterGames
+                    .Where(x => x.MasterGame.GameName.ToLower().Contains(gameName))
+                    .Concat(lowDistance).Distinct();
+            }
+            List<MasterGameYearViewModel> viewModels = matchingMasterGames.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
 
             return viewModels;
         }

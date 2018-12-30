@@ -40,6 +40,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<SupportedYear>> GetSupportedYears();
 
         Task<IReadOnlyList<MasterGame>> GetMasterGames();
+        Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year);
         Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);
         Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year);
         Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame);

@@ -21,12 +21,16 @@ namespace FantasyCritic.Lib.Domain
             PercentStandardGame = percentStandardGame;
             PercentCounterPick = percentCounterPick;
             AverageDraftPosition = averageDraftPosition;
+            if (AverageDraftPosition == 0m)
+            {
+                AverageDraftPosition = null;
+            }
         }
 
         public MasterGame MasterGame { get; }
         public int Year { get; }
         public decimal PercentStandardGame { get; }
         public decimal PercentCounterPick { get; }
-        public decimal AverageDraftPosition { get; }
+        public decimal? AverageDraftPosition { get; }
     }
 }

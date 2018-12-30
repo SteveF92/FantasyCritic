@@ -42,10 +42,6 @@ namespace FantasyCritic.Web.Models.Responses
                     CriticScore = publisherGame.ManualCriticScore;
                     ManualCriticScore = true;
                 }
-
-                PercentStandardGame = publisherGame.MasterGame.Value.PercentStandardGame;
-                PercentCounterPick = publisherGame.MasterGame.Value.PercentCounterPick;
-                AverageDraftPosition = publisherGame.MasterGame.Value.AverageDraftPosition;
             }
 
             WillRelease = publisherGame.WillRelease();
@@ -60,9 +56,6 @@ namespace FantasyCritic.Web.Models.Responses
         public decimal? FantasyPoints { get; }
         public decimal? CriticScore { get; }
         public MasterGameYearViewModel MasterGame { get; }
-        public decimal PercentStandardGame { get; set; }
-        public decimal PercentCounterPick { get; set; }
-        public decimal AverageDraftPosition { get; set; }
 
         public bool Linked { get; }
         public bool Released { get; }
