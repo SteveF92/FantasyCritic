@@ -83,23 +83,13 @@
       </div>
     </div>
 
-    <div v-if="league.invitedPlayers.length > 0">
-      <h5>Invited Players</h5>
-      <ul>
-        <li v-for="player in league.invitedPlayers">
-          <span>{{ player }}</span>
-          <b-button v-if="league.isManager" variant="danger" v-on:click="rescindInvite(player)" class="mx-2">Rescind Invite</b-button>
-        </li>
-      </ul>
-    </div>
-
     <div class="row" v-if="league && leagueYear && leagueYear.userPublisher">
       <div class="col-xl-2 col-lg-3 col-md-12">
         <leagueActions ref="leagueActionsRef" :league="league" :leagueYear="leagueYear" :leagueActions="leagueActions"
                        :currentBids="currentBids" :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
       </div>
       <div class="col-xl-10 col-lg-9 col-md-12">
-        <leagueYearStandings :standings="leagueYear.standings"></leagueYearStandings>
+        <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
         <h3>Summary</h3>
         <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
       </div>
@@ -190,25 +180,6 @@
           .get('/api/league/CurrentBids/' + this.leagueYear.userPublisher.publisherID)
           .then(response => {
             this.currentBids = response.data;
-          })
-          .catch(response => {
-
-          });
-      },
-      rescindInvite(emailAddress) {
-        var model = {
-          leagueID: this.league.leagueID,
-          inviteEmail: emailAddress
-        };
-        axios
-          .post('/api/leagueManager/RescindInvite', model)
-          .then(response => {
-            let actionInfo = {
-              message: 'The invite to ' + emailAddress + ' has been rescinded.',
-              fetchLeague: true,
-              fetchLeagueYear: true
-            };
-            this.actionTaken(actionInfo);
           })
           .catch(response => {
 
