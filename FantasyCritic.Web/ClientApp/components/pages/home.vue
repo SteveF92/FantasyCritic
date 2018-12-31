@@ -5,10 +5,10 @@
       <div>Your email address has not been confirmed. You cannot accept league invites until you do so.</div>
       <div>Check your email account for an email from us.</div>
     </div>
-    <b-button variant="primary" :to="{ name: 'createLeague' }" class="create-league-button">Create a League</b-button>
 
     <div class="row">
       <div class="col-lg-6 col-md-12">
+        <b-button variant="primary" :to="{ name: 'createLeague' }" class="create-league-button">Create a League</b-button>
         <div v-if="anyInvitedLeagues">
           <h2>League Invites</h2>
           <ul>
@@ -114,6 +114,6 @@
 </script>
 <style scoped>
   .create-league-button {
-    width: 430px;
+    width: 100%;
   }
 </style>
