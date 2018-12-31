@@ -5,13 +5,13 @@
     <div class="col-lg-6 col-sm-12">
       <h4>Something about the site is broken!</h4>
       <p>
-        Sounds likely. We’re just getting started here at Fantasy Critic and there bound to be issues.
+        Sounds likely. We’re just getting started here at Fantasy Critic and there are bound to be issues.
         The best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">GitHub <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
         Contacting me on Twitter or Reddit is also an option.
       </p>
       <h4>How can I follow updates for the site?</h4>
       <p>
-        Follow me on twitter <a href="https://twitter.com/fantasy_critic" target="_blank">@fantasy_critic <font-awesome-icon icon="external-link-alt" size="sm" /></a> and join our <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">subreddit <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
+        Follow us on twitter <a href="https://twitter.com/fantasy_critic" target="_blank">@fantasy_critic <font-awesome-icon icon="external-link-alt" size="sm" /></a> and join our <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">subreddit <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
       </p>
       <h4>Why should I play FantasyCritic?</h4>
       <p>
@@ -91,7 +91,7 @@
       <h4>What is a “counter pick”?</h4>
       <p>
         After everyone has drafted their roster of games, the players will draft their counter picks. A counter pick is a game from someone else’s roster, but instead of
-        getting points for it, you LOSE points for it. The goal is to choose a game from someone else’s team that you think will be bad.
+        getting points for it, you LOSE points for it. The goal is to choose a game from someone else’s team that you think will be bad, or one that you think won't even release.
       </p>
       <h4>How does scoring work?</h4>
       <p>
