@@ -12,7 +12,7 @@
           </div>
 
           <div class="game-description">
-            <h5 class="game-name">{{masterGame.gameName}}</h5>
+            <h4 class="game-name">{{masterGame.gameName}}</h4>
             <div>
               <strong>Release Date: </strong>
               <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>

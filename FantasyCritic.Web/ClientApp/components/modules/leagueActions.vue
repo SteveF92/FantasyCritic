@@ -4,11 +4,11 @@
       <div class="publisher-image">
         <font-awesome-icon icon="user-circle" size="4x" />
       </div>
-      <h5>{{leagueYear.userPublisher.publisherName}}</h5>
+      <h4>{{leagueYear.userPublisher.publisherName}}</h4>
       <span>User: {{leagueYear.userPublisher.playerName}}</span>
       <hr />
 
-      <h5>Player Actions</h5>
+      <h4>Player Actions</h4>
       <ul class="actions-list">
         <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
           Draft Game
@@ -32,7 +32,7 @@
 
       <div v-if="league.isManager">
         <div v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
-          <h5>Draft Management</h5>
+          <h4>Draft Management</h4>
           <ul class="actions-list">
             <li class="fake-link action" v-b-modal="'managerDraftGameForm'" v-show="!leagueYear.playStatus.draftingCounterPicks">
               Select Next Game
@@ -49,7 +49,7 @@
             </li>
           </ul>
         </div>
-        <h5>Manage League</h5>
+        <h4>Manage League</h4>
         <ul class="actions-list">
           <li class="fake-link action" v-b-modal="'invitePlayer'" v-show="!leagueYear.playStatus.playStarted">
             Invite a Player

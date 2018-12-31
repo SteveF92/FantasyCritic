@@ -2,9 +2,9 @@
     <div v-if="publisher">
         <h1>{{publisher.publisherName}}</h1>
         <h3>{{publisher.playerName}}</h3>
-        <h5>
+        <h4>
             <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>
-        </h5>
+        </h4>
         <p>Budget: {{publisher.budget | money}}</p>
         <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options"></playerGameTable>
     </div>

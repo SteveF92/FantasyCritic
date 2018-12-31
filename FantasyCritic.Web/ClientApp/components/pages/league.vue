@@ -76,7 +76,7 @@
     </div>
 
     <div class="league-manager-info">
-      <h5 class="league-manager-info-item">League Manager:</h5>
+      <h4 class="league-manager-info-item">League Manager:</h4>
       <span class="league-manager-info-item">{{ league.leagueManager.displayName }}</span>
     </div>
 
