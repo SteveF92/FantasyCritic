@@ -19,7 +19,7 @@
       <p>
         This site is open source. If you want to help work on features or fix bugs, contact me on <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">GitHub <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
       </p>
-      <h3>Technical Credits</h3>
+      <h2>Technical Credits</h2>
       <p>
         This site uses the following software packages heavily, and I wouldn’t be able to create this site without them.
       </p>

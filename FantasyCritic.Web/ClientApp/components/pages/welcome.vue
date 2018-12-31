@@ -15,7 +15,7 @@
       </div>
       <div class="col-sm-6 col-12 registration-area">
         <div class="registration-box shadowed">
-          <h3>Sign up for free</h3>
+          <h2>Sign up for free</h2>
           <registerForm></registerForm>
         </div>
       </div>
@@ -41,7 +41,7 @@
       </div>
       <div class="col-lg-6 col-8 get-started-area">
         <div class="get-started-message">
-          <h3>How to get Started</h3>
+          <h2>How to get Started</h2>
         </div>
 
         <div class="starting-steps">
@@ -83,7 +83,7 @@
     </div>
 
     <div class="features-area">
-      <h3 class="features-heading">Features and Highlights</h3>
+      <h2 class="features-heading">Features and Highlights</h2>
       <div class="feature-highlights-area">
         <div class="row">
           <div class="col-sm-12 col-md-6">
@@ -129,7 +129,7 @@
 
     <div class="row">
       <div class="col-lg-6 col-md-12">
-        <h3>Frequently Asked Questions</h3>
+        <h2>Frequently Asked Questions</h2>
         <div class="full-welcome">
           <homeFaq></homeFaq>
           <div class="alert alert-secondary">

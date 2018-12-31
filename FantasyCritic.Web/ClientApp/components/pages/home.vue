@@ -10,7 +10,7 @@
     <div class="row">
       <div class="col-lg-6 col-md-12">
         <div v-if="anyInvitedLeagues">
-          <h3>League Invites</h3>
+          <h2>League Invites</h2>
           <ul>
             <li v-for="league in invitedLeagues">
               <router-link v-show="userInfo.emailConfirmed" :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
@@ -21,7 +21,7 @@
         </div>
 
         <div v-if="anyManagedLeagues">
-          <h3>Leagues I Manage</h3>
+          <h2>Leagues I Manage</h2>
           <ul>
             <li v-for="league in myLeagues" v-if="league.isManager">
               <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
@@ -31,7 +31,7 @@
         </div>
 
         <div v-if="anyPlayerLeagues">
-          <h3>Leagues I Play In</h3>
+          <h2>Leagues I Play In</h2>
           <ul>
             <li v-for="league in myLeagues" v-if="!league.isManager">
               <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>

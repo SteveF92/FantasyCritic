@@ -3,7 +3,7 @@
     <h1>Create a league</h1>
     <hr />
     <div class="alert alert-danger" v-show="errorInfo">
-      <h3>Error!</h3>
+      <h2>Error!</h2>
       <p>{{errorInfo}}</p>
     </div>
     <form v-if="possibleLeagueOptions" method="post" class="form-horizontal" role="form" v-on:submit.prevent="postRequest">

@@ -17,7 +17,7 @@
     </p>
 
     <div v-if="masterGame.subGames && masterGame.subGames.length > 0">
-      <h3>Sub Games (Episodes)</h3>
+      <h2>Sub Games (Episodes)</h2>
       <div v-for="subGame in masterGame.subGames">
         <h4>{{subGame.gameName}}</h4>
         <p>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>Standings</h3>
+    <h2>Standings</h2>
     <table class="table table-bordered table-striped table-sm">
       <thead>
         <tr class="bg-primary">

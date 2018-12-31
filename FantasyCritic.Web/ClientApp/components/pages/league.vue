@@ -20,9 +20,9 @@
     </b-modal>
 
     <div v-if="leagueYear && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
-      <h3>
+      <h2>
         This year is not active yet!
-      </h3>
+      </h2>
       <ul>
         <li v-for="error in leagueYear.playStatus.startDraftErrors">{{error}}</li>
       </ul>
@@ -87,7 +87,7 @@
       </div>
       <div class="col-xl-10 col-lg-9 col-md-12">
         <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
-        <h3>Summary</h3>
+        <h2>Summary</h2>
         <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
       </div>
     </div>
