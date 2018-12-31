@@ -3,6 +3,7 @@
     <h2>Frequently Asked Questions</h2>
     <hr />
     <div class="col-lg-6 col-sm-12">
+      <h3>Technical</h3>
       <h4>Something about the site is broken!</h4>
       <p>
         Sounds likely. We’re just getting started here at Fantasy Critic and there are bound to be issues.
@@ -26,6 +27,9 @@
         There isn’t one. For now, this is a passion project for me and I’m comfortable eating the cost of servers and advertising.
         In the future, it is possible that I will consider adding advertising or opening a Patreon, but I’m never going to charge people to play.
       </p>
+      <br />
+
+      <h3>League Creation</h3>
       <h4>How many players can be in a league?</h4>
       <p>
         Anywhere from 2 to 14. Somewhere between 4 and 8 is probably optimal, but you’ll do fine anywhere in that range.
@@ -60,12 +64,15 @@
         The standard is that ⅔ of your games should be draft games. If you are in a 6 person league, the default is 9 games per player, 6 of them being selected at the draft,
         and 1 counter pick. That leaves you with 3 pickup games per team.
       </p>
+      <br />
+
+      <h3>Drafting</h3>
       <h4>How does the draft work?</h4>
       <p>
         Your league will decide on the order that the teams will draft in. Then the league manager will decide when to begin the draft. Once it has started, the teams will
         choose games in the order that was chosen, snake style, until all teams have filled all of their draft game slots.
       </p>
-      <h4>Whats a snake draft?</h4>
+      <h4>What's a snake draft?</h4>
       <p>
         A snake draft means that the person who goes last in a round of drafting, goes first in the next round. So with 4 teams the first 9 games
         would go Team A, B, C, D, D, C, B, A, A.
@@ -80,19 +87,30 @@
         Each roster is made up of a number of “draft games”, “pickup games”, and “counter picks”. Draft games and pickup games are the games that you get points for.
         Any one game can only be on one roster within a single league. Counter picks work a bit different and are described below.
       </p>
+      <br />
+
+      <h3>Bidding System</h3>
       <h4>What is a “draft game” vs a “pickup game”?</h4>
       <p>
         Draft games are chosen during the draft - turn by turn at the start of the year. Pickup games are chosen over the course of year (after the draft) by bidding on them.
       </p>
       <h4>How does the bidding system work?</h4>
       <p>
-        If you’re familiar with Free Agency Acquisition Budget (FAAB) rules in fantasy football, it works like that.
+        If you’re familiar with Free Agency Acquisition Budget (FAAB) rules in fantasy football, it works like that. Essentially, any player that is interested in a game will place a secret "bid" for the game,
+        using some of their available budget. Every player starts the year with $100 of budget. Then, on Monday mornings at 3AM eastern, the system will process those bids. The top bidder for any given game
+        will recieve the game and spend the money that they bid. The other players keep their money but do not get the game.
       </p>
-      <h4>What is a “counter pick”?</h4>
+      <h4>Will I still lose my money even if no one else is bidding on a game?</h4>
       <p>
-        After everyone has drafted their roster of games, the players will draft their counter picks. A counter pick is a game from someone else’s roster, but instead of
-        getting points for it, you LOSE points for it. The goal is to choose a game from someone else’s team that you think will be bad, or one that you think won't even release.
+        Yes.
       </p>
+      <h4>Can I bid zero dollars on a game?</h4>
+      <p>
+        Yes, but you will be outbid by anyone who bids at least a dollar.
+      </p>
+      <br />
+
+      <h3>Scoring</h3>
       <h4>How does scoring work?</h4>
       <p>
         A game's score is based on it’s score from <a href="https://opencritic.com/" target="_blank">opencritic.com <font-awesome-icon icon="external-link-alt" size="sm" /></a>. Your team will gain or lose points based upon how well your game reviews.
@@ -136,10 +154,18 @@
           </tr>
         </tbody>
       </table>
+      <h4>What is a “counter pick”?</h4>
+      <p>
+        After everyone has drafted their roster of games, the players will draft their counter picks. A counter pick is a game from someone else’s roster, but instead of
+        getting points for it, you LOSE points for it. The goal is to choose a game from someone else’s team that you think will be bad, or one that you think won't even release.
+      </p>
       <h4>If I counter pick a game that scores below a 70, will I gain points?</h4>
       <p>
         Yes.
       </p>
+      <br />
+
+      <h3>Eligibility</h3>
       <h4>What is an “eligibility level”?</h4>
       <p>
         When deciding on the settings for a league, the league manager must choose what games to allow. The spirit of the game is to make predictions.
@@ -224,6 +250,9 @@
         It's up to your league and ultimately up to your league manager. League managers can override the eligibility rules and assign
         the game you want to your team. Your league should agree on whether or not they want to allow the exception, though.
       </p>
+      <br />
+
+      <h3>Winning</h3>
       <h4>What do I get if I win?</h4>
       <p>
         That’s totally up to your league. This site doesn’t provide any prizes. Look to fantasy sports for advice on how to structure any winnings you want to play for.
