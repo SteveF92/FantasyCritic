@@ -1,45 +1,47 @@
 <template>
   <div>
     <h2>Standings</h2>
-    <table class="table table-bordered table-striped table-sm">
-      <thead>
-        <tr class="bg-primary">
-          <th>User</th>
-          <th>Publisher</th>
-          <th>Points (Projected)</th>
-          <th>Points (Actual)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="player in leagueYear.players">
-          <td>
-            <span v-if="player.user">{{ player.user.displayName }}</span>
-            <span v-if="!player.user">{{ player.invitedEmailAddress }}</span>
-          </td>
-          <td>
-            <span v-if="player.publisher">
-              <router-link class="text-primary" :to="{ name: 'publisher', params: { publisherid: player.publisher.publisherID }}">{{ player.publisher.publisherName }}</router-link>
-              <span v-if="showRemove && league.leagueManager.userID !== player.user.userID"">
-                <b-button variant="danger" size="sm" v-on:click="removeUser(player.user)">Remove</b-button>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped table-sm">
+        <thead>
+          <tr class="bg-primary">
+            <th>User</th>
+            <th>Publisher</th>
+            <th>Points (Projected)</th>
+            <th>Points (Actual)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="player in leagueYear.players">
+            <td>
+              <span v-if="player.user">{{ player.user.displayName }}</span>
+              <span v-if="!player.user">{{ player.invitedEmailAddress }}</span>
+            </td>
+            <td>
+              <span v-if="player.publisher">
+                <router-link class="text-primary" :to="{ name: 'publisher', params: { publisherid: player.publisher.publisherID }}">{{ player.publisher.publisherName }}</router-link>
+                <span v-if="showRemove && league.leagueManager.userID !== player.user.userID">
+                  <b-button variant="danger" size="sm" v-on:click="removeUser(player.user)">Remove</b-button>
+                </span>
               </span>
-            </span>
-            <span v-if="player.user && !player.publisher">
-              &lt;Publisher Not Created&gt;
-              <span v-if="showRemove && league.leagueManager.userID !== player.user.userID">
-                <b-button variant="danger" size="sm" v-on:click="removeUser(player.user)">Remove</b-button>
+              <span v-if="player.user && !player.publisher">
+                &lt;Publisher Not Created&gt;
+                <span v-if="showRemove && league.leagueManager.userID !== player.user.userID">
+                  <b-button variant="danger" size="sm" v-on:click="removeUser(player.user)">Remove</b-button>
+                </span>
               </span>
-            </span>
-            <span v-if="!player.user">
-              &lt;Invite Sent&gt;
-              <b-button variant="danger" size="sm" v-on:click="rescindInvite(player.invitedEmailAddress)">Rescind Invite</b-button>
-            </span>
-          </td>
-          <td>{{player.projectedFantasyPoints | score(2)}}</td>
-          <td>{{player.totalFantasyPoints | score(2)}}</td>
-        </tr>
-      </tbody>
-    </table>
-</div>
+              <span v-if="!player.user">
+                &lt;Invite Sent&gt;
+                <b-button variant="danger" size="sm" v-on:click="rescindInvite(player.invitedEmailAddress)">Rescind Invite</b-button>
+              </span>
+            </td>
+            <td>{{player.projectedFantasyPoints | score(2)}}</td>
+            <td>{{player.totalFantasyPoints | score(2)}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </template>
 <script>
   import Vue from "vue";
