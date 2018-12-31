@@ -38,8 +38,8 @@
       </div>
 
       <div v-if="associateResult && !associateResult.success" class="alert associate-error" v-bind:class="{ 'alert-danger': !associateResult.overridable, 'alert-warning': associateResult.overridable }">
-        <h4 class="alert-heading" v-if="associateResult.overridable">Warning!</h4>
-        <h4 class="alert-heading" v-if="!associateResult.overridable">Error!</h4>
+        <h3 class="alert-heading" v-if="associateResult.overridable">Warning!</h3>
+        <h3 class="alert-heading" v-if="!associateResult.overridable">Error!</h3>
         <ul>
           <li v-for="error in associateResult.errors">{{error}}</li>
         </ul>

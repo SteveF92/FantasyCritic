@@ -22,7 +22,7 @@
         <div v-if="removeGame">
           <input type="submit" class="btn btn-primary add-game-button" value="Remove Game" />
           <div v-if="errorInfo" class="alert alert-danger remove-error">
-            <h4 class="alert-heading">Error!</h4>
+            <h3 class="alert-heading">Error!</h3>
             <p>{{errorInfo}}</p>
           </div>
         </div>

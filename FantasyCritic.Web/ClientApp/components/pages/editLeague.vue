@@ -28,7 +28,7 @@
                       piecewise piecewise-label :piecewise-style="piecewiseStyle">
           </vue-slider>
           <div>
-            <h4>{{ selectedEligibilityLevel.name }}</h4>
+            <h3>{{ selectedEligibilityLevel.name }}</h3>
             <p>{{ selectedEligibilityLevel.description }}</p>
             <p>Examples: </p>
             <ul>
@@ -36,7 +36,7 @@
             </ul>
           </div>
           <div>
-            <h4>Other Options</h4>
+            <h3>Other Options</h3>
             <div>
               <b-form-checkbox id="yearly-checkbox"
                                v-model="selectedLeagueOptions.allowYearlyInstallments">

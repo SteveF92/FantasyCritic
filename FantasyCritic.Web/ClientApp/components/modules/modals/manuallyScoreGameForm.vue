@@ -36,7 +36,7 @@
         <div v-if="manuallyScoreGame && (manualScore || removeManualScore)">
           <input type="submit" class="btn btn-primary add-game-button" :value="buttonText" />
           <div v-if="errorInfo" class="alert alert-danger manuallyScore-error">
-            <h4 class="alert-heading">Error!</h4>
+            <h3 class="alert-heading">Error!</h3>
             <p>{{errorInfo}}</p>
           </div>
         </div>

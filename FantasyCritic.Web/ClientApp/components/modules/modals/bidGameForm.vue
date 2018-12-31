@@ -24,7 +24,7 @@
         <input type="submit" class="btn btn-primary add-game-button" value="Make Bid" v-if="formIsValid" />
       </div>
       <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
-        <h4 class="alert-heading">Error!</h4>
+        <h3 class="alert-heading">Error!</h3>
         <ul>
           <li v-for="error in bidResult.errors">{{error}}</li>
         </ul>
