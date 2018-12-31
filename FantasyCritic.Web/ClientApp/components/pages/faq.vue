@@ -13,6 +13,8 @@
         <li><a href="#eligibility">Eligibility</a></li>
         <li><a href="#winning">Winning</a></li>
       </ul>
+      <hr />
+
       <h2><a name="technical">Technical</a></h2>
       <h3>Something about the site is broken!</h3>
       <p>
