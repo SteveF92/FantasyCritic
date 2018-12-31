@@ -25,7 +25,8 @@ import {
   faSlash,
   faGamepad,
   faTimes,
-  faUserCircle
+  faUserCircle,
+  faBookOpen
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -77,7 +78,8 @@ library.add(
   regSquare,
   faTimes,
   faFacebookSquare,
-  faUserCircle
+  faUserCircle,
+  faBookOpen
   );
 
 export {

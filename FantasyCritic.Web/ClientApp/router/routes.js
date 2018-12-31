@@ -3,6 +3,7 @@ import Home from "components/pages/home";
 import Login from "components/pages/login";
 import Register from "components/pages/register";
 import About from "components/pages/about";
+import HowToPlay from "components/pages/howtoplay";
 import Faq from "components/pages/faq";
 import Contact from "components/pages/contact";
 import ManageUser from "components/pages/manageUser";
@@ -90,6 +91,15 @@ export const routes = [
     name: "about",
     meta: {
       title: "About",
+      isPublic: true
+    }
+  },
+  {
+    path: "/howtoplay",
+    component: HowToPlay,
+    name: "howtoplay",
+    meta: {
+      title: "How to Play",
       isPublic: true
     }
   },

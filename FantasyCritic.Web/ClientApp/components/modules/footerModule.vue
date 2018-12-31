@@ -9,15 +9,21 @@
         <div col-md-4>
           <label>Navigation</label>
           <div>
-            <router-link :to="{ name: 'about' }" title="About">
-              <font-awesome-icon icon="info-circle" size="lg" />
-              About
+            <router-link :to="{ name: 'howtoplay' }" title="How To Play">
+              <font-awesome-icon icon="book-open" size="lg" />
+              How to Play
             </router-link>
           </div>
           <div>
             <router-link :to="{ name: 'faq' }" title="FAQ">
               <font-awesome-icon icon="question-circle" size="lg" />
               FAQ
+            </router-link>
+          </div>
+          <div>
+            <router-link :to="{ name: 'about' }" title="About">
+              <font-awesome-icon icon="info-circle" size="lg" />
+              About
             </router-link>
           </div>
         </div>

@@ -8,15 +8,21 @@
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link optional-nav" title="About">
-                <span class="full-nav">About</span>
-                <font-awesome-icon class="minimal-nav topnav-icon" icon="info-circle" size="lg" />
+              <router-link :to="{ name: 'howtoplay' }" class="nav-link top-nav-link optional-nav" title="How to Play">
+                <span class="full-nav">How to Play</span>
+                <font-awesome-icon class="minimal-nav topnav-icon" icon="book-open" size="lg" />
               </router-link>
             </li>
             <li class="nav-item">
               <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link optional-nav" title="FAQ">
                 <span class="full-nav">FAQ</span>
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="question-circle" size="lg" />
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link optional-nav" title="About">
+                <span class="full-nav">About</span>
+                <font-awesome-icon class="minimal-nav topnav-icon" icon="info-circle" size="lg" />
               </router-link>
             </li>
             <li class="nav-item">
