@@ -1,50 +1,60 @@
 <template>
   <div>
-    <h2>Frequently Asked Questions</h2>
+    <h1>Frequently Asked Questions</h1>
     <hr />
     <div class="col-lg-6 col-sm-12">
-      <h3>Technical</h3>
-      <h4>Something about the site is broken!</h4>
+      <h2>Contents</h2>
+      <ul>
+        <li><a href="#technical">Technical</a></li>
+        <li><a href="#league-creation">League Creation</a></li>
+        <li><a href="#drafting">Drafting</a></li>
+        <li><a href="#bidding-system">Bidding System</a></li>
+        <li><a href="#scoring">Scoring</a></li>
+        <li><a href="#eligibility">Eligibility</a></li>
+        <li><a href="#winning">Winning</a></li>
+      </ul>
+      <h2><a name="technical">Technical</a></h2>
+      <h3>Something about the site is broken!</h3>
       <p>
         Sounds likely. We’re just getting started here at Fantasy Critic and there are bound to be issues.
         The best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">GitHub <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
         Contacting me on Twitter or Reddit is also an option.
       </p>
-      <h4>How can I follow updates for the site?</h4>
+      <h3>How can I follow updates for the site?</h3>
       <p>
         Follow us on twitter <a href="https://twitter.com/fantasy_critic" target="_blank">@fantasy_critic <font-awesome-icon icon="external-link-alt" size="sm" /></a> and join our <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">subreddit <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
       </p>
-      <h4>Why should I play FantasyCritic?</h4>
+      <h3>Why should I play FantasyCritic?</h3>
       <p>
         It’s a great catalyst for discussing video games with your friends, and gets everyone invested in checking out the year’s best video games.
       </p>
-      <h4>Does this cost money?</h4>
+      <h3>Does this cost money?</h3>
       <p>
         No. It’s totally free.
       </p>
-      <h4>Wait really? What’s the catch?</h4>
+      <h3>Wait really? What’s the catch?</h3>
       <p>
         There isn’t one. For now, this is a passion project for me and I’m comfortable eating the cost of servers and advertising.
         In the future, it is possible that I will consider adding advertising or opening a Patreon, but I’m never going to charge people to play.
       </p>
       <br />
 
-      <h3>League Creation</h3>
-      <h4>How many players can be in a league?</h4>
+      <h2><a name="league-creation">League Creation</a></h2>
+      <h3>How many players can be in a league?</h3>
       <p>
         Anywhere from 2 to 14. Somewhere between 4 and 8 is probably optimal, but you’ll do fine anywhere in that range.
       </p>
-      <h4>How long does a league last?</h4>
+      <h3>How long does a league last?</h3>
       <p>
         Each calendar year is one “game” of Fantasy Critic. Everyone starts fresh with a new roster at the start of each new year, but you are free to keep playing
         in the same league with the same people year after year.
       </p>
-      <h4>What does the league manager do?</h4>
+      <h3>What does the league manager do?</h3>
       <p>
         Similar to fantasy football, the league manager is in charge of inviting players, deciding on the settings for the league, and making administrative decisions
         throughout the year.
       </p>
-      <h4>What settings can be chosen by the league manager?</h4>
+      <h3>What settings can be chosen by the league manager?</h3>
       <p>
         <ul>
           <li>Amount of games per team.</li>
@@ -54,64 +64,64 @@
           <li>Whether or not to allow yearly installments and early access games.</li>
         </ul>
       </p>
-      <h4>How many games should I allow per team?</h4>
+      <h3>How many games should I allow per team?</h3>
       <p>
         The league creation page will guide you through this, but you should shoot for about 50 games in your whole league. This means that bigger leagues should probably
         have smaller roster sizes, but that’s up to you.
       </p>
-      <h4>How many games should I set as “Games to draft”? </h4>
+      <h3>How many games should I set as “Games to draft”? </h3>
       <p>
         The standard is that ⅔ of your games should be draft games. If you are in a 6 person league, the default is 9 games per player, 6 of them being selected at the draft,
         and 1 counter pick. That leaves you with 3 pickup games per team.
       </p>
       <br />
 
-      <h3>Drafting</h3>
-      <h4>How does the draft work?</h4>
+      <h2><a name="drafting">Drafting</a></h2>
+      <h3>How does the draft work?</h3>
       <p>
         Your league will decide on the order that the teams will draft in. Then the league manager will decide when to begin the draft. Once it has started, the teams will
         choose games in the order that was chosen, snake style, until all teams have filled all of their draft game slots.
       </p>
-      <h4>What's a snake draft?</h4>
+      <h3>What's a snake draft?</h3>
       <p>
         A snake draft means that the person who goes last in a round of drafting, goes first in the next round. So with 4 teams the first 9 games
         would go Team A, B, C, D, D, C, B, A, A.
       </p>
-      <h4>During the draft, is there a time limit to picking games for each player?</h4>
+      <h3>During the draft, is there a time limit to picking games for each player?</h3>
       <p>
         No, but leagues are encouraged to set a time to do their draft and have all players committed to completing it in one sitting. Even better, have all players in
         the same room or on a group video chat, to facilitate discussion of the games being selected.
       </p>
-      <h4>How do the rosters work?	</h4>
+      <h3>How do the rosters work?	</h3>
       <p>
         Each roster is made up of a number of “draft games”, “pickup games”, and “counter picks”. Draft games and pickup games are the games that you get points for.
         Any one game can only be on one roster within a single league. Counter picks work a bit different and are described below.
       </p>
       <br />
 
-      <h3>Bidding System</h3>
-      <h4>What is a “draft game” vs a “pickup game”?</h4>
+      <h2><a name="bidding-system">Bidding System</a></h2>
+      <h3>What is a “draft game” vs a “pickup game”?</h3>
       <p>
         Draft games are chosen during the draft - turn by turn at the start of the year. Pickup games are chosen over the course of year (after the draft) by bidding on them.
       </p>
-      <h4>How does the bidding system work?</h4>
+      <h3>How does the bidding system work?</h3>
       <p>
         If you’re familiar with Free Agency Acquisition Budget (FAAB) rules in fantasy football, it works like that. Essentially, any player that is interested in a game will place a secret "bid" for the game,
         using some of their available budget. Every player starts the year with $100 of budget. Then, on Monday mornings at 3AM eastern, the system will process those bids. The top bidder for any given game
         will recieve the game and spend the money that they bid. The other players keep their money but do not get the game.
       </p>
-      <h4>Will I still lose my money even if no one else is bidding on a game?</h4>
+      <h3>Will I still lose my money even if no one else is bidding on a game?</h3>
       <p>
         Yes.
       </p>
-      <h4>Can I bid zero dollars on a game?</h4>
+      <h3>Can I bid zero dollars on a game?</h3>
       <p>
         Yes, but you will be outbid by anyone who bids at least a dollar.
       </p>
       <br />
 
-      <h3>Scoring</h3>
-      <h4>How does scoring work?</h4>
+      <h2><a name="scoring">Scoring</a></h2>
+      <h3>How does scoring work?</h3>
       <p>
         A game's score is based on it’s score from <a href="https://opencritic.com/" target="_blank">opencritic.com <font-awesome-icon icon="external-link-alt" size="sm" /></a>. Your team will gain or lose points based upon how well your game reviews.
         Only critic reviews are taken into account. For every point above a 70 on OpenCritic, your game gets you one point. For every point below 70,
@@ -154,30 +164,30 @@
           </tr>
         </tbody>
       </table>
-      <h4>What is a “counter pick”?</h4>
+      <h3>What is a “counter pick”?</h3>
       <p>
         After everyone has drafted their roster of games, the players will draft their counter picks. A counter pick is a game from someone else’s roster, but instead of
         getting points for it, you LOSE points for it. The goal is to choose a game from someone else’s team that you think will be bad, or one that you think won't even release.
       </p>
-      <h4>If I counter pick a game that scores below a 70, will I gain points?</h4>
+      <h3>If I counter pick a game that scores below a 70, will I gain points?</h3>
       <p>
         Yes.
       </p>
       <br />
 
-      <h3>Eligibility</h3>
-      <h4>What is an “eligibility level”?</h4>
+      <h2><a name="eligibility">Eligibility</a></h2>
+      <h3>What is an “eligibility level”?</h3>
       <p>
         When deciding on the settings for a league, the league manager must choose what games to allow. The spirit of the game is to make predictions.
         In keeping with that spirit, some games are simply too safe of a bet, and don’t create interesting discussion. All games are categorized (by me) into “eligibility levels”,
         ranging from the most acceptable in all leagues, to games allowable in only the most lenient leagues.
       </p>
-      <h4>What are the different levels?</h4>
+      <h3>What are the different levels?</h3>
       <ul>
         <li>
-          <h5>New Game</h5>
+          <h4>New Game</h4>
           A definitively new game.
-          <h6>Examples</h6>
+          <h5>Examples</h5>
           <ul>
             <li>Spider Man (2018)</li>
             <li>Red Dead Redemption 2</li>
@@ -187,9 +197,9 @@
           </ul>
         </li>
         <li>
-          <h5>Complete Remake</h5>
+          <h4>Complete Remake</h4>
           A remake that radically overhauls the original gameplay.
-          <h6>Examples</h6>
+          <h5>Examples</h5>
           <ul>
             <li>Silent Hill: Shattered Memories</li>
             <li>Resident Evil 2 Remake</li>
@@ -199,9 +209,9 @@
           </ul>
         </li>
         <li>
-          <h5>Remake</h5>
+          <h4>Remake</h4>
           A remake that modernizes gameplay without fundamentally changing it.
-          <h6>Examples</h6>
+          <h5>Examples</h5>
           <ul>
             <li>Pokemon Omega Ruby and Alpha Sapphire</li>
             <li>Fire Emblem: Shadow Dragon</li>
@@ -209,9 +219,9 @@
           </ul>
         </li>
         <li>
-          <h5>Partial Remake</h5>
+          <h4>Partial Remake</h4>
           A game that adds some new features while largely playing the same as the original.
-          <h6>Examples</h6>
+          <h5>Examples</h5>
           <ul>
             <li>Crash Bandicoot N. Sane Trilogy</li>
             <li>The Legend of Zelda: Ocarina of Time 3D</li>
@@ -221,9 +231,9 @@
           </ul>
         </li>
         <li>
-          <h5>Remaster</h5>
+          <h4>Remaster</h4>
           A re-release that updates graphics while changing little else.
-          <h6>Examples</h6>
+          <h5>Examples</h5>
           <ul>
             <li>Halo: The Master Chief Collection</li>
             <li>Uncharted: The Nathan Drake Collection</li>
@@ -232,9 +242,9 @@
           </ul>
         </li>
         <li>
-          <h5>Port</h5>
+          <h4>Port</h4>
           A game that was not originally released on a particular platform that is ported to it without many changes.
-          <h6>Examples</h6>
+          <h5>Examples</h5>
           <ul>
             <li>Doom - Nintendo Switch Edition</li>
             <li>Sonic Mania Plus</li>
@@ -242,18 +252,18 @@
           </ul>
         </li>
       </ul>
-      <h4>
+      <h3>
         I don't agree with your eligibility levels! My league is set to a maximum level of “Complete Remake” but I should be able
         to take the new 'Mario & Luigi: Bowser's Inside Story' on 3DS.
-      </h4>
+      </h3>
       <p>
         It's up to your league and ultimately up to your league manager. League managers can override the eligibility rules and assign
         the game you want to your team. Your league should agree on whether or not they want to allow the exception, though.
       </p>
       <br />
 
-      <h3>Winning</h3>
-      <h4>What do I get if I win?</h4>
+      <h2><a name="winning">Winning</a></h2>
+      <h3>What do I get if I win?</h3>
       <p>
         That’s totally up to your league. This site doesn’t provide any prizes. Look to fantasy sports for advice on how to structure any winnings you want to play for.
       </p>
