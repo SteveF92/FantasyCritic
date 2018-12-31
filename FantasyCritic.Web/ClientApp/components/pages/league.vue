@@ -155,6 +155,8 @@
               .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
               .then(response => {
                 this.leagueYear = response.data;
+                this.year = this.leagueYear.year;
+                this.selectedYear = this.leagueYear.year;
                 this.fetchCurrentBids();
                 this.fetchLeagueActions();
               })
