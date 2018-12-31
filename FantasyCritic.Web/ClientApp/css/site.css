@@ -26,6 +26,10 @@ h2 {
     color: #D6993A;
 }
 
+.alert h2 {
+    color: white;
+}
+
 label {
     font-weight: bold;
 }
