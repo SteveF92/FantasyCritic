@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Welcome to Fantasy Critic!</h2>
+    <h1>Welcome to Fantasy Critic!</h1>
     <div class="alert alert-warning" v-show="userInfo && !userInfo.emailConfirmed">
       <div>Your email address has not been confirmed. You cannot accept league invites until you do so.</div>
       <div>Check your email account for an email from us.</div>

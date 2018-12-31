@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>Change Email Address</h2>
+        <h1>Change Email Address</h1>
         <hr />
         <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="changeEmail">
           <div class="alert alert-warning">Click the button below to change your email address to {{newEmailAddress}}</div>

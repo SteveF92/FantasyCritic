@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Manage User Account</h2>
+    <h1>Manage User Account</h1>
     <hr />
     <div v-if="changeEmailSent" class="alert alert-success">
       Check your existing email address for an email with instructions to change to your new email address.

@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h2>Forgot Password</h2>
+      <h1>Forgot Password</h1>
       <div v-if="showSent" class="alert alert-success">Forgot password email has been sent. Please check your email.</div>
       <form v-on:submit.prevent="sendForgotPasswordRequest">
         <div class="form-group col-md-4">

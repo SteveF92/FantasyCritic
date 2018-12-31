@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>Reset Password</h2>
+        <h1>Reset Password</h1>
         <hr />
         <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="resetPassword">
             <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>

@@ -1,6 +1,6 @@
 <template>
     <div v-if="publisher">
-        <h2>{{publisher.publisherName}}</h2>
+        <h1>{{publisher.publisherName}}</h1>
         <h4>{{publisher.playerName}}</h4>
         <h5>
             <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>

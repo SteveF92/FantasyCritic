@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="selectedLeagueOptions && possibleLeagueOptions">
-      <h2>Edit League: {{selectedLeagueOptions.leagueName}} (Year {{selectedLeagueOptions.year}})</h2>
+      <h1>Edit League: {{selectedLeagueOptions.leagueName}} (Year {{selectedLeagueOptions.year}})</h1>
       <hr />
       <form v-if="possibleLeagueOptions" method="post" class="form-horizontal" role="form" v-on:submit.prevent="postRequest">
         <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>

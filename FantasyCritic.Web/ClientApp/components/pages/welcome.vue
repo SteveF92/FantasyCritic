@@ -23,7 +23,7 @@
 
     <div class="row welcome-area">
       <div class="col-md-6 col-sm-12 welcome-heading">
-        <h2>Play free forever!</h2>
+        <h1>Play free forever!</h1>
       </div>
       <div class="col-md-6 col-sm-12">
         <p class="welcome-message">

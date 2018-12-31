@@ -5,7 +5,7 @@
     </div>
 
     <div class="row league-header">
-      <h2>{{ league.leagueName }}</h2>
+      <h1>{{ league.leagueName }}</h1>
       <div class="year-selector">
         <div>
           <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear" />

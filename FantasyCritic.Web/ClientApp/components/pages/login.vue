@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Login</h2>
+    <h1>Login</h1>
     <hr />
     <div class="alert alert-success" v-show="newAccountCreated">
       <div>Your account was sucessfully created. Check your account for an email from us to confirm your email address.</div>

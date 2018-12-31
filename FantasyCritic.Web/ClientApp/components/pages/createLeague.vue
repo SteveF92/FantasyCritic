@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Create a league</h2>
+    <h1>Create a league</h1>
     <hr />
     <div class="alert alert-danger" v-show="errorInfo">
       <h3>Error!</h3>
