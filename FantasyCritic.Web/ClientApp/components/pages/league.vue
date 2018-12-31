@@ -76,7 +76,7 @@
     </div>
 
     <div class="league-manager-info">
-      <h4 class="league-manager-info-item">League Manager:</h4>
+      <h4>League Manager:</h4>
       <span class="league-manager-info-item">{{ league.leagueManager.displayName }}</span>
     </div>
 
@@ -290,6 +290,7 @@
     flex-direction: row;
   }
   .league-manager-info-item {
-    margin-right: 5px;
+    padding-left: 5px;
+    padding-top: 3px;
   }
 </style>
