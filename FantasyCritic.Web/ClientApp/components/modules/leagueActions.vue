@@ -10,10 +10,10 @@
 
       <h5>Player Actions</h5>
       <ul class="actions-list">
-        <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks" :disabled="!userIsNextInDraft">
+        <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
           Draft Game
         </li>
-        <li class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks" :disabled="!userIsNextInDraft">
+        <li class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
           Draft Counterpick
         </li>
         <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">
@@ -82,7 +82,7 @@
       </div>
     </div>
     <div>
-      <playerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :userPublisher="leagueYear.userPublisher" :isManager="league.isManager" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
+      <playerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :userPublisher="leagueYear.userPublisher" :isManager="league.isManager" :year="leagueYear.year" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
       <playerDraftCounterPickForm :userPublisher="leagueYear.userPublisher" :availableCounterPicks="leagueYear.availableCounterPicks" v-on:counterPickDrafted="counterPickDrafted"></playerDraftCounterPickForm>
 
       <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
@@ -94,13 +94,13 @@
       <addNewLeagueYearForm :league="league" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
       <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
       <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
-      <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
+      <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
       <managerDraftCounterPickForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :availableCounterPicks="leagueYear.availableCounterPicks"
                                    :nextPublisherUp="nextPublisherUp" v-on:counterPickDrafted="managerCounterPickDrafted"></managerDraftCounterPickForm>
       <undoLastDraftActionModal v-on:undoLastDraftAction="undoLastDraftAction"></undoLastDraftActionModal>
       <setPauseModal v-on:setPause="setPause" :paused="leagueYear.playStatus.draftIsPaused"></setPauseModal>
       <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :year="leagueYear.year" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
-      <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
+      <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
       <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
       <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
       <changeLeagueNameForm :league="league" v-on:leagueNameChanged="leagueNameChanged"></changeLeagueNameForm>

@@ -76,12 +76,12 @@
         components: {
             PossibleMasterGamesTable
         },
-        props: ['publishers', 'maximumEligibilityLevel'],
+        props: ['publishers', 'maximumEligibilityLevel', 'year'],
         methods: {
           searchGame() {
           this.possibleMasterGames = [];
               axios
-                .get('/api/game/MasterGame?gameName=' + this.associateGameName)
+                .get('/api/game/MasterGameYear?gameName=' + this.associateGameName + '&year=' + this.year)
                 .then(response => {
                     this.possibleMasterGames = response.data;
                 })

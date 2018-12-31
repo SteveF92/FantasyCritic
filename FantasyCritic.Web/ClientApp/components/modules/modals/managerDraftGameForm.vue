@@ -89,12 +89,12 @@
             return (this.draftUnlistedGame || this.draftMasterGame);
           },
         },
-        props: ['nextPublisherUp', 'maximumEligibilityLevel'],
+        props: ['nextPublisherUp', 'maximumEligibilityLevel', 'year'],
         methods: {
           searchGame() {
             this.possibleMasterGames = [];
             axios
-                .get('/api/game/MasterGame?gameName=' + this.searchGameName)
+                .get('/api/game/MasterGameYear?gameName=' + this.searchGameName + '&year=' + this.year)
                 .then(response => {
                   this.possibleMasterGames = response.data;
                   this.searched = true;
