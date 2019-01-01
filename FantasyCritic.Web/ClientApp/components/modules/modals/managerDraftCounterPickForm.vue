@@ -38,13 +38,16 @@
         props: ['nextPublisherUp', 'availableCounterPicks'],
         methods: {
           selectCounterPick() {
-
             var request = {
               publisherID: this.nextPublisherUp.publisherID,
               gameName: this.selectedCounterPick.gameName,
               counterPick: true,
-              masterGameID: this.selectedCounterPick.masterGame.masterGameID
+              masterGameID: null
             };
+
+            if (this.selectedCounterPick.masterGame) {
+              request.masterGameID = this.selectedCounterPick.masterGame.masterGameID;
+            }
 
             axios
               .post('/api/leagueManager/ManagerDraftGame', request)

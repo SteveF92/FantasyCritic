@@ -33,8 +33,12 @@
                 publisherID: this.userPublisher.publisherID,
                 gameName: this.selectedCounterPick.gameName,
                 counterPick: true,
-                masterGameID: this.selectedCounterPick.masterGame.masterGameID,
+                masterGameID: null
               };
+
+              if (this.selectedCounterPick.masterGame) {
+                request.masterGameID = this.selectedCounterPick.masterGame.masterGameID;
+              }
 
               axios
                 .post('/api/league/DraftGame', request)
