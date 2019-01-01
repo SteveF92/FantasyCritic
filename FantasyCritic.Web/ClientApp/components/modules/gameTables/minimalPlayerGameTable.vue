@@ -78,8 +78,6 @@
 </script>
 <style scoped>
   .player-table {
-    margin-left: 3px;
-    margin-right: 7px;
     margin-bottom: 10px;
     padding: 5px;
   }
