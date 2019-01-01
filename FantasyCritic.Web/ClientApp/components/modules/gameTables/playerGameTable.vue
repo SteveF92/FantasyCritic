@@ -1,6 +1,6 @@
 <template>
-    <div class="player-table">
-        <table class="table table-bordered table-striped">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-sm">
             <thead>
                 <tr class="bg-primary">
                     <th scope="col">Game Name</th>
@@ -60,17 +60,6 @@
     }
 </script>
 <style scoped>
-  .player-table {
-    margin-left: 3px;
-    margin-right: 7px;
-    margin-bottom: 10px;
-  }
-  .player-table table {
-    margin-bottom: 0px;
-    table-layout: fixed;
-    width: 100%;
-  }
-
   #total-description {
     vertical-align: middle;
   }
