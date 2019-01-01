@@ -34,10 +34,10 @@
         <div v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
           <h4>Draft Management</h4>
           <ul class="actions-list">
-            <li class="fake-link action" v-b-modal="'managerDraftGameForm'" v-show="!leagueYear.playStatus.draftingCounterPicks">
+            <li class="fake-link action" v-b-modal="'managerDraftGameForm'" v-show="!leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
               Select Next Game
             </li>
-            <li class="fake-link action" v-b-modal="'managerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftingCounterPicks">
+            <li class="fake-link action" v-b-modal="'managerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
               Select Next Game
             </li>
             <li class="fake-link action" v-b-modal="'setPauseModal'">
