@@ -12,13 +12,13 @@ namespace FantasyCritic.Web.Models.Requests
         public string LeagueName { get; set; }
 
         [Required]
-        [Range(1,20)]
+        [Range(1,30)]
         public int StandardGames { get; set; }
         [Required]
-        [Range(1,20)]
+        [Range(1,30)]
         public int GamesToDraft { get; set; }
         [Required]
-        [Range(1,20)]
+        [Range(0,20)]
         public int CounterPicks { get; set; }
 
         [Required]
