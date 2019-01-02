@@ -80,3 +80,10 @@ div.alert {
 .fake-link:hover {
     text-decoration: underline !important;
 }
+
+.toasted.primary.default {
+    background: #3AACD6;
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+}
