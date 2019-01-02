@@ -525,11 +525,11 @@ namespace FantasyCritic.Web.Controllers.API
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, false, true);
             bool draftCompleted = await _fantasyCriticService.CompleteDraft(leagueYear.Value);
             var viewModel = new PlayerClaimResultViewModel(result);
-            await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             if (draftCompleted)
             {
-                await _hubcontext.Clients.All.SendAsync("DraftFinished", leagueYear.Value);
+                await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
             }
 
             return Ok(viewModel);

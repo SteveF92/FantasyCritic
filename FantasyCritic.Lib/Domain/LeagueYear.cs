@@ -23,5 +23,7 @@ namespace FantasyCritic.Lib.Domain
         public int Year { get; }
         public LeagueOptions Options { get; }
         public PlayStatus PlayStatus { get; }
+
+        public string GetGroupName => $"{League.LeagueID}|{Year}";
     }
 }

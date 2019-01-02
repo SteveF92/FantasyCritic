@@ -24,16 +24,6 @@ namespace FantasyCritic.Web.Hubs
             _fantasyCriticService = fantasyCriticService;
         }
 
-        public async Task RefreshLeagueYear(LeagueYear leagueYear)
-        {
-            await Clients.Group(GetGroupName(leagueYear)).SendAsync("RefreshLeagueYear");
-        }
-
-        public async Task DraftFinished(LeagueYear leagueYear)
-        {
-            await Clients.Group(GetGroupName(leagueYear)).SendAsync("DraftFinished");
-        }
-
         public override async Task OnConnectedAsync()
         {
             var currentUser = await _userManager.FindByNameAsync(Context.User.Identity.Name);
@@ -44,7 +34,7 @@ namespace FantasyCritic.Web.Hubs
                 foreach (var year in league.Years)
                 {
                     var leagueYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, year);
-                    if (leagueYear.HasValue && leagueYear.Value.PlayStatus.DraftIsActive)
+                    if (leagueYear.HasValue && leagueYear.Value.PlayStatus.DraftIsActive || leagueYear.Value.PlayStatus.DraftIsPaused)
                     {
                         draftingLeagueYears.Add(leagueYear.Value);
                     }
@@ -53,10 +43,8 @@ namespace FantasyCritic.Web.Hubs
 
             foreach (var leagueYear in draftingLeagueYears)
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(leagueYear));
+                await Groups.AddToGroupAsync(Context.ConnectionId, leagueYear.GetGroupName);
             }
         }
-
-        private static string GetGroupName(LeagueYear leagueYear) => $"{leagueYear.League.LeagueID}|{leagueYear.Year}";
     }
 }

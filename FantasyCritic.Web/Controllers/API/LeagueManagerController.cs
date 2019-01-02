@@ -641,7 +641,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.StartDraft(leagueYear.Value);
-            await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }
@@ -791,11 +791,11 @@ namespace FantasyCritic.Web.Controllers.API
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, true);
             bool draftCompleted = await _fantasyCriticService.CompleteDraft(leagueYear.Value);
             var viewModel = new ManagerClaimResultViewModel(result);
-            await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             if (draftCompleted)
             {
-                await _hubcontext.Clients.All.SendAsync("DraftFinished", leagueYear.Value);
+                await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
             }
 
             return Ok(viewModel);
@@ -844,7 +844,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.SetDraftPause(leagueYear.Value, request.Pause);
-            await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }
@@ -882,7 +882,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.UndoLastDraftAction(leagueYear.Value);
-            await _hubcontext.Clients.All.SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }
