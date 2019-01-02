@@ -113,7 +113,7 @@
             <input type="submit" class="btn btn-primary" value="Create League" />
           </div>
           <div class="alert alert-info disclaimer">
-            Reminder: All of these settings (Except the year you are playing) can always be changed later.
+            Reminder: All of these settings can always be changed later.
           </div>
         </div>
       </div>
