@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const bundleOutputDir = './wwwroot/dist'
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = () => {
   console.log('Building for \x1b[33m%s\x1b[0m', process.env.NODE_ENV)
@@ -74,12 +75,13 @@ module.exports = () => {
       })
     ] : [
       // Plugins that apply in production builds only
-      extractCSS,
-      // Compress extracted CSS.
-      new OptimizeCSSPlugin({
-        cssProcessorOptions: {
-          safe: true
-        }
+        new UglifyJsPlugin(),
+        extractCSS,
+        // Compress extracted CSS.
+        new OptimizeCSSPlugin({
+          cssProcessorOptions: {
+            safe: true
+          }
       })
     ])
   }]
