@@ -34,7 +34,7 @@ namespace FantasyCritic.Web.Hubs
                 foreach (var year in league.Years)
                 {
                     var leagueYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, year);
-                    if (leagueYear.HasValue && leagueYear.Value.PlayStatus.DraftIsActive || leagueYear.Value.PlayStatus.DraftIsPaused)
+                    if (leagueYear.HasValue && (leagueYear.Value.PlayStatus.DraftIsActive || leagueYear.Value.PlayStatus.DraftIsPaused || !leagueYear.Value.PlayStatus.PlayStarted))
                     {
                         draftingLeagueYears.Add(leagueYear.Value);
                     }
