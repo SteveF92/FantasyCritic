@@ -52,7 +52,7 @@
     </div>
     <hr />
     <div class="row">
-      <div class="col-8">
+      <div class="col-lg-8 col-md-12">
         <h2>Create a League</h2>
         Rally your friends and start a fantasy critic league of your own.
         <ul>
@@ -74,7 +74,7 @@
     <hr />
 
     <div class="row">
-      <div class="col-8">
+      <div class="col-lg-8 col-md-12">
         <h2>Plan your draft</h2>
         <p>
           The earlier in the year you can do your draft, the better, as there are more games still to be released. The site doesn't schedule your draft for you, start it automatically, or enforce any time
@@ -102,7 +102,7 @@
     <hr />
 
     <div class="row">
-      <div class="col-8">
+      <div class="col-lg-8 col-md-12">
         <h2>Draft your games</h2>
         <p>
           Okay, so it's draft time! The league manager starts the draft, and the first player up will choose their first game. After that, each player will follow suit. After every player has a game, the
@@ -116,7 +116,7 @@
     <hr />
 
     <div class="row">
-      <div class="col-8">
+      <div class="col-lg-8 col-md-12">
         <h2>Watch the releases</h2>
         Throughout the year, check in on your game’s release dates!
         <ul>
