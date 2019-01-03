@@ -109,7 +109,8 @@
           player that choose last in the first round will choose first in the second round. This is called a "snake draft".
         </p>
         <p>
-          Once every player has drafted all of their games, each player will choose their counter picks. More on this below.
+          Once every player has drafted all of their games, each player will choose their counter picks.
+          For more info, <a href="/faq#scoring">click here.</a>
         </p>
       </div>
     </div>
@@ -121,7 +122,7 @@
         Throughout the year, check in on your game’s release dates!
         <ul>
           <li>Check out how reviews on opencritic.com reflect in your scores on your league dashboard.</li>
-          <li>Make your mid year pickups. More on this below.</li>
+          <li>Make your mid year pickups. For more info, <a href="/faq#bidding-system">click here.</a></li>
           <li>At the end of your league year, one person will be crowned the winner.</li>
         </ul>
         What do you win? Well, that's up to you and your league. Creative prizes are encouraged!
