@@ -126,13 +126,13 @@
     margin-right: 5px;
   }
 
-  @media only screen and (max-width: 679px) {
+  @media only screen and (max-width: 769px) {
     .full-logo {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 680px) {
+  @media only screen and (min-width: 770px) {
     .minimal-logo {
       display: none;
     }
@@ -144,7 +144,7 @@
     }
   }
 
-  @media only screen and (max-width: 430px) {
+  @media only screen and (max-width: 465px) {
     .topnav-icon {
       font-size: 15px;
     }
@@ -153,13 +153,13 @@
     }
   }
 
-  @media only screen and (max-width: 509px) {
+  @media only screen and (max-width: 609px) {
     .full-nav {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 510px) {
+  @media only screen and (min-width: 610px) {
     .minimal-nav {
       display: none;
     }
