@@ -93,8 +93,10 @@
           However many people you have, we <em>strongly</em> reccommend setting aside at least an hour to dedicate to your draft. While being together in person is not required, we do think that
           is the most fun way to do it.
         </p>
-        <p>Finally, make sure to set your draft order. Different groups may like to decide this in different ways. There is no obvious best position in the draft, so different players may prefer to be
-        first, last, or somewhere in the middle. If you don't change anything, the system will default to the order in which people joined the league.</p>
+        <p>
+          Finally, make sure to set your draft order. Different groups may like to decide this in different ways. There is no obvious best position in the draft, so different players may prefer to be
+          first, last, or somewhere in the middle. If you don't change anything, the system will default to the order in which people joined the league.
+        </p>
       </div>
     </div>
     <hr />
@@ -126,33 +128,9 @@
       </div>
     </div>
     <hr />
-
-    <div class="row">
-      <div class="col-8">
-        <h2>Scoring</h2>
-        <p>
-        </p>
-      </div>
-    </div>
-    <hr />
-
-    <div class="row">
-      <div class="col-8">
-        <h2>Counter pick</h2>
-        <p>
-        </p>
-      </div>
-    </div>
-    <hr />
-
-    <div class="row">
-      <div class="col-8">
-        <h2>Mid Year Pickups</h2>
-        <p>
-        </p>
-      </div>
-    </div>
-    <hr />
+    
+    <h3>If you have any more questions, check out our <router-link :to="{ name: 'faq' }" title="FAQ">FAQ</router-link> page,
+    or <router-link :to="{ name: 'contact' }" title="Contact">contact</router-link> me directly!</h3>
   </div>
 </template>
 
