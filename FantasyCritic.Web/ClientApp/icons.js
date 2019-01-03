@@ -26,7 +26,9 @@ import {
   faGamepad,
   faTimes,
   faUserCircle,
-  faBookOpen
+  faBookOpen,
+  faUsers,
+  faCalendarAlt
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -79,7 +81,9 @@ library.add(
   faTimes,
   faFacebookSquare,
   faUserCircle,
-  faBookOpen
+  faBookOpen,
+  faUsers,
+  faCalendarAlt
   );
 
 export {
