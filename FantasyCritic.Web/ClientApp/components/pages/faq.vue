@@ -94,7 +94,14 @@
         No, but leagues are encouraged to set a time to do their draft and have all players committed to completing it in one sitting. Even better, have all players in
         the same room or on a group video chat, to facilitate discussion of the games being selected.
       </p>
-      <h3>How do the rosters work?	</h3>
+      <h3>Am I picking games from a list or can I pick anything?</h3>
+      <p>
+        Both, actually. I try to maintain a fairly inclusive list of upcoming games, which I call my "master game" list. If your game is in this list, it will show
+        up when you search for it when drafting. If it doesn't, you can draft a "unlisted" game. I will frequently update the list of "master games", and the league manager
+        can link a "unlisted" game to a "master game" at any point after the draft is completed, at no penalty to the player. However, if a game never recieves a score from
+        OpenCritic, you will never get any points from it. They are fairly inclusive, but pick an extremely obscure game at your own risk.
+      </p>
+      <h3>How do the rosters work?</h3>
       <p>
         Each roster is made up of a number of “draft games”, “pickup games”, and “counter picks”. Draft games and pickup games are the games that you get points for.
         Any one game can only be on one roster within a single league. Counter picks work a bit different and are described below.

@@ -28,7 +28,8 @@ import {
   faUserCircle,
   faBookOpen,
   faUsers,
-  faCalendarAlt
+  faCalendarAlt,
+  faCalendarDay
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -83,7 +84,8 @@ library.add(
   faUserCircle,
   faBookOpen,
   faUsers,
-  faCalendarAlt
+  faCalendarAlt,
+  faCalendarDay
   );
 
 export {
