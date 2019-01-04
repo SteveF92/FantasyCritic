@@ -32,7 +32,9 @@
               </span>
               <span v-if="!player.user">
                 &lt;Invite Sent&gt;
-                <b-button variant="danger" size="sm" v-on:click="rescindInvite(player.invitedEmailAddress)">Rescind Invite</b-button>
+                <span v-if="showRemove">
+                  <b-button variant="danger" size="sm" v-on:click="rescindInvite(player.invitedEmailAddress)">Rescind Invite</b-button>
+                </span>
               </span>
             </td>
             <td>{{player.projectedFantasyPoints | score(2)}}</td>
