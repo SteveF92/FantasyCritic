@@ -9,6 +9,7 @@ import App from 'components/app-root';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import Toasted from 'vue-toasted';
 import VeeValidate from 'vee-validate';
+import VueAnalytics from 'vue-analytics'
 
 import "./filters";
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -17,6 +18,11 @@ import 'bootstrap/dist/js/bootstrap.bundle.js';
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
 Vue.use(VeeValidate);
+
+Vue.use(VueAnalytics, {
+  id: 'UA-131370681-1',
+  router
+});
 
 // Registration of global components
 Vue.component('font-awesome-icon', FontAwesomeIcon);
