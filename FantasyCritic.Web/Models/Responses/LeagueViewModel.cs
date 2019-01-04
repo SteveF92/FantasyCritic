@@ -16,6 +16,7 @@ namespace FantasyCritic.Web.Models.Responses
             IsManager = isManager;
             Years = league.Years;
             ActiveYear = Years.Max();
+            PublicLeague = league.PublicLeague;
         }
 
         public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUser> players, bool outstandingInvite, bool neverStarted)
@@ -29,6 +30,7 @@ namespace FantasyCritic.Web.Models.Responses
             OutstandingInvite = outstandingInvite;
             Players = players.Select(x => new PlayerViewModel(league, x)).ToList();
             NeverStarted = neverStarted;
+            PublicLeague = league.PublicLeague;
         }
 
         public Guid LeagueID { get; }
@@ -40,5 +42,6 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<int> Years { get; }
         public int ActiveYear { get; }
         public bool NeverStarted { get; }
+        public bool PublicLeague { get; }
     }
 }
