@@ -2,7 +2,7 @@
   <div>
     <h1>About</h1>
     <hr />
-    <div class="col-lg-6 col-sm-12">
+    <div class="col-lg-8 col-md-10 col-sm-12">
       <p>
         Fantasy Critic was created by me, Steve Fallon. The visual design for the site was created by <a href="http://dalemahabir.rocks/" target="_blank">Dale Mahabir <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
         As of now, this site is brand new and there are bound to be bugs, oversights, and design issues. However, I am committed to improving the site for the foreseeable future.

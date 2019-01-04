@@ -2,7 +2,7 @@
   <div>
     <h1>Frequently Asked Questions</h1>
     <hr />
-    <div class="col-lg-6 col-sm-12">
+    <div class="col-lg-8 col-md-10 col-sm-12">
       <h2>Contents</h2>
       <ul>
         <li><a href="#technical">Technical</a></li>
