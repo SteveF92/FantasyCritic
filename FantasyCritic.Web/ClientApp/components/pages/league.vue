@@ -18,6 +18,9 @@
           </div>
         </div>
       </div>
+      <div v-if="league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-info" role="info">
+        You are viewing a public league.
+      </div>
 
       <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">
         <p>
@@ -43,7 +46,7 @@
           </div>
         </div>
       </div>
-      <div v-if="leagueYear && !leagueYear.userPublisher && !league.outstandingInvite">
+      <div v-if="leagueYear && league.userIsInLeague && !leagueYear.userPublisher">
         You need to create your publisher for this year.
         <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
         <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>

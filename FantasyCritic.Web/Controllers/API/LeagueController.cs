@@ -59,7 +59,7 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var league in myLeagues)
             {
                 bool isManager = (league.LeagueManager.UserID == currentUser.UserID);
-                viewModels.Add(new LeagueViewModel(league, isManager));
+                viewModels.Add(new LeagueViewModel(league, isManager, true));
             }
 
             return Ok(viewModels);
@@ -104,7 +104,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             bool isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
-            var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, userIsInvitedToLeague, neverStarted);
+            var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, userIsInvitedToLeague, neverStarted, userIsInLeague);
             return Ok(leagueViewModel);
         }
 
