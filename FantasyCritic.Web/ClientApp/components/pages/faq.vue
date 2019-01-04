@@ -127,6 +127,11 @@
       <p>
         Yes, but you will be outbid by anyone who bids at least a dollar.
       </p>
+      <h3>Can I bid on a game that doesn't come up when I search for games?</h3>
+      <p>
+        Unfortunately no. To bid on a game, it must be in the master database. I try to stay on top of upcoming releases, but if a game that you want is missing,
+        DM me on <a href="https://twitter.com/fantasy_critic" target="_blank">twitter <font-awesome-icon icon="external-link-alt" size="sm" /></a> and I'll make sure to get it added for you quickly.
+      </p>
       <br />
 
       <h2><a name="scoring">Scoring</a></h2>
