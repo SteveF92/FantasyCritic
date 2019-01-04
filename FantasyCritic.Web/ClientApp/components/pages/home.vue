@@ -116,7 +116,7 @@
 <style scoped>
   .learn-to-play-button {
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
   }
   .create-league-button {
     width: 100%;
