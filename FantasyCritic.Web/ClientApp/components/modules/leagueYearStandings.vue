@@ -40,7 +40,9 @@
             </td>
             <td>{{player.projectedFantasyPoints | score(2)}}</td>
             <td>{{player.totalFantasyPoints | score(2)}}</td>
-            <td>{{player.publisher.budget | money}}</td>
+            <td>
+              <span v-if="player.publisher">{{player.publisher.budget | money}}</span>
+            </td>
           </tr>
         </tbody>
       </table>
