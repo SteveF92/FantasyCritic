@@ -87,3 +87,19 @@ div.alert {
     font-weight: bold;
     padding: 5px;
 }
+
+.fb-icon {
+    color: #3b5998;
+}
+
+.twitter-icon {
+    color: #00acee;
+}
+
+.github-icon {
+    color: #ffffff;
+}
+
+.reddit-icon {
+    color: #ff4500;
+}

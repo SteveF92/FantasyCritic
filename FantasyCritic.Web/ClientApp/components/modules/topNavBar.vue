@@ -37,17 +37,17 @@
           <ul class="navbar-nav">
             <li class="nav-item">
               <a class="nav-link top-nav-link brand-nav" href="https://www.facebook.com/fantasycritic" target="_blank">
-                <font-awesome-icon :icon="['fab', 'facebook-square']" size="lg" :style="{ color: '3b5998' }" class="topnav-icon" />
+                <font-awesome-icon :icon="['fab', 'facebook-square']" size="lg" class="topnav-icon fb-icon" />
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link top-nav-link brand-nav" href="https://twitter.com/fantasy_critic" target="_blank">
-                <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" :style="{ color: '00acee' }" class="topnav-icon" />
+                <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" class="topnav-icon twitter-icon" />
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link top-nav-link brand-nav" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-                <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" :style="{ color: 'ff4500' }" class="topnav-icon" />
+                <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" class="topnav-icon reddit-icon" />
               </a>
             </li>
             <slot v-if="!storeIsBusy">
