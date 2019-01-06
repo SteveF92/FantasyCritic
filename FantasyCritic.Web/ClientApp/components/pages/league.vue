@@ -73,6 +73,7 @@
             <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
             <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft Counter-Picks!</div>
             <div>Next to draft: <strong>{{nextPublisherUp.publisherName}}</strong></div>
+            <div v-show="league.isManager">To select the next player's game for them, Select 'Select Next Game' under 'Draft Management' in the sidebar!</div>
           </div>
         </div>
         <div v-else>
@@ -80,6 +81,7 @@
             <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
             <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
             <div><strong>It is your turn to draft!</strong></div>
+            <div>Select 'Draft Game' under 'Player Actions' in the sidebar!</div>
           </div>
         </div>
       </div>
