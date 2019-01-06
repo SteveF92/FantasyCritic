@@ -147,9 +147,9 @@ namespace FantasyCritic.Web.Controllers.API
 
             SystemWideValues systemWideValues = await _fantasyCriticService.GetLeagueWideValues();
 
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, currentUser, userPublisher, _clock,
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks,
-                leagueYear.Value.Options.ScoringSystem, systemWideValues, inviteesToLeague);
+                leagueYear.Value.Options.ScoringSystem, systemWideValues, inviteesToLeague, userIsInLeague);
             return Ok(leagueViewModel);
         }
 
