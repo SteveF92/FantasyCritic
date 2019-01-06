@@ -273,7 +273,7 @@
           this.$refs.draftFinishedModalRef.show();
         });
         hubConnection.onclose(async () => {
-          await startHubConnection();
+          await this.startHubConnection();
         });
       }
     },
