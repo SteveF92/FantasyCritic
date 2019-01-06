@@ -95,15 +95,21 @@
           <div>
             <h3>Other Options</h3>
             <div>
-              <b-form-checkbox id="yearly-checkbox" v-model="allowYearlyInstallments">
+              <b-form-checkbox v-model="allowYearlyInstallments">
                 <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
                 <p>These are often pretty safe bets, but the scores vary just enough year to year for me to recommend that you leave this on.</p>
               </b-form-checkbox>
             </div>
             <div>
-              <b-form-checkbox id="early-access-checkbox" v-model="allowEarlyAccess">
+              <b-form-checkbox v-model="allowEarlyAccess">
                 <span class="checkbox-label">Allow Early Access Games</span>
                 <p>If this is left unchecked, a game that is already in early access will not be selectable. Games that are planned for early access that are not yet playable are always selectable.</p>
+              </b-form-checkbox>
+            </div>
+            <div>
+              <b-form-checkbox v-model="publicLeague">
+                <span class="checkbox-label">Public League</span>
+                <p>If checked, anyone with a link to your league will be able to view it. If unchecked, your league will only be viewable by its members.</p>
               </b-form-checkbox>
             </div>
           </div>
@@ -139,6 +145,7 @@ export default {
           maximumEligibilityLevel: 0,
           allowYearlyInstallments: true,
           allowEarlyAccess: false,
+          publicLeague: false,
           possibleLeagueOptions: null,
           piecewiseStyle: {
             "backgroundColor": "#ccc",
@@ -202,6 +209,7 @@ export default {
             maximumEligibilityLevel: this.maximumEligibilityLevel,
             allowYearlyInstallments: this.allowYearlyInstallments,
             allowEarlyAccess: this.allowEarlyAccess,
+            publicLeague: this.publicLeague,
             draftSystem: "Flexible",
             pickupSystem: "Budget",
             scoringSystem: "Standard"
