@@ -47,6 +47,11 @@
             <li class="fake-link action" v-b-modal="'undoLastDraftActionModal'" v-show="leagueYear.playStatus.draftIsPaused">
               Undo Last Drafted Game
             </li>
+            <li v-show="!leagueYear.playStatus.draftIsPaused">
+              Undo Last Drafted Game
+              <br />
+              <span class="action-note">(Pause Draft First)</span>
+            </li>
           </ul>
         </div>
         <h4>Manage League</h4>
@@ -346,5 +351,8 @@
   }
   .action {
     color: #D6993A !important;
+  }
+  .action-note {
+    padding-left: 15px;
   }
 </style>

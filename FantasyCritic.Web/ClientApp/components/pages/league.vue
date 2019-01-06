@@ -81,7 +81,8 @@
             <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
             <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
             <div><strong>It is your turn to draft!</strong></div>
-            <div>Select 'Draft Game' under 'Player Actions' in the sidebar!</div>
+            <div v-show="!leagueYear.playStatus.draftingCounterPicks">Select 'Draft Game' under 'Player Actions' in the sidebar!</div>
+            <div v-show="leagueYear.playStatus.draftingCounterPicks">Select 'Draft Counterpick' under 'Player Actions' in the sidebar!</div>
           </div>
         </div>
       </div>
