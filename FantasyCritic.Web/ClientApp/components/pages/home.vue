@@ -8,7 +8,7 @@
 
     <div class="row">
       <div class="col-lg-6 col-md-12">
-        <b-button variant="info" :to="{ name: 'howtoplay' }" class="learn-to-play-button">Learn to Play</b-button>
+        <b-button variant="info" :to="{ name: 'howtoplay' }" v-if="!fetchingLeagues && noLeagues" class="learn-to-play-button">Learn to Play</b-button>
         <b-button variant="primary" :to="{ name: 'createLeague' }" class="create-league-button">Create a League</b-button>
         <div v-if="anyInvitedLeagues">
           <h2>League Invites</h2>
@@ -42,8 +42,10 @@
         </div>
 
         <div v-if="!fetchingLeagues && noLeagues">
-          You are not part of any leagues! Why not start one?
+          <hr />
+          <h3>You are not part of any leagues! Why not start one?</h3>
         </div>
+        
       </div>
       <div class="col-lg-6 col-md-12">
         <tweets></tweets>
