@@ -9,6 +9,7 @@
             <th>Publisher</th>
             <th>Points (Projected)</th>
             <th>Points (Actual)</th>
+            <th>Budget</th>
           </tr>
         </thead>
         <tbody>
@@ -39,6 +40,7 @@
             </td>
             <td>{{player.projectedFantasyPoints | score(2)}}</td>
             <td>{{player.totalFantasyPoints | score(2)}}</td>
+            <td>{{player.publisher.budget | money}}</td>
           </tr>
         </tbody>
       </table>
