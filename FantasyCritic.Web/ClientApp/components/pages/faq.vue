@@ -132,6 +132,10 @@
         Unfortunately no. To bid on a game, it must be in the master database. I try to stay on top of upcoming releases, but if a game that you want is missing,
         DM me on <a href="https://twitter.com/fantasy_critic" target="_blank">twitter <font-awesome-icon icon="external-link-alt" size="sm" /></a> and I'll make sure to get it added for you quickly.
       </p>
+      <h3>When are bids processed?</h3>
+      <p>
+        Bids are processed on Monday mornings at 9AM UTC.
+      </p>
       <br />
 
       <h2><a name="scoring">Scoring</a></h2>
