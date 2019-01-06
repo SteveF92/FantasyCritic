@@ -151,7 +151,8 @@ export const routes = [
     component: League,
     name: "league",
     meta: {
-      title: "League"
+      title: "League",
+      isPublic: true
     },
     props: (route) => ({
       leagueid: route.params.leagueid,
@@ -175,7 +176,8 @@ export const routes = [
     component: Publisher,
     name: "publisher",
     meta: {
-      title: "Publisher"
+      title: "Publisher",
+      isPublic: true
     },
     props: (route) => ({
       publisherid: route.params.publisherid
