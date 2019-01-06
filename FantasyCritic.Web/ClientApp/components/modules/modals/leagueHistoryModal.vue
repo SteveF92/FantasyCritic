@@ -12,7 +12,7 @@
       </thead>
       <tbody>
         <tr v-for="leagueAction in leagueActions">
-          <td>{{leagueAction.publisher.publisherName}}</td>
+          <td>{{leagueAction.publisherName}}</td>
           <td>{{leagueAction.timestamp | date}}</td>
           <td>{{leagueAction.actionType}}</td>
           <td>{{leagueAction.description}}</td>

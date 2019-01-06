@@ -1,13 +1,19 @@
 <template>
-    <div v-if="publisher">
-        <h1>{{publisher.publisherName}}</h1>
-        <h3>{{publisher.playerName}}</h3>
-        <h4>
-            <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>
-        </h4>
-        <p>Budget: {{publisher.budget | money}}</p>
-        <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options"></playerGameTable>
+  <div v-if="publisher">
+    <h1>{{publisher.publisherName}}</h1>
+
+    <div v-if="publisher.publicLeague && !(publisher.userIsInLeague || publisher.outstandingInvite)" class="alert alert-info" role="info">
+      You are viewing a public league.
     </div>
+
+    <h4>Player Name: {{publisher.playerName}}</h4>
+
+    <h4>
+      <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>
+    </h4>
+    <p>Budget: {{publisher.budget | money}}</p>
+    <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options"></playerGameTable>
+  </div>
 </template>
 
 <script>

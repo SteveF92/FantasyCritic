@@ -15,7 +15,8 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Publisher userPublisher,
             IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> users, Maybe<Publisher> nextDraftPublisher, DraftPhase draftPhase,
-            IEnumerable<PublisherGame> availableCounterPicks, ScoringSystem scoringSystem, SystemWideValues systemWideValues, IEnumerable<string> invitedPlayers, bool userIsInLeague)
+            IEnumerable<PublisherGame> availableCounterPicks, ScoringSystem scoringSystem, SystemWideValues systemWideValues, IEnumerable<string> invitedPlayers, bool userIsInLeague,
+            bool userIsInvitedToLeague)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -28,11 +29,12 @@ namespace FantasyCritic.Web.Models.Responses
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
-            Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x => new PublisherViewModel(x, clock, nextDraftPublisher)).ToList();
+            Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x =>
+                new PublisherViewModel(x, clock, nextDraftPublisher, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague)).ToList();
 
             if (!(userPublisher is null))
             {
-                UserPublisher = new PublisherViewModel(userPublisher, clock);
+                UserPublisher = new PublisherViewModel(userPublisher, clock, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague);
             }
 
             List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
@@ -47,7 +49,7 @@ namespace FantasyCritic.Web.Models.Responses
                 }
                 else
                 {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, scoringSystem, systemWideValues));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, scoringSystem, systemWideValues, userIsInLeague, userIsInvitedToLeague));
                 }
             }
 

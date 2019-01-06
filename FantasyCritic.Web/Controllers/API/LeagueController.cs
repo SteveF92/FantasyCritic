@@ -179,7 +179,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks,
-                leagueYear.Value.Options.ScoringSystem, systemWideValues, inviteesToLeague, userIsInLeague);
+                leagueYear.Value.Options.ScoringSystem, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague);
             return Ok(leagueViewModel);
         }
 
@@ -226,10 +226,14 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var playersInLeague = await _fantasyCriticService.GetUsersInLeague(publisher.Value.League);
+            var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(publisher.Value.League);
+
             bool userIsInLeague = false;
+            bool userIsInvitedToLeague = false;
             if (currentUser != null)
             {
                 userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
+                userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!userIsInLeague && !publisher.Value.League.PublicLeague)
@@ -249,7 +253,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Requested player is not in requested league.");
             }
 
-            var publisherViewModel = new PublisherViewModel(publisher.Value, _clock);
+            var publisherViewModel = new PublisherViewModel(publisher.Value, _clock, userIsInLeague, publisher.Value.League.PublicLeague, userIsInvitedToLeague);
             return Ok(publisherViewModel);
         }
 

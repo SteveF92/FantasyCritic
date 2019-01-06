@@ -9,13 +9,13 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherViewModel
     {
-        public PublisherViewModel(Publisher publisher, IClock clock)
-        : this(publisher, clock, Maybe<Publisher>.None)
+        public PublisherViewModel(Publisher publisher, IClock clock, bool userIsInLeague, bool publicLeague, bool outstandingInvite)
+        : this(publisher, clock, Maybe<Publisher>.None, userIsInLeague, publicLeague, outstandingInvite)
         {
 
         }
 
-        public PublisherViewModel(Publisher publisher, IClock clock, Maybe<Publisher> nextDraftPublisher)
+        public PublisherViewModel(Publisher publisher, IClock clock, Maybe<Publisher> nextDraftPublisher, bool userIsInLeague, bool publicLeague, bool outstandingInvite)
         {
             PublisherID = publisher.PublisherID;
             LeagueID = publisher.League.LeagueID;
@@ -33,6 +33,10 @@ namespace FantasyCritic.Web.Models.Responses
             {
                 NextToDraft = true;
             }
+
+            UserIsInLeague = userIsInLeague;
+            PublicLeague = publicLeague;
+            OutstandingInvite = outstandingInvite;
         }
 
         public Guid PublisherID { get; }
@@ -47,5 +51,8 @@ namespace FantasyCritic.Web.Models.Responses
         public decimal TotalFantasyPoints { get; }
         public int Budget { get; }
         public bool NextToDraft { get; }
+        public bool UserIsInLeague { get; }
+        public bool PublicLeague { get; }
+        public bool OutstandingInvite { get; }
     }
 }

@@ -21,10 +21,11 @@ namespace FantasyCritic.Web.Models.Responses
             User = new PlayerViewModel(leagueYear.League, user);
         }
 
-        public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, IClock clock, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
+        public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, IClock clock,
+            ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague)
         {
             User = new PlayerViewModel(leagueYear.League, user);
-            Publisher = new PublisherViewModel(publisher, clock);
+            Publisher = new PublisherViewModel(publisher, clock, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
             ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(scoringSystem, systemWideValues);
         }
