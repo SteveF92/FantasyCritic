@@ -91,7 +91,7 @@
       <leagueHistoryModal :leagueActions="leagueActions"></leagueHistoryModal>
       <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
-      <addNewLeagueYearForm :league="league" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
+      <addNewLeagueYearForm :league="league" :isManager="league.isManager" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
       <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
       <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
       <managerDraftGameForm :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>

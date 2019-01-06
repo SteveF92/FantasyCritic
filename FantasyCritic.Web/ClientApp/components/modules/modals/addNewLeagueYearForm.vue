@@ -27,7 +27,7 @@
         error: ""
       }
     },
-    props: ['league'],
+    props: ['league', 'isManager'],
     methods: {
       addNewLeagueYear() {
         var model = {
@@ -46,6 +46,9 @@
       }
     },
     mounted() {
+      if (!this.isManager) {
+        return;
+      }
       axios
         .get('/api/LeagueManager/AvailableYears/' + this.league.leagueID)
         .then(response => {
