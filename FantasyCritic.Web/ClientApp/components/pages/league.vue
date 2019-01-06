@@ -28,7 +28,7 @@
         </p>
       </b-modal>
 
-      <div v-if="leagueYear && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
+      <div v-if="leagueYear && leagueYear.userIsInLeague && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
         <h2>
           This year is not active yet!
         </h2>
@@ -37,7 +37,7 @@
         </ul>
       </div>
 
-      <div v-if="league.outstandingInvite">
+      <div v-if="league.outstandingInvite" class="alert alert-info">
         You have been invited to join this league. Do you wish to join?
         <div class="row">
           <div class="btn-toolbar">
@@ -46,7 +46,7 @@
           </div>
         </div>
       </div>
-      <div v-if="leagueYear && league.userIsInLeague && !leagueYear.userPublisher">
+      <div v-if="leagueYear && league.userIsInLeague && !leagueYear.userPublisher" class="alert alert-info">
         You need to create your publisher for this year.
         <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
         <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
