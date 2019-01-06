@@ -68,6 +68,7 @@ namespace FantasyCritic.MySQL
                          $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +
                          $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +
                          $"EmailConfirmed = @{nameof(FantasyCriticUserEntity.EmailConfirmed)}, " +
+                         $"LastChangedCredentials = @{nameof(FantasyCriticUserEntity.LastChangedCredentials)}, " +
                          $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)} " +
                          $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
 
