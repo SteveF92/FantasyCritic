@@ -20,6 +20,7 @@ namespace FantasyCritic.MySQL.Entities
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
             LeagueManager = league.LeagueManager.UserID;
+            PublicLeague = league.PublicLeague;
         }
 
         public Guid LeagueID { get; set; }

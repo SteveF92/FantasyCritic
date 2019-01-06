@@ -352,8 +352,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblleague(LeagueID,LeagueName,LeagueManager) VALUES " +
-                    "(@LeagueID,@LeagueName,@LeagueManager);",
+                    "insert into tblleague(LeagueID,LeagueName,LeagueManager,PublicLeague) VALUES " +
+                    "(@LeagueID,@LeagueName,@LeagueManager,@PublicLeague);",
                     entity);
 
                 await connection.ExecuteAsync(
