@@ -142,7 +142,7 @@
         return next;
       },
       userIsNextInDraft() {
-        if (this.nextPublisherUp) {
+        if (this.nextPublisherUp && this.leagueYear.userPublisher) {
           return this.nextPublisherUp.publisherID === this.leagueYear.userPublisher.publisherID
         }
 
