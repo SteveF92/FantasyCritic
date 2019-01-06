@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.Domain.Requests
     {
         public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, 
             int initialYear, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
-            bool allowEarlyAccess, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem)
+            bool allowEarlyAccess, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             Manager = manager;
             LeagueName = leagueName;
@@ -21,6 +21,7 @@ namespace FantasyCritic.Lib.Domain.Requests
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
+            PublicLeague = publicLeague;
         }
 
         public FantasyCriticUser Manager { get; }
@@ -35,5 +36,6 @@ namespace FantasyCritic.Lib.Domain.Requests
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }
+        public bool PublicLeague { get; }
     }
 }

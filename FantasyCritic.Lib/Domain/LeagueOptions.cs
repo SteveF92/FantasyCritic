@@ -14,7 +14,7 @@ namespace FantasyCritic.Lib.Domain
     {
         public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks,
             EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, bool allowEarlyAccess,
-            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem)
+            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
@@ -25,6 +25,7 @@ namespace FantasyCritic.Lib.Domain
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
+            PublicLeague = publicLeague;
         }
 
         public LeagueOptions(LeagueCreationParameters parameters)
@@ -38,6 +39,7 @@ namespace FantasyCritic.Lib.Domain
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
+            PublicLeague = parameters.PublicLeague;
         }
 
         public LeagueOptions(EditLeagueYearParameters parameters)
@@ -51,6 +53,7 @@ namespace FantasyCritic.Lib.Domain
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
+            PublicLeague = parameters.PublicLeague;
         }
 
         public int StandardGames { get; }
@@ -62,6 +65,7 @@ namespace FantasyCritic.Lib.Domain
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }
+        public bool PublicLeague { get; }
 
         public Result Validate()
         {
