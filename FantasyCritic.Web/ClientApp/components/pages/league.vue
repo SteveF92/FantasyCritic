@@ -262,7 +262,10 @@
           .configureLogging(signalR.LogLevel.Error)
           .build();
 
-        hubConnection.start().catch(err => console.error(err.toString()));
+        await hubConnection.start().catch(err => console.error(err.toString()));
+
+        hubConnection.invoke("Subscribe", this.leagueid, this.year).catch(err => console.error(err.toString()));
+
         hubConnection.on('RefreshLeagueYear', data => {
           this.fetchLeagueYear();
         });
@@ -271,7 +274,7 @@
         });
         hubConnection.onclose(async () => {
           await startHubConnection();
-        })
+        });
       }
     },
     async mounted() {
