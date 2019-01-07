@@ -232,11 +232,15 @@ export default {
       intendedNumberOfPlayers: function (val) {
         let recommendedNumberOfGames = 54;
         this.standardGames = Math.floor(recommendedNumberOfGames / val);
+        if (this.standardGames > 10) {
+          this.standardGames = 10;
+        }
         this.gamesToDraft = Math.floor(this.standardGames * (2 / 3));
         this.counterPicks = Math.floor(this.gamesToDraft / 6);
         if (this.counterPicks === 0) {
           this.counterPicks = 1;
         }
+        
       }
     },
     mounted() {
