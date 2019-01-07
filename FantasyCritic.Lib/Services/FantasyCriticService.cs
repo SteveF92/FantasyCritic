@@ -510,7 +510,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             LeagueOptions yearOptions = leagueYear.Value.Options;
-            if (request.MasterGame.HasValue)
+            if (request.MasterGame.HasValue && !request.CounterPick)
             {
                 var masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame.Value, leagueYear.Value.Year, request.CounterPick);
                 claimErrors.AddRange(masterGameErrors);
