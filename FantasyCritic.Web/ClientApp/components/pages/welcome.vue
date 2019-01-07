@@ -37,7 +37,7 @@
 
     <div class="row justify-content-center">
       <div class="col-lg-6 computer-image-area">
-        <img src="/images/new-monitor-mock.png" class="computer-image" />
+        <img src="/images/monitor-mock.png" class="computer-image" />
       </div>
       <div class="col-lg-6 col-8 get-started-area">
         <div class="get-started-message">
