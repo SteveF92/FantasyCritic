@@ -191,6 +191,10 @@
       <p>
         Yes.
       </p>
+      <h3>What order are counter picks chosen in?</h3>
+      <p>
+        Counter picks are chosen in a snake draft - just like the regular games. However, the player who went LAST in the regular draft always goes first when it comes time to draft counter picks.
+      </p>
       <br />
 
       <h2><a name="eligibility">Eligibility</a></h2>
