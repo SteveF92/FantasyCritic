@@ -53,7 +53,7 @@ namespace FantasyCritic.Web.Models.Responses
                 }
             }
 
-            if (!userIsInLeague)
+            if (userIsInLeague)
             {
                 foreach (var invitedPlayer in invitedPlayers)
                 {
