@@ -17,9 +17,11 @@
         <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
         <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
         <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
+        <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
       </div>
 
       <div v-if="readyToChooseNumbers()">
+        <hr />
         <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
 
         <div class="form-group col-8">
