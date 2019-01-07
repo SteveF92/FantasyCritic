@@ -1,5 +1,5 @@
 <template>
-  <tr class="minimal-game-row table-default" v-bind:class="{ 'bg-danger': game.counterPick }">
+  <tr class="minimal-game-row table-default" v-bind:class="{ 'counter-pick-row': game.counterPick }">
     <td class="game-column">
       <span class="master-game-popover">
         <masterGamePopover v-if="game.linked" :masterGame="game.masterGame"></masterGamePopover>
@@ -64,5 +64,9 @@
   }
   .master-game-popover {
     float:left;
+  }
+
+  .counter-pick-row td {
+    background-color: #AA1E1E !important;
   }
 </style>
