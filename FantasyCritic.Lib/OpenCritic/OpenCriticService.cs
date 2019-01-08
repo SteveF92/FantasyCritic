@@ -43,6 +43,12 @@ namespace FantasyCritic.Lib.OpenCritic
                         continue;
                     }
 
+                    string releaseDateString = releaseDateToken.Value<string>();
+                    if (!string.IsNullOrWhiteSpace(releaseDateString))
+                    {
+                        continue;
+                    }
+
                     DateTime releaseDateResult = releaseDateToken.Value<DateTime>();
                     LocalDate releaseDate = LocalDate.FromDateTime(releaseDateResult);
 
