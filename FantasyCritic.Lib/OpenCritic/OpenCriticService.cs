@@ -55,8 +55,12 @@ namespace FantasyCritic.Lib.OpenCritic
                     releaseDates.Add(releaseDate);
                 }
 
-                LocalDate? earliestReleaseDate = releaseDates.Min();
-
+                LocalDate? earliestReleaseDate = null;
+                if (releaseDates.Any())
+                {
+                    earliestReleaseDate = releaseDates.Min();
+                }
+                 
                 var scoreResponse = await _client.GetStringAsync($"/api/game/score?id={openCriticGameID}");
                 var parsedResult = JsonConvert.DeserializeObject<OpenCriticScoreResponse>(scoreResponse);
                 if (parsedResult == null)
