@@ -19,7 +19,8 @@
       <h3>Something about the site is broken!</h3>
       <p>
         Sounds likely. We’re just getting started here at Fantasy Critic and there are bound to be issues.
-        The best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">GitHub <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
+        Honestly, most issues can be fixed by refreshing the page.
+        Beyond that, the best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">GitHub <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
         Contacting me on Twitter or Reddit is also an option.
       </p>
       <h3>How can I follow updates for the site?</h3>
