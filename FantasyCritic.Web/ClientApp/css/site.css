@@ -103,3 +103,9 @@ div.alert {
 .reddit-icon {
     color: #ff4500;
 }
+
+.text-well {
+ padding: 10px;
+ background: rgba(50, 50, 50, 0.7);
+ border-radius: 5px;
+}
