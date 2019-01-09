@@ -26,6 +26,7 @@ namespace FantasyCritic.Web.Models.Responses
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
             AverageDraftPosition = masterGame.AverageDraftPosition;
+            HypeFactor = masterGame.HypeFactor;
         }
 
         public MasterGameYearViewModel(MasterSubGame masterSubGame, MasterGameYear masterGame, IClock clock)
@@ -44,6 +45,7 @@ namespace FantasyCritic.Web.Models.Responses
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
             AverageDraftPosition = masterGame.AverageDraftPosition;
+            HypeFactor = masterGame.HypeFactor;
         }
 
         public Guid MasterGameID { get; }
@@ -61,5 +63,7 @@ namespace FantasyCritic.Web.Models.Responses
         public decimal PercentStandardGame { get; }
         public decimal PercentCounterPick { get; }
         public decimal? AverageDraftPosition { get; }
+        public decimal? HypeFactor { get; set; }
+
     }
 }

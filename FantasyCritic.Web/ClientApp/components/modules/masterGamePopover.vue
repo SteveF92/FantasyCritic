@@ -36,6 +36,11 @@
               <span v-show="masterGame.averageDraftPosition">{{masterGame.averageDraftPosition}}</span>
               <span v-show="!masterGame.averageDraftPosition">Undrafted</span>
             </div>
+            <div>
+              <strong>Hype Factor: </strong>
+              <span v-show="masterGame.hypeFactor">{{masterGame.hypeFactor | score(1)}}</span>
+              <span v-show="!masterGame.hypeFactor">Unhyped...</span>
+            </div>
             <div v-if="masterGame.openCriticID">
               <a :href="openCriticLink(masterGame)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
             </div>

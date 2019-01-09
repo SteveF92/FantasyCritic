@@ -24,6 +24,7 @@ namespace FantasyCritic.MySQL.Entities
         public decimal PercentStandardGame { get; set; }
         public decimal PercentCounterPick { get; set; }
         public decimal AverageDraftPosition { get; set; }
+        public decimal? HypeFactor { get; set; }
 
         public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel, int year)
         {
@@ -36,7 +37,7 @@ namespace FantasyCritic.MySQL.Entities
             var masterGame =  new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel, 
                 YearlyInstallment, EarlyAccess, subGames.ToList(), BoxartFileName);
 
-            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, AverageDraftPosition);
+            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, AverageDraftPosition, HypeFactor);
         }
     }
 }

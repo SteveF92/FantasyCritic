@@ -107,6 +107,10 @@
         Each roster is made up of a number of “draft games”, “pickup games”, and “counter picks”. Draft games and pickup games are the games that you get points for.
         Any one game can only be on one roster within a single league. Counter picks work a bit different and are described below.
       </p>
+      <h3>What's this "Hype Factor" thing I see when I click on a game?</h3>
+      <p class="text-well">
+        "Hype Factor" is a measure of how high antipating a game is. It's a 0-100 value derived from the percentage of leagues that draft a game, and what it's average draft position is in those leagues.
+      </p>
       <br />
 
       <h2><a name="bidding-system">Bidding System</a></h2>
