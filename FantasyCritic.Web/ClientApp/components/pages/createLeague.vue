@@ -147,7 +147,7 @@ export default {
           maximumEligibilityLevel: 0,
           allowYearlyInstallments: true,
           allowEarlyAccess: false,
-          publicLeague: false,
+          publicLeague: true,
           possibleLeagueOptions: null,
           piecewiseStyle: {
             "backgroundColor": "#ccc",
