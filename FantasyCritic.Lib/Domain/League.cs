@@ -7,13 +7,14 @@ namespace FantasyCritic.Lib.Domain
 {
     public class League
     {
-        public League(Guid leagueID, string leagueName, FantasyCriticUser leagueManager, IEnumerable<int> years, bool publicLeague)
+        public League(Guid leagueID, string leagueName, FantasyCriticUser leagueManager, IEnumerable<int> years, bool publicLeague, bool testLeague)
         {
             LeagueID = leagueID;
             LeagueName = leagueName;
             LeagueManager = leagueManager;
             Years = years.ToList();
             PublicLeague = publicLeague;
+            TestLeague = testLeague;
         }
 
         public Guid LeagueID { get; }
@@ -21,5 +22,6 @@ namespace FantasyCritic.Lib.Domain
         public FantasyCriticUser LeagueManager { get; }
         public IReadOnlyList<int> Years { get; }
         public bool PublicLeague { get; set; }
+        public bool TestLeague { get; set; }
     }
 }

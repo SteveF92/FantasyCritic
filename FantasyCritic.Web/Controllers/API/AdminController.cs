@@ -160,8 +160,13 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> DeleteLeague([FromBody] DeleteLeagueRequest request)
         {
-            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            Maybe<League> league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
             if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (!league.Value.TestLeague)
             {
                 return BadRequest();
             }

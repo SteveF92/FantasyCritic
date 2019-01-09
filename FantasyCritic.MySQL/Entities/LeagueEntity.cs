@@ -21,16 +21,18 @@ namespace FantasyCritic.MySQL.Entities
             LeagueName = league.LeagueName;
             LeagueManager = league.LeagueManager.UserID;
             PublicLeague = league.PublicLeague;
+            TestLeague = league.TestLeague;
         }
 
         public Guid LeagueID { get; set; }
         public string LeagueName { get; set; }
         public Guid LeagueManager { get; set; }
         public bool PublicLeague { get; set; }
+        public bool TestLeague { get; set; }
 
         public League ToDomain(FantasyCriticUser manager, IEnumerable<int> years)
         {
-            League parameters = new League(LeagueID, LeagueName, manager, years, PublicLeague);
+            League parameters = new League(LeagueID, LeagueName, manager, years, PublicLeague, TestLeague);
             return parameters;
         }
     }
