@@ -34,7 +34,7 @@
     </form>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
       <div>
-        <input type="submit" class="btn btn-primary add-game-button" value="Draft Game" v-if="formIsValid" />
+        <input type="submit" class="btn btn-primary add-game-button" value="Draft Game" v-if="formIsValid" :disabled="isBusy" />
       </div>
       <div v-if="draftResult && !draftResult.success" class="alert draft-error" v-bind:class="{ 'alert-danger': !draftResult.overridable, 'alert-warning': draftResult.overridable }">
         <h3 class="alert-heading" v-if="draftResult.overridable">Warning!</h3>
@@ -72,7 +72,8 @@
               draftOverride: false,
               possibleMasterGames: [],
               searched: false,
-              showingUnlistedField: false
+              showingUnlistedField: false,
+              isBusy: false
             }
         },
         components: {
@@ -104,6 +105,7 @@
             this.draftUnlistedGame = this.searchGameName;
           },
           addGame() {
+            this.isBusy = true;
             var gameName = "";
             if (this.draftMasterGame !== null) {
               gameName = this.draftMasterGame.gameName;
@@ -143,6 +145,7 @@
                 });
           },
           clearData() {
+            this.isBusy = false;
             this.searchGameName = null;
             this.draftUnlistedGame = null;
             this.draftMasterGame = null;

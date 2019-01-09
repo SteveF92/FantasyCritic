@@ -11,7 +11,7 @@
         </div>
 
         <div v-if="selectedCounterPick">
-          <input type="submit" class="btn btn-primary add-game-button" value="Select Game as Counter-Pick" />
+          <input type="submit" class="btn btn-primary add-game-button" value="Select Game as Counter-Pick" :disabled="isBusy" />
         </div>
     </form>
   </b-modal>
@@ -23,12 +23,14 @@
     export default {
         data() {
             return {
-              selectedCounterPick: null
+              selectedCounterPick: null,
+              isBusy: false
             }
         },
         props: ['userPublisher', 'availableCounterPicks'],
         methods: {
-            selectCounterPick() {
+          selectCounterPick() {
+              this.isBusy = true;
               var request = {
                 publisherID: this.userPublisher.publisherID,
                 gameName: this.selectedCounterPick.gameName,
@@ -58,7 +60,8 @@
 
                 });
             },
-            clearData() {
+          clearData() {
+              this.isBusy = false;
               this.selectedCounterPick = null;
             }
         }
