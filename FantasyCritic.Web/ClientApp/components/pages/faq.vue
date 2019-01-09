@@ -109,7 +109,7 @@
       </p>
       <h3>What's this "Hype Factor" thing I see when I click on a game?</h3>
       <p class="text-well">
-        "Hype Factor" is a measure of how high antipating a game is. It's a 0-100 value derived from the percentage of leagues that draft a game, and what it's average draft position is in those leagues.
+        "Hype Factor" is a measure of how highly anticipated a game is. It's a 0-100 value, with 100 being the best, derived from the percentage of leagues that draft a game, and what it's average draft position is in those leagues.
       </p>
       <br />
 
