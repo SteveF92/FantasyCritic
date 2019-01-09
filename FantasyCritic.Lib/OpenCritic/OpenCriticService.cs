@@ -44,7 +44,7 @@ namespace FantasyCritic.Lib.OpenCritic
                     }
 
                     string releaseDateString = releaseDateToken.Value<string>();
-                    if (!string.IsNullOrWhiteSpace(releaseDateString))
+                    if (string.IsNullOrWhiteSpace(releaseDateString))
                     {
                         continue;
                     }
