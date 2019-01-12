@@ -72,10 +72,15 @@
         The league creation page will guide you through this, but you should shoot for about 50 games in your whole league. This means that bigger leagues should probably
         have smaller roster sizes, but that’s up to you.
       </p>
-      <h3>How many games should I set as “Games to draft”? </h3>
+      <h3>How many games should I set as “Games to draft”?</h3>
       <p class="text-well">
         The standard is that ⅔ of your games should be draft games. If you are in a 6 person league, the default is 9 games per player, 6 of them being selected at the draft,
         and 1 counter pick. That leaves you with 3 pickup games per team.
+      </p>
+      <h3>The site says I need to create a "Publisher", what does that mean?</h3>
+      <p class="text-well">
+        So the "backstory" of Fantasy Critic is that you are the CEO of a video game publisher, and you need to decide which games currently in development are worth publishing. Your "Publisher" is
+        just your "team" name. It's just a flavor thing. You can make it something serious or a big joke. Doesn't matter at all.
       </p>
       <br />
 
