@@ -102,5 +102,15 @@ namespace FantasyCritic.Web.Controllers.API
 
             return viewModels;
         }
+
+        [HttpGet("{year}")]
+        public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(int year)
+        {
+            IReadOnlyList<MasterGameYear> masterGames = await _fantasyCriticService.GetMasterGameYears(year);
+            var relevantGames = masterGames.Where(x => x.MasterGame.MinimumReleaseYear >= year);
+            List<MasterGameYearViewModel> viewModels = relevantGames.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
+
+            return viewModels;
+        }
     }
 }
