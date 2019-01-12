@@ -26,7 +26,8 @@
           {{data.item.isReleased | yesNo}}
         </template>
         <template slot="criticScore" slot-scope="data">
-          {{data.item.criticScore | score(2)}}
+          <a v-if="data.item.openCriticID" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
+          <span v-else>--</span>
         </template>
         <template slot="hypeFactor" slot-scope="data">
           {{data.item.hypeFactor | score(1)}}
@@ -65,7 +66,7 @@
           { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
           { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'isReleased', label: 'Released?', sortable: true, thClass: 'bg-primary' },
-          { key: 'criticScore', label: 'Critic Score', sortable: true, thClass: 'bg-primary' },
+          { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary' },
           { key: 'hypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
           { key: 'percentStandardGame', label: '% Picked', sortable: true, thClass: 'bg-primary' },
           { key: 'percentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
@@ -118,6 +119,9 @@
         }
         return game.estimatedReleaseDate + ' (Estimated)'
       },
+      openCriticLink(game) {
+        return "https://opencritic.com/game/" + game.openCriticID + "/";
+      }
     },
     mounted() {
       this.fetchSupportedYears();

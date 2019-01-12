@@ -18,10 +18,8 @@
               <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
               <span v-else>{{masterGame.estimatedReleaseDate}} (Estimated)</span>
             </div>
-            <div>
-              <strong>Critic Score: </strong>
-              {{masterGame.criticScore | score(2)}}
-              <span v-if="masterGame.averagedScore">(Averaged Score)</span>
+            <div v-if="masterGame.openCriticID">
+              <a :href="openCriticLink(masterGame)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
             </div>
             <div>
               <strong>Percent Published: </strong>
@@ -41,9 +39,7 @@
               <span v-show="masterGame.hypeFactor">{{masterGame.hypeFactor | score(1)}}</span>
               <span v-show="!masterGame.hypeFactor">Unhyped...</span>
             </div>
-            <div v-if="masterGame.openCriticID">
-              <a :href="openCriticLink(masterGame)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
-            </div>
+
             <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}"><strong>View full details</strong></router-link>
           </div>
           <div class="close-button fake-link" v-on:click="closePopover">
