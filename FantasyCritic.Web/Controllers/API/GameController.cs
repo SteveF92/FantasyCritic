@@ -112,5 +112,12 @@ namespace FantasyCritic.Web.Controllers.API
 
             return viewModels;
         }
+
+        public async Task<ActionResult<List<int>>> SupportedYears()
+        {
+            var supportedYears = await _fantasyCriticService.GetSupportedYears();
+            var years = supportedYears.Select(x => x.Year).OrderByDescending(x => x);
+            return years.ToList();
+        }
     }
 }

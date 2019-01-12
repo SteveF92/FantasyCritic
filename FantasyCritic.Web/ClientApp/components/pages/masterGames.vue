@@ -1,17 +1,106 @@
 <template>
-    <div>
-        <h1>Games</h1>
-        <hr />
+  <div>
+    <div class="row league-header">
+      <h1>Games</h1>
+      <div class="year-selector">
+        <div>
+          <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="changeYear" />
+        </div>
+      </div>
     </div>
+    <div class="row games-table" v-if="gamesForYear && gamesForYear.length > 0">
+      <b-table :sort-by.sync="sortBy"
+               :sort-desc.sync="sortDesc"
+               :items="gamesForYear"
+               :fields="gameFields"
+               bordered
+               striped
+               responsive>
+        <template slot="releaseDate" slot-scope="data">
+          {{getReleaseDate(data.item)}}
+        </template>
+        <template slot="isReleased" slot-scope="data">
+          {{data.item.isReleased | yesNo}}
+        </template>
+      </b-table>
+    </div>
+  </div>
 </template>
 
 <script>
-    import Vue from 'vue';
+  import Vue from 'vue';
+  import axios from "axios";
+  import moment from "moment";
 
-    export default {
-        data() {
-            return {
-            }
+  export default {
+    data() {
+      return {
+        selectedYear: null,
+        supportedYears: [],
+        gamesForYear: [],
+        gameFields: [
+          { key: 'gameName', label: 'Name', sortable: true },
+          { key: 'releaseDate', label: 'Release Date', sortable: true },
+          { key: 'isReleased', label: 'Released?', sortable: true },
+          { key: 'criticScore', label: 'Critic Score', sortable: true },
+          { key: 'hypeFactor', label: 'Hype Factor', sortable: true },
+          { key: 'percentStandardGame', label: '% Picked', sortable: true },
+          { key: 'percentCounterPick', label: '% Counter Picked', sortable: true },
+          { key: 'averageDraftPosition', label: 'Avg. Draft Position', sortable: true }
+        ],
+        sortBy: 'gameName',
+        sortDesc: true
+      }
+    },
+    methods: {
+      changeYear() {
+        return;
+      },
+      fetchSupportedYears() {
+        axios
+          .get('/api/game/SupportedYears')
+          .then(response => {
+            this.supportedYears = response.data;
+            this.selectedYear = this.supportedYears[0];
+            this.fetchGamesForSelectedYear();
+          })
+          .catch(response => {
+
+          });
+      },
+      fetchGamesForSelectedYear() {
+        axios
+          .get('/api/game/MasterGameYear/' + this.selectedYear)
+          .then(response => {
+            this.gamesForYear = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
+      getReleaseDate(game) {
+        if (game.releaseDate) {
+          return moment(game.releaseDate).format('MMMM Do, YYYY');
         }
+        return game.estimatedReleaseDate + ' (Estimated)'
+      },
+    },
+    mounted() {
+      this.fetchSupportedYears();
     }
+  }
 </script>
+<style scoped>
+  .year-selector {
+    position: absolute;
+    right: 0px;
+  }
+
+  .year-selector div {
+    float: left;
+  }
+  .games-table {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+</style>
