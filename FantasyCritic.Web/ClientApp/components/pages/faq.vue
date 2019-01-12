@@ -294,6 +294,14 @@
         It's up to your league and ultimately up to your league manager. League managers can override the eligibility rules and assign
         the game you want to your team. Your league should agree on whether or not they want to allow the exception, though.
       </p>
+      <h3>
+        How do episodic games work?
+      </h3>
+      <p class="text-well">
+        If no game from an episodic series has come out, you can select the game as a whole. If episodes have already come out, then the game will not be eligible.
+        If you do have an episodic game on your roster, and only some of the episodes come out, then we use the average critic score of the released episodes.
+        If the entire game has been released, the game usually receives reviews for the game as whole, and we use that score.
+      </p>
       <br />
 
       <h2><a name="winning">Winning</a></h2>
