@@ -163,7 +163,7 @@ export default {
     },
     computed: {
       formIsValid() {
-        return !Object.keys(this.fields).some(key => this.fields[key].invalid);
+        return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
       },
       minimumPossibleEligibilityLevel() {
         return 0;
@@ -182,14 +182,14 @@ export default {
     },
     methods: {
         readyToChooseNumbers() {
-          let leagueNameValid = this.fields['leagueName'] && this.fields['leagueName'].valid;
-          let intendedNumberOfPlayersValid = this.fields['intendedNumberOfPlayers'] && this.fields['intendedNumberOfPlayers'].valid;
+          let leagueNameValid = this.veeFields['leagueName'] && this.veeFields['leagueName'].valid;
+          let intendedNumberOfPlayersValid = this.veeFields['intendedNumberOfPlayers'] && this.veeFields['intendedNumberOfPlayers'].valid;
           return leagueNameValid && intendedNumberOfPlayersValid;
         },
         readyToChooseLevels() {
-          let standardGamesValid = this.fields['standardGames'] && this.fields['standardGames'].valid;
-          let gamesToDraftValid = this.fields['gamesToDraft'] && this.fields['gamesToDraft'].valid;
-          let counterPicksValid = this.fields['counterPicks'] && this.fields['counterPicks'].valid;
+          let standardGamesValid = this.veeFields['standardGames'] && this.veeFields['standardGames'].valid;
+          let gamesToDraftValid = this.veeFields['gamesToDraft'] && this.veeFields['gamesToDraft'].valid;
+          let counterPicksValid = this.veeFields['counterPicks'] && this.veeFields['counterPicks'].valid;
           return standardGamesValid && gamesToDraftValid && counterPicksValid && this.initialYear;
         },
         fetchLeagueOptions() {

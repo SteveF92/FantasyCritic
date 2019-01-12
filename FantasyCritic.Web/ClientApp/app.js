@@ -17,7 +17,10 @@ import 'bootstrap/dist/js/bootstrap.bundle.js';
 
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
-Vue.use(VeeValidate);
+Vue.use(VeeValidate, {
+  inject: true,
+  fieldsBagName: 'veeFields'
+});
 
 Vue.use(VueAnalytics, {
   id: 'UA-131370681-1',

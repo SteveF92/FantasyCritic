@@ -52,7 +52,7 @@
         },
         computed: {
           formIsValid() {
-            return !Object.keys(this.fields).some(key => this.fields[key].invalid);
+            return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
           }
         },
         methods: {
