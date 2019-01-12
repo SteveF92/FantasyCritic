@@ -205,6 +205,12 @@
       <p class="text-well">
         Counter picks are chosen in a snake draft - just like the regular games. However, the player who went LAST in the regular draft always goes first when it comes time to draft counter picks.
       </p>
+      <h3>What's a manual score?</h3>
+      <p class="text-well">
+        If for some reason you don't agree with my methodologies, you can choose to manually assign a score. For example, if a game is released but never appears on OpenCritic, you could choose to add
+        manual score from another site - hopefully one you decided on ahead of time. Or, if you think you should be able to draft specific episodes of an episodic series, you'll have to manually score
+        those as well. See the <a href="#eligibility">eligibility</a> section for more on episodic games.
+      </p>
       <br />
 
       <h2><a name="eligibility">Eligibility</a></h2>
