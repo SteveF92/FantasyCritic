@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="row league-header">
-      <h1>Games</h1>
+      <h1>Master Games List</h1>
       <div class="year-selector">
         <div>
-          <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="changeYear" />
+          <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" />
         </div>
       </div>
     </div>
@@ -60,24 +60,21 @@
       MasterGamePopover
     },
     methods: {
-      changeYear() {
-        return;
-      },
       fetchSupportedYears() {
         axios
           .get('/api/game/SupportedYears')
           .then(response => {
             this.supportedYears = response.data;
             this.selectedYear = this.supportedYears[0];
-            this.fetchGamesForSelectedYear();
+            this.fetchGamesForYear(this.selectedYear);
           })
           .catch(response => {
 
           });
       },
-      fetchGamesForSelectedYear() {
+      fetchGamesForYear(year) {
         axios
-          .get('/api/game/MasterGameYear/' + this.selectedYear)
+          .get('/api/game/MasterGameYear/' + year)
           .then(response => {
             this.gamesForYear = response.data;
           })

@@ -116,7 +116,7 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<ActionResult<List<int>>> SupportedYears()
         {
             var supportedYears = await _fantasyCriticService.GetSupportedYears();
-            var years = supportedYears.Select(x => x.Year).OrderByDescending(x => x);
+            var years = supportedYears.Select(x => x.Year).Where(x => x > 2017).OrderByDescending(x => x);
             return years.ToList();
         }
     }
