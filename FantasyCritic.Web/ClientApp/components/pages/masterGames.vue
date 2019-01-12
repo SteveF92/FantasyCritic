@@ -16,6 +16,9 @@
                bordered
                striped
                responsive>
+        <template slot="gameName" slot-scope="data">
+          <masterGamePopover :masterGame="data.item"></masterGamePopover>
+        </template>
         <template slot="releaseDate" slot-scope="data">
           {{getReleaseDate(data.item)}}
         </template>
@@ -31,6 +34,7 @@
   import Vue from 'vue';
   import axios from "axios";
   import moment from "moment";
+  import MasterGamePopover from "components/modules/masterGamePopover";
 
   export default {
     data() {
@@ -51,6 +55,9 @@
         sortBy: 'gameName',
         sortDesc: true
       }
+    },
+    components: {
+      MasterGamePopover
     },
     methods: {
       changeYear() {
