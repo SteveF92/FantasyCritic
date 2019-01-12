@@ -115,7 +115,7 @@
       },
       getReleaseDate(game) {
         if (game.releaseDate) {
-          return moment(game.releaseDate).format('MMMM Do, YYYY');
+          return moment(game.releaseDate).format('YYYY-MM-DD');
         }
         return game.estimatedReleaseDate + ' (Estimated)'
       },
