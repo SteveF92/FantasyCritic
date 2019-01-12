@@ -15,6 +15,12 @@
             </router-link>
           </div>
           <div>
+            <router-link :to="{ name: 'masterGames' }" title="Games">
+              <font-awesome-icon icon="gamepad" size="lg" />
+              Games
+            </router-link>
+          </div>
+          <div>
             <router-link :to="{ name: 'faq' }" title="FAQ">
               <font-awesome-icon icon="question-circle" size="lg" />
               FAQ

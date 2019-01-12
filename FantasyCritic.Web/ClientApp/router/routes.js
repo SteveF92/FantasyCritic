@@ -16,6 +16,7 @@ import ConfirmEmail from "components/pages/confirmEmail";
 import ForgotPassword from "components/pages/forgotPassword";
 import ResetPassword from "components/pages/resetPassword";
 import ChangeEmail from "components/pages/changeEmail";
+import MasterGames from "components/pages/masterGames";
 
 export const routes = [
   {
@@ -118,6 +119,15 @@ export const routes = [
     name: "contact",
     meta: {
       title: "Contact",
+      isPublic: true
+    }
+  },
+  {
+    path: "/games",
+    component: MasterGames,
+    name: "masterGames",
+    meta: {
+      title: "Games",
       isPublic: true
     }
   },

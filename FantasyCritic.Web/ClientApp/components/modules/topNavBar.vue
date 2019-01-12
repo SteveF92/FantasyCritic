@@ -20,6 +20,12 @@
               </router-link>
             </li>
             <li class="nav-item">
+              <router-link :to="{ name: 'masterGames' }" class="nav-link top-nav-link optional-nav" title="Games">
+                <span class="full-nav">Games</span>
+                <font-awesome-icon class="minimal-nav topnav-icon" icon="gamepad" size="lg" />
+              </router-link>
+            </li>
+            <li class="nav-item">
               <router-link :to="{ name: 'about' }" class="nav-link top-nav-link optional-nav" title="About">
                 <span class="full-nav">About</span>
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="info-circle" size="lg" />
@@ -126,25 +132,25 @@
     margin-right: 5px;
   }
 
-  @media only screen and (max-width: 769px) {
+  @media only screen and (max-width: 820px) {
     .full-logo {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 770px) {
+  @media only screen and (min-width: 821px) {
     .minimal-logo {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 340px) {
+  @media only screen and (max-width: 350px) {
     .optional-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 465px) {
+  @media only screen and (max-width: 490px) {
     .topnav-icon {
       font-size: 15px;
     }
@@ -153,13 +159,13 @@
     }
   }
 
-  @media only screen and (max-width: 609px) {
+  @media only screen and (max-width: 659px) {
     .full-nav {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 610px) {
+  @media only screen and (min-width: 660px) {
     .minimal-nav {
       display: none;
     }
