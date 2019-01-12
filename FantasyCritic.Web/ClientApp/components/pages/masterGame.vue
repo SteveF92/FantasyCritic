@@ -7,10 +7,13 @@
       <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
       <span v-else>{{masterGame.estimatedReleaseDate}} (Estimated)</span>
     </p>
-    <p>
-      <strong>Critic Score: </strong>
-      {{masterGame.criticScore | score(2)}}
-      <span v-if="masterGame.averagedScore">(Averaged Score)</span>
+    <p v-if="masterGame.averagedScore">
+      <label>This is an episodic game. We have caluclated an average score.</label>
+      <div>
+        <strong>Critic Score: </strong>
+        {{masterGame.criticScore | score(2)}}
+        <span>(Averaged Score)</span>
+      </div>
     </p>
     <p v-if="masterGame.openCriticID">
       <a :href="openCriticLink(masterGame)" target="_blank">Open Critic Link <font-awesome-icon icon="external-link-alt" size="xs" /></a>
@@ -24,10 +27,6 @@
           <strong>Release Date: </strong>
           <span v-if="subGame.releaseDate">{{releaseDate(subGame)}}</span>
           <span v-else>{{subGame.estimatedReleaseDate}} (Estimated)</span>
-        </p>
-        <p>
-          <strong>Critic Score: </strong>
-          {{subGame.criticScore | score(2)}}
         </p>
         <p v-if="subGame.openCriticID">
           <a :href="openCriticLink(subGame)" target="_blank">Open Critic Link <font-awesome-icon icon="external-link-alt" size="xs" /></a>
