@@ -25,6 +25,21 @@
         <template slot="isReleased" slot-scope="data">
           {{data.item.isReleased | yesNo}}
         </template>
+        <template slot="criticScore" slot-scope="data">
+          {{data.item.criticScore | score(2)}}
+        </template>
+        <template slot="hypeFactor" slot-scope="data">
+          {{data.item.hypeFactor | score(1)}}
+        </template>
+        <template slot="percentStandardGame" slot-scope="data">
+          {{data.item.percentStandardGame | percent(1)}}
+        </template>
+        <template slot="percentCounterPick" slot-scope="data">
+          {{data.item.percentCounterPick | percent(1)}}
+        </template>
+        <template slot="averageDraftPosition" slot-scope="data">
+          {{data.item.averageDraftPosition | score(1)}}
+        </template>
       </b-table>
     </div>
   </div>

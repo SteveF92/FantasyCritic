@@ -43,9 +43,10 @@ Vue.filter('yesNo', function (value) {
   return "No";
 });
 
-Vue.filter('percent', function (value) {
-  if (!value) {
-    return "0%";
-  }
-  return (value * 100) + "%";
+Vue.filter('percent', function(value, decimals) {
+  if (!value) value = 0;
+  if (!decimals) decimals = 0;
+
+  value = value * 100;
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals) + '%';
 });

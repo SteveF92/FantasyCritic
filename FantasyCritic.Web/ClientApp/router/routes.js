@@ -198,7 +198,8 @@ export const routes = [
     component: MasterGame,
     name: "mastergame",
     meta: {
-      title: "Master Game"
+      title: "Master Game",
+      isPublic: true
     },
     props: (route) => ({
       mastergameid: route.params.mastergameid

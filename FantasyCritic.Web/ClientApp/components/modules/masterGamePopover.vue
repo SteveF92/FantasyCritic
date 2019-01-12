@@ -25,15 +25,15 @@
             </div>
             <div>
               <strong>Percent Published: </strong>
-              {{masterGame.percentStandardGame | percent}}
+              {{masterGame.percentStandardGame | percent(1)}}
             </div>
             <div>
               <strong>Percent Counterpicked: </strong>
-              {{masterGame.percentCounterPick | percent}}
+              {{masterGame.percentCounterPick | percent(1)}}
             </div>
             <div>
               <strong>Average Draft Position: </strong>
-              <span v-show="masterGame.averageDraftPosition">{{masterGame.averageDraftPosition}}</span>
+              <span v-show="masterGame.averageDraftPosition">{{masterGame.averageDraftPosition | score(1)}}</span>
               <span v-show="!masterGame.averageDraftPosition">Undrafted</span>
             </div>
             <div>
