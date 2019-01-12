@@ -20,18 +20,15 @@ using NodaTime;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GameController : Controller
     {
-        private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IClock _clock;
         private static readonly int MaxDistance = 10;
         private static readonly int MaxDistanceGames = 5;
 
-        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IClock clock)
+        public GameController(FantasyCriticService fantasyCriticService, IClock clock)
         {
-            _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
             _clock = clock;
         }
