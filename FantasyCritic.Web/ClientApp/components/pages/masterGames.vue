@@ -40,6 +40,9 @@
         <template slot="averageDraftPosition" slot-scope="data">
           {{data.item.averageDraftPosition | score(1)}}
         </template>
+        <template slot="eligibilityLevel" slot-scope="data">
+          <eligibilityBadge :eligibilityLevel="data.item.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
+        </template>
       </b-table>
     </div>
   </div>
@@ -50,6 +53,7 @@
   import axios from "axios";
   import moment from "moment";
   import MasterGamePopover from "components/modules/masterGamePopover";
+  import EligibilityBadge from "components/modules/eligibilityBadge";
 
   export default {
     data() {
@@ -65,14 +69,25 @@
           { key: 'hypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
           { key: 'percentStandardGame', label: '% Picked', sortable: true, thClass: 'bg-primary' },
           { key: 'percentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
-          { key: 'averageDraftPosition', label: 'Avg. Draft Position', sortable: true, thClass: 'bg-primary' }
+          { key: 'averageDraftPosition', label: 'Avg. Draft Position', sortable: true, thClass: 'bg-primary' },
+          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: 'bg-primary' }
+
         ],
         sortBy: 'gameName',
         sortDesc: true
       }
     },
     components: {
-      MasterGamePopover
+      MasterGamePopover,
+      EligibilityBadge
+    },
+    computed: {
+      maximumEligibilityLevel() {
+        let level = {
+          level: 5
+        };
+        return level;
+      }
     },
     methods: {
       fetchSupportedYears() {
