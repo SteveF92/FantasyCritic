@@ -26,7 +26,7 @@
           {{data.item.isReleased | yesNo}}
         </template>
         <template slot="criticScore" slot-scope="data">
-          <a v-if="data.item.openCriticID" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
+          <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
           <span v-else>--</span>
         </template>
         <template slot="hypeFactor" slot-scope="data">
