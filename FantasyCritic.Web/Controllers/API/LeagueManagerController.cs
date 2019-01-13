@@ -746,7 +746,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't draft a game if the draft isn't active.");
             }
 
-            var nextPublisher = await _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value);
+            var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var nextPublisher = await _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
             if (nextPublisher.HasNoValue)
             {
                 return BadRequest("There are no spots open to draft.");
@@ -769,8 +770,7 @@ namespace FantasyCritic.Web.Controllers.API
             if (draftPhase.Equals(DraftPhase.StandardGames))
             {
                 publisherPosition = publisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
-                var publishers = await _fantasyCriticService.GetPublishersInLeagueForYear(league.Value, leagueYear.Value.Year);
-                overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
+                overallPosition = publishersInLeague.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
 
                 if (request.CounterPick)
                 {

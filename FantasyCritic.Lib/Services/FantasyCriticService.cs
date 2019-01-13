@@ -910,20 +910,19 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public async Task<Maybe<Publisher>> GetNextDraftPublisher(LeagueYear leagueYear)
+        public async Task<Maybe<Publisher>> GetNextDraftPublisher(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear)
         {
             if (!leagueYear.PlayStatus.DraftIsActive)
             {
                 return Maybe<Publisher>.None;
             }
 
-            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
-            DraftPhase phase = GetDraftPhase(leagueYear, publishers);
+            DraftPhase phase = GetDraftPhase(leagueYear, publishersInLeagueForYear);
             if (phase.Equals(DraftPhase.StandardGames))
             {
-                var publishersWithLowestNumberOfGames = publishers.MinBy(x => x.PublisherGames.Count(y => !y.CounterPick));
-                var allPlayersHaveSameNumberOfGames = publishers.Select(x => x.PublisherGames.Count(y => !y.CounterPick)).Distinct().Count() == 1;
-                var maxNumberOfGames = publishers.Max(x => x.PublisherGames.Count(y => !y.CounterPick));
+                var publishersWithLowestNumberOfGames = publishersInLeagueForYear.MinBy(x => x.PublisherGames.Count(y => !y.CounterPick));
+                var allPlayersHaveSameNumberOfGames = publishersInLeagueForYear.Select(x => x.PublisherGames.Count(y => !y.CounterPick)).Distinct().Count() == 1;
+                var maxNumberOfGames = publishersInLeagueForYear.Max(x => x.PublisherGames.Count(y => !y.CounterPick));
                 var roundNumber = maxNumberOfGames;
                 if (allPlayersHaveSameNumberOfGames)
                 {
@@ -944,9 +943,9 @@ namespace FantasyCritic.Lib.Services
             }
             if (phase.Equals(DraftPhase.CounterPicks))
             {
-                var publishersWithLowestNumberOfGames = publishers.MinBy(x => x.PublisherGames.Count(y => y.CounterPick));
-                var allPlayersHaveSameNumberOfGames = publishers.Select(x => x.PublisherGames.Count(y => y.CounterPick)).Distinct().Count() == 1;
-                var maxNumberOfGames = publishers.Max(x => x.PublisherGames.Count(y => y.CounterPick));
+                var publishersWithLowestNumberOfGames = publishersInLeagueForYear.MinBy(x => x.PublisherGames.Count(y => y.CounterPick));
+                var allPlayersHaveSameNumberOfGames = publishersInLeagueForYear.Select(x => x.PublisherGames.Count(y => y.CounterPick)).Distinct().Count() == 1;
+                var maxNumberOfGames = publishersInLeagueForYear.Max(x => x.PublisherGames.Count(y => y.CounterPick));
 
                 var roundNumber = maxNumberOfGames;
                 if (allPlayersHaveSameNumberOfGames)
@@ -995,12 +994,11 @@ namespace FantasyCritic.Lib.Services
             return DraftPhase.Complete;
         }
 
-        public async Task<IReadOnlyList<PublisherGame>> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher)
+        public async Task<IReadOnlyList<PublisherGame>> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear)
         {
-            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
-            IReadOnlyList<Publisher> otherPublishers = allPublishers.Where(x => x.PublisherID != nextDraftingPublisher.PublisherID).ToList();
+            IReadOnlyList<Publisher> otherPublishers = publishersInLeagueForYear.Where(x => x.PublisherID != nextDraftingPublisher.PublisherID).ToList();
 
-            IReadOnlyList<PublisherGame> gamesForYear = allPublishers.SelectMany(x => x.PublisherGames).ToList();
+            IReadOnlyList<PublisherGame> gamesForYear = publishersInLeagueForYear.SelectMany(x => x.PublisherGames).ToList();
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick).ToList();
 
             var alreadyCounterPicked = gamesForYear.Where(x => x.CounterPick).ToList();
