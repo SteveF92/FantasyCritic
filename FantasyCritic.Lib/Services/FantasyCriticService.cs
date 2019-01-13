@@ -759,7 +759,7 @@ namespace FantasyCritic.Lib.Services
                 {
                     var bestBids = gameGroup.MaxBy(x => x.BidAmount);
                     var bestBidsByProjectedScore = bestBids.MinBy(x => x.Publisher.GetProjectedFantasyPoints(options.ScoringSystem, systemWideValues));
-                    bestBid = bestBidsByProjectedScore.First();
+                    bestBid = bestBidsByProjectedScore.OrderByDescending(x => x.Publisher.DraftPosition).First();
                 }
 
                 winnableBids.Add(bestBid);
