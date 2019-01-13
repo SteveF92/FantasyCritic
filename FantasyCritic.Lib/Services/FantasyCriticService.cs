@@ -423,6 +423,11 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.GetMasterGameYear(masterGameID, year);
         }
 
+        public Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)
+        {
+            return _masterGameRepo.GetAllSelectedMasterGameIDsForYear(year);
+        }
+
         public Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
         {
             return _masterGameRepo.UpdateCriticStats(masterGame, openCriticGame);

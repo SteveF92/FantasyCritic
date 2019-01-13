@@ -108,6 +108,16 @@ namespace FantasyCritic.Web.Controllers.API
         {
             IReadOnlyList<MasterGameYear> masterGames = await _fantasyCriticService.GetMasterGameYears(year);
             var relevantGames = masterGames.Where(x => x.MasterGame.MinimumReleaseYear >= year);
+
+            var supportedYears = await GetSupportedYears();
+            var finishedYears = supportedYears.Where(x => x.Finished);
+            bool thisYearIsFinished = finishedYears.Any(x => x.Year == year);
+            if (thisYearIsFinished)
+            {
+                var chosenGames = await _fantasyCriticService.GetAllSelectedMasterGameIDsForYear(year);
+                relevantGames = relevantGames.Where(x => chosenGames.Contains(x.MasterGame.MasterGameID));
+            }
+
             List<MasterGameYearViewModel> viewModels = relevantGames.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
 
             return viewModels;
@@ -115,8 +125,14 @@ namespace FantasyCritic.Web.Controllers.API
 
         public async Task<ActionResult<List<int>>> SupportedYears()
         {
-            var supportedYears = await _fantasyCriticService.GetSupportedYears();
-            var years = supportedYears.Select(x => x.Year).Where(x => x > 2017).OrderByDescending(x => x);
+            var supportedYears = await GetSupportedYears();
+            return supportedYears.Select(x => x.Year).ToList();
+        }
+
+        private async Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
+        {
+            IReadOnlyList<SupportedYear> supportedYears = await _fantasyCriticService.GetSupportedYears();
+            var years = supportedYears.Where(x => x.Year > 2017).OrderByDescending(x => x);
             return years.ToList();
         }
     }

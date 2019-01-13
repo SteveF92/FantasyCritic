@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -184,6 +185,20 @@ namespace FantasyCritic.MySQL
                 var entities = await connection.QueryAsync<EligibilityLevelEntity>("select * from tbleligibilitylevel;");
                 _eligibilityLevels = entities.Select(x => x.ToDomain()).ToList();
                 return _eligibilityLevels;
+            }
+        }
+
+        public async Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)
+        {
+            var sql = "select distinct MasterGameID from tblpublishergame " +
+                      "join tblpublisher on(tblpublisher.PublisherID = tblpublishergame.PublisherID) " +
+                      "join tblleague on (tblleague.LeagueID = tblpublisher.LeagueID) " +
+                      "where Year = @year and tblleague.TestLeague = 0";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<Guid> guids = await connection.QueryAsync<Guid>(sql, new { year });
+                return guids.ToList();
             }
         }
     }
