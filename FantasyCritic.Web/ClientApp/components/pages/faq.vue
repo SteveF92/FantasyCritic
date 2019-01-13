@@ -159,6 +159,11 @@
       <p class="text-well">
         Bids are processed on Monday mornings at 9AM UTC.
       </p>
+      <h3>How are ties handled on bids?</h3>
+      <p class="text-well">
+        If two or more players bid the same amount for the same game, the tie goes to the player with less projected points, and then if THAT's a tie, the game goes to the person who drafted later in
+        the draft. My hope is that we rarely have to go to that level of tiebreaker.
+      </p>
       <br />
 
       <h2><a name="scoring">Scoring</a></h2>
