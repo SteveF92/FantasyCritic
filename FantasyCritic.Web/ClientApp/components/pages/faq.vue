@@ -31,7 +31,7 @@
           <li>Try an incognito window.</li>
           <li>Login first then try clicking the link.</li>
           <li>Logout first then try clicking the link.</li>
-          <li>Try resending the email by click on "Manage Account" in the dropdown that comes up when you click your username in the top right, and using that link.</li>
+          <li>Try resending the email by clicking on "Manage Account" in the dropdown that comes up when you click your username in the top right, and using that link.</li>
           <li>Try a combination of these things.</li>
           <li>If all else fails, contact me.</li>
         </ol>
