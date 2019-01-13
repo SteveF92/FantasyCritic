@@ -62,6 +62,7 @@ namespace FantasyCritic.Web
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
             services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
             services.AddScoped<IFantasyCriticRepo>(factory => fantasyCriticRepo);
+            services.AddScoped<IMasterGameRepo>(factory => masterGameRepo);
             services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 

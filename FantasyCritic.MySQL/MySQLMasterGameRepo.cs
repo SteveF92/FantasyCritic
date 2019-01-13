@@ -17,14 +17,23 @@ namespace FantasyCritic.MySQL
     {
         private readonly string _connectionString;
         private IReadOnlyList<EligibilityLevel> _eligibilityLevels;
+        private Dictionary<Guid, MasterGame> _masterGamesCache;
+        private Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
 
         public MySQLMasterGameRepo(string connectionString)
         {
             _connectionString = connectionString;
+            _masterGamesCache = new Dictionary<Guid, MasterGame>();
+            _masterGameYearsCache = new Dictionary<int, Dictionary<Guid, MasterGameYear>>();
         }
 
         public async Task<IReadOnlyList<MasterGame>> GetMasterGames()
         {
+            if (_masterGamesCache.Any())
+            {
+                return _masterGamesCache.Values.ToList();
+            }
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var masterGameResults = await connection.QueryAsync<MasterGameEntity>("select * from tblmastergame;");
@@ -40,12 +49,18 @@ namespace FantasyCritic.MySQL
                     masterGames.Add(domain);
                 }
 
+                _masterGamesCache = masterGames.ToDictionary(x => x.MasterGameID, y => y);
                 return masterGames;
             }
         }
 
         public async Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
         {
+            if (_masterGameYearsCache.ContainsKey(year))
+            {
+                return _masterGameYearsCache[year].Values.ToList();
+            }
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from vwmastergame where Year = @year;", new { year });
@@ -61,44 +76,43 @@ namespace FantasyCritic.MySQL
                     masterGames.Add(domain);
                 }
 
+                _masterGameYearsCache[year] = masterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
+
                 return masterGames;
             }
         }
 
         public async Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            if (!_masterGamesCache.Any())
             {
-                MasterGameEntity masterGame = await connection.QuerySingleOrDefaultAsync<MasterGameEntity>("select * from tblmastergame where MasterGameID = @masterGameID", new { masterGameID });
-                if (masterGame == null)
-                {
-                    return Maybe<MasterGame>.None;
-                }
-
-                IEnumerable<MasterSubGameEntity> masterSubGames = await connection.QueryAsync<MasterSubGameEntity>("select * from tblmastersubgame where MasterGameID = @masterGameID", new { masterGameID });
-
-                EligibilityLevel eligibilityLevel = await GetEligibilityLevel(masterGame.EligibilityLevel);
-                MasterGame domain = masterGame.ToDomain(masterSubGames.Select(x => x.ToDomain()), eligibilityLevel);
-                return Maybe<MasterGame>.From(domain);
+                await GetMasterGames();
             }
+
+            _masterGamesCache.TryGetValue(masterGameID, out MasterGame foundMasterGame);
+            if (foundMasterGame is null)
+            {
+                return Maybe<MasterGame>.None;
+            }
+
+            return foundMasterGame;
         }
 
         public async Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            if (!_masterGameYearsCache.ContainsKey(year))
             {
-                MasterGameYearEntity masterGame = await connection.QuerySingleOrDefaultAsync<MasterGameYearEntity>("select * from vwmastergame where MasterGameID = @masterGameID and Year = @year", new { masterGameID, year });
-                if (masterGame == null)
-                {
-                    return Maybe<MasterGameYear>.None;
-                }
-
-                IEnumerable<MasterSubGameEntity> masterSubGames = await connection.QueryAsync<MasterSubGameEntity>("select * from tblmastersubgame where MasterGameID = @masterGameID", new { masterGameID });
-
-                EligibilityLevel eligibilityLevel = await GetEligibilityLevel(masterGame.EligibilityLevel);
-                MasterGameYear domain = masterGame.ToDomain(masterSubGames.Select(x => x.ToDomain()), eligibilityLevel, year);
-                return Maybe<MasterGameYear>.From(domain);
+                await GetMasterGameYears(year);
             }
+
+            var yearCache = _masterGameYearsCache[year];
+            yearCache.TryGetValue(masterGameID, out MasterGameYear foundMasterGame);
+            if (foundMasterGame is null)
+            {
+                return Maybe<MasterGameYear>.None;
+            }
+
+            return foundMasterGame;
         }
 
         public async Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
