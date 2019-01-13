@@ -107,15 +107,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            bool neverStarted = true;
-            foreach (var year in league.Value.Years)
-            {
-                var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
-                if (leagueYear.Value.PlayStatus.PlayStarted)
-                {
-                    neverStarted = false;
-                }
-            }
+            bool hasBeenStarted = await _fantasyCriticService.LeagueHasBeenStarted(league.Value.LeagueID);
+            bool neverStarted = !hasBeenStarted;
 
             var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, userIsInvitedToLeague, neverStarted, userIsInLeague);
             return Ok(leagueViewModel);

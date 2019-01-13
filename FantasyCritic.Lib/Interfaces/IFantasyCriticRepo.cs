@@ -74,5 +74,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task DeleteLeagueYear(LeagueYear leagueYear);
         Task DeleteLeague(League league);
         Task DeleteLeagueActions(Publisher publisher);
+        Task<bool> LeagueHasBeenStarted(Guid leagueID);
     }
 }

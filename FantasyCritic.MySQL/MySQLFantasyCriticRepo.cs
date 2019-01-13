@@ -985,5 +985,22 @@ namespace FantasyCritic.MySQL
                     deleteObject);
             }
         }
+
+        public Task<bool> LeagueHasBeenStarted(Guid leagueID)
+        {
+            var selectObject = new
+            {
+                leagueID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteScalarAsync<bool>(
+                    "select count(1) from tblleague " +
+                    "join tblleagueyear on (tblleague.LeagueID = tblleagueyear.LeagueID) " +
+                    "where PlayStatus <> 'NotStartedDraft' and tblleague.LeagueID = @leagueID;",
+                    selectObject);
+            }
+        }
     }
 }

@@ -1086,5 +1086,10 @@ namespace FantasyCritic.Lib.Services
 
             await _fantasyCriticRepo.DeleteLeague(league);
         }
+
+        public Task<bool> LeagueHasBeenStarted(Guid leagueID)
+        {
+            return _fantasyCriticRepo.LeagueHasBeenStarted(leagueID);
+        }
     }
 }
