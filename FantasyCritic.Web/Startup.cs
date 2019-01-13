@@ -52,7 +52,8 @@ namespace FantasyCritic.Web
             // Add application services.
             var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
-            var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString, userStore);
+            var masterGameRepo = new MySQLMasterGameRepo(connectionString);
+            var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString, userStore, masterGameRepo);
             var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
             SendGridEmailSender sendGridEmailSender = new SendGridEmailSender();
 

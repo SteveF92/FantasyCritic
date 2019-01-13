@@ -39,18 +39,8 @@ namespace FantasyCritic.Lib.Interfaces
 
         Task<IReadOnlyList<SupportedYear>> GetSupportedYears();
 
-        Task<IReadOnlyList<MasterGame>> GetMasterGames();
-        Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year);
-        Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);
-        Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year);
-        Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame);
-        Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame);
-
         Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year);
         Task UpdateFantasyPoints(Dictionary<Guid, decimal?> publisherGameScores);
-        Task CreateMasterGame(MasterGame masterGame);
-        Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels();
-        Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel);
         Task<Result> RemovePublisherGame(Guid publisherGameID);
         Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
 

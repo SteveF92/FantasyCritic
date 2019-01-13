@@ -21,12 +21,14 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
+        private readonly IMasterGameRepo _masterGameRepo;
         private readonly IClock _clock;
 
-        public FantasyCriticService(FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+        public FantasyCriticService(FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock)
         {
             _userManager = userManager;
             _fantasyCriticRepo = fantasyCriticRepo;
+            _masterGameRepo = masterGameRepo;
             _clock = clock;
         }
 
@@ -54,7 +56,7 @@ namespace FantasyCritic.Lib.Services
 
         public Task CreateMasterGame(MasterGame masterGame)
         {
-            return _fantasyCriticRepo.CreateMasterGame(masterGame);
+            return _masterGameRepo.CreateMasterGame(masterGame);
         }
 
         public async Task<Result<League>> CreateLeague(LeagueCreationParameters parameters)
@@ -403,32 +405,32 @@ namespace FantasyCritic.Lib.Services
 
         public Task<IReadOnlyList<MasterGame>> GetMasterGames()
         {
-            return _fantasyCriticRepo.GetMasterGames();
+            return _masterGameRepo.GetMasterGames();
         }
 
         public Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
         {
-            return _fantasyCriticRepo.GetMasterGameYears(year);
+            return _masterGameRepo.GetMasterGameYears(year);
         }
 
         public Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
         {
-            return _fantasyCriticRepo.GetMasterGame(masterGameID);
+            return _masterGameRepo.GetMasterGame(masterGameID);
         }
 
         public Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year)
         {
-            return _fantasyCriticRepo.GetMasterGameYear(masterGameID, year);
+            return _masterGameRepo.GetMasterGameYear(masterGameID, year);
         }
 
         public Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
         {
-            return _fantasyCriticRepo.UpdateCriticStats(masterGame, openCriticGame);
+            return _masterGameRepo.UpdateCriticStats(masterGame, openCriticGame);
         }
 
         public Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame)
         {
-            return _fantasyCriticRepo.UpdateCriticStats(masterSubGame, openCriticGame);
+            return _masterGameRepo.UpdateCriticStats(masterSubGame, openCriticGame);
         }
 
         public async Task<bool> UserIsInLeague(League league, FantasyCriticUser user)
@@ -439,12 +441,12 @@ namespace FantasyCritic.Lib.Services
 
         public Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel)
         {
-            return _fantasyCriticRepo.GetEligibilityLevel(eligibilityLevel);
+            return _masterGameRepo.GetEligibilityLevel(eligibilityLevel);
         }
 
         public Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
         {
-            return _fantasyCriticRepo.GetEligibilityLevels();
+            return _masterGameRepo.GetEligibilityLevels();
         }
 
         public async Task<Result> RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
