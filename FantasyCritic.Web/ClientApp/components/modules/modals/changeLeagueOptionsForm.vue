@@ -12,9 +12,10 @@
         </b-form-checkbox>
       </div>
       <div class="form-group">
-        <b-form-checkbox v-model="testLeague">
+        <b-form-checkbox v-model="testLeague" :disabled="initialTestLeague">
           <span class="checkbox-label">Test League</span>
-          <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
+          <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.
+          If you want to change a test league into a regular league, you'll need to contact me.</p>
         </b-form-checkbox>
       </div>
     </div>
@@ -33,7 +34,8 @@
         newleagueName: "",
         publicLeague: true,
         testLeague: false,
-        errorInfo: ""
+        errorInfo: "",
+        initialTestLeague: false
       }
     },
     props: ['league'],
@@ -63,6 +65,7 @@
       this.newleagueName = this.league.leagueName;
       this.publicLeague = this.league.publicLeague;
       this.testLeague = this.league.testLeague;
+      this.initialTestLeague = this.league.testLeague;
     }
   }
 </script>

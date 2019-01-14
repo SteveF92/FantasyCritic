@@ -168,6 +168,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
+            if (league.Value.TestLeague)
+            {
+                //Users can't change a test league to a non test.
+                request.TestLeague = true;
+            }
+
             await _fantasyCriticService.ChangeLeagueOptions(league.Value, request.LeagueName, request.PublicLeague, request.TestLeague);
             return Ok();
         }
