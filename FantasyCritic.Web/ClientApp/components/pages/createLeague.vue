@@ -114,6 +114,12 @@
                 <p>If checked, anyone with a link to your league will be able to view it. If unchecked, your league will only be viewable by its members.</p>
               </b-form-checkbox>
             </div>
+            <div>
+              <b-form-checkbox v-model="testLeague">
+                <span class="checkbox-label">Test League</span>
+                <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
+              </b-form-checkbox>
+            </div>
           </div>
         </div>
         <div class="form-group">
@@ -148,6 +154,7 @@ export default {
           allowYearlyInstallments: true,
           allowEarlyAccess: false,
           publicLeague: true,
+          testLeague: false,
           possibleLeagueOptions: null,
           piecewiseStyle: {
             "backgroundColor": "#ccc",
@@ -212,6 +219,7 @@ export default {
             allowYearlyInstallments: this.allowYearlyInstallments,
             allowEarlyAccess: this.allowEarlyAccess,
             publicLeague: this.publicLeague,
+            testLeague: this.testLeague,
             draftSystem: "Flexible",
             pickupSystem: "Budget",
             scoringSystem: "Standard"
