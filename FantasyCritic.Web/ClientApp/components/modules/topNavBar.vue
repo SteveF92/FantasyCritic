@@ -150,12 +150,15 @@
     }
   }
 
-  @media only screen and (max-width: 490px) {
-    .topnav-icon {
-      font-size: 15px;
-    }
+  @media only screen and (max-width: 505px) {
     .brand-nav {
       display: none;
+    }
+  }
+
+  @media only screen and (max-width: 425px) {
+    .topnav-icon {
+      font-size: 15px;
     }
   }
 
