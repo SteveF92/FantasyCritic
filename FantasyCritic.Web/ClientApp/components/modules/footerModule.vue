@@ -11,25 +11,25 @@
           <div>
             <router-link :to="{ name: 'howtoplay' }" title="How To Play">
               <font-awesome-icon icon="book-open" size="lg" />
-              How to Play
+              <span class="full-nav">How to Play</span>
             </router-link>
           </div>
           <div>
             <router-link :to="{ name: 'masterGames' }" title="Games">
               <font-awesome-icon icon="gamepad" size="lg" />
-              Games
+              <span class="full-nav">Games</span>
             </router-link>
           </div>
           <div>
             <router-link :to="{ name: 'faq' }" title="FAQ">
               <font-awesome-icon icon="question-circle" size="lg" />
-              FAQ
+              <span class="full-nav">FAQ</span>
             </router-link>
           </div>
           <div>
             <router-link :to="{ name: 'about' }" title="About">
               <font-awesome-icon icon="info-circle" size="lg" />
-              About
+              <span class="full-nav">About</span>
             </router-link>
           </div>
         </div>

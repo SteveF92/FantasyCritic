@@ -1,5 +1,11 @@
-@media only screen and (max-width: 374px) {
+@media only screen and (max-width: 378px) {
     .full-contact {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 350px) {
+    .full-nav {
         display: none;
     }
 }
