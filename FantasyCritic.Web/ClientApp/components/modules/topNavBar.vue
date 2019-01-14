@@ -132,13 +132,13 @@
     margin-right: 5px;
   }
 
-  @media only screen and (max-width: 820px) {
+  @media only screen and (max-width: 840px) {
     .full-logo {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 821px) {
+  @media only screen and (min-width: 841px) {
     .minimal-logo {
       display: none;
     }
