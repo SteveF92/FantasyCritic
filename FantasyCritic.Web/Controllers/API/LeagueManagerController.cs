@@ -254,10 +254,15 @@ namespace FantasyCritic.Web.Controllers.API
 
             string inviteEmail = request.InviteEmail.ToLower();
             FantasyCriticUser inviteUser = await _userManager.FindByEmailAsync(inviteEmail);
+            string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
             if (inviteUser is null)
             {
-                string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
-                await _emailSender.SendInviteEmail(inviteEmail, league.Value, baseURL);
+                await _emailSender.SendSiteInviteEmail(inviteEmail, league.Value, baseURL);
+            }
+            else
+            {
+                await _emailSender.SendLeagueInviteEmail(inviteEmail, league.Value, baseURL);
+
             }
 
             Result result = await _fantasyCriticService.InviteUser(league.Value, inviteEmail);
