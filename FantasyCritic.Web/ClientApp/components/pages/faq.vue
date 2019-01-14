@@ -95,6 +95,16 @@
         So the "backstory" of Fantasy Critic is that you are the CEO of a video game publisher, and you need to decide which games currently in development are worth publishing. Your "Publisher" is
         just your "team" name. It's just a flavor thing. You can make it something serious or a big joke. Doesn't matter at all.
       </p>
+      <h3>What is a 'test league'?</h3>
+      <p class="text-well">
+        Test leagues function exactly the same as normal leagues, except they don't affect the overall stats for games in the system, such as hype factor.
+        This is to prevent people from manipulating the stats.
+      </p>
+      <h3>My league was set to a test league and it won't let me change it back!</h3>
+      <p class="text-well">
+        League Managers can set a league as test league whenever they want, but cannot change a test league into a regular league. You will need to contact me if you want me to change your league.
+        If I suspect that a league doesn't represent an honest effort by at least two seperate people, I reserve the right to set it as a test league.
+      </p>
       <br />
 
       <h2><a name="drafting">Drafting</a></h2>
