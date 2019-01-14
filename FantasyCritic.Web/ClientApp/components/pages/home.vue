@@ -24,7 +24,7 @@
         <div v-if="anyManagedLeagues">
           <h2>Leagues I Manage</h2>
           <ul>
-            <li v-for="league in myLeagues" v-if="league.isManager">
+            <li v-for="league in myLeagues" v-if="league.isManager && !league.testLeague">
               <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
             </li>
           </ul>
@@ -34,7 +34,16 @@
         <div v-if="anyPlayerLeagues">
           <h2>Leagues I Play In</h2>
           <ul>
-            <li v-for="league in myLeagues" v-if="!league.isManager">
+            <li v-for="league in myLeagues" v-if="!league.isManager && !league.testLeague">
+              <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+            </li>
+          </ul>
+          <hr />
+        </div>
+        <div v-if="anyTestLeagues">
+          <h2>Test Leagues</h2>
+          <ul>
+            <li v-for="league in myLeagues" v-if="league.testLeague">
               <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
             </li>
           </ul>
@@ -45,7 +54,7 @@
           <hr />
           <h3>You are not part of any leagues! Why not start one?</h3>
         </div>
-        
+
       </div>
       <div class="col-lg-6 col-md-12">
         <tweets></tweets>
@@ -75,6 +84,9 @@
         computed: {
           anyManagedLeagues() {
             return _(this.myLeagues).some('isManager');
+          },
+          anyTestLeagues() {
+            return _(this.myLeagues).some('testLeague');
           },
           anyPlayerLeagues() {
             return _.some(this.myLeagues, ['isManager', false]);
