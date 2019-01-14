@@ -17,6 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             Years = league.Years;
             ActiveYear = Years.Max();
             PublicLeague = league.PublicLeague;
+            TestLeague = league.TestLeague;
             UserIsInLeague = userIsInLeague;
         }
 
@@ -32,6 +33,7 @@ namespace FantasyCritic.Web.Models.Responses
             Players = players.Select(x => new PlayerViewModel(league, x)).ToList();
             NeverStarted = neverStarted;
             PublicLeague = league.PublicLeague;
+            TestLeague = league.TestLeague;
             UserIsInLeague = userIsInLeague;
         }
 
@@ -45,6 +47,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int ActiveYear { get; }
         public bool NeverStarted { get; }
         public bool PublicLeague { get; }
+        public bool TestLeague { get; }
         public bool UserIsInLeague { get; }
     }
 }

@@ -1,13 +1,25 @@
 <template>
-  <b-modal id="changeLeagueNameForm" ref="changeLeagueNameFormRef" title="Change League Name" @hidden="clearData">
+  <b-modal id="changeLeagueNameForm" ref="changeLeagueNameFormRef" title="Change League Options" @hidden="clearData">
     <div class="form-horizontal">
       <div class="form-group">
         <label for="newleagueName" class="control-label">League Name</label>
         <input v-model="newleagueName" id="newleagueName" name="newleagueName" type="text" class="form-control input" />
       </div>
+      <div class="form-group">
+        <b-form-checkbox v-model="publicLeague">
+          <span class="checkbox-label">Public League</span>
+          <p>If checked, anyone with a link to your league will be able to view it. If unchecked, your league will only be viewable by its members.</p>
+        </b-form-checkbox>
+      </div>
+      <div class="form-group">
+        <b-form-checkbox v-model="testLeague">
+          <span class="checkbox-label">Test League</span>
+          <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
+        </b-form-checkbox>
+      </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Change Name" v-on:click="changeleagueName" :disabled="!newleagueName"/>
+      <input type="submit" class="btn btn-primary" value="Change Settings" v-on:click="changeleagueName" :disabled="!newleagueName"/>
     </div>
   </b-modal>
 </template>
@@ -19,6 +31,8 @@
     data() {
       return {
         newleagueName: "",
+        publicLeague: true,
+        testLeague: false,
         errorInfo: ""
       }
     },
@@ -27,18 +41,15 @@
       changeleagueName() {
         var model = {
           leagueID: this.league.leagueID,
-          leagueName: this.newleagueName
+          leagueName: this.newleagueName,
+          publicLeague: this.publicLeague,
+          testLeague: this.testLeague
         };
         axios
-          .post('/api/leagueManager/changeleagueName', model)
+          .post('/api/leagueManager/ChangeLeagueOptions', model)
           .then(response => {
             this.$refs.changeLeagueNameFormRef.hide();
-            let actionInfo = {
-              oldName: this.league.leagueName,
-              newName: this.newleagueName,
-              fetchLeagueYear: true
-            };
-            this.$emit('leagueNameChanged', actionInfo);
+            this.$emit('leagueOptionsChanged');
             this.newleagueName = "";
           })
           .catch(response => {
@@ -50,6 +61,8 @@
     },
     mounted() {
       this.newleagueName = this.league.leagueName;
+      this.publicLeague = this.league.publicLeague;
+      this.testLeague = this.league.testLeague;
     }
   }
 </script>

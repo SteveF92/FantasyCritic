@@ -242,12 +242,12 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task ChangeLeagueName(League league, string leagueName)
+        public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("update tblleague SET LeagueName = @leagueName where LeagueID = @leagueID;",
-                    new { leagueID = league.LeagueID, leagueName });
+                await connection.ExecuteAsync("update tblleague SET LeagueName = @leagueName, PublicLeague = @publicLeague, TestLeague = @testLeague where LeagueID = @leagueID;",
+                    new { leagueID = league.LeagueID, leagueName, publicLeague, testLeague });
             }
         }
 

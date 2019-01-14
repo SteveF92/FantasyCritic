@@ -809,9 +809,9 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ChangePublisherName(publisher, publisherName);
         }
 
-        public Task ChangeLeagueName(League league, string leagueName)
+        public Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
         {
-            return _fantasyCriticRepo.ChangeLeagueName(league, leagueName);
+            return _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague);
         }
 
         public async Task<StartDraftResult> GetStartDraftResult(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> usersInLeague)

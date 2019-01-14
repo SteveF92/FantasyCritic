@@ -75,10 +75,10 @@
             Score a Game Manually
           </li>
           <li class="fake-link action">
-            <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit League Settings</router-link>
+            <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit Game Settings</router-link>
           </li>
           <li class="fake-link action" v-b-modal="'changeLeagueNameForm'">
-            Change League Name
+            Change League Options
           </li>
           <li class="fake-link action" v-b-modal="'addNewLeagueYear'">
             Start New Year
@@ -108,7 +108,7 @@
       <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
       <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
       <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
-      <changeLeagueNameForm :league="league" v-on:leagueNameChanged="leagueNameChanged"></changeLeagueNameForm>
+      <changeLeagueNameForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueNameForm>
 
     </div>
   </div>
@@ -315,9 +315,9 @@
         };
         this.$emit('actionTaken', actionInfo);
       },
-      leagueNameChanged(changeInfo) {
+      leagueOptionsChanged() {
         let actionInfo = {
-          message: 'League name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
+          message: 'League options have been updated',
           fetchLeague: true,
           fetchLeagueYear: true
         };

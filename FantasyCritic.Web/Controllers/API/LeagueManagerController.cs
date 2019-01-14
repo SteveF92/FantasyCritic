@@ -144,7 +144,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeLeagueName([FromBody] ChangeLeagueNameRequest request)
+        public async Task<IActionResult> ChangeLeagueOptions([FromBody] ChangeLeagueOptionsRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             if (currentUser == null)
@@ -168,7 +168,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            await _fantasyCriticService.ChangeLeagueName(league.Value, request.LeagueName);
+            await _fantasyCriticService.ChangeLeagueOptions(league.Value, request.LeagueName, request.PublicLeague, request.TestLeague);
             return Ok();
         }
 
