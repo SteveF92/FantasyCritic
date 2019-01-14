@@ -77,7 +77,7 @@
           <li class="fake-link action">
             <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit Game Settings</router-link>
           </li>
-          <li class="fake-link action" v-b-modal="'changeLeagueNameForm'">
+          <li class="fake-link action" v-b-modal="'changeLeagueOptionsForm'">
             Change League Options
           </li>
           <li class="fake-link action" v-b-modal="'addNewLeagueYear'">
@@ -108,7 +108,7 @@
       <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
       <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
       <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
-      <changeLeagueNameForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueNameForm>
+      <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
 
     </div>
   </div>
@@ -130,7 +130,7 @@
   import InvitePlayerForm from "components/modules/modals/invitePlayerForm";
   import RemoveGameForm from "components/modules/modals/removeGameForm";
   import ManuallyScoreGameForm from "components/modules/modals/manuallyScoreGameForm";
-  import ChangeLeagueNameForm from "components/modules/modals/changeLeagueNameForm";
+  import ChangeLeagueOptionsForm from "components/modules/modals/changeLeagueOptionsForm";
   import EditDraftOrderForm from "components/modules/modals/editDraftOrderForm";
   import SetPauseModal from "components/modules/modals/setPauseModal";
   import UndoLastDraftActionModal from "components/modules/modals/undoLastDraftActionModal";
@@ -157,7 +157,7 @@
       InvitePlayerForm,
       RemoveGameForm,
       ManuallyScoreGameForm,
-      ChangeLeagueNameForm,
+      ChangeLeagueOptionsForm,
       EditDraftOrderForm,
       SetPauseModal,
       UndoLastDraftActionModal,

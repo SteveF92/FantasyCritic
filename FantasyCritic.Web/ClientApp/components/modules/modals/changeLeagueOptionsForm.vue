@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="changeLeagueNameForm" ref="changeLeagueNameFormRef" title="Change League Options" @hidden="clearData">
+  <b-modal id="changeLeagueOptionsForm" ref="changeLeagueOptionsFormRef" title="Change League Options" @hidden="clearData">
     <div class="form-horizontal">
       <div class="form-group">
         <label for="newleagueName" class="control-label">League Name</label>
@@ -48,7 +48,7 @@
         axios
           .post('/api/leagueManager/ChangeLeagueOptions', model)
           .then(response => {
-            this.$refs.changeLeagueNameFormRef.hide();
+            this.$refs.changeLeagueOptionsFormRef.hide();
             this.$emit('leagueOptionsChanged');
             this.newleagueName = "";
           })
