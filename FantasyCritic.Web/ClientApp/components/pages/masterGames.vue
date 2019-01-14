@@ -1,11 +1,9 @@
 <template>
   <div>
     <div class="row league-header">
-      <h1>Master Games List</h1>
+      <h1 class="header">Master Games List</h1>
       <div class="year-selector">
-        <div>
-          <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" />
-        </div>
+        <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" />
       </div>
     </div>
     <div class="row games-table" v-if="gamesForYear && gamesForYear.length > 0">
@@ -129,14 +127,14 @@
   }
 </script>
 <style scoped>
+  .header {
+    max-width: 80%;
+  }
   .year-selector {
     position: absolute;
     right: 0px;
   }
 
-  .year-selector div {
-    float: left;
-  }
   .games-table {
     margin-left: 15px;
     margin-right: 15px;
