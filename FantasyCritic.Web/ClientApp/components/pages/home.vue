@@ -73,21 +73,21 @@
           Tweets
         },
         computed: {
-            anyManagedLeagues() {
-                return _(this.myLeagues).some('isManager');
-            },
-            anyPlayerLeagues() {
-                return _.some(this.myLeagues, ['isManager', false]);
-            },
-            anyInvitedLeagues() {
-                return this.invitedLeagues.length > 0;
-            },
-            noLeagues() {
-                return (!(this.anyPlayerLeagues || this.anyManagedLeagues || this.anyInvitedLeagues));
-            },
-            userInfo() {
-              return this.$store.getters.userInfo;
-            }
+          anyManagedLeagues() {
+            return _(this.myLeagues).some('isManager');
+          },
+          anyPlayerLeagues() {
+            return _.some(this.myLeagues, ['isManager', false]);
+          },
+          anyInvitedLeagues() {
+            return this.invitedLeagues.length > 0;
+          },
+          noLeagues() {
+            return (!(this.anyPlayerLeagues || this.anyManagedLeagues || this.anyInvitedLeagues));
+          },
+          userInfo() {
+            return this.$store.getters.userInfo;
+          }
         },
         methods: {
             fetchMyLeagues() {
