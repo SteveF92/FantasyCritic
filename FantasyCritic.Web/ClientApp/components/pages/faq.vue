@@ -105,6 +105,10 @@
         League Managers can set a league as test league whenever they want, but cannot change a test league into a regular league. You will need to contact me if you want me to change your league.
         If I suspect that a league doesn't represent an honest effort by at least two seperate people, I reserve the right to set it as a test league.
       </p>
+      <h3>How do I delete a league?</h3>
+      <p class="text-well">
+        As of now, you'll need to contact me. Renaming your league to something like "delete me!" and sending me your league ID (it's what appears afer 'league/' and before '/{year}' in the URL) helps.
+      </p>
       <br />
 
       <h2><a name="drafting">Drafting</a></h2>
