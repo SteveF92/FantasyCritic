@@ -132,13 +132,13 @@
     margin-right: 5px;
   }
 
-  @media only screen and (max-width: 840px) {
+  @media only screen and (max-width: 940px) {
     .full-logo {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 841px) {
+  @media only screen and (min-width: 941px) {
     .minimal-logo {
       display: none;
     }
@@ -162,13 +162,13 @@
     }
   }
 
-  @media only screen and (max-width: 659px) {
+  @media only screen and (max-width: 730px) {
     .full-nav {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 660px) {
+  @media only screen and (min-width: 729px) {
     .minimal-nav {
       display: none;
     }
