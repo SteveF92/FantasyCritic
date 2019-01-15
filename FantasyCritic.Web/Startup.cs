@@ -52,8 +52,6 @@ namespace FantasyCritic.Web
             // Add application services.
             var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
-            var masterGameRepo = new MySQLMasterGameRepo(connectionString);
-            var fantasyCriticRepo = new MySQLFantasyCriticRepo(connectionString, userStore, masterGameRepo);
             var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
             SendGridEmailSender sendGridEmailSender = new SendGridEmailSender();
 
@@ -61,8 +59,8 @@ namespace FantasyCritic.Web
 
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
             services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
-            services.AddScoped<IFantasyCriticRepo>(factory => fantasyCriticRepo);
-            services.AddScoped<IMasterGameRepo>(factory => masterGameRepo);
+            services.AddScoped<IMasterGameRepo>(factory => new MySQLMasterGameRepo(connectionString));
+            services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString)));
             services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
