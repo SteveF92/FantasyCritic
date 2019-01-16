@@ -118,7 +118,7 @@
         return game.estimatedReleaseDate + ' (Estimated)'
       },
       openCriticLink(game) {
-        return "https://opencritic.com/game/" + game.openCriticID + "/";
+        return "https://opencritic.com/game/" + game.openCriticID + "/a";
       }
     },
     mounted() {

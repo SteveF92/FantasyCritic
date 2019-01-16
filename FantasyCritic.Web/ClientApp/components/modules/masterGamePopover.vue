@@ -84,7 +84,7 @@
         return moment(game.releaseDate).format('MMMM Do, YYYY');
       },
       openCriticLink(game) {
-        return "https://opencritic.com/game/" + game.openCriticID + "/";
+        return "https://opencritic.com/game/" + game.openCriticID + "/a";
       },
       closePopover() {
         this.$refs.gamePopoverRef.doClose();
