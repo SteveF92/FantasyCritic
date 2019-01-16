@@ -486,9 +486,10 @@ namespace FantasyCritic.Lib.Services
         public async Task ProcessPickups(int year)
         {
             var leagueYears = await GetLeagueYears(year);
+            SystemWideValues systemWideValues = await GetLeagueWideValues();
             foreach (var leagueYear in leagueYears)
             {
-                await ProcessPickupsForLeagueYear(leagueYear);
+                await ProcessPickupsForLeagueYear(leagueYear, systemWideValues);
             }
         }
 
@@ -698,15 +699,13 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        private async Task ProcessPickupsForLeagueYear(LeagueYear leagueYear)
+        private async Task ProcessPickupsForLeagueYear(LeagueYear leagueYear, SystemWideValues systemWideValues)
         {
             var allActiveBids = await GetActiveBids(leagueYear);
             if (!allActiveBids.Any())
             {
                 return;
             }
-
-            SystemWideValues systemWideValues = await GetLeagueWideValues();
 
             var insufficientFundsBids = allActiveBids.Where(x => x.BidAmount > x.Publisher.Budget);
             var winnableBids = GetWinnableBids(allActiveBids, leagueYear.Options, systemWideValues);
@@ -726,7 +725,7 @@ namespace FantasyCritic.Lib.Services
             //When we are done, we run again.
             //This will repeat until there are no active bids.
             await Task.Delay(5);
-            await ProcessPickupsForLeagueYear(leagueYear);
+            await ProcessPickupsForLeagueYear(leagueYear, systemWideValues);
         }
 
         private async Task<IReadOnlyList<PickupBid>> GetActiveBids(LeagueYear leagueYear)
