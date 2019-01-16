@@ -47,5 +47,10 @@ namespace FantasyCritic.Lib.Domain
         {
             return BidID.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return $"{Publisher.PublisherName}|{MasterGame.GameName}|{BidAmount}|{Priority}|{Successful}";
+        }
     }
 }
