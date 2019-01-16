@@ -72,7 +72,7 @@ namespace FantasyCritic.Lib.Domain
 
         public bool HasRemainingGameSpot(int totalSpots)
         {
-            if (totalSpots > PublisherGames.Count)
+            if (totalSpots > PublisherGames.Count(x => !x.CounterPick))
             {
                 return true;
             }
