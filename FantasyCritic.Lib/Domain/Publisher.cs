@@ -70,6 +70,16 @@ namespace FantasyCritic.Lib.Domain
             return PublisherGames.Sum(x => x.GetProjectedFantasyPoints(scoringSystem, systemWideValues));
         }
 
+        public bool HasRemainingGameSpot(int totalSpots)
+        {
+            if (totalSpots > PublisherGames.Count)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public bool Equals(Publisher other)
         {
             if (ReferenceEquals(null, other)) return false;

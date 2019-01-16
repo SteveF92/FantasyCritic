@@ -483,14 +483,24 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
         }
 
-        public async Task ProcessPickups(int year)
+        public async Task ProcessPickups(Guid leagueID, int year)
         {
-            var leagueYears = await GetLeagueYears(year);
-            SystemWideValues systemWideValues = await GetLeagueWideValues();
-            foreach (var leagueYear in leagueYears)
+            var league = await _fantasyCriticRepo.GetLeagueByID(leagueID);
+            if (league.HasNoValue)
             {
-                await ProcessPickupsForLeagueYear(leagueYear, systemWideValues);
+                throw new Exception("Bad!");
             }
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league.Value, year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Bad!");
+            }
+            SystemWideValues systemWideValues = await GetLeagueWideValues();
+            await ProcessPickupsForLeagueYear(leagueYear.Value, systemWideValues);
+            //foreach (var leagueYear in leagueYears)
+            //{
+            //    await ProcessPickupsForLeagueYear(leagueYear, systemWideValues);
+            //}
         }
 
         public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
@@ -707,19 +717,24 @@ namespace FantasyCritic.Lib.Services
                 return;
             }
 
+            var noSpaceLeftBids = allActiveBids.Where(x => !x.Publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames));
             var insufficientFundsBids = allActiveBids.Where(x => x.BidAmount > x.Publisher.Budget);
-            var winnableBids = GetWinnableBids(allActiveBids, leagueYear.Options, systemWideValues);
+
+            var validBids = allActiveBids.Except(noSpaceLeftBids).Except(insufficientFundsBids);
+            var winnableBids = GetWinnableBids(validBids, leagueYear.Options, systemWideValues);
             var winningBids = GetWinningBids(winnableBids);
 
             var takenGames = winningBids.Select(x => x.MasterGame);
             var losingBids = allActiveBids
                 .Except(winningBids)
+                .Except(noSpaceLeftBids)
                 .Except(insufficientFundsBids)
                 .Where(x => takenGames.Contains(x.MasterGame))
                 .Select(x => new FailedPickupBid(x, "Publisher was outbid."));
 
             var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget."));
-            var failedBids = losingBids.Concat(insufficientFundsBidFailures);
+            var noSpaceLeftBidFailures = noSpaceLeftBids.Select(x => new FailedPickupBid(x, "No roster spots available."));
+            var failedBids = losingBids.Concat(insufficientFundsBidFailures).Concat(noSpaceLeftBidFailures);
             await ProcessSuccessfulAndFailedBids(winningBids, failedBids);
 
             //When we are done, we run again.
