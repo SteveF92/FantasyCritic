@@ -1110,5 +1110,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.LeagueHasBeenStarted(leagueID);
         }
+
+        public Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser)
+        {
+            return _fantasyCriticRepo.GetFollowedLeagues(currentUser);
+        }
     }
 }

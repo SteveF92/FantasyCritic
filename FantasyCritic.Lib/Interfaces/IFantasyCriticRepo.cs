@@ -20,6 +20,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
         Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser);
         Task<IReadOnlyList<League>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);
+        Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser);
         Task SaveInvite(League league, string emailAddress);
         Task RescindInvite(League league, string emailAddress);
         Task<IReadOnlyList<string>> GetOutstandingInvitees(League league);

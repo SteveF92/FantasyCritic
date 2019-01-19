@@ -417,6 +417,25 @@ namespace FantasyCritic.MySQL
             return leagues;
         }
 
+        public async Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser)
+        {
+            var query = new
+            {
+                userID = currentUser.UserID
+            };
+
+            IEnumerable<LeagueEntity> leagueEntities;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                leagueEntities = await connection.QueryAsync<LeagueEntity>(
+                    "select tblleague.* from tblleague join tbluserfollowingleague on (tblleague.LeagueID = tbluserfollowingleague.LeagueID) where tbluserfollowingleague.UserID = @userID;",
+                    query);
+            }
+
+            IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
+            return leagues;
+        }
+
         public Task SaveInvite(League league, string emailAddress)
         {
             var saveObject = new

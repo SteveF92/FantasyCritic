@@ -65,6 +65,20 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModels);
         }
 
+        public async Task<IActionResult> FollowedLeagues()
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            IReadOnlyList<League> leaguesFollowing = await _fantasyCriticService.GetFollowedLeagues(currentUser);
+
+            List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
+            foreach (var league in leaguesFollowing)
+            {
+                viewModels.Add(new LeagueViewModel(league, false, false));
+            }
+
+            return Ok(viewModels);
+        }
+
         public async Task<IActionResult> MyInvites()
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
