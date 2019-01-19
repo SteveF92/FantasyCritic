@@ -40,6 +40,17 @@
           </ul>
           <hr />
         </div>
+
+        <div v-if="anyFollowedLeagues">
+          <h2>Leagues I'm Following</h2>
+          <ul>
+            <li v-for="league in myFollowedLeagues">
+              <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+            </li>
+          </ul>
+          <hr />
+        </div>
+
         <div v-if="anyTestLeagues">
           <h2>Test Leagues</h2>
           <ul>
@@ -64,68 +75,78 @@
 </template>
 
 <script>
-    import Vue from "vue";
-    import axios from "axios";
-    import _ from "lodash";
-    import Tweets from "components/modules/tweets";
+  import Vue from "vue";
+  import axios from "axios";
+  import _ from "lodash";
+  import Tweets from "components/modules/tweets";
 
-    export default {
-        data() {
-            return {
-                errorInfo: "",
-                myLeagues: [],
-                invitedLeagues: [],
-                fetchingLeagues: true
-            }
-        },
-        components: {
-          Tweets
-        },
-        computed: {
-          anyManagedLeagues() {
-            return _(this.myLeagues).some('isManager');
-          },
-          anyTestLeagues() {
-            return _(this.myLeagues).some('testLeague');
-          },
-          anyPlayerLeagues() {
-            return _.some(this.myLeagues, ['isManager', false]);
-          },
-          anyInvitedLeagues() {
-            return this.invitedLeagues.length > 0;
-          },
-          noLeagues() {
-            return (!(this.anyPlayerLeagues || this.anyManagedLeagues || this.anyInvitedLeagues));
-          },
-          userInfo() {
-            return this.$store.getters.userInfo;
-          }
-        },
-        methods: {
-            fetchMyLeagues() {
-              axios
-                .get('/api/League/MyLeagues')
-                .then(response => {
-                  this.myLeagues = response.data;
-                  this.fetchingLeagues = false;
-                })
-                .catch(returnedError => (this.error = returnedError));
-            },
-            fetchInvitedLeagues() {
-              axios
-                .get('/api/League/MyInvites')
-                .then(response => {
-                  this.invitedLeagues = response.data;
-                  this.fetchMyLeagues();
-
-                })
-                .catch(returnedError => (this.error = returnedError));
-            }
-        },
-        mounted() {
-          this.fetchInvitedLeagues();
-        }
+  export default {
+    data() {
+      return {
+        errorInfo: "",
+        myLeagues: [],
+        invitedLeagues: [],
+        myFollowedLeagues: [],
+        fetchingLeagues: true
+      }
+    },
+    components: {
+      Tweets
+    },
+    computed: {
+      anyManagedLeagues() {
+        return _(this.myLeagues).some('isManager');
+      },
+      anyTestLeagues() {
+        return _(this.myLeagues).some('testLeague');
+      },
+      anyPlayerLeagues() {
+        return _.some(this.myLeagues, ['isManager', false]);
+      },
+      anyInvitedLeagues() {
+        return this.invitedLeagues.length > 0;
+      },
+      anyFollowedLeagues() {
+        return this.myFollowedLeagues.length > 0;
+      },
+      noLeagues() {
+        return (!(this.anyPlayerLeagues || this.anyManagedLeagues || this.anyInvitedLeagues));
+      },
+      userInfo() {
+        return this.$store.getters.userInfo;
+      }
+    },
+    methods: {
+      async fetchMyLeagues() {
+        axios
+          .get('/api/League/MyLeagues')
+          .then(response => {
+            this.myLeagues = response.data;
+          })
+          .catch(returnedError => (this.error = returnedError));
+      },
+      async fetchInvitedLeagues() {
+        axios
+          .get('/api/League/MyInvites')
+          .then(response => {
+            this.invitedLeagues = response.data;
+          })
+          .catch(returnedError => (this.error = returnedError));
+      },
+      async fetchFollowedLeagues() {
+        axios
+          .get('/api/League/FollowedLeagues')
+          .then(response => {
+            this.myFollowedLeagues = response.data;
+          })
+          .catch(returnedError => (this.error = returnedError));
+      }
+    },
+    async mounted() {
+      await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues()]);
+      this.fetchingLeagues = false;
     }
+  }
 </script>
 <style scoped>
   .learn-to-play-button {
