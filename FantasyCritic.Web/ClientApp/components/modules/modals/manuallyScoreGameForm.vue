@@ -2,6 +2,8 @@
   <div>
     <form class="form-horizontal" v-on:submit.prevent="manuallyScorePublisherGame" hide-footer>
       <b-modal id="manuallyScorePublisherGame" ref="manuallyScorePublisherGameRef" title="Manually Score Publisher Game" hide-footer @hidden="clearData">
+        <div class="alert alert-warning">Warning! This feature is intended to deal with exceptional circumstances.
+        See the <a href="/faq#scoring" class="text-secondary" target="_blank">FAQ</a> page for more info.</div>
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
           <b-form-select v-model="manuallyScoreGamePublisher">
@@ -28,7 +30,7 @@
             </div>
             <div v-if="!removeManualScore">
               <label for="manualScore" class="control-label">Score</label>
-              <input v-model="manualScore" name="manualScore" type="text" class="form-control input"/>
+              <input v-model="manualScore" name="manualScore" type="text" class="form-control input" />
             </div>
           </div>
         </div>

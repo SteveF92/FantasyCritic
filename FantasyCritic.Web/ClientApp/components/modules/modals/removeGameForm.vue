@@ -1,7 +1,8 @@
 <template>
   <div>
     <form class="form-horizontal" v-on:submit.prevent="removePublisherGame" hide-footer>
-      <b-modal id="removePublisherGame" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer @hidden="clearData">
+      <b-modal id="removePublisherGame" size="lg" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer @hidden="clearData">
+        <div class="alert alert-warning">Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be removing games from player's rosters.</div>
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
           <b-form-select v-model="removeGamePublisher">

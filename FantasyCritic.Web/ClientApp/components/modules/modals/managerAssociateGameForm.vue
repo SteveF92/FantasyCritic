@@ -1,5 +1,6 @@
 <template>
   <b-modal id="associateGameForm" ref="associateGameFormRef" size="lg" title="Associate Publisher Game" hide-footer @hidden="clearData">
+    <div class="alert alert-info">This form allows you to link a game that currently says "Not Linked to Master Game" with the correct master game.</div>
     <div class="form-group">
       <label for="associatePublisher" class="control-label">Publisher</label>
       <b-form-select v-model="associatePublisher">
