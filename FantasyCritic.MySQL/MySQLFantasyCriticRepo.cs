@@ -23,7 +23,6 @@ namespace FantasyCritic.MySQL
         private readonly string _connectionString;
         private readonly IReadOnlyFantasyCriticUserStore _userStore;
         private readonly IMasterGameRepo _masterGameRepo;
-        private IReadOnlyList<EligibilityLevel> _eligibilityLevels;
 
         public MySQLFantasyCriticRepo(string connectionString, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo)
         {

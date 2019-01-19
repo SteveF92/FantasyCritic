@@ -758,7 +758,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
-            var nextPublisher = await _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
+            var nextPublisher = _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
             if (nextPublisher.HasNoValue)
             {
                 return BadRequest("There are no spots open to draft.");

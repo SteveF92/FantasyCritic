@@ -167,7 +167,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             StartDraftResult startDraftResult = await _fantasyCriticService.GetStartDraftResult(leagueYear.Value, publishersInLeague, usersInLeague);
-            Maybe<Publisher> nextDraftPublisher = await _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
+            Maybe<Publisher> nextDraftPublisher = _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
             DraftPhase draftPhase = await _fantasyCriticService.GetDraftPhase(leagueYear.Value);
 
             Publisher userPublisher = null;
@@ -179,7 +179,7 @@ namespace FantasyCritic.Web.Controllers.API
             IReadOnlyList<PublisherGame> availableCounterPicks = new List<PublisherGame>();
             if (nextDraftPublisher.HasValue)
             {
-                availableCounterPicks = await _fantasyCriticService.GetAvailableCounterPicks(leagueYear.Value, nextDraftPublisher.Value, publishersInLeague);
+                availableCounterPicks = _fantasyCriticService.GetAvailableCounterPicks(leagueYear.Value, nextDraftPublisher.Value, publishersInLeague);
             }
 
             SystemWideValues systemWideValues = await _fantasyCriticService.GetLeagueWideValues();
@@ -533,7 +533,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
-            var nextPublisher = await _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
+            var nextPublisher = _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
             if (nextPublisher.HasNoValue)
             {
                 return BadRequest("There are no spots open to draft.");

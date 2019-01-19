@@ -931,7 +931,7 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public async Task<Maybe<Publisher>> GetNextDraftPublisher(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear)
+        public Maybe<Publisher> GetNextDraftPublisher(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear)
         {
             if (!leagueYear.PlayStatus.DraftIsActive)
             {
@@ -1015,7 +1015,7 @@ namespace FantasyCritic.Lib.Services
             return DraftPhase.Complete;
         }
 
-        public async Task<IReadOnlyList<PublisherGame>> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear)
+        public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear)
         {
             IReadOnlyList<Publisher> otherPublishers = publishersInLeagueForYear.Where(x => x.PublisherID != nextDraftingPublisher.PublisherID).ToList();
 
