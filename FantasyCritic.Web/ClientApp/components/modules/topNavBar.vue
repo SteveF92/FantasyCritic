@@ -9,32 +9,32 @@
           <ul class="navbar-nav">
             <li class="nav-item">
               <router-link :to="{ name: 'howtoplay' }" class="nav-link top-nav-link optional-nav" title="How to Play">
-                <span class="full-nav">How to Play</span>
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="book-open" size="lg" />
+                <span class="full-nav">How to Play</span>
               </router-link>
             </li>
             <li class="nav-item">
               <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link optional-nav" title="FAQ">
-                <span class="full-nav">FAQ</span>
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="question-circle" size="lg" />
+                <span class="full-nav">FAQ</span>
               </router-link>
             </li>
             <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
               <router-link :to="{ name: 'masterGames' }" class="nav-link top-nav-link optional-nav" title="Games">
-                <span class="full-nav">Games</span>
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="gamepad" size="lg" />
+                <span class="full-nav">Games</span>
               </router-link>
             </li>
             <li class="nav-item">
               <router-link :to="{ name: 'about' }" class="nav-link top-nav-link optional-nav" title="About">
-                <span class="full-nav">About</span>
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="info-circle" size="lg" />
+                <span class="full-nav">About</span>
               </router-link>
             </li>
             <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
               <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link optional-nav" title="Contact">
-                <span class="full-nav">Contact</span>
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="envelope" size="lg" />
+                <span class="full-nav">Contact</span>
               </router-link>
             </li>
           </ul>
@@ -174,7 +174,7 @@
     }
   }
 
-  @media only screen and (min-width: 729px) {
+  @media screen and (min-width: 729px) and (max-width: 1100px) {
     .minimal-nav {
       display: none;
     }
