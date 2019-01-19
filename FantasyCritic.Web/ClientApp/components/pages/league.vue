@@ -210,14 +210,14 @@
               leagueID: this.league.leagueID
           };
           axios
-              .post('/api/league/AcceptInvite', model)
-              .then(response => {
-                this.fetchLeague();
-                this.fetchLeagueYear();
-              })
-              .catch(response => {
+            .post('/api/league/AcceptInvite', model)
+            .then(response => {
+              this.fetchLeague();
+              this.fetchLeagueYear();
+            })
+            .catch(response => {
 
-              });
+            });
       },
       declineInvite() {
           var model = {
@@ -268,10 +268,30 @@
         this.$router.push({ name: "league", params: parameters });
       },
       followLeague() {
+        var model = {
+          leagueID: this.league.leagueID
+        };
+        axios
+          .post('/api/league/FollowLeague', model)
+          .then(response => {
+            this.fetchLeague();
+          })
+          .catch(response => {
 
+          });
       },
       unfollowLeague() {
+        var model = {
+          leagueID: this.league.leagueID
+        };
+        axios
+          .post('/api/league/UnfollowLeague', model)
+          .then(response => {
+            this.fetchLeague();
+          })
+          .catch(response => {
 
+          });
       },
       async startHubConnection() {
         let token = this.$store.getters.token;

@@ -513,6 +513,37 @@ namespace FantasyCritic.MySQL
             return DeleteInvite(league, inviteUser.EmailAddress);
         }
 
+        public Task FollowLeague(League league, FantasyCriticUser user)
+        {
+            var userAddObject = new
+            {
+                leagueID = league.LeagueID,
+                userID = user.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "insert into tbluserfollowingleague(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
+            }
+        }
+
+        public Task UnfollowLeague(League league, FantasyCriticUser user)
+        {
+            var deleteObject = new
+            {
+                leagueID = league.LeagueID,
+                userID = user.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "delete from tbluserfollowingleague where LeagueID = @leagueID and UserID = @userID;",
+                    deleteObject);
+            }
+        }
+
         public async Task RemovePublisher(Publisher publisher)
         {
             using (var connection = new MySqlConnection(_connectionString))

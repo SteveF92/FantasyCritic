@@ -27,6 +27,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<string>> GetOutstandingInvitees(League league);
         Task AcceptInvite(League league, FantasyCriticUser inviteUser);
         Task DeclineInvite(League league, FantasyCriticUser inviteUser);
+        Task FollowLeague(League league, FantasyCriticUser user);
+        Task UnfollowLeague(League league, FantasyCriticUser user);
 
         Task RemovePublisher(Publisher publisherValue);
         Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);

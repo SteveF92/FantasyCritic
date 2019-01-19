@@ -1120,5 +1120,42 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.GetLeagueFollowers(league);
         }
+
+        public async Task<Result> FollowLeague(League league, FantasyCriticUser user)
+        {
+            if (!league.PublicLeague)
+            {
+                return Result.Fail("League is not public");
+            }
+
+            bool userIsInLeague = await UserIsInLeague(league, user);
+            if (userIsInLeague)
+            {
+                return Result.Fail("Can't follow a league you are in.");
+            }
+
+            var followedLeagues = await GetFollowedLeagues(user);
+            bool userIsFollowingLeague = followedLeagues.Any(x => x.LeagueID == league.LeagueID);
+            if (userIsFollowingLeague)
+            {
+                return Result.Fail("User is already following that league.");
+            }
+
+            await _fantasyCriticRepo.FollowLeague(league, user);
+            return Result.Ok();
+        }
+
+        public async Task<Result> UnfollowLeague(League league, FantasyCriticUser user)
+        {
+            var followedLeagues = await GetFollowedLeagues(user);
+            bool userIsFollowingLeague = followedLeagues.Any(x => x.LeagueID == league.LeagueID);
+            if (!userIsFollowingLeague)
+            {
+                return Result.Fail("User is not following that league.");
+            }
+
+            await _fantasyCriticRepo.UnfollowLeague(league, user);
+            return Result.Ok();
+        }
     }
 }
