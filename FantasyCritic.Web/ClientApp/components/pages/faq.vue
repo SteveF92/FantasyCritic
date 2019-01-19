@@ -342,6 +342,16 @@
         If you do have an episodic game on your roster, and only some of the episodes come out, then we use the average critic score of the released episodes.
         If the entire game has been released, the game usually receives reviews for the game as whole, and we use that score.
       </p>
+      <h3>
+        How do early access games work?
+      </h3>
+      <p class="text-well">
+        If you check "Allow Early Access Games", then there's no restrictions on early access at all. If you don't check it, then once a game enters
+        early access (as in, once you can play it), then it is no longer eligible. You never get points until reviews come in. That part, I don't decide.
+
+        The idea of the rule is to prevent people from taking games that are playable now, despite not having review scores. It's not much of a prediction if you can go play it
+        at the time you are picking it.
+      </p>
       <br />
 
       <h2><a name="winning">Winning</a></h2>
