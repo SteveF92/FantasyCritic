@@ -11,7 +11,13 @@
       </div>
 
       <div class="row league-header">
-        <h1>{{ league.leagueName }}</h1>
+        <div class="league-name-area">
+          <h1 class="league-name">{{ league.leagueName }}</h1>
+          <div v-if="!league.userIsInLeague" class="follow-buttons">
+            <b-button v-if="!league.userIsFollowingLeague" variant="info" v-on:click="followLeague">Follow</b-button>
+            <b-button v-if="league.userIsFollowingLeague" variant="secondary" v-on:click="unfollowLeague">Unfollow</b-button>
+          </div>
+        </div>
         <div class="year-selector">
           <div>
             <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear" />
@@ -261,6 +267,12 @@
         };
         this.$router.push({ name: "league", params: parameters });
       },
+      followLeague() {
+
+      },
+      unfollowLeague() {
+
+      },
       async startHubConnection() {
         let token = this.$store.getters.token;
         let hubConnection = new signalR.HubConnectionBuilder()
@@ -314,5 +326,15 @@
   .league-manager-info-item {
     padding-left: 5px;
     padding-top: 3px;
+  }
+
+  .league-name {
+    float:left;
+  }
+
+  .follow-buttons {
+    float:left;
+    margin-left: 10px;
+    margin-top: 5px;
   }
 </style>

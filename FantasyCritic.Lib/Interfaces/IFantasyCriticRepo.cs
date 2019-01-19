@@ -18,6 +18,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task EditLeagueYear(LeagueYear leagueYear);
 
         Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
+        Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
         Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser);
         Task<IReadOnlyList<League>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);
         Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser);

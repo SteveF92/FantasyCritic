@@ -1115,5 +1115,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.GetFollowedLeagues(currentUser);
         }
+
+        public Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league)
+        {
+            return _fantasyCriticRepo.GetLeagueFollowers(league);
+        }
     }
 }

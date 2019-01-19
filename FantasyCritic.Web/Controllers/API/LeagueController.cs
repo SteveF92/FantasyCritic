@@ -59,7 +59,7 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var league in myLeagues)
             {
                 bool isManager = (league.LeagueManager.UserID == currentUser.UserID);
-                viewModels.Add(new LeagueViewModel(league, isManager, true));
+                viewModels.Add(new LeagueViewModel(league, isManager, true, false));
             }
 
             return Ok(viewModels);
@@ -73,7 +73,7 @@ namespace FantasyCritic.Web.Controllers.API
             List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
             foreach (var league in leaguesFollowing)
             {
-                viewModels.Add(new LeagueViewModel(league, false, false));
+                viewModels.Add(new LeagueViewModel(league, false, false, true));
             }
 
             return Ok(viewModels);
@@ -105,15 +105,18 @@ namespace FantasyCritic.Web.Controllers.API
 
             var playersInLeague = await _fantasyCriticService.GetUsersInLeague(league.Value);
             var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(league.Value);
+            var leagueFollowers = await _fantasyCriticService.GetLeagueFollowers(league.Value);
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
             bool isManager = false;
+            bool userIsFollowingLeague = false;
             if (currentUser != null)
             {
                 userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
                 userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
                 isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
+                userIsFollowingLeague = leagueFollowers.Any(x => x.UserID == currentUser.UserID);
             }
 
             if (!userIsInLeague && !userIsInvitedToLeague && !league.Value.PublicLeague)
@@ -124,7 +127,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool hasBeenStarted = await _fantasyCriticService.LeagueHasBeenStarted(league.Value.LeagueID);
             bool neverStarted = !hasBeenStarted;
 
-            var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, userIsInvitedToLeague, neverStarted, userIsInLeague);
+            var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, userIsInvitedToLeague, neverStarted, userIsInLeague, userIsFollowingLeague);
             return Ok(leagueViewModel);
         }
 

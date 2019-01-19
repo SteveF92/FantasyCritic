@@ -8,7 +8,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueViewModel
     {
-        public LeagueViewModel(League league, bool isManager, bool userIsInLeague)
+        public LeagueViewModel(League league, bool isManager, bool userIsInLeague, bool userIsFollowingLeague)
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
@@ -19,9 +19,10 @@ namespace FantasyCritic.Web.Models.Responses
             PublicLeague = league.PublicLeague;
             TestLeague = league.TestLeague;
             UserIsInLeague = userIsInLeague;
+            UserIsFollowingLeague = userIsFollowingLeague;
         }
 
-        public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUser> players, bool outstandingInvite, bool neverStarted, bool userIsInLeague)
+        public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUser> players, bool outstandingInvite, bool neverStarted, bool userIsInLeague, bool userIsFollowingLeague)
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
@@ -35,6 +36,7 @@ namespace FantasyCritic.Web.Models.Responses
             PublicLeague = league.PublicLeague;
             TestLeague = league.TestLeague;
             UserIsInLeague = userIsInLeague;
+            UserIsFollowingLeague = userIsFollowingLeague;
         }
 
         public Guid LeagueID { get; }
@@ -49,5 +51,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool PublicLeague { get; }
         public bool TestLeague { get; }
         public bool UserIsInLeague { get; }
+        public bool UserIsFollowingLeague { get; }
     }
 }
