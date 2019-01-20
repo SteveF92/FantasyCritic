@@ -13,8 +13,8 @@
       <div class="row league-header">
         <div class="league-name-area">
           <h1 class="league-name">{{ league.leagueName }}</h1>
-          <div v-if="!league.userIsInLeague" class="follow-buttons">
-            <b-button v-if="!league.userIsFollowingLeague" variant="info" v-on:click="followLeague">Follow</b-button>
+          <div v-if="!league.userIsInLeague && isAuth" class="follow-buttons">
+            <b-button v-if="!league.userIsFollowingLeague" variant="primary" v-on:click="followLeague">Follow</b-button>
             <b-button v-if="league.userIsFollowingLeague" variant="secondary" v-on:click="unfollowLeague">Unfollow</b-button>
           </div>
         </div>
@@ -159,6 +159,9 @@
         }
 
         return false;
+      },
+      isAuth() {
+        return this.$store.getters.tokenIsCurrent();
       }
     },
     methods: {
