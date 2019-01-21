@@ -1,38 +1,45 @@
 <template>
   <div>
     <div class="league-actions">
-      <div class="publisher-image">
-        <font-awesome-icon icon="user-circle" size="4x" />
+      <div v-if="leagueYear.userPublisher">
+        <div class="publisher-image">
+          <font-awesome-icon icon="user-circle" size="4x" />
+        </div>
+        <h4>{{leagueYear.userPublisher.publisherName}}</h4>
+        <span>User: {{leagueYear.userPublisher.playerName}}</span>
+        <hr />
       </div>
-      <h4>{{leagueYear.userPublisher.publisherName}}</h4>
-      <span>User: {{leagueYear.userPublisher.playerName}}</span>
-      <hr />
-
-      <h4>Player Actions</h4>
-      <ul class="actions-list">
-        <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
-          Draft Game
-        </li>
-        <li class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
-          Draft Counterpick
-        </li>
-        <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">
-          Make a Bid
-        </li>
-        <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
-          See Current Bids
-        </li>
-        <li class="fake-link action" v-if="leagueYear.playStatus.draftFinished">
-          <router-link :to="{ name: 'leagueHistory', params: { leagueid: league.leagueID, year: leagueYear.year }}">See League History</router-link>
-        </li>
-        <li class="fake-link action" v-b-modal="'leagueOptionsModal'">
-          See League Options
-        </li>
-        <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
-          Change Publisher Name
-        </li>
-      </ul>
-
+      <div>
+        <h4>Public Actions</h4>
+        <ul class="actions-list">
+          <li class="fake-link action" v-if="leagueYear.playStatus.draftFinished">
+            <router-link :to="{ name: 'leagueHistory', params: { leagueid: league.leagueID, year: leagueYear.year }}">See League History</router-link>
+          </li>
+          <li class="fake-link action" v-b-modal="'leagueOptionsModal'">
+            See League Options
+          </li>
+        </ul>
+      </div>
+      <div v-if="leagueYear.userPublisher">
+        <h4>Player Actions</h4>
+        <ul class="actions-list">
+          <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
+            Draft Game
+          </li>
+          <li class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
+            Draft Counterpick
+          </li>
+          <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">
+            Make a Bid
+          </li>
+          <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
+            See Current Bids
+          </li>
+          <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
+            Change Publisher Name
+          </li>
+        </ul>
+      </div>
       <div v-if="league.isManager">
         <div v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
           <h4>Draft Management</h4>
