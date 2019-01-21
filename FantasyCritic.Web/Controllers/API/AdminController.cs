@@ -152,7 +152,7 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> ProcessPickups([FromBody] ProcessPickupsRequest request)
         {
-            await _fantasyCriticService.ProcessPickups(request.LeagueID, request.Year);
+            await _fantasyCriticService.ProcessPickups(request.Year);
 
             return Ok();
         }

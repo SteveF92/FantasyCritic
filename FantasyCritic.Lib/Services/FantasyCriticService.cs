@@ -483,24 +483,14 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
         }
 
-        public async Task ProcessPickups(Guid leagueID, int year)
+        public async Task ProcessPickups(int year)
         {
-            var league = await _fantasyCriticRepo.GetLeagueByID(leagueID);
-            if (league.HasNoValue)
-            {
-                throw new Exception("Bad!");
-            }
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league.Value, year);
-            if (leagueYear.HasNoValue)
-            {
-                throw new Exception("Bad!");
-            }
             SystemWideValues systemWideValues = await GetLeagueWideValues();
-            await ProcessPickupsForLeagueYear(leagueYear.Value, systemWideValues);
-            //foreach (var leagueYear in leagueYears)
-            //{
-            //    await ProcessPickupsForLeagueYear(leagueYear, systemWideValues);
-            //}
+            var leagueYears = await GetLeagueYears(year);
+            foreach (var leagueYear in leagueYears)
+            {
+                await ProcessPickupsForLeagueYear(leagueYear, systemWideValues);
+            }
         }
 
         public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
