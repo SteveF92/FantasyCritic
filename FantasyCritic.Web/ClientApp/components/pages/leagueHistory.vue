@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div v-if="forbidden">
+      <div class="alert alert-danger" role="alert">
+        You do not have permission to view this league.
+      </div>
+    </div>
     <div v-if="league">
       <h1>League History: {{league.leagueName}} (Year {{year}})</h1>
       <hr />
@@ -37,8 +42,9 @@ export default {
           { key: 'description', label: 'Description', thClass: 'bg-primary' },
           { key: 'managerAction', label: 'Mananger Action?', thClass: 'bg-primary' },
         ],
-        sortBy: 'gameName',
-        sortDesc: true
+        sortBy: 'timestamp',
+        sortDesc: true,
+        forbidden: false
       }
     },
     props: ['leagueid', 'year'],
