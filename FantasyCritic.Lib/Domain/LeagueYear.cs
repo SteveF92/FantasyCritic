@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -23,6 +24,8 @@ namespace FantasyCritic.Lib.Domain
         public int Year { get; }
         public LeagueOptions Options { get; }
         public PlayStatus PlayStatus { get; }
+
+        public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 
         public string GetGroupName => $"{League.LeagueID}|{Year}";
     }

@@ -108,10 +108,11 @@ namespace FantasyCritic.MySQL
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tblleagueyear where Year = @year", queryObject);
                 List<LeagueYear> leagueYears = new List<LeagueYear>();
                 IReadOnlyList<League> leagues = await GetAllLeagues();
+                Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
                 foreach (var entity in yearEntities)
                 {
-                    var league = leagues.SingleOrDefault(x => x.LeagueID == entity.LeagueID);
-                    if (league is null)
+                    var success = leaguesDictionary.TryGetValue(entity.LeagueID, out League league);
+                    if (!success)
                     {
                         throw new Exception($"Cannot find league for league-year (should never happen) LeagueID: {entity.LeagueID}");
                     }
@@ -622,21 +623,28 @@ namespace FantasyCritic.MySQL
             };
 
             var allUsers = await _userStore.GetAllUsers();
+            var usersDictionary = allUsers.ToDictionary(x => x.UserID, y => y);
             var allLeagues = await GetAllLeagues();
+            var leaguesDictionary = allLeagues.ToDictionary(x => x.LeagueID, y => y);
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var publisherEntities = await connection.QueryAsync<PublisherEnity>("select * from tblpublisher where tblpublisher.Year = @year;", query);
 
                 IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(year);
+                Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherEntities.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
+                foreach (var game in allDomainGames)
+                {
+                    domainGamesDictionary[game.PublisherID].Add(game);
+                }
+
                 List<Publisher> publishers = new List<Publisher>();
                 foreach (var entity in publisherEntities)
                 {
-                    var user = allUsers.Single(x => x.UserID == entity.UserID);
-                    var league = allLeagues.Single(x => x.LeagueID == entity.LeagueID);
-                    var domainGames = allDomainGames.Where(x => x.PublisherID == entity.PublisherID);
+                    var user = usersDictionary[entity.UserID];
+                    var league = leaguesDictionary[entity.LeagueID];
+                    var domainGames = domainGamesDictionary[entity.PublisherID];
                     var domainPublisher = entity.ToDomain(league, user, domainGames);
                     publishers.Add(domainPublisher);
-
                 }
 
                 return publishers;

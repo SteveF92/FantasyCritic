@@ -369,17 +369,17 @@ namespace FantasyCritic.Lib.Services
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
 
             IReadOnlyList<LeagueYear> activeLeagueYears = await GetLeagueYears(year);
+            Dictionary<LeagueYearKey, LeagueYear> leagueYearDictionary = activeLeagueYears.ToDictionary(x => x.Key, y => y);
             IReadOnlyList<Publisher> allPublishersForYear = await GetAllPublishersForYear(year);
-            foreach (var leagueYear in activeLeagueYears)
+
+            foreach (var publisher in allPublishersForYear)
             {
-                var publishersInLeague = allPublishersForYear.Where(x => x.League.LeagueID == leagueYear.League.LeagueID && x.Year == leagueYear.Year);
-                foreach (var publisher in publishersInLeague)
+                var key = new LeagueYearKey(publisher.League.LeagueID, publisher.Year);
+                foreach (var publisherGame in publisher.PublisherGames)
                 {
-                    foreach (var publisherGame in publisher.PublisherGames)
-                    {
-                        decimal? fantasyPoints = leagueYear.Options.ScoringSystem.GetPointsForGame(publisherGame, _clock, systemWideValues);
-                        publisherGameScores.Add(publisherGame.PublisherGameID, fantasyPoints);
-                    }
+                    var leagueYear = leagueYearDictionary[key];
+                    decimal? fantasyPoints = leagueYear.Options.ScoringSystem.GetPointsForGame(publisherGame, _clock, systemWideValues);
+                    publisherGameScores.Add(publisherGame.PublisherGameID, fantasyPoints);
                 }
             }
 
