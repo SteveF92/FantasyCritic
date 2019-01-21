@@ -25,6 +25,9 @@
         <li class="fake-link action" v-if="leagueYear.playStatus.draftFinished">
           <router-link :to="{ name: 'leagueHistory', params: { leagueid: league.leagueID, year: leagueYear.year }}">See League History</router-link>
         </li>
+        <li class="fake-link action" v-b-modal="'leagueOptionsModal'">
+          See League Options
+        </li>
         <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
           Change Publisher Name
         </li>
@@ -92,6 +95,7 @@
 
       <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
       <currentBidsForm :currentBids="currentBids" v-on:bidCanceled="bidCanceled"></currentBidsForm>
+      <leagueOptionsModal :leagueYear="leagueYear"></leagueOptionsModal>
 
       <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
@@ -134,6 +138,7 @@
   import UndoLastDraftActionModal from "components/modules/modals/undoLastDraftActionModal";
   import ManagerDraftCounterPickForm from "components/modules/modals/managerDraftCounterPickForm";
   import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
+  import LeagueOptionsModal from "components/modules/modals/leagueOptionsModal";
 
   export default {
     data() {
@@ -159,7 +164,8 @@
       SetPauseModal,
       UndoLastDraftActionModal,
       ManagerDraftCounterPickForm,
-      AddNewLeagueYearForm
+      AddNewLeagueYearForm,
+      LeagueOptionsModal
     },
     methods: {
       gameBid(bidInfo) {
