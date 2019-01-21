@@ -193,6 +193,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(leagueViewModel);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> GetLeagueActions(Guid leagueID, int year)
         {
             Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
@@ -201,12 +202,23 @@ namespace FantasyCritic.Web.Controllers.API
                 throw new Exception("Something went really wrong, no options are set up for this league.");
             }
 
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
-            bool userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
+            FantasyCriticUser currentUser = null;
+            if (!string.IsNullOrWhiteSpace(User.Identity.Name))
+            {
+                currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            }
 
             var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(leagueYear.Value.League);
-            bool userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
+
+            bool userIsInLeague = false;
+            bool userIsInvitedToLeague = false;
+            if (currentUser != null)
+            {
+                var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
+                userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
+                userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
+            }
+
             if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
             {
                 return Forbid();
@@ -267,6 +279,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(publisherViewModel);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> GetLeagueYearOptions(Guid leagueID, int year)
         {
             Maybe<League> league = await _fantasyCriticService.GetLeagueByID(leagueID);
@@ -281,9 +294,18 @@ namespace FantasyCritic.Web.Controllers.API
                 throw new Exception("Something went really wrong, no options are set up for this league.");
             }
 
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
-            bool userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
+            bool userIsInLeague = false;
+            FantasyCriticUser currentUser = null;
+            if (!string.IsNullOrWhiteSpace(User.Identity.Name))
+            {
+                currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            }
+            if (currentUser != null)
+            {
+                var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
+                userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
+            }
+
             if (!userIsInLeague && !leagueYear.Value.League.PublicLeague)
             {
                 return Forbid();

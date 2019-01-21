@@ -187,7 +187,8 @@ export const routes = [
     component: LeagueHistory,
     name: "leagueHistory",
     meta: {
-      title: "League History"
+      title: "League History",
+      isPublic: true
     },
     props: (route) => ({
       leagueid: route.params.leagueid,
