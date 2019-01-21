@@ -250,6 +250,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year);
         }
 
+        private Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year)
+        {
+            return _fantasyCriticRepo.GetAllPublishersForYear(year);
+        }
+
         public Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
         {
             return _fantasyCriticRepo.GetPublisher(league, year, user);
@@ -273,7 +278,7 @@ namespace FantasyCritic.Lib.Services
                 masterGameYear = new MasterGameYear(request.MasterGame.Value, request.Publisher.Year);
             }
 
-            PublisherGame playerGame = new PublisherGame(Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null, 
+            PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null, 
                 masterGameYear, request.DraftPosition, request.OverallDraftPosition, request.Publisher.Year);
 
             ClaimResult claimResult = await CanClaimGame(request);
@@ -364,9 +369,10 @@ namespace FantasyCritic.Lib.Services
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
 
             IReadOnlyList<LeagueYear> activeLeagueYears = await GetLeagueYears(year);
+            IReadOnlyList<Publisher> allPublishersForYear = await GetAllPublishersForYear(year);
             foreach (var leagueYear in activeLeagueYears)
             {
-                var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, year);
+                var publishersInLeague = allPublishersForYear.Where(x => x.League.LeagueID == leagueYear.League.LeagueID && x.Year == leagueYear.Year);
                 foreach (var publisher in publishersInLeague)
                 {
                     foreach (var publisherGame in publisher.PublisherGames)
@@ -790,7 +796,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var successBid in successBids)
             {
                 await _fantasyCriticRepo.MarkBidStatus(successBid, true);
-                PublisherGame newPublisherGame = new PublisherGame(Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), false, null, null, 
+                PublisherGame newPublisherGame = new PublisherGame(successBid.Publisher.PublisherID, Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), false, null, null, 
                     new MasterGameYear(successBid.MasterGame, successBid.Publisher.Year), null, null, successBid.Publisher.Year);
                 await _fantasyCriticRepo.AddPublisherGame(successBid.Publisher, newPublisherGame);
                 await _fantasyCriticRepo.SpendBudget(successBid.Publisher, successBid.BidAmount);

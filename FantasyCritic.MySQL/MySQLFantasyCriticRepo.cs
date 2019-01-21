@@ -614,6 +614,64 @@ namespace FantasyCritic.MySQL
             return publishers;
         }
 
+        public async Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year)
+        {
+            var query = new
+            {
+                year
+            };
+
+            var allUsers = await _userStore.GetAllUsers();
+            var allLeagues = await GetAllLeagues();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var publisherEntities = await connection.QueryAsync<PublisherEnity>("select * from tblpublisher where tblpublisher.Year = @year;", query);
+
+                IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(year);
+                List<Publisher> publishers = new List<Publisher>();
+                foreach (var entity in publisherEntities)
+                {
+                    var user = allUsers.Single(x => x.UserID == entity.UserID);
+                    var league = allLeagues.Single(x => x.LeagueID == entity.LeagueID);
+                    var domainGames = allDomainGames.Where(x => x.PublisherID == entity.PublisherID);
+                    var domainPublisher = entity.ToDomain(league, user, domainGames);
+                    publishers.Add(domainPublisher);
+
+                }
+
+                return publishers;
+            }
+        }
+
+        private async Task<IReadOnlyList<PublisherGame>> GetAllPublisherGamesForYear(int year)
+        {
+            var query = new
+            {
+                year
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
+                    "select * from tblpublishergame where tblpublishergame.Year = @year;",
+                    query);
+
+                List<PublisherGame> domainGames = new List<PublisherGame>();
+                foreach (var entity in gameEntities)
+                {
+                    Maybe<MasterGameYear> masterGame = null;
+                    if (entity.MasterGameID.HasValue)
+                    {
+                        masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID.Value, year);
+                    }
+
+                    domainGames.Add(entity.ToDomain(masterGame, year));
+                }
+
+                return domainGames;
+            }
+        }
+
         public async Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
         {
             var query = new

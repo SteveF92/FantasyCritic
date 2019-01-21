@@ -12,9 +12,10 @@ namespace FantasyCritic.Lib.Domain
     {
         private readonly int _leagueYear;
 
-        public PublisherGame(Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, decimal? fantasyPoints, 
+        public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, decimal? fantasyPoints, 
             Maybe<MasterGameYear> masterGame, int? draftPosition, int? overallDraftPosition, int leagueYear)
         {
+            PublisherID = publisherID;
             PublisherGameID = publisherGameID;
             GameName = gameName;
             Timestamp = timestamp;
@@ -27,6 +28,7 @@ namespace FantasyCritic.Lib.Domain
             _leagueYear = leagueYear;
         }
 
+        public Guid PublisherID { get; }
         public Guid PublisherGameID { get; }
         public string GameName { get; }
         public Instant Timestamp { get; }
