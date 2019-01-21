@@ -53,6 +53,27 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        private async Task<IReadOnlyList<League>> GetAllLeagues()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var leagueEntities = await connection.QueryAsync<LeagueEntity>("select * from tblleague");
+
+                IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tblleagueyear");
+                List<League> leagues = new List<League>();
+                var allUsers = await _userStore.GetAllUsers();
+                foreach (var leagueEntity in leagueEntities)
+                {
+                    FantasyCriticUser manager = allUsers.Single(x => x.UserID == leagueEntity.LeagueManager);
+                    IEnumerable<int> years = yearEntities.Where(x => x.LeagueID == leagueEntity.LeagueID).Select(x => x.Year);
+                    League league = leagueEntity.ToDomain(manager, years);
+                    leagues.Add(league);
+                }
+
+                return leagues;
+            }
+        }
+
         public async Task<Maybe<LeagueYear>> GetLeagueYear(League requestLeague, int requestYear)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -86,16 +107,17 @@ namespace FantasyCritic.MySQL
 
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tblleagueyear where Year = @year", queryObject);
                 List<LeagueYear> leagueYears = new List<LeagueYear>();
+                IReadOnlyList<League> leagues = await GetAllLeagues();
                 foreach (var entity in yearEntities)
                 {
-                    var league = await GetLeagueByID(entity.LeagueID);
-                    if (league.HasNoValue)
+                    var league = leagues.SingleOrDefault(x => x.LeagueID == entity.LeagueID);
+                    if (league is null)
                     {
                         throw new Exception($"Cannot find league for league-year (should never happen) LeagueID: {entity.LeagueID}");
                     }
 
                     var eligibilityLevel = await _masterGameRepo.GetEligibilityLevel(entity.MaximumEligibilityLevel);
-                    LeagueYear leagueYear = entity.ToDomain(league.Value, eligibilityLevel);
+                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel);
                     leagueYears.Add(leagueYear);
                 }
 

@@ -11,5 +11,6 @@ namespace FantasyCritic.Lib.Interfaces
     public interface IReadOnlyFantasyCriticUserStore
     {
         Task<FantasyCriticUser> FindByIdAsync(string userId, CancellationToken cancellationToken);
+        Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers();
     }
 }

@@ -119,6 +119,17 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
+                    @"select * from tbluser");
+                var results = userResult.Select(x => x.ToDomain()).ToList();
+                return results;
+            }
+        }
+
         public async Task<FantasyCriticUser> FindByNameAsync(string normalizedEmailAddress, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
