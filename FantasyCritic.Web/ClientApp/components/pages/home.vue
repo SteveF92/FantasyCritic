@@ -4,6 +4,7 @@
     <div class="alert alert-warning" v-show="userInfo && !userInfo.emailConfirmed">
       <div>Your email address has not been confirmed. You cannot accept league invites until you do so.</div>
       <div>Check your email account for an email from us.</div>
+      <span>If you are having issues, check out our <a href="/faq#technical" class="text-secondary" target="_blank">FAQ</a> page.</span>
     </div>
 
     <div class="row">

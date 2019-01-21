@@ -1,6 +1,9 @@
 <template>
     <div>
-        <div v-if="!accountConfirmed" class="alert alert-info">Confirming Email...</div>
+        <div v-if="!accountConfirmed" class="alert alert-info">
+          <div>Confirming Email...</div>
+          <div>If you are having issues, check out our <a href="/faq#bidding-system" target="_blank">FAQ</a> page.</div>
+        </div>
         <div v-if="accountConfirmed" class="alert alert-success">
           <span>Email Confirmation Successful!</span>
           <span>You will be redirected in a few seconds...</span>
