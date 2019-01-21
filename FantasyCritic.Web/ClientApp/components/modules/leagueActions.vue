@@ -93,7 +93,6 @@
       <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
       <currentBidsForm :currentBids="currentBids" v-on:bidCanceled="bidCanceled"></currentBidsForm>
 
-      <leagueHistoryModal :leagueActions="leagueActions"></leagueHistoryModal>
       <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
       <addNewLeagueYearForm :league="league" :isManager="league.isManager" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
@@ -119,7 +118,6 @@
 
   import BidGameForm from "components/modules/modals/bidGameForm";
   import CurrentBidsForm from "components/modules/modals/currentBidsForm";
-  import LeagueHistoryModal from "components/modules/modals/leagueHistoryModal";
   import ChangePublisherNameForm from "components/modules/modals/changePublisherNameForm";
   import PlayerDraftGameForm from "components/modules/modals/playerDraftGameForm";
   import PlayerDraftCounterPickForm from "components/modules/modals/playerDraftCounterPickForm";
@@ -147,7 +145,6 @@
     components: {
       BidGameForm,
       CurrentBidsForm,
-      LeagueHistoryModal,
       ChangePublisherNameForm,
       PlayerDraftGameForm,
       PlayerDraftCounterPickForm,
