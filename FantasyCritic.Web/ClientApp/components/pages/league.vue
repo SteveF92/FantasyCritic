@@ -103,7 +103,7 @@
 
       <div class="row" v-if="league && leagueYear">
         <div v-if="leagueYear.userPublisher" class="col-xl-2 col-lg-3 col-md-12">
-          <leagueActions ref="leagueActionsRef" :league="league" :leagueYear="leagueYear" :leagueActions="leagueActions"
+          <leagueActions ref="leagueActionsRef" :league="league" :leagueYear="leagueYear"
                          :currentBids="currentBids" :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
         </div>
         <div class="col-xl-10 col-lg-9 col-md-12">
@@ -189,14 +189,6 @@
                 this.fetchLeagueActions();
               })
             .catch(returnedError => (this.error = returnedError));
-      },
-      fetchLeagueActions() {
-        axios
-          .get('/api/League/GetLeagueActions?leagueID=' + this.leagueid + '&year=' + this.year)
-          .then(response => {
-            this.leagueActions = response.data;
-          })
-          .catch(returnedError => (this.error = returnedError));
       },
       fetchCurrentBids() {
         axios

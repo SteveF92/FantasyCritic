@@ -17,6 +17,7 @@ import ForgotPassword from "components/pages/forgotPassword";
 import ResetPassword from "components/pages/resetPassword";
 import ChangeEmail from "components/pages/changeEmail";
 import MasterGames from "components/pages/masterGames";
+import LeagueHistory from "components/pages/leagueHistory";
 
 export const routes = [
   {
@@ -175,6 +176,18 @@ export const routes = [
     name: "editLeague",
     meta: {
       title: "Edit League"
+    },
+    props: (route) => ({
+      leagueid: route.params.leagueid,
+      year: route.params.year
+    })
+  },
+  {
+    path: "/leagueHistory/:leagueid/:year",
+    component: LeagueHistory,
+    name: "leagueHistory",
+    meta: {
+      title: "League History"
     },
     props: (route) => ({
       leagueid: route.params.leagueid,

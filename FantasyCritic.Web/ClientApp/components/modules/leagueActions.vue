@@ -22,8 +22,8 @@
         <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
           See Current Bids
         </li>
-        <li class="fake-link action" v-b-modal="'leagueActionsModal'" v-if="leagueYear.playStatus.draftFinished">
-          See League History
+        <li class="fake-link action" v-if="leagueYear.playStatus.draftFinished">
+          <router-link :to="{ name: 'leagueHistory', params: { leagueid: league.leagueID, year: leagueYear.year }}">See League History</router-link>
         </li>
         <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
           Change Publisher Name
