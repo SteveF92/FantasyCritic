@@ -70,7 +70,6 @@
           { key: 'percentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
           { key: 'averageDraftPosition', label: 'Avg. Draft Position', sortable: true, thClass: 'bg-primary' },
           { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: 'bg-primary' }
-
         ],
         sortBy: 'gameName',
         sortDesc: true
