@@ -95,7 +95,7 @@
 
       <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.maximumEligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
       <currentBidsForm :currentBids="currentBids" v-on:bidCanceled="bidCanceled"></currentBidsForm>
-      <leagueOptionsModal :leagueYear="leagueYear"></leagueOptionsModal>
+      <leagueOptionsModal :league="league" :leagueYear="leagueYear"></leagueOptionsModal>
 
       <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
