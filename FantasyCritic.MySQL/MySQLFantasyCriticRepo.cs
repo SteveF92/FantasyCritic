@@ -653,7 +653,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
-                    "select * from tblpublishergame where tblpublishergame.Year = @year;",
+                    "select * from tblpublishergame join tblpublisher on (tblpublishergame.PublisherID = tblpublisher.PublisherID) where tblpublisher.Year = @year;",
                     query);
 
                 List<PublisherGame> domainGames = new List<PublisherGame>();
