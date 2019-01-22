@@ -44,7 +44,7 @@
 
         <div>
           <h2>Leagues I'm Following</h2>
-          <h5><router-link :to="{ name: 'publicLeagues' }">Full List</router-link></h5>
+          <h5><router-link :to="{ name: 'publicLeagues' }">Full List of Public Leagues</router-link></h5>
           <div v-if="anyFollowedLeagues">
             <ul>
               <li v-for="league in myFollowedLeagues">
