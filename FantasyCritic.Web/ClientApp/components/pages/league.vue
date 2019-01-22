@@ -17,15 +17,15 @@
             <b-button v-if="!league.userIsFollowingLeague" variant="primary" v-on:click="followLeague">Follow</b-button>
             <b-button v-if="league.userIsFollowingLeague" variant="secondary" v-on:click="unfollowLeague">Unfollow</b-button>
           </div>
-          <div>
-            <label>Followers: </label> {{league.numberOfFollowers}}
-          </div>
         </div>
         <div class="year-selector">
           <div>
             <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear" />
           </div>
         </div>
+      </div>
+      <div>
+        <label>Followers: </label> {{league.numberOfFollowers}}
       </div>
       <div v-if="league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-info" role="info">
         You are viewing a public league.
