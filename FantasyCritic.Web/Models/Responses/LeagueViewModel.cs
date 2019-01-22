@@ -20,6 +20,7 @@ namespace FantasyCritic.Web.Models.Responses
             TestLeague = league.TestLeague;
             UserIsInLeague = userIsInLeague;
             UserIsFollowingLeague = userIsFollowingLeague;
+            NumberOfFollowers = league.NumberOfFollowers;
         }
 
         public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUser> players, bool outstandingInvite, bool neverStarted, bool userIsInLeague, bool userIsFollowingLeague)
@@ -37,6 +38,7 @@ namespace FantasyCritic.Web.Models.Responses
             TestLeague = league.TestLeague;
             UserIsInLeague = userIsInLeague;
             UserIsFollowingLeague = userIsFollowingLeague;
+            NumberOfFollowers = league.NumberOfFollowers;
         }
 
         public Guid LeagueID { get; }
@@ -52,5 +54,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool TestLeague { get; }
         public bool UserIsInLeague { get; }
         public bool UserIsFollowingLeague { get; }
+        public int NumberOfFollowers{ get; }
     }
 }

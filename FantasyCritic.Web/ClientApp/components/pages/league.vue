@@ -17,6 +17,9 @@
             <b-button v-if="!league.userIsFollowingLeague" variant="primary" v-on:click="followLeague">Follow</b-button>
             <b-button v-if="league.userIsFollowingLeague" variant="secondary" v-on:click="unfollowLeague">Unfollow</b-button>
           </div>
+          <div>
+            <label>Followers: </label> {{league.numberOfFollowers}}
+          </div>
         </div>
         <div class="year-selector">
           <div>
