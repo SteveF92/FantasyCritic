@@ -431,7 +431,7 @@ namespace FantasyCritic.MySQL
                 };
 
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select vwleague.* from vwleague join tblleaguehasuser on (tblleague.LeagueID = tblleaguehasuser.LeagueID) where tblleaguehasuser.UserID = @userID;", queryObject);
+                    "select vwleague.* from vwleague join tblleaguehasuser on (vwleague.LeagueID = tblleaguehasuser.LeagueID) where tblleaguehasuser.UserID = @userID;", queryObject);
             }
 
             IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
@@ -1005,8 +1005,8 @@ namespace FantasyCritic.MySQL
             {
                 return connection.ExecuteScalarAsync<bool>(
                     "select count(1) from vwleague " +
-                    "join tblleagueyear on (tblleague.LeagueID = tblleagueyear.LeagueID) " +
-                    "where PlayStatus <> 'NotStartedDraft' and tblleague.LeagueID = @leagueID;",
+                    "join tblleagueyear on (vwleague.LeagueID = tblleagueyear.LeagueID) " +
+                    "where PlayStatus <> 'NotStartedDraft' and vwleague.LeagueID = @leagueID;",
                     selectObject);
             }
         }
