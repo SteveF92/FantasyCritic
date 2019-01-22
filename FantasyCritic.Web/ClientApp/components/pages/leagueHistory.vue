@@ -8,28 +8,30 @@
     <div v-if="league">
       <h1>League History: {{league.leagueName}} (Year {{year}})</h1>
       <hr />
-      <b-table :sort-by.sync="sortBy"
-               :sort-desc.sync="sortDesc"
-               :items="leagueActions"
-               :fields="actionFields"
-               bordered
-               striped
-               responsive>
-        <template slot="timestamp" slot-scope="data">
-          {{data.item.timestamp | date}}
-        </template>
-        <template slot="managerAction" slot-scope="data">
-          {{data.item.managerAction | yesNo}}
-        </template>
-      </b-table>
+      <div class="history-table">
+        <b-table :sort-by.sync="sortBy"
+                 :sort-desc.sync="sortDesc"
+                 :items="leagueActions"
+                 :fields="actionFields"
+                 bordered
+                 striped
+                 responsive>
+          <template slot="timestamp" slot-scope="data">
+            {{data.item.timestamp | date}}
+          </template>
+          <template slot="managerAction" slot-scope="data">
+            {{data.item.managerAction | yesNo}}
+          </template>
+        </b-table>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import Vue from "vue";
-import axios from "axios";
+  import Vue from "vue";
+  import axios from "axios";
 
-export default {
+  export default {
     data() {
       return {
         errorInfo: "",
@@ -73,5 +75,11 @@ export default {
       this.fetchLeague();
       this.fetchLeagueActions();
     }
-}
+  }
 </script>
+<style scoped>
+  .history-table {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+</style>
