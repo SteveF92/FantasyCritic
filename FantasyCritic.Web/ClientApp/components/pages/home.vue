@@ -42,13 +42,20 @@
           <hr />
         </div>
 
-        <div v-if="anyFollowedLeagues">
+        <div>
           <h2>Leagues I'm Following</h2>
-          <ul>
-            <li v-for="league in myFollowedLeagues">
-              <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-            </li>
-          </ul>
+          <h5><router-link :to="{ name: 'publicLeagues' }">Full List</router-link></h5>
+          <div v-if="anyFollowedLeagues">
+            <ul>
+              <li v-for="league in myFollowedLeagues">
+                <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+              </li>
+            </ul>
+            <hr />
+          </div>
+          <div v-else>
+            <label>You are not following any public leagues!</label>
+          </div>
           <hr />
         </div>
 

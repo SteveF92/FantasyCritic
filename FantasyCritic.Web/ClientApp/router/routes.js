@@ -17,6 +17,7 @@ import ForgotPassword from "components/pages/forgotPassword";
 import ResetPassword from "components/pages/resetPassword";
 import ChangeEmail from "components/pages/changeEmail";
 import MasterGames from "components/pages/masterGames";
+import PublicLeagues from "components/pages/publicLeagues";
 import LeagueHistory from "components/pages/leagueHistory";
 
 export const routes = [
@@ -129,6 +130,15 @@ export const routes = [
     name: "masterGames",
     meta: {
       title: "Games",
+      isPublic: true
+    }
+  },
+  {
+    path: "/publicLeagues",
+    component: PublicLeagues,
+    name: "publicLeagues",
+    meta: {
+      title: "Public Leagues",
       isPublic: true
     }
   },
