@@ -17,6 +17,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddNewLeagueYear(League league, int year, LeagueOptions options);
         Task EditLeagueYear(LeagueYear leagueYear);
 
+        Task<IReadOnlyList<League>> GetAllLeagues();
         Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
         Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
         Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser);

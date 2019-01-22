@@ -53,7 +53,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        private async Task<IReadOnlyList<League>> GetAllLeagues()
+        public async Task<IReadOnlyList<League>> GetAllLeagues()
         {
             using (var connection = new MySqlConnection(_connectionString))
             {

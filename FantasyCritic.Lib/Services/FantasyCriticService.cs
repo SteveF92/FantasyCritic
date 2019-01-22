@@ -1153,5 +1153,11 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.UnfollowLeague(league, user);
             return Result.Ok();
         }
+
+        public async Task<IReadOnlyList<League>> GetPublicLeagues()
+        {
+            var allLeagues = await _fantasyCriticRepo.GetAllLeagues();
+            return allLeagues.Where(x => x.PublicLeague).OrderByDescending(x => x.NumberOfFollowers).ToList();
+        }
     }
 }

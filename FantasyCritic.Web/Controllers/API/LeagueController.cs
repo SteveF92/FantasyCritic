@@ -88,6 +88,20 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [AllowAnonymous]
+        public async Task<IActionResult> PublicLeagues()
+        {
+            IReadOnlyList<League> publicLeagues = await _fantasyCriticService.GetPublicLeagues();
+
+            List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
+            foreach (var league in publicLeagues)
+            {
+                viewModels.Add(new LeagueViewModel(league, false, false, false));
+            }
+
+            return Ok(viewModels);
+        }
+
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetLeague(Guid id)
         {
