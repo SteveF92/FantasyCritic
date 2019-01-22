@@ -69,8 +69,8 @@
         </div>
 
         <div v-if="!fetchingLeagues && noLeagues">
-          <hr />
           <h3>You are not part of any leagues! Why not start one?</h3>
+          <hr />
         </div>
 
       </div>
