@@ -88,9 +88,10 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> PublicLeagues()
+        [HttpGet("{year}")]
+        public async Task<IActionResult> PublicLeagues(int year)
         {
-            IReadOnlyList<League> publicLeagues = await _fantasyCriticService.GetPublicLeagues();
+            IReadOnlyList<League> publicLeagues = await _fantasyCriticService.GetPublicLeagues(year);
 
             List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
             foreach (var league in publicLeagues)

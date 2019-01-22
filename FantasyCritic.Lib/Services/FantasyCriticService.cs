@@ -1154,10 +1154,10 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public async Task<IReadOnlyList<League>> GetPublicLeagues()
+        public async Task<IReadOnlyList<League>> GetPublicLeagues(int year)
         {
-            var allLeagues = await _fantasyCriticRepo.GetAllLeagues();
-            return allLeagues.Where(x => x.PublicLeague).OrderByDescending(x => x.NumberOfFollowers).ToList();
+            var leagueYears = await GetLeagueYears(year);
+            return leagueYears.Where(x => x.League.PublicLeague).Where(x => x.Year == year).OrderByDescending(x => x.League.NumberOfFollowers).Select(x => x.League).ToList();
         }
     }
 }
