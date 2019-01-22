@@ -51,7 +51,6 @@
                 <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
               </li>
             </ul>
-            <hr />
           </div>
           <div v-else>
             <label>You are not following any public leagues!</label>
