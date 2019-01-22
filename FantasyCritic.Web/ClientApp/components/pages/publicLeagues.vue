@@ -6,7 +6,19 @@
         <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchPublicLeaguesForYear" />
       </div>
     </div>
-    
+    <div class="row leagues-table" v-if="publicLeagues && publicLeagues.length > 0">
+      <b-table :sort-by.sync="sortBy"
+               :sort-desc.sync="sortDesc"
+               :items="publicLeagues"
+               :fields="leagueFields"
+               bordered
+               striped
+               responsive>
+        <template slot="leagueName" slot-scope="data">
+          <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear }}">{{data.item.leagueName}}</router-link>
+        </template>
+      </b-table>
+    </div>
   </div>
 </template>
 
@@ -22,17 +34,11 @@
         supportedYears: [],
         publicLeagues: [],
         leagueFields: [
-          { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
-          { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-          { key: 'isReleased', label: 'Released?', sortable: true, thClass: 'bg-primary' },
-          { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary' },
-          { key: 'hypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
-          { key: 'percentStandardGame', label: '% Picked', sortable: true, thClass: 'bg-primary' },
-          { key: 'percentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
-          { key: 'averageDraftPosition', label: 'Avg. Draft Position', sortable: true, thClass: 'bg-primary' },
-          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: 'bg-primary' }
+          { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+          { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' },
+          { key: 'playStatus', label: 'Play Status', sortable: true, thClass:'bg-primary' },
         ],
-        sortBy: 'gameName',
+        sortBy: 'numberOfFollowers',
         sortDesc: true
       }
     },
