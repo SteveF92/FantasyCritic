@@ -91,12 +91,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpGet("{year}")]
         public async Task<IActionResult> PublicLeagues(int year)
         {
-            IReadOnlyList<League> publicLeagues = await _fantasyCriticService.GetPublicLeagues(year);
+            IReadOnlyList<LeagueYear> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(year);
 
-            List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
-            foreach (var league in publicLeagues)
+            List<PublicLeagueYearViewModel> viewModels = new List<PublicLeagueYearViewModel>();
+            foreach (var leagueYear in publicLeagueYears)
             {
-                viewModels.Add(new LeagueViewModel(league, false, false, false));
+                viewModels.Add(new PublicLeagueYearViewModel(leagueYear));
             }
 
             return Ok(viewModels);
