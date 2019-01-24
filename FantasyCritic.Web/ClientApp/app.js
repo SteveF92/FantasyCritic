@@ -55,6 +55,11 @@ axios.interceptors.response.use(function (response) {
             var newBearer = "Bearer " + res.data.token;
             originalRequest.headers.Authorization = newBearer;
             return axios(originalRequest);
+          })
+          .catch((error) => {
+            store.commit("clearUserAndToken");
+            router.push({ name: 'login' });
+            return Promise.reject(error);
           });
       } else {
         store.commit("clearUserAndToken");
