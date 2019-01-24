@@ -9,7 +9,7 @@
 
     <div class="row">
       <div class="col-lg-6 col-md-12">
-        <b-button variant="info" :to="{ name: 'howtoplay' }" v-if="!fetchingLeagues && noLeagues" class="learn-to-play-button">Learn to Play</b-button>
+        <b-button variant="info" :to="{ name: 'howtoplay' }" v-if="shouldShowLearnToPlay" class="learn-to-play-button">Learn to Play</b-button>
         <b-button variant="primary" :to="{ name: 'createLeague' }" class="create-league-button">Create a League</b-button>
         <div v-if="anyInvitedLeagues">
           <h2>League Invites</h2>
@@ -117,10 +117,21 @@
         return this.myFollowedLeagues.length > 0;
       },
       noLeagues() {
-        return (!(this.anyPlayerLeagues || this.anyManagedLeagues || this.anyInvitedLeagues));
+        return (!(this.anyPlayerLeagues || this.anyManagedLeagues));
       },
       userInfo() {
         return this.$store.getters.userInfo;
+      },
+      shouldShowLearnToPlay() {
+        if (this.fetchingLeagues) {
+          return false;
+        }
+
+        if (this.noLeagues) {
+          return true;
+        }
+
+        return false;
       }
     },
     methods: {
@@ -129,6 +140,7 @@
           .get('/api/League/MyLeagues')
           .then(response => {
             this.myLeagues = response.data;
+            this.fetchingLeagues = false;
           })
           .catch(returnedError => (this.error = returnedError));
       },
@@ -151,7 +163,6 @@
     },
     async mounted() {
       await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues()]);
-      this.fetchingLeagues = false;
     }
   }
 </script>
