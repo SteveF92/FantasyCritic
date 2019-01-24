@@ -95,6 +95,11 @@
         So the "backstory" of Fantasy Critic is that you are the CEO of a video game publisher, and you need to decide which games currently in development are worth publishing. Your "Publisher" is
         just your "team" name. It's just a flavor thing. You can make it something serious or a big joke. Doesn't matter at all.
       </p>
+      <h3>What is a 'public league'?</h3>
+      <p class="text-well">
+        If you set your league to public, you allow people who are not in the league to view it. It's also added to a list of all public leagues for ease of finding popular public leagues.
+        However, you still need an invite to join a public league. This setting only affects who can view a league, not who can join it.
+      </p>
       <h3>What is a 'test league'?</h3>
       <p class="text-well">
         Test leagues function exactly the same as normal leagues, except they don't affect the overall stats for games in the system, such as hype factor.
@@ -244,6 +249,11 @@
         If for some reason you don't agree with my methodologies, you can choose to manually assign a score. For example, if a game is released but never appears on OpenCritic, you could choose to add
         manual score from another site - hopefully one you decided on ahead of time. Or, if you think you should be able to draft specific episodes of an episodic series, you'll have to manually score
         those as well. See the <a href="#eligibility">eligibility</a> section for more on episodic games.
+      </p>
+      <h3>My game has a critic score but no points. What gives?</h3>
+      <p class="text-well">
+        The game needs to release before you get the points. So if reviews come out 3 days before the game, you will see a critic score but no points for a few days. The only time this will actually
+        make a difference if a game comes out in early January but has reviews come out in late December. In that case, you won't get the points for the year, because the game didn't come out.
       </p>
       <br />
 
