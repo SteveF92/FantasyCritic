@@ -22,12 +22,12 @@ namespace FantasyCritic.Web.Models.Responses
         }
 
         public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, IClock clock,
-            ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague)
+            LeagueOptions options, SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague, SupportedYear supportedYear)
         {
             User = new PlayerViewModel(leagueYear.League, user);
             Publisher = new PublisherViewModel(publisher, clock, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
-            ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(scoringSystem, systemWideValues);
+            ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished);
         }
 
         public string InvitedEmailAddress { get; }

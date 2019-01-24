@@ -65,9 +65,12 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues)
+        public decimal GetProjectedFantasyPoints(LeagueOptions options, SystemWideValues systemWideValues, bool yearFinished)
         {
-            return PublisherGames.Sum(x => x.GetProjectedFantasyPoints(scoringSystem, systemWideValues));
+            var currentGamesScore =  PublisherGames.Sum(x => x.GetProjectedFantasyPoints(options.ScoringSystem, systemWideValues));
+            var availableSlots = GetAvailableSlots(options, yearFinished);
+            var emptySlotsScore = availableSlots * systemWideValues.AverageStandardGamePoints;
+            return currentGamesScore + emptySlotsScore;
         }
 
         public bool HasRemainingGameSpot(int totalSpots)
@@ -78,6 +81,16 @@ namespace FantasyCritic.Lib.Domain
             }
 
             return false;
+        }
+
+        public int GetAvailableSlots(LeagueOptions options, bool yearFinished)
+        {
+            if (yearFinished)
+            {
+                return 0;
+            }
+
+            return options.StandardGames - PublisherGames.Count;
         }
 
         public bool Equals(Publisher other)

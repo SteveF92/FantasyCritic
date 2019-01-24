@@ -15,7 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Publisher userPublisher,
             IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> users, Maybe<Publisher> nextDraftPublisher, DraftPhase draftPhase,
-            IEnumerable<PublisherGame> availableCounterPicks, ScoringSystem scoringSystem, SystemWideValues systemWideValues, IEnumerable<string> invitedPlayers, bool userIsInLeague,
+            IEnumerable<PublisherGame> availableCounterPicks, LeagueOptions options, SystemWideValues systemWideValues, IEnumerable<string> invitedPlayers, bool userIsInLeague,
             bool userIsInvitedToLeague)
         {
             LeagueID = leagueYear.League.LeagueID;
@@ -49,7 +49,7 @@ namespace FantasyCritic.Web.Models.Responses
                 }
                 else
                 {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, scoringSystem, systemWideValues, userIsInLeague, userIsInvitedToLeague));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, options, systemWideValues, userIsInLeague, userIsInvitedToLeague, supportedYear));
                 }
             }
 

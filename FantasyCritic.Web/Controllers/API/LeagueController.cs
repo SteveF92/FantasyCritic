@@ -204,7 +204,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks,
-                leagueYear.Value.Options.ScoringSystem, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague);
+                leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague);
             return Ok(leagueViewModel);
         }
 
