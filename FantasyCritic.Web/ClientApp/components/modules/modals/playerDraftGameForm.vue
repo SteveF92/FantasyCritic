@@ -131,6 +131,7 @@
               .then(response => {
                   this.draftResult = response.data;
                   if (!this.draftResult.success) {
+                    this.isBusy = false;
                     return;
                   }
                   this.$refs.playerDraftGameFormRef.hide();
