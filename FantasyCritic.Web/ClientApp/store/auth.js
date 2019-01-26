@@ -23,11 +23,12 @@ export default {
         if (state.jwt === null || state.expiration === null) {
           return false;
         }
-        var expire = state.expiration;
-        var now = new Date();
-        var before = expire > now;
+        let expire = state.expiration;
+        let now = new Date();
+        let notExpiredYet = expire > now;
+        let valid = state.jwt && notExpiredYet;
 
-        return state.jwt && before;
+        return valid;
       }
     },
     token: (state) => state.jwt,
