@@ -14,11 +14,13 @@ namespace FantasyCritic.Web.Models.EmailTemplates
         {
             DisplayName = user.DisplayName;
             Link = $"{baseURL}/confirmEmail?UserID={user.UserID}&Code={UrlEncoder.Default.Encode(confirmCode)}";
+            UserID = user.UserID.ToString();
             Code = confirmCode;
         }
 
         public string DisplayName { get; }
         public string Link { get; }
+        public string UserID { get; }
         public string Code { get; }
     }
 }

@@ -229,6 +229,7 @@ namespace FantasyCritic.Web.Controllers.API
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
         {
+            await Task.Delay(2 * 1000);
             var user = await _userManager.FindByIdAsync(request.UserID);
             if (user == null)
             {

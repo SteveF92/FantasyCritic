@@ -12,13 +12,19 @@
     <a href="@Model.Link">Click here to validate your email address.</a>
 </p>
 <p>
-    If the link above doesn't work immediately, you can use this code to confirm your email address:
+    If the link above doesn't work immediately, you can use this info to confirm your email address:
 </p>
 <p>
-    <strong>@Model.Code</strong>
+    <div>
+        <label>User ID</label>
+        <br/>
+        <strong>@Model.UserID</strong>
+    </div>
+    <div>
+        <label>Confirmation Code</label>
+        <br/>
+        <strong>@Model.Code</strong>
+    </div>
 </p>  
-<p>
-    Yeah, it's long...you should probably copy and paste it.
-</p>
 </body>
 </html>
