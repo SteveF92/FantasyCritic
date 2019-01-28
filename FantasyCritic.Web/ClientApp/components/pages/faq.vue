@@ -158,7 +158,7 @@
       <h3>How does the bidding system work?</h3>
       <p class="text-well">
         If you’re familiar with Free Agency Acquisition Budget (FAAB) rules in fantasy football, it works like that. Essentially, any player that is interested in a game will place a secret "bid" for the game,
-        using some of their available budget. Every player starts the year with $100 of budget. Then, on Monday mornings at 9AM UTC, the system will process those bids. The top bidder for any given game
+        using some of their available budget. Every player starts the year with $100 of budget. Then, on Monday evenings at 8PM Eastern, the system will process those bids. The top bidder for any given game
         will recieve the game and spend the money that they bid. The other players keep their money but do not get the game.
       </p>
       <h3>Will I still lose my money even if no one else is bidding on a game?</h3>
@@ -178,7 +178,7 @@
       </p>
       <h3>When are bids processed?</h3>
       <p class="text-well">
-        Bids are processed on Monday mornings at 9AM UTC.
+        Bids are processed on Monday evenings at 8PM Eastern (New York City time).
       </p>
       <h3>How are ties handled on bids?</h3>
       <p class="text-well">
