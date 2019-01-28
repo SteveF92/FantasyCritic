@@ -480,6 +480,7 @@ namespace FantasyCritic.MySQL
         {
             var saveObject = new
             {
+                inviteID = Guid.NewGuid(),
                 leagueID = league.LeagueID,
                 emailAddress
             };
@@ -487,7 +488,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 return connection.ExecuteAsync(
-                    "insert into tblleagueinvite(LeagueID,EmailAddress) VALUES (@leagueID, @emailAddress);",
+                    "insert into tblleagueinvite(InviteID,LeagueID,EmailAddress) VALUES (@inviteID, @leagueID, @emailAddress);",
                     saveObject);
             }
         }
