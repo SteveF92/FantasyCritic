@@ -793,25 +793,35 @@ namespace FantasyCritic.Lib.Services
 
         private async Task ProcessSuccessfulAndFailedBids(IEnumerable<PickupBid> successBids, IEnumerable<FailedPickupBid> failedBids)
         {
+            Dictionary<Publisher, List<PublisherGame>> gamesToAdd = new Dictionary<Publisher, List<PublisherGame>>();
+            List<LeagueAction> leagueActions = new List<LeagueAction>();
+            List<BudgetExpenditure> expenditures = new List<BudgetExpenditure>();
             foreach (var successBid in successBids)
             {
-                await _fantasyCriticRepo.MarkBidStatus(successBid, true);
-                PublisherGame newPublisherGame = new PublisherGame(successBid.Publisher.PublisherID, Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), false, null, null, 
-                    new MasterGameYear(successBid.MasterGame, successBid.Publisher.Year), null, null, successBid.Publisher.Year);
-                await _fantasyCriticRepo.AddPublisherGame(successBid.Publisher, newPublisherGame);
-                await _fantasyCriticRepo.SpendBudget(successBid.Publisher, successBid.BidAmount);
+                PublisherGame newPublisherGame = new PublisherGame(successBid.Publisher.PublisherID, Guid.NewGuid(), successBid.MasterGame.GameName, _clock.GetCurrentInstant(), 
+                    false, null, null, new MasterGameYear(successBid.MasterGame, successBid.Publisher.Year), null, null, successBid.Publisher.Year);
+                if (!gamesToAdd.ContainsKey(successBid.Publisher))
+                {
+                    gamesToAdd[successBid.Publisher] = new List<PublisherGame>();
+                }
 
+                gamesToAdd[successBid.Publisher].Add(newPublisherGame);
+                expenditures.Add(new BudgetExpenditure(successBid.Publisher, successBid.BidAmount));
+                
                 LeagueAction leagueAction = new LeagueAction(successBid, _clock.GetCurrentInstant());
-                await _fantasyCriticRepo.AddLeagueAction(leagueAction);
+                leagueActions.Add(leagueAction);
             }
 
             foreach (var failedBid in failedBids)
             {
-                await _fantasyCriticRepo.MarkBidStatus(failedBid.PickupBid, false);
-
                 LeagueAction leagueAction = new LeagueAction(failedBid, _clock.GetCurrentInstant());
-                await _fantasyCriticRepo.AddLeagueAction(leagueAction);
+                leagueActions.Add(leagueAction);
             }
+
+            await _fantasyCriticRepo.MarkBidStatus(successBids, true);
+            await _fantasyCriticRepo.MarkBidStatus(failedBids, false);
+            await _fantasyCriticRepo.AddLeagueActions(leagueActions);
+            await _fantasyCriticRepo.SpendBudgets(expenditures);
         }
 
         public Task ChangePublisherName(Publisher publisher, string publisherName)
