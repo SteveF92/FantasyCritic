@@ -704,13 +704,17 @@ namespace FantasyCritic.Lib.Services
                 return;
             }
 
+            var processedBids = new ProcessedBidSet();
             foreach (var leagueYear in allActiveBids)
             {
-                await ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, systemWideValues);
+                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, systemWideValues);
+                processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
             }
+
+            await ProcessSuccessfulAndFailedBids(processedBids.SuccessBids, processedBids.FailedBids);
         }
 
-        private async Task ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague, SystemWideValues systemWideValues)
+        private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague, SystemWideValues systemWideValues)
         {
             var noSpaceLeftBids = activeBidsForLeague.Where(x => !x.Publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames));
             var insufficientFundsBids = activeBidsForLeague.Where(x => x.BidAmount > x.Publisher.Budget);
@@ -731,15 +735,16 @@ namespace FantasyCritic.Lib.Services
             var noSpaceLeftBidFailures = noSpaceLeftBids.Select(x => new FailedPickupBid(x, "No roster spots available."));
             var failedBids = losingBids.Concat(insufficientFundsBidFailures).Concat(noSpaceLeftBidFailures);
 
-            var failedBidsSimple = failedBids.Select(x => x.PickupBid);
+            var processedSet = new ProcessedBidSet(winningBids, failedBids);
 
-            await ProcessSuccessfulAndFailedBids(winningBids, failedBids);
-
-            var remainingBidsForLeague = activeBidsForLeague.Except(winningBids).Except(failedBidsSimple);
+            var remainingBidsForLeague = activeBidsForLeague.Except(processedSet.ProcessedBids);
             if (remainingBidsForLeague.Any())
             {
-                await ProcessPickupsForLeagueYear(leagueYear, remainingBidsForLeague, systemWideValues);
+                var subProcessedSet = ProcessPickupsForLeagueYear(leagueYear, remainingBidsForLeague, systemWideValues);
+                processedSet = processedSet.AppendSet(subProcessedSet);
             }
+
+            return processedSet;
         }
 
         private IReadOnlyList<PickupBid> GetWinnableBids(IEnumerable<PickupBid> activeBidsForLeagueYear, LeagueOptions options, SystemWideValues systemWideValues)
