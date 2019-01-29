@@ -10,7 +10,7 @@ using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class LeagueYear
+    public class LeagueYear : IEquatable<LeagueYear>
     {
         public LeagueYear(League league, int year, LeagueOptions options, PlayStatus playStatus)
         {
@@ -28,5 +28,28 @@ namespace FantasyCritic.Lib.Domain
         public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 
         public string GetGroupName => $"{League.LeagueID}|{Year}";
+
+        public bool Equals(LeagueYear other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(League, other.League) && Year == other.Year;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((LeagueYear) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((League != null ? League.GetHashCode() : 0) * 397) ^ Year;
+            }
+        }
     }
 }

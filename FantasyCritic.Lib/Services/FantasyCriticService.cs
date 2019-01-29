@@ -489,16 +489,6 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
         }
 
-        public async Task ProcessPickups(int year)
-        {
-            SystemWideValues systemWideValues = await GetLeagueWideValues();
-            var leagueYears = await GetLeagueYears(year);
-            foreach (var leagueYear in leagueYears)
-            {
-                await ProcessPickupsForLeagueYear(leagueYear, systemWideValues);
-            }
-        }
-
         public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
         {
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);
@@ -705,23 +695,32 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        private async Task ProcessPickupsForLeagueYear(LeagueYear leagueYear, SystemWideValues systemWideValues)
+        public async Task ProcessPickups(int year)
         {
-            var allActiveBids = await GetActiveBids(leagueYear);
+            SystemWideValues systemWideValues = await GetLeagueWideValues();
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             if (!allActiveBids.Any())
             {
                 return;
             }
 
-            var noSpaceLeftBids = allActiveBids.Where(x => !x.Publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames));
-            var insufficientFundsBids = allActiveBids.Where(x => x.BidAmount > x.Publisher.Budget);
+            foreach (var leagueYear in allActiveBids)
+            {
+                await ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, systemWideValues);
+            }
+        }
 
-            var validBids = allActiveBids.Except(noSpaceLeftBids).Except(insufficientFundsBids);
+        private async Task ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague, SystemWideValues systemWideValues)
+        {
+            var noSpaceLeftBids = activeBidsForLeague.Where(x => !x.Publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames));
+            var insufficientFundsBids = activeBidsForLeague.Where(x => x.BidAmount > x.Publisher.Budget);
+
+            var validBids = activeBidsForLeague.Except(noSpaceLeftBids).Except(insufficientFundsBids);
             var winnableBids = GetWinnableBids(validBids, leagueYear.Options, systemWideValues);
             var winningBids = GetWinningBids(winnableBids);
 
             var takenGames = winningBids.Select(x => x.MasterGame);
-            var losingBids = allActiveBids
+            var losingBids = activeBidsForLeague
                 .Except(winningBids)
                 .Except(noSpaceLeftBids)
                 .Except(insufficientFundsBids)
@@ -731,25 +730,16 @@ namespace FantasyCritic.Lib.Services
             var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget."));
             var noSpaceLeftBidFailures = noSpaceLeftBids.Select(x => new FailedPickupBid(x, "No roster spots available."));
             var failedBids = losingBids.Concat(insufficientFundsBidFailures).Concat(noSpaceLeftBidFailures);
+
+            var failedBidsSimple = failedBids.Select(x => x.PickupBid);
+
             await ProcessSuccessfulAndFailedBids(winningBids, failedBids);
 
-            //When we are done, we run again.
-            //This will repeat until there are no active bids.
-            await Task.Delay(5);
-            await ProcessPickupsForLeagueYear(leagueYear, systemWideValues);
-        }
-
-        private async Task<IReadOnlyList<PickupBid>> GetActiveBids(LeagueYear leagueYear)
-        {
-            List<PickupBid> activeBids = new List<PickupBid>();
-            var publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
-            foreach (var publisher in publishers)
+            var remainingBidsForLeague = activeBidsForLeague.Except(winningBids).Except(failedBidsSimple);
+            if (remainingBidsForLeague.Any())
             {
-                var bidsForPublisher = await _fantasyCriticRepo.GetActivePickupBids(publisher);
-                activeBids.AddRange(bidsForPublisher);
+                await ProcessPickupsForLeagueYear(leagueYear, remainingBidsForLeague, systemWideValues);
             }
-
-            return activeBids;
         }
 
         private IReadOnlyList<PickupBid> GetWinnableBids(IEnumerable<PickupBid> activeBidsForLeagueYear, LeagueOptions options, SystemWideValues systemWideValues)

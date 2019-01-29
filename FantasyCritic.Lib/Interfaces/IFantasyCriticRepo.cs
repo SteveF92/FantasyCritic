@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -53,6 +54,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task CreatePickupBid(PickupBid currentBid);
         Task RemovePickupBid(PickupBid bid);
         Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
+        Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year);
         Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);
         Task MarkBidStatus(PickupBid bid, bool success);
         Task SpendBudget(Publisher successBidPublisher, uint successBidBidAmount);
