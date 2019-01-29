@@ -818,8 +818,10 @@ namespace FantasyCritic.Lib.Services
                 leagueActions.Add(leagueAction);
             }
 
+            var simpleFailedBids = failedBids.Select(x => x.PickupBid);
+
             await _fantasyCriticRepo.MarkBidStatus(successBids, true);
-            await _fantasyCriticRepo.MarkBidStatus(failedBids, false);
+            await _fantasyCriticRepo.MarkBidStatus(simpleFailedBids, false);
             await _fantasyCriticRepo.AddLeagueActions(leagueActions);
             await _fantasyCriticRepo.SpendBudgets(expenditures);
         }

@@ -56,9 +56,10 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
         Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year);
         Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);
-        Task MarkBidStatus(PickupBid bid, bool success);
-        Task SpendBudget(Publisher successBidPublisher, uint successBidBidAmount);
+        Task MarkBidStatus(IEnumerable<PickupBid> bid, bool success);
+        Task SpendBudgets(IEnumerable<BudgetExpenditure> expenditures);
         Task AddLeagueAction(LeagueAction action);
+        Task AddLeagueActions(IEnumerable<LeagueAction> leagueActions);
         Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
         Task ChangePublisherName(Publisher publisher, string publisherName);
         Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague);
