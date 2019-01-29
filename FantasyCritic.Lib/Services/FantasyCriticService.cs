@@ -704,14 +704,27 @@ namespace FantasyCritic.Lib.Services
                 return;
             }
 
+            IEnumerable<PickupBid> flatAllBids = allActiveBids.SelectMany(x => x.Value);
+
             var processedBids = new ProcessedBidSet();
             foreach (var leagueYear in allActiveBids)
             {
+                if (!leagueYear.Value.Any())
+                {
+                    continue;
+                }
                 var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, systemWideValues);
                 processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
             }
 
             await ProcessSuccessfulAndFailedBids(processedBids.SuccessBids, processedBids.FailedBids);
+
+            var remainingBids = flatAllBids.Except(processedBids.ProcessedBids);
+            if (remainingBids.Any())
+            {
+                await Task.Delay(1);
+                await ProcessPickups(year);
+            }
         }
 
         private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague, SystemWideValues systemWideValues)
@@ -736,14 +749,6 @@ namespace FantasyCritic.Lib.Services
             var failedBids = losingBids.Concat(insufficientFundsBidFailures).Concat(noSpaceLeftBidFailures);
 
             var processedSet = new ProcessedBidSet(winningBids, failedBids);
-
-            var remainingBidsForLeague = activeBidsForLeague.Except(processedSet.ProcessedBids);
-            if (remainingBidsForLeague.Any())
-            {
-                var subProcessedSet = ProcessPickupsForLeagueYear(leagueYear, remainingBidsForLeague, systemWideValues);
-                processedSet = processedSet.AppendSet(subProcessedSet);
-            }
-
             return processedSet;
         }
 
