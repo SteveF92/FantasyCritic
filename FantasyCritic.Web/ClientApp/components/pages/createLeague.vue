@@ -25,7 +25,7 @@
         <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
 
         <div class="form-group col-8">
-          <label for="pickupGames" class="control-label">Total Number of Games</label>
+          <label for="standardGames" class="control-label">Total Number of Games</label>
           <p>
             This is the total number of games that each player will have on their roster.
           </p>

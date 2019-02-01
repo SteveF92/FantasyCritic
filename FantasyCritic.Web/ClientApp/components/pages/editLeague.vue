@@ -7,17 +7,36 @@
         <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>
 
         <div class="form-group col-md-10">
-          <label for="pickupGames" class="control-label">Total Number of Games</label>
+          <label for="standardGames" class="control-label">Total Number of Games</label>
+          <p>
+            This is the total number of games that each player will have on their roster.
+          </p>
+
           <input v-model="selectedLeagueOptions.standardGames" id="standardGames" name="standardGames" type="text" class="form-control input" />
         </div>
 
         <div class="form-group col-md-10">
           <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
+          <p>
+            This is the number of games that will be chosen by each player at the draft.
+            If this number is lower than the "Total Number of Games", the remainder will be
+            <a href="/faq#bidding-system" target="_blank">
+              Pickup Games.
+            </a>
+          </p>
+
           <input v-model="selectedLeagueOptions.gamesToDraft" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
         </div>
 
         <div class="form-group col-md-10">
           <label for="counterPicks" class="control-label">Number of Counter Picks</label>
+          <p>
+            Counter picks are essentially bets against a game. For more details,
+            <a href="/faq#scoring" target="_blank">
+              click here.
+            </a>
+          </p>
+
           <input v-model="selectedLeagueOptions.counterPicks" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
         </div>
         <hr />
