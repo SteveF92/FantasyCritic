@@ -27,7 +27,7 @@ namespace FantasyCritic.Lib.Domain
         public int Year { get; }
         public string PublisherName { get; }
         public int DraftPosition { get; }
-        public IReadOnlyList<PublisherGame> PublisherGames { get; }
+        public IReadOnlyList<PublisherGame> PublisherGames { get; private set; }
         public uint Budget { get; private set; }
 
         public decimal? AverageCriticScore
@@ -113,8 +113,9 @@ namespace FantasyCritic.Lib.Domain
             return PublisherID.GetHashCode();
         }
 
-        public void SpendBudget(uint bidAmount)
+        public void AquireGame(PublisherGame game, uint bidAmount)
         {
+            PublisherGames = PublisherGames.Concat(new []{ game }).ToList();
             Budget -= bidAmount;
         }
     }

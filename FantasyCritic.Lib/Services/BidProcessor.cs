@@ -121,7 +121,7 @@ namespace FantasyCritic.Lib.Services
                     false, null, null, new MasterGameYear(successBid.MasterGame, successBid.Publisher.Year), null, null, successBid.Publisher.Year);
                 gamesToAdd.Add(newPublisherGame);
                 var affectedPublisher = updatedPublishers.Single(x => x.PublisherID == successBid.Publisher.PublisherID);
-                affectedPublisher.SpendBudget(successBid.BidAmount);
+                affectedPublisher.AquireGame(newPublisherGame, successBid.BidAmount);
 
                 LeagueAction leagueAction = new LeagueAction(successBid, clock.GetCurrentInstant());
                 leagueActions.Add(leagueAction);
