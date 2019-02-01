@@ -702,7 +702,9 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             BidProcessingResults results = BidProcessor.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock);
-            await _fantasyCriticRepo.SaveProcessedBidResults(results);
+            var testingFail = results.FailedBids.Where(x => x.MasterGame.GameName.Contains("Marvel")).ToList();
+            var testingWin = results.SuccessBids.Where(x => x.MasterGame.GameName.Contains("Marvel")).ToList();
+            //await _fantasyCriticRepo.SaveProcessedBidResults(results);
         }
 
         public Task ChangePublisherName(Publisher publisher, string publisherName)

@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Services
                 {
                     continue;
                 }
-                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, systemWideValues);
+                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, currentPublisherStates, systemWideValues);
                 processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
             }
 
@@ -46,10 +46,27 @@ namespace FantasyCritic.Lib.Services
             return bidProcessingResults;
         }
 
-        private static ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague, SystemWideValues systemWideValues)
+        private static ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague,
+            IEnumerable<Publisher> currentPublisherStates, SystemWideValues systemWideValues)
         {
-            var noSpaceLeftBids = activeBidsForLeague.Where(x => !x.Publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames));
-            var insufficientFundsBids = activeBidsForLeague.Where(x => x.BidAmount > x.Publisher.Budget);
+            List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
+            //activeBidsForLeague.Where(x => !x.Publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames));
+            List<PickupBid> insufficientFundsBids = new List<PickupBid>();
+            //activeBidsForLeague.Where(x => x.BidAmount > x.Publisher.Budget);
+
+            foreach (var activeBid in activeBidsForLeague)
+            {
+                Publisher publisher = currentPublisherStates.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
+                if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames))
+                {
+                    noSpaceLeftBids.Add(activeBid);
+                }
+
+                if (activeBid.BidAmount > publisher.Budget)
+                {
+                    insufficientFundsBids.Add(activeBid);
+                }
+            }
 
             var validBids = activeBidsForLeague.Except(noSpaceLeftBids).Except(insufficientFundsBids);
             var winnableBids = GetWinnableBids(validBids, leagueYear.Options, systemWideValues);
