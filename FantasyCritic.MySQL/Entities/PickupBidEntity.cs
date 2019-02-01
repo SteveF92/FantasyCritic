@@ -26,6 +26,17 @@ namespace FantasyCritic.MySQL.Entities
             Successful = domain.Successful;
         }
 
+        public PickupBidEntity(PickupBid domain, bool successful)
+        {
+            BidID = domain.BidID;
+            PublisherID = domain.Publisher.PublisherID;
+            MasterGameID = domain.MasterGame.MasterGameID;
+            Timestamp = domain.Timestamp.ToDateTimeUtc();
+            Priority = domain.Priority;
+            BidAmount = domain.BidAmount;
+            Successful = successful;
+        }
+
         public Guid BidID { get; set; }
         public Guid PublisherID { get; set; }
         public Guid MasterGameID { get; set; }
