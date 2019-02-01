@@ -233,34 +233,6 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task MarkBidStatus(IEnumerable<PickupBid> bids, bool success)
-        {
-            var entities = bids.Select(x => new PickupBidEntity(x, success));
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                using (var transaction = await connection.BeginTransactionAsync())
-                {
-                    await connection.ExecuteAsync("update tblpickupbid SET Successful = @Successful where BidID = @BidID;", entities, transaction);
-                    transaction.Commit();
-                }
-            }
-        }
-
-        public async Task UpdatePublisherBudgets(IEnumerable<Publisher> publishers)
-        {
-            var entities = publishers.Select(x => new PublisherEnity(x));
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                using (var transaction = await connection.BeginTransactionAsync())
-                {
-                    await connection.ExecuteAsync("update tblpublisher SET Budget = Budget - @BidAmount where PublisherID = @PublisherID;", entities, transaction);
-                    transaction.Commit();
-                }
-            }
-        }
-
         public async Task AddLeagueAction(LeagueAction action)
         {
             LeagueActionEntity entity = new LeagueActionEntity(action);
@@ -270,23 +242,6 @@ namespace FantasyCritic.MySQL
                 await connection.ExecuteAsync(
                     "insert into tblleagueaction(PublisherID,Timestamp,ActionType,Description,ManagerAction) VALUES " +
                     "(@PublisherID,@Timestamp,@ActionType,@Description,@ManagerAction);", entity);
-            }
-        }
-
-        public async Task AddLeagueActions(IEnumerable<LeagueAction> actions)
-        {
-            var entities = actions.Select(x => new LeagueActionEntity(x));
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                using (var transaction = await connection.BeginTransactionAsync())
-                {
-                    await connection.ExecuteAsync(
-                        "insert into tblleagueaction(PublisherID,Timestamp,ActionType,Description,ManagerAction) VALUES " +
-                        "(@PublisherID,@Timestamp,@ActionType,@Description,@ManagerAction);", entities, transaction);
-                    transaction.Commit();
-                }
             }
         }
 
@@ -840,24 +795,6 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task AddPublisherGames(IEnumerable<PublisherGame> publisherGames)
-        {
-            var entities = publisherGames.Select(x => new PublisherGameEntity(x));
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                using (var transaction = await connection.BeginTransactionAsync())
-                {
-                    await connection.ExecuteAsync(
-                        "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition) VALUES " +
-                        "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition);",
-                        entities, transaction);
-                }
-                
-            }
-        }
-
         public async Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -1086,6 +1023,53 @@ namespace FantasyCritic.MySQL
                     "where PlayStatus <> 'NotStartedDraft' and vwleague.LeagueID = @leagueID;",
                     selectObject);
             }
+        }
+
+        public async Task SaveProcessedResults(BidProcessingResults bidProcessingResults)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await MarkBidStatus(bidProcessingResults.SuccessBids, true, connection, transaction);
+                    await MarkBidStatus(bidProcessingResults.FailedBids, false, connection, transaction);
+                    await AddLeagueActions(bidProcessingResults.LeagueActions, connection, transaction);
+                    await UpdatePublisherBudgets(bidProcessingResults.UpdatedPublishers, connection, transaction);
+                    await AddPublisherGames(bidProcessingResults.PublisherGames, connection, transaction);
+                    transaction.Commit();
+                }
+            }   
+        }
+
+        private async Task MarkBidStatus(IEnumerable<PickupBid> bids, bool success, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            var entities = bids.Select(x => new PickupBidEntity(x, success));
+            await connection.ExecuteAsync("update tblpickupbid SET Successful = @Successful where BidID = @BidID;", entities, transaction);
+        }
+
+        private async Task UpdatePublisherBudgets(IEnumerable<Publisher> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            var entities = updatedPublishers.Select(x => new PublisherEnity(x));
+            await connection.ExecuteAsync("update tblpublisher SET Budget = Budget - @BidAmount where PublisherID = @PublisherID;", entities, transaction);
+
+        }
+
+        private async Task AddLeagueActions(IEnumerable<LeagueAction> actions, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            var entities = actions.Select(x => new LeagueActionEntity(x));
+            await connection.ExecuteAsync(
+                "insert into tblleagueaction(PublisherID,Timestamp,ActionType,Description,ManagerAction) VALUES " +
+                "(@PublisherID,@Timestamp,@ActionType,@Description,@ManagerAction);", entities, transaction);
+        }
+
+        private async Task AddPublisherGames(IEnumerable<PublisherGame> publisherGames, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            var entities = publisherGames.Select(x => new PublisherGameEntity(x));
+            await connection.ExecuteAsync(
+                "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition) VALUES " +
+                "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition);",
+                entities, transaction);
         }
     }
 }

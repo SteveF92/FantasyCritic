@@ -42,7 +42,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year);
         Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year);
         Task AddPublisherGame(PublisherGame publisherGame);
-        Task AddPublisherGames(IEnumerable<PublisherGame> publisherGame);
         Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
 
         Task<IReadOnlyList<SupportedYear>> GetSupportedYears();
@@ -57,10 +56,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
         Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year);
         Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);
-        Task MarkBidStatus(IEnumerable<PickupBid> bid, bool success);
-        Task UpdatePublisherBudgets(IEnumerable<Publisher> updatedPublishers);
         Task AddLeagueAction(LeagueAction action);
-        Task AddLeagueActions(IEnumerable<LeagueAction> leagueActions);
         Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
         Task ChangePublisherName(Publisher publisher, string publisherName);
         Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague);
@@ -75,5 +71,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task DeleteLeague(League league);
         Task DeleteLeagueActions(Publisher publisher);
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
+
+        Task SaveProcessedResults(BidProcessingResults bidProcessingResults);
+
     }
 }
