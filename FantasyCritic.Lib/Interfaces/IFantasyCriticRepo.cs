@@ -72,7 +72,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task DeleteLeagueActions(Publisher publisher);
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
 
-        Task SaveProcessedResults(BidProcessingResults bidProcessingResults);
+        Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
 
     }
 }
