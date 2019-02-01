@@ -41,7 +41,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task CreatePublisher(Publisher publisher);
         Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year);
         Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year);
-        Task AddPublisherGame(Publisher publisher, PublisherGame publisherGame);
+        Task AddPublisherGame(PublisherGame publisherGame);
+        Task AddPublisherGames(IEnumerable<PublisherGame> publisherGame);
         Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
 
         Task<IReadOnlyList<SupportedYear>> GetSupportedYears();

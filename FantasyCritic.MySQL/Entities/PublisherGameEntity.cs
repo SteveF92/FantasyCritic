@@ -16,10 +16,10 @@ namespace FantasyCritic.MySQL.Entities
 
         }
 
-        public PublisherGameEntity(Publisher publisher, PublisherGame publisherGame)
+        public PublisherGameEntity(PublisherGame publisherGame)
         {
             PublisherGameID = publisherGame.PublisherGameID;
-            PublisherID = publisher.PublisherID;
+            PublisherID = publisherGame.PublisherID;
             GameName = publisherGame.GameName;
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
             CounterPick = publisherGame.CounterPick;

@@ -236,9 +236,13 @@ namespace FantasyCritic.MySQL
         {
             var entities = bids.Select(x => new PickupBidEntity(x, success));
             using (var connection = new MySqlConnection(_connectionString))
-            using (var transaction = await connection.BeginTransactionAsync())
             {
-                await connection.ExecuteAsync("update tblpickupbid SET Successful = @Success where BidID = @BidID;", entities, transaction);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync("update tblpickupbid SET Successful = @Successful where BidID = @BidID;", entities, transaction);
+                    transaction.Commit();
+                }
             }
         }
 
@@ -246,9 +250,13 @@ namespace FantasyCritic.MySQL
         {
             var entities = expenditures.Select(x => new BudgetExpenditureEntity(x));
             using (var connection = new MySqlConnection(_connectionString))
-            using (var transaction = await connection.BeginTransactionAsync())
             {
-                await connection.ExecuteAsync("update tblpublisher SET Budget = Budget - @BidAmount where PublisherID = @PublisherID;", entities, transaction);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync("update tblpublisher SET Budget = Budget - @BidAmount where PublisherID = @PublisherID;", entities, transaction);
+                    transaction.Commit();
+                }
             }
         }
 
@@ -269,11 +277,15 @@ namespace FantasyCritic.MySQL
             var entities = actions.Select(x => new LeagueActionEntity(x));
 
             using (var connection = new MySqlConnection(_connectionString))
-            using (var transaction = await connection.BeginTransactionAsync())
             {
-                await connection.ExecuteAsync(
-                    "insert into tblleagueaction(PublisherID,Timestamp,ActionType,Description,ManagerAction) VALUES " +
-                    "(@PublisherID,@Timestamp,@ActionType,@Description,@ManagerAction);", entities, transaction);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(
+                        "insert into tblleagueaction(PublisherID,Timestamp,ActionType,Description,ManagerAction) VALUES " +
+                        "(@PublisherID,@Timestamp,@ActionType,@Description,@ManagerAction);", entities, transaction);
+                    transaction.Commit();
+                }
             }
         }
 
@@ -813,9 +825,9 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task AddPublisherGame(Publisher publisher, PublisherGame publisherGame)
+        public async Task AddPublisherGame(PublisherGame publisherGame)
         {
-            PublisherGameEntity entity = new PublisherGameEntity(publisher, publisherGame);
+            PublisherGameEntity entity = new PublisherGameEntity(publisherGame);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -823,6 +835,24 @@ namespace FantasyCritic.MySQL
                     "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition) VALUES " +
                     "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition);",
                     entity);
+            }
+        }
+
+        public async Task AddPublisherGames(IEnumerable<PublisherGame> publisherGames)
+        {
+            var entities = publisherGames.Select(x => new PublisherGameEntity(x));
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(
+                        "insert into tblpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition) VALUES " +
+                        "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition);",
+                        entities, transaction);
+                }
+                
             }
         }
 
