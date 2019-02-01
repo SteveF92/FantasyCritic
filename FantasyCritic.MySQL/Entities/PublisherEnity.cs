@@ -31,7 +31,7 @@ namespace FantasyCritic.MySQL.Entities
         public int Year { get; set; }
         public Guid UserID { get; set; }
         public int DraftPosition { get; set; }
-        public int Budget { get; set; }
+        public uint Budget { get; set; }
 
         public Publisher ToDomain(League league, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames)
         {

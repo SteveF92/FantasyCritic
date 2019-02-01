@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class Publisher : IEquatable<Publisher>
     {
-        public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, int draftPosition, IEnumerable<PublisherGame> publisherGames, int budget)
+        public Publisher(Guid publisherID, League league, FantasyCriticUser user, int year, string publisherName, int draftPosition, IEnumerable<PublisherGame> publisherGames, uint budget)
         {
             PublisherID = publisherID;
             League = league;
@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Domain
         public string PublisherName { get; }
         public int DraftPosition { get; }
         public IReadOnlyList<PublisherGame> PublisherGames { get; }
-        public int Budget { get; }
+        public uint Budget { get; private set; }
 
         public decimal? AverageCriticScore
         {
@@ -111,6 +111,11 @@ namespace FantasyCritic.Lib.Domain
         public override int GetHashCode()
         {
             return PublisherID.GetHashCode();
+        }
+
+        public void SpendBudget(uint bidAmount)
+        {
+            Budget -= bidAmount;
         }
     }
 }

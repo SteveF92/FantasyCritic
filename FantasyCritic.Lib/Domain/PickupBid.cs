@@ -9,10 +9,11 @@ namespace FantasyCritic.Lib.Domain
 {
     public class PickupBid : IEquatable<PickupBid>
     {
-        public PickupBid(Guid bidID, Publisher publisher, MasterGame masterGame, uint bidAmount, int priority, Instant timestamp, bool? successful)
+        public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, uint bidAmount, int priority, Instant timestamp, bool? successful)
         {
             BidID = bidID;
             Publisher = publisher;
+            LeagueYear = leagueYear;
             MasterGame = masterGame;
             BidAmount = bidAmount;
             Priority = priority;
@@ -22,6 +23,7 @@ namespace FantasyCritic.Lib.Domain
 
         public Guid BidID { get; }
         public Publisher Publisher { get; }
+        public LeagueYear LeagueYear { get; }
         public MasterGame MasterGame { get; }
         public uint BidAmount { get; }
         public int Priority { get; }

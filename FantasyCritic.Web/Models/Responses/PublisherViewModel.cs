@@ -49,7 +49,7 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<PublisherGameViewModel> Games { get; }
         public decimal? AverageCriticScore { get; }
         public decimal TotalFantasyPoints { get; }
-        public int Budget { get; }
+        public uint Budget { get; }
         public bool NextToDraft { get; }
         public bool UserIsInLeague { get; }
         public bool PublicLeague { get; }

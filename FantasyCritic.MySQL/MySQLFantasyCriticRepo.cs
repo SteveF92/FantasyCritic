@@ -185,6 +185,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher)
         {
+            var leagueYear = await GetLeagueYear(publisher.League, publisher.Year);
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var bidEntities = await connection.QueryAsync<PickupBidEntity>("select * from tblpickupbid where PublisherID = @publisherID and Successful is NULL",
@@ -195,7 +196,7 @@ namespace FantasyCritic.MySQL
                 {
                     var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
 
-                    PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value);
+                    PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, leagueYear.Value);
                     domainBids.Add(domain);
                 }
 
@@ -222,7 +223,7 @@ namespace FantasyCritic.MySQL
                     var publisher = publisherDictionary[bidEntity.PublisherID];
                     var leagueYear = leagueDictionary[publisher.League.LeagueID].Single(x => x.Year == year);
 
-                    PickupBid domainPickup = bidEntity.ToDomain(publisher, masterGame.Value);
+                    PickupBid domainPickup = bidEntity.ToDomain(publisher, masterGame.Value, leagueYear);
                     pickupBidsByLeagueYear[leagueYear].Add(domainPickup);
                 }
 
@@ -246,9 +247,9 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task SpendBudgets(IEnumerable<BudgetExpenditure> expenditures)
+        public async Task UpdatePublisherBudgets(IEnumerable<Publisher> publishers)
         {
-            var entities = expenditures.Select(x => new BudgetExpenditureEntity(x));
+            var entities = publishers.Select(x => new PublisherEnity(x));
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
@@ -387,8 +388,9 @@ namespace FantasyCritic.MySQL
 
                 var publisher = await GetPublisher(bidEntity.PublisherID);
                 var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
+                var leagueYear = await GetLeagueYear(publisher.Value.League, publisher.Value.Year);
 
-                PickupBid domain = bidEntity.ToDomain(publisher.Value, masterGame.Value);
+                PickupBid domain = bidEntity.ToDomain(publisher.Value, masterGame.Value, leagueYear.Value);
                 return domain;
             }
         }

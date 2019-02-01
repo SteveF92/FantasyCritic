@@ -45,10 +45,10 @@ namespace FantasyCritic.MySQL.Entities
         public uint BidAmount { get; set; }
         public bool? Successful { get; set; }
 
-        public PickupBid ToDomain(Publisher publisher, MasterGame masterGame)
+        public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, LeagueYear leagueYear)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            return new PickupBid(BidID, publisher, masterGame, BidAmount, Priority, instant, Successful);
+            return new PickupBid(BidID, publisher, leagueYear, masterGame, BidAmount, Priority, instant, Successful);
         }
     }
 }
