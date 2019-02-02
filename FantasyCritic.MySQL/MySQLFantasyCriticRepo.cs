@@ -138,6 +138,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(
                         "update tblpublishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;",
                         updateEntities, transaction);
+                    transaction.Commit();
                 }
             }
         }
