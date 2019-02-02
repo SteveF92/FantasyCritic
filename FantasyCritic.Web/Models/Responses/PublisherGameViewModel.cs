@@ -14,10 +14,9 @@ namespace FantasyCritic.Web.Models.Responses
         {
             PublisherGameID = publisherGame.PublisherGameID;
             GameName = publisherGame.GameName;
+            
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
-
             CounterPick = publisherGame.CounterPick;
-
             FantasyPoints = publisherGame.FantasyPoints;
 
             Linked = publisherGame.MasterGame.HasValue;
@@ -35,13 +34,13 @@ namespace FantasyCritic.Web.Models.Responses
                 if (publisherGame.MasterGame.HasValue)
                 {
                     MasterGame = new MasterGameYearViewModel(publisherGame.MasterGame.Value, clock);
-                }
+                }  
+            }
 
-                if (publisherGame.ManualCriticScore.HasValue)
-                {
-                    CriticScore = publisherGame.ManualCriticScore;
-                    ManualCriticScore = true;
-                }
+            if (publisherGame.ManualCriticScore.HasValue)
+            {
+                CriticScore = publisherGame.ManualCriticScore;
+                ManualCriticScore = true;
             }
 
             WillRelease = publisherGame.WillRelease();

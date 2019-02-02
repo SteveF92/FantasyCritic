@@ -15,6 +15,11 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
         {
             if (publisherGame.MasterGame.HasNoValue)
             {
+                decimal? unlinkedManualScore = publisherGame.ManualCriticScore;
+                if (unlinkedManualScore.HasValue)
+                {
+                    return GetPointsForScore(publisherGame, unlinkedManualScore.Value, systemWideValues);
+                }
                 return null;
             }
 
