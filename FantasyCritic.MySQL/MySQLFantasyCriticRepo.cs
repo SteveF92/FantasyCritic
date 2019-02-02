@@ -132,9 +132,13 @@ namespace FantasyCritic.MySQL
                 publisherGameScores.Select(x => new PublisherScoreUpdateEntity(x)).ToList();
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(
-                    "update tblpublishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;",
-                    updateEntities);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(
+                        "update tblpublishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;",
+                        updateEntities, transaction);
+                }
             }
         }
 
