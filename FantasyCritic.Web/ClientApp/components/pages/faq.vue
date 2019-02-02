@@ -199,7 +199,7 @@
         <thead>
           <tr class="bg-primary">
             <th>Game Name</th>
-            <th>Open Critic Score</th>
+            <th>OpenCritic Score</th>
             <th>Fantasy Points</th>
           </tr>
         </thead>
@@ -254,6 +254,16 @@
       <p class="text-well">
         The game needs to release before you get the points. So if reviews come out 3 days before the game, you will see a critic score but no points for a few days. The only time this will actually
         make a difference if a game comes out in early January but has reviews come out in late December. In that case, you won't get the points for the year, because the game didn't come out.
+      </p>
+      <h3>I see a score on OpenCritic but not in my league. Why?</h3>
+      <p class="text-well">
+        I refresh the database about once every other day. I don't want to hit OpenCritic's API more frequently than I have to, as doing so involves a bunch of rapid requests. Additionally, I have
+        to manually enter the "OpenCritic ID" for every game in the master games list. OpenCritic doesn't usually add a game until it is close to release, so I need to check frequently to see if
+        they have added new games. If you notice a particular game that is missing a score, feel free to let me know. If a score is just out of sync, it'll be fixed soon.
+      </p>
+      <h3>When are critic scores locked in?</h3>
+      <p class="text-well">
+        At the very end of the year. Usually scores don't change after the first few weeks a game has been out, but there's no reason to "lock" scores until it's time to determine the winner.
       </p>
       <br />
 
