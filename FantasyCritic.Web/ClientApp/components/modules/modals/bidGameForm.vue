@@ -10,9 +10,8 @@
           </span>
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
-        <div v-if="bidMasterGame">
-          Selected Game: {{bidMasterGame.gameName}}
-        </div>
+
+        <label v-if="bidMasterGame" for="bidMasterGame" class="control-label">Selected Game: {{bidMasterGame.gameName}}</label>
       </div>
     </form>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="bidGame">
