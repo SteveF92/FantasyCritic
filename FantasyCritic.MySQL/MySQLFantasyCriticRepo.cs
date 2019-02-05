@@ -290,22 +290,26 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task StartDraft(LeagueYear leagueYear)
-        {
-            return SetDraftStatus(leagueYear, PlayStatus.Drafting);
-        }
-
-        public Task CompleteDraft(LeagueYear leagueYear)
-        {
-            return SetDraftStatus(leagueYear, PlayStatus.DraftFinal);
-        }
-
-        private async Task SetDraftStatus(LeagueYear leagueYear, PlayStatus playStatus)
+        public async Task StartDraft(LeagueYear leagueYear)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    $"update tblleagueyear SET PlayStatus = '{playStatus.Value}' WHERE LeagueID = @leagueID and Year = @year",
+                    $"update tblleagueyear SET PlayStatus = '{PlayStatus.Drafting.Value}', DraftStartedTimestamp = CURRENT_TIMESTAMP WHERE LeagueID = @leagueID and Year = @year",
+                    new
+                    {
+                        leagueID = leagueYear.League.LeagueID,
+                        year = leagueYear.Year
+                    });
+            }
+        }
+
+        public async Task CompleteDraft(LeagueYear leagueYear)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    $"update tblleagueyear SET PlayStatus = '{PlayStatus.DraftFinal.Value}' WHERE LeagueID = @leagueID and Year = @year",
                     new
                     {
                         leagueID = leagueYear.League.LeagueID,
