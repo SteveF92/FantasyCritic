@@ -148,6 +148,11 @@
       <p class="text-well">
         "Hype Factor" is a measure of how highly anticipated a game is. It's a 0-100 value, with 100 being the best, derived from the percentage of leagues that draft a game, and what its average draft position is in those leagues.
       </p>
+      <h3>What is adjusted hype factor?</h3>
+      <p class="text-well">
+        Adjusted hype factor is almost the same as regular hype factor, but it doesn't factor in leagues that drafted after the game in question came out. After a game comes out,
+        it can't be drafted anymore, and if more people start up leagues, it's hype factor will drop. Adjusted Hype Factor corrects for this.
+      </p>
       <br />
 
       <h2><a name="bidding-system">Bidding System</a></h2>
