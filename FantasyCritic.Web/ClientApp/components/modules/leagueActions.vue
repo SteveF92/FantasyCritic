@@ -39,61 +39,62 @@
             Change Publisher Name
           </li>
         </ul>
-      </div>
-      <div v-if="league.isManager">
-        <div v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
-          <h4>Draft Management</h4>
+
+        <div v-if="league.isManager">
+          <div v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
+            <h4>Draft Management</h4>
+            <ul class="actions-list">
+              <li class="fake-link action" v-b-modal="'managerDraftGameForm'" v-show="!leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
+                Select Next Game
+              </li>
+              <li class="fake-link action" v-b-modal="'managerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
+                Select Next Game
+              </li>
+              <li class="fake-link action" v-b-modal="'setPauseModal'">
+                <span v-show="leagueYear.playStatus.draftIsActive">Pause Draft</span>
+                <span v-show="leagueYear.playStatus.draftIsPaused">Resume Draft</span>
+              </li>
+              <li class="fake-link action" v-b-modal="'undoLastDraftActionModal'" v-show="leagueYear.playStatus.draftIsPaused">
+                Undo Last Drafted Game
+              </li>
+              <li v-show="!leagueYear.playStatus.draftIsPaused">
+                Undo Last Drafted Game
+                <br />
+                <span class="action-note">(Pause Draft First)</span>
+              </li>
+            </ul>
+          </div>
+          <h4>Manage League</h4>
           <ul class="actions-list">
-            <li class="fake-link action" v-b-modal="'managerDraftGameForm'" v-show="!leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
-              Select Next Game
+            <li class="fake-link action" v-b-modal="'invitePlayer'" v-show="!leagueYear.playStatus.playStarted">
+              Invite a Player
             </li>
-            <li class="fake-link action" v-b-modal="'managerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
-              Select Next Game
+            <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">
+              Edit Draft Order
             </li>
-            <li class="fake-link action" v-b-modal="'setPauseModal'">
-              <span v-show="leagueYear.playStatus.draftIsActive">Pause Draft</span>
-              <span v-show="leagueYear.playStatus.draftIsPaused">Resume Draft</span>
+            <li class="fake-link action" v-b-modal="'claimGameForm'" v-show="leagueYear.playStatus.draftFinished">
+              Add Publisher Game
             </li>
-            <li class="fake-link action" v-b-modal="'undoLastDraftActionModal'" v-show="leagueYear.playStatus.draftIsPaused">
-              Undo Last Drafted Game
+            <li class="fake-link action" v-b-modal="'associateGameForm'" v-show="leagueYear.playStatus.draftFinished">
+              Associate Unlinked Game
             </li>
-            <li v-show="!leagueYear.playStatus.draftIsPaused">
-              Undo Last Drafted Game
-              <br />
-              <span class="action-note">(Pause Draft First)</span>
+            <li class="fake-link action" v-b-modal="'removePublisherGame'" v-show="leagueYear.playStatus.draftFinished">
+              Remove Publisher Game
+            </li>
+            <li class="fake-link action" v-b-modal="'manuallyScorePublisherGame'" v-show="leagueYear.playStatus.draftFinished">
+              Score a Game Manually
+            </li>
+            <li class="fake-link action">
+              <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit Game Settings</router-link>
+            </li>
+            <li class="fake-link action" v-b-modal="'changeLeagueOptionsForm'">
+              Change League Options
+            </li>
+            <li class="fake-link action" v-b-modal="'addNewLeagueYear'">
+              Start New Year
             </li>
           </ul>
         </div>
-        <h4>Manage League</h4>
-        <ul class="actions-list">
-          <li class="fake-link action" v-b-modal="'invitePlayer'" v-show="!leagueYear.playStatus.playStarted">
-            Invite a Player
-          </li>
-          <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">
-            Edit Draft Order
-          </li>
-          <li class="fake-link action" v-b-modal="'claimGameForm'" v-show="leagueYear.playStatus.draftFinished">
-            Add Publisher Game
-          </li>
-          <li class="fake-link action" v-b-modal="'associateGameForm'" v-show="leagueYear.playStatus.draftFinished">
-            Associate Unlinked Game
-          </li>
-          <li class="fake-link action" v-b-modal="'removePublisherGame'" v-show="leagueYear.playStatus.draftFinished">
-            Remove Publisher Game
-          </li>
-          <li class="fake-link action" v-b-modal="'manuallyScorePublisherGame'" v-show="leagueYear.playStatus.draftFinished">
-            Score a Game Manually
-          </li>
-          <li class="fake-link action">
-            <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit Game Settings</router-link>
-          </li>
-          <li class="fake-link action" v-b-modal="'changeLeagueOptionsForm'">
-            Change League Options
-          </li>
-          <li class="fake-link action" v-b-modal="'addNewLeagueYear'">
-            Start New Year
-          </li>
-        </ul>
       </div>
     </div>
     <div>
