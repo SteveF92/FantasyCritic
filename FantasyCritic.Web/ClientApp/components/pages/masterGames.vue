@@ -30,6 +30,9 @@
         <template slot="hypeFactor" slot-scope="data">
           {{data.item.hypeFactor | score(1)}}
         </template>
+        <template slot="dateAdjustedHypeFactor" slot-scope="data">
+          {{data.item.dateAdjustedHypeFactor | score(1)}}
+        </template>
         <template slot="percentStandardGame" slot-scope="data">
           {{data.item.percentStandardGame | percent(1)}}
         </template>
@@ -66,6 +69,7 @@
           { key: 'isReleased', label: 'Released?', sortable: true, thClass: 'bg-primary' },
           { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary' },
           { key: 'hypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
+          { key: 'dateAdjustedHypeFactor', label: 'Hype Factor (Adjusted)', sortable: true, thClass: 'bg-primary' },
           { key: 'percentStandardGame', label: '% Picked', sortable: true, thClass: 'bg-primary' },
           { key: 'percentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
           { key: 'averageDraftPosition', label: 'Avg. Draft Position', sortable: true, thClass: 'bg-primary' },
