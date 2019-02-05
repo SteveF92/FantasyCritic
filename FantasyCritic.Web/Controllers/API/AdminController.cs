@@ -72,6 +72,11 @@ namespace FantasyCritic.Web.Controllers.API
                     continue;
                 }
 
+                if (masterGame.DoNotRefresh)
+                {
+                    continue;
+                }
+
                 if (masterGame.IsReleased(_clock) && masterGame.ReleaseDate.HasValue)
                 {
                     var year = masterGame.ReleaseDate.Value.Year;
@@ -133,8 +138,8 @@ namespace FantasyCritic.Web.Controllers.API
                     minimumReleaseYear = openCriticGame.Value.ReleaseDate.Value.Year;
                 }
 
-                MasterGame masterGame = new MasterGame(Guid.NewGuid(), openCriticGame.Value.Name, openCriticGame.Value.ReleaseDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), openCriticGame.Value.ReleaseDate,
-                    id, openCriticGame.Value.Score, minimumReleaseYear, eligibilityLevel, false, false, "");
+                MasterGame masterGame = new MasterGame(Guid.NewGuid(), openCriticGame.Value.Name, openCriticGame.Value.ReleaseDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    openCriticGame.Value.ReleaseDate, id, openCriticGame.Value.Score, minimumReleaseYear, eligibilityLevel, false, false, "", null, false);
                 await _fantasyCriticService.CreateMasterGame(masterGame);
 
                 id++;

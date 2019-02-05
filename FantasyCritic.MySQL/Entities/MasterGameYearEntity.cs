@@ -21,10 +21,13 @@ namespace FantasyCritic.MySQL.Entities
         public bool YearlyInstallment { get; set; }
         public bool EarlyAccess { get; set; }
         public string BoxartFileName { get; set; }
+        public DateTime? FirstCriticScoreTimestamp { get; set; }
+        public bool DoNotRefresh { get; set; }
         public decimal PercentStandardGame { get; set; }
         public decimal PercentCounterPick { get; set; }
         public decimal AverageDraftPosition { get; set; }
         public decimal? HypeFactor { get; set; }
+        public decimal? DateAdjustedHypeFactor { get; set; }
 
         public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel, int year)
         {
@@ -34,10 +37,16 @@ namespace FantasyCritic.MySQL.Entities
                 releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
             }
 
-            var masterGame =  new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel, 
-                YearlyInstallment, EarlyAccess, subGames.ToList(), BoxartFileName);
+            Instant? firstCriticScoreTimestamp = null;
+            if (FirstCriticScoreTimestamp.HasValue)
+            {
+                firstCriticScoreTimestamp = Instant.FromDateTimeUtc(FirstCriticScoreTimestamp.Value);
+            }
 
-            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, AverageDraftPosition, HypeFactor);
+            var masterGame =  new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel, 
+                YearlyInstallment, EarlyAccess, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh);
+
+            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, AverageDraftPosition, HypeFactor, DateAdjustedHypeFactor);
         }
     }
 }

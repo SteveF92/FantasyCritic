@@ -124,9 +124,16 @@ namespace FantasyCritic.MySQL
                 releaseDate = openCriticGame.ReleaseDate.Value.ToDateTimeUnspecified();
             }
 
+            string setFirstTimestamp = "";
+            if (!masterGame.CriticScore.HasValue && openCriticGame.Score.HasValue)
+            {
+                setFirstTimestamp = ", FirstCriticScoreTimestamp = CURRENT_TIMESTAMP ";
+            }
+
+            string sql = $"update tblmastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore {setFirstTimestamp} where MasterGameID = @masterGameID";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("update tblmastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterGameID = @masterGameID",
+                await connection.ExecuteAsync(sql,
                     new
                     {
                         masterGameID = masterGame.MasterGameID,

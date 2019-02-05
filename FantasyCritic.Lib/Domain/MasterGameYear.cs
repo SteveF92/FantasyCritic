@@ -14,7 +14,8 @@ namespace FantasyCritic.Lib.Domain
             Year = year;
         }
 
-        public MasterGameYear(MasterGame masterGame, int year, decimal percentStandardGame, decimal percentCounterPick, decimal averageDraftPosition, decimal? hypeFactor)
+        public MasterGameYear(MasterGame masterGame, int year, decimal percentStandardGame, decimal percentCounterPick, decimal averageDraftPosition, 
+            decimal? hypeFactor, decimal? dateAdjustedHypeFactor)
         {
             MasterGame = masterGame;
             Year = year;
@@ -27,6 +28,7 @@ namespace FantasyCritic.Lib.Domain
             }
 
             HypeFactor = hypeFactor;
+            DateAdjustedHypeFactor = dateAdjustedHypeFactor;
         }
 
         public MasterGame MasterGame { get; }
@@ -35,5 +37,6 @@ namespace FantasyCritic.Lib.Domain
         public decimal PercentCounterPick { get; }
         public decimal? AverageDraftPosition { get; }
         public decimal? HypeFactor { get; }
+        public decimal? DateAdjustedHypeFactor { get; set; }
     }
 }

@@ -11,7 +11,8 @@ namespace FantasyCritic.Lib.Domain
         private readonly decimal? _criticScore;
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, string boxartFileName)
+            int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, string boxartFileName,
+            Instant? firstCriticScoreTimestamp, bool doNotRefresh)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -25,10 +26,13 @@ namespace FantasyCritic.Lib.Domain
             EarlyAccess = earlyAccess;
             SubGames = new List<MasterSubGame>();
             BoxartFileName = boxartFileName;
+            FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
+            DoNotRefresh = doNotRefresh;
         }
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, IReadOnlyList<MasterSubGame> subGames, string boxartFileName)
+            int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, IReadOnlyList<MasterSubGame> subGames, string boxartFileName, 
+            Instant? firstCriticScoreTimestamp, bool doNotRefresh)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -42,6 +46,8 @@ namespace FantasyCritic.Lib.Domain
             EarlyAccess = earlyAccess;
             SubGames = subGames;
             BoxartFileName = boxartFileName;
+            FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
+            DoNotRefresh = doNotRefresh;
         }
 
         public Guid MasterGameID { get; }
@@ -52,6 +58,8 @@ namespace FantasyCritic.Lib.Domain
         public bool YearlyInstallment { get; }
         public bool EarlyAccess { get; }
         public string BoxartFileName { get; }
+        public Instant? FirstCriticScoreTimestamp { get; set; }
+        public bool DoNotRefresh { get; set; }
 
         public decimal? CriticScore
         {
