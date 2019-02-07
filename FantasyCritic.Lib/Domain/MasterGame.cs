@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Domain
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
             int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, string boxartFileName,
-            Instant? firstCriticScoreTimestamp, bool doNotRefresh)
+            Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -28,11 +28,12 @@ namespace FantasyCritic.Lib.Domain
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
             DoNotRefresh = doNotRefresh;
+            AddedTimestamp = addedTimestamp;
         }
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
             int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, IReadOnlyList<MasterSubGame> subGames, string boxartFileName, 
-            Instant? firstCriticScoreTimestamp, bool doNotRefresh)
+            Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -48,6 +49,7 @@ namespace FantasyCritic.Lib.Domain
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
             DoNotRefresh = doNotRefresh;
+            AddedTimestamp = addedTimestamp;
         }
 
         public Guid MasterGameID { get; }
@@ -58,8 +60,9 @@ namespace FantasyCritic.Lib.Domain
         public bool YearlyInstallment { get; }
         public bool EarlyAccess { get; }
         public string BoxartFileName { get; }
-        public Instant? FirstCriticScoreTimestamp { get; set; }
-        public bool DoNotRefresh { get; set; }
+        public Instant? FirstCriticScoreTimestamp { get; }
+        public bool DoNotRefresh { get; }
+        public Instant AddedTimestamp { get; }
 
         public decimal? CriticScore
         {

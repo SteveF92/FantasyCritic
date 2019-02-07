@@ -27,10 +27,10 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public string BoxartFileName { get; set; }
 
-        public MasterGame ToDomain(EligibilityLevel eligibilityLevel)
+        public MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp)
         {
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, MinimumReleaseYear,
-                eligibilityLevel, YearlyInstallment, EarlyAccess, BoxartFileName, null, false);
+                eligibilityLevel, YearlyInstallment, EarlyAccess, BoxartFileName, null, false, timestamp);
             return masterGame;
         }
     }

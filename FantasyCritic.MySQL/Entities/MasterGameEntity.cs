@@ -43,6 +43,7 @@ namespace FantasyCritic.MySQL.Entities
         public string BoxartFileName { get; set; }
         public DateTime? FirstCriticScoreTimestamp { get; set; }
         public bool DoNotRefresh { get; set; }
+        public DateTime AddedTimestamp { get; set; }
 
 
         public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel)
@@ -60,7 +61,7 @@ namespace FantasyCritic.MySQL.Entities
             }
 
             return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel, 
-                YearlyInstallment, EarlyAccess, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh);
+                YearlyInstallment, EarlyAccess, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh, Instant.FromDateTimeUtc(AddedTimestamp));
         }
     }
 }

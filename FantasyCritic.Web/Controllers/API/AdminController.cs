@@ -41,7 +41,8 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
         {
             EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(viewModel.EligibilityLevel);
-            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel);
+            Instant instant = _clock.GetCurrentInstant();
+            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant);
             await _fantasyCriticService.CreateMasterGame(masterGame);
 
             return Ok();
@@ -53,7 +54,8 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var singleGame in request)
             {
                 EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(0);
-                MasterGame masterGame = singleGame.ToDomain(eligibilityLevel);
+                Instant instant = _clock.GetCurrentInstant();
+                MasterGame masterGame = singleGame.ToDomain(eligibilityLevel, instant);
                 await _fantasyCriticService.CreateMasterGame(masterGame);
             }
 
@@ -139,7 +141,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
 
                 MasterGame masterGame = new MasterGame(Guid.NewGuid(), openCriticGame.Value.Name, openCriticGame.Value.ReleaseDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    openCriticGame.Value.ReleaseDate, id, openCriticGame.Value.Score, minimumReleaseYear, eligibilityLevel, false, false, "", null, false);
+                    openCriticGame.Value.ReleaseDate, id, openCriticGame.Value.Score, minimumReleaseYear, eligibilityLevel, false, false, "", null, false, _clock.GetCurrentInstant());
                 await _fantasyCriticService.CreateMasterGame(masterGame);
 
                 id++;
