@@ -23,6 +23,7 @@ namespace FantasyCritic.Web.Models.Responses
             OpenCriticID = masterGame.OpenCriticID;
             SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, masterGame.EligibilityLevel, clock)).ToList();
             BoxartFileName = masterGame.BoxartFileName;
+            AddedTimestamp = masterGame.AddedTimestamp;
         }
 
         public MasterGameViewModel(MasterSubGame masterSubGame, EligibilityLevel eligibilityLevel, IClock clock)
@@ -50,5 +51,6 @@ namespace FantasyCritic.Web.Models.Responses
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameViewModel> SubGames { get; }
         public string BoxartFileName { get; }
+        public Instant AddedTimestamp { get; }
     }
 }
