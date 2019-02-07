@@ -42,6 +42,9 @@
         <template slot="averageDraftPosition" slot-scope="data">
           {{data.item.averageDraftPosition | score(1)}}
         </template>
+        <template slot="addedTimestamp" slot-scope="data">
+          {{data.item.addedTimestamp | date}}
+        </template>
         <template slot="eligibilityLevel" slot-scope="data">
           <eligibilityBadge :eligibilityLevel="data.item.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
         </template>
@@ -67,13 +70,14 @@
           { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
           { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'isReleased', label: 'Released?', sortable: true, thClass: 'bg-primary' },
-          { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary' },
+          { key: 'criticScore', label: 'Critic Score Link', thClass: 'bg-primary' },
           { key: 'hypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
           { key: 'dateAdjustedHypeFactor', label: 'Hype Factor (Adjusted)', sortable: true, thClass: 'bg-primary' },
           { key: 'percentStandardGame', label: '% Picked', sortable: true, thClass: 'bg-primary' },
           { key: 'percentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
           { key: 'averageDraftPosition', label: 'Avg. Draft Position', sortable: true, thClass: 'bg-primary' },
-          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: 'bg-primary' }
+          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: 'bg-primary' },
+          { key: 'addedTimestamp', label: 'Added Time', sortable: true, thClass: 'bg-primary' }
         ],
         sortBy: 'gameName',
         sortDesc: true

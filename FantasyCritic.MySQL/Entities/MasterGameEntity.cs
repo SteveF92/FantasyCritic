@@ -60,8 +60,10 @@ namespace FantasyCritic.MySQL.Entities
                 firstCriticScoreTimestamp = Instant.FromDateTimeUtc(FirstCriticScoreTimestamp.Value);
             }
 
+            var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
+
             return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel, 
-                YearlyInstallment, EarlyAccess, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh, Instant.FromDateTimeUtc(AddedTimestamp));
+                YearlyInstallment, EarlyAccess, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh, addedTimestamp);
         }
     }
 }

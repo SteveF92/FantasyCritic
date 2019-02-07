@@ -28,6 +28,7 @@ namespace FantasyCritic.Web.Models.Responses
             AverageDraftPosition = masterGame.AverageDraftPosition;
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
+            AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
         }
 
         public MasterGameYearViewModel(MasterSubGame masterSubGame, MasterGameYear masterGame, IClock clock)
@@ -48,6 +49,7 @@ namespace FantasyCritic.Web.Models.Responses
             AverageDraftPosition = masterGame.AverageDraftPosition;
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
+            AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
         }
 
         public Guid MasterGameID { get; }
@@ -61,6 +63,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameYearViewModel> SubGames { get; }
         public string BoxartFileName { get; }
+        public Instant AddedTimestamp { get; }
 
         public decimal PercentStandardGame { get; }
         public decimal PercentCounterPick { get; }

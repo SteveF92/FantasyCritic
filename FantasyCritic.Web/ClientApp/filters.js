@@ -29,9 +29,16 @@ Vue.filter('money', function (value) {
   return formatter.format(value);
 });
 
-Vue.filter('date', function(value) {
+Vue.filter('dateTime', function(value) {
   if (value) {
-    return moment(String(value)).format('MM/DD/YYYY hh:mm');
+    return moment(String(value)).format('YYYY-MM-DD hh:mm');
+  }
+  return "";
+});
+
+Vue.filter('date', function (value) {
+  if (value) {
+    return moment(String(value)).format('YYYY-MM-DD');
   }
   return "";
 });

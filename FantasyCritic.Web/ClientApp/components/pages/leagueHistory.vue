@@ -17,7 +17,7 @@
                  striped
                  responsive>
           <template slot="timestamp" slot-scope="data">
-            {{data.item.timestamp | date}}
+            {{data.item.timestamp | dateTime}}
           </template>
           <template slot="managerAction" slot-scope="data">
             {{data.item.managerAction | yesNo}}
