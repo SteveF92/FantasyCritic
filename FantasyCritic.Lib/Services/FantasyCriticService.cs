@@ -786,9 +786,8 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
         }
 
-        public async Task UndoLastDraftAction(LeagueYear leagueYear)
+        public async Task UndoLastDraftAction(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
         {
-            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
             var newestGame = publisherGames.MaxBy(x => x.Timestamp).First();
 

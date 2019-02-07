@@ -892,7 +892,14 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Can only undo when the draft is paused.");
             }
 
-            await _fantasyCriticService.UndoLastDraftAction(leagueYear.Value);
+            var publishers = await _fantasyCriticService.GetPublishersInLeagueForYear(league.Value, leagueYear.Value.Year);
+            bool hasGames = publishers.SelectMany(x => x.PublisherGames).Any();
+            if (!hasGames)
+            {
+                return BadRequest("Can't undo a drafted game if no games have been drafted.");
+            }
+
+            await _fantasyCriticService.UndoLastDraftAction(leagueYear.Value, publishers);
             await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
