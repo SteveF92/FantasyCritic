@@ -790,7 +790,7 @@ namespace FantasyCritic.Lib.Services
         {
             IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
-            var newestGame = publisherGames.MaxBy(x => x.Timestamp).Single();
+            var newestGame = publisherGames.MaxBy(x => x.Timestamp).First();
 
             var publisher = publishers.Single(x => x.PublisherGames.Select(y => y.PublisherGameID).Contains(newestGame.PublisherGameID));
 
