@@ -9,7 +9,7 @@
           <li class="list-group-item" v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition">
             <font-awesome-icon icon="bars" />
             <span class="badge">{{publisher.draftPosition}}</span>
-            {{publisher.publisherName}}
+            {{publisher.publisherName}} ({{publisher.playerName}})
           </li>
         </transition-group>
       </draggable>
