@@ -7,124 +7,124 @@
       <p>{{errorInfo}}</p>
     </div>
     <form v-if="possibleLeagueOptions" method="post" class="form-horizontal" role="form" v-on:submit.prevent="postRequest">
-      <div class="form-group col-8">
-        <label for="leagueName" class="control-label">League Name</label>
-        <input v-model="leagueName" v-validate="'required'" id="leagueName" name="leagueName" type="text" class="form-control input" />
-        <span class="text-danger">{{ errors.first('leagueName') }}</span>
-      </div>
-      <hr />
-      <div class="form-group col-8">
-        <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-        <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
-        <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
-        <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
-      </div>
-
-      <div v-if="readyToChooseNumbers()">
-        <hr />
-        <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
-
-        <div class="form-group col-8">
-          <label for="standardGames" class="control-label">Total Number of Games</label>
-          <p>
-            This is the total number of games that each player will have on their roster.
-          </p>
-         
-          <input v-model="standardGames" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('standardGames') }}</span>
-        </div>
-
-        <div class="form-group col-8">
-          <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
-          <p>
-            This is the number of games that will be chosen by each player at the draft.
-            If this number is lower than the "Total Number of Games", the remainder will be
-            <a href="/faq#bidding-system" target="_blank">
-              Pickup Games.
-            </a>
-          </p>
-          <input v-model="gamesToDraft" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
-        </div>
-
-        <div class="form-group col-8">
-          <label for="counterPicks" class="control-label">Number of Counter Picks</label>
-          <p>
-            Counter picks are essentially bets against a game. For more details,
-            <a href="/faq#scoring" target="_blank">
-              click here.
-            </a>
-          </p>
-          <input v-model="counterPicks" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('counterPicks') }}</span>
-        </div>
-        <hr />
-
-        <div class="form-group col-8">
-          <label for="intialYear" class="control-label">Year to Play</label>
-          <p>
-            The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the Decemeber before the new year begins.
-          </p>
-          <select class="form-control" v-model="initialYear" id="initialYear">
-            <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
-          </select>
-          <span class="text-danger">{{ errors.first('initialYear') }}</span>
-        </div>
-        <hr />
-      </div>
-      <div v-if="readyToChooseLevels()">
-        <div class="form-group col-10 eligibility-section">
-          <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
-          <p class="eligibility-explanation">
-            Eligibility levels are designed to prevent people from taking "uninteresting" games. Setting this to a low number means being more restrictive, setting it to a higher number means being
-            more lenient. For more details, 
-            <a href="/faq#eligibility" target="_blank">
-              click here.
-            </a>
-          </p>
-          <vue-slider v-model="maximumEligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                      piecewise piecewise-label :piecewise-style="piecewiseStyle">
-          </vue-slider>
-          <div class="eligibility-description">
-            <h3>{{ selectedEligibilityLevel.name }}</h3>
-            <p>{{ selectedEligibilityLevel.description }}</p>
-            <p>Examples: </p>
-            <ul>
-              <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3>Other Options</h3>
-            <div>
-              <b-form-checkbox v-model="allowYearlyInstallments">
-                <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
-                <p>These are often pretty safe bets, but the scores vary just enough year to year for me to recommend that you leave this on.</p>
-              </b-form-checkbox>
-            </div>
-            <div>
-              <b-form-checkbox v-model="allowEarlyAccess">
-                <span class="checkbox-label">Allow Early Access Games</span>
-                <p>If this is left unchecked, a game that is already in early access will not be selectable. Games that are planned for early access that are not yet playable are always selectable.</p>
-              </b-form-checkbox>
-            </div>
-            <div>
-              <b-form-checkbox v-model="publicLeague">
-                <span class="checkbox-label">Public League</span>
-                <p>If checked, anyone with a link to your league will be able to view it. If unchecked, your league will only be viewable by its members.</p>
-              </b-form-checkbox>
-            </div>
-            <div>
-              <b-form-checkbox v-model="testLeague">
-                <span class="checkbox-label">Test League</span>
-                <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
-              </b-form-checkbox>
-            </div>
-          </div>
-        </div>
+      <div class="text-well col-md-12 col-lg-10 col-xl-8">
         <div class="form-group">
-          <div class="col-md-offset-2 col-8">
-            <input type="submit" class="btn btn-primary" value="Create League" />
+          <label for="leagueName" class="control-label">League Name</label>
+          <input v-model="leagueName" v-validate="'required'" id="leagueName" name="leagueName" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors.first('leagueName') }}</span>
+        </div>
+        <hr />
+        <div class="form-group">
+          <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
+          <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
+          <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
+        </div>
+
+        <div v-if="readyToChooseNumbers()">
+          <hr />
+          <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
+
+          <div class="form-group">
+            <label for="standardGames" class="control-label">Total Number of Games</label>
+            <p>
+              This is the total number of games that each player will have on their roster.
+            </p>
+
+            <input v-model="standardGames" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
+            <span class="text-danger">{{ errors.first('standardGames') }}</span>
+          </div>
+
+          <div class="form-group">
+            <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
+            <p>
+              This is the number of games that will be chosen by each player at the draft.
+              If this number is lower than the "Total Number of Games", the remainder will be
+              <a href="/faq#bidding-system" target="_blank">
+                Pickup Games.
+              </a>
+            </p>
+            <input v-model="gamesToDraft" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
+            <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
+          </div>
+
+          <div class="form-group">
+            <label for="counterPicks" class="control-label">Number of Counter Picks</label>
+            <p>
+              Counter picks are essentially bets against a game. For more details,
+              <a href="/faq#scoring" target="_blank">
+                click here.
+              </a>
+            </p>
+            <input v-model="counterPicks" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
+            <span class="text-danger">{{ errors.first('counterPicks') }}</span>
+          </div>
+          <hr />
+
+          <div class="form-group">
+            <label for="intialYear" class="control-label">Year to Play</label>
+            <p>
+              The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the Decemeber before the new year begins.
+            </p>
+            <select class="form-control" v-model="initialYear" id="initialYear">
+              <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
+            </select>
+            <span class="text-danger">{{ errors.first('initialYear') }}</span>
+          </div>
+          <hr />
+        </div>
+        <div v-if="readyToChooseLevels()">
+          <div class="form-group eligibility-section">
+            <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
+            <p class="eligibility-explanation">
+              Eligibility levels are designed to prevent people from taking "uninteresting" games. Setting this to a low number means being more restrictive, setting it to a higher number means being
+              more lenient. For more details,
+              <a href="/faq#eligibility" target="_blank">
+                click here.
+              </a>
+            </p>
+            <vue-slider v-model="maximumEligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
+                        piecewise piecewise-label :piecewise-style="piecewiseStyle">
+            </vue-slider>
+            <div class="eligibility-description">
+              <h3>{{ selectedEligibilityLevel.name }}</h3>
+              <p>{{ selectedEligibilityLevel.description }}</p>
+              <p>Examples: </p>
+              <ul>
+                <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3>Other Options</h3>
+              <div>
+                <b-form-checkbox v-model="allowYearlyInstallments">
+                  <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
+                  <p>These are often pretty safe bets, but the scores vary just enough year to year for me to recommend that you leave this on.</p>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox v-model="allowEarlyAccess">
+                  <span class="checkbox-label">Allow Early Access Games</span>
+                  <p>If this is left unchecked, a game that is already in early access will not be selectable. Games that are planned for early access that are not yet playable are always selectable.</p>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox v-model="publicLeague">
+                  <span class="checkbox-label">Public League</span>
+                  <p>If checked, everyone will be able to see your league. Players still need to be invited to join. If unchecked, your league will only be viewable by its members.</p>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox v-model="testLeague">
+                  <span class="checkbox-label">Test League</span>
+                  <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
+                </b-form-checkbox>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="submit" class="btn btn-primary col-10 offset-1" value="Create League" />
           </div>
           <div class="alert alert-info disclaimer">
             Reminder: All of these settings can always be changed later.
@@ -280,6 +280,14 @@ export default {
 .disclaimer {
   margin-top: 10px;
 }
+
+label {
+  font-size: 18px;
+}
+
+  .submit-button {
+    text-align: right;
+  }
 </style>
 <style>
   .vue-slider-piecewise-label {
