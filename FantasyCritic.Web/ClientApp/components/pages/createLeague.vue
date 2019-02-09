@@ -238,15 +238,15 @@ export default {
     },
     watch: {
       intendedNumberOfPlayers: function (val) {
-        let recommendedNumberOfGames = 54;
+        let recommendedNumberOfGames = 72;
         this.standardGames = Math.floor(recommendedNumberOfGames / val);
-        if (this.standardGames > 15) {
-          this.standardGames = 15;
+        if (this.standardGames > 25) {
+          this.standardGames = 25;
         }
-        if (this.standardGames < 6) {
-          this.standardGames = 6;
+        if (this.standardGames < 10) {
+          this.standardGames = 10;
         }
-        this.gamesToDraft = Math.floor(this.standardGames * (2 / 3));
+        this.gamesToDraft = Math.floor(this.standardGames / 2);
         this.counterPicks = Math.floor(this.gamesToDraft / 6);
         if (this.counterPicks === 0) {
           this.counterPicks = 1;
