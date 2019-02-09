@@ -24,21 +24,32 @@
           <th scope="col" class="score-column">Points</th>
         </tr>
       </thead>
-      <tbody>
-        <minimalPlayerGameRow v-for="game in standardGames" :game="game" :yearFinished="yearFinished"></minimalPlayerGameRow>
-        <minimalBlankPlayerGameRow v-for="blankSpace in standardFiller"></minimalBlankPlayerGameRow>
-        <minimalPlayerGameRow v-for="game in counterPicks" :game="game" :yearFinished="yearFinished"></minimalPlayerGameRow>
-        <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
-        <tr class="minimal-game-row">
-          <td id="total-description">
-            <span id="total-description-text">
-              Total Fantasy Points
-            </span>
+      <tbody v-if="tableIsValid">
+          <minimalPlayerGameRow v-for="game in standardGames" :game="game" :yearFinished="yearFinished"></minimalPlayerGameRow>
+          <minimalBlankPlayerGameRow v-for="blankSpace in standardFiller"></minimalBlankPlayerGameRow>
+          <minimalPlayerGameRow v-for="game in counterPicks" :game="game" :yearFinished="yearFinished"></minimalPlayerGameRow>
+          <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
+          <tr class="minimal-game-row">
+            <td id="total-description">
+              <span id="total-description-text">
+                Total Fantasy Points
+              </span>
+            </td>
+            <td id="total-column" class="success" colspan="2">{{publisher.totalFantasyPoints | score}}</td>
+          </tr>
+      </tbody>
+      <tbody v-if="!tableIsValid">
+        <tr>
+          <td scope="col" colspan="4">
+            <div class="alert alert-danger">
+              Something has gone wrong with this publisher! There are probably duplicated games that the league manager can remove using the "Remove Publisher Game" action. If that doesn't work,
+              <router-link :to="{ name: 'contact'}">contact</router-link> me.
+            </div>
           </td>
-          <td id="total-column" class="success" colspan="2">{{publisher.totalFantasyPoints | score}}</td>
         </tr>
       </tbody>
     </table>
+    
   </div>
     
 </template>
@@ -72,6 +83,9 @@
                 var numberCounterPicked = this.counterPicks.length;
                 var openSlots = this.options.counterPickSlots - numberCounterPicked;
                 return openSlots;
+            },
+            tableIsValid() {
+              return (this.standardGames.length <= this.options.standardGameSlots) && (this.counterPicks.length <= this.options.counterPickSlots);
             }
         }
     }
