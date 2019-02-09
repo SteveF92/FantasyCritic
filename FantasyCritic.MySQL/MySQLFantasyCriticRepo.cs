@@ -590,11 +590,23 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task RemovePublisher(Publisher publisher)
+        public async Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
         {
+            string deleteSQL = "delete from tblpublisher where PublisherID = @publisherID;";
+            string fixDraftOrderSQL = "update tblpublisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
+
+            var remainingOrderedPublishers = publishersInLeague.Except(new List<Publisher>{ deletePublisher }).OrderBy(x => x.DraftPosition).ToList();
+            IEnumerable<SetDraftOrderEntity> setDraftOrderEntities = remainingOrderedPublishers.Select((publisher, index) => new SetDraftOrderEntity(publisher.PublisherID, index + 1));
+
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("delete from tblpublisher where PublisherID = @publisherID;", new {publisherID = publisher.PublisherID});
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(deleteSQL, new { publisherID = deletePublisher.PublisherID }, transaction);
+                    await connection.ExecuteAsync(fixDraftOrderSQL, setDraftOrderEntities);
+                    transaction.Commit();
+                }
             }
         }
 

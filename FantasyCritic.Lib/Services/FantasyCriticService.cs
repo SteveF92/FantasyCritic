@@ -230,10 +230,11 @@ namespace FantasyCritic.Lib.Services
         {
             foreach (var year in league.Years)
             {
-                var publisher = await GetPublisher(league, year, removeUser);
-                if (publisher.HasValue)
+                var allPublishers = await GetPublishersInLeagueForYear(league, year);
+                var deletePublisher = allPublishers.SingleOrDefault(x => x.User.UserID == removeUser.UserID);
+                if (deletePublisher != null)
                 {
-                    await _fantasyCriticRepo.RemovePublisher(publisher.Value);
+                    await _fantasyCriticRepo.RemovePublisher(deletePublisher, allPublishers);
                 }
             }
 

@@ -32,7 +32,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task FollowLeague(League league, FantasyCriticUser user);
         Task UnfollowLeague(League league, FantasyCriticUser user);
 
-        Task RemovePublisher(Publisher publisherValue);
+        Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
         Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
 
         Task<Maybe<Publisher>> GetPublisher(Guid publisherID);
