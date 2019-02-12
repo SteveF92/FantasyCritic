@@ -200,7 +200,7 @@ namespace FantasyCritic.Web.Controllers.API
                 availableCounterPicks = _fantasyCriticService.GetAvailableCounterPicks(leagueYear.Value, nextDraftPublisher.Value, publishersInLeague);
             }
 
-            SystemWideValues systemWideValues = await _fantasyCriticService.GetLeagueWideValues();
+            SystemWideValues systemWideValues = await _fantasyCriticService.GetSystemWideValues();
 
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks,

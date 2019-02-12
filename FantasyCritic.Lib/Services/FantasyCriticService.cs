@@ -367,7 +367,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task UpdateFantasyPoints(int year)
         {
-            SystemWideValues systemWideValues = await GetLeagueWideValues();
+            SystemWideValues systemWideValues = await GetSystemWideValues();
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
 
             IReadOnlyList<LeagueYear> activeLeagueYears = await GetLeagueYears(year);
@@ -391,7 +391,7 @@ namespace FantasyCritic.Lib.Services
         public async Task UpdateFantasyPoints(LeagueYear leagueYear)
         {
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
-            SystemWideValues systemWideValues = await GetLeagueWideValues();
+            SystemWideValues systemWideValues = await GetSystemWideValues();
 
             var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             foreach (var publisher in publishersInLeague)
@@ -699,7 +699,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task ProcessPickups(int year)
         {
-            SystemWideValues systemWideValues = await GetLeagueWideValues();
+            SystemWideValues systemWideValues = await GetSystemWideValues();
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             BidProcessingResults results = BidProcessor.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock);
@@ -947,9 +947,14 @@ namespace FantasyCritic.Lib.Services
             return true;
         }
 
-        public Task<SystemWideValues> GetLeagueWideValues()
+        public Task<SystemWideValues> GetSystemWideValues()
         {
             return _fantasyCriticRepo.GetSystemWideValues();
+        }
+
+        public Task<SiteCounts> GetSiteCounts()
+        {
+            return _fantasyCriticRepo.GetSiteCounts();
         }
 
         public async Task DeleteLeague(League league)

@@ -65,6 +65,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task SetDraftPause(LeagueYear leagueYear, bool pause);
         Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions);
         Task<SystemWideValues> GetSystemWideValues();
+        Task<SiteCounts> GetSiteCounts();
 
         Task DeletePublisher(Publisher publisher);
         Task DeleteLeagueYear(LeagueYear leagueYear);
@@ -73,6 +74,5 @@ namespace FantasyCritic.Lib.Interfaces
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
 
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
-
     }
 }

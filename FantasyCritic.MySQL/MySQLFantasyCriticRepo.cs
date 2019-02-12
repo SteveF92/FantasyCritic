@@ -968,6 +968,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<SiteCounts> GetSiteCounts()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var result = await connection.QuerySingleAsync<SiteCountsEntity>("select * from vwsitecounts;");
+                return result.ToDomain();
+            }
+        }
+
         public Task DeletePublisher(Publisher publisher)
         {
             var deleteObject = new
