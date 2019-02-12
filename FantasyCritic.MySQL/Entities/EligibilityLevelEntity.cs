@@ -2,7 +2,7 @@
 using FantasyCritic.Lib.Domain;
 using Newtonsoft.Json;
 
-namespace FantasyCritic.MySQL
+namespace FantasyCritic.MySQL.Entities
 {
     internal class EligibilityLevelEntity
     {

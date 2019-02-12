@@ -7,14 +7,14 @@ using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.MySQL.Entities
 {
-    internal class PublisherEnity
+    internal class PublisherEntity
     {
-        public PublisherEnity()
+        public PublisherEntity()
         {
 
         }
 
-        public PublisherEnity(Publisher publisher)
+        public PublisherEntity(Publisher publisher)
         {
             PublisherID = publisher.PublisherID;
             PublisherName = publisher.PublisherName;

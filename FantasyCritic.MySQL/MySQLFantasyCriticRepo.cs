@@ -621,7 +621,7 @@ namespace FantasyCritic.MySQL
 
         public async Task CreatePublisher(Publisher publisher)
         {
-            var entity = new PublisherEnity(publisher);
+            var entity = new PublisherEntity(publisher);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -663,7 +663,7 @@ namespace FantasyCritic.MySQL
             var leaguesDictionary = allLeagues.ToDictionary(x => x.LeagueID, y => y);
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var publisherEntities = await connection.QueryAsync<PublisherEnity>("select * from tblpublisher where tblpublisher.Year = @year;", query);
+                var publisherEntities = await connection.QueryAsync<PublisherEntity>("select * from tblpublisher where tblpublisher.Year = @year;", query);
 
                 IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(year);
                 Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherEntities.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
@@ -724,7 +724,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                PublisherEnity publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEnity>(
+                PublisherEntity publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEntity>(
                     "select * from tblpublisher where tblpublisher.PublisherID = @publisherID;",
                     query);
 
@@ -788,7 +788,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                PublisherEnity publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEnity>(
+                PublisherEntity publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEntity>(
                     "select * from tblpublisher where tblpublisher.LeagueID = @leagueID and tblpublisher.Year = @year and tblpublisher.UserID = @userID;",
                     query);
 
@@ -1074,7 +1074,7 @@ namespace FantasyCritic.MySQL
 
         private Task UpdatePublisherBudgets(IEnumerable<Publisher> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)
         {
-            var entities = updatedPublishers.Select(x => new PublisherEnity(x));
+            var entities = updatedPublishers.Select(x => new PublisherEntity(x));
             return connection.ExecuteAsync("update tblpublisher SET Budget = @Budget where PublisherID = @PublisherID;", entities, transaction);
 
         }
