@@ -57,3 +57,7 @@ Vue.filter('percent', function(value, decimals) {
   value = value * 100;
   return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals) + '%';
 });
+
+Vue.filter('thousands', function (value) {
+  return new Intl.NumberFormat().format(value);
+});
