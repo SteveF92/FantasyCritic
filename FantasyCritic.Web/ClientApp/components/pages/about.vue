@@ -71,6 +71,17 @@
         </ul>
       </div>
     </div>
-
-    </div>
+    <hr />
+    <h2>A few statistics...</h2>
+    <siteCounts></siteCounts>
+  </div>
 </template>
+<script>
+  import SiteCounts from "components/modules/siteCounts";
+
+  export default {
+    components: {
+      SiteCounts
+    }
+  }
+</script>
