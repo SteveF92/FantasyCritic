@@ -74,7 +74,7 @@ namespace FantasyCritic.Web.Controllers.API
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                return BadRequest();
+                return BadRequest(result.Errors);
             }
 
             _logger.LogInformation("User created a new account with password.");

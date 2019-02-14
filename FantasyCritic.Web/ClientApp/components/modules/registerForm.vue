@@ -1,7 +1,7 @@
 <template>
   <div>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="register">
-      <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>
+      <div class="alert alert-danger" v-if="errorInfo">An error has occurred: {{errorInfo}}</div>
       <div class="form-group">
         <label for="emailAddress" class="control-label">Email</label>
         <input v-model="emailAddress" v-validate="'required|email'" id="emailAddress" name="emailAddress" type="text" class="form-control input" />
@@ -68,7 +68,7 @@
                     this.$router.push({ name: "login" });
                   })
                   .catch(returnedError => {
-                    this.errorInfo = returnedError;
+                    this.errorInfo = returnedError.response.data[0].description.replace("User name", "Email Address");
                   });
             }
         }

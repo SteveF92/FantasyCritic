@@ -60,7 +60,7 @@ export default {
             resolve();
           })
           .catch(error => {
-            reject();
+            reject(error);
           });
       });
     },
