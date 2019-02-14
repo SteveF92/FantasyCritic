@@ -464,14 +464,15 @@ namespace FantasyCritic.MySQL
         {
             var query = new
             {
-                email = currentUser.EmailAddress
+                email = currentUser.EmailAddress,
+                userID = currentUser.UserID
             };
 
             IEnumerable<LeagueEntity> leagueEntities;
             using (var connection = new MySqlConnection(_connectionString))
             {
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select vwleague.* from vwleague join tblleagueinvite on (vwleague.LeagueID = tblleagueinvite.LeagueID) where tblleagueinvite.EmailAddress = @email;",
+                    "select vwleague.* from vwleague join tblleagueinvite on (vwleague.LeagueID = tblleagueinvite.LeagueID) where tblleagueinvite.EmailAddress = @email OR tblleagueinvite.UserID = @userID;",
                     query);
             }
 
