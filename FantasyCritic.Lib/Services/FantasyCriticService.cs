@@ -145,8 +145,8 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> InviteUser(League league, string inviteEmail)
         {
-            bool userInvited = await UserIsInvited(league, inviteEmail);
-            if (userInvited)
+            var existingInvite = await UserIsInvited(league, inviteEmail);
+            if (existingInvite.HasValue)
             {
                 return Result.Fail("User is already invited to this league.");
             }
@@ -162,7 +162,7 @@ namespace FantasyCritic.Lib.Services
             }
             
             IReadOnlyList<FantasyCriticUser> players = await GetUsersInLeague(league);
-            IReadOnlyList<string> outstandingInvites = await GetOutstandingInvitees(league);
+            IReadOnlyList<LeagueInvite> outstandingInvites = await GetOutstandingInvitees(league);
             int totalPlayers = players.Count + outstandingInvites.Count;
 
             if (totalPlayers >= 14)
@@ -170,20 +170,22 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("A league cannot have more than 14 players.");
             }
 
-            await _fantasyCriticRepo.SaveInvite(league, inviteEmail);
+            LeagueInvite invite = new LeagueInvite(Guid.NewGuid(), league, inviteEmail);
+
+            await _fantasyCriticRepo.SaveInvite(invite);
 
             return Result.Ok();
         }
 
         public async Task<Result> RescindInvite(League league, string inviteEmail)
         {
-            bool userInvited = await UserIsInvited(league, inviteEmail);
-            if (!userInvited)
+            var invite = await UserIsInvited(league, inviteEmail);
+            if (invite.HasNoValue)
             {
                 return Result.Fail("That email address has not been invited.");
             }
 
-            await _fantasyCriticRepo.RescindInvite(league, inviteEmail);
+            await _fantasyCriticRepo.RescindInvite(invite.Value);
 
             return Result.Ok();
         }
@@ -196,13 +198,13 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is already in league.");
             }
 
-            bool userInvited = await UserIsInvited(league, inviteUser.EmailAddress);
-            if (!userInvited)
+            var invite = await UserIsInvited(league, inviteUser.EmailAddress);
+            if (invite.HasNoValue)
             {
                 return Result.Fail("User is not invited to this league.");
             }
 
-            await _fantasyCriticRepo.AcceptInvite(league, inviteUser);
+            await _fantasyCriticRepo.AcceptInvite(invite.Value);
 
             return Result.Ok();
         }
@@ -215,13 +217,13 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is already in league.");
             }
 
-            bool userInvited = await UserIsInvited(league, inviteUser.EmailAddress);
-            if (!userInvited)
+            var invite = await UserIsInvited(league, inviteUser.EmailAddress);
+            if (invite.HasNoValue)
             {
                 return Result.Fail("User is not invited to this league.");
             }
 
-            await _fantasyCriticRepo.DeclineInvite(league, inviteUser);
+            await _fantasyCriticRepo.DeclineInvite(invite.Value);
 
             return Result.Ok();
         }
@@ -241,7 +243,7 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
         }
 
-        public Task<IReadOnlyList<string>> GetOutstandingInvitees(League league)
+        public Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league)
         {
             return _fantasyCriticRepo.GetOutstandingInvitees(league);
         }
@@ -496,10 +498,14 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);
         }
 
-        private async Task<bool> UserIsInvited(League league, string inviteEmail)
+        private async Task<Maybe<LeagueInvite>> UserIsInvited(League league, string inviteEmail)
         {
             var playersInvited = await GetOutstandingInvitees(league);
-            return playersInvited.Any(x => string.Equals(x, inviteEmail, StringComparison.OrdinalIgnoreCase));
+            var invite =  playersInvited.SingleOrDefault(x =>
+                x.EmailAddress.HasValue &&
+                string.Equals(x.EmailAddress.Value, inviteEmail, StringComparison.OrdinalIgnoreCase));
+
+            return invite;
         }
 
         private async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request)
@@ -962,7 +968,7 @@ namespace FantasyCritic.Lib.Services
             var invites = await _fantasyCriticRepo.GetOutstandingInvitees(league);
             foreach (var invite in invites)
             {
-                await _fantasyCriticRepo.RescindInvite(league, invite);
+                await _fantasyCriticRepo.RescindInvite(invite);
             }
 
             foreach (var year in league.Years)
