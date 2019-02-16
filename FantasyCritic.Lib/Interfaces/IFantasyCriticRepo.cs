@@ -22,15 +22,16 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
         Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
         Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser);
-        Task<IReadOnlyList<League>> GetLeaguesInvitedTo(FantasyCriticUser currentUser);
         Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser);
+        Task FollowLeague(League league, FantasyCriticUser user);
+        Task UnfollowLeague(League league, FantasyCriticUser user);
+
+        Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser);
         Task SaveInvite(LeagueInvite leagueInvite);
         Task RescindInvite(LeagueInvite leagueInvite);
         Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league);
         Task AcceptInvite(LeagueInvite leagueInvite);
         Task DeclineInvite(LeagueInvite leagueInvite);
-        Task FollowLeague(League league, FantasyCriticUser user);
-        Task UnfollowLeague(League league, FantasyCriticUser user);
 
         Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
         Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);

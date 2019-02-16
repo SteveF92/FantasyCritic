@@ -21,13 +21,13 @@ namespace FantasyCritic.Lib.Domain
         {
             InviteID = inviteID;
             League = league;
-            EmailAddress = Maybe<string>.None;
+            EmailAddress = user.EmailAddress;
             User = user;
         }
 
         public Guid InviteID { get; }
         public League League { get; }
-        public Maybe<string> EmailAddress { get; }
+        public string EmailAddress { get; }
         public Maybe<FantasyCriticUser> User { get; }
     }
 }

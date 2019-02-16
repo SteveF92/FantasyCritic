@@ -138,14 +138,14 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeaguesForUser(user);
         }
 
-        public Task<IReadOnlyList<League>> GetLeaguesInvitedTo(FantasyCriticUser user)
+        public Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser user)
         {
-            return _fantasyCriticRepo.GetLeaguesInvitedTo(user);
+            return _fantasyCriticRepo.GetLeagueInvites(user);
         }
 
-        public async Task<Result> InviteUser(League league, string inviteEmail)
+        public async Task<Result> InviteUserByEmail(League league, string inviteEmail)
         {
-            var existingInvite = await UserIsInvited(league, inviteEmail);
+            var existingInvite = await GetMatchingInvite(league, inviteEmail);
             if (existingInvite.HasValue)
             {
                 return Result.Fail("User is already invited to this league.");
@@ -179,7 +179,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> RescindInvite(League league, string inviteEmail)
         {
-            var invite = await UserIsInvited(league, inviteEmail);
+            var invite = await GetMatchingInvite(league, inviteEmail);
             if (invite.HasNoValue)
             {
                 return Result.Fail("That email address has not been invited.");
@@ -198,7 +198,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is already in league.");
             }
 
-            var invite = await UserIsInvited(league, inviteUser.EmailAddress);
+            var invite = await GetMatchingInvite(league, inviteUser.EmailAddress);
             if (invite.HasNoValue)
             {
                 return Result.Fail("User is not invited to this league.");
@@ -217,7 +217,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is already in league.");
             }
 
-            var invite = await UserIsInvited(league, inviteUser.EmailAddress);
+            var invite = await GetMatchingInvite(league, inviteUser.EmailAddress);
             if (invite.HasNoValue)
             {
                 return Result.Fail("User is not invited to this league.");
@@ -498,13 +498,10 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);
         }
 
-        private async Task<Maybe<LeagueInvite>> UserIsInvited(League league, string inviteEmail)
+        private async Task<Maybe<LeagueInvite>> GetMatchingInvite(League league, string emailAddress)
         {
-            var playersInvited = await GetOutstandingInvitees(league);
-            var invite =  playersInvited.SingleOrDefault(x =>
-                x.EmailAddress.HasValue &&
-                string.Equals(x.EmailAddress.Value, inviteEmail, StringComparison.OrdinalIgnoreCase));
-
+            IReadOnlyList<LeagueInvite> playersInvited = await GetOutstandingInvitees(league);
+            var invite = playersInvited.GetMatchingInvite(emailAddress);
             return invite;
         }
 
