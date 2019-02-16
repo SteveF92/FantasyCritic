@@ -11,9 +11,9 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PlayerWithPublisherViewModel
     {
-        public PlayerWithPublisherViewModel(string invitedEmailAddress)
+        public PlayerWithPublisherViewModel(string inviteName)
         {
-            InvitedEmailAddress = invitedEmailAddress;
+            InviteName = inviteName;
         }
 
         public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user)
@@ -30,7 +30,7 @@ namespace FantasyCritic.Web.Models.Responses
             ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished);
         }
 
-        public string InvitedEmailAddress { get; }
+        public string InviteName { get; }
         public PlayerViewModel User { get; }
         public PublisherViewModel Publisher { get; }
         public decimal TotalFantasyPoints { get; }

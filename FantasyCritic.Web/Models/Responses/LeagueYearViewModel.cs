@@ -15,8 +15,8 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Publisher userPublisher,
             IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> users, Maybe<Publisher> nextDraftPublisher, DraftPhase draftPhase,
-            IEnumerable<PublisherGame> availableCounterPicks, LeagueOptions options, SystemWideValues systemWideValues, IEnumerable<string> invitedPlayers, bool userIsInLeague,
-            bool userIsInvitedToLeague)
+            IEnumerable<PublisherGame> availableCounterPicks, LeagueOptions options, SystemWideValues systemWideValues, IEnumerable<LeagueInvite> invitedPlayers,
+            bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -53,12 +53,24 @@ namespace FantasyCritic.Web.Models.Responses
                 }
             }
 
-            if (userIsInLeague)
+            foreach (var invitedPlayer in invitedPlayers)
             {
-                foreach (var invitedPlayer in invitedPlayers)
+                allPublishersMade = false;
+
+                if (invitedPlayer.User.HasValue)
                 {
-                    allPublishersMade = false;
-                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.User.Value.DisplayName));
+                }
+                else
+                {
+                    if (userIsManager)
+                    {
+                        playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.EmailAddress));
+                    }
+                    else
+                    {
+                        playerVMs.Add(new PlayerWithPublisherViewModel("<Email Address Hidden>"));
+                    }
                 }
             }
 

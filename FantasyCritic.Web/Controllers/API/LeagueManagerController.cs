@@ -254,7 +254,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             string inviteEmail = request.InviteEmail.ToLower();
 
-            Result result = await _fantasyCriticService.InviteUser(league.Value, inviteEmail);
+            Result result = await _fantasyCriticService.InviteUserByEmail(league.Value, inviteEmail);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);

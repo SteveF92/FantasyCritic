@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
@@ -82,8 +83,8 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> MyInvites()
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            var invitedLeagues = await _fantasyCriticService.GetLeaguesInvitedTo(currentUser);
-            var viewModels = invitedLeagues.Select(x => new InviteViewModel(x));
+            var invitedLeagues = await _fantasyCriticService.GetLeagueInvites(currentUser);
+            var viewModels = invitedLeagues.Select(LeagueInviteViewModel.CreateWithDisplayName);
             return Ok(viewModels);
         }
 
@@ -129,7 +130,7 @@ namespace FantasyCritic.Web.Controllers.API
             if (currentUser != null)
             {
                 userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
                 isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
                 userIsFollowingLeague = leagueFollowers.Any(x => x.UserID == currentUser.UserID);
             }
@@ -169,7 +170,7 @@ namespace FantasyCritic.Web.Controllers.API
             if (currentUser != null)
             {
                 userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
             }
 
             if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
@@ -202,9 +203,11 @@ namespace FantasyCritic.Web.Controllers.API
 
             SystemWideValues systemWideValues = await _fantasyCriticService.GetSystemWideValues();
 
+            bool isManager = (leagueYear.Value.League.LeagueManager.UserID == currentUser.UserID);
+
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks,
-                leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague);
+                leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager);
             return Ok(leagueViewModel);
         }
 
@@ -231,7 +234,7 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
                 userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
             }
 
             if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
@@ -270,7 +273,7 @@ namespace FantasyCritic.Web.Controllers.API
             if (currentUser != null)
             {
                 userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.Any(x => string.Equals(x, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase));
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
             }
 
             if (!userIsInLeague && !publisher.Value.League.PublicLeague)
