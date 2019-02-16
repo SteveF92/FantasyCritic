@@ -19,10 +19,7 @@ namespace FantasyCritic.MySQL.Entities
             InviteID = domain.InviteID;
             LeagueID = domain.League.LeagueID;
 
-            if (domain.EmailAddress.HasValue)
-            {
-                EmailAddress = domain.EmailAddress.Value;
-            }
+            EmailAddress = domain.EmailAddress;
 
             if (domain.User.HasValue)
             {
