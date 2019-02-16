@@ -185,7 +185,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("That email address has not been invited.");
             }
 
-            await _fantasyCriticRepo.RescindInvite(invite.Value);
+            await _fantasyCriticRepo.DeleteInvite(invite.Value);
 
             return Result.Ok();
         }
@@ -204,7 +204,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is not invited to this league.");
             }
 
-            await _fantasyCriticRepo.AcceptInvite(invite.Value);
+            await _fantasyCriticRepo.AcceptInvite(invite.Value, inviteUser);
 
             return Result.Ok();
         }
@@ -223,7 +223,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("User is not invited to this league.");
             }
 
-            await _fantasyCriticRepo.DeclineInvite(invite.Value);
+            await _fantasyCriticRepo.DeleteInvite(invite.Value);
 
             return Result.Ok();
         }
@@ -965,7 +965,7 @@ namespace FantasyCritic.Lib.Services
             var invites = await _fantasyCriticRepo.GetOutstandingInvitees(league);
             foreach (var invite in invites)
             {
-                await _fantasyCriticRepo.RescindInvite(invite);
+                await _fantasyCriticRepo.DeleteInvite(invite);
             }
 
             foreach (var year in league.Years)

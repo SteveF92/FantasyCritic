@@ -510,6 +510,78 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser)
+        {
+            var query = new
+            {
+                email = currentUser.EmailAddress,
+                userID = currentUser.UserID
+            };
+
+            IEnumerable<LeagueInviteEntity> inviteEntities;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                inviteEntities = await connection.QueryAsync<LeagueInviteEntity>(
+                    "select * from tblleagueinvite where tblleagueinvite.EmailAddress = @email OR tblleagueinvite.UserID = @userID;",
+                    query);
+            }
+
+            var leagueInvites = await ConvertLeagueInviteEntities(inviteEntities);
+            return leagueInvites;
+        }
+
+        public Task SaveInvite(LeagueInvite leagueInvite)
+        {
+            var entity = new LeagueInviteEntity(leagueInvite);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return connection.ExecuteAsync(
+                    "insert into tblleagueinvite(InviteID,LeagueID,EmailAddress,UserID) VALUES (@inviteID, @leagueID, @emailAddress, @userID);",
+                    entity);
+            }
+        }
+
+        public async Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league)
+        {
+            var query = new
+            {
+                leagueID = league.LeagueID
+            };
+
+            IEnumerable<LeagueInviteEntity> invites;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                invites = await connection.QueryAsync<LeagueInviteEntity>(
+                    "select * from tblleagueinvite where tblleagueinvite.LeagueID = @leagueID;",
+                    query);
+            }
+
+            var leagueInvites = await ConvertLeagueInviteEntities(invites);
+            return leagueInvites;
+        }
+
+        public async Task AcceptInvite(LeagueInvite leagueInvite, FantasyCriticUser user)
+        {
+            await AddPlayerToLeague(leagueInvite.League, user);
+            await DeleteInvite(leagueInvite);
+        }
+
+        public async Task DeleteInvite(LeagueInvite invite)
+        {
+            var deleteObject = new
+            {
+                inviteID = invite.InviteID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "delete from tblleagueinvite where InviteID = @inviteID;",
+                    deleteObject);
+            }
+        }
+
         public async Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
         {
             string deleteSQL = "delete from tblpublisher where PublisherID = @publisherID;";
@@ -1008,5 +1080,32 @@ namespace FantasyCritic.MySQL
                     "insert into tblleaguehasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
             }
         }
+
+        private async Task<IReadOnlyList<LeagueInvite>> ConvertLeagueInviteEntities(IEnumerable<LeagueInviteEntity> entities)
+        {
+            List<LeagueInvite> leagueInvites = new List<LeagueInvite>();
+            foreach (var entity in entities)
+            {
+                var league = await GetLeagueByID(entity.LeagueID);
+                if (league.HasNoValue)
+                {
+                    throw new Exception($"Cannot find league for league (should never happen) LeagueID: {entity.LeagueID}");
+                }
+
+                if (entity.UserID.HasValue)
+                {
+                    FantasyCriticUser user = await _userStore.FindByIdAsync(entity.UserID.Value.ToString(), CancellationToken.None);
+                    leagueInvites.Add(entity.ToDomain(league.Value, user));
+                }
+                else
+                {
+                    leagueInvites.Add(entity.ToDomain(league.Value));
+                }
+            }
+
+            return leagueInvites;
+        }
+
+        
     }
 }

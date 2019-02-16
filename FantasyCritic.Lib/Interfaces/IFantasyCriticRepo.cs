@@ -27,11 +27,10 @@ namespace FantasyCritic.Lib.Interfaces
         Task UnfollowLeague(League league, FantasyCriticUser user);
 
         Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser);
-        Task SaveInvite(LeagueInvite leagueInvite);
-        Task RescindInvite(LeagueInvite leagueInvite);
         Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league);
-        Task AcceptInvite(LeagueInvite leagueInvite);
-        Task DeclineInvite(LeagueInvite leagueInvite);
+        Task SaveInvite(LeagueInvite leagueInvite);
+        Task AcceptInvite(LeagueInvite leagueInvite, FantasyCriticUser user);
+        Task DeleteInvite(LeagueInvite leagueInvite);
 
         Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
         Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
