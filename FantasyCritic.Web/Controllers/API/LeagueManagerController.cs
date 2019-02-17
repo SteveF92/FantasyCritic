@@ -223,7 +223,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> InvitePlayer([FromBody] InviteRequest request)
+        public async Task<IActionResult> InvitePlayer([FromBody] CreateInviteRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 

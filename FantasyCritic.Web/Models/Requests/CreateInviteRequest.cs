@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Web.Models.Requests
 {
-    public class InviteRequest
+    public class CreateInviteRequest
     {
         [Required]
         public Guid LeagueID { get; set; }
