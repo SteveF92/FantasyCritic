@@ -11,8 +11,9 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PlayerWithPublisherViewModel
     {
-        public PlayerWithPublisherViewModel(string inviteName)
+        public PlayerWithPublisherViewModel(Guid inviteID, string inviteName)
         {
+            InviteID = inviteID;
             InviteName = inviteName;
         }
 
@@ -30,6 +31,7 @@ namespace FantasyCritic.Web.Models.Responses
             ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished);
         }
 
+        public Guid InviteID { get; }
         public string InviteName { get; }
         public PlayerViewModel User { get; }
         public PublisherViewModel Publisher { get; }

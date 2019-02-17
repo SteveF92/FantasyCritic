@@ -59,17 +59,17 @@ namespace FantasyCritic.Web.Models.Responses
 
                 if (invitedPlayer.User.HasValue)
                 {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.User.Value.DisplayName));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.User.Value.DisplayName));
                 }
                 else
                 {
                     if (userIsManager || string.Equals(invitedPlayer.EmailAddress, accessingUser.EmailAddress, StringComparison.OrdinalIgnoreCase))
                     {
-                        playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.EmailAddress));
+                        playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.EmailAddress));
                     }
                     else
                     {
-                        playerVMs.Add(new PlayerWithPublisherViewModel("<Email Address Hidden>"));
+                        playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, "<Email Address Hidden>"));
                     }
                 }
             }
