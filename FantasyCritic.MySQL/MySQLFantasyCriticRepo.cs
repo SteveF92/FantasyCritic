@@ -510,6 +510,22 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<Maybe<LeagueInvite>> GetInvite(Guid inviteID)
+        {
+            var query = new
+            {
+                inviteID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var entity = await connection.QuerySingleOrDefaultAsync<LeagueInviteEntity>(
+                    "select * from tblleagueinvite where tblleagueinvite.InviteID = @inviteID",
+                    query);
+                return await ConvertLeagueInviteEntity(entity);
+            }
+        }
+
         public async Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser)
         {
             var query = new
@@ -1106,6 +1122,21 @@ namespace FantasyCritic.MySQL
             return leagueInvites;
         }
 
-        
+        private async Task<LeagueInvite> ConvertLeagueInviteEntity(LeagueInviteEntity entity)
+        {
+            var league = await GetLeagueByID(entity.LeagueID);
+            if (league.HasNoValue)
+            {
+                throw new Exception($"Cannot find league for league (should never happen) LeagueID: {entity.LeagueID}");
+            }
+
+            if (entity.UserID.HasValue)
+            {
+                FantasyCriticUser user = await _userStore.FindByIdAsync(entity.UserID.Value.ToString(), CancellationToken.None);
+                return entity.ToDomain(league.Value, user);
+            }
+
+            return entity.ToDomain(league.Value);
+        }
     }
 }

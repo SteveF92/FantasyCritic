@@ -275,7 +275,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> RescindInvite([FromBody] InviteRequest request)
+        public async Task<IActionResult> RescindInvite([FromBody] DeleteInviteRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
@@ -284,23 +284,18 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
-            if (league.HasNoValue)
+            Maybe<LeagueInvite> invite = await _fantasyCriticService.GetInvite(request.InviteID);
+            if (invite.HasNoValue)
             {
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (invite.Value.League.LeagueManager.UserID != currentUser.UserID)
             {
                 return Forbid();
             }
 
-            Result result = await _fantasyCriticService.RescindInvite(league.Value, request.InviteEmail);
-            if (result.IsFailure)
-            {
-                return BadRequest(result.Error);
-            }
-
+            await _fantasyCriticService.DeleteInvite(invite.Value);
             return Ok();
         }
 

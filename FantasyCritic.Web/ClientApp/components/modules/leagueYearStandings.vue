@@ -16,7 +16,7 @@
           <tr v-for="player in leagueYear.players">
             <td>
               <span v-if="player.user">{{ player.user.displayName }}</span>
-              <span v-if="!player.user">{{ player.invitedEmailAddress }}</span>
+              <span v-if="!player.user">{{ player.inviteName }}</span>
             </td>
             <td>
               <span v-if="player.publisher">
@@ -34,7 +34,7 @@
               <span v-if="!player.user">
                 &lt;Invite Sent&gt;
                 <span v-if="showRemove">
-                  <b-button variant="danger" size="sm" v-on:click="rescindInvite(player.invitedEmailAddress)">Rescind Invite</b-button>
+                  <b-button variant="danger" size="sm" v-on:click="rescindInvite(player.inviteName)">Rescind Invite</b-button>
                 </span>
               </span>
             </td>

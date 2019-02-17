@@ -177,17 +177,14 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public async Task<Result> RescindInvite(League league, string inviteEmail)
+        public Task<Maybe<LeagueInvite>> GetInvite(Guid inviteID)
         {
-            var invite = await GetMatchingInvite(league, inviteEmail);
-            if (invite.HasNoValue)
-            {
-                return Result.Fail("That email address has not been invited.");
-            }
+           return _fantasyCriticRepo.GetInvite(inviteID);
+        }
 
-            await _fantasyCriticRepo.DeleteInvite(invite.Value);
-
-            return Result.Ok();
+        public Task DeleteInvite(LeagueInvite invite)
+        {
+            return _fantasyCriticRepo.DeleteInvite(invite);
         }
 
         public async Task<Result> AcceptInvite(League league, FantasyCriticUser inviteUser)
@@ -205,25 +202,6 @@ namespace FantasyCritic.Lib.Services
             }
 
             await _fantasyCriticRepo.AcceptInvite(invite.Value, inviteUser);
-
-            return Result.Ok();
-        }
-
-        public async Task<Result> DeclineInvite(League league, FantasyCriticUser inviteUser)
-        {
-            bool userInLeague = await UserIsInLeague(league, inviteUser);
-            if (userInLeague)
-            {
-                return Result.Fail("User is already in league.");
-            }
-
-            var invite = await GetMatchingInvite(league, inviteUser.EmailAddress);
-            if (invite.HasNoValue)
-            {
-                return Result.Fail("User is not invited to this league.");
-            }
-
-            await _fantasyCriticRepo.DeleteInvite(invite.Value);
 
             return Result.Ok();
         }

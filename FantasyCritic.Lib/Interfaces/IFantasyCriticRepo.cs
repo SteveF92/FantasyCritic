@@ -26,6 +26,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task FollowLeague(League league, FantasyCriticUser user);
         Task UnfollowLeague(League league, FantasyCriticUser user);
 
+        Task<Maybe<LeagueInvite>> GetInvite(Guid inviteID);
         Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser);
         Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league);
         Task SaveInvite(LeagueInvite leagueInvite);
