@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Web.Models.Responses
@@ -23,7 +24,8 @@ namespace FantasyCritic.Web.Models.Responses
             NumberOfFollowers = league.NumberOfFollowers;
         }
 
-        public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUser> players, bool outstandingInvite, bool neverStarted, bool userIsInLeague, bool userIsFollowingLeague)
+        public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUser> players, Maybe<LeagueInvite> outstandingInvite, FantasyCriticUser currentUser,
+            bool neverStarted, bool userIsInLeague, bool userIsFollowingLeague)
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
@@ -31,7 +33,12 @@ namespace FantasyCritic.Web.Models.Responses
             IsManager = isManager;
             Years = league.Years;
             ActiveYear = Years.Max();
-            OutstandingInvite = outstandingInvite;
+
+            if (outstandingInvite.HasValue)
+            {
+                OutstandingInvite = LeagueInviteViewModel.CreateWithDisplayName(outstandingInvite.Value, currentUser);
+            }
+
             Players = players.Select(x => new PlayerViewModel(league, x)).ToList();
             NeverStarted = neverStarted;
             PublicLeague = league.PublicLeague;
@@ -46,7 +53,7 @@ namespace FantasyCritic.Web.Models.Responses
         public PlayerViewModel LeagueManager { get; }
         public bool IsManager { get; }
         public IReadOnlyList<PlayerViewModel> Players { get; }
-        public bool OutstandingInvite { get; }
+        public LeagueInviteViewModel OutstandingInvite { get; }
         public IReadOnlyList<int> Years { get; }
         public int ActiveYear { get; }
         public bool NeverStarted { get; }

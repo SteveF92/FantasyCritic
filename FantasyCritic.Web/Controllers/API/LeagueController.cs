@@ -140,10 +140,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
+            Maybe<LeagueInvite> leagueInvite = inviteesToLeague.GetMatchingInvite(currentUser.EmailAddress);
+
             bool hasBeenStarted = await _fantasyCriticService.LeagueHasBeenStarted(league.Value.LeagueID);
             bool neverStarted = !hasBeenStarted;
 
-            var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, userIsInvitedToLeague, neverStarted, userIsInLeague, userIsFollowingLeague);
+            var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, leagueInvite, currentUser, neverStarted, userIsInLeague, userIsFollowingLeague);
             return Ok(leagueViewModel);
         }
 
