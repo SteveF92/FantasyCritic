@@ -312,7 +312,10 @@ namespace FantasyCritic.Web.Controllers.API
                 throw new Exception("Something went really wrong, no options are set up for this league.");
             }
 
+            var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(leagueYear.Value.League);
+
             bool userIsInLeague = false;
+            bool userIsInvitedToLeague = false;
             FantasyCriticUser currentUser = null;
             if (!string.IsNullOrWhiteSpace(User.Identity.Name))
             {
@@ -322,9 +325,10 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
                 userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
             }
 
-            if (!userIsInLeague && !leagueYear.Value.League.PublicLeague)
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
             {
                 return Forbid();
             }
