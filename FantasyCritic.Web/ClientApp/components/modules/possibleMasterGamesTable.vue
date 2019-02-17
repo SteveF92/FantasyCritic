@@ -45,8 +45,8 @@
     props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
     methods: {
       selectGame(game) {
-          this.selectedMasterGame = game;
-          this.$emit('input', this.selectedMasterGame);
+        this.selectedMasterGame = game;
+        this.$emit('input', this.selectedMasterGame);
       },
       newPopoverShown(masterGame) {
         this.$refs.gamePopoverWrapperRef.forEach(function (popover) {

@@ -9,7 +9,8 @@
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
+                                  v-on:input="newGameSelected"></possibleMasterGamesTable>
 
         <label v-if="bidMasterGame" for="bidMasterGame" class="control-label">Selected Game: {{bidMasterGame.gameName}}</label>
       </div>
@@ -56,7 +57,8 @@
         },
         props: ['leagueYear', 'maximumEligibilityLevel'],
         methods: {
-            searchGame() {
+          searchGame() {
+                this.bidResult = null;
                 axios
                     .get('/api/game/MasterGame?gameName=' + this.bidGameName)
                     .then(response => {
@@ -102,6 +104,9 @@
               this.bidMasterGame = null;
               this.bidAmount = 0;
               this.possibleMasterGames = [];
+            },
+            newGameSelected() {
+              this.bidResult = null;
             }
         }
     }
