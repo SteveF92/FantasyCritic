@@ -34,7 +34,7 @@
               <span v-if="!player.user">
                 &lt;Invite Sent&gt;
                 <span v-if="showRemove">
-                  <b-button variant="danger" size="sm" v-on:click="rescindInvite(player.inviteName)">Rescind Invite</b-button>
+                  <b-button variant="danger" size="sm" v-on:click="rescindInvite(player.inviteID, player.inviteName)">Rescind Invite</b-button>
                 </span>
               </span>
             </td>
@@ -80,16 +80,15 @@
 
           });
       },
-      rescindInvite(emailAddress) {
+      rescindInvite(inviteID, inviteName) {
         var model = {
-          leagueID: this.league.leagueID,
-          inviteEmail: emailAddress
+          inviteID: inviteID
         };
         axios
           .post('/api/leagueManager/RescindInvite', model)
           .then(response => {
             let actionInfo = {
-              message: 'The invite to ' + emailAddress + ' has been rescinded.',
+              message: 'The invite to ' + inviteName + ' has been rescinded.',
               fetchLeague: true,
               fetchLeagueYear: true
             };

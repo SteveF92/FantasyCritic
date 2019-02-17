@@ -219,7 +219,7 @@
       },
       declineInvite() {
           var model = {
-            leagueID: this.league.leagueID
+            inviteID: this.league.outstandingInvite.inviteID
           };
           axios
             .post('/api/league/DeclineInvite', model)

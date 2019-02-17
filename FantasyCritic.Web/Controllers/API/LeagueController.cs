@@ -437,7 +437,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (string.Equals(invite.Value.EmailAddress, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(invite.Value.EmailAddress, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase))
             {
                 return Forbid();
             }
