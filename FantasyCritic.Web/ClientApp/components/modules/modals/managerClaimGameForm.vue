@@ -10,7 +10,8 @@
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
+                                  v-on:input="newGameSelected"></possibleMasterGamesTable>
 
         <div v-show="searched && !claimMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
@@ -102,6 +103,7 @@
         methods: {
           searchGame() {
             this.possibleMasterGames = [];
+            this.claimResult = null;
             axios
                 .get('/api/game/MasterGameYear?gameName=' + this.searchGameName + '&year=' + this.year)
                 .then(response => {
@@ -169,6 +171,9 @@
             this.showingUnlistedField = false;
             this.claimCounterPick = false;
             this.claimPublisher = null;
+          },
+          newGameSelected() {
+            this.claimResult = null;
           }
         }
     }

@@ -27,7 +27,8 @@
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
+                                  v-on:input="newGameSelected"></possibleMasterGamesTable>
 
         <label v-if="associateMasterGame" for="associateMasterGame" class="control-label">Selected Game: {{associateMasterGame.gameName}}</label>
       </div>
@@ -80,15 +81,16 @@
         props: ['publishers', 'maximumEligibilityLevel', 'year'],
         methods: {
           searchGame() {
-          this.possibleMasterGames = [];
-              axios
-                .get('/api/game/MasterGameYear?gameName=' + this.associateGameName + '&year=' + this.year)
-                .then(response => {
-                    this.possibleMasterGames = response.data;
-                })
-                .catch(response => {
+            this.possibleMasterGames = [];
+            this.associateResult = null;
+            axios
+              .get('/api/game/MasterGameYear?gameName=' + this.associateGameName + '&year=' + this.year)
+              .then(response => {
+                  this.possibleMasterGames = response.data;
+              })
+              .catch(response => {
 
-                });
+              });
             },
             associateGame() {
                 var request = {
@@ -129,7 +131,10 @@
               this.possibleMasterGames = [];
               this.claimCounterPick = false;
               this.claimPublisher = null;
-            }
+          },
+          newGameSelected() {
+            this.associateResult = null;
+          }
         }
     }
 </script>

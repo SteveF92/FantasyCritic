@@ -58,15 +58,16 @@
         props: ['leagueYear', 'maximumEligibilityLevel'],
         methods: {
           searchGame() {
-                this.bidResult = null;
-                axios
-                    .get('/api/game/MasterGame?gameName=' + this.bidGameName)
-                    .then(response => {
-                        this.possibleMasterGames = response.data;
-                    })
-                    .catch(response => {
+            this.bidResult = null;
+            this.possibleMasterGames = [];
+            axios
+                .get('/api/game/MasterGame?gameName=' + this.bidGameName)
+                .then(response => {
+                    this.possibleMasterGames = response.data;
+                })
+                .catch(response => {
 
-                    });
+                });
             },
             bidGame() {
                 var request = {
