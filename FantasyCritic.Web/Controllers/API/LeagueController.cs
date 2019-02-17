@@ -84,7 +84,7 @@ namespace FantasyCritic.Web.Controllers.API
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             var invitedLeagues = await _fantasyCriticService.GetLeagueInvites(currentUser);
-            var viewModels = invitedLeagues.Select(LeagueInviteViewModel.CreateWithDisplayName);
+            var viewModels = invitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
             return Ok(viewModels);
         }
 

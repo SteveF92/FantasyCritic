@@ -9,34 +9,29 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueInviteViewModel
     {
-        private LeagueInviteViewModel(League league, string emailAddress, string displayName)
+        private LeagueInviteViewModel(Guid inviteID, League league, string inviteName)
         {
+            InviteID = inviteID;
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
             ActiveYear = league.Years.Max();
-            EmailAddress = emailAddress;
-            DisplayName = displayName;
+            InviteName = inviteName;
         }
 
+        public Guid InviteID { get; }
         public Guid LeagueID { get; }
         public string LeagueName { get; }
         public int ActiveYear { get; }
-        public string EmailAddress { get; }
-        public string DisplayName { get; }
+        public string InviteName { get; }
 
         public static LeagueInviteViewModel CreateWithEmailAddress(LeagueInvite invite)
         {
-            return new LeagueInviteViewModel(invite.League, invite.EmailAddress, null);
+            return new LeagueInviteViewModel(invite.InviteID, invite.League, invite.EmailAddress);
         }
 
-        public static LeagueInviteViewModel CreateWithDisplayName(LeagueInvite invite)
+        public static LeagueInviteViewModel CreateWithDisplayName(LeagueInvite invite, FantasyCriticUser user)
         {
-            if (invite.User.HasNoValue)
-            {
-                throw new Exception("Invite does not have a user attached.");
-            }
-
-            return new LeagueInviteViewModel(invite.League, null, invite.User.Value.DisplayName);
+            return new LeagueInviteViewModel(invite.InviteID, invite.League, user.DisplayName);
         }
     }
 }
