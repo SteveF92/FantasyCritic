@@ -2,19 +2,19 @@
   <div v-if="masterGame">
     <h1>{{masterGame.gameName}}</h1>
     <img :src="boxartLink" alt="Cover Image">
-    <p>
+    <div>
       <strong>Release Date: </strong>
       <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
       <span v-else>{{masterGame.estimatedReleaseDate}} (Estimated)</span>
-    </p>
-    <p v-if="masterGame.averagedScore">
-      <label>This is an episodic game. We have caluclated an average score.</label>
+    </div>
+    <div>
+      <label v-if="masterGame.averagedScore">This is an episodic game. We have caluclated an average score.</label>
       <div>
         <strong>Critic Score: </strong>
         {{masterGame.criticScore | score(2)}}
-        <span>(Averaged Score)</span>
+        <span v-if="masterGame.averagedScore">(Averaged Score)</span>
       </div>
-    </p>
+    </div>
     <p v-if="masterGame.openCriticID">
       <a :href="openCriticLink(masterGame)" target="_blank">Open Critic Link <font-awesome-icon icon="external-link-alt" size="xs" /></a>
     </p>
