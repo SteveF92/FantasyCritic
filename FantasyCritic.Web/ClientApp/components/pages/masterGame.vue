@@ -1,7 +1,13 @@
 <template>
   <div v-if="masterGame">
     <h1>{{masterGame.gameName}}</h1>
-    <img :src="boxartLink" alt="Cover Image">
+    <div class="game-image-area">
+      <img v-show="this.masterGame.boxartFileName" :src="boxartLink" alt="Cover Image" class="game-image">
+      <font-awesome-layers v-show="!this.masterGame.boxartFileName" class="fa-8x no-game-image">
+        <font-awesome-icon :icon="['far', 'square']" />
+        <font-awesome-layers-text transform="shrink-14" value="No image found" />
+      </font-awesome-layers>
+    </div>
     <div>
       <strong>Release Date: </strong>
       <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
@@ -54,7 +60,7 @@
         if (this.masterGame.boxartFileName) {
           return "https://s3.amazonaws.com/fantasy-critic-box-art/" + this.masterGame.boxartFileName;
         }
-        return "https://s3.amazonaws.com/fantasy-critic-box-art/noBoxArt.png";
+        return null;
       }
     },
     methods: {
