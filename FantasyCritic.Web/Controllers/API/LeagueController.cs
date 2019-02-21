@@ -127,20 +127,20 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInvitedToLeague = false;
             bool isManager = false;
             bool userIsFollowingLeague = false;
+            Maybe<LeagueInvite> leagueInvite = Maybe<LeagueInvite>.None;
             if (currentUser != null)
             {
                 userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
                 isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
                 userIsFollowingLeague = leagueFollowers.Any(x => x.UserID == currentUser.UserID);
+                leagueInvite = inviteesToLeague.GetMatchingInvite(currentUser.EmailAddress);
             }
 
             if (!userIsInLeague && !userIsInvitedToLeague && !league.Value.PublicLeague)
             {
                 return Forbid();
             }
-
-            Maybe<LeagueInvite> leagueInvite = inviteesToLeague.GetMatchingInvite(currentUser.EmailAddress);
 
             bool hasBeenStarted = await _fantasyCriticService.LeagueHasBeenStarted(league.Value.LeagueID);
             bool neverStarted = !hasBeenStarted;
@@ -169,10 +169,12 @@ namespace FantasyCritic.Web.Controllers.API
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
+            bool isManager = false;
             if (currentUser != null)
             {
                 userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
+                isManager = (leagueYear.Value.League.LeagueManager.UserID == currentUser.UserID);
             }
 
             if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
@@ -205,7 +207,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             SystemWideValues systemWideValues = await _fantasyCriticService.GetSystemWideValues();
 
-            bool isManager = (leagueYear.Value.League.LeagueManager.UserID == currentUser.UserID);
+            
 
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks,
