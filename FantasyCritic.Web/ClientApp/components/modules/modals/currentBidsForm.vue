@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="currentBidsForm" ref="currentBidsFormRef" title="Current Bids" hide-footer>
+  <b-modal id="currentBidsForm" ref="currentBidsFormRef" title="My Current Bids" hide-footer>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">

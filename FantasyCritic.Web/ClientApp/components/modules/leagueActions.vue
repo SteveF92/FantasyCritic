@@ -33,7 +33,7 @@
             Make a Bid
           </li>
           <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
-            See Current Bids
+            My Current Bids
           </li>
           <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
             Change Publisher Name
