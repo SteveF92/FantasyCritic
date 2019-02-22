@@ -25,6 +25,8 @@ namespace FantasyCritic.Web.Models.Responses
             BoxartFileName = masterGame.MasterGame.BoxartFileName;
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
+            EligiblePercentStandardGame = masterGame.EligiblePercentStandardGame;
+            EligiblePercentCounterPick = masterGame.EligiblePercentCounterPick;
             AverageDraftPosition = masterGame.AverageDraftPosition;
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
@@ -46,6 +48,8 @@ namespace FantasyCritic.Web.Models.Responses
 
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
+            EligiblePercentStandardGame = masterGame.EligiblePercentStandardGame;
+            EligiblePercentCounterPick = masterGame.EligiblePercentCounterPick;
             AverageDraftPosition = masterGame.AverageDraftPosition;
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
@@ -67,6 +71,8 @@ namespace FantasyCritic.Web.Models.Responses
 
         public decimal PercentStandardGame { get; }
         public decimal PercentCounterPick { get; }
+        public decimal EligiblePercentStandardGame { get; set; }
+        public decimal EligiblePercentCounterPick { get; set; }
         public decimal? AverageDraftPosition { get; }
         public decimal? HypeFactor { get; set; }
         public decimal? DateAdjustedHypeFactor { get; set; }

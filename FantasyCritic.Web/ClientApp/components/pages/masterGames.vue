@@ -30,14 +30,11 @@
         <template slot="dateAdjustedHypeFactor" slot-scope="data">
           {{data.item.dateAdjustedHypeFactor | score(1)}}
         </template>
-        <template slot="percentStandardGame" slot-scope="data">
-          {{data.item.percentStandardGame | percent(1)}}
+        <template slot="eligiblePercentStandardGame" slot-scope="data">
+          {{data.item.eligiblePercentStandardGame | percent(1)}}
         </template>
-        <template slot="percentCounterPick" slot-scope="data">
-          {{data.item.percentCounterPick | percent(1)}}
-        </template>
-        <template slot="averageDraftPosition" slot-scope="data">
-          {{data.item.averageDraftPosition | score(1)}}
+        <template slot="eligiblePercentCounterPick" slot-scope="data">
+          {{data.item.eligiblePercentCounterPick | percent(1)}}
         </template>
         <template slot="addedTimestamp" slot-scope="data">
           {{data.item.addedTimestamp | date}}
@@ -69,8 +66,8 @@
           { key: 'isReleased', label: 'Released?', sortable: true, thClass: 'bg-primary' },
           { key: 'criticScore', label: 'Critic Score Link', thClass: 'bg-primary' },
           { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
-          { key: 'percentStandardGame', label: '% Picked', sortable: true, thClass: 'bg-primary' },
-          { key: 'percentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
+          { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: 'bg-primary' },
+          { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
           { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: 'bg-primary' },
           { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: 'bg-primary' }
         ],
