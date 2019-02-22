@@ -13,7 +13,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="player in leagueYear.players">
+          <tr v-for="player in sortedPlayers">
             <td>
               <span v-if="player.user">{{ player.user.displayName }}</span>
               <span v-if="!player.user">{{ player.inviteName }}</span>
@@ -58,6 +58,10 @@
     computed: {
       showRemove() {
         return (this.league.isManager && this.league.neverStarted);
+      },
+      sortedPlayers() {
+        return _.sortBy(this.leagueYear.players, [function (x) { return x.projectedFantasyPoints; }]).reverse();
+        return ;
       }
     },
     methods: {
