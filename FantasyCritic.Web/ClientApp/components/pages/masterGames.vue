@@ -27,9 +27,6 @@
           <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
           <span v-else>--</span>
         </template>
-        <template slot="hypeFactor" slot-scope="data">
-          {{data.item.hypeFactor | score(1)}}
-        </template>
         <template slot="dateAdjustedHypeFactor" slot-scope="data">
           {{data.item.dateAdjustedHypeFactor | score(1)}}
         </template>
@@ -71,15 +68,13 @@
           { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'isReleased', label: 'Released?', sortable: true, thClass: 'bg-primary' },
           { key: 'criticScore', label: 'Critic Score Link', thClass: 'bg-primary' },
-          { key: 'hypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
-          { key: 'dateAdjustedHypeFactor', label: 'Hype Factor (Adjusted)', sortable: true, thClass: 'bg-primary' },
+          { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
           { key: 'percentStandardGame', label: '% Picked', sortable: true, thClass: 'bg-primary' },
           { key: 'percentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
-          { key: 'averageDraftPosition', label: 'Avg. Draft Position', sortable: true, thClass: 'bg-primary' },
           { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: 'bg-primary' },
           { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: 'bg-primary' }
         ],
-        sortBy: 'gameName',
+        sortBy: 'dateAdjustedHypeFactor',
         sortDesc: true
       }
     },

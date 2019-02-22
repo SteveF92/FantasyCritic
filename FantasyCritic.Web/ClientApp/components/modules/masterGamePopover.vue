@@ -33,11 +33,6 @@
             </div>
             <div>
               <strong>Hype Factor: </strong>
-              <span v-show="masterGame.hypeFactor">{{masterGame.hypeFactor | score(1)}}</span>
-              <span v-show="!masterGame.hypeFactor">Unhyped...</span>
-            </div>
-            <div>
-              <strong>Hype Factor (Adjusted): </strong>
               <span v-show="masterGame.dateAdjustedHypeFactor">{{masterGame.dateAdjustedHypeFactor | score(1)}}</span>
               <span v-show="!masterGame.dateAdjustedHypeFactor">Unhyped...</span>
             </div>
