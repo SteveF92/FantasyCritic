@@ -162,6 +162,11 @@
         using some of their available budget. Every player starts the year with $100 of budget. Then, on Monday evenings at 8PM Eastern, the system will process those bids. The top bidder for any given game
         will recieve the game and spend the money that they bid. The other players keep their money but do not get the game.
       </p>
+      <h3>What games are eligible?</h3>
+      <p class="text-well">
+        Same rules as during the draft. The system will warn you if you try to bid on a game that has already been released or already has reviews, but be aware that the game also must be eligible at the times the bid process,
+        not just when you make the bid. For example, if you bid on a game on Thursday, and reviews come out on Saturday, then the bid will fail come Monday.
+      </p>
       <h3>Will I still lose my money even if no one else is bidding on a game?</h3>
       <p class="text-well">
         Yes.
