@@ -27,16 +27,18 @@ namespace FantasyCritic.Web.Controllers.API
     public class GeneralController : Controller
     {
         private readonly FantasyCriticService _fantasyCriticService;
+        private readonly InterLeagueService _interLeagueService;
 
-        public GeneralController(FantasyCriticService fantasyCriticService)
+        public GeneralController(FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService)
         {
             _fantasyCriticService = fantasyCriticService;
+            _interLeagueService = interLeagueService;
         }
 
         [AllowAnonymous]
         public async Task<IActionResult> SiteCounts()
         {
-            var counts = await _fantasyCriticService.GetSiteCounts();
+            var counts = await _interLeagueService.GetSiteCounts();
             return Ok(new SiteCountsViewModel(counts));
         }
     }

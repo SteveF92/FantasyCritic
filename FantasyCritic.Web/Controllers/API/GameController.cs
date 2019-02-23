@@ -23,20 +23,22 @@ namespace FantasyCritic.Web.Controllers.API
     public class GameController : Controller
     {
         private readonly FantasyCriticService _fantasyCriticService;
+        private readonly InterLeagueService _interLeagueService;
         private readonly IClock _clock;
         private static readonly int MaxDistance = 10;
         private static readonly int MaxDistanceGames = 5;
 
-        public GameController(FantasyCriticService fantasyCriticService, IClock clock)
+        public GameController(FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, IClock clock)
         {
             _fantasyCriticService = fantasyCriticService;
+            _interLeagueService = interLeagueService;
             _clock = clock;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<MasterGameViewModel>> MasterGame(Guid id)
         {
-            var masterGame = await _fantasyCriticService.GetMasterGame(id);
+            var masterGame = await _interLeagueService.GetMasterGame(id);
             if (masterGame.HasNoValue)
             {
                 return NotFound();
@@ -49,7 +51,7 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpGet("{id}/{year}")]
         public async Task<ActionResult<MasterGameYearViewModel>> MasterGameYear(Guid id, int year)
         {
-            Maybe<MasterGameYear> masterGame = await _fantasyCriticService.GetMasterGameYear(id, year);
+            Maybe<MasterGameYear> masterGame = await _interLeagueService.GetMasterGameYear(id, year);
             if (masterGame.HasNoValue)
             {
                 return NotFound();
@@ -61,7 +63,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame(string gameName)
         {
-            IReadOnlyList<MasterGame> masterGames = await _fantasyCriticService.GetMasterGames();
+            IReadOnlyList<MasterGame> masterGames = await _interLeagueService.GetMasterGames();
             IEnumerable<MasterGame> matchingMasterGames = new List<MasterGame>();
             if (!string.IsNullOrWhiteSpace(gameName))
             {
@@ -83,7 +85,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(string gameName, int year)
         {
-            IReadOnlyList<MasterGameYear> masterGames = await _fantasyCriticService.GetMasterGameYears(year);
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
             IEnumerable<MasterGameYear> matchingMasterGames = new List<MasterGameYear>();
             if (!string.IsNullOrWhiteSpace(gameName))
             {
@@ -106,7 +108,7 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpGet("{year}")]
         public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(int year)
         {
-            IReadOnlyList<MasterGameYear> masterGames = await _fantasyCriticService.GetMasterGameYears(year);
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
             var relevantGames = masterGames.Where(x => x.MasterGame.MinimumReleaseYear >= year);
 
             var supportedYears = await GetSupportedYears();
@@ -114,7 +116,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool thisYearIsFinished = finishedYears.Any(x => x.Year == year);
             if (thisYearIsFinished)
             {
-                var chosenGames = await _fantasyCriticService.GetAllSelectedMasterGameIDsForYear(year);
+                var chosenGames = await _interLeagueService.GetAllSelectedMasterGameIDsForYear(year);
                 relevantGames = relevantGames.Where(x => chosenGames.Contains(x.MasterGame.MasterGameID));
             }
 
@@ -131,7 +133,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         private async Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
-            IReadOnlyList<SupportedYear> supportedYears = await _fantasyCriticService.GetSupportedYears();
+            IReadOnlyList<SupportedYear> supportedYears = await _interLeagueService.GetSupportedYears();
             var years = supportedYears.Where(x => x.Year > 2017).OrderByDescending(x => x);
             return years.ToList();
         }

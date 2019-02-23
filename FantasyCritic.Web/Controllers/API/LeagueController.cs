@@ -29,22 +29,31 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
+        private readonly InterLeagueService _interLeagueService;
+        private readonly LeagueMemberService _leagueMemberService;
+        private readonly DraftService _draftService;
+        private readonly PublisherService _publisherService;
         private readonly IClock _clock;
         private readonly IHubContext<UpdateHub> _hubcontext;
 
-        public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IClock clock, IHubContext<UpdateHub> hubcontext)
+        public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
+            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubcontext)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
+            _interLeagueService = interLeagueService;
+            _leagueMemberService = leagueMemberService;
+            _draftService = draftService;
+            _publisherService = publisherService;
             _clock = clock;
             _hubcontext = hubcontext;
         }
 
         public async Task<IActionResult> LeagueOptions()
         {
-            var supportedYears = await _fantasyCriticService.GetSupportedYears();
+            var supportedYears = await _interLeagueService.GetSupportedYears();
             var openYears = supportedYears.Where(x => x.OpenForCreation).Select(x => x.Year);
-            IReadOnlyList<EligibilityLevel> eligibilityLevels = await _fantasyCriticService.GetEligibilityLevels();
+            IReadOnlyList<EligibilityLevel> eligibilityLevels = await _interLeagueService.GetEligibilityLevels();
             LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
                 PickupSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), eligibilityLevels);
 
@@ -54,7 +63,7 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> MyLeagues()
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            IReadOnlyList<League> myLeagues = await _fantasyCriticService.GetLeaguesForUser(currentUser);
+            IReadOnlyList<League> myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
 
             List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
             foreach (var league in myLeagues)
@@ -83,7 +92,7 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> MyInvites()
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            var invitedLeagues = await _fantasyCriticService.GetLeagueInvites(currentUser);
+            var invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
             var viewModels = invitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
             return Ok(viewModels);
         }
@@ -119,8 +128,8 @@ namespace FantasyCritic.Web.Controllers.API
                 currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             }
 
-            var playersInLeague = await _fantasyCriticService.GetUsersInLeague(league.Value);
-            var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(league.Value);
+            var playersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
+            var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(league.Value);
             var leagueFollowers = await _fantasyCriticService.GetLeagueFollowers(league.Value);
 
             bool userIsInLeague = false;
@@ -164,8 +173,8 @@ namespace FantasyCritic.Web.Controllers.API
                 currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             }
 
-            var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
-            var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(leagueYear.Value.League);
+            var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
+            var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
@@ -182,16 +191,16 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
-            var supportedYear = (await _fantasyCriticService.GetSupportedYears()).SingleOrDefault(x => x.Year == year);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == year);
             if (supportedYear is null)
             {
                 return BadRequest();
             }
 
-            StartDraftResult startDraftResult = await _fantasyCriticService.GetStartDraftResult(leagueYear.Value, publishersInLeague, usersInLeague);
-            Maybe<Publisher> nextDraftPublisher = _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
-            DraftPhase draftPhase = await _fantasyCriticService.GetDraftPhase(leagueYear.Value);
+            StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear.Value, publishersInLeague, usersInLeague);
+            Maybe<Publisher> nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
+            DraftPhase draftPhase = await _draftService.GetDraftPhase(leagueYear.Value);
 
             Publisher userPublisher = null;
             if (userIsInLeague)
@@ -202,10 +211,10 @@ namespace FantasyCritic.Web.Controllers.API
             IReadOnlyList<PublisherGame> availableCounterPicks = new List<PublisherGame>();
             if (nextDraftPublisher.HasValue)
             {
-                availableCounterPicks = _fantasyCriticService.GetAvailableCounterPicks(leagueYear.Value, nextDraftPublisher.Value, publishersInLeague);
+                availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear.Value, nextDraftPublisher.Value, publishersInLeague);
             }
 
-            SystemWideValues systemWideValues = await _fantasyCriticService.GetSystemWideValues();
+            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
 
             
 
@@ -230,13 +239,13 @@ namespace FantasyCritic.Web.Controllers.API
                 currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             }
 
-            var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(leagueYear.Value.League);
+            var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
             if (currentUser != null)
             {
-                var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
+                var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
                 userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
             }
@@ -257,7 +266,7 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPublisher(Guid id)
         {
-            Maybe<Publisher> publisher = await _fantasyCriticService.GetPublisher(id);
+            Maybe<Publisher> publisher = await _publisherService.GetPublisher(id);
             if (publisher.HasNoValue)
             {
                 return NotFound();
@@ -269,8 +278,8 @@ namespace FantasyCritic.Web.Controllers.API
                 currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             }
 
-            var playersInLeague = await _fantasyCriticService.GetUsersInLeague(publisher.Value.League);
-            var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(publisher.Value.League);
+            var playersInLeague = await _leagueMemberService.GetUsersInLeague(publisher.Value.League);
+            var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(publisher.Value.League);
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
@@ -316,7 +325,7 @@ namespace FantasyCritic.Web.Controllers.API
                 throw new Exception("Something went really wrong, no options are set up for this league.");
             }
 
-            var inviteesToLeague = await _fantasyCriticService.GetOutstandingInvitees(leagueYear.Value.League);
+            var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
@@ -327,7 +336,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
             if (currentUser != null)
             {
-                var usersInLeague = await _fantasyCriticService.GetUsersInLeague(leagueYear.Value.League);
+                var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
                 userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
             }
@@ -362,7 +371,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            Result result = await _fantasyCriticService.AcceptInvite(league.Value, currentUser);
+            Result result = await _leagueMemberService.AcceptInvite(league.Value, currentUser);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);
@@ -381,34 +390,34 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(league.Value, currentUser);
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(league.Value, currentUser);
             if (!userIsInLeague)
             {
                 return Forbid();
             }
 
-            var currentPublishers = await _fantasyCriticService.GetPublishersInLeagueForYear(league.Value, request.Year);
+            var currentPublishers = await _publisherService.GetPublishersInLeagueForYear(league.Value, request.Year);
             var publisherForUser = currentPublishers.SingleOrDefault(x => x.User.UserID == currentUser.UserID);
             if (publisherForUser != null)
             {
                 return BadRequest("You have already created a publisher for this this league/year.");
             }
 
-            await _fantasyCriticService.CreatePublisher(league.Value, request.Year, currentUser, request.PublisherName, currentPublishers);
+            await _publisherService.CreatePublisher(league.Value, request.Year, currentUser, request.PublisherName, currentPublishers);
             return Ok();
         }
 
         [HttpPost]
         public async Task<IActionResult> ChangePublisherName([FromBody] ChangePublisherNameRequest request)
         {
-            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)
             {
                 return BadRequest();
             }
 
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(publisher.Value.League, currentUser);
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.League, currentUser);
             if (!userIsInLeague)
             {
                 return Forbid();
@@ -433,7 +442,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            Maybe<LeagueInvite> invite = await _fantasyCriticService.GetInvite(request.InviteID);
+            Maybe<LeagueInvite> invite = await _leagueMemberService.GetInvite(request.InviteID);
             if (invite.HasNoValue)
             {
                 return BadRequest();
@@ -444,7 +453,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            await _fantasyCriticService.DeleteInvite(invite.Value);
+            await _leagueMemberService.DeleteInvite(invite.Value);
             return Ok();
         }
 
@@ -456,7 +465,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)
             {
                 return BadRequest();
@@ -473,14 +482,14 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(publisher.Value.League, currentUser);
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.League, currentUser);
             bool userIsPublisher = (currentUser.UserID == publisher.Value.User.UserID);
             if (!userIsInLeague || !userIsPublisher)
             {
                 return Forbid();
             }
 
-            var masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID);
+            var masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
             if (masterGame.HasNoValue)
             {
                 return BadRequest("That master game does not exist.");
@@ -508,7 +517,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var publisher = maybeBid.Value.Publisher;
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            bool userIsInLeague = await _fantasyCriticService.UserIsInLeague(publisher.League, currentUser);
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.League, currentUser);
             bool userIsPublisher = (currentUser.UserID == publisher.User.UserID);
             if (!userIsInLeague || !userIsPublisher)
             {
@@ -528,7 +537,7 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpGet("{publisherID}")]
         public async Task<IActionResult> CurrentBids(Guid publisherID)
         {
-            Maybe<Publisher> publisher = await _fantasyCriticService.GetPublisher(publisherID);
+            Maybe<Publisher> publisher = await _publisherService.GetPublisher(publisherID);
             if (publisher.HasNoValue)
             {
                 return NotFound();
@@ -554,7 +563,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var publisher = await _fantasyCriticService.GetPublisher(request.PublisherID);
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)
             {
                 return BadRequest();
@@ -583,8 +592,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't draft a game if the draft isn't active.");
             }
 
-            var publishersInLeague = await _fantasyCriticService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
-            var nextPublisher = _fantasyCriticService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var nextPublisher = _draftService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
             if (nextPublisher.HasNoValue)
             {
                 return BadRequest("There are no spots open to draft.");
@@ -598,12 +607,12 @@ namespace FantasyCritic.Web.Controllers.API
             Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
             if (request.MasterGameID.HasValue)
             {
-                masterGame = await _fantasyCriticService.GetMasterGame(request.MasterGameID.Value);
+                masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
             }
 
             int? publisherPosition = null;
             int? overallPosition = null;
-            var draftPhase = await _fantasyCriticService.GetDraftPhase(leagueYear.Value);
+            var draftPhase = await _draftService.GetDraftPhase(leagueYear.Value);
             if (draftPhase.Equals(DraftPhase.StandardGames))
             {
                 publisherPosition = publisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
@@ -626,7 +635,7 @@ namespace FantasyCritic.Web.Controllers.API
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, masterGame, publisherPosition, overallPosition);
 
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, false, true);
-            bool draftCompleted = await _fantasyCriticService.CompleteDraft(leagueYear.Value);
+            bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value);
             var viewModel = new PlayerClaimResultViewModel(result);
             await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
