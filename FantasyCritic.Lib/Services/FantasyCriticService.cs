@@ -19,22 +19,20 @@ namespace FantasyCritic.Lib.Services
 {
     public class FantasyCriticService
     {
-        private readonly FantasyCriticUserManager _userManager;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
-        private readonly IMasterGameRepo _masterGameRepo;
         private readonly IClock _clock;
         private readonly GameAquisitionService _gameAquisitionService;
         private readonly LeagueMemberService _leagueMemberService;
+        private readonly InterLeagueService _interLeagueService;
 
-        public FantasyCriticService(FantasyCriticUserManager userManager, GameAquisitionService gameAquisitionService, LeagueMemberService leagueMemberService, 
-            IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock)
+        public FantasyCriticService(GameAquisitionService gameAquisitionService, LeagueMemberService leagueMemberService, 
+            InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
         {
-            _userManager = userManager;
             _fantasyCriticRepo = fantasyCriticRepo;
-            _masterGameRepo = masterGameRepo;
             _clock = clock;
 
             _leagueMemberService = leagueMemberService;
+            _interLeagueService = interLeagueService;
             _gameAquisitionService = gameAquisitionService;
         }
 
@@ -58,11 +56,6 @@ namespace FantasyCritic.Lib.Services
         public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
         {
             return _fantasyCriticRepo.GetLeagueYears(year);
-        }
-
-        public Task CreateMasterGame(MasterGame masterGame)
-        {
-            return _masterGameRepo.CreateMasterGame(masterGame);
         }
 
         public async Task<Result<League>> CreateLeague(LeagueCreationParameters parameters)
@@ -250,7 +243,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task UpdateFantasyPoints(int year)
         {
-            SystemWideValues systemWideValues = await GetSystemWideValues();
+            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
 
             IReadOnlyList<LeagueYear> activeLeagueYears = await GetLeagueYears(year);
@@ -274,7 +267,7 @@ namespace FantasyCritic.Lib.Services
         public async Task UpdateFantasyPoints(LeagueYear leagueYear)
         {
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
-            SystemWideValues systemWideValues = await GetSystemWideValues();
+            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
 
             var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             foreach (var publisher in publishersInLeague)
@@ -287,56 +280,6 @@ namespace FantasyCritic.Lib.Services
             }
 
             await _fantasyCriticRepo.UpdateFantasyPoints(publisherGameScores);
-        }
-
-        public  Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
-        {
-            return _fantasyCriticRepo.GetSupportedYears();
-        }
-
-        public Task<IReadOnlyList<MasterGame>> GetMasterGames()
-        {
-            return _masterGameRepo.GetMasterGames();
-        }
-
-        public Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
-        {
-            return _masterGameRepo.GetMasterGameYears(year);
-        }
-
-        public Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
-        {
-            return _masterGameRepo.GetMasterGame(masterGameID);
-        }
-
-        public Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year)
-        {
-            return _masterGameRepo.GetMasterGameYear(masterGameID, year);
-        }
-
-        public Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)
-        {
-            return _masterGameRepo.GetAllSelectedMasterGameIDsForYear(year);
-        }
-
-        public Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
-        {
-            return _masterGameRepo.UpdateCriticStats(masterGame, openCriticGame);
-        }
-
-        public Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame)
-        {
-            return _masterGameRepo.UpdateCriticStats(masterSubGame, openCriticGame);
-        }
-
-        public Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel)
-        {
-            return _masterGameRepo.GetEligibilityLevel(eligibilityLevel);
-        }
-
-        public Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
-        {
-            return _masterGameRepo.GetEligibilityLevels();
         }
 
         public async Task<Result> RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
@@ -373,33 +316,9 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);
         }
 
-        private async Task<IReadOnlyList<ClaimError>> GetBasicErrors(League league, Publisher publisher)
-        {
-            List<ClaimError> claimErrors = new List<ClaimError>();
-
-            bool isInLeague = await _leagueMemberService.UserIsInLeague(league, publisher.User);
-            if (!isInLeague)
-            {
-                claimErrors.Add(new ClaimError("User is not in that league.", false));
-            }
-
-            if (!league.Years.Contains(publisher.Year))
-            {
-                claimErrors.Add(new ClaimError("League is not active for that year.", false));
-            }
-
-            var openYears = (await GetSupportedYears()).Where(x => x.OpenForPlay).Select(x => x.Year);
-            if (!openYears.Contains(publisher.Year))
-            {
-                claimErrors.Add(new ClaimError("That year is not open for play", false));
-            }
-
-            return claimErrors;
-        }
-
         public async Task ProcessPickups(int year)
         {
-            SystemWideValues systemWideValues = await GetSystemWideValues();
+            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             BidProcessingResults results = BidProcessor.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock);
@@ -445,7 +364,6 @@ namespace FantasyCritic.Lib.Services
 
             return new StartDraftResult(!errors.Any(), errors);
         }
-
 
         public bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
         {
@@ -645,16 +563,6 @@ namespace FantasyCritic.Lib.Services
 
             await _fantasyCriticRepo.CompleteDraft(leagueYear);
             return true;
-        }
-
-        public Task<SystemWideValues> GetSystemWideValues()
-        {
-            return _fantasyCriticRepo.GetSystemWideValues();
-        }
-
-        public Task<SiteCounts> GetSiteCounts()
-        {
-            return _fantasyCriticRepo.GetSiteCounts();
         }
 
         public async Task DeleteLeague(League league)
