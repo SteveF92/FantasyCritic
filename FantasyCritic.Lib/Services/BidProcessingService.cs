@@ -4,14 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Requests;
 using MoreLinq;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Services
 {
-    public static class BidProcessor
+    public class BidProcessingService
     {
-        public static BidProcessingResults ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
+        private readonly GameAquisitionService _gameAquisitionService;
+
+        public BidProcessingService(GameAquisitionService gameAquisitionService)
+        {
+            _gameAquisitionService = gameAquisitionService;
+        }
+
+        public async Task<BidProcessingResults> ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
             IEnumerable<Publisher> currentPublisherStates, IClock clock)
         {
             if (!allActiveBids.Any())
@@ -28,7 +36,7 @@ namespace FantasyCritic.Lib.Services
                 {
                     continue;
                 }
-                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, currentPublisherStates, systemWideValues);
+                var processedBidsForLeagueYear = await ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, currentPublisherStates, systemWideValues);
                 processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
             }
 
@@ -38,7 +46,7 @@ namespace FantasyCritic.Lib.Services
             if (remainingBids.Any())
             {
                 Dictionary<LeagueYear, IReadOnlyList<PickupBid>> remainingBidDictionary = remainingBids.GroupBy(x => x.LeagueYear).ToDictionary(x => x.Key, y => (IReadOnlyList<PickupBid>)y.ToList());
-                var subProcessingResults = ProcessPickupsIteration(systemWideValues, remainingBidDictionary, bidProcessingResults.UpdatedPublishers, clock);
+                var subProcessingResults = await ProcessPickupsIteration(systemWideValues, remainingBidDictionary, bidProcessingResults.UpdatedPublishers, clock);
                 BidProcessingResults combinedResults = bidProcessingResults.Combine(subProcessingResults);
                 return combinedResults;
             }
@@ -46,7 +54,7 @@ namespace FantasyCritic.Lib.Services
             return bidProcessingResults;
         }
 
-        private static ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague,
+        private async Task<ProcessedBidSet> ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague,
             IEnumerable<Publisher> currentPublisherStates, SystemWideValues systemWideValues)
         {
             List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
@@ -56,9 +64,20 @@ namespace FantasyCritic.Lib.Services
             foreach (var activeBid in activeBidsForLeague)
             {
                 Publisher publisher = currentPublisherStates.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
+
+                var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, false, false, activeBid.MasterGame, null, null);
+                var claimResult = await _gameAquisitionService.CanClaimGame(gameRequest);
+
+                if (!claimResult.Success)
+                {
+                    invalidGameBids.Add(activeBid);
+                    continue;
+                }
+                
                 if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames))
                 {
                     noSpaceLeftBids.Add(activeBid);
+                    continue;
                 }
 
                 if (activeBid.BidAmount > publisher.Budget)
@@ -76,12 +95,14 @@ namespace FantasyCritic.Lib.Services
                 .Except(winningBids)
                 .Except(noSpaceLeftBids)
                 .Except(insufficientFundsBids)
+                .Except(invalidGameBids)
                 .Where(x => takenGames.Contains(x.MasterGame))
                 .Select(x => new FailedPickupBid(x, "Publisher was outbid."));
 
+            var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x, "Game is no longer eligible (it probably has been released or at least has reviews."));
             var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget."));
             var noSpaceLeftBidFailures = noSpaceLeftBids.Select(x => new FailedPickupBid(x, "No roster spots available."));
-            var failedBids = losingBids.Concat(insufficientFundsBidFailures).Concat(noSpaceLeftBidFailures);
+            var failedBids = losingBids.Concat(insufficientFundsBidFailures).Concat(noSpaceLeftBidFailures).Concat(invalidGameBidFailures);
 
             var processedSet = new ProcessedBidSet(winningBids, failedBids);
             return processedSet;

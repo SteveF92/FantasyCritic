@@ -25,9 +25,10 @@ namespace FantasyCritic.Lib.Services
         private readonly LeagueMemberService _leagueMemberService;
         private readonly PublisherService _publisherService;
         private readonly InterLeagueService _interLeagueService;
+        private readonly BidProcessingService _bidProcessingService;
 
         public FantasyCriticService(GameAquisitionService gameAquisitionService, LeagueMemberService leagueMemberService, 
-            PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+            PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock, BidProcessingService bidProcessingService)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
             _clock = clock;
@@ -36,6 +37,7 @@ namespace FantasyCritic.Lib.Services
             _publisherService = publisherService;
             _interLeagueService = interLeagueService;
             _gameAquisitionService = gameAquisitionService;
+            _bidProcessingService = bidProcessingService;
         }
 
         public Task<Maybe<League>> GetLeagueByID(Guid id)
@@ -266,7 +268,7 @@ namespace FantasyCritic.Lib.Services
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
-            BidProcessingResults results = BidProcessor.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock);
+            BidProcessingResults results = await _bidProcessingService.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock);
             await _fantasyCriticRepo.SaveProcessedBidResults(results);
         }
 
