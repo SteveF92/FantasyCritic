@@ -86,7 +86,7 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            var validBids = activeBidsForLeague.Except(noSpaceLeftBids).Except(insufficientFundsBids);
+            var validBids = activeBidsForLeague.Except(noSpaceLeftBids).Except(insufficientFundsBids).Except(invalidGameBids);
             var winnableBids = GetWinnableBids(validBids, leagueYear.Options, systemWideValues);
             var winningBids = GetWinningBids(winnableBids);
 
@@ -99,7 +99,7 @@ namespace FantasyCritic.Lib.Services
                 .Where(x => takenGames.Contains(x.MasterGame))
                 .Select(x => new FailedPickupBid(x, "Publisher was outbid."));
 
-            var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x, "Game is no longer eligible (it probably has been released or at least has reviews."));
+            var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x, "Game is no longer eligible (it probably has been released or at least has reviews)."));
             var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget."));
             var noSpaceLeftBidFailures = noSpaceLeftBids.Select(x => new FailedPickupBid(x, "No roster spots available."));
             var failedBids = losingBids.Concat(insufficientFundsBidFailures).Concat(noSpaceLeftBidFailures).Concat(invalidGameBidFailures);
