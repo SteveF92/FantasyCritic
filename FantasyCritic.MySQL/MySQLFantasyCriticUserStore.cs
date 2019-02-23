@@ -13,7 +13,7 @@ using NodaTime;
 
 namespace FantasyCritic.MySQL
 {
-    public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore, IReadOnlyFantasyCriticUserStore
+    public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     {
         private readonly string _connectionString;
         private readonly IClock _clock;
@@ -33,8 +33,8 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbluser(UserID,DisplayName,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
-                    "(@UserID,@DisplayName,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
+                    "insert into tbluser(UserID,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
+                    "(@UserID,@DisplayName,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
                     entity);
             }
 
@@ -64,6 +64,7 @@ namespace FantasyCritic.MySQL
             //Not updating password or email confirmed as that breaks password change. Use the SetPasswordHash.
             FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);
             string sql = $@"UPDATE tbluser SET DisplayName = @{nameof(FantasyCriticUserEntity.DisplayName)}, " +
+                         $"DisplayNumber = @{nameof(FantasyCriticUserEntity.DisplayNumber)}, " +
                          $"EmailAddress = @{nameof(FantasyCriticUserEntity.EmailAddress)}, " +
                          $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +
                          $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +
@@ -343,6 +344,11 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 await connection.ExecuteAsync("delete from tbluserrefreshtoken where UserID = @UserID;", new { user.UserID });
             }
+        }
+
+        public Task<int> GetOpenDisplayNumber(string displayName)
+        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()

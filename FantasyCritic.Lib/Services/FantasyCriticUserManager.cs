@@ -46,5 +46,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _userStore.RemoveAllRefreshTokens(user);
         }
+
+        public Task<int> GetOpenDisplayNumber(string displayName)
+        {
+            return _userStore.GetOpenDisplayNumber(displayName);
+        }
     }
 }

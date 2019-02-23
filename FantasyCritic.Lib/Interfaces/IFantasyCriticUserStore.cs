@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Lib.Interfaces
 {
-    public interface IFantasyCriticUserStore : IUserStore<FantasyCriticUser>, IUserEmailStore<FantasyCriticUser>, IUserPasswordStore<FantasyCriticUser>, IUserRoleStore<FantasyCriticUser>, IUserSecurityStampStore<FantasyCriticUser>
+    public interface IFantasyCriticUserStore : IReadOnlyFantasyCriticUserStore, IUserStore<FantasyCriticUser>, IUserEmailStore<FantasyCriticUser>, IUserPasswordStore<FantasyCriticUser>, IUserRoleStore<FantasyCriticUser>, IUserSecurityStampStore<FantasyCriticUser>
     {
         Task<IReadOnlyList<string>> GetRefreshTokens(FantasyCriticUser user);
         Task AddRefreshToken(FantasyCriticUser user, string refreshToken);

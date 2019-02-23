@@ -70,7 +70,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var user = new FantasyCriticUser(Guid.NewGuid(), model.DisplayName, model.EmailAddress, model.EmailAddress, false, "", "", _clock.GetCurrentInstant());
+            int openUserNumber = await _userManager.GetOpenDisplayNumber(model.DisplayName);
+
+            var user = new FantasyCriticUser(Guid.NewGuid(), model.DisplayName, openUserNumber, model.EmailAddress, model.EmailAddress, false, "", "", _clock.GetCurrentInstant());
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
@@ -279,6 +281,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             user.DisplayName = request.NewDisplayName;
+            user.DisplayNumber = await _userManager.GetOpenDisplayNumber(user.DisplayName);
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
