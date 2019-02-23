@@ -26,24 +26,26 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
+        private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
         private readonly IClock _clock;
 
-        public AdminController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService, IClock clock)
+        public AdminController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService, IClock clock, InterLeagueService interLeagueService)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
             _openCriticService = openCriticService;
             _clock = clock;
+            _interLeagueService = interLeagueService;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
         {
-            EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(viewModel.EligibilityLevel);
+            EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(viewModel.EligibilityLevel);
             Instant instant = _clock.GetCurrentInstant();
             MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant);
-            await _fantasyCriticService.CreateMasterGame(masterGame);
+            await _interLeagueService.CreateMasterGame(masterGame);
 
             return Ok();
         }
@@ -53,10 +55,10 @@ namespace FantasyCritic.Web.Controllers.API
         {
             foreach (var singleGame in request)
             {
-                EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(0);
+                EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(0);
                 Instant instant = _clock.GetCurrentInstant();
                 MasterGame masterGame = singleGame.ToDomain(eligibilityLevel, instant);
-                await _fantasyCriticService.CreateMasterGame(masterGame);
+                await _interLeagueService.CreateMasterGame(masterGame);
             }
 
             return Ok();
@@ -65,8 +67,8 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RefreshCriticInfo()
         {
-            var supportedYears = await _fantasyCriticService.GetSupportedYears();
-            var masterGames = await _fantasyCriticService.GetMasterGames();
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            var masterGames = await _interLeagueService.GetMasterGames();
             foreach (var masterGame in masterGames)
             {
                 if (!masterGame.OpenCriticID.HasValue)
@@ -92,7 +94,7 @@ namespace FantasyCritic.Web.Controllers.API
                 var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID.Value);
                 if (openCriticGame.HasValue)
                 {
-                    await _fantasyCriticService.UpdateCriticStats(masterGame, openCriticGame.Value);
+                    await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame.Value);
                 }
 
                 foreach (var subGame in masterGame.SubGames)
@@ -106,7 +108,7 @@ namespace FantasyCritic.Web.Controllers.API
 
                     if (subGameOpenCriticGame.HasValue)
                     {
-                        await _fantasyCriticService.UpdateCriticStats(subGame, subGameOpenCriticGame.Value);
+                        await _interLeagueService.UpdateCriticStats(subGame, subGameOpenCriticGame.Value);
                     }
                 }
             }
@@ -118,7 +120,7 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> GetOpenCriticGames([FromBody] OpenCriticSearchRequest request)
         {
             int id = request.MinimumOpenCriticID;
-            var masterGames = await _fantasyCriticService.GetMasterGames();
+            var masterGames = await _interLeagueService.GetMasterGames();
             while (true)
             {
                 var openCriticGame = await _openCriticService.GetOpenCriticGame(id);
@@ -133,7 +135,7 @@ namespace FantasyCritic.Web.Controllers.API
                     continue;
                 }
 
-                EligibilityLevel eligibilityLevel = await _fantasyCriticService.GetEligibilityLevel(0);
+                EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(0);
                 int minimumReleaseYear = 2018;
                 if (openCriticGame.Value.ReleaseDate.HasValue)
                 {
@@ -142,7 +144,7 @@ namespace FantasyCritic.Web.Controllers.API
 
                 MasterGame masterGame = new MasterGame(Guid.NewGuid(), openCriticGame.Value.Name, openCriticGame.Value.ReleaseDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                     openCriticGame.Value.ReleaseDate, id, openCriticGame.Value.Score, minimumReleaseYear, eligibilityLevel, false, false, "", null, false, _clock.GetCurrentInstant());
-                await _fantasyCriticService.CreateMasterGame(masterGame);
+                await _interLeagueService.CreateMasterGame(masterGame);
 
                 id++;
             }
