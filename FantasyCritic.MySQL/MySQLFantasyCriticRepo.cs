@@ -945,6 +945,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<SystemWideSettings> GetSystemWideSettings()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var result = await connection.QuerySingleAsync<SystemWideSettingsEntity>("select * from tblsystemwidesettings;");
+                return result.ToDomain();
+            }
+        }
+
         public async Task<SiteCounts> GetSiteCounts()
         {
             using (var connection = new MySqlConnection(_connectionString))

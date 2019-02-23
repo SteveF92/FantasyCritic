@@ -65,7 +65,9 @@ namespace FantasyCritic.Lib.Interfaces
         Task CompleteDraft(LeagueYear leagueYear);
         Task SetDraftPause(LeagueYear leagueYear, bool pause);
         Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions);
+
         Task<SystemWideValues> GetSystemWideValues();
+        Task<SystemWideSettings> GetSystemWideSettings();
         Task<SiteCounts> GetSiteCounts();
 
         Task DeletePublisher(Publisher publisher);

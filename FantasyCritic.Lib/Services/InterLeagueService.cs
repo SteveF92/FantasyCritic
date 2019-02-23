@@ -22,6 +22,11 @@ namespace FantasyCritic.Lib.Services
             _masterGameRepo = masterGameRepo;
         }
 
+        public Task<SystemWideSettings> GetSystemWideSettings()
+        {
+            return _fantasyCriticRepo.GetSystemWideSettings();
+        }
+
         public Task<SystemWideValues> GetSystemWideValues()
         {
             return _fantasyCriticRepo.GetSystemWideValues();
