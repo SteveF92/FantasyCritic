@@ -50,9 +50,8 @@ namespace FantasyCritic.Lib.Services
             IEnumerable<Publisher> currentPublisherStates, SystemWideValues systemWideValues)
         {
             List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
-            //activeBidsForLeague.Where(x => !x.Publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames));
             List<PickupBid> insufficientFundsBids = new List<PickupBid>();
-            //activeBidsForLeague.Where(x => x.BidAmount > x.Publisher.Budget);
+            List<PickupBid> invalidGameBids = new List<PickupBid>();
 
             foreach (var activeBid in activeBidsForLeague)
             {
