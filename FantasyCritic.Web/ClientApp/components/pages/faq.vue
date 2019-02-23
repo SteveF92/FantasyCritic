@@ -184,7 +184,14 @@
       </p>
       <h3>When are bids processed?</h3>
       <p class="text-well">
-        Bids are processed on Monday evenings at 8PM Eastern (New York City time).
+        Bids are processed on Monday evenings at 8PM Eastern (New York City time). While bids are processing, you will not be able to:
+        <ul>
+          <li>Make bids</li>
+          <li>Cancel bids</li>
+          <li>Add/Remove Publisher Games post draft (as a manager)</li>
+          <li>Associate Publisher Games</li>
+        </ul>
+        The processing doesn't take long (no longer than 20 minutes, and probably much less). I only need to block these actions because if they happen during bid processing, it would cause conflicts with my algorithms.
       </p>
       <h3>How are ties handled on bids?</h3>
       <p class="text-well">
