@@ -66,6 +66,10 @@ namespace FantasyCritic.Web
 
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticRoleManager>();
+            services.AddScoped<GameAquisitionService>();
+            services.AddScoped<LeagueMemberService>();
+            services.AddScoped<PublisherService>();
+            services.AddScoped<InterLeagueService>();
             services.AddScoped<FantasyCriticService>();
 
             services.AddTransient<IEmailSender>(factory => sendGridEmailSender);

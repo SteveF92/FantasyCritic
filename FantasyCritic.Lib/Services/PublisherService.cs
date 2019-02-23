@@ -16,19 +16,12 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
         private readonly IClock _clock;
-        private readonly GameAquisitionService _gameAquisitionService;
-        private readonly LeagueMemberService _leagueMemberService;
-        private readonly InterLeagueService _interLeagueService;
 
-        public PublisherService(GameAquisitionService gameAquisitionService, LeagueMemberService leagueMemberService,
-            InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+
+        public PublisherService(IFantasyCriticRepo fantasyCriticRepo, IClock clock)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
             _clock = clock;
-
-            _leagueMemberService = leagueMemberService;
-            _interLeagueService = interLeagueService;
-            _gameAquisitionService = gameAquisitionService;
         }
 
         public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName, IEnumerable<Publisher> existingPublishers)
