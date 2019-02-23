@@ -465,6 +465,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest();
+            }
+
             var publisher = await _publisherService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)
             {
@@ -505,6 +511,12 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> DeletePickupBid([FromBody] PickupBidDeleteRequest request)
         {
             if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
             {
                 return BadRequest();
             }

@@ -196,6 +196,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest();
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest();
@@ -371,6 +377,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest();
+            }
+
             var publisher = await _publisherService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)
             {
@@ -426,6 +438,12 @@ namespace FantasyCritic.Web.Controllers.API
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
             if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
             {
                 return BadRequest();
             }
@@ -492,6 +510,12 @@ namespace FantasyCritic.Web.Controllers.API
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
             if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
             {
                 return BadRequest();
             }
