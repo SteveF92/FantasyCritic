@@ -23,15 +23,17 @@ namespace FantasyCritic.Lib.Services
         private readonly IClock _clock;
         private readonly GameAquisitionService _gameAquisitionService;
         private readonly LeagueMemberService _leagueMemberService;
+        private readonly PublisherService _publisherService;
         private readonly InterLeagueService _interLeagueService;
 
         public FantasyCriticService(GameAquisitionService gameAquisitionService, LeagueMemberService leagueMemberService, 
-            InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+            PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
             _clock = clock;
 
             _leagueMemberService = leagueMemberService;
+            _publisherService = publisherService;
             _interLeagueService = interLeagueService;
             _gameAquisitionService = gameAquisitionService;
         }
@@ -89,7 +91,7 @@ namespace FantasyCritic.Lib.Services
                 throw new Exception($"League year cannot be found: {parameters.LeagueID}|{parameters.Year}");
             }
 
-            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(league, parameters.Year);
+            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(league, parameters.Year);
 
             int maxStandardGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick)).DefaultIfEmpty(0).Max();
             int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).DefaultIfEmpty(0).Max();
@@ -112,39 +114,6 @@ namespace FantasyCritic.Lib.Services
         public Task AddNewLeagueYear(League league, int year, LeagueOptions options)
         {
             return _fantasyCriticRepo.AddNewLeagueYear(league, year, options);
-        }
-
-        public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName, IEnumerable<Publisher> existingPublishers)
-        {
-            int draftPosition = 1;
-            if (existingPublishers.Any())
-            {
-                draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
-            }
-
-            Publisher publisher = new Publisher(Guid.NewGuid(), league, user, year, publisherName, draftPosition, new List<PublisherGame>(), 100);
-            await _fantasyCriticRepo.CreatePublisher(publisher);
-            return publisher;
-        }
-
-        public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year)
-        {
-            return _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year);
-        }
-
-        public Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
-        {
-            return _fantasyCriticRepo.GetPublisher(league, year, user);
-        }
-
-        public Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
-        {
-            return _fantasyCriticRepo.GetPublisher(publisherID);
-        }
-
-        public Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID)
-        {
-            return _fantasyCriticRepo.GetPublisherGame(publisherGameID);
         }
 
         public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft)
@@ -269,7 +238,7 @@ namespace FantasyCritic.Lib.Services
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
 
-            var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             foreach (var publisher in publishersInLeague)
             {
                 foreach (var publisherGame in publisher.PublisherGames)
@@ -280,30 +249,6 @@ namespace FantasyCritic.Lib.Services
             }
 
             await _fantasyCriticRepo.UpdateFantasyPoints(publisherGameScores);
-        }
-
-        public async Task<Result> RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
-        {
-            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
-            IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.Year == leagueYear.Year).ToList();
-            IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != publisher.User.UserID).ToList();
-            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
-
-            bool otherPlayerHasCounterPick = otherPlayersGames.Where(x => x.CounterPick).ContainsGame(publisherGame);
-            if (otherPlayerHasCounterPick)
-            {
-                return Result.Fail("Can't remove a publisher game that another player has as a counterPick.");
-            }
-
-            var result = await _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
-            if (result.IsSuccess)
-            {
-                RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisher, publisherGame);
-                LeagueAction leagueAction = new LeagueAction(removeGameRequest, _clock.GetCurrentInstant());
-                await _fantasyCriticRepo.AddLeagueAction(leagueAction);
-            }
-
-            return result;
         }
 
         public Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)
@@ -333,236 +278,6 @@ namespace FantasyCritic.Lib.Services
         public Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
         {
             return _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague);
-        }
-
-        public async Task<StartDraftResult> GetStartDraftResult(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> usersInLeague)
-        {
-            if (leagueYear.PlayStatus.PlayStarted)
-            {
-                return new StartDraftResult(true, new List<string>());
-            }
-
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            var supportedYear = supportedYears.Single(x => x.Year == leagueYear.Year);
-
-            List<string> errors = new List<string>();
-
-            if (usersInLeague.Count() < 2)
-            {
-                errors.Add("You need to have at least two players in the league.");
-            }
-
-            if (publishersInLeague.Count() != usersInLeague.Count())
-            {
-                errors.Add("Not every player has created a publisher.");
-            }
-
-            if (!supportedYear.OpenForPlay)
-            {
-                errors.Add($"This year is not yet open for play. It will become available on {supportedYear.StartDate}.");
-            }
-
-            return new StartDraftResult(!errors.Any(), errors);
-        }
-
-        public bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
-        {
-            if (publishersInLeague.Count() != usersInLeague.Count())
-            {
-                return false;
-            }
-
-            if (publishersInLeague.Count() < 2)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool LeagueIsReadyToPlay(SupportedYear supportedYear, IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
-        {
-            if (!LeagueIsReadyToSetDraftOrder(publishersInLeague, usersInLeague))
-            {
-                return false;
-            }
-
-            if (!supportedYear.OpenForPlay)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public Task StartDraft(LeagueYear leagueYear)
-        {
-            return _fantasyCriticRepo.StartDraft(leagueYear);
-        }
-
-        public Task SetDraftPause(LeagueYear leagueYear, bool pause)
-        {
-            return _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
-        }
-
-        public async Task UndoLastDraftAction(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
-        {
-            var publisherGames = publishers.SelectMany(x => x.PublisherGames);
-            var newestGame = publisherGames.MaxBy(x => x.Timestamp).First();
-
-            var publisher = publishers.Single(x => x.PublisherGames.Select(y => y.PublisherGameID).Contains(newestGame.PublisherGameID));
-
-            await RemovePublisherGame(leagueYear, publisher, newestGame);
-        }
-
-        public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IEnumerable<KeyValuePair<Publisher, int>> draftPositions)
-        {
-            var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
-            int publishersCount = publishersInLeague.Count;
-            if (publishersCount != draftPositions.Count())
-            {
-                return Result.Fail("Not setting all publishers.");
-            }
-
-            var requiredNumbers = Enumerable.Range(1, publishersCount).ToList();
-            var requestedDraftNumbers = draftPositions.Select(x => x.Value);
-            bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedDraftNumbers);
-            if (!allRequiredPresent)
-            {
-                return Result.Fail("Some of the positions are not valid.");
-            }
-
-            await _fantasyCriticRepo.SetDraftOrder(draftPositions);
-            return Result.Ok();
-        }
-
-        public Maybe<Publisher> GetNextDraftPublisher(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear)
-        {
-            if (!leagueYear.PlayStatus.DraftIsActive)
-            {
-                return Maybe<Publisher>.None;
-            }
-
-            DraftPhase phase = GetDraftPhase(leagueYear, publishersInLeagueForYear);
-            if (phase.Equals(DraftPhase.StandardGames))
-            {
-                var publishersWithLowestNumberOfGames = publishersInLeagueForYear.MinBy(x => x.PublisherGames.Count(y => !y.CounterPick));
-                var allPlayersHaveSameNumberOfGames = publishersInLeagueForYear.Select(x => x.PublisherGames.Count(y => !y.CounterPick)).Distinct().Count() == 1;
-                var maxNumberOfGames = publishersInLeagueForYear.Max(x => x.PublisherGames.Count(y => !y.CounterPick));
-                var roundNumber = maxNumberOfGames;
-                if (allPlayersHaveSameNumberOfGames)
-                {
-                    roundNumber++;
-                }
-
-                bool roundNumberIsOdd = (roundNumber % 2 != 0);
-                if (roundNumberIsOdd)
-                {
-                    var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderBy(x => x.DraftPosition);
-                    var firstPublisherOdd = sortedPublishersOdd.First();
-                    return firstPublisherOdd;
-                }
-                //Else round is even
-                var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderByDescending(x => x.DraftPosition);
-                var firstPublisherEven = sortedPublishersEven.First();
-                return firstPublisherEven;
-            }
-            if (phase.Equals(DraftPhase.CounterPicks))
-            {
-                var publishersWithLowestNumberOfGames = publishersInLeagueForYear.MinBy(x => x.PublisherGames.Count(y => y.CounterPick));
-                var allPlayersHaveSameNumberOfGames = publishersInLeagueForYear.Select(x => x.PublisherGames.Count(y => y.CounterPick)).Distinct().Count() == 1;
-                var maxNumberOfGames = publishersInLeagueForYear.Max(x => x.PublisherGames.Count(y => y.CounterPick));
-
-                var roundNumber = maxNumberOfGames;
-                if (allPlayersHaveSameNumberOfGames)
-                {
-                    roundNumber++;
-                }
-
-                bool roundNumberIsOdd = (roundNumber % 2 != 0);
-                if (roundNumberIsOdd)
-                {
-                    var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderByDescending(x => x.DraftPosition);
-                    var firstPublisherOdd = sortedPublishersOdd.First();
-                    return firstPublisherOdd;
-                }
-                //Else round is even
-                var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderBy(x => x.DraftPosition);
-                var firstPublisherEven = sortedPublishersEven.First();
-                return firstPublisherEven;
-            }
-
-            return Maybe<Publisher>.None;
-        }
-
-        public async Task<DraftPhase> GetDraftPhase(LeagueYear leagueYear)
-        {
-            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
-            return GetDraftPhase(leagueYear, publishers);
-        }
-
-        private DraftPhase GetDraftPhase(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
-        {
-            int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
-            int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
-            if (standardGamesDrafted < numberOfStandardGamesToDraft)
-            {
-                return DraftPhase.StandardGames;
-            }
-
-            int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
-            int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
-            if (counterPicksDrafted < numberOfCounterPicksToDraft)
-            {
-                return DraftPhase.CounterPicks;
-            }
-
-            return DraftPhase.Complete;
-        }
-
-        public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear)
-        {
-            IReadOnlyList<Publisher> otherPublishers = publishersInLeagueForYear.Where(x => x.PublisherID != nextDraftingPublisher.PublisherID).ToList();
-
-            IReadOnlyList<PublisherGame> gamesForYear = publishersInLeagueForYear.SelectMany(x => x.PublisherGames).ToList();
-            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick).ToList();
-
-            var alreadyCounterPicked = gamesForYear.Where(x => x.CounterPick).ToList();
-            List<PublisherGame> availableCounterPicks = new List<PublisherGame>();
-            foreach (var otherPlayerGame in otherPlayersGames)
-            {
-                bool playerHasCounterPick = alreadyCounterPicked.ContainsGame(otherPlayerGame);
-                if (playerHasCounterPick)
-                {
-                    continue;
-                }
-
-                availableCounterPicks.Add(otherPlayerGame);
-            }
-
-            return availableCounterPicks;
-        }
-
-        public async Task<bool> CompleteDraft(LeagueYear leagueYear)
-        {
-            IReadOnlyList<Publisher> publishers = await GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
-
-            int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
-            int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
-            if (standardGamesDrafted < numberOfStandardGamesToDraft)
-            {
-                return false;
-            }
-
-            int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
-            int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
-            if (counterPicksDrafted < numberOfCounterPicksToDraft)
-            {
-                return false;
-            }
-
-            await _fantasyCriticRepo.CompleteDraft(leagueYear);
-            return true;
         }
 
         public async Task DeleteLeague(League league)
