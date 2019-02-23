@@ -346,9 +346,21 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task<int> GetOpenDisplayNumber(string displayName)
+        public async Task<int> GetOpenDisplayNumber(string displayName)
         {
-            throw new NotImplementedException();
+            var allUsers = await GetAllUsers();
+            var usersWithMatchingDisplayNames = allUsers.Where(x => string.Equals(x.DisplayName, displayName, StringComparison.OrdinalIgnoreCase));
+            var existingDisplayNumbers = usersWithMatchingDisplayNames.Select(x => x.DisplayNumber).ToList();
+
+            Random randomGenerator = new Random();
+            while (true)
+            {
+                var randomNumber = randomGenerator.Next(1000, 10000);
+                if (!existingDisplayNumbers.Contains(randomNumber))
+                {
+                    return randomNumber;
+                }
+            }
         }
 
         public void Dispose()
