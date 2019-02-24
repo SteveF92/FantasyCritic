@@ -51,5 +51,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _userStore.GetOpenDisplayNumber(displayName);
         }
+
+        public Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
+        {
+            return _userStore.GetAllUsers();
+        }
     }
 }

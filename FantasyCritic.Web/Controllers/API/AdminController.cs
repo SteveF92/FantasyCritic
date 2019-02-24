@@ -167,6 +167,20 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> SetDisplayNumbers()
+        {
+            return BadRequest();
+            var allUsers = await _userManager.GetAllUsers();
+            foreach (var user in allUsers)
+            {
+                user.DisplayNumber = await _userManager.GetOpenDisplayNumber(user.DisplayName);
+                await _userManager.UpdateAsync(user);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DeleteLeague([FromBody] DeleteLeagueRequest request)
         {
             Maybe<League> league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
