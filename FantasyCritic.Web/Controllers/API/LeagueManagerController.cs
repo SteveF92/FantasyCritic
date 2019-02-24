@@ -267,25 +267,41 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            string inviteEmail = request.InviteEmail.ToLower();
-
-            Result result = await _leagueMemberService.InviteUserByEmail(league.Value, inviteEmail);
-            if (result.IsFailure)
-            {
-                return BadRequest(result.Error);
-            }
-
-            FantasyCriticUser inviteUser = await _userManager.FindByEmailAsync(inviteEmail);
             string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
-            if (inviteUser is null)
+            FantasyCriticUser inviteUser;
+            if (!request.IsDisplayNameInvite())
             {
-                await _emailSender.SendSiteInviteEmail(inviteEmail, league.Value, baseURL);
+                string inviteEmail = request.InviteEmail.ToLower();
+                inviteUser = await _userManager.FindByEmailAsync(inviteEmail);
+                if (inviteUser is null)
+                {
+                    Result userlessInviteResult = await _leagueMemberService.InviteUserByEmail(league.Value, inviteEmail);
+                    if (userlessInviteResult.IsFailure)
+                    {
+                        return BadRequest(userlessInviteResult.Error);
+                    }
+
+                    await _emailSender.SendSiteInviteEmail(inviteEmail, league.Value, baseURL);
+                    return Ok();
+                }
             }
             else
             {
-                await _emailSender.SendLeagueInviteEmail(inviteEmail, league.Value, baseURL);
+                inviteUser = _userManager.FindByDisplayName(request.InviteDisplayName, request.InviteDisplayNumber.Value);
             }
 
+            if (inviteUser is null)
+            {
+                return BadRequest();
+            }
+
+            Result userInviteResult = await _leagueMemberService.InviteUserByUserID(inviteUser.UserID);
+            if (userInviteResult.IsFailure)
+            {
+                return BadRequest(userInviteResult.Error);
+            }
+
+            await _emailSender.SendLeagueInviteEmail(inviteUser.EmailAddress, league.Value, baseURL);
             return Ok();
         }
 

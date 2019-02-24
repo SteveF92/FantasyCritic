@@ -56,5 +56,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _userStore.GetAllUsers();
         }
+
+        public FantasyCriticUser FindByDisplayName(string requestInviteDisplayName, int value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

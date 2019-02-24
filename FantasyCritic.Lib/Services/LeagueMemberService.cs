@@ -69,6 +69,11 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
+        public Task<Result> InviteUserByUserID(Guid inviteUserUserID)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Result> AcceptInvite(League league, FantasyCriticUser inviteUser)
         {
             bool userInLeague = await UserIsInLeague(league, inviteUser);
