@@ -1,13 +1,25 @@
 <template>
   <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData">
     <div class="form-horizontal">
-      <div class="form-group">
+      <div class="form-group email-form">
         <label for="inviteEmail" class="control-label">Email Address</label>
         <input v-model="inviteEmail" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
       </div>
     </div>
+    <h3 class="text-black">OR</h3>
+    <div class="form-horizontal">
+      <div class="form-group">
+        <label for="inviteDisplayName" class="control-label">Display Name</label>
+        <input v-model="inviteDisplayName" id="inviteDisplayName" name="inviteDisplayName" type="text" class="form-control input" />
+      </div>
+      <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
+      <div class="form-group form-inline">
+        <label for="inviteDisplayNumber" class="display-number-label">#</label>
+        <input v-model="inviteDisplayNumber" id="inviteDisplayNumber" name="inviteDisplayNumber" type="text" class="form-control"/>
+      </div>
+    </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Send Invite" v-on:click="invitePlayer" :disabled="!emailIsValid"/>
+      <input type="submit" class="btn btn-primary" value="Send Invite" v-on:click="invitePlayer" :disabled="!emailIsValid && !displayNameIsValid" />
     </div>
   </b-modal>
 </template>
@@ -19,6 +31,8 @@
     data() {
       return {
         inviteEmail: "",
+        inviteDisplayName: "",
+        inviteDisplayNumber: "",
         errorInfo: ""
       }
     },
@@ -26,6 +40,9 @@
       emailIsValid() {
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(String(this.inviteEmail).toLowerCase());
+      },
+      displayNameIsValid() {
+        return (this.inviteDisplayName && this.inviteDisplayNumber);
       }
     },
     props: ['league'],
@@ -52,3 +69,15 @@
     }
   }
 </script>
+<style scoped>
+  .email-form {
+    margin-bottom: 10px;
+  }
+  .text-black{
+    color:black !important;
+  }
+  .display-number-label {
+    font-size: 35px;
+    margin-right:3px;
+  }
+</style>
