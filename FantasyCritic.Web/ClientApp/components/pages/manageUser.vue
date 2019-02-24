@@ -9,7 +9,7 @@
       <dl class="row">
         <dt class="col-sm-3">Display Name</dt>
         <dd class="col-sm-9">
-          {{userInfo.displayName}}
+          {{userInfo.displayName}} #{{userInfo.displayNumber}}
           <b-button variant="info" v-b-modal="'changeDisplayNameForm'">Change Display Name</b-button>
         </dd>
 
