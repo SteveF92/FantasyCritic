@@ -69,9 +69,34 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public Task<Result> InviteUserByUserID(Guid inviteUserID)
+        public async Task<Result> InviteUserByUserID(League league, FantasyCriticUser inviteUser)
         {
-            throw new NotImplementedException();
+            var existingInvite = await GetMatchingInvite(league, inviteUser);
+            if (existingInvite.HasValue)
+            {
+                return Result.Fail("User is already invited to this league.");
+            }
+
+            bool userInLeague = await UserIsInLeague(league, inviteUser);
+            if (userInLeague)
+            {
+                return Result.Fail("User is already in league.");
+            }
+
+            IReadOnlyList<FantasyCriticUser> players = await GetUsersInLeague(league);
+            IReadOnlyList<LeagueInvite> outstandingInvites = await GetOutstandingInvitees(league);
+            int totalPlayers = players.Count + outstandingInvites.Count;
+
+            if (totalPlayers >= 14)
+            {
+                return Result.Fail("A league cannot have more than 14 players.");
+            }
+
+            LeagueInvite invite = new LeagueInvite(Guid.NewGuid(), league, inviteUser);
+
+            await _fantasyCriticRepo.SaveInvite(invite);
+
+            return Result.Ok();
         }
 
         public async Task<Result> AcceptInvite(League league, FantasyCriticUser inviteUser)
@@ -138,6 +163,13 @@ namespace FantasyCritic.Lib.Services
         {
             IReadOnlyList<LeagueInvite> playersInvited = await GetOutstandingInvitees(league);
             var invite = playersInvited.GetMatchingInvite(emailAddress);
+            return invite;
+        }
+
+        private async Task<Maybe<LeagueInvite>> GetMatchingInvite(League league, FantasyCriticUser user)
+        {
+            IReadOnlyList<LeagueInvite> playersInvited = await GetOutstandingInvitees(league);
+            var invite = playersInvited.GetMatchingInvite(user);
             return invite;
         }
     }

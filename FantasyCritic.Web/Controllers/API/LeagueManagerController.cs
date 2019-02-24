@@ -295,7 +295,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            Result userInviteResult = await _leagueMemberService.InviteUserByUserID(inviteUser.UserID);
+            Result userInviteResult = await _leagueMemberService.InviteUserByUserID(league.Value, inviteUser);
             if (userInviteResult.IsFailure)
             {
                 return BadRequest(userInviteResult.Error);

@@ -21,5 +21,11 @@ namespace FantasyCritic.Lib.Extensions
             var matchingInvite = invites.SingleOrDefault(x => string.Equals(x.EmailAddress, emailAddress, StringComparison.OrdinalIgnoreCase));
             return matchingInvite;
         }
+
+        public static Maybe<LeagueInvite> GetMatchingInvite(this IEnumerable<LeagueInvite> invites, FantasyCriticUser user)
+        {
+            var matchingInvite = invites.SingleOrDefault(x => x.User.HasValue && x.User.Value.UserID == user.UserID);
+            return matchingInvite;
+        }
     }
 }

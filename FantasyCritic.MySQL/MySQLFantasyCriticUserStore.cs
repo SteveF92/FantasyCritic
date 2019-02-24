@@ -120,6 +120,21 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<FantasyCriticUser> FindByDisplayName(string displayName, int displayNumber)
+        {
+            string normalizedDisplayName = displayName.ToUpperInvariant();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
+                    @"select * from tbluser WHERE UPPER(DisplayName) = @normalizedDisplayName and DisplayNumber = @displayNumber;",
+                    new { normalizedDisplayName, displayNumber });
+                var entity = userResult.SingleOrDefault();
+                return entity?.ToDomain();
+            }
+        }
+
         public async Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -361,11 +376,6 @@ namespace FantasyCritic.MySQL
                     return randomNumber;
                 }
             }
-        }
-
-        public Task<FantasyCriticUser> FindByDisplayName(string displayName, int displayNumber)
-        {
-            throw new NotImplementedException();
         }
 
         public void Dispose()
