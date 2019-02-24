@@ -69,7 +69,7 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public Task<Result> InviteUserByUserID(Guid inviteUserUserID)
+        public Task<Result> InviteUserByUserID(Guid inviteUserID)
         {
             throw new NotImplementedException();
         }

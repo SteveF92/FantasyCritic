@@ -287,7 +287,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
             else
             {
-                inviteUser = _userManager.FindByDisplayName(request.InviteDisplayName, request.InviteDisplayNumber.Value);
+                inviteUser = await _userManager.FindByDisplayName(request.InviteDisplayName, request.InviteDisplayNumber.Value);
             }
 
             if (inviteUser is null)

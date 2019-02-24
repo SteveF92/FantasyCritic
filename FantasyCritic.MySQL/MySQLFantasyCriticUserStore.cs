@@ -363,6 +363,11 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public Task<FantasyCriticUser> FindByDisplayName(string displayName, int displayNumber)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
 
