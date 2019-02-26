@@ -292,7 +292,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (inviteUser is null)
             {
-                return BadRequest();
+                return BadRequest("No user is found with that information.");
             }
 
             Result userInviteResult = await _leagueMemberService.InviteUserByUserID(league.Value, inviteUser);

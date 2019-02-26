@@ -1,9 +1,13 @@
 <template>
   <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData">
+    <div class="alert alert-danger" v-show="errorInfo">
+      {{errorInfo}}
+    </div>
     <div class="form-horizontal">
       <div class="form-group email-form">
         <label for="inviteEmail" class="control-label">Email Address</label>
-        <input v-model="inviteEmail" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
+        <input v-model="inviteEmail" v-validate="'email'" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
+        <span class="text-danger">{{ errors.first('inviteEmail') }}</span>
       </div>
     </div>
     <h3 class="text-black">OR</h3>
@@ -15,11 +19,12 @@
       <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
       <div class="form-group form-inline">
         <label for="inviteDisplayNumber" class="display-number-label">#</label>
-        <input v-model="inviteDisplayNumber" id="inviteDisplayNumber" name="inviteDisplayNumber" type="text" class="form-control"/>
+        <input v-model="inviteDisplayNumber" v-validate="'min_value:1000|max_value:9999'"id="inviteDisplayNumber" name="inviteDisplayNumber" type="text" class="form-control" />
+        <span class="text-danger">{{ errors.first('inviteDisplayNumber') }}</span>
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Send Invite" v-on:click="invitePlayer" :disabled="!emailIsValid && !displayNameIsValid" />
+      <input type="submit" class="btn btn-primary" value="Send Invite" v-on:click="invitePlayer" :disabled="!formIsValid" />
     </div>
   </b-modal>
 </template>
@@ -37,6 +42,10 @@
       }
     },
     computed: {
+      formIsValid() {
+        return (this.emailIsValid || this.displayNameIsValid &&
+          !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid));
+      },
       emailIsValid() {
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(String(this.inviteEmail).toLowerCase());
@@ -65,14 +74,15 @@
             this.$emit('playerInvited', inviteName);
             this.inviteEmail = "";
           })
-          .catch(response => {
-            this.errorInfo = "Cannot find a player with that email address."
+          .catch(error => {
+            this.errorInfo = error.response.data;
           });
       },
       clearData() {
         this.inviteEmail = "";
         this.inviteDisplayName = "";
         this.inviteDisplayNumber = "";
+        this.errorInfo = "";
       }
     }
   }
