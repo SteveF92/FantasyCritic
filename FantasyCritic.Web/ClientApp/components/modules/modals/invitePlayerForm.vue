@@ -50,13 +50,19 @@
       invitePlayer() {
         var model = {
           leagueID: this.league.leagueID,
-          inviteEmail: this.inviteEmail
+          inviteEmail: this.inviteEmail,
+          inviteDisplayName: this.inviteDisplayName,
+          inviteDisplayNumber: this.inviteDisplayNumber
         };
         axios
           .post('/api/leagueManager/InvitePlayer', model)
           .then(response => {
             this.$refs.invitePlayerRef.hide();
-            this.$emit('playerInvited', this.inviteEmail);
+            let inviteName = this.inviteEmail;
+            if (this.inviteDisplayName) {
+              inviteName = this.inviteDisplayName;
+            }
+            this.$emit('playerInvited', inviteName);
             this.inviteEmail = "";
           })
           .catch(response => {
@@ -65,6 +71,8 @@
       },
       clearData() {
         this.inviteEmail = "";
+        this.inviteDisplayName = "";
+        this.inviteDisplayNumber = "";
       }
     }
   }
