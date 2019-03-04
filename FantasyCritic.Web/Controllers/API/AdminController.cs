@@ -151,9 +151,20 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateFantasyPoints([FromBody] UpdateFantasyPointsRequest request)
+        public async Task<IActionResult> UpdateFantasyPoints()
         {
-            await _fantasyCriticService.UpdateFantasyPoints(request.Year);
+            var systemWideValues = await _interLeagueService.GetSystemWideValues();
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            foreach (var supportedYear in supportedYears)
+            {
+                if (supportedYear.Finished || !supportedYear.OpenForPlay)
+                {
+                    continue;
+                }
+
+                await _fantasyCriticService.UpdateFantasyPoints(systemWideValues, supportedYear.Year);
+            }
+            
 
             return Ok();
         }

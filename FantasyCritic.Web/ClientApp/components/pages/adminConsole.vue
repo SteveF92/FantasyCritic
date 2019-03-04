@@ -4,7 +4,15 @@
     <div class="alert alert-danger" v-show="errorInfo">{{errorInfo}}</div>
     <div class="alert alert-info" v-show="isBusy">Request is processing...</div>
     <div class="alert alert-success" v-show="jobSuccess">{{jobSuccess}} sucessfully run.</div>
-    <b-button variant="info" v-on:click="refreshCriticScores">Refresh Critic Scores</b-button>
+
+    <h2>Actions</h2>
+    <div>
+      <b-button variant="info" v-on:click="refreshCriticScores">Refresh Critic Scores</b-button>
+    </div>
+    <hr />
+    <div>
+      <b-button variant="info" v-on:click="updateFantasyPoints">Update Fantasy Points</b-button>
+    </div>
   </div>
 </template>
 <script>
@@ -29,6 +37,18 @@
           .then(response => {
             this.isBusy = false;
             this.jobSuccess = "Refresh Critic Scores";
+          })
+          .catch(returnedError => {
+            this.errorInfo = returnedError.response.data;
+          });
+      },
+      updateFantasyPoints() {
+        this.isBusy = true;
+        axios
+          .post('/api/admin/updateFantasyPoints')
+          .then(response => {
+            this.isBusy = false;
+            this.jobSuccess = "Update Fantasy Points";
           })
           .catch(returnedError => {
             this.errorInfo = returnedError.response.data;
