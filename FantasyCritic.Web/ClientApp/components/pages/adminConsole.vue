@@ -8,10 +8,23 @@
     <h2>Actions</h2>
     <div>
       <b-button variant="info" v-on:click="refreshCriticScores">Refresh Critic Scores</b-button>
+      <hr />
     </div>
-    <hr />
     <div>
       <b-button variant="info" v-on:click="updateFantasyPoints">Update Fantasy Points</b-button>
+      <hr />
+    </div>
+    <div>
+      <b-button variant="info" v-on:click="processBids">Process Bids</b-button>
+      <hr />
+    </div>
+    <div>
+      <b-button variant="info" v-on:click="turnOnBidProcessing">Turn on bid processing mode</b-button>
+      <hr />
+    </div>
+    <div>
+      <b-button variant="info" v-on:click="turnOffBidProcessing">Turn off bid processing mode</b-button>
+      <hr />
     </div>
   </div>
 </template>
@@ -39,6 +52,7 @@
             this.jobSuccess = "Refresh Critic Scores";
           })
           .catch(returnedError => {
+            this.isBusy = false;
             this.errorInfo = returnedError.response.data;
           });
       },
@@ -51,6 +65,46 @@
             this.jobSuccess = "Update Fantasy Points";
           })
           .catch(returnedError => {
+            this.isBusy = false;
+            this.errorInfo = returnedError.response.data;
+          });
+      },
+      processBids() {
+        this.isBusy = true;
+        axios
+          .post('/api/admin/ProcessPickups')
+          .then(response => {
+            this.isBusy = false;
+            this.jobSuccess = "Process Bids";
+          })
+          .catch(returnedError => {
+            this.isBusy = false;
+            this.errorInfo = returnedError.response.data;
+          });
+      },
+      turnOnBidProcessing() {
+        this.isBusy = true;
+        axios
+          .post('/api/admin/TurnOnBidProcessingMode')
+          .then(response => {
+            this.isBusy = false;
+            this.jobSuccess = "Bid Processing Mode ON";
+          })
+          .catch(returnedError => {
+            this.isBusy = false;
+            this.errorInfo = returnedError.response.data;
+          });
+      },
+      turnOffBidProcessing() {
+        this.isBusy = true;
+        axios
+          .post('/api/admin/TurnOffBidProcessingMode')
+          .then(response => {
+            this.isBusy = false;
+            this.jobSuccess = "Bid Processing Mode OFF";
+          })
+          .catch(returnedError => {
+            this.isBusy = false;
             this.errorInfo = returnedError.response.data;
           });
       }

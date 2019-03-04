@@ -963,6 +963,14 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task SetBidProcessingMode(bool modeOn)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tblsystemwidesettings set BidProcessingMode = @modeOn;", new { modeOn });
+            }
+        }
+
         public Task DeletePublisher(Publisher publisher)
         {
             var deleteObject = new

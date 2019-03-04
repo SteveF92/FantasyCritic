@@ -91,5 +91,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _masterGameRepo.GetEligibilityLevels();
         }
+
+        public Task SetBidProcessingMode(bool modeOn)
+        {
+            return _fantasyCriticRepo.SetBidProcessingMode(modeOn);
+        }
     }
 }

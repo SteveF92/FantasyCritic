@@ -69,6 +69,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<SystemWideValues> GetSystemWideValues();
         Task<SystemWideSettings> GetSystemWideSettings();
         Task<SiteCounts> GetSiteCounts();
+        Task SetBidProcessingMode(bool modeOn);
 
         Task DeletePublisher(Publisher publisher);
         Task DeleteLeagueYear(LeagueYear leagueYear);

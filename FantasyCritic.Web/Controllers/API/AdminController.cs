@@ -164,15 +164,30 @@ namespace FantasyCritic.Web.Controllers.API
 
                 await _fantasyCriticService.UpdateFantasyPoints(systemWideValues, supportedYear.Year);
             }
-            
 
             return Ok();
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessPickups([FromBody] ProcessPickupsRequest request)
+        public async Task<IActionResult> ProcessPickups()
         {
-            await _fantasyCriticService.ProcessPickups(request.Year);
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (!systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest("Turn on bid processing mode first.");
+            }
+
+            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            foreach (var supportedYear in supportedYears)
+            {
+                if (supportedYear.Finished || !supportedYear.OpenForPlay)
+                {
+                    continue;
+                }
+
+                await _fantasyCriticService.ProcessPickups(systemWideValues, supportedYear.Year);
+            }
 
             return Ok();
         }
@@ -206,6 +221,20 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.DeleteLeague(league.Value);
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TurnOnBidProcessingMode()
+        {
+            await _interLeagueService.SetBidProcessingMode(true);
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TurnOffBidProcessingMode()
+        {
+            await _interLeagueService.SetBidProcessingMode(false);
             return Ok();
         }
     }
