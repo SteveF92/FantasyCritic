@@ -35,7 +35,8 @@ export default {
     redirect: (state) => state.redirect,
     userInfo: (state) => state.userInfo,
     newAccountCreated: (state) => state.newAccountCreated,
-    storeIsBusy: (state) => state.isBusy
+    storeIsBusy: (state) => state.isBusy,
+    isAdmin: (state) => (state.userInfo && state.userInfo.roles.includes("Admin"))
   },
   actions: {
     doAuthentication(context, creds) {

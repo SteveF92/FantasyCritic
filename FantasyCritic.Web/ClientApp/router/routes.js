@@ -19,6 +19,7 @@ import ChangeEmail from "components/pages/changeEmail";
 import MasterGames from "components/pages/masterGames";
 import PublicLeagues from "components/pages/publicLeagues";
 import LeagueHistory from "components/pages/leagueHistory";
+import AdminConsole from "components/pages/adminConsole";
 
 export const routes = [
   {
@@ -228,5 +229,15 @@ export const routes = [
     props: (route) => ({
       mastergameid: route.params.mastergameid
     })
+  },
+  {
+    path: "/adminConsole",
+    component: AdminConsole,
+    name: "adminConsole",
+    meta: {
+      title: "Admin Console",
+      isPublic: false,
+      adminOnly: true
+    }
   }
 ];

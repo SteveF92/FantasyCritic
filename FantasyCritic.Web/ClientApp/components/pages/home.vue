@@ -41,7 +41,6 @@
           </ul>
           <hr />
         </div>
-
         <div>
           <h2>Leagues I'm Following</h2>
           <h5><router-link :to="{ name: 'publicLeagues' }">Full List of Public Leagues</router-link></h5>
@@ -72,6 +71,7 @@
           <h3>You are not part of any leagues! Why not start one?</h3>
           <hr />
         </div>
+        <h5 v-if="isAdmin"><router-link :to="{ name: 'adminConsole' }">Admin Console</router-link></h5>
 
       </div>
       <div class="col-lg-6 col-md-12">
@@ -121,6 +121,9 @@
       },
       userInfo() {
         return this.$store.getters.userInfo;
+      },
+      isAdmin() {
+        return this.$store.getters.isAdmin;
       },
       shouldShowLearnToPlay() {
         if (this.fetchingLeagues) {
