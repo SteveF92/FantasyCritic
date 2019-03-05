@@ -68,18 +68,18 @@ namespace FantasyCritic.Lib.Services
                 var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, false, false, activeBid.MasterGame, null, null);
                 var claimResult = await _gameAquisitionService.CanClaimGame(gameRequest, supportedYears, leagueYear);
 
-                if (!claimResult.Success)
-                {
-                    invalidGameBids.Add(activeBid);
-                    continue;
-                }
-                
                 if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames))
                 {
                     noSpaceLeftBids.Add(activeBid);
                     continue;
                 }
 
+                if (!claimResult.Success)
+                {
+                    invalidGameBids.Add(activeBid);
+                    continue;
+                }
+                
                 if (activeBid.BidAmount > publisher.Budget)
                 {
                     insufficientFundsBids.Add(activeBid);
