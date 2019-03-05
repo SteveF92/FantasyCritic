@@ -28,11 +28,11 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear)
+        public ClaimResult CanClaimGame(ClaimGameDomainRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeague)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
-            var basicErrors = await GetBasicErrors(request.Publisher.League, request.Publisher, supportedYears);
+            var basicErrors = GetBasicErrors(request.Publisher.League, request.Publisher, supportedYears);
             claimErrors.AddRange(basicErrors);
 
             LeagueOptions yearOptions = leagueYear.Options;
@@ -42,10 +42,9 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.AddRange(masterGameErrors);
             }
 
-            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
-            IReadOnlyList<Publisher> otherPublishers = allPublishers.Where(x => x.User.UserID != request.Publisher.User.UserID).ToList();
+            IReadOnlyList<Publisher> otherPublishers = publishersInLeague.Where(x => x.User.UserID != request.Publisher.User.UserID).ToList();
 
-            IReadOnlyList<PublisherGame> gamesForYear = allPublishers.SelectMany(x => x.PublisherGames).ToList();
+            IReadOnlyList<PublisherGame> gamesForYear = publishersInLeague.SelectMany(x => x.PublisherGames).ToList();
             IReadOnlyList<PublisherGame> thisPlayersGames = request.Publisher.PublisherGames;
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
 
@@ -103,7 +102,7 @@ namespace FantasyCritic.Lib.Services
             List<ClaimError> associationErrors = new List<ClaimError>();
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
-            var basicErrors = await GetBasicErrors(request.Publisher.League, request.Publisher, supportedYears);
+            var basicErrors = GetBasicErrors(request.Publisher.League, request.Publisher, supportedYears);
             associationErrors.AddRange(basicErrors);
 
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
@@ -145,11 +144,11 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
-        private async Task<IReadOnlyList<ClaimError>> GetBasicErrors(League league, Publisher publisher, IEnumerable<SupportedYear> supportedYears)
+        private IReadOnlyList<ClaimError> GetBasicErrors(League league, Publisher publisher, IEnumerable<SupportedYear> supportedYears)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
-            bool isInLeague = await _leagueMemberService.UserIsInLeague(league, publisher.User);
+            bool isInLeague = (publisher.League.LeagueID == league.LeagueID);
             if (!isInLeague)
             {
                 claimErrors.Add(new ClaimError("User is not in that league.", false));

@@ -136,7 +136,8 @@ namespace FantasyCritic.Lib.Services
                 throw new Exception("Something has gone terribly wrong with league years.");
             }
 
-            ClaimResult claimResult = await _gameAquisitionService.CanClaimGame(request, supportedYears, leagueYear.Value);
+            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
+            ClaimResult claimResult = _gameAquisitionService.CanClaimGame(request, supportedYears, leagueYear.Value, publishersForYear);
 
             if (!claimResult.Success)
             {
@@ -186,7 +187,9 @@ namespace FantasyCritic.Lib.Services
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(publisher.League, publisher.Year);
-            var claimResult = await _gameAquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear.Value);
+            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.League, publisher.Year);
+
+            var claimResult = _gameAquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear.Value, publishersForYear);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -277,7 +280,7 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            BidProcessingResults results = await _bidProcessingService.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock, supportedYears);
+            BidProcessingResults results = _bidProcessingService.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock, supportedYears);
             await _fantasyCriticRepo.SaveProcessedBidResults(results);
         }
 

@@ -19,7 +19,7 @@ namespace FantasyCritic.Lib.Services
             _gameAquisitionService = gameAquisitionService;
         }
 
-        public async Task<BidProcessingResults> ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
+        public BidProcessingResults ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
             IEnumerable<Publisher> currentPublisherStates, IClock clock, IEnumerable<SupportedYear> supportedYears)
         {
             if (!allActiveBids.Any())
@@ -36,7 +36,8 @@ namespace FantasyCritic.Lib.Services
                 {
                     continue;
                 }
-                var processedBidsForLeagueYear = await ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, currentPublisherStates, systemWideValues, supportedYears);
+
+                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, currentPublisherStates, systemWideValues, supportedYears);
                 processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
             }
 
@@ -46,7 +47,7 @@ namespace FantasyCritic.Lib.Services
             if (remainingBids.Any())
             {
                 Dictionary<LeagueYear, IReadOnlyList<PickupBid>> remainingBidDictionary = remainingBids.GroupBy(x => x.LeagueYear).ToDictionary(x => x.Key, y => (IReadOnlyList<PickupBid>)y.ToList());
-                var subProcessingResults = await ProcessPickupsIteration(systemWideValues, remainingBidDictionary, bidProcessingResults.UpdatedPublishers, clock, supportedYears);
+                var subProcessingResults = ProcessPickupsIteration(systemWideValues, remainingBidDictionary, bidProcessingResults.UpdatedPublishers, clock, supportedYears);
                 BidProcessingResults combinedResults = bidProcessingResults.Combine(subProcessingResults);
                 return combinedResults;
             }
@@ -54,7 +55,7 @@ namespace FantasyCritic.Lib.Services
             return bidProcessingResults;
         }
 
-        private async Task<ProcessedBidSet> ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague,
+        private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague,
             IEnumerable<Publisher> currentPublisherStates, SystemWideValues systemWideValues, IEnumerable<SupportedYear> supportedYears)
         {
             List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
@@ -66,7 +67,8 @@ namespace FantasyCritic.Lib.Services
                 Publisher publisher = currentPublisherStates.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
 
                 var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, false, false, activeBid.MasterGame, null, null);
-                var claimResult = await _gameAquisitionService.CanClaimGame(gameRequest, supportedYears, leagueYear);
+                var publishersForLeagueAndYear = currentPublisherStates.Where(x => x.League.LeagueID == leagueYear.League.LeagueID && x.Year == leagueYear.Year);
+                var claimResult = _gameAquisitionService.CanClaimGame(gameRequest, supportedYears, leagueYear, publishersForLeagueAndYear);
 
                 if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames))
                 {
