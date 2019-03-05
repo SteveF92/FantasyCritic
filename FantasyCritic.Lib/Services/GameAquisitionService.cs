@@ -27,10 +27,9 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request)
+        public async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request, IEnumerable<SupportedYear> supportedYears)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
             var basicErrors = await GetBasicErrors(request.Publisher.League, request.Publisher, supportedYears);
             claimErrors.AddRange(basicErrors);

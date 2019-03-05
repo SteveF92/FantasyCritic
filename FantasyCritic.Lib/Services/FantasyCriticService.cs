@@ -129,7 +129,8 @@ namespace FantasyCritic.Lib.Services
             PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null, 
                 masterGameYear, request.DraftPosition, request.OverallDraftPosition, request.Publisher.Year);
 
-            ClaimResult claimResult = await _gameAquisitionService.CanClaimGame(request);
+            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+            ClaimResult claimResult = await _gameAquisitionService.CanClaimGame(request, supportedYears);
 
             if (!claimResult.Success)
             {
@@ -176,7 +177,8 @@ namespace FantasyCritic.Lib.Services
             }
 
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null);
-            var claimResult = await _gameAquisitionService.CanClaimGame(claimRequest);
+            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+            var claimResult = await _gameAquisitionService.CanClaimGame(claimRequest, supportedYears);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -266,7 +268,8 @@ namespace FantasyCritic.Lib.Services
         {
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
-            BidProcessingResults results = await _bidProcessingService.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock);
+            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+            BidProcessingResults results = await _bidProcessingService.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock, supportedYears);
             await _fantasyCriticRepo.SaveProcessedBidResults(results);
         }
 
