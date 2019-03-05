@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
@@ -27,23 +28,17 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request, IEnumerable<SupportedYear> supportedYears)
+        public async Task<ClaimResult> CanClaimGame(ClaimGameDomainRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
             var basicErrors = await GetBasicErrors(request.Publisher.League, request.Publisher, supportedYears);
             claimErrors.AddRange(basicErrors);
 
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
-            if (leagueYear.HasNoValue)
-            {
-                throw new Exception("Something has gone terribly wrong with league years.");
-            }
-
-            LeagueOptions yearOptions = leagueYear.Value.Options;
+            LeagueOptions yearOptions = leagueYear.Options;
             if (request.MasterGame.HasValue && !request.CounterPick)
             {
-                var masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame.Value, leagueYear.Value.Year, request.CounterPick);
+                var masterGameErrors = GetMasterGameErrors(leagueYear.Options, request.MasterGame.Value, leagueYear.Year, request.CounterPick);
                 claimErrors.AddRange(masterGameErrors);
             }
 

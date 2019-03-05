@@ -130,7 +130,13 @@ namespace FantasyCritic.Lib.Services
                 masterGameYear, request.DraftPosition, request.OverallDraftPosition, request.Publisher.Year);
 
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            ClaimResult claimResult = await _gameAquisitionService.CanClaimGame(request, supportedYears);
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Something has gone terribly wrong with league years.");
+            }
+
+            ClaimResult claimResult = await _gameAquisitionService.CanClaimGame(request, supportedYears, leagueYear.Value);
 
             if (!claimResult.Success)
             {
@@ -178,7 +184,9 @@ namespace FantasyCritic.Lib.Services
 
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            var claimResult = await _gameAquisitionService.CanClaimGame(claimRequest, supportedYears);
+
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(publisher.League, publisher.Year);
+            var claimResult = await _gameAquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear.Value);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -186,7 +194,7 @@ namespace FantasyCritic.Lib.Services
 
             var nextPriority = pickupBids.Count + 1;
 
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(publisher.League, publisher.Year);
+            
             PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear.Value, masterGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
             await _fantasyCriticRepo.CreatePickupBid(currentBid);
 

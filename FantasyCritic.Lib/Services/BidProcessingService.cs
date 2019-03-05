@@ -66,7 +66,7 @@ namespace FantasyCritic.Lib.Services
                 Publisher publisher = currentPublisherStates.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
 
                 var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, false, false, activeBid.MasterGame, null, null);
-                var claimResult = await _gameAquisitionService.CanClaimGame(gameRequest, supportedYears);
+                var claimResult = await _gameAquisitionService.CanClaimGame(gameRequest, supportedYears, leagueYear);
 
                 if (!claimResult.Success)
                 {
