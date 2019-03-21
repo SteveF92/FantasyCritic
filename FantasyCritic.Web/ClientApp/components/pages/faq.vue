@@ -5,7 +5,7 @@
     <div class="col-lg-8 col-md-10 col-sm-12">
       <h2>Contents</h2>
       <ul>
-        <li><a href="#technical">Technical</a></li>
+        <li><a href="#general">General</a></li>
         <li><a href="#league-creation">League Creation</a></li>
         <li><a href="#drafting">Drafting</a></li>
         <li><a href="#bidding-system">Bidding System</a></li>
@@ -15,7 +15,7 @@
       </ul>
       <hr />
 
-      <h2><a name="technical">Technical</a></h2>
+      <h2><a name="general">General</a></h2>
       <h3>Something about the site is broken!</h3>
       <p class="text-well">
         Sounds likely. We’re just getting started here at Fantasy Critic and there are bound to be issues.
