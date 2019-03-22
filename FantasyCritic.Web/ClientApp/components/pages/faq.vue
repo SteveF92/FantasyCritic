@@ -206,44 +206,8 @@
         A game's score is based on it’s score from <a href="https://opencritic.com/" target="_blank">opencritic.com <font-awesome-icon icon="external-link-alt" size="sm" /></a>. Your team will gain or lose points based upon how well your game reviews.
         Only critic reviews are taken into account. For every point above a 70 on OpenCritic, your game gets you one point. For every point below 70,
         you lose one point. However, to really separate the cream of the crop, every point above 90 gets you <em>two</em> points. If a game doesn’t release in the
-        year you are playing, it is treated as getting a 70, and therefore 0 points. Some examples (for the year 2018):
+        year you are playing, it is treated as getting a 70, and therefore 0 points.
       </p>
-      <table class="table table-striped table-bordered">
-        <thead>
-          <tr class="bg-primary">
-            <th>Game Name</th>
-            <th>OpenCritic Score</th>
-            <th>Fantasy Points</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Dragon Ball FighterZ</td>
-            <td>86</td>
-            <td>16</td>
-          </tr>
-          <tr>
-            <td>Shadow of the Tomb Raider</td>
-            <td>80</td>
-            <td>10</td>
-          </tr>
-          <tr>
-            <td>Fallout 76</td>
-            <td>52</td>
-            <td>-18</td>
-          </tr>
-          <tr>
-            <td>Red Dead Redemption 2</td>
-            <td>97</td>
-            <td>34</td>
-          </tr>
-          <tr>
-            <td>Kingdom Hearts III</td>
-            <td>Delayed to 2019</td>
-            <td>0</td>
-          </tr>
-        </tbody>
-      </table>
       <h3>What is a “counter pick”?</h3>
       <p class="text-well">
         After everyone has drafted their roster of games, the players will draft their counter picks. A counter pick is a game from someone else’s roster, but instead of
@@ -253,6 +217,53 @@
       <p class="text-well">
         Yes.
       </p>
+      <h3>If I counter pick a game that doesn't come out, what do I get?</h3>
+      <p class="text-well">
+        Both players get 0 points in this case. This should be considered a good result for the counter picker and a bad result for the person who actually chose the game.
+      </p>
+      <h3>Scoring Examples</h3>
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr class="bg-primary">
+            <th>Game Name</th>
+            <th>OpenCritic Score</th>
+            <th>Fantasy Points</th>
+            <th>Counter Pick Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Dragon Ball FighterZ</td>
+            <td>86</td>
+            <td>16</td>
+            <td>-16</td>
+          </tr>
+          <tr>
+            <td>Shadow of the Tomb Raider</td>
+            <td>80</td>
+            <td>10</td>
+            <td>-10</td>
+          </tr>
+          <tr>
+            <td>Fallout 76</td>
+            <td>52</td>
+            <td>-18</td>
+            <td>18</td>
+          </tr>
+          <tr>
+            <td>Red Dead Redemption 2</td>
+            <td>97</td>
+            <td>34</td>
+            <td>-34</td>
+          </tr>
+          <tr>
+            <td>Kingdom Hearts III</td>
+            <td>Delayed to 2019</td>
+            <td>0</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
       <h3>What order are counter picks chosen in?</h3>
       <p class="text-well">
         Counter picks are chosen in a snake draft - just like the regular games. However, the player who went LAST in the regular draft always goes first when it comes time to draft counter picks.
@@ -273,6 +284,12 @@
         I refresh the database about once every other day. I don't want to hit OpenCritic's API more frequently than I have to, as doing so involves a bunch of rapid requests. Additionally, I have
         to manually enter the "OpenCritic ID" for every game in the master games list. OpenCritic doesn't usually add a game until it is close to release, so I need to check frequently to see if
         they have added new games. If you notice a particular game that is missing a score, feel free to let me know. If a score is just out of sync, it'll be fixed soon.
+      </p>
+      <h3>I see a score on the site but not on OpenCritic? Why?</h3>
+      <p class="text-well">
+        This typically happens when a game is very new. OpenCritic doesn't display scores until there's a certain number of reviews available. However, if you retrieve scores via the API, it will give
+        a result as soon as there is even one review. Since FantasyCritic uses the OpenCritic API, you will see a score here before OpenCritic has displayed it on their site. In these cases, the score
+        is likely to change significantly as very few reviews are accounted for.
       </p>
       <h3>When are critic scores locked in?</h3>
       <p class="text-well">
