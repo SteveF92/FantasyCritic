@@ -1069,6 +1069,21 @@ namespace FantasyCritic.MySQL
             }   
         }
 
+        public async Task CreateMasterGameRequest(MasterGameRequest domainRequest)
+        {
+            var entity = new MasterGameRequestEntity(domainRequest);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblmastergamerequest(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,EstimatedReleaseDate,EligibilityLevel," +
+                    "YearlyInstallment,EarlyAccess,Answered,ResponseTimestamp,ResponseNote,MasterGameID) VALUES " +
+                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@EstimatedReleaseDate," +
+                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID);",
+                    entity);
+            }
+        }
+
         private Task MarkBidStatus(IEnumerable<PickupBid> bids, bool success, MySqlConnection connection, MySqlTransaction transaction)
         {
             var entities = bids.Select(x => new PickupBidEntity(x, success));

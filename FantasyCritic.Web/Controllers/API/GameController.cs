@@ -22,14 +22,16 @@ namespace FantasyCritic.Web.Controllers.API
     [Route("api/[controller]/[action]")]
     public class GameController : Controller
     {
+        private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly InterLeagueService _interLeagueService;
         private readonly IClock _clock;
         private static readonly int MaxDistance = 10;
         private static readonly int MaxDistanceGames = 5;
 
-        public GameController(FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, IClock clock)
+        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, IClock clock)
         {
+            _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
             _interLeagueService = interLeagueService;
             _clock = clock;
@@ -123,6 +125,28 @@ namespace FantasyCritic.Web.Controllers.API
             List<MasterGameYearViewModel> viewModels = relevantGames.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
 
             return viewModels;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateMasterGameRequest([FromBody] MasterGameRequestRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            Maybe<EligibilityLevel> eligibilityLevel = Maybe<EligibilityLevel>.None;
+            if (request.EligibilityLevel.HasValue)
+            {
+                eligibilityLevel = await _interLeagueService.GetEligibilityLevel(request.EligibilityLevel.Value);
+            }
+            
+            MasterGameRequest domainRequest = request.ToDomain(currentUser, _clock.GetCurrentInstant(), eligibilityLevel);
+
+            await _interLeagueService.CreateMasterGameRequest(domainRequest);
+            return Ok();
         }
 
         public async Task<ActionResult<List<int>>> SupportedYears()

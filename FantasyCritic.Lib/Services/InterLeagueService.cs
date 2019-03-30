@@ -96,5 +96,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.SetBidProcessingMode(modeOn);
         }
+
+        public Task CreateMasterGameRequest(MasterGameRequest domainRequest)
+        {
+            return _fantasyCriticRepo.CreateMasterGameRequest(domainRequest);
+        }
     }
 }
