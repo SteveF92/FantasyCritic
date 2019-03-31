@@ -99,7 +99,12 @@ namespace FantasyCritic.Lib.Services
 
         public Task CreateMasterGameRequest(MasterGameRequest domainRequest)
         {
-            return _fantasyCriticRepo.CreateMasterGameRequest(domainRequest);
+            return _masterGameRepo.CreateMasterGameRequest(domainRequest);
+        }
+
+        public Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequests(FantasyCriticUser user)
+        {
+            return _masterGameRepo.GetMasterGameRequests(user);
         }
     }
 }

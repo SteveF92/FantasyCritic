@@ -208,5 +208,52 @@ namespace FantasyCritic.MySQL
                 return guids.ToList();
             }
         }
+
+        public async Task CreateMasterGameRequest(MasterGameRequest domainRequest)
+        {
+            var entity = new MasterGameRequestEntity(domainRequest);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tblmastergamerequest(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,EstimatedReleaseDate,EligibilityLevel," +
+                    "YearlyInstallment,EarlyAccess,Answered,ResponseTimestamp,ResponseNote,MasterGameID) VALUES " +
+                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@EstimatedReleaseDate," +
+                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID);",
+                    entity);
+            }
+        }
+
+        public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequests(FantasyCriticUser user)
+        {
+            var sql = "select * from tblmastergamerequest " +
+                      "where UserID = @userID";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<MasterGameRequestEntity> entites = await connection.QueryAsync<MasterGameRequestEntity>(sql, new { userID = user.UserID });
+                var eligibilityLevels = await GetEligibilityLevels();
+                var masterGames = await GetMasterGames();
+                List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
+                foreach (var entity in entites)
+                {
+                    Maybe<EligibilityLevel> eligibilityLevel = Maybe<EligibilityLevel>.None;
+                    if (entity.EligibilityLevel.HasValue)
+                    {
+                        eligibilityLevel = eligibilityLevels.Single();
+                    }
+
+                    Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+                    if (entity.MasterGameID.HasValue)
+                    {
+                        masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID.Value);
+                    }
+
+                    MasterGameRequest domain = entity.ToDomain(user, eligibilityLevel, masterGame);
+                }
+
+                return domainRequests;
+            }
+        }
     }
 }

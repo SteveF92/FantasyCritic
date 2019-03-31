@@ -22,5 +22,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel);
 
         Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year);
+
+        Task CreateMasterGameRequest(MasterGameRequest domainRequest);
+        Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequests(FantasyCriticUser user);
     }
 }

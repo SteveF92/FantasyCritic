@@ -150,6 +150,17 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<MasterGameRequestViewModel>>> MasterGameRequests()
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetMasterGameRequests(currentUser);
+
+            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x)).ToList();
+            return viewModels;
+        }
+
         public async Task<IActionResult> EligibilityLevels()
         {
             IReadOnlyList<EligibilityLevel> eligibilityLevels = await _interLeagueService.GetEligibilityLevels();

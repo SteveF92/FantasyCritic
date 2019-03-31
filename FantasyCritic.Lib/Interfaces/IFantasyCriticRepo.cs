@@ -78,6 +78,5 @@ namespace FantasyCritic.Lib.Interfaces
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
 
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
-        Task CreateMasterGameRequest(MasterGameRequest domainRequest);
     }
 }
