@@ -23,11 +23,11 @@
             <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
           </div>
           <div class="form-group">
-            <label for="steamLink" class="control-label">Link to Steam Page</label>
+            <label for="steamLink" class="control-label">Link to Steam Page (Optional)</label>
             <input v-model="steamLink" id="steamLink" name="steamLink" class="form-control input" />
           </div>
           <div class="form-group">
-            <label for="openCriticLink" class="control-label">Link to Open Critic Page</label>
+            <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
             <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
           </div>
 
@@ -157,10 +157,22 @@
               left: 0,
               behavior: 'smooth'
             });
+            this.clearData();
           })
           .catch(error => {
             this.errorInfo = error.response;
           });
+      },
+      clearData() {
+        this.gameName = "";
+        this.requestNote = "";
+        this.steamLink = "";
+        this.openCriticLink = "";
+        this.estimatedReleaseDate = "";
+        this.yearlyInstallment = false;
+        this.earlyAccess = false;
+        this.eligibilityLevel = 0;
+        this.$validator.reset();
       }
     },
     mounted() {
