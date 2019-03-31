@@ -13,19 +13,17 @@ namespace FantasyCritic.Web.Models.Requests
 {
     public class MasterGameRequestRequest
     {
-        //Request
-        [Required]
-        public string RequestNote { get; set; }
-
-        //Game Details
         [Required]
         public string GameName { get; set; }
+
         public string SteamLink { get; set; }
         public string OpenCriticLink { get; set; }
         public string EstimatedReleaseDate { get; set; }
         public int? EligibilityLevel { get; set; }
         public bool? YearlyInstallment { get; set; }
         public bool? EarlyAccess { get; set; }
+
+        public string RequestNote { get; set; }
 
         public MasterGameRequest ToDomain(FantasyCriticUser user, Instant requestTimestamp, Maybe<EligibilityLevel> eligibilityLevel)
         {

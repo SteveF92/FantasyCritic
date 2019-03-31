@@ -128,6 +128,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CreateMasterGameRequest([FromBody] MasterGameRequestRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);

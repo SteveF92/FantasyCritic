@@ -20,6 +20,7 @@ import MasterGames from "components/pages/masterGames";
 import PublicLeagues from "components/pages/publicLeagues";
 import LeagueHistory from "components/pages/leagueHistory";
 import AdminConsole from "components/pages/adminConsole";
+import MasterGameRequest from "components/pages/masterGameRequest";
 
 export const routes = [
   {
@@ -132,6 +133,14 @@ export const routes = [
     meta: {
       title: "Games",
       isPublic: true
+    }
+  },
+  {
+    path: "/masterGameRequest",
+    component: MasterGameRequest,
+    name: "masterGameRequest",
+    meta: {
+      title: "Request a Master Game"
     }
   },
   {

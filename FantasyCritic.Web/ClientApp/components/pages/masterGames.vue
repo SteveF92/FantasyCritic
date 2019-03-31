@@ -6,7 +6,14 @@
         <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" />
       </div>
     </div>
+    <div class="row">
+      <div class="col-12 col-lg-6">
+        <b-button variant="info" :to="{ name: 'masterGameRequest' }" v-show="isAuth" class="nav-link request-button">Request new Master Game</b-button>
+      </div>
+    </div>
+    <hr />
     <div class="row games-table" v-if="gamesForYear && gamesForYear.length > 0">
+      
       <b-table :sort-by.sync="sortBy"
                :sort-desc.sync="sortDesc"
                :items="gamesForYear"
@@ -85,7 +92,10 @@
           level: 5
         };
         return level;
-      }
+      },
+      isAuth() {
+        return this.$store.getters.tokenIsCurrent();
+      },
     },
     methods: {
       fetchSupportedYears() {
@@ -137,5 +147,9 @@
   .games-table {
     margin-left: 15px;
     margin-right: 15px;
+  }
+
+  .request-button {
+    width: 100%;
   }
 </style>
