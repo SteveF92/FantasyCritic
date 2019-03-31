@@ -150,6 +150,13 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        public async Task<IActionResult> EligibilityLevels()
+        {
+            IReadOnlyList<EligibilityLevel> eligibilityLevels = await _interLeagueService.GetEligibilityLevels();
+            var vms = eligibilityLevels.Select(x => new EligibilityLevelViewModel(x, true));
+            return Ok(vms);
+        }
+
         public async Task<ActionResult<List<int>>> SupportedYears()
         {
             var supportedYears = await GetSupportedYears();

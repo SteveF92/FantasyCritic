@@ -285,9 +285,9 @@ label {
   font-size: 18px;
 }
 
-  .submit-button {
-    text-align: right;
-  }
+.submit-button {
+  text-align: right;
+}
 </style>
 <style>
   .vue-slider-piecewise-label {
