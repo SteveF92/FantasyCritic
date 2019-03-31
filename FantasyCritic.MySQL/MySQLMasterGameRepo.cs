@@ -226,21 +226,20 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequests(FantasyCriticUser user)
         {
-            var sql = "select * from tblmastergamerequest " +
-                      "where UserID = @userID";
+            var sql = "select * from tblmastergamerequest where UserID = @userID";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                IEnumerable<MasterGameRequestEntity> entites = await connection.QueryAsync<MasterGameRequestEntity>(sql, new { userID = user.UserID });
+                IEnumerable<MasterGameRequestEntity> entities = await connection.QueryAsync<MasterGameRequestEntity>(sql, new { userID = user.UserID });
                 var eligibilityLevels = await GetEligibilityLevels();
                 var masterGames = await GetMasterGames();
                 List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
-                foreach (var entity in entites)
+                foreach (var entity in entities)
                 {
                     Maybe<EligibilityLevel> eligibilityLevel = Maybe<EligibilityLevel>.None;
                     if (entity.EligibilityLevel.HasValue)
                     {
-                        eligibilityLevel = eligibilityLevels.Single();
+                        eligibilityLevel = eligibilityLevels.Single(x => x.Level == entity.EligibilityLevel.Value);
                     }
 
                     Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
@@ -250,6 +249,7 @@ namespace FantasyCritic.MySQL
                     }
 
                     MasterGameRequest domain = entity.ToDomain(user, eligibilityLevel, masterGame);
+                    domainRequests.Add(domain);
                 }
 
                 return domainRequests;

@@ -11,6 +11,11 @@ namespace FantasyCritic.MySQL.Entities
 {
     internal class MasterGameRequestEntity
     {
+        public MasterGameRequestEntity()
+        {
+
+        }
+        
         public MasterGameRequestEntity(MasterGameRequest domain)
         {
             RequestID = domain.RequestID;

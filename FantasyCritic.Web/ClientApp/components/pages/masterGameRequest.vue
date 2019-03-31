@@ -3,6 +3,15 @@
     <h1>Master Game Request</h1>
     <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
     <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
+    <div class="row" v-if="myRequests.length !== 0">
+      <div class="col-xl-8 col-lg-10 col-md-12">
+        <b-table :items="myRequests"
+                 bordered
+                 striped
+                 responsive>
+        </b-table>
+      </div>
+    </div>
     <div class="row">
       <div class="col-xl-8 col-lg-10 col-md-12 text-well">
         <p>
@@ -85,6 +94,7 @@
   export default {
     data() {
       return {
+        myRequests: [],
         showSent: false,
         errorInfo: "",
         gameName: "",
@@ -128,6 +138,16 @@
       }
     },
     methods: {
+      fetchMyRequests() {
+        axios
+          .get('/api/game/MyMasterGameRequests')
+          .then(response => {
+            this.myRequests = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
       fetchEligibilityLevels() {
         axios
           .get('/api/Game/EligibilityLevels')
@@ -177,6 +197,7 @@
     },
     mounted() {
       this.fetchEligibilityLevels();
+      this.fetchMyRequests();
     }
   }
 </script>
