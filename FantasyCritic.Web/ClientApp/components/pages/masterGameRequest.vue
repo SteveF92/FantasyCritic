@@ -2,18 +2,20 @@
   <div>
     <h1>Master Game Request</h1>
     <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
+    <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
     <div class="row">
       <div class="col-xl-8 col-lg-10 col-md-12 text-well">
         <p>
-        <strong>
-          If there's a game you want to see added to the site, you can fill out this form and I'll look into adding the game.
-          You can check back on this page to see the status of previous requests, as well.
-        </strong>
+          <strong>
+            If there's a game you want to see added to the site, you can fill out this form and I'll look into adding the game.
+            You can check back on this page to see the status of previous requests, as well.
+          </strong>
         </p>
         <form v-on:submit.prevent="sendMasterGameRequestRequest">
           <div class="form-group">
             <label for="gameName" class="control-label">Game Name</label>
-            <input v-model="gameName" id="gameName" name="gameName" class="form-control input" />
+            <input v-model="gameName" v-validate="'required'" id="gameName" name="gameName" class="form-control input" />
+            <span class="text-danger">{{ errors.first('gameName') }}</span>
           </div>
 
           <div class="form-group">
@@ -84,6 +86,7 @@
     data() {
       return {
         showSent: false,
+        errorInfo: "",
         gameName: "",
         requestNote: "",
         steamLink: "",
@@ -155,8 +158,8 @@
               behavior: 'smooth'
             });
           })
-          .catch(response => {
-
+          .catch(error => {
+            this.errorInfo = error.response;
           });
       }
     },
