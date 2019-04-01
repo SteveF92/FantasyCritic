@@ -21,6 +21,8 @@ import PublicLeagues from "components/pages/publicLeagues";
 import LeagueHistory from "components/pages/leagueHistory";
 import AdminConsole from "components/pages/adminConsole";
 import MasterGameRequest from "components/pages/masterGameRequest";
+import ActiveMasterGameRequests from "components/pages/activeMasterGameRequests";
+import MasterGameCreator from "components/pages/masterGameCreator";
 
 export const routes = [
   {
@@ -245,6 +247,26 @@ export const routes = [
     name: "adminConsole",
     meta: {
       title: "Admin Console",
+      isPublic: false,
+      adminOnly: true
+    }
+  },
+  {
+    path: "/activeMasterGameRequests",
+    component: ActiveMasterGameRequests,
+    name: "activeMasterGameRequests",
+    meta: {
+      title: "Active Master Game Requests",
+      isPublic: false,
+      adminOnly: true
+    }
+  },
+  {
+    path: "/masterGameCreator",
+    component: MasterGameCreator,
+    name: "masterGameCreator",
+    meta: {
+      title: "Master Game Creator",
       isPublic: false,
       adminOnly: true
     }

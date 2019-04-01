@@ -7,6 +7,14 @@
 
     <h2>Actions</h2>
     <div>
+      <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">View master game requests</b-button>
+      <hr />
+    </div>
+    <div>
+      <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
+      <hr />
+    </div>
+    <div>
       <b-button variant="info" v-on:click="refreshCriticScores">Refresh Critic Scores</b-button>
       <hr />
     </div>

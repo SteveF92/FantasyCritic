@@ -102,7 +102,12 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.CreateMasterGameRequest(domainRequest);
         }
 
-        public Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequests(FantasyCriticUser user)
+        public Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
         {
             return _masterGameRepo.GetMasterGameRequests(user);
         }
