@@ -150,6 +150,33 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> DeleteMasterGameRequest([FromBody] MasterGameRequestDeletionRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            Maybe<MasterGameRequest> maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
+            if (maybeRequest.HasNoValue)
+            {
+                return BadRequest("That request does not exist.");
+            }
+
+            var domainRequest = maybeRequest.Value;
+            if (domainRequest.User.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            await _interLeagueService.DeleteMasterGameRequest(domainRequest);
+            return Ok();
+        }
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<List<MasterGameRequestViewModel>>> MyMasterGameRequests()
         {

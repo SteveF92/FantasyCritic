@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Dapper;
@@ -18,12 +19,15 @@ namespace FantasyCritic.MySQL
     {
         private readonly string _connectionString;
         private IReadOnlyList<EligibilityLevel> _eligibilityLevels;
-        private Dictionary<Guid, MasterGame> _masterGamesCache;
-        private Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
+        private readonly Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
+        private readonly IReadOnlyFantasyCriticUserStore _userStore;
 
-        public MySQLMasterGameRepo(string connectionString)
+        private Dictionary<Guid, MasterGame> _masterGamesCache;
+
+        public MySQLMasterGameRepo(string connectionString, IReadOnlyFantasyCriticUserStore userStore)
         {
             _connectionString = connectionString;
+            _userStore = userStore;
             _masterGamesCache = new Dictionary<Guid, MasterGame>();
             _masterGameYearsCache = new Dictionary<int, Dictionary<Guid, MasterGameYear>>();
         }
@@ -253,6 +257,51 @@ namespace FantasyCritic.MySQL
                 }
 
                 return domainRequests;
+            }
+        }
+
+        public async Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID)
+        {
+            var sql = "select * from tblmastergamerequest where RequestID = @requestID";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                MasterGameRequestEntity entity = await connection.QuerySingleOrDefaultAsync<MasterGameRequestEntity>(sql, new { requestID });
+                if (entity == null)
+                {
+                    return Maybe<MasterGameRequest>.None;
+                }
+
+                var eligibilityLevel = Maybe<EligibilityLevel>.None;
+                if (entity.EligibilityLevel.HasValue)
+                {
+                    eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel.Value);
+                }
+
+                Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+                if (entity.MasterGameID.HasValue)
+                {
+                    masterGame = await GetMasterGame(entity.MasterGameID.Value);
+                }
+
+                var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
+
+                return entity.ToDomain(user, eligibilityLevel, masterGame);
+            }
+        }
+
+        public async Task DeleteMasterGameRequest(MasterGameRequest request)
+        {
+            var deleteObject = new
+            {
+                requestID = request.RequestID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "delete from tblmastergamerequest where RequestID = @requestID;",
+                    deleteObject);
             }
         }
     }

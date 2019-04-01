@@ -59,8 +59,8 @@ namespace FantasyCritic.Web
 
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
             services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
-            services.AddScoped<IMasterGameRepo>(factory => new MySQLMasterGameRepo(connectionString));
-            services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString)));
+            services.AddScoped<IMasterGameRepo>(factory => new MySQLMasterGameRepo(connectionString, userStore));
+            services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore)));
             services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 

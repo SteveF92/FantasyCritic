@@ -2,14 +2,29 @@
   <div>
     <h1>Master Game Request</h1>
     <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
+    <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
     <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
-    <div class="row" v-if="myRequests.length !== 0">
-      <div class="col-xl-8 col-lg-10 col-md-12">
-        <b-table :items="myRequests"
-                 bordered
-                 striped
-                 responsive>
-        </b-table>
+    <div class="col-xl-8 col-lg-10 col-md-12" v-if="myRequests.length !== 0">
+      <div class="row">
+        <h3>My Current Requests</h3>
+      </div>
+      <div class="row">
+        <table class="table table-sm table-responsive-sm table-bordered table-striped">
+          <thead>
+            <tr class="bg-primary">
+              <th scope="col" class="game-column">Game Name</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="request in myRequests">
+              <td>{{request.gameName}}</td>
+              <td class="select-cell">
+                <b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <div class="row">
@@ -96,6 +111,7 @@
       return {
         myRequests: [],
         showSent: false,
+        showDeleted: false,
         errorInfo: "",
         gameName: "",
         requestNote: "",
@@ -178,6 +194,7 @@
               behavior: 'smooth'
             });
             this.clearData();
+            this.fetchMyRequests();
           })
           .catch(error => {
             this.errorInfo = error.response;
@@ -193,6 +210,20 @@
         this.earlyAccess = false;
         this.eligibilityLevel = 0;
         this.$validator.reset();
+      },
+      cancelRequest(request) {
+        let model = {
+          requestID: request.requestID
+        };
+        axios
+          .post('/api/game/DeleteMasterGameRequest', model)
+          .then(response => {
+            this.showDeleted = true;
+            this.fetchMyRequests();
+          })
+          .catch(response => {
+
+          });
       }
     },
     mounted() {
@@ -202,6 +233,9 @@
   }
 </script>
 <style scoped>
+  .select-cell {
+    text-align: center;
+  }
   .eligibility-explanation {
     margin-bottom: 50px;
     max-width: 1300px;

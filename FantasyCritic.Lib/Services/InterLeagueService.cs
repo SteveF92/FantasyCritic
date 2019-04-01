@@ -106,5 +106,15 @@ namespace FantasyCritic.Lib.Services
         {
             return _masterGameRepo.GetMasterGameRequests(user);
         }
+
+        public Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID)
+        {
+            return _masterGameRepo.GetMasterGameRequest(requestID);
+        }
+
+        public Task DeleteMasterGameRequest(MasterGameRequest request)
+        {
+            return _masterGameRepo.DeleteMasterGameRequest(request);
+        }
     }
 }
