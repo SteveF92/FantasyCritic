@@ -22,6 +22,7 @@ namespace FantasyCritic.Web.Models.Responses
 
             Answered = domain.Answered;
             ResponseNote = domain.ResponseNote;
+            ResponseTimestamp = domain.ResponseTimestamp;
             if (domain.MasterGame.HasValue)
             {
                 MasterGame = new MasterGameViewModel(domain.MasterGame.Value, clock);
@@ -41,6 +42,7 @@ namespace FantasyCritic.Web.Models.Responses
         //Response
         public bool Answered { get; }
         public string ResponseNote { get; }
+        public Instant? ResponseTimestamp { get; }
         public MasterGameViewModel MasterGame { get; }
         public bool Hidden { get; }
     }

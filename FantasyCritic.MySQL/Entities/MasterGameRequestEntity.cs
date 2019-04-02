@@ -42,6 +42,8 @@ namespace FantasyCritic.MySQL.Entities
             {
                 MasterGameID = domain.MasterGame.Value.MasterGameID;
             }
+
+            Hidden = domain.Hidden;
         }
 
         //Request

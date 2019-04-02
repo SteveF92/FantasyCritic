@@ -13,14 +13,29 @@
           <thead>
             <tr class="bg-primary">
               <th scope="col" class="game-column">Game Name</th>
+              <th scope="col">Response</th>
+              <th scope="col">Response Time</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="request in myRequests">
-              <td>{{request.gameName}}</td>
+              <td>
+                <span v-if="request.masterGame"><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
+                <span v-show="!request.masterGame"> {{request.gameName}} </span>
+              </td>
+              <td>
+                <span v-show="request.responseNote"> {{request.responseNote}} </span>
+                <span v-show="!request.responseNote">&lt;Pending&gt;</span>
+              </td>
+              <td>
+                <span v-show="request.responseTimestamp"> {{request.responseTimestamp | dateTime}} </span>
+                <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
+              </td>
               <td class="select-cell">
-                <b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button>
+                
+                <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
+                <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
               </td>
             </tr>
           </tbody>
@@ -105,6 +120,7 @@
   import axios from 'axios';
   import vueSlider from 'vue-slider-component';
   import Popper from 'vue-popperjs';
+  import MasterGamePopover from "components/modules/masterGamePopover";
 
   export default {
     data() {
@@ -131,6 +147,7 @@
       }
     },
     components: {
+      MasterGamePopover,
       vueSlider,
       'popper': Popper,
     },
@@ -219,6 +236,19 @@
           .post('/api/game/DeleteMasterGameRequest', model)
           .then(response => {
             this.showDeleted = true;
+            this.fetchMyRequests();
+          })
+          .catch(response => {
+
+          });
+      },
+      hideRequest(request) {
+        let model = {
+          requestID: request.requestID
+        };
+        axios
+          .post('/api/game/DismissMasterGameRequest', model)
+          .then(response => {
             this.fetchMyRequests();
           })
           .catch(response => {
