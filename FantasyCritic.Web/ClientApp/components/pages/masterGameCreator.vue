@@ -5,7 +5,7 @@
     <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
     <div class="row">
       <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-        <form v-on:submit.prevent="sendMasterGameRequestRequest">
+        <form v-on:submit.prevent="createMasterGame">
           <div class="form-group">
             <label for="gameName" class="control-label">Game Name</label>
             <input v-model="gameName" v-validate="'required'" id="gameName" name="gameName" class="form-control input" />
@@ -22,8 +22,8 @@
           </div>
 
           <div class="form-group">
-            <label for="opencriticID" class="control-label">Open Critic ID</label>
-            <input v-model="opencriticID" id="opencriticID" name="opencriticID" class="form-control input" />
+            <label for="openCriticID" class="control-label">Open Critic ID</label>
+            <input v-model="openCriticID" id="openCriticID" name="openCriticID" class="form-control input" />
           </div>
 
           <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
@@ -136,7 +136,7 @@
           earlyAccess: this.earlyAccess
         };
         axios
-          .post('/api/game/CreateMasterGame', request)
+          .post('/api/admin/CreateMasterGame', request)
           .then(response => {
             this.showCreated = true;
             window.scroll({
