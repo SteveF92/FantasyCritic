@@ -7,6 +7,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
+using MoreLinq;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Services
@@ -45,6 +46,12 @@ namespace FantasyCritic.Lib.Services
         public Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
             return _fantasyCriticRepo.GetSupportedYears();
+        }
+
+        public async Task<SupportedYear> GetCurrentYear()
+        {
+            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+            return supportedYears.Where(x => x.OpenForPlay).MinBy(x => x.Year).Single();
         }
 
         public Task<IReadOnlyList<MasterGame>> GetMasterGames()

@@ -54,6 +54,7 @@
         let query = {
           gameName: request.gameName,
           estimatedReleaseDate: request.estimatedReleaseDate,
+          steamID: request.steamID,
           openCriticID: request.openCriticID,
           eligibilityLevel: request.eligibilityLevel,
           yearlyInstallment: request.yearlyInstallment,

@@ -3,6 +3,13 @@
     <h1>Create Master Game</h1>
     <div v-if="showCreated" class="alert alert-success">Master Game created.</div>
     <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
+    <div v-if="openCriticID || steamID">
+      <h2>Links</h2>
+      <ul>
+        <li><a v-if="openCriticID" :href="openCriticLink" target="_blank">OpenCritic Link <font-awesome-icon icon="external-link-alt" /></a></li>
+        <li><a v-if="steamID" :href="steamLink" target="_blank">Steam Link <font-awesome-icon icon="external-link-alt" /></a></li>
+      </ul>
+    </div>
     <div class="row">
       <div class="col-xl-8 col-lg-10 col-md-12 text-well">
         <form v-on:submit.prevent="createMasterGame">
@@ -57,7 +64,7 @@
 
           <div class="form-group">
             <div class="col-md-offset-2 col-md-4">
-              <input type="submit" class="btn btn-primary" value="Submit" :disabled="!formIsValid" />
+              <input type="submit" class="btn btn-primary" value="Submit" />
             </div>
           </div>
         </form>
@@ -98,9 +105,6 @@
       'popper': Popper,
     },
     computed: {
-      formIsValid() {
-        return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
-      },
       minimumPossibleEligibilityLevel() {
         return 0;
       },
@@ -114,6 +118,12 @@
       selectedEligibilityLevel() {
         let matchingLevel = _.filter(this.possibleEligibilityLevels, { 'level': this.eligibilityLevel });
         return matchingLevel[0];
+      },
+      openCriticLink() {
+        return "https://opencritic.com/game/" + this.openCriticID + "/a";
+      },
+      steamLink() {
+        return "https://store.steampowered.com/app/" + this.steamID;
       }
     },
     methods: {
@@ -154,6 +164,7 @@
         this.gameName = this.$route.query.gameName;
         this.estimatedReleaseDate = this.$route.query.estimatedReleaseDate;
         this.releaseDate = this.$route.query.releaseDate;
+        this.steamID = this.$route.query.steamID;
         this.openCriticID = this.$route.query.openCriticID;
         this.eligibilityLevel = this.$route.query.eligibilityLevel;
         this.yearlyInstallment = this.$route.query.yearlyInstallment;

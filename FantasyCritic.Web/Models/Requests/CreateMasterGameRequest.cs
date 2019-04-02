@@ -17,8 +17,6 @@ namespace FantasyCritic.Web.Models.Requests
         public LocalDate? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         [Required]
-        public int MinimumReleaseYear { get; set; }
-        [Required]
         public int EligibilityLevel { get; set; }
         [Required]
         public bool YearlyInstallment { get; set; }
@@ -27,9 +25,9 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public string BoxartFileName { get; set; }
 
-        public MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp)
+        public MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp, SupportedYear currentYear)
         {
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, MinimumReleaseYear,
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, currentYear.Year,
                 eligibilityLevel, YearlyInstallment, EarlyAccess, BoxartFileName, null, false, timestamp);
             return masterGame;
         }
