@@ -242,7 +242,7 @@
 
           });
       },
-      hideRequest(request) {
+      dismissRequest(request) {
         let model = {
           requestID: request.requestID
         };

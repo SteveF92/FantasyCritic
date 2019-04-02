@@ -133,5 +133,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _masterGameRepo.CompleteMasterGameRequest(masterGameRequest, responseTime, responseNote, masterGame);
         }
+
+        public Task DismissMasterGameRequest(MasterGameRequest masterGameRequest)
+        {
+            return _masterGameRepo.DismissMasterGameRequest(masterGameRequest);
+        }
     }
 }

@@ -262,7 +262,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
         {
-            var sql = "select * from tblmastergamerequest where UserID = @userID";
+            var sql = "select * from tblmastergamerequest where UserID = @userID and Hidden = 0";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -340,6 +340,21 @@ namespace FantasyCritic.MySQL
                 await connection.ExecuteAsync(
                     "delete from tblmastergamerequest where RequestID = @requestID;",
                     deleteObject);
+            }
+        }
+
+        public async Task DismissMasterGameRequest(MasterGameRequest masterGameRequest)
+        {
+            var dismissObject = new
+            {
+                requestID = masterGameRequest.RequestID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "update tblmastergamerequest SET Hidden = 1 where RequestID = @requestID;",
+                    dismissObject);
             }
         }
     }
