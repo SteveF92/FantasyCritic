@@ -104,12 +104,12 @@ namespace FantasyCritic.Lib.Services
 
         public Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests()
         {
-            throw new NotImplementedException();
+            return _masterGameRepo.GetAllMasterGameRequests();
         }
 
         public Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
         {
-            return _masterGameRepo.GetMasterGameRequests(user);
+            return _masterGameRepo.GetMasterGameRequestsForUser(user);
         }
 
         public Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID)

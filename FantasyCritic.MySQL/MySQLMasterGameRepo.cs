@@ -228,36 +228,53 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequests(FantasyCriticUser user)
+        public async Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests()
+        {
+            var sql = "select * from tblmastergamerequest where Answered = 0";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<MasterGameRequestEntity> entities = await connection.QueryAsync<MasterGameRequestEntity>(sql);
+                return await ConvertMasterGameEntities(entities);
+            }
+        }
+
+        public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
         {
             var sql = "select * from tblmastergamerequest where UserID = @userID";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 IEnumerable<MasterGameRequestEntity> entities = await connection.QueryAsync<MasterGameRequestEntity>(sql, new { userID = user.UserID });
-                var eligibilityLevels = await GetEligibilityLevels();
-                var masterGames = await GetMasterGames();
-                List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
-                foreach (var entity in entities)
+                return await ConvertMasterGameEntities(entities);
+            }
+        }
+
+        private async Task<IReadOnlyList<MasterGameRequest>> ConvertMasterGameEntities(IEnumerable<MasterGameRequestEntity> entities)
+        {
+            var eligibilityLevels = await GetEligibilityLevels();
+            var masterGames = await GetMasterGames();
+            var users = await _userStore.GetAllUsers();
+            List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
+            foreach (var entity in entities)
+            {
+                Maybe<EligibilityLevel> eligibilityLevel = Maybe<EligibilityLevel>.None;
+                if (entity.EligibilityLevel.HasValue)
                 {
-                    Maybe<EligibilityLevel> eligibilityLevel = Maybe<EligibilityLevel>.None;
-                    if (entity.EligibilityLevel.HasValue)
-                    {
-                        eligibilityLevel = eligibilityLevels.Single(x => x.Level == entity.EligibilityLevel.Value);
-                    }
-
-                    Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
-                    if (entity.MasterGameID.HasValue)
-                    {
-                        masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID.Value);
-                    }
-
-                    MasterGameRequest domain = entity.ToDomain(user, eligibilityLevel, masterGame);
-                    domainRequests.Add(domain);
+                    eligibilityLevel = eligibilityLevels.Single(x => x.Level == entity.EligibilityLevel.Value);
                 }
 
-                return domainRequests;
+                Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+                if (entity.MasterGameID.HasValue)
+                {
+                    masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID.Value);
+                }
+
+                MasterGameRequest domain = entity.ToDomain(users.Single(x => x.UserID == entity.UserID), eligibilityLevel, masterGame);
+                domainRequests.Add(domain);
             }
+
+            return domainRequests;
         }
 
         public async Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID)

@@ -1,17 +1,18 @@
 <template>
   <div>
     <h1>Active Master Game Requests</h1>
-    <div class="col-xl-8 col-lg-10 col-md-12" v-if="myRequests.length !== 0">
+    <div class="col-xl-8 col-lg-10 col-md-12" v-if="activeRequests.length !== 0">
       <div class="row">
         <table class="table table-sm table-responsive-sm table-bordered table-striped">
           <thead>
             <tr class="bg-primary">
               <th scope="col" class="game-column">Game Name</th>
               <th scope="col"></th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="request in myRequests">
+            <tr v-for="request in activeRequests">
               <td>{{request.gameName}}</td>
               <td class="select-cell">
                 <b-button variant="danger" size="sm" v-on:click="assignGame(request)">Assign Game</b-button>
@@ -32,7 +33,7 @@
   export default {
     data() {
       return {
-        myRequests: []
+        activeRequests: []
       }
     },
     computed: {
@@ -61,3 +62,8 @@
     }
   }
 </script>
+<style scoped>
+  .select-cell {
+    text-align: center;
+  }
+</style>
