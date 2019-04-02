@@ -50,7 +50,7 @@ namespace FantasyCritic.Web.Models.Requests
             }
 
             return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, EstimatedReleaseDate, eligibilityLevel,
-                YearlyInstallment, EarlyAccess, false, null, null, Maybe<MasterGame>.None);
+                YearlyInstallment, EarlyAccess, false, null, null, Maybe<MasterGame>.None, false);
         }
     }
 }

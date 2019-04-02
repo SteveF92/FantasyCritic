@@ -12,6 +12,7 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.MySQL.Entities;
 using MySql.Data.MySqlClient;
+using NodaTime;
 
 namespace FantasyCritic.MySQL
 {
@@ -237,6 +238,11 @@ namespace FantasyCritic.MySQL
                 IEnumerable<MasterGameRequestEntity> entities = await connection.QueryAsync<MasterGameRequestEntity>(sql);
                 return await ConvertMasterGameEntities(entities);
             }
+        }
+
+        public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)

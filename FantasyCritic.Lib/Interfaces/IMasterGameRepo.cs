@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.OpenCritic;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Interfaces
 {
@@ -28,5 +29,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID);
         Task DeleteMasterGameRequest(MasterGameRequest request);
         Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests();
+        Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame);
     }
 }

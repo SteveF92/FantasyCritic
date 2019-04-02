@@ -64,6 +64,8 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime? ResponseTimestamp { get; set; }
         public string ResponseNote { get; set; }
         public Guid? MasterGameID { get; set; }
+        
+        public bool Hidden { get; set; }
 
         public MasterGameRequest ToDomain(FantasyCriticUser user, Maybe<EligibilityLevel> eligibilityLevel, Maybe<MasterGame> masterGame)
         {
@@ -75,7 +77,7 @@ namespace FantasyCritic.MySQL.Entities
             }
 
             return new MasterGameRequest(RequestID, user, requestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, EstimatedReleaseDate, eligibilityLevel,
-                YearlyInstallment, EarlyAccess, Answered, responseTimestamp, ResponseNote, masterGame);
+                YearlyInstallment, EarlyAccess, Answered, responseTimestamp, ResponseNote, masterGame, Hidden);
         }
     }
 }
