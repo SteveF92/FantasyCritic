@@ -1,40 +1,10 @@
 <template>
   <div>
     <h1>Create Master Game</h1>
-    <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
-    <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
+    <div v-if="showCreated" class="alert alert-success">Master Game created.</div>
     <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
-    <div class="col-xl-8 col-lg-10 col-md-12" v-if="myRequests.length !== 0">
-      <div class="row">
-        <h3>My Current Requests</h3>
-      </div>
-      <div class="row">
-        <table class="table table-sm table-responsive-sm table-bordered table-striped">
-          <thead>
-            <tr class="bg-primary">
-              <th scope="col" class="game-column">Game Name</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="request in myRequests">
-              <td>{{request.gameName}}</td>
-              <td class="select-cell">
-                <b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
     <div class="row">
       <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-        <p>
-          <strong>
-            If there's a game you want to see added to the site, you can fill out this form and I'll look into adding the game.
-            You can check back on this page to see the status of previous requests, as well.
-          </strong>
-        </p>
         <form v-on:submit.prevent="sendMasterGameRequestRequest">
           <div class="form-group">
             <label for="gameName" class="control-label">Game Name</label>
@@ -47,12 +17,13 @@
             <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
           </div>
           <div class="form-group">
-            <label for="steamLink" class="control-label">Link to Steam Page (Optional)</label>
-            <input v-model="steamLink" id="steamLink" name="steamLink" class="form-control input" />
+            <label for="releaseDate" class="control-label">Release Date</label>
+            <input v-model="releaseDate" id="releaseDate" name="releaseDate" class="form-control input" />
           </div>
+
           <div class="form-group">
-            <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
-            <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
+            <label for="opencriticID" class="control-label">Open Critic ID</label>
+            <input v-model="opencriticID" id="opencriticID" name="opencriticID" class="form-control input" />
           </div>
 
           <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
@@ -75,20 +46,13 @@
 
           <div class="form-group">
             <b-form-checkbox v-model="yearlyInstallment">
-              <span class="checkbox-label">Is this game a yearly installment?</span>
-              <p>Check this for games like yearly sports titles.</p>
+              <span class="checkbox-label">Yearly installment?</span>
             </b-form-checkbox>
           </div>
           <div class="form-group">
             <b-form-checkbox v-model="earlyAccess">
-              <span class="checkbox-label">Is this game currenly in early access?</span>
-              <p>Games that are already playable in early access are only selectable in some leagues.</p>
+              <span class="checkbox-label">Early access?</span>
             </b-form-checkbox>
-          </div>
-
-          <div class="form-group">
-            <label for="requestNote" class="control-label">Any other notes?</label>
-            <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
           </div>
 
           <div class="form-group">
@@ -109,15 +73,14 @@
   export default {
     data() {
       return {
-        myRequests: [],
-        showSent: false,
-        showDeleted: false,
+        showCreated: false,
         errorInfo: "",
-        gameName: "",
         requestNote: "",
-        steamLink: "",
-        openCriticLink: "",
+        steamID: null,
+        openCriticID: null,
+        gameName: "",
         estimatedReleaseDate: "",
+        releaseDate: "",
         yearlyInstallment: false,
         earlyAccess: false,
         eligibilityLevel: 0,
@@ -154,16 +117,6 @@
       }
     },
     methods: {
-      fetchMyRequests() {
-        axios
-          .get('/api/game/MyMasterGameRequests')
-          .then(response => {
-            this.myRequests = response.data;
-          })
-          .catch(response => {
-
-          });
-      },
       fetchEligibilityLevels() {
         axios
           .get('/api/Game/EligibilityLevels')
@@ -172,63 +125,34 @@
           })
           .catch(returnedError => (this.error = returnedError));
       },
-      sendMasterGameRequestRequest() {
+      createMasterGame() {
         let request = {
           gameName: this.gameName,
-          requestNote: this.requestNote,
-          steamLink: this.steamLink,
-          openCriticLink: this.openCriticLink,
           estimatedReleaseDate: this.estimatedReleaseDate,
+          releaseDate: this.releaseDate,
+          openCriticID: this.openCriticID,
+          eligibilityLevel: this.eligibilityLevel,
           yearlyInstallment: this.yearlyInstallment,
-          earlyAccess: this.earlyAccess,
-          eligibilityLevel: this.eligibilityLevel
-
+          earlyAccess: this.earlyAccess
         };
         axios
-          .post('/api/game/CreateMasterGameRequest', request)
+          .post('/api/game/CreateMasterGame', request)
           .then(response => {
-            this.showSent = true;
+            this.showCreated = true;
             window.scroll({
               top: 0,
               left: 0,
               behavior: 'smooth'
             });
             this.clearData();
-            this.fetchMyRequests();
           })
           .catch(error => {
             this.errorInfo = error.response;
-          });
-      },
-      clearData() {
-        this.gameName = "";
-        this.requestNote = "";
-        this.steamLink = "";
-        this.openCriticLink = "";
-        this.estimatedReleaseDate = "";
-        this.yearlyInstallment = false;
-        this.earlyAccess = false;
-        this.eligibilityLevel = 0;
-        this.$validator.reset();
-      },
-      cancelRequest(request) {
-        let model = {
-          requestID: request.requestID
-        };
-        axios
-          .post('/api/game/DeleteMasterGameRequest', model)
-          .then(response => {
-            this.showDeleted = true;
-            this.fetchMyRequests();
-          })
-          .catch(response => {
-
           });
       }
     },
     mounted() {
       this.fetchEligibilityLevels();
-      this.fetchMyRequests();
     }
   }
 </script>
@@ -254,17 +178,10 @@
     padding-left: 25px;
   }
 
-  .disclaimer {
-    margin-top: 10px;
-  }
-
   label {
     font-size: 18px;
   }
 
-  .submit-button {
-    text-align: right;
-  }
 </style>
 <style>
   .vue-slider-piecewise-label {

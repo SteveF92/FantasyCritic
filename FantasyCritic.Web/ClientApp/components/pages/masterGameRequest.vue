@@ -253,16 +253,8 @@
     padding-left: 25px;
   }
 
-  .disclaimer {
-    margin-top: 10px;
-  }
-
   label {
     font-size: 18px;
-  }
-
-  .submit-button {
-    text-align: right;
   }
 </style>
 <style>
