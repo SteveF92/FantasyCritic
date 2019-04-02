@@ -1,11 +1,12 @@
 using System;
 using FantasyCritic.Lib.Domain;
+using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {
     public class MasterGameRequestViewModel
     {
-        public MasterGameRequestViewModel(MasterGameRequest domain)
+        public MasterGameRequestViewModel(MasterGameRequest domain, IClock clock)
         {
             RequestID = domain.RequestID;
             GameName = domain.GameName;
@@ -18,6 +19,14 @@ namespace FantasyCritic.Web.Models.Responses
             }
             YearlyInstallment = domain.YearlyInstallment;
             EarlyAccess = domain.EarlyAccess;
+
+            Answered = domain.Answered;
+            ResponseNote = domain.ResponseNote;
+            if (domain.MasterGame.HasValue)
+            {
+                MasterGame = new MasterGameViewModel(domain.MasterGame.Value, clock);
+            }
+            Hidden = domain.Hidden;
         }
 
         public Guid RequestID { get; }
@@ -28,5 +37,11 @@ namespace FantasyCritic.Web.Models.Responses
         public int? EligibilityLevel { get; }
         public bool? YearlyInstallment { get; }
         public bool? EarlyAccess { get; }
+
+        //Response
+        public bool Answered { get; }
+        public string ResponseNote { get; }
+        public MasterGameViewModel MasterGame { get; }
+        public bool Hidden { get; }
     }
 }

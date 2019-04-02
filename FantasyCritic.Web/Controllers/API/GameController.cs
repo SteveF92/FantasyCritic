@@ -23,16 +23,14 @@ namespace FantasyCritic.Web.Controllers.API
     public class GameController : Controller
     {
         private readonly FantasyCriticUserManager _userManager;
-        private readonly FantasyCriticService _fantasyCriticService;
         private readonly InterLeagueService _interLeagueService;
         private readonly IClock _clock;
         private static readonly int MaxDistance = 10;
         private static readonly int MaxDistanceGames = 5;
 
-        public GameController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, IClock clock)
+        public GameController(FantasyCriticUserManager userManager, InterLeagueService interLeagueService, IClock clock)
         {
             _userManager = userManager;
-            _fantasyCriticService = fantasyCriticService;
             _interLeagueService = interLeagueService;
             _clock = clock;
         }
@@ -184,7 +182,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetMasterGameRequestsForUser(currentUser);
 
-            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x)).ToList();
+            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, _clock)).ToList();
             return viewModels;
         }
 

@@ -80,7 +80,7 @@ namespace FantasyCritic.Web.Controllers.API
         {
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
 
-            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x)).ToList();
+            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, _clock)).ToList();
             return viewModels;
         }
 
