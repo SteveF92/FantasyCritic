@@ -240,9 +240,24 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
+        public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
         {
-            throw new NotImplementedException();
+            Guid? masterGameID = null;
+            if (masterGame.HasValue)
+            {
+                masterGameID = masterGame.Value.MasterGameID;
+            }
+            string sql = "update tblmastergamerequest set Answered = 1, ResponseTimestamp = @responseTime, ResponseNote = @responseNote, MasterGameID = @masterGameID;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql,
+                    new
+                    {
+                        masterGameID,
+                        responseTime = responseTime.ToDateTimeUtc(),
+                        responseNote
+                    });
+            }
         }
 
         public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
