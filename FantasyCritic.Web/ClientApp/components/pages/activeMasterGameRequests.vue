@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Active Master Game Requests</h1>
+    <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
     <div class="col-xl-8 col-lg-10 col-md-12" v-if="activeRequests.length !== 0">
       <div class="row">
         <table class="table table-sm table-responsive-sm table-bordered table-striped">
@@ -24,6 +25,28 @@
           </tbody>
         </table>
       </div>
+      <div v-if="requestSelected">
+        <h3>Respond to Request</h3>
+        <div class="row">
+          <div class="col-xl-8 col-lg-10 col-md-12 text-well">
+            <form v-on:submit.prevent="respondToRequest">
+              <div class="form-group">
+                <label for="masterGameID" class="control-label">Master Game ID</label>
+                <input v-model="masterGameID" id="masterGameID" name="masterGameID" class="form-control input" />
+              </div>
+              <div class="form-group">
+                <label for="responseNote" class="control-label">Response Note</label>
+                <input v-model="responseNote" id="responseNote" name="responseNote" class="form-control input" />
+              </div>
+              <div class="form-group">
+                <div class="col-md-offset-2 col-md-4">
+                  <input type="submit" class="btn btn-primary" value="Submit" />
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -33,7 +56,11 @@
   export default {
     data() {
       return {
-        activeRequests: []
+        activeRequests: [],
+        showResponded: false,
+        requestSelected: null,
+        masterGameID: null,
+        responseNote: ""
       }
     },
     computed: {
@@ -63,7 +90,22 @@
         this.$router.push({ name: 'masterGameCreator', query: query });
       },
       assignGame(request) {
-
+        this.requestSelected = request;
+      },
+      respondToRequest() {
+        let request = {
+          requestID: this.requestSelected.requestID,
+          responseNote: this.responseNote,
+          masterGameID: this.masterGameID
+        };
+        axios
+          .post('/api/admin/CompleteMasterGameRequest', request)
+          .then(response => {
+            this.showResponded = true;
+          })
+          .catch(error => {
+            this.errorInfo = error.response;
+          });
       }
     },
     mounted() {
