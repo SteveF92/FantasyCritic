@@ -50,10 +50,18 @@
 
           });
       },
-      createGame() {
-        
+      createGame(request) {
+        let query = {
+          gameName: request.gameName,
+          estimatedReleaseDate: request.estimatedReleaseDate,
+          openCriticID: request.openCriticID,
+          eligibilityLevel: request.eligibilityLevel,
+          yearlyInstallment: request.yearlyInstallment,
+          earlyAccess: request.earlyAccess
+        };
+        this.$router.push({ name: 'masterGameCreator', query: query });
       },
-      assignGame() {
+      assignGame(request) {
 
       }
     },

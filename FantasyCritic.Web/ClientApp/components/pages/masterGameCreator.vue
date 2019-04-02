@@ -34,7 +34,7 @@
             <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
                         piecewise piecewise-label :piecewise-style="piecewiseStyle">
             </vue-slider>
-            <div class="eligibility-description">
+            <div class="eligibility-description" v-if="selectedEligibilityLevel">
               <h3>{{ selectedEligibilityLevel.name }}</h3>
               <p>{{ selectedEligibilityLevel.description }}</p>
               <p>Examples: </p>
@@ -149,10 +149,20 @@
           .catch(error => {
             this.errorInfo = error.response;
           });
+      },
+      populateFieldsFromURL() {
+        this.gameName = this.$route.query.gameName;
+        this.estimatedReleaseDate = this.$route.query.estimatedReleaseDate;
+        this.releaseDate = this.$route.query.releaseDate;
+        this.openCriticID = this.$route.query.openCriticID;
+        this.eligibilityLevel = this.$route.query.eligibilityLevel;
+        this.yearlyInstallment = this.$route.query.yearlyInstallment;
+        this.earlyAccess = this.$route.query.earlyAccess;
       }
     },
     mounted() {
       this.fetchEligibilityLevels();
+      this.populateFieldsFromURL();
     }
   }
 </script>
