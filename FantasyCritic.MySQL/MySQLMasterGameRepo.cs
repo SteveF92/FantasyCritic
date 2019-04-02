@@ -247,12 +247,13 @@ namespace FantasyCritic.MySQL
             {
                 masterGameID = masterGame.Value.MasterGameID;
             }
-            string sql = "update tblmastergamerequest set Answered = 1, ResponseTimestamp = @responseTime, ResponseNote = @responseNote, MasterGameID = @masterGameID;";
+            string sql = "update tblmastergamerequest set Answered = 1, ResponseTimestamp = @responseTime, ResponseNote = @responseNote, MasterGameID = @masterGameID where RequestID = @requestID;";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql,
                     new
                     {
+                        requestID = masterGameRequest.RequestID,
                         masterGameID,
                         responseTime = responseTime.ToDateTimeUtc(),
                         responseNote
