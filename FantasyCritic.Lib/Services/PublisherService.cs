@@ -15,12 +15,14 @@ namespace FantasyCritic.Lib.Services
     public class PublisherService
     {
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
+        private readonly LeagueMemberService _leagueMemberService;
         private readonly IClock _clock;
 
 
-        public PublisherService(IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+        public PublisherService(IFantasyCriticRepo fantasyCriticRepo, LeagueMemberService leagueMemberService, IClock clock)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
+            _leagueMemberService = leagueMemberService;
             _clock = clock;
         }
 
@@ -37,9 +39,15 @@ namespace FantasyCritic.Lib.Services
             return publisher;
         }
 
-        public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year)
+        public async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year)
         {
-            return _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year);
+            var users = await _leagueMemberService.GetUsersInLeague(league);
+            return await _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year, users);
+        }
+
+        public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year, IEnumerable<FantasyCriticUser> users)
+        {
+            return _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year, users);
         }
 
         public Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)

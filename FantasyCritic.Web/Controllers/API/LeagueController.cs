@@ -191,7 +191,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year, usersInLeague);
             var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == year);
             if (supportedYear is null)
             {
@@ -215,8 +215,6 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
-
-            
 
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks,

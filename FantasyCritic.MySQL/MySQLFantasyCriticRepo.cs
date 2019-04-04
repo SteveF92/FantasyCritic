@@ -643,19 +643,38 @@ namespace FantasyCritic.MySQL
         public async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year)
         {
             var usersInLeague = await GetUsersInLeague(league);
+            return await GetPublishersInLeagueForYear(league, year, usersInLeague);
+        }
 
-            List<Publisher> publishers = new List<Publisher>();
-            foreach (var user in usersInLeague)
+        public async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year, IEnumerable<FantasyCriticUser> usersInLeague)
+        {
+            var query = new
             {
-                var publisher = await GetPublisher(league, year, user);
-                if (publisher.HasNoValue)
-                {
-                    continue;
-                }
-                publishers.Add(publisher.Value);
+                leagueID = league.LeagueID,
+                year
+            };
+
+            IEnumerable<PublisherEntity> publisherEntities;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                publisherEntities = await connection.QueryAsync<PublisherEntity>(
+                    "select * from tblpublisher where tblpublisher.LeagueID = @leagueID and tblpublisher.Year = @year;",
+                    query);
             }
 
-            return publishers;
+            var publisherIDs = publisherEntities.Select(x => x.PublisherID);
+            IReadOnlyList<PublisherGame> domainGames = await GetPublisherGamesInLeague(publisherIDs, year);
+
+            List<Publisher> domainPublishers = new List<Publisher>();
+            foreach (var entity in publisherEntities)
+            {
+                var gamesForPublisher = domainGames.Where(x => x.PublisherID == entity.PublisherID);
+                var user = usersInLeague.Single(x => x.UserID == entity.UserID);
+                var domainPublisher = entity.ToDomain(league, user, gamesForPublisher);
+                domainPublishers.Add(domainPublisher);
+            }
+
+            return domainPublishers;
         }
 
         public async Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year)
@@ -894,6 +913,35 @@ namespace FantasyCritic.MySQL
                     }
 
                     domainGames.Add(entity.ToDomain(masterGame, leagueYear));
+                }
+
+                return domainGames;
+            }
+        }
+
+        private async Task<IReadOnlyList<PublisherGame>> GetPublisherGamesInLeague(IEnumerable<Guid> publisherIDs, int year)
+        {
+            var query = new
+            {
+                publisherIDs
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
+                    "select * from tblpublishergame where tblpublishergame.PublisherID in @publisherIDs;",
+                    query);
+
+                List<PublisherGame> domainGames = new List<PublisherGame>();
+                foreach (var entity in gameEntities)
+                {
+                    Maybe<MasterGameYear> masterGame = null;
+                    if (entity.MasterGameID.HasValue)
+                    {
+                        masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID.Value, year);
+                    }
+
+                    domainGames.Add(entity.ToDomain(masterGame, year));
                 }
 
                 return domainGames;
