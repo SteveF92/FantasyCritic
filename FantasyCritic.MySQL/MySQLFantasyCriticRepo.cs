@@ -988,7 +988,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var result = await connection.QuerySingleAsync<SystemWideValuesEntity>("select * from vwsystemwidevalues;");
+                var result = await connection.QuerySingleAsync<SystemWideValuesEntity>("select * from tbl_caching_systemWideValues;");
                 return result.ToDomain();
             }
         }
