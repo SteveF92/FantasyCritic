@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
@@ -35,9 +36,11 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly PublisherService _publisherService;
         private readonly IClock _clock;
         private readonly IHubContext<UpdateHub> _hubcontext;
+        private readonly ILogger<LeagueController> _logger;
 
         public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
-            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubcontext)
+            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock,
+            IHubContext<UpdateHub> hubcontext, ILogger<LeagueController> logger)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
@@ -47,6 +50,7 @@ namespace FantasyCritic.Web.Controllers.API
             _publisherService = publisherService;
             _clock = clock;
             _hubcontext = hubcontext;
+            _logger = logger;
         }
 
         public async Task<IActionResult> LeagueOptions()
