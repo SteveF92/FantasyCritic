@@ -34,6 +34,10 @@
       <b-button variant="info" v-on:click="turnOffBidProcessing">Turn off bid processing mode</b-button>
       <hr />
     </div>
+    <div>
+      <b-button variant="info" v-on:click="refreshCaches">Refresh Caches</b-button>
+      <hr />
+    </div>
   </div>
 </template>
 <script>
@@ -110,6 +114,19 @@
           .then(response => {
             this.isBusy = false;
             this.jobSuccess = "Bid Processing Mode OFF";
+          })
+          .catch(returnedError => {
+            this.isBusy = false;
+            this.errorInfo = returnedError.response.data;
+          });
+      },
+      refreshCaches() {
+        this.isBusy = true;
+        axios
+          .post('/api/admin/refreshCaches')
+          .then(response => {
+            this.isBusy = false;
+            this.jobSuccess = "Caches Refreshed";
           })
           .catch(returnedError => {
             this.isBusy = false;

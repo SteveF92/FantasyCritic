@@ -243,5 +243,12 @@ namespace FantasyCritic.Web.Controllers.API
             await _interLeagueService.SetBidProcessingMode(false);
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RefreshCaches()
+        {
+            await _interLeagueService.RefreshCaches();
+            return Ok();
+        }
     }
 }

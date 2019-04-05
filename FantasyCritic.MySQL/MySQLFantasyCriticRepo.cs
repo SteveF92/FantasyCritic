@@ -1117,6 +1117,16 @@ namespace FantasyCritic.MySQL
             }   
         }
 
+        public async Task RefreshCaches()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var masterGameYearRefresh = connection.ExecuteAsync("CALL `sp_caching_updateMasterGameYear`();");
+                var systemWideValuesRefresh = connection.ExecuteAsync("CALL `sp_caching_updateSystemWideValues`();");
+                await Task.WhenAll(masterGameYearRefresh, systemWideValuesRefresh);
+            }
+        }
+
         private Task MarkBidStatus(IEnumerable<PickupBid> bids, bool success, MySqlConnection connection, MySqlTransaction transaction)
         {
             var entities = bids.Select(x => new PickupBidEntity(x, success));
