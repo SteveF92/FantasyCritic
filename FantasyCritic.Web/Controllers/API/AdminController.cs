@@ -47,6 +47,8 @@ namespace FantasyCritic.Web.Controllers.API
             var currentYear = await _interLeagueService.GetCurrentYear();
             MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, currentYear);
             await _interLeagueService.CreateMasterGame(masterGame);
+            await Task.Delay(1);
+            await _interLeagueService.RefreshCaches();
 
             return Ok();
         }
