@@ -41,7 +41,7 @@ namespace FantasyCritic.MySQL
                 };
 
                 LeagueEntity leagueEntity = await connection.QuerySingleAsync<LeagueEntity>(
-                    "select * from vwleague where LeagueID = @leagueID", queryObject);
+                    "select * from vw_league where LeagueID = @leagueID", queryObject);
 
                 FantasyCriticUser manager = await _userStore.FindByIdAsync(leagueEntity.LeagueManager.ToString(), CancellationToken.None);
 
@@ -57,7 +57,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var leagueEntities = await connection.QueryAsync<LeagueEntity>("select * from vwleague");
+                var leagueEntities = await connection.QueryAsync<LeagueEntity>("select * from vw_league");
 
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tblleagueyear");
                 List<League> leagues = new List<League>();
@@ -218,7 +218,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var bidEntities = await connection.QueryAsync<PickupBidEntity>("select * from vwpickupbid where Year = @year and Successful is NULL", new { year });
+                var bidEntities = await connection.QueryAsync<PickupBidEntity>("select * from vw_league_pickupbid where Year = @year and Successful is NULL", new { year });
 
                 Dictionary<LeagueYear, List<PickupBid>> pickupBidsByLeagueYear = leagueYears.ToDictionary(x => x, y => new List<PickupBid>());
 
@@ -453,7 +453,7 @@ namespace FantasyCritic.MySQL
                 };
 
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select vwleague.* from vwleague join tblleaguehasuser on (vwleague.LeagueID = tblleaguehasuser.LeagueID) where tblleaguehasuser.UserID = @userID;", queryObject);
+                    "select vw_league.* from vw_league join tblleaguehasuser on (vw_league.LeagueID = tblleaguehasuser.LeagueID) where tblleaguehasuser.UserID = @userID;", queryObject);
             }
 
             IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
@@ -471,7 +471,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select vwleague.* from vwleague join tbluserfollowingleague on (vwleague.LeagueID = tbluserfollowingleague.LeagueID) where tbluserfollowingleague.UserID = @userID;",
+                    "select vw_league.* from vw_league join tbluserfollowingleague on (vw_league.LeagueID = tbluserfollowingleague.LeagueID) where tbluserfollowingleague.UserID = @userID;",
                     query);
             }
 
@@ -1006,7 +1006,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var result = await connection.QuerySingleAsync<SiteCountsEntity>("select * from vwsitecounts;");
+                var result = await connection.QuerySingleAsync<SiteCountsEntity>("select * from vw_meta_sitecounts;");
                 return result.ToDomain();
             }
         }
@@ -1090,9 +1090,9 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 return connection.ExecuteScalarAsync<bool>(
-                    "select count(1) from vwleague " +
-                    "join tblleagueyear on (vwleague.LeagueID = tblleagueyear.LeagueID) " +
-                    "where PlayStatus <> 'NotStartedDraft' and vwleague.LeagueID = @leagueID;",
+                    "select count(1) from vw_league " +
+                    "join tblleagueyear on (vw_league.LeagueID = tblleagueyear.LeagueID) " +
+                    "where PlayStatus <> 'NotStartedDraft' and vw_league.LeagueID = @leagueID;",
                     selectObject);
             }
         }
