@@ -33,7 +33,7 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbluser(UserID,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
+                    "insert into tbl_user(UserID,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
                     "(@UserID,@DisplayName,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
                     entity);
             }
@@ -48,7 +48,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                await connection.ExecuteAsync($"delete from tbluser where UserID = @{nameof(FantasyCriticUserEntity.UserID)}", new { user.UserID });
+                await connection.ExecuteAsync($"delete from tbl_user where UserID = @{nameof(FantasyCriticUserEntity.UserID)}", new { user.UserID });
             }
 
             return IdentityResult.Success;
@@ -63,7 +63,7 @@ namespace FantasyCritic.MySQL
 
             //Not updating password or email confirmed as that breaks password change. Use the SetPasswordHash.
             FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);
-            string sql = $@"UPDATE tbluser SET DisplayName = @{nameof(FantasyCriticUserEntity.DisplayName)}, " +
+            string sql = $@"UPDATE tbl_user SET DisplayName = @{nameof(FantasyCriticUserEntity.DisplayName)}, " +
                          $"DisplayNumber = @{nameof(FantasyCriticUserEntity.DisplayNumber)}, " +
                          $"EmailAddress = @{nameof(FantasyCriticUserEntity.EmailAddress)}, " +
                          $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +
@@ -91,7 +91,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
 
                 var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    @"select * from tbluser WHERE NormalizedEmailAddress = @normalizedEmail",
+                    @"select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmail",
                     new { normalizedEmail });
                 var entity = userResult.SingleOrDefault();
                 return entity?.ToDomain();
@@ -113,7 +113,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
 
                 var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    @"select * from tbluser WHERE UserID = @userID",
+                    @"select * from tbl_user WHERE UserID = @userID",
                     new { userID = parseduserid });
                 var entity = userResult.SingleOrDefault();
                 return entity?.ToDomain();
@@ -128,7 +128,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
 
                 var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    @"select * from tbluser WHERE UPPER(DisplayName) = @normalizedDisplayName and DisplayNumber = @displayNumber;",
+                    @"select * from tbl_user WHERE UPPER(DisplayName) = @normalizedDisplayName and DisplayNumber = @displayNumber;",
                     new { normalizedDisplayName, displayNumber });
                 var entity = userResult.SingleOrDefault();
                 return entity?.ToDomain();
@@ -140,7 +140,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    @"select * from tbluser");
+                    @"select * from tbl_user");
                 var results = userResult.Select(x => x.ToDomain()).ToList();
                 return results;
             }
@@ -155,7 +155,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
 
                 var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    @"select * from tbluser WHERE NormalizedEmailAddress = @normalizedEmailAddress",
+                    @"select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmailAddress",
                     new { normalizedEmailAddress });
                 var entity = userResult.SingleOrDefault();
                 return entity?.ToDomain();
@@ -257,8 +257,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                var roleResults = await connection.QueryAsync<string>(@"select tblrole.Name from tbluser join tbluserhasrole on (tbluser.UserID = tbluserhasrole.UserID) " +
-                    "join tblrole on (tbluserhasrole.RoleID = tblrole.RoleID) WHERE tbluser.UserID = @userID", new { userID = user.UserID });
+                var roleResults = await connection.QueryAsync<string>(@"select tbl_user_role.Name from tbl_user join tbl_user_hasrole on (tbl_user.UserID = tbl_user_hasrole.UserID) " +
+                    "join tbl_user_role on (tbl_user_hasrole.RoleID = tbl_user_role.RoleID) WHERE tbl_user.UserID = @userID", new { userID = user.UserID });
                 var roleStrings = roleResults.ToList();
                 return roleStrings;
             }
@@ -271,8 +271,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                var userResults = await connection.QueryAsync<Guid>(@"select tbluser.UserID from tbluser join tbluserhasrole on (tbluser.UserID = tbluserhasrole.UserID) " +
-                    "join tblrole on (tbluserhasrole.RoleID = tblrole.RoleID) WHERE tblrole.Name = @roleName", new { roleName });
+                var userResults = await connection.QueryAsync<Guid>(@"select tbl_user.UserID from tbl_user join tbl_user_hasrole on (tbl_user.UserID = tbl_user_hasrole.UserID) " +
+                    "join tbl_user_role on (tbl_user_hasrole.RoleID = tbl_user_role.RoleID) WHERE tbl_user_role.Name = @roleName", new { roleName });
 
                 List<FantasyCriticUser> users = new List<FantasyCriticUser>();
                 foreach (Guid userID in userResults)
@@ -290,12 +290,12 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                string retrieveSQL = "select ID from tblrole where Name = @Name";
+                string retrieveSQL = "select ID from tbl_user_role where Name = @Name";
 
                 await connection.OpenAsync(cancellationToken);
                 var roleID = await connection.QueryAsync<int>(retrieveSQL, new { Name = roleName });
 
-                string insertSQL = "insert into tbluserhasrole (UserID, RoleID) VALUES (@UserID, @RoleID)";
+                string insertSQL = "insert into tbl_user_hasrole (UserID, RoleID) VALUES (@UserID, @RoleID)";
                 await connection.ExecuteAsync(insertSQL, new { UserID = user.UserID, RoleID = roleID });
             }
         }
@@ -313,12 +313,12 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                string retrieveSQL = "select ID from tblrole where Name = @Name";
+                string retrieveSQL = "select ID from tbl_user_role where Name = @Name";
 
                 await connection.OpenAsync(cancellationToken);
                 var roleID = await connection.QueryAsync<int>(retrieveSQL, new { Name = roleName });
 
-                string deleteSQL = "delete from tbluserhasrole where UserID = @UserID and RoleID = @RoleID)";
+                string deleteSQL = "delete from tbl_user_hasrole where UserID = @UserID and RoleID = @RoleID)";
                 await connection.ExecuteAsync(deleteSQL, new { UserID = user.UserID, RoleID = roleID });
             }
         }
@@ -328,7 +328,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                IEnumerable<string> refreshTokens = await connection.QueryAsync<string>("select RefreshToken from tbluserrefreshtoken where UserID = @UserID;", new { user.UserID });
+                IEnumerable<string> refreshTokens = await connection.QueryAsync<string>("select RefreshToken from tbl_user_refreshtoken where UserID = @UserID;", new { user.UserID });
 
                 return refreshTokens.ToList();
             }
@@ -339,7 +339,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync("insert into tbluserrefreshtoken(UserID,RefreshToken) VALUES (@UserID, @refreshToken);", new { user.UserID, refreshToken });
+                await connection.ExecuteAsync("insert into tbl_user_refreshtoken(UserID,RefreshToken) VALUES (@UserID, @refreshToken);", new { user.UserID, refreshToken });
             }
         }
 
@@ -348,7 +348,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync("delete from tbluserrefreshtoken where UserID = @UserID and RefreshToken = @refreshToken;", new { user.UserID, refreshToken });
+                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID and RefreshToken = @refreshToken;", new { user.UserID, refreshToken });
             }
         }
 
@@ -357,7 +357,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync("delete from tbluserrefreshtoken where UserID = @UserID;", new { user.UserID });
+                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID;", new { user.UserID });
             }
         }
 

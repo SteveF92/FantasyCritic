@@ -47,7 +47,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
 
                 var userResult = await connection.QueryAsync<FantasyCriticRoleEntity>(
-                    @"select * from tblrole WHERE NormalizedName = @normalizedRoleName",
+                    @"select * from tbl_user_role WHERE NormalizedName = @normalizedRoleName",
                     new { normalizedRoleName });
                 var entity = userResult.SingleOrDefault();
                 return entity?.ToDomain();

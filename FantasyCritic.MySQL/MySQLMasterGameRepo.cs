@@ -42,8 +42,8 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var masterGameResults = await connection.QueryAsync<MasterGameEntity>("select * from tblmastergame;");
-                var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tblmastersubgame;");
+                var masterGameResults = await connection.QueryAsync<MasterGameEntity>("select * from tbl_mastergame;");
+                var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tbl_mastergame_subgame;");
 
                 var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
                 List<MasterGame> masterGames = new List<MasterGame>();
@@ -70,7 +70,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from tbl_caching_masterGameYear where Year = @year;", new { year });
-                var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tblmastersubgame;");
+                var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tbl_mastergame_subgame;");
 
                 var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
                 List<MasterGameYear> masterGames = new List<MasterGameYear>();
@@ -135,7 +135,7 @@ namespace FantasyCritic.MySQL
                 setFirstTimestamp = ", FirstCriticScoreTimestamp = CURRENT_TIMESTAMP ";
             }
 
-            string sql = $"update tblmastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore {setFirstTimestamp} where MasterGameID = @masterGameID";
+            string sql = $"update tbl_mastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore {setFirstTimestamp} where MasterGameID = @masterGameID";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql,
@@ -158,7 +158,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("update tblmastersubgame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterSubGameID = @masterSubGameID",
+                await connection.ExecuteAsync("update tbl_mastergame_subgame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterSubGameID = @masterSubGameID",
                     new
                     {
                         masterSubGameID = masterSubGame.MasterSubGameID,
@@ -174,7 +174,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblmastergame(MasterGameID,GameName,EstimatedReleaseDate,ReleaseDate,OpenCriticID,CriticScore,MinimumReleaseYear,EligibilityLevel,YearlyInstallment,EarlyAccess,BoxartFileName) VALUES " +
+                    "insert into tbl_mastergame(MasterGameID,GameName,EstimatedReleaseDate,ReleaseDate,OpenCriticID,CriticScore,MinimumReleaseYear,EligibilityLevel,YearlyInstallment,EarlyAccess,BoxartFileName) VALUES " +
                     "(@MasterGameID,@GameName,@EstimatedReleaseDate,@ReleaseDate,@OpenCriticID,@CriticScore,@MinimumReleaseYear,@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@BoxartFileName);",
                     entity);
             }
@@ -194,7 +194,7 @@ namespace FantasyCritic.MySQL
             }
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var entities = await connection.QueryAsync<EligibilityLevelEntity>("select * from tbleligibilitylevel;");
+                var entities = await connection.QueryAsync<EligibilityLevelEntity>("select * from tbl_settings_eligibilitylevel;");
                 _eligibilityLevels = entities.Select(x => x.ToDomain()).ToList();
                 return _eligibilityLevels;
             }
@@ -202,10 +202,10 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)
         {
-            var sql = "select distinct MasterGameID from tblpublishergame " +
-                      "join tblpublisher on(tblpublisher.PublisherID = tblpublishergame.PublisherID) " +
-                      "join tblleague on (tblleague.LeagueID = tblpublisher.LeagueID) " +
-                      "where Year = @year and tblleague.TestLeague = 0";
+            var sql = "select distinct MasterGameID from tbl_league_publishergame " +
+                      "join tbl_league_publisher on(tbl_league_publisher.PublisherID = tbl_league_publishergame.PublisherID) " +
+                      "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                      "where Year = @year and tbl_league.TestLeague = 0";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -221,7 +221,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tblmastergamerequest(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,EstimatedReleaseDate,EligibilityLevel," +
+                    "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,EstimatedReleaseDate,EligibilityLevel," +
                     "YearlyInstallment,EarlyAccess,Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
                     "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@EstimatedReleaseDate," +
                     "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
@@ -231,7 +231,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests()
         {
-            var sql = "select * from tblmastergamerequest where Answered = 0";
+            var sql = "select * from tbl_mastergame_request where Answered = 0";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -247,7 +247,7 @@ namespace FantasyCritic.MySQL
             {
                 masterGameID = masterGame.Value.MasterGameID;
             }
-            string sql = "update tblmastergamerequest set Answered = 1, ResponseTimestamp = @responseTime, ResponseNote = @responseNote, MasterGameID = @masterGameID where RequestID = @requestID;";
+            string sql = "update tbl_mastergame_request set Answered = 1, ResponseTimestamp = @responseTime, ResponseNote = @responseNote, MasterGameID = @masterGameID where RequestID = @requestID;";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql,
@@ -263,7 +263,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
         {
-            var sql = "select * from tblmastergamerequest where UserID = @userID and Hidden = 0";
+            var sql = "select * from tbl_mastergame_request where UserID = @userID and Hidden = 0";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -301,7 +301,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID)
         {
-            var sql = "select * from tblmastergamerequest where RequestID = @requestID";
+            var sql = "select * from tbl_mastergame_request where RequestID = @requestID";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -339,7 +339,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "delete from tblmastergamerequest where RequestID = @requestID;",
+                    "delete from tbl_mastergame_request where RequestID = @requestID;",
                     deleteObject);
             }
         }
@@ -354,7 +354,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "update tblmastergamerequest SET Hidden = 1 where RequestID = @requestID;",
+                    "update tbl_mastergame_request SET Hidden = 1 where RequestID = @requestID;",
                     dismissObject);
             }
         }
