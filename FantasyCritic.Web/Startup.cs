@@ -85,6 +85,8 @@ namespace FantasyCritic.Web
                 client.BaseAddress = new Uri("https://api.opencritic.com/");
             });
 
+            services.AddScoped<AdminService>();
+
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
             {
                 options.Password.RequireDigit = false;

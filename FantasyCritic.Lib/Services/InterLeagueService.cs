@@ -138,10 +138,5 @@ namespace FantasyCritic.Lib.Services
         {
             return _masterGameRepo.DismissMasterGameRequest(masterGameRequest);
         }
-
-        public Task RefreshCaches()
-        {
-            return _fantasyCriticRepo.RefreshCaches();
-        }
     }
 }

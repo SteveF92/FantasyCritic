@@ -24,15 +24,15 @@ namespace FantasyCritic.Web.Controllers.API
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly FantasyCriticUserManager _userManager;
+        private readonly AdminService _adminService;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
         private readonly IClock _clock;
 
-        public AdminController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService, IClock clock, InterLeagueService interLeagueService)
+        public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService, IClock clock, InterLeagueService interLeagueService)
         {
-            _userManager = userManager;
+            _adminService = adminService;
             _fantasyCriticService = fantasyCriticService;
             _openCriticService = openCriticService;
             _clock = clock;
@@ -47,8 +47,8 @@ namespace FantasyCritic.Web.Controllers.API
             var currentYear = await _interLeagueService.GetCurrentYear();
             MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, currentYear);
             await _interLeagueService.CreateMasterGame(masterGame);
-            await Task.Delay(1);
-            await _interLeagueService.RefreshCaches();
+            await Task.Delay(1000);
+            await _adminService.RefreshCaches();
 
             return Ok();
         }
@@ -89,52 +89,7 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RefreshCriticInfo()
         {
-            var supportedYears = await _interLeagueService.GetSupportedYears();
-            var masterGames = await _interLeagueService.GetMasterGames();
-            foreach (var masterGame in masterGames)
-            {
-                if (!masterGame.OpenCriticID.HasValue)
-                {
-                    continue;
-                }
-
-                if (masterGame.DoNotRefresh)
-                {
-                    continue;
-                }
-
-                if (masterGame.IsReleased(_clock) && masterGame.ReleaseDate.HasValue)
-                {
-                    var year = masterGame.ReleaseDate.Value.Year;
-                    var supportedYear = supportedYears.Single(x => x.Year == year);
-                    if (supportedYear.Finished)
-                    {
-                        continue;
-                    }
-                }
-
-                var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID.Value);
-                if (openCriticGame.HasValue)
-                {
-                    await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame.Value);
-                }
-
-                foreach (var subGame in masterGame.SubGames)
-                {
-                    if (!subGame.OpenCriticID.HasValue)
-                    {
-                        continue;
-                    }
-
-                    var subGameOpenCriticGame = await _openCriticService.GetOpenCriticGame(subGame.OpenCriticID.Value);
-
-                    if (subGameOpenCriticGame.HasValue)
-                    {
-                        await _interLeagueService.UpdateCriticStats(subGame, subGameOpenCriticGame.Value);
-                    }
-                }
-            }
-
+            await _adminService.RefreshCriticInfo();
             return Ok();
         }
 
@@ -249,7 +204,7 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RefreshCaches()
         {
-            await _interLeagueService.RefreshCaches();
+            await _adminService.RefreshCaches();
             return Ok();
         }
     }
