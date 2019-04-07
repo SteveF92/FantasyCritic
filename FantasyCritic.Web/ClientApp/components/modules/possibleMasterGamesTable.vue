@@ -4,22 +4,26 @@
           <tr class="bg-primary">
             <th>Game Name</th>
             <th>Estimated Release Date</th>
+            <th class="no-mobile">Eligibility Level</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-            <tr v-for="game in possibleGames">
-              <td>
-                <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="game" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
-              </td>
-              <td v-bind:class="{ 'text-danger': game.isReleased }" class="release-date">
-                <span>{{game.estimatedReleaseDate}}</span>
-                <span v-show="game.isReleased">(Released)</span>
-              </td>
-              <td class="select-cell">
-                  <b-button size="sm" variant="info" v-on:click="selectGame(game)">Select</b-button>
-              </td>
-            </tr>
+          <tr v-for="game in possibleGames">
+            <td>
+              <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="game" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
+            </td>
+            <td v-bind:class="{ 'text-danger': game.isReleased }" class="release-date">
+              <span>{{game.estimatedReleaseDate}}</span>
+              <span v-show="game.isReleased">(Released)</span>
+            </td>
+            <td class="no-mobile">
+              <eligibilityBadge :eligibilityLevel="game.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
+            </td>
+            <td class="select-cell">
+              <b-button size="sm" variant="info" v-on:click="selectGame(game)">Select</b-button>
+            </td>
+          </tr>
         </tbody>
     </table>
 </template>
@@ -70,5 +74,11 @@
 
   .select-cell {
     text-align: center;
+  }
+
+  @media only screen and (max-width: 450px) {
+    .no-mobile {
+      display: none;
+    }
   }
 </style>
