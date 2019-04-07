@@ -1,10 +1,9 @@
 <template>
-    <table class="table table-sm table-responsive-sm table-bordered table-striped">
+    <table class="table table-sm table-bordered table-striped">
         <thead>
           <tr class="bg-primary">
             <th>Game Name</th>
             <th>Estimated Release Date</th>
-            <th>Eligibility Level</th>
             <th></th>
           </tr>
         </thead>
@@ -17,11 +16,8 @@
                 <span>{{game.estimatedReleaseDate}}</span>
                 <span v-show="game.isReleased">(Released)</span>
               </td>
-              <td>
-                <eligibilityBadge :eligibilityLevel="game.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
-              </td>
               <td class="select-cell">
-                  <b-button variant="info" v-on:click="selectGame(game)">Select</b-button>
+                  <b-button size="sm" variant="info" v-on:click="selectGame(game)">Select</b-button>
               </td>
             </tr>
         </tbody>
