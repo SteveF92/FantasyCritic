@@ -69,7 +69,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from tbl_caching_masterGameYear where Year = @year;", new { year });
+                var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from tbl_caching_mastergameyear where Year = @year;", new { year });
                 var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tbl_mastergame_subgame;");
 
                 var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
