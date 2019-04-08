@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
+using FantasyCritic.Lib.Scheduling;
+using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
 using FantasyCritic.SendGrid;
@@ -23,6 +25,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
@@ -32,8 +35,11 @@ namespace FantasyCritic.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger<Startup> _logger;
+
+        public Startup(ILogger<Startup> logger, IConfiguration configuration)
         {
+            _logger = logger;
             Configuration = configuration;
         }
 
@@ -42,6 +48,7 @@ namespace FantasyCritic.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            _logger.LogInformation("Initializing services.");
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
             int validMinutes = Convert.ToInt32(Configuration["Tokens:ValidMinutes"]);
             var keyString = Configuration["Tokens:Key"];
@@ -86,6 +93,14 @@ namespace FantasyCritic.Web
             });
 
             services.AddScoped<AdminService>();
+
+            //Add scheduled tasks & scheduler
+            services.AddSingleton<IScheduledTask, RefreshDataTask>();
+            services.AddScheduler((sender, args) =>
+            {
+                _logger.LogError(args.Exception.Message);
+                args.SetObserved();
+            });
 
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
             {

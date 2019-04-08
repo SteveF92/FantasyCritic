@@ -6,23 +6,30 @@ using System.Threading;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FantasyCritic.Lib.Scheduling
 {
     public class RefreshDataTask : IScheduledTask
     {
-        private readonly AdminService _adminService;
+        private readonly IServiceProvider _serviceProvider;
         //public string Schedule => "0 */2 * * *";
         public string Schedule => "*/2 * * * *";
 
-        public RefreshDataTask(AdminService adminService)
+        public RefreshDataTask(IServiceProvider serviceProvider)
         {
-            _adminService = adminService;
+            _serviceProvider = serviceProvider;
         }
 
-        public Task ExecuteAsync(CancellationToken cancellationToken)
+        public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            return _adminService.UpdateFantasyPoints();
+            var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+            using (var scope = serviceScopeFactory.CreateScope())
+            {
+                var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
+                await adminService.UpdateFantasyPoints();
+            }
         }
     }
 }
