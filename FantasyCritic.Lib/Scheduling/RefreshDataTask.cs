@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Scheduling
             using (var scope = serviceScopeFactory.CreateScope())
             {
                 var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
-                await adminService.UpdateFantasyPoints();
+                await adminService.RefreshCriticInfo();
             }
         }
     }
