@@ -13,8 +13,7 @@ namespace FantasyCritic.Lib.Scheduling
     public class RefreshDataTask : IScheduledTask
     {
         private readonly IServiceProvider _serviceProvider;
-        //public string Schedule => "0 */2 * * *";
-        public string Schedule => "*/2 * * * *";
+        public string Schedule => "0 */2 * * *";
 
         public RefreshDataTask(IServiceProvider serviceProvider)
         {
