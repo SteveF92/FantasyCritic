@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSharpFunctionalExtensions" Version="1.10.0" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="1.18.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="2.1.2" />
-    <PackageReference Include="morelinq" Version="3.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="NLog" Version="4.5.6" />
-    <PackageReference Include="NodaTime" Version="2.3.0" />
+    <PackageReference Include="morelinq" Version="3.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="NLog" Version="4.6.2" />
+    <PackageReference Include="NodaTime" Version="2.4.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,9 +31,6 @@
     </Reference>
     <Reference Include="Microsoft.Extensions.Options">
       <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.options\2.0.0\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Hosting">
-      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.hosting\2.0.0\lib\netstandard2.0\Microsoft.Extensions.Hosting.dll</HintPath>
     </Reference>
   </ItemGroup>
 
