@@ -16,6 +16,7 @@ using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
@@ -29,14 +30,16 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
         private readonly IClock _clock;
+        private readonly ILogger _logger;
 
-        public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService, IClock clock, InterLeagueService interLeagueService)
+        public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService, IClock clock, InterLeagueService interLeagueService, ILogger<AdminController> logger)
         {
             _adminService = adminService;
             _fantasyCriticService = fantasyCriticService;
             _openCriticService = openCriticService;
             _clock = clock;
             _interLeagueService = interLeagueService;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -51,6 +54,7 @@ namespace FantasyCritic.Web.Controllers.API
             await _adminService.RefreshCaches();
             var vm = new MasterGameViewModel(masterGame, _clock);
 
+            _logger.LogInformation($"Created master game: {masterGame.MasterGameID}");
             return CreatedAtAction("MasterGame", "Game", new {id = masterGame.MasterGameID}, vm);
         }
 
