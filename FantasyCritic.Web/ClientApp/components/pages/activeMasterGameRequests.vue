@@ -88,7 +88,8 @@
           openCriticID: request.openCriticID,
           eligibilityLevel: request.eligibilityLevel,
           yearlyInstallment: request.yearlyInstallment,
-          earlyAccess: request.earlyAccess
+          earlyAccess: request.earlyAccess,
+          requestNote: request.requestNote
         };
         this.$router.push({ name: 'masterGameCreator', query: query });
       },

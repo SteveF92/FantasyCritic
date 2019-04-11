@@ -96,7 +96,7 @@
           </div>
           <div class="form-group">
             <b-form-checkbox v-model="earlyAccess">
-              <span class="checkbox-label">Is this game currenly in early access?</span>
+              <span class="checkbox-label">Is this game currently in early access?</span>
               <p>Games that are already playable in early access are only selectable in some leagues.</p>
             </b-form-checkbox>
           </div>

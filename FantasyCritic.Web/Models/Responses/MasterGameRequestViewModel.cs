@@ -28,6 +28,7 @@ namespace FantasyCritic.Web.Models.Responses
                 MasterGame = new MasterGameViewModel(domain.MasterGame.Value, clock);
             }
             Hidden = domain.Hidden;
+            RequestNote = domain.RequestNote;
         }
 
         public Guid RequestID { get; }
@@ -38,6 +39,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int? EligibilityLevel { get; }
         public bool? YearlyInstallment { get; }
         public bool? EarlyAccess { get; }
+        public string RequestNote { get; }
 
         //Response
         public bool Answered { get; }

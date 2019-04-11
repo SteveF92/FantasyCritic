@@ -6,10 +6,23 @@
     <div v-if="openCriticID || steamID">
       <h2>Links</h2>
       <ul>
-        <li><a v-if="openCriticID" :href="openCriticLink" target="_blank">OpenCritic Link <font-awesome-icon icon="external-link-alt" /></a></li>
-        <li><a v-if="steamID" :href="steamLink" target="_blank">Steam Link <font-awesome-icon icon="external-link-alt" /></a></li>
+        <li>
+          <a v-if="openCriticID" :href="openCriticLink" target="_blank">OpenCritic Link <font-awesome-icon icon="external-link-alt" /></a>
+          <span v-else>No OpenCritic Link</span>
+        </li>
+        <li>
+          <a v-if="steamID" :href="steamLink" target="_blank">Steam Link <font-awesome-icon icon="external-link-alt" /></a>
+          <span v-else>No Steam Link</span>
+        </li>
       </ul>
     </div>
+    <div class="row" v-if="requestNote">
+      <div class="col-xl-8 col-lg-10 col-md-12 text-well">
+        <h2>Request Note</h2>
+        <p>{{requestNote}}</p>
+      </div>
+    </div>
+    <hr />
     <div class="row">
       <div class="col-xl-8 col-lg-10 col-md-12 text-well">
         <form v-on:submit.prevent="createMasterGame">
@@ -169,6 +182,7 @@
         this.eligibilityLevel = this.$route.query.eligibilityLevel;
         this.yearlyInstallment = this.$route.query.yearlyInstallment;
         this.earlyAccess = this.$route.query.earlyAccess;
+        this.requestNote = this.$route.query.requestNote;
       }
     },
     mounted() {
