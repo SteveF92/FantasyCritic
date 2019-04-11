@@ -11,6 +11,7 @@
           <thead>
             <tr class="bg-primary">
               <th scope="col" class="game-column">Game Name</th>
+              <th scope="col">User Name</th>
               <th scope="col"></th>
               <th scope="col"></th>
             </tr>
@@ -18,6 +19,7 @@
           <tbody>
             <tr v-for="request in activeRequests">
               <td>{{request.gameName}}</td>
+              <td>{{request.requesterDisplayName}}</td>
               <td class="select-cell">
                 <b-button variant="danger" size="sm" v-on:click="assignGame(request)">Assign Game</b-button>
               </td>

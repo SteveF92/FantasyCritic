@@ -9,6 +9,7 @@ namespace FantasyCritic.Web.Models.Responses
         public MasterGameRequestViewModel(MasterGameRequest domain, IClock clock)
         {
             RequestID = domain.RequestID;
+            RequesterDisplayName = domain.User.DisplayName;
             GameName = domain.GameName;
             EstimatedReleaseDate = domain.EstimatedReleaseDate;
             SteamID = domain.SteamID;
@@ -32,6 +33,7 @@ namespace FantasyCritic.Web.Models.Responses
         }
 
         public Guid RequestID { get; }
+        public string RequesterDisplayName { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
         public int? SteamID { get; }
