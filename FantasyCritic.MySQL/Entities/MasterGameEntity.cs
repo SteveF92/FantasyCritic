@@ -62,7 +62,7 @@ namespace FantasyCritic.MySQL.Entities
 
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
 
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel, 
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel,
                 YearlyInstallment, EarlyAccess, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh, addedTimestamp);
         }
     }

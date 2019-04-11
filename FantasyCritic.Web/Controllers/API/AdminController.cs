@@ -49,8 +49,9 @@ namespace FantasyCritic.Web.Controllers.API
             await _interLeagueService.CreateMasterGame(masterGame);
             await Task.Delay(1000);
             await _adminService.RefreshCaches();
+            var vm = new MasterGameViewModel(masterGame, _clock);
 
-            return Ok();
+            return CreatedAtAction("MasterGame", "Game", new {id = masterGame.MasterGameID}, vm);
         }
 
         [HttpPost]

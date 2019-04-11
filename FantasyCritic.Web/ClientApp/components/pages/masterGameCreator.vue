@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Create Master Game</h1>
-    <div v-if="showCreated" class="alert alert-success">Master Game created.</div>
+    <div v-if="createdGame" class="alert alert-success">Master Game created: {{createdGame.masterGameID}}</div>
     <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
     <div v-if="openCriticID || steamID">
       <h2>Links</h2>
@@ -80,7 +80,7 @@
   export default {
     data() {
       return {
-        showCreated: false,
+        createdGame: null,
         errorInfo: "",
         requestNote: "",
         steamID: null,
@@ -148,7 +148,7 @@
         axios
           .post('/api/admin/CreateMasterGame', request)
           .then(response => {
-            this.showCreated = true;
+            this.createdGame = response.data;
             window.scroll({
               top: 0,
               left: 0,
