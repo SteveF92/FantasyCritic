@@ -48,6 +48,7 @@
       <hr />
       <h2>Technical Credits</h2>
       <div class="text-well">
+        <h3>Software Packages</h3>
         <p>
           This site uses the following software packages heavily, and I wouldn’t be able to create this site without them.
         </p>
@@ -69,6 +70,13 @@
           <li>NLog</li>
           <li>NUnit</li>
         </ul>
+
+        <h3>Other Credits</h3>
+        <ul>
+          <li><a href="https://wildermuth.com/">Shawn Wildermuth</a>, who's ASP.NET Core + Vue.JS gave me a great introduction to Vue.JS.</li>
+          <li><a href="https://github.com/TrilonIO/aspnetcore-Vue-starter">Mark Piesak</a>, for his excellent ASP.NET Core + Vue.JS template, which forms the foundation of this website.</li>
+        </ul>
+        
       </div>
     </div>
     <hr />
