@@ -1,17 +1,21 @@
 const path = require('path')
 const webpack = require('webpack')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const bundleOutputDir = './wwwroot/dist'
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = () => {
   console.log('Building for \x1b[33m%s\x1b[0m', process.env.NODE_ENV)
 
   const isDevBuild = !(process.env.NODE_ENV && process.env.NODE_ENV === 'production')
-  const extractCSS = new ExtractTextPlugin('site.css')
+  
+  const extractCSS = new MiniCssExtractPlugin({
+    filename: 'style.css'
+  })
 
   return [{
+    mode: (isDevBuild ? 'development' :'production'  ),
     stats: { modules: false },
     entry: { 'main': './ClientApp/boot-app.js' },
     resolve: {
@@ -38,31 +42,24 @@ module.exports = () => {
       rules: [
         {
           test: /\.vue$/,
-          loader: 'vue-loader',
-          options: {
-            loaders: {
-              scss: 'vue-style-loader!css-loader!sass-loader',
-              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
-            }
-          }
+          include: /ClientApp/,
+          loader: 'vue-loader'
         },
         { test: /\.js$/, include: /ClientApp/, use: 'babel-loader' },
-        { test: /\.css$/, use: isDevBuild ? ['style-loader', 'css-loader'] : ExtractTextPlugin.extract({ use: 'css-loader' }) },
         { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' },
         {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader']
+        },
+        {
           test: /\.scss$/,
-          use: [
-            {
-              loader: 'css-loader'
-            },
-            {
-              loader: 'sass-loader'
-            }
-          ]
+          use: ['style-loader', 'css-loader', 'sass-loader']
         }
+
       ]
     },
     plugins: [
+      new VueLoaderPlugin(),
       new webpack.DllReferencePlugin({
         context: __dirname,
         manifest: require('./wwwroot/dist/vendor-manifest.json')
@@ -74,14 +71,12 @@ module.exports = () => {
         moduleFilenameTemplate: path.relative(bundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
       })
     ] : [
-      // Plugins that apply in production builds only
-        new UglifyJsPlugin(),
-        extractCSS,
-        // Compress extracted CSS.
-        new OptimizeCSSPlugin({
-          cssProcessorOptions: {
-            safe: true
-          }
+      extractCSS,
+      // Compress extracted CSS.
+      new OptimizeCSSPlugin({
+        cssProcessorOptions: {
+          safe: true
+        }
       })
     ])
   }]
