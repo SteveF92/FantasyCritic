@@ -5,7 +5,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 
-namespace FantasyCritic.Web.Models.Requests
+namespace FantasyCritic.Web.Models.RoundTrip
 {
     public class LeagueYearSettingsViewModel
     {
