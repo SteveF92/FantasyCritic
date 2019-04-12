@@ -36,7 +36,7 @@ sync(store, router);
 
 axios.interceptors.response.use(function (response) {
   return response;
-}, function(error) {
+}, function (error) {
   const originalRequest = error.config;
   if (error.code !== "ECONNABORTED" && error.response.status === 401) {
     if (!originalRequest._retry) {
@@ -85,4 +85,4 @@ export {
   app,
   router,
   store
-  };
+};
