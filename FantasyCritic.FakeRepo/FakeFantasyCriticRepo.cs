@@ -63,12 +63,12 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<League>>(new List<League>());
         }
 
         public Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<League>>(new List<League>());
         }
 
         public Task FollowLeague(League league, FantasyCriticUser user)
@@ -88,7 +88,7 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<LeagueInvite>>(new List<LeagueInvite>());
         }
 
         public Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league)
