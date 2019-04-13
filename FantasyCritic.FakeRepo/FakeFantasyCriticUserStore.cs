@@ -7,11 +7,19 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using NodaTime;
 
 namespace FantasyCritic.FakeRepo
 {
     public class FakeFantasyCriticUserStore : IFantasyCriticUserStore
     {
+        private readonly IClock _clock;
+
+        public FakeFantasyCriticUserStore(IClock clock)
+        {
+            _clock = clock;
+        }
+
         public Task<string> GetUserIdAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();

@@ -10,13 +10,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.FakeRepo
 {
-    public class FakeFantasyRoleStore : IFantasyCriticRoleStore
+    public class FakeFantasyCriticRoleStore : IFantasyCriticRoleStore
     {
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public Task<IdentityResult> CreateAsync(FantasyCriticRole role, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -63,6 +59,11 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task<FantasyCriticRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
         {
             throw new NotImplementedException();
         }

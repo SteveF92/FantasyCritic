@@ -13,6 +13,13 @@ namespace FantasyCritic.FakeRepo
 {
     public class FakeMasterGameRepo : IMasterGameRepo
     {
+        private readonly FakeFantasyCriticUserStore _userStore;
+
+        public FakeMasterGameRepo(FakeFantasyCriticUserStore userStore)
+        {
+            _userStore = userStore;
+        }
+
         public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
         {
             throw new NotImplementedException();

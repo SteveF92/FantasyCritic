@@ -11,6 +11,15 @@ namespace FantasyCritic.FakeRepo
 {
     public class FakeFantasyCriticRepo : IFantasyCriticRepo
     {
+        private readonly FakeFantasyCriticUserStore _userStore;
+        private readonly FakeMasterGameRepo _fakeMasterGameRepo;
+
+        public FakeFantasyCriticRepo(FakeFantasyCriticUserStore userStore, FakeMasterGameRepo fakeMasterGameRepo)
+        {
+            _userStore = userStore;
+            _fakeMasterGameRepo = fakeMasterGameRepo;
+        }
+
         public Task<Maybe<League>> GetLeagueByID(Guid id)
         {
             throw new NotImplementedException();
