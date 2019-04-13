@@ -49,7 +49,7 @@ namespace FantasyCritic.Web
         public void ConfigureServices(IServiceCollection services)
         {
             _logger.LogInformation("Initializing services.");
-            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            
             int validMinutes = Convert.ToInt32(Configuration["Tokens:ValidMinutes"]);
             var keyString = Configuration["Tokens:Key"];
             var issuer = Configuration["Tokens:Issuer"];
@@ -63,7 +63,9 @@ namespace FantasyCritic.Web
 
             services.AddHttpClient();
 
+            //Repository Setup. Uncomment either the MySQL section OR the fake repo section. Not both.
             ////MySQL Repos
+            //string connectionString = Configuration.GetConnectionString("DefaultConnection");
             //var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
             //var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             //services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
@@ -82,6 +84,7 @@ namespace FantasyCritic.Web
             services.AddScoped<IFantasyCriticRepo>(factory => new FakeFantasyCriticRepo(userStore, new FakeMasterGameRepo(userStore)));
             services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
+
 
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticRoleManager>();
