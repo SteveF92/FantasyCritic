@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using FantasyCritic.Lib.Domain;
 
-namespace FantasyCritic.FakeRepo
+namespace FantasyCritic.FakeRepo.Factories
 {
     internal class EligibilityLevelFactory
     {

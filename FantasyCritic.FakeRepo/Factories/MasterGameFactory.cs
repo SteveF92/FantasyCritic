@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using NodaTime;
 using NodaTime.Text;
 
-namespace FantasyCritic.FakeRepo
+namespace FantasyCritic.FakeRepo.Factories
 {
     internal static class MasterGameFactory
     {

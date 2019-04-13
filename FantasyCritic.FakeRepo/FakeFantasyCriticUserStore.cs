@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FantasyCritic.FakeRepo.Factories;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
