@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
+using NodaTime;
 
 namespace FantasyCritic.FakeRepo
 {
@@ -167,7 +168,10 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<SupportedYear>> (new List<SupportedYear>()
+            {
+                new SupportedYear(2019, true, true, new LocalDate(2018, 12, 7), false)
+            });
         }
 
         public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -262,12 +266,12 @@ namespace FantasyCritic.FakeRepo
 
         public Task<SystemWideSettings> GetSystemWideSettings()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new SystemWideSettings(false));
         }
 
         public Task<SiteCounts> GetSiteCounts()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new SiteCounts(3001, 1140, 300, 150));
         }
 
         public Task SetBidProcessingMode(bool modeOn)
