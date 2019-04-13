@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.SendGrid", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Test", "FantasyCritic.Test\FantasyCritic.Test.csproj", "{32D58B14-D35E-48F8-B6C3-4C7201A2853D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.FakeRepo", "FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj", "{024EACD2-3B4D-4980-853D-84172900890D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{32D58B14-D35E-48F8-B6C3-4C7201A2853D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32D58B14-D35E-48F8-B6C3-4C7201A2853D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32D58B14-D35E-48F8-B6C3-4C7201A2853D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{024EACD2-3B4D-4980-853D-84172900890D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{024EACD2-3B4D-4980-853D-84172900890D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{024EACD2-3B4D-4980-853D-84172900890D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{024EACD2-3B4D-4980-853D-84172900890D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
