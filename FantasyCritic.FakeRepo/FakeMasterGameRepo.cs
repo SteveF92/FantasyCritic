@@ -60,17 +60,18 @@ namespace FantasyCritic.FakeRepo
 
         public Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(EligibilityLevelFactory.GetEligibilityLevels().Single(x => x.Level == eligibilityLevel));
         }
 
         public Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(EligibilityLevelFactory.GetEligibilityLevels());
         }
 
         public Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
         {
-            throw new NotImplementedException();
+            Maybe<MasterGame> masterGame = _masterGames.SingleOrDefault(x => x.MasterGameID == masterGameID);
+            return Task.FromResult(masterGame);
         }
 
         public Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID)
@@ -85,7 +86,7 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<MasterGame>> GetMasterGames()
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<MasterGame>>(_masterGames);
         }
 
         public Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year)
