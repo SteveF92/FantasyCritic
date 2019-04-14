@@ -16,11 +16,13 @@ namespace FantasyCritic.FakeRepo
     {
         private readonly IClock _clock;
         private readonly List<FantasyCriticUser> _fantasyCriticUsers;
+        private readonly Dictionary<FantasyCriticUser, List<string>> _refreshTokens;
 
         public FakeFantasyCriticUserStore(IClock clock)
         {
             _clock = clock;
             _fantasyCriticUsers = UserFactory.GetUsers();
+            _refreshTokens = new Dictionary<FantasyCriticUser, List<string>>();
         }
 
         public Task<string> GetUserIdAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -175,22 +177,48 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<string>> GetRefreshTokens(FantasyCriticUser user)
         {
-            throw new NotImplementedException();
+            if (!_refreshTokens.ContainsKey(user))
+            {
+                return Task.FromResult<IReadOnlyList<string>>(new List<string>());
+            }
+
+            return Task.FromResult<IReadOnlyList<string>>(_refreshTokens[user]);
         }
 
         public Task AddRefreshToken(FantasyCriticUser user, string refreshToken)
         {
+            if (!_refreshTokens.ContainsKey(user))
+            {
+                _refreshTokens.Add(user, new List<string>());
+            }
+
+            _refreshTokens[user].Add(refreshToken);
+
             return Task.CompletedTask;
         }
 
         public Task RemoveRefreshToken(FantasyCriticUser user, string refreshToken)
         {
+            if (!_refreshTokens.ContainsKey(user))
+            {
+                return Task.CompletedTask;
+            }
+
+            _refreshTokens[user].Remove(refreshToken);
+
             return Task.CompletedTask;
         }
 
         public Task RemoveAllRefreshTokens(FantasyCriticUser user)
         {
-            throw new NotImplementedException();
+            if (!_refreshTokens.ContainsKey(user))
+            {
+                return Task.CompletedTask;
+            }
+
+            _refreshTokens[user] = new List<string>();
+
+            return Task.CompletedTask;
         }
 
         public void Dispose()
