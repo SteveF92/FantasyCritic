@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using FantasyCritic.FakeRepo.Factories;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using NodaTime;
@@ -14,21 +15,30 @@ namespace FantasyCritic.FakeRepo
     {
         private readonly FakeFantasyCriticUserStore _userStore;
         private readonly FakeMasterGameRepo _fakeMasterGameRepo;
+        private readonly List<League> _leagues;
+        private readonly List<LeagueYear> _leagueYears;
+        private readonly Dictionary<League, List<FantasyCriticUser>> _usersInLeagues;
+        private readonly List<Publisher> _publishers;
+        private readonly List<PublisherGame> _publisherGames;
 
         public FakeFantasyCriticRepo(FakeFantasyCriticUserStore userStore, FakeMasterGameRepo fakeMasterGameRepo)
         {
             _userStore = userStore;
             _fakeMasterGameRepo = fakeMasterGameRepo;
+            _leagueYears = LeagueFactory.GetLeagueYears();
+            _usersInLeagues = LeagueFactory.GetUsersInLeagues();
+            _publishers = PublisherFactory.GetPublishers();
+            _publisherGames = PublisherFactory.GetPublisherGames();
         }
 
         public Task<Maybe<League>> GetLeagueByID(Guid id)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<Maybe<League>>(_leagues.SingleOrDefault(x => x.LeagueID == id));
         }
 
         public Task<Maybe<LeagueYear>> GetLeagueYear(League requestLeague, int requestYear)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<Maybe<LeagueYear>>(_leagueYears.SingleOrDefault(x => x.League.LeagueID == requestLeague.LeagueID && x.Year == requestYear));
         }
 
         public Task CreateLeague(League league, int initialYear, LeagueOptions options)
@@ -48,25 +58,26 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<League>> GetAllLeagues()
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<League>>(_leagues);
         }
 
         public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<FantasyCriticUser>>(_usersInLeagues.Single(x => x.Key.Equals(league)).Value);
         }
 
         public Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<FantasyCriticUser>>(new List<FantasyCriticUser>());
         }
 
-        public Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser)
+        public Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user)
         {
-            return Task.FromResult<IReadOnlyList<League>>(new List<League>());
+            var leaguesForUser = _usersInLeagues.Where(x => x.Value.Contains(user)).Select(x => x.Key).ToList();
+            return Task.FromResult<IReadOnlyList<League>>(leaguesForUser);
         }
 
-        public Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser)
+        public Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser user)
         {
             return Task.FromResult<IReadOnlyList<League>>(new List<League>());
         }
@@ -93,7 +104,7 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<LeagueInvite>>(new List<LeagueInvite>());
         }
 
         public Task SaveInvite(LeagueInvite leagueInvite)
@@ -123,17 +134,24 @@ namespace FantasyCritic.FakeRepo
 
         public Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<Maybe<Publisher>>(_publishers.SingleOrDefault(x => x.PublisherID == publisherID));
         }
 
         public Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
         {
-            throw new NotImplementedException();
+            var publisher = _publishers
+                .Where(x => x.League.Equals(league))
+                .Where(x => x.Year == year)
+                .Where(x => x.User.Equals(user))
+                .SingleOrDefault();
+            return Task.FromResult<Maybe<Publisher>>(publisher);
+
         }
 
         public Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID)
         {
-            throw new NotImplementedException();
+            var publisherGame = _publisherGames.SingleOrDefault(x => x.PublisherGameID == publisherGameID);
+            return Task.FromResult<Maybe<PublisherGame>>(publisherGame);
         }
 
         public Task CreatePublisher(Publisher publisher)
@@ -143,17 +161,28 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year)
         {
-            throw new NotImplementedException();
+            var publishers = _publishers
+                .Where(x => x.League.Equals(league))
+                .Where(x => x.Year == year)
+                .ToList();
+            return Task.FromResult<IReadOnlyList<Publisher>>(publishers);
         }
 
         public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year, IEnumerable<FantasyCriticUser> usersInLeague)
         {
-            throw new NotImplementedException();
+            var publishers = _publishers
+                .Where(x => x.League.Equals(league))
+                .Where(x => x.Year == year)
+                .ToList();
+            return Task.FromResult<IReadOnlyList<Publisher>>(publishers);
         }
 
         public Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year)
         {
-            throw new NotImplementedException();
+            var publishers = _publishers
+                .Where(x => x.Year == year)
+                .ToList();
+            return Task.FromResult<IReadOnlyList<Publisher>>(publishers);
         }
 
         public Task AddPublisherGame(PublisherGame publisherGame)
@@ -176,7 +205,10 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
         {
-            throw new NotImplementedException();
+            var leagueYears = _leagueYears
+                .Where(x => x.Year == year)
+                .ToList();
+            return Task.FromResult<IReadOnlyList<LeagueYear>>(leagueYears);
         }
 
         public Task UpdateFantasyPoints(Dictionary<Guid, decimal?> publisherGameScores)
@@ -206,17 +238,19 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IReadOnlyList<PickupBid>>(new List<PickupBid>());
         }
 
         public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year)
         {
-            throw new NotImplementedException();
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> activePickupBids = new Dictionary<LeagueYear, IReadOnlyList<PickupBid>>();
+            return Task.FromResult(activePickupBids);
         }
 
         public Task<Maybe<PickupBid>> GetPickupBid(Guid bidID)
         {
-            throw new NotImplementedException();
+            Maybe<PickupBid> pickupBid = Maybe<PickupBid>.None;
+            return Task.FromResult(pickupBid);
         }
 
         public Task AddLeagueAction(LeagueAction action)
@@ -226,7 +260,8 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
         {
-            throw new NotImplementedException();
+            IReadOnlyList<LeagueAction> leagueActions = new List<LeagueAction>();
+            return Task.FromResult(leagueActions);
         }
 
         public Task ChangePublisherName(Publisher publisher, string publisherName)
@@ -261,7 +296,7 @@ namespace FantasyCritic.FakeRepo
 
         public Task<SystemWideValues> GetSystemWideValues()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new SystemWideValues(7m, -1m));
         }
 
         public Task<SystemWideSettings> GetSystemWideSettings()
