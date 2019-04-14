@@ -7,7 +7,7 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class FantasyCriticUser
+    public class FantasyCriticUser : IEquatable<FantasyCriticUser>
     {
         public FantasyCriticUser(Guid userID, string displayName, int displayNumber, string emailAddress, string normalizedEmailAddress, 
             bool emailConfirmed, string securityStamp, string passwordHash, Instant lastChangedCredentials)
@@ -36,6 +36,26 @@ namespace FantasyCritic.Lib.Domain
         public void UpdateLastUsedCredentials(Instant currentInstant)
         {
             LastChangedCredentials = currentInstant;
+        }
+
+        public bool Equals(FantasyCriticUser other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return UserID.Equals(other.UserID);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((FantasyCriticUser) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return UserID.GetHashCode();
         }
     }
 }
