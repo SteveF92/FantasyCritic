@@ -25,6 +25,7 @@ namespace FantasyCritic.FakeRepo
         {
             _userStore = userStore;
             _fakeMasterGameRepo = fakeMasterGameRepo;
+            _leagues = LeagueFactory.GetLeagues();
             _leagueYears = LeagueFactory.GetLeagueYears();
             _usersInLeagues = LeagueFactory.GetUsersInLeagues();
             _publishers = PublisherFactory.GetPublishers();
@@ -336,7 +337,16 @@ namespace FantasyCritic.FakeRepo
 
         public Task<bool> LeagueHasBeenStarted(Guid leagueID)
         {
-            throw new NotImplementedException();
+            var leagueYears = _leagueYears.Where(x => x.League.LeagueID == leagueID);
+            foreach (var leagueYear in leagueYears)
+            {
+                if (leagueYear.PlayStatus.PlayStarted)
+                {
+                    return Task.FromResult(true);
+                }
+            }
+
+            return Task.FromResult(false);
         }
 
         public Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults)

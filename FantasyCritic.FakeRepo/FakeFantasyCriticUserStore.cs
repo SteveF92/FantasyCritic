@@ -195,7 +195,7 @@ namespace FantasyCritic.FakeRepo
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+
         }
     }
 }
