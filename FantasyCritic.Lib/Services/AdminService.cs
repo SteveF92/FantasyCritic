@@ -50,8 +50,8 @@ namespace FantasyCritic.Lib.Services
                 if (masterGame.IsReleased(_clock) && masterGame.ReleaseDate.HasValue)
                 {
                     var year = masterGame.ReleaseDate.Value.Year;
-                    var supportedYear = supportedYears.Single(x => x.Year == year);
-                    if (supportedYear.Finished)
+                    var supportedYear = supportedYears.SingleOrDefault(x => x.Year == year);
+                    if (supportedYear != null && supportedYear.Finished)
                     {
                         continue;
                     }
