@@ -19,16 +19,14 @@
                :items="gamesForYear"
                :fields="gameFields"
                bordered
-               striped
-               responsive>
+               :small="tableIsSmall"
+               responsive
+               striped>
         <template slot="gameName" slot-scope="data">
           <masterGamePopover :masterGame="data.item"></masterGamePopover>
         </template>
         <template slot="releaseDate" slot-scope="data">
           {{getReleaseDate(data.item)}}
-        </template>
-        <template slot="isReleased" slot-scope="data">
-          {{data.item.isReleased | yesNo}}
         </template>
         <template slot="criticScore" slot-scope="data">
           <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
@@ -70,13 +68,12 @@
         gameFields: [
           { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
           { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-          { key: 'isReleased', label: 'Released?', sortable: true, thClass: 'bg-primary' },
-          { key: 'criticScore', label: 'Critic Score Link', thClass: 'bg-primary' },
+          { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' },
           { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
-          { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: 'bg-primary' },
-          { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: 'bg-primary' },
-          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: 'bg-primary' },
-          { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: 'bg-primary' }
+          { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary','sm-screen-minimum'], tdClass: 'sm-screen-minimum' },
+          { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary','sm-screen-minimum'], tdClass: 'sm-screen-minimum' },
+          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' },
+          { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' }
         ],
         sortBy: 'dateAdjustedHypeFactor',
         sortDesc: true
@@ -96,6 +93,13 @@
       isAuth() {
         return this.$store.getters.tokenIsCurrent();
       },
+      tableIsSmall() {
+        if (window.innerWidth < 768) {
+          return true;
+        }
+
+        return false;
+      }
     },
     methods: {
       fetchSupportedYears() {

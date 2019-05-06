@@ -113,3 +113,14 @@ div.alert {
  background: rgba(50, 50, 50, 0.7);
  border-radius: 5px;
 }
+
+@media only screen and (max-width: 768px) {
+    .md-screen-minimum{
+        display: none;
+    }
+}
+@media only screen and (max-width: 576px) {
+    .sm-screen-minimum {
+        display: none;
+    }
+}
