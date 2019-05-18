@@ -349,7 +349,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var leagueViewModel = new LeagueYearSettingsViewModel(league.Value, leagueYear.Value);
+            var leagueViewModel = new LeagueYearSettingsViewModel(leagueYear.Value);
             return Ok(leagueViewModel);
         }
 

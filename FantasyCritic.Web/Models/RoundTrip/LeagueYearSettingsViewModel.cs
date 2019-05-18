@@ -14,11 +14,11 @@ namespace FantasyCritic.Web.Models.RoundTrip
 
         }
 
-        public LeagueYearSettingsViewModel(League league, LeagueYear leagueYear)
+        public LeagueYearSettingsViewModel(LeagueYear leagueYear)
         {
-            LeagueID = league.LeagueID;
+            LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
-            LeagueName = league.LeagueName;
+            LeagueName = leagueYear.League.LeagueName;
             StandardGames = leagueYear.Options.StandardGames;
             GamesToDraft = leagueYear.Options.GamesToDraft;
             CounterPicks = leagueYear.Options.CounterPicks;
