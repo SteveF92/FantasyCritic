@@ -27,7 +27,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), null, 84.8095m, 2018, StandardEligibilityLevel, false, false, "", 
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), null, 84.8095m, 2018, StandardEligibilityLevel, false, false, false, false, "", 
                 fakeClock.GetCurrentInstant(), false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null, 2018);
 
@@ -44,7 +44,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), null, null, 2018, StandardEligibilityLevel, false, false, "", 
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), null, null, 2018, StandardEligibilityLevel, false, false, false, false, "", 
                 fakeClock.GetCurrentInstant(), false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, null, new MasterGameYear(masterGame, 2018), null, null, 2018);
 
@@ -61,7 +61,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 94.8125m, 2018, StandardEligibilityLevel, false, false, "", 
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 94.8125m, 2018, StandardEligibilityLevel, false, false, false, false, "", 
                 fakeClock.GetCurrentInstant(), false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null, 2018);
 
@@ -78,7 +78,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018, StandardEligibilityLevel, false, false, "", 
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018, StandardEligibilityLevel, false, false, false, false, "", 
                 fakeClock.GetCurrentInstant(), false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null, 2018);
 
@@ -95,7 +95,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2018, StandardEligibilityLevel, false, false, "", 
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2018, StandardEligibilityLevel, false, false, false, false, "", 
                 fakeClock.GetCurrentInstant(), false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null, 2018);
 
@@ -112,7 +112,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2019, StandardEligibilityLevel, false, false, "", 
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), null, null, 2019, StandardEligibilityLevel, false, false, false, false, "", 
                 fakeClock.GetCurrentInstant(), false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null, 2018);
 
@@ -129,7 +129,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018, StandardEligibilityLevel, false, false, "", 
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), null, 65.8559m, 2018, StandardEligibilityLevel, false, false, false, false, "", 
                 fakeClock.GetCurrentInstant(), false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, null, new MasterGameYear(masterGame, 2018), null, null, 2018);
 
