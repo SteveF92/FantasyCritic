@@ -21,7 +21,7 @@ namespace FantasyCritic.Web.Models.Requests
         public MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp)
         {
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, null, null, MinimumReleaseYear,
-                eligibilityLevel, false, false, "", null, false, timestamp);
+                eligibilityLevel, false, false, false, false, "", null, false, timestamp);
             return masterGame;
         }
     }

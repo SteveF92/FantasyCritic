@@ -22,6 +22,8 @@ namespace FantasyCritic.Web.Models.Requests
         public int? EligibilityLevel { get; set; }
         public bool? YearlyInstallment { get; set; }
         public bool? EarlyAccess { get; set; }
+        public bool? FreeToPlay { get; set; }
+        public bool? ReleasedInternationally { get; set; }
 
         public string RequestNote { get; set; }
 
@@ -50,7 +52,7 @@ namespace FantasyCritic.Web.Models.Requests
             }
 
             return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, EstimatedReleaseDate, eligibilityLevel,
-                YearlyInstallment, EarlyAccess, false, null, null, Maybe<MasterGame>.None, false);
+                YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, false, null, null, Maybe<MasterGame>.None, false);
         }
     }
 }

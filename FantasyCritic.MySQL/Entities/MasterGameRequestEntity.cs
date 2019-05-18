@@ -60,6 +60,8 @@ namespace FantasyCritic.MySQL.Entities
         public int? EligibilityLevel { get; set; }
         public bool? YearlyInstallment { get; set; }
         public bool? EarlyAccess { get; set; }
+        public bool? FreeToPlay { get; set; }
+        public bool? ReleasedInternationally { get; set; }
 
         //Response
         public bool Answered { get; set; }
@@ -79,7 +81,7 @@ namespace FantasyCritic.MySQL.Entities
             }
 
             return new MasterGameRequest(RequestID, user, requestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, EstimatedReleaseDate, eligibilityLevel,
-                YearlyInstallment, EarlyAccess, Answered, responseTimestamp, ResponseNote, masterGame, Hidden);
+                YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, Answered, responseTimestamp, ResponseNote, masterGame, Hidden);
         }
     }
 }
