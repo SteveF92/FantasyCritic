@@ -38,6 +38,8 @@ namespace FantasyCritic.Lib.Domain
             MaximumEligibilityLevel = parameters.MaximumEligibilityLevel;
             AllowYearlyInstallments = parameters.AllowYearlyInstallments;
             AllowEarlyAccess = parameters.AllowEarlyAccess;
+            AllowFreeToPlay = parameters.AllowFreeToPlay;
+            AllowReleasedInternationally = parameters.AllowReleasedInternationally;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
@@ -52,6 +54,8 @@ namespace FantasyCritic.Lib.Domain
             MaximumEligibilityLevel = parameters.MaximumEligibilityLevel;
             AllowYearlyInstallments = parameters.AllowYearlyInstallments;
             AllowEarlyAccess = parameters.AllowEarlyAccess;
+            AllowFreeToPlay = parameters.AllowFreeToPlay;
+            AllowReleasedInternationally = parameters.AllowReleasedInternationally;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;

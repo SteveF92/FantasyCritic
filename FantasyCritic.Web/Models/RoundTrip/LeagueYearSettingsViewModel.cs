@@ -25,6 +25,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
             MaximumEligibilityLevel = leagueYear.Options.MaximumEligibilityLevel.Level;
             AllowYearlyInstallments = leagueYear.Options.AllowYearlyInstallments;
             AllowEarlyAccess = leagueYear.Options.AllowEarlyAccess;
+            AllowFreeToPlay = leagueYear.Options.AllowFreeToPlay;
+            AllowReleasedInternationally = leagueYear.Options.AllowReleasedInternationally;
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
@@ -49,6 +51,11 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Required]
         public bool AllowEarlyAccess { get; set; }
         [Required]
+        public bool AllowFreeToPlay { get; set; }
+        [Required]
+        public bool AllowReleasedInternationally { get; set; }
+
+        [Required]
         public string DraftSystem { get; set; }
         [Required]
         public string PickupSystem { get; set; }
@@ -64,7 +71,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,
-                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, draftSystem, pickupSystem, scoringSystem, PublicLeague);
+                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay, AllowReleasedInternationally,
+                draftSystem, pickupSystem, scoringSystem, PublicLeague);
             return parameters;
         }
     }

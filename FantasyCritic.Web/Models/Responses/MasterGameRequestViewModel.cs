@@ -20,6 +20,8 @@ namespace FantasyCritic.Web.Models.Responses
             }
             YearlyInstallment = domain.YearlyInstallment;
             EarlyAccess = domain.EarlyAccess;
+            FreeToPlay = domain.FreeToPlay;
+            ReleasedInternationally = domain.ReleasedInternationally;
 
             Answered = domain.Answered;
             ResponseNote = domain.ResponseNote;
@@ -41,6 +43,8 @@ namespace FantasyCritic.Web.Models.Responses
         public int? EligibilityLevel { get; }
         public bool? YearlyInstallment { get; }
         public bool? EarlyAccess { get; }
+        public bool? FreeToPlay { get; }
+        public bool? ReleasedInternationally { get; }
         public string RequestNote { get; }
 
         //Response

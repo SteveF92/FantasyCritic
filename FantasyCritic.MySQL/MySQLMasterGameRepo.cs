@@ -174,8 +174,10 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_mastergame(MasterGameID,GameName,EstimatedReleaseDate,ReleaseDate,OpenCriticID,CriticScore,MinimumReleaseYear,EligibilityLevel,YearlyInstallment,EarlyAccess,BoxartFileName) VALUES " +
-                    "(@MasterGameID,@GameName,@EstimatedReleaseDate,@ReleaseDate,@OpenCriticID,@CriticScore,@MinimumReleaseYear,@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@BoxartFileName);",
+                    "insert into tbl_mastergame(MasterGameID,GameName,EstimatedReleaseDate,ReleaseDate,OpenCriticID,CriticScore,MinimumReleaseYear," +
+                    "EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,BoxartFileName) VALUES " +
+                    "(@MasterGameID,@GameName,@EstimatedReleaseDate,@ReleaseDate,@OpenCriticID,@CriticScore,@MinimumReleaseYear," +
+                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@BoxartFileName);",
                     entity);
             }
         }
@@ -222,9 +224,9 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync(
                     "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,EstimatedReleaseDate,EligibilityLevel," +
-                    "YearlyInstallment,EarlyAccess,Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
+                    "YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
                     "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@EstimatedReleaseDate," +
-                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
+                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
                     entity);
             }
         }

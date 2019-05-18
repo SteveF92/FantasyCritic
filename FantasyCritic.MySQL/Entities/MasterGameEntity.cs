@@ -27,6 +27,8 @@ namespace FantasyCritic.MySQL.Entities
             EligibilityLevel = masterGame.EligibilityLevel.Level;
             YearlyInstallment = masterGame.YearlyInstallment;
             EarlyAccess = masterGame.EarlyAccess;
+            FreeToPlay = masterGame.FreeToPlay;
+            ReleasedInternationally = masterGame.ReleasedInternationally;
             BoxartFileName = masterGame.BoxartFileName;
         }
 
