@@ -190,6 +190,18 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's yearly installment settings.", true));
             }
 
+            bool freeToPlayEligible = (!masterGame.FreeToPlay || yearOptions.AllowFreeToPlay);
+            if (!freeToPlayEligible)
+            {
+                claimErrors.Add(new ClaimError("That game is not eligible under this league's free to play settings.", true));
+            }
+
+            bool releasedInternationallyEligible = (!masterGame.ReleasedInternationally || yearOptions.AllowReleasedInternationally);
+            if (!releasedInternationallyEligible)
+            {
+                claimErrors.Add(new ClaimError("That game is not eligible under this league's international release settings.", true));
+            }
+
             bool released = masterGame.IsReleased(_clock);
             if (released)
             {

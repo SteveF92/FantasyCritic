@@ -33,6 +33,8 @@ namespace FantasyCritic.MySQL.Entities
             }
             YearlyInstallment = domain.YearlyInstallment;
             EarlyAccess = domain.EarlyAccess;
+            FreeToPlay = domain.FreeToPlay;
+            ReleasedInternationally = domain.ReleasedInternationally;
 
             Answered = domain.Answered;
             ResponseTimestamp = domain.ResponseTimestamp?.ToDateTimeUtc();

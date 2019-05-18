@@ -12,8 +12,8 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
-        public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks,
-            EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, bool allowEarlyAccess,
+        public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, EligibilityLevel maximumEligibilityLevel, 
+            bool allowYearlyInstallments, bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally,
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
@@ -22,6 +22,8 @@ namespace FantasyCritic.Lib.Domain
             MaximumEligibilityLevel = maximumEligibilityLevel;
             AllowYearlyInstallments = allowYearlyInstallments;
             AllowEarlyAccess = allowEarlyAccess;
+            AllowFreeToPlay = allowFreeToPlay;
+            AllowReleasedInternationally = allowReleasedInternationally;
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
@@ -61,6 +63,8 @@ namespace FantasyCritic.Lib.Domain
         public int CounterPicks { get; }
         public bool AllowYearlyInstallments { get; }
         public bool AllowEarlyAccess { get; }
+        public bool AllowFreeToPlay { get; }
+        public bool AllowReleasedInternationally { get; }
         public EligibilityLevel MaximumEligibilityLevel { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
