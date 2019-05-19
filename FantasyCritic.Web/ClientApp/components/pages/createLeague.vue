@@ -100,13 +100,25 @@
               <div>
                 <b-form-checkbox v-model="allowYearlyInstallments">
                   <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
-                  <p>These are often pretty safe bets, but the scores vary just enough year to year for me to recommend that you leave this on.</p>
+                  <p>These are often pretty safe bets, so they may not be the most interesting choices.</p>
                 </b-form-checkbox>
               </div>
               <div>
                 <b-form-checkbox v-model="allowEarlyAccess">
                   <span class="checkbox-label">Allow Early Access Games</span>
                   <p>If this is left unchecked, a game that is already in early access will not be selectable. Games that are planned for early access that are not yet playable are always selectable.</p>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox v-model="allowFreeToPlay">
+                  <span class="checkbox-label">Allow Free to Play Games</span>
+                  <p>These are often hard to review and may not get a score.</p>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox v-model="allowReleasedInternationally">
+                  <span class="checkbox-label">Allow games already released in other regions</span>
+                  <p>If this is left unchecked, a game that has already been released in another region will not be selectable. For example, a game that came out in Japan in 2018 and is getting an English release in 2019.</p>
                 </b-form-checkbox>
               </div>
               <div>
@@ -151,8 +163,10 @@ export default {
           counterPicks: "",
           initialYear: "",
           maximumEligibilityLevel: 0,
-          allowYearlyInstallments: true,
+          allowYearlyInstallments: false,
           allowEarlyAccess: false,
+          allowFreeToPlay: false,
+          allowReleasedInternationally: false,
           publicLeague: true,
           testLeague: false,
           possibleLeagueOptions: null,
@@ -218,6 +232,8 @@ export default {
             maximumEligibilityLevel: this.maximumEligibilityLevel,
             allowYearlyInstallments: this.allowYearlyInstallments,
             allowEarlyAccess: this.allowEarlyAccess,
+            allowFreeToPlay: this.allowFreeToPlay,
+            allowReleasedInternationally: this.allowReleasedInternationally,
             publicLeague: this.publicLeague,
             testLeague: this.testLeague,
             draftSystem: "Flexible",

@@ -77,7 +77,7 @@
           <li>How many games to draft vs how many games to leave as mid-year pickups.</li>
           <li>Number of counter picks to draft per team.</li>
           <li>The league’s “eligibility level” (more on this below).</li>
-          <li>Whether or not to allow yearly installments and early access games.</li>
+          <li>Whether or not to allow yearly installments, early access games, free to play games, and games already released in other regions.</li>
         </ul>
       </p>
       <h3>How many games should I allow per team?</h3>

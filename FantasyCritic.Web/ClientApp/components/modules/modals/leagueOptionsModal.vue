@@ -31,6 +31,14 @@
             <th class="bg-primary">Allow Early Access</th>
             <td>{{leagueYearOptions.allowEarlyAccess | yesNo}}</td>
           </tr>
+          <tr>
+            <th class="bg-primary">Allow Free to Play</th>
+            <td>{{leagueYearOptions.allowFreeToPlay | yesNo}}</td>
+          </tr>
+          <tr>
+            <th class="bg-primary">Allow Released Internationally</th>
+            <td>{{leagueYearOptions.allowReleasedInternationally | yesNo}}</td>
+          </tr>
 
           <tr>
             <th class="bg-primary">Public League</th>

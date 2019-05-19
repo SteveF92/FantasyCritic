@@ -91,6 +91,8 @@
           eligibilityLevel: request.eligibilityLevel,
           yearlyInstallment: request.yearlyInstallment,
           earlyAccess: request.earlyAccess,
+          freeToPlay: request.freeToPlay,
+          releasedInternationally: request.releasedInternationally,
           requestNote: request.requestNote
         };
         this.$router.push({ name: 'masterGameCreator', query: query });

@@ -66,7 +66,19 @@
               <div>
                 <b-form-checkbox id="early-access-checkbox"
                                  v-model="selectedLeagueOptions.allowEarlyAccess">
-                  <span class="checkbox-label">Allow Early Access Games</span>
+                  <span class="checkbox-label">Allow Early Access games</span>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox id="freetoplay-checkbox"
+                                 v-model="selectedLeagueOptions.allowFreeToPlay">
+                  <span class="checkbox-label">Allow Free to Play games</span>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox id="released-internationally-checkbox"
+                                 v-model="selectedLeagueOptions.allowReleasedInternationally">
+                  <span class="checkbox-label">Allow games already released internationally</span>
                 </b-form-checkbox>
               </div>
             </div>

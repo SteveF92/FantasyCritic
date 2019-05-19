@@ -100,6 +100,18 @@
               <p>Games that are already playable in early access are only selectable in some leagues.</p>
             </b-form-checkbox>
           </div>
+          <div class="form-group">
+            <b-form-checkbox v-model="freeToPlay">
+              <span class="checkbox-label">Is this game free to play?</span>
+              <p>Check this for free to play games.</p>
+            </b-form-checkbox>
+          </div>
+          <div class="form-group">
+            <b-form-checkbox v-model="releasedInternationally">
+              <span class="checkbox-label">Has this game already been released in a non-English speaking region?</span>
+              <p>Games that are already playable in other regions are only selectable in some leagues.</p>
+            </b-form-checkbox>
+          </div>
 
           <div class="form-group">
             <label for="requestNote" class="control-label">Any other notes?</label>
@@ -136,6 +148,8 @@
         estimatedReleaseDate: "",
         yearlyInstallment: false,
         earlyAccess: false,
+        freeToPlay: false,
+        releasedInternationally: false,
         eligibilityLevel: 0,
         possibleEligibilityLevels: null,
         piecewiseStyle: {
@@ -198,6 +212,8 @@
           estimatedReleaseDate: this.estimatedReleaseDate,
           yearlyInstallment: this.yearlyInstallment,
           earlyAccess: this.earlyAccess,
+          freeToPlay: this.freeToPlay,
+          releasedInternationally: this.releasedInternationally,
           eligibilityLevel: this.eligibilityLevel
 
         };
@@ -225,6 +241,8 @@
         this.estimatedReleaseDate = "";
         this.yearlyInstallment = false;
         this.earlyAccess = false;
+        this.freeToPlay = false;
+        this.releasedInternationally = false;
         this.eligibilityLevel = 0;
         this.$validator.reset();
       },

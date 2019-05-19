@@ -74,6 +74,16 @@
               <span class="checkbox-label">Early access?</span>
             </b-form-checkbox>
           </div>
+          <div class="form-group">
+            <b-form-checkbox v-model="freeToPlay">
+              <span class="checkbox-label">Free to Play?</span>
+            </b-form-checkbox>
+          </div>
+          <div class="form-group">
+            <b-form-checkbox v-model="releasedInternationally">
+              <span class="checkbox-label">Released Internationally?</span>
+            </b-form-checkbox>
+          </div>
 
           <div class="form-group">
             <div class="col-md-offset-2 col-md-4">
@@ -103,6 +113,8 @@
         releaseDate: "",
         yearlyInstallment: false,
         earlyAccess: false,
+        freeToPlay: false,
+        releasedInternationally: false,
         eligibilityLevel: 0,
         possibleEligibilityLevels: null,
         piecewiseStyle: {
@@ -156,7 +168,9 @@
           openCriticID: this.openCriticID,
           eligibilityLevel: this.eligibilityLevel,
           yearlyInstallment: this.yearlyInstallment,
-          earlyAccess: this.earlyAccess
+          earlyAccess: this.earlyAccess,
+          freeToPlay: this.freeToPlay,
+          releasedInternationally: this.releasedInternationally
         };
         axios
           .post('/api/admin/CreateMasterGame', request)
@@ -182,6 +196,8 @@
         this.eligibilityLevel = this.$route.query.eligibilityLevel;
         this.yearlyInstallment = this.$route.query.yearlyInstallment;
         this.earlyAccess = this.$route.query.earlyAccess;
+        this.freeToPlay = this.$route.query.freeToPlay;
+        this.releasedInternationally = this.$route.query.releasedInternationally;
         this.requestNote = this.$route.query.requestNote;
       }
     },
