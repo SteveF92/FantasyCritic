@@ -26,9 +26,11 @@ namespace FantasyCritic.FakeRepo.Factories
         {
             EligibilityLevel eligibilityLevel = EligibilityLevelFactory.GetEligibilityLevels().Single(x => x.Level == eligibilityLevelID);
 
+            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, false, false, false, false, false);
+
             var game = new MasterGame(Guid.Parse(guid), name, estimatedReleaseDate, releaseDate, openCriticID,
-                criticScore, minimumReleaseYear, eligibilityLevel, yearlyInstallment, earlyAccess, freeToPlay, releasedInternationally, expansionPack,
-                boxartFileName, InstantPattern.ExtendedIso.Parse(firstCriticScoreTimestamp).GetValueOrThrow(), doNotRefresh,
+                criticScore, minimumReleaseYear, eligibilitySettings, boxartFileName, 
+                InstantPattern.ExtendedIso.Parse(firstCriticScoreTimestamp).GetValueOrThrow(), doNotRefresh,
                 InstantPattern.ExtendedIso.Parse(addedTimestamp).GetValueOrThrow());
 
             return game;

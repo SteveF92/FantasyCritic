@@ -11,8 +11,7 @@ namespace FantasyCritic.Lib.Domain
         private readonly decimal? _criticScore;
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally,
-            bool expansionPack, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
+            int minimumReleaseYear, EligibilitySettings eligibilitySettings, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -21,12 +20,7 @@ namespace FantasyCritic.Lib.Domain
             OpenCriticID = openCriticID;
             _criticScore = criticScore;
             MinimumReleaseYear = minimumReleaseYear;
-            EligibilityLevel = eligibilityLevel;
-            YearlyInstallment = yearlyInstallment;
-            EarlyAccess = earlyAccess;
-            FreeToPlay = freeToPlay;
-            ReleasedInternationally = releasedInternationally;
-            ExpansionPack = expansionPack;
+            EligibilitySettings = eligibilitySettings;
             SubGames = new List<MasterSubGame>();
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
@@ -35,8 +29,8 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally,
-            bool expansionPack, IReadOnlyList<MasterSubGame> subGames, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
+            int minimumReleaseYear, EligibilitySettings eligibilitySettings, IReadOnlyList<MasterSubGame> subGames, string boxartFileName, 
+            Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -45,12 +39,7 @@ namespace FantasyCritic.Lib.Domain
             OpenCriticID = openCriticID;
             _criticScore = criticScore;
             MinimumReleaseYear = minimumReleaseYear;
-            EligibilityLevel = eligibilityLevel;
-            YearlyInstallment = yearlyInstallment;
-            EarlyAccess = earlyAccess;
-            FreeToPlay = freeToPlay;
-            ReleasedInternationally = releasedInternationally;
-            ExpansionPack = expansionPack;
+            EligibilitySettings = eligibilitySettings;
             SubGames = subGames;
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
@@ -63,11 +52,7 @@ namespace FantasyCritic.Lib.Domain
         public string EstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
-        public bool YearlyInstallment { get; }
-        public bool EarlyAccess { get; }
-        public bool FreeToPlay { get; }
-        public bool ReleasedInternationally { get; }
-        public bool ExpansionPack { get; }
+
         public string BoxartFileName { get; }
         public Instant? FirstCriticScoreTimestamp { get; }
         public bool DoNotRefresh { get; }
@@ -111,7 +96,7 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public int MinimumReleaseYear { get; }
-        public EligibilityLevel EligibilityLevel { get; }
+        public EligibilitySettings EligibilitySettings { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
 
         public bool IsReleased(IClock clock)
@@ -140,7 +125,7 @@ namespace FantasyCritic.Lib.Domain
 
         public bool IsEligible(EligibilityLevel eligibilityLevel)
         {
-            return EligibilityLevel.Level <= eligibilityLevel.Level;
+            return EligibilitySettings.EligibilityLevel.Level <= eligibilityLevel.Level;
         }
 
         public bool Equals(MasterGame other)
