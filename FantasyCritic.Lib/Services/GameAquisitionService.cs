@@ -172,37 +172,37 @@ namespace FantasyCritic.Lib.Services
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
-            bool eligible = masterGame.IsEligible(yearOptions.MaximumEligibilityLevel);
+            bool eligible = masterGame.IsEligible(yearOptions.AllowedEligibilitySettings.EligibilityLevel);
             if (!eligible)
             {
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's settings.", true));
             }
 
-            bool earlyAccessEligible = (!masterGame.EligibilitySettings.EarlyAccess || yearOptions.AllowEarlyAccess);
+            bool earlyAccessEligible = (!masterGame.EligibilitySettings.EarlyAccess || yearOptions.AllowedEligibilitySettings.EarlyAccess);
             if (!earlyAccessEligible)
             {
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's early access settings.", true));
             }
 
-            bool yearlyInstallmentEligible = (!masterGame.EligibilitySettings.YearlyInstallment || yearOptions.AllowYearlyInstallments);
+            bool yearlyInstallmentEligible = (!masterGame.EligibilitySettings.YearlyInstallment || yearOptions.AllowedEligibilitySettings.YearlyInstallment);
             if (!yearlyInstallmentEligible)
             {
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's yearly installment settings.", true));
             }
 
-            bool freeToPlayEligible = (!masterGame.EligibilitySettings.FreeToPlay || yearOptions.AllowFreeToPlay);
+            bool freeToPlayEligible = (!masterGame.EligibilitySettings.FreeToPlay || yearOptions.AllowedEligibilitySettings.FreeToPlay);
             if (!freeToPlayEligible)
             {
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's free to play settings.", true));
             }
 
-            bool releasedInternationallyEligible = (!masterGame.EligibilitySettings.ReleasedInternationally || yearOptions.AllowReleasedInternationally);
+            bool releasedInternationallyEligible = (!masterGame.EligibilitySettings.ReleasedInternationally || yearOptions.AllowedEligibilitySettings.ReleasedInternationally);
             if (!releasedInternationallyEligible)
             {
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's international release settings.", true));
             }
 
-            bool expansionEligible = (!masterGame.EligibilitySettings.ExpansionPack || yearOptions.AllowExpansions);
+            bool expansionEligible = (!masterGame.EligibilitySettings.ExpansionPack || yearOptions.AllowedEligibilitySettings.ExpansionPack);
             if (!expansionEligible)
             {
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's expansion pack settings.", true));

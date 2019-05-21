@@ -19,12 +19,8 @@ namespace FantasyCritic.Lib.Domain
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
             CounterPicks = counterPicks;
-            MaximumEligibilityLevel = maximumEligibilityLevel;
-            AllowYearlyInstallments = allowYearlyInstallments;
-            AllowEarlyAccess = allowEarlyAccess;
-            AllowFreeToPlay = allowFreeToPlay;
-            AllowReleasedInternationally = allowReleasedInternationally;
-            AllowExpansions = allowExpansions;
+            AllowedEligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, allowYearlyInstallments, allowEarlyAccess,
+                allowFreeToPlay, allowReleasedInternationally, allowExpansions);
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
@@ -36,12 +32,7 @@ namespace FantasyCritic.Lib.Domain
             StandardGames = parameters.StandardGames;
             GamesToDraft = parameters.GamesToDraft;
             CounterPicks = parameters.CounterPicks;
-            MaximumEligibilityLevel = parameters.MaximumEligibilityLevel;
-            AllowYearlyInstallments = parameters.AllowYearlyInstallments;
-            AllowEarlyAccess = parameters.AllowEarlyAccess;
-            AllowFreeToPlay = parameters.AllowFreeToPlay;
-            AllowReleasedInternationally = parameters.AllowReleasedInternationally;
-            AllowExpansions = parameters.AllowExpansions;
+            AllowedEligibilitySettings = parameters.AllowedEligibilitySettings;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
@@ -53,12 +44,7 @@ namespace FantasyCritic.Lib.Domain
             StandardGames = parameters.StandardGames;
             GamesToDraft = parameters.GamesToDraft;
             CounterPicks = parameters.CounterPicks;
-            MaximumEligibilityLevel = parameters.MaximumEligibilityLevel;
-            AllowYearlyInstallments = parameters.AllowYearlyInstallments;
-            AllowEarlyAccess = parameters.AllowEarlyAccess;
-            AllowFreeToPlay = parameters.AllowFreeToPlay;
-            AllowReleasedInternationally = parameters.AllowReleasedInternationally;
-            AllowExpansions = parameters.AllowExpansions;
+            AllowedEligibilitySettings = parameters.AllowedEligibilitySettings;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
@@ -68,12 +54,7 @@ namespace FantasyCritic.Lib.Domain
         public int StandardGames { get; }
         public int GamesToDraft { get; }
         public int CounterPicks { get; }
-        public bool AllowYearlyInstallments { get; }
-        public bool AllowEarlyAccess { get; }
-        public bool AllowFreeToPlay { get; }
-        public bool AllowReleasedInternationally { get; }
-        public bool AllowExpansions { get; }
-        public EligibilityLevel MaximumEligibilityLevel { get; }
+        public EligibilitySettings AllowedEligibilitySettings { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }

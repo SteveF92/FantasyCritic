@@ -15,12 +15,8 @@ namespace FantasyCritic.Lib.Domain.Requests
             GamesToDraft = gamesToDraft;
             CounterPicks = counterPicks;
             InitialYear = initialYear;
-            AllowYearlyInstallments = allowYearlyInstallments;
-            AllowEarlyAccess = allowEarlyAccess;
-            AllowFreeToPlay = allowFreeToPlay;
-            AllowReleasedInternationally = allowReleasedInternationally;
-            AllowExpansions = allowExpansions;
-            MaximumEligibilityLevel = maximumEligibilityLevel;
+            AllowedEligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, allowYearlyInstallments, allowEarlyAccess, 
+                allowFreeToPlay, allowReleasedInternationally, allowExpansions);
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
@@ -34,12 +30,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int GamesToDraft { get; }
         public int CounterPicks { get; }
         public int InitialYear { get; }
-        public EligibilityLevel MaximumEligibilityLevel { get; }
-        public bool AllowYearlyInstallments { get; set; }
-        public bool AllowEarlyAccess { get; set; }
-        public bool AllowFreeToPlay { get; }
-        public bool AllowReleasedInternationally { get; }
-        public bool AllowExpansions { get; }
+        public EligibilitySettings AllowedEligibilitySettings { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }
