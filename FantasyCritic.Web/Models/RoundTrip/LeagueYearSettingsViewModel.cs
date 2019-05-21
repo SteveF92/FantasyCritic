@@ -27,6 +27,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
             AllowEarlyAccess = leagueYear.Options.AllowEarlyAccess;
             AllowFreeToPlay = leagueYear.Options.AllowFreeToPlay;
             AllowReleasedInternationally = leagueYear.Options.AllowReleasedInternationally;
+            AllowExpansions = leagueYear.Options.AllowExpansions;
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
