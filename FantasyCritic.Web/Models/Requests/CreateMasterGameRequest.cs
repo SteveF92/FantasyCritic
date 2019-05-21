@@ -27,12 +27,14 @@ namespace FantasyCritic.Web.Models.Requests
         [Required]
         public bool ReleasedInternationally { get; set; }
         [Required]
+        public bool ExpansionPack { get; set; }
+        [Required]
         public string BoxartFileName { get; set; }
 
         public MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp, SupportedYear currentYear)
         {
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, currentYear.Year,
-                eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, BoxartFileName, null, false, timestamp);
+                eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, BoxartFileName, null, false, timestamp);
             return masterGame;
         }
     }

@@ -22,6 +22,7 @@ namespace FantasyCritic.Web.Models.Responses
             EarlyAccess = domain.EarlyAccess;
             FreeToPlay = domain.FreeToPlay;
             ReleasedInternationally = domain.ReleasedInternationally;
+            ExpansionPack = domain.ExpansionPack;
 
             Answered = domain.Answered;
             ResponseNote = domain.ResponseNote;
@@ -45,6 +46,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool? EarlyAccess { get; }
         public bool? FreeToPlay { get; }
         public bool? ReleasedInternationally { get; }
+        public bool? ExpansionPack { get; }
         public string RequestNote { get; }
 
         //Response
