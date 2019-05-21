@@ -24,12 +24,12 @@ namespace FantasyCritic.MySQL.Entities
             OpenCriticID = masterGame.OpenCriticID;
             CriticScore = masterGame.CriticScore;
             MinimumReleaseYear = masterGame.MinimumReleaseYear;
-            EligibilityLevel = masterGame.EligibilityLevel.Level;
-            YearlyInstallment = masterGame.YearlyInstallment;
-            EarlyAccess = masterGame.EarlyAccess;
-            FreeToPlay = masterGame.FreeToPlay;
-            ReleasedInternationally = masterGame.ReleasedInternationally;
-            ExpansionPack = masterGame.ExpansionPack;
+            EligibilityLevel = masterGame.EligibilitySettings.EligibilityLevel.Level;
+            YearlyInstallment = masterGame.EligibilitySettings.YearlyInstallment;
+            EarlyAccess = masterGame.EligibilitySettings.EarlyAccess;
+            FreeToPlay = masterGame.EligibilitySettings.FreeToPlay;
+            ReleasedInternationally = masterGame.EligibilitySettings.ReleasedInternationally;
+            ExpansionPack = masterGame.EligibilitySettings.ExpansionPack;
             BoxartFileName = masterGame.BoxartFileName;
         }
 
@@ -67,9 +67,10 @@ namespace FantasyCritic.MySQL.Entities
             }
 
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
+            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack);
 
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel,
-                YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh, addedTimestamp);
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, 
+                eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh, addedTimestamp);
         }
     }
 }
