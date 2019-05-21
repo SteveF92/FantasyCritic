@@ -12,15 +12,13 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
-        public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, EligibilityLevel maximumEligibilityLevel, 
-            bool allowYearlyInstallments, bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally, bool allowExpansions,
+        public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, EligibilitySettings eligibilitySettings,
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
             CounterPicks = counterPicks;
-            AllowedEligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, allowYearlyInstallments, allowEarlyAccess,
-                allowFreeToPlay, allowReleasedInternationally, allowExpansions);
+            AllowedEligibilitySettings = eligibilitySettings;
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;

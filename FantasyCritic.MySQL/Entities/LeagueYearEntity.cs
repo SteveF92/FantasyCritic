@@ -25,12 +25,12 @@ namespace FantasyCritic.MySQL.Entities
             GamesToDraft = options.GamesToDraft;
             CounterPicks = options.CounterPicks;
 
-            MaximumEligibilityLevel = options.MaximumEligibilityLevel.Level;
-            AllowYearlyInstallments = options.AllowYearlyInstallments;
-            AllowEarlyAccess = options.AllowEarlyAccess;
-            AllowFreeToPlay = options.AllowFreeToPlay;
-            AllowReleasedInternationally = options.AllowReleasedInternationally;
-            AllowExpansions = options.AllowExpansions;
+            MaximumEligibilityLevel = options.AllowedEligibilitySettings.EligibilityLevel.Level;
+            AllowYearlyInstallments = options.AllowedEligibilitySettings.YearlyInstallment;
+            AllowEarlyAccess = options.AllowedEligibilitySettings.EarlyAccess;
+            AllowFreeToPlay = options.AllowedEligibilitySettings.FreeToPlay;
+            AllowReleasedInternationally = options.AllowedEligibilitySettings.ReleasedInternationally;
+            AllowExpansions = options.AllowedEligibilitySettings.ExpansionPack;
 
             DraftSystem = options.DraftSystem.Value;
             PickupSystem = options.PickupSystem.Value;
@@ -59,10 +59,10 @@ namespace FantasyCritic.MySQL.Entities
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
+            var eligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, 
+                AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions);
 
-            LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks,
-                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay, AllowReleasedInternationally, 
-                AllowExpansions, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
+            LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, eligibilitySettings, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
 
             return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus));
         }

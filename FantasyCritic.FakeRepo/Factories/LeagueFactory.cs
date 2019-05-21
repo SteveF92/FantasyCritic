@@ -27,7 +27,8 @@ namespace FantasyCritic.FakeRepo.Factories
             List<LeagueYear> leagueYears = new List<LeagueYear>();
             foreach (var league in leagues)
             {
-                LeagueYear year = new LeagueYear(league, 2019, new LeagueOptions(12, 6, 1, eligibilityLevel, true, false, true, false, false, DraftSystem.Flexible, 
+                var eligibilitySettings = new EligibilitySettings(eligibilityLevel, true, false, true, false, false);
+                LeagueYear year = new LeagueYear(league, 2019, new LeagueOptions(12, 6, 1, eligibilitySettings, DraftSystem.Flexible, 
                     PickupSystem.Budget, ScoringSystem.GetScoringSystem("Standard"), true), PlayStatus.DraftFinal);
                 leagueYears.Add(year);
             }
