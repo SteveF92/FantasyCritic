@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Web.Models.RoundTrip;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
@@ -19,14 +20,14 @@ namespace FantasyCritic.Web.Models.Responses
             IsReleased = masterGame.IsReleased(clock);
             CriticScore = masterGame.CriticScore;
             AveragedScore = masterGame.AveragedScore;
-            EligibilityLevel = new EligibilityLevelViewModel(masterGame.EligibilityLevel, false);
+            EligibilitySettings = new EligibilitySettingsViewModel(masterGame.EligibilitySettings, false);
             OpenCriticID = masterGame.OpenCriticID;
-            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, masterGame.EligibilityLevel, clock)).ToList();
+            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, masterGame.EligibilitySettings, clock)).ToList();
             BoxartFileName = masterGame.BoxartFileName;
             AddedTimestamp = masterGame.AddedTimestamp;
         }
 
-        public MasterGameViewModel(MasterSubGame masterSubGame, EligibilityLevel eligibilityLevel, IClock clock)
+        public MasterGameViewModel(MasterSubGame masterSubGame, EligibilitySettings eligibilitySettings, IClock clock)
         {
             MasterGameID = masterSubGame.MasterGameID;
             GameName = masterSubGame.GameName;
@@ -35,7 +36,7 @@ namespace FantasyCritic.Web.Models.Responses
             IsReleased = masterSubGame.IsReleased(clock);
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
-            EligibilityLevel = new EligibilityLevelViewModel(eligibilityLevel, false);
+            EligibilitySettings = new EligibilitySettingsViewModel(eligibilitySettings, false);
             OpenCriticID = masterSubGame.OpenCriticID;
             SubGames = null;
         }
@@ -47,7 +48,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool IsReleased { get; }
         public decimal? CriticScore { get; }
         public bool AveragedScore { get; }
-        public EligibilityLevelViewModel EligibilityLevel { get; }
+        public EligibilitySettingsViewModel EligibilitySettings { get; }
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameViewModel> SubGames { get; }
         public string BoxartFileName { get; }

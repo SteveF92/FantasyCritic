@@ -33,8 +33,9 @@ namespace FantasyCritic.Web.Models.Requests
 
         public MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp, SupportedYear currentYear)
         {
+            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack);
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, OpenCriticID, null, currentYear.Year,
-                eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, BoxartFileName, null, false, timestamp);
+                eligibilitySettings, BoxartFileName, null, false, timestamp);
             return masterGame;
         }
     }

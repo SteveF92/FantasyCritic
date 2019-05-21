@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Web.Models.RoundTrip;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
@@ -19,7 +20,7 @@ namespace FantasyCritic.Web.Models.Responses
             IsReleased = masterGame.MasterGame.IsReleased(clock);
             CriticScore = masterGame.MasterGame.CriticScore;
             AveragedScore = masterGame.MasterGame.AveragedScore;
-            EligibilityLevel = new EligibilityLevelViewModel(masterGame.MasterGame.EligibilityLevel, false);
+            EligibilitySettings = new EligibilitySettingsViewModel(masterGame.MasterGame.EligibilitySettings, false);
             OpenCriticID = masterGame.MasterGame.OpenCriticID;
             SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, clock)).ToList();
             BoxartFileName = masterGame.MasterGame.BoxartFileName;
@@ -42,7 +43,7 @@ namespace FantasyCritic.Web.Models.Responses
             IsReleased = masterSubGame.IsReleased(clock);
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
-            EligibilityLevel = new EligibilityLevelViewModel(masterGame.MasterGame.EligibilityLevel, false);
+            EligibilitySettings = new EligibilitySettingsViewModel(masterGame.MasterGame.EligibilitySettings, false);
             OpenCriticID = masterSubGame.OpenCriticID;
             SubGames = null;
 
@@ -63,7 +64,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool IsReleased { get; }
         public decimal? CriticScore { get; }
         public bool AveragedScore { get; }
-        public EligibilityLevelViewModel EligibilityLevel { get; }
+        public EligibilitySettingsViewModel EligibilitySettings { get; }
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameYearViewModel> SubGames { get; }
         public string BoxartFileName { get; }

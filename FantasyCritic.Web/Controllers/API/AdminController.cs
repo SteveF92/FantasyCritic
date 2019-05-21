@@ -123,10 +123,10 @@ namespace FantasyCritic.Web.Controllers.API
                 {
                     minimumReleaseYear = openCriticGame.Value.ReleaseDate.Value.Year;
                 }
+                var eligibilitySettings = new EligibilitySettings(eligibilityLevel, false, false, false, false, false);
 
                 MasterGame masterGame = new MasterGame(Guid.NewGuid(), openCriticGame.Value.Name, openCriticGame.Value.ReleaseDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    openCriticGame.Value.ReleaseDate, id, openCriticGame.Value.Score, minimumReleaseYear, eligibilityLevel, false, false, false, false, false,
-                    "", null, false, _clock.GetCurrentInstant());
+                    openCriticGame.Value.ReleaseDate, id, openCriticGame.Value.Score, minimumReleaseYear, eligibilitySettings, "", null, false, _clock.GetCurrentInstant());
                 await _interLeagueService.CreateMasterGame(masterGame);
 
                 id++;
