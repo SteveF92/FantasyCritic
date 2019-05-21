@@ -202,6 +202,12 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's international release settings.", true));
             }
 
+            bool expansionEligible = (!masterGame.ExpansionPack || yearOptions.AllowExpansions);
+            if (!expansionEligible)
+            {
+                claimErrors.Add(new ClaimError("That game is not eligible under this league's expansion pack settings.", true));
+            }
+
             bool released = masterGame.IsReleased(_clock);
             if (released)
             {

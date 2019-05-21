@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Domain
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
             int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally,
-            string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
+            bool expansionPack, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -26,6 +26,7 @@ namespace FantasyCritic.Lib.Domain
             EarlyAccess = earlyAccess;
             FreeToPlay = freeToPlay;
             ReleasedInternationally = releasedInternationally;
+            ExpansionPack = expansionPack;
             SubGames = new List<MasterSubGame>();
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
@@ -35,7 +36,7 @@ namespace FantasyCritic.Lib.Domain
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
             int minimumReleaseYear, EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally,
-            IReadOnlyList<MasterSubGame> subGames, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
+            bool expansionPack, IReadOnlyList<MasterSubGame> subGames, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefresh, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -49,6 +50,7 @@ namespace FantasyCritic.Lib.Domain
             EarlyAccess = earlyAccess;
             FreeToPlay = freeToPlay;
             ReleasedInternationally = releasedInternationally;
+            ExpansionPack = expansionPack;
             SubGames = subGames;
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
@@ -65,6 +67,7 @@ namespace FantasyCritic.Lib.Domain
         public bool EarlyAccess { get; }
         public bool FreeToPlay { get; }
         public bool ReleasedInternationally { get; }
+        public bool ExpansionPack { get; }
         public string BoxartFileName { get; }
         public Instant? FirstCriticScoreTimestamp { get; }
         public bool DoNotRefresh { get; }

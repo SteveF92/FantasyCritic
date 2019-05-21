@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Domain
     public class LeagueOptions
     {
         public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, EligibilityLevel maximumEligibilityLevel, 
-            bool allowYearlyInstallments, bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally,
+            bool allowYearlyInstallments, bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally, bool allowExpansions,
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
@@ -24,6 +24,7 @@ namespace FantasyCritic.Lib.Domain
             AllowEarlyAccess = allowEarlyAccess;
             AllowFreeToPlay = allowFreeToPlay;
             AllowReleasedInternationally = allowReleasedInternationally;
+            AllowExpansions = allowExpansions;
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
@@ -40,6 +41,7 @@ namespace FantasyCritic.Lib.Domain
             AllowEarlyAccess = parameters.AllowEarlyAccess;
             AllowFreeToPlay = parameters.AllowFreeToPlay;
             AllowReleasedInternationally = parameters.AllowReleasedInternationally;
+            AllowExpansions = parameters.AllowExpansions;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
@@ -56,6 +58,7 @@ namespace FantasyCritic.Lib.Domain
             AllowEarlyAccess = parameters.AllowEarlyAccess;
             AllowFreeToPlay = parameters.AllowFreeToPlay;
             AllowReleasedInternationally = parameters.AllowReleasedInternationally;
+            AllowExpansions = parameters.AllowExpansions;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
@@ -69,6 +72,7 @@ namespace FantasyCritic.Lib.Domain
         public bool AllowEarlyAccess { get; }
         public bool AllowFreeToPlay { get; }
         public bool AllowReleasedInternationally { get; }
+        public bool AllowExpansions { get; }
         public EligibilityLevel MaximumEligibilityLevel { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
