@@ -217,12 +217,14 @@
           steamLink: this.steamLink,
           openCriticLink: this.openCriticLink,
           estimatedReleaseDate: this.estimatedReleaseDate,
-          yearlyInstallment: this.yearlyInstallment,
-          earlyAccess: this.earlyAccess,
-          freeToPlay: this.freeToPlay,
-          releasedInternationally: this.releasedInternationally,
-          expansionPack: this.expansionPack,
-          eligibilityLevel: this.eligibilityLevel
+          eligibilitySettings: {
+            eligibilityLevel: this.eligibilityLevel,
+            yearlyInstallment: this.yearlyInstallment,
+            earlyAccess: this.earlyAccess,
+            freeToPlay: this.freeToPlay,
+            releasedInternationally: this.releasedInternationally,
+            expansionPack: this.expansionPack,
+          }
         };
         axios
           .post('/api/game/CreateMasterGameRequest', request)
@@ -246,12 +248,12 @@
         this.steamLink = "";
         this.openCriticLink = "";
         this.estimatedReleaseDate = "";
-        this.yearlyInstallment = false;
-        this.earlyAccess = false;
-        this.freeToPlay = false;
-        this.releasedInternationally = false;
-        this.expansionPack = false;
-        this.eligibilityLevel = 0;
+        this.eligibilitySettings.yearlyInstallment = false;
+        this.eligibilitySettings.earlyAccess = false;
+        this.eligibilitySettings.freeToPlay = false;
+        this.eligibilitySettings.releasedInternationally = false;
+        this.eligibilitySettings.expansionPack = false;
+        this.eligibilitySettings.eligibilityLevel = 0;
         this.$validator.reset();
       },
       cancelRequest(request) {

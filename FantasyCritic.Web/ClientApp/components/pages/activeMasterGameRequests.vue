@@ -88,12 +88,14 @@
           estimatedReleaseDate: request.estimatedReleaseDate,
           steamID: request.steamID,
           openCriticID: request.openCriticID,
-          eligibilityLevel: request.eligibilityLevel,
-          yearlyInstallment: request.yearlyInstallment,
-          earlyAccess: request.earlyAccess,
-          freeToPlay: request.freeToPlay,
-          releasedInternationally: request.releasedInternationally,
-          expansionPack: request.expansionPack,
+          eligibilitySettings: {
+            eligibilityLevel: request.eligibilityLevel,
+            yearlyInstallment: request.yearlyInstallment,
+            earlyAccess: request.earlyAccess,
+            freeToPlay: request.freeToPlay,
+            releasedInternationally: request.releasedInternationally,
+            expansionPack: request.expansionPack,
+          },
           requestNote: request.requestNote
         };
         this.$router.push({ name: 'masterGameCreator', query: query });
