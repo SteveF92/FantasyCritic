@@ -29,6 +29,7 @@ namespace FantasyCritic.MySQL.Entities
             EarlyAccess = masterGame.EarlyAccess;
             FreeToPlay = masterGame.FreeToPlay;
             ReleasedInternationally = masterGame.ReleasedInternationally;
+            ExpansionPack = masterGame.ExpansionPack;
             BoxartFileName = masterGame.BoxartFileName;
         }
 
@@ -44,6 +45,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool EarlyAccess { get; set; }
         public bool FreeToPlay { get; set; }
         public bool ReleasedInternationally { get; set; }
+        public bool ExpansionPack { get; set; }
         public string BoxartFileName { get; set; }
         public DateTime? FirstCriticScoreTimestamp { get; set; }
         public bool DoNotRefresh { get; set; }
@@ -67,7 +69,7 @@ namespace FantasyCritic.MySQL.Entities
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
 
             return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, eligibilityLevel,
-                YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh, addedTimestamp);
+                YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh, addedTimestamp);
         }
     }
 }

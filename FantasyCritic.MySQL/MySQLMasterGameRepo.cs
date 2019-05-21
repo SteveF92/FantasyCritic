@@ -175,9 +175,9 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync(
                     "insert into tbl_mastergame(MasterGameID,GameName,EstimatedReleaseDate,ReleaseDate,OpenCriticID,CriticScore,MinimumReleaseYear," +
-                    "EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,BoxartFileName) VALUES " +
+                    "EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,BoxartFileName) VALUES " +
                     "(@MasterGameID,@GameName,@EstimatedReleaseDate,@ReleaseDate,@OpenCriticID,@CriticScore,@MinimumReleaseYear," +
-                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@BoxartFileName);",
+                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@BoxartFileName);",
                     entity);
             }
         }
@@ -224,9 +224,9 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync(
                     "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,EstimatedReleaseDate,EligibilityLevel," +
-                    "YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
+                    "YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
                     "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@EstimatedReleaseDate," +
-                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
+                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
                     entity);
             }
         }

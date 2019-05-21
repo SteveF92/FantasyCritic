@@ -35,6 +35,7 @@ namespace FantasyCritic.MySQL.Entities
             EarlyAccess = domain.EarlyAccess;
             FreeToPlay = domain.FreeToPlay;
             ReleasedInternationally = domain.ReleasedInternationally;
+            ExpansionPack = domain.ExpansionPack;
 
             Answered = domain.Answered;
             ResponseTimestamp = domain.ResponseTimestamp?.ToDateTimeUtc();
@@ -64,6 +65,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool? EarlyAccess { get; set; }
         public bool? FreeToPlay { get; set; }
         public bool? ReleasedInternationally { get; set; }
+        public bool? ExpansionPack { get; set; }
 
         //Response
         public bool Answered { get; set; }
@@ -83,7 +85,7 @@ namespace FantasyCritic.MySQL.Entities
             }
 
             return new MasterGameRequest(RequestID, user, requestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, EstimatedReleaseDate, eligibilityLevel,
-                YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, Answered, responseTimestamp, ResponseNote, masterGame, Hidden);
+                YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, Answered, responseTimestamp, ResponseNote, masterGame, Hidden);
         }
     }
 }

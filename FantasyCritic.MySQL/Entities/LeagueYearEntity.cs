@@ -30,6 +30,7 @@ namespace FantasyCritic.MySQL.Entities
             AllowEarlyAccess = options.AllowEarlyAccess;
             AllowFreeToPlay = options.AllowFreeToPlay;
             AllowReleasedInternationally = options.AllowReleasedInternationally;
+            AllowExpansions = options.AllowExpansions;
 
             DraftSystem = options.DraftSystem.Value;
             PickupSystem = options.PickupSystem.Value;
@@ -47,6 +48,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool AllowEarlyAccess { get; set; }
         public bool AllowFreeToPlay { get; set; }
         public bool AllowReleasedInternationally { get; set; }
+        public bool AllowExpansions { get; set; }
         public string DraftSystem { get; set; }
         public string PickupSystem { get; set; }
         public string ScoringSystem { get; set; }
@@ -59,8 +61,8 @@ namespace FantasyCritic.MySQL.Entities
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks,
-                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay, AllowReleasedInternationally,
-                draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
+                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay, AllowReleasedInternationally, 
+                AllowExpansions, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
 
             return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus));
         }
