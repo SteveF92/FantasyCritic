@@ -81,6 +81,12 @@
                   <span class="checkbox-label">Allow games already released internationally</span>
                 </b-form-checkbox>
               </div>
+              <div>
+                <b-form-checkbox id="expansion-pack-checkbox"
+                                 v-model="selectedLeagueOptions.allowExpansions">
+                  <span class="checkbox-label">Allow expansion packs/DLC</span>
+                </b-form-checkbox>
+              </div>
             </div>
           </div>
 

@@ -39,6 +39,10 @@
             <th class="bg-primary">Allow Released Internationally</th>
             <td>{{leagueYearOptions.allowReleasedInternationally | yesNo}}</td>
           </tr>
+          <tr>
+            <th class="bg-primary">Allow Expansion Packs</th>
+            <td>{{leagueYearOptions.allowExpansions | yesNo}}</td>
+          </tr>
 
           <tr>
             <th class="bg-primary">Public League</th>

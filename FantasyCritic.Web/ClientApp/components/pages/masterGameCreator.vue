@@ -84,6 +84,11 @@
               <span class="checkbox-label">Released Internationally?</span>
             </b-form-checkbox>
           </div>
+          <div class="form-group">
+            <b-form-checkbox v-model="expansionPack">
+              <span class="checkbox-label">Expansion Pack?</span>
+            </b-form-checkbox>
+          </div>
 
           <div class="form-group">
             <div class="col-md-offset-2 col-md-4">
@@ -115,6 +120,7 @@
         earlyAccess: false,
         freeToPlay: false,
         releasedInternationally: false,
+        expansionPack: false,
         eligibilityLevel: 0,
         possibleEligibilityLevels: null,
         piecewiseStyle: {
@@ -170,7 +176,8 @@
           yearlyInstallment: this.yearlyInstallment,
           earlyAccess: this.earlyAccess,
           freeToPlay: this.freeToPlay,
-          releasedInternationally: this.releasedInternationally
+          releasedInternationally: this.releasedInternationally,
+          expansionPack: this.expansionPack
         };
         axios
           .post('/api/admin/CreateMasterGame', request)
@@ -198,6 +205,7 @@
         this.earlyAccess = this.$route.query.earlyAccess;
         this.freeToPlay = this.$route.query.freeToPlay;
         this.releasedInternationally = this.$route.query.releasedInternationally;
+        this.expansionPack = this.$route.query.expansionPack;
         this.requestNote = this.$route.query.requestNote;
       }
     },

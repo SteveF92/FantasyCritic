@@ -122,6 +122,12 @@
                 </b-form-checkbox>
               </div>
               <div>
+                <b-form-checkbox v-model="allowExpansions">
+                  <span class="checkbox-label">Allow expansion packs/DLC</span>
+                  <p>If this is left unchecked, expansion packs and DLC will not be selectable.</p>
+                </b-form-checkbox>
+              </div>
+              <div>
                 <b-form-checkbox v-model="publicLeague">
                   <span class="checkbox-label">Public League</span>
                   <p>If checked, everyone will be able to see your league. Players still need to be invited to join. If unchecked, your league will only be viewable by its members.</p>
@@ -167,6 +173,7 @@ export default {
           allowEarlyAccess: false,
           allowFreeToPlay: false,
           allowReleasedInternationally: false,
+          allowExpansions: false,
           publicLeague: true,
           testLeague: false,
           possibleLeagueOptions: null,
@@ -234,6 +241,7 @@ export default {
             allowEarlyAccess: this.allowEarlyAccess,
             allowFreeToPlay: this.allowFreeToPlay,
             allowReleasedInternationally: this.allowReleasedInternationally,
+            allowExpansions: this.allowExpansions,
             publicLeague: this.publicLeague,
             testLeague: this.testLeague,
             draftSystem: "Flexible",

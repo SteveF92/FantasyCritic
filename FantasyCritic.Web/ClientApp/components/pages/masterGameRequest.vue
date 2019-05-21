@@ -112,6 +112,12 @@
               <p>Games that are already playable in other regions are only selectable in some leagues.</p>
             </b-form-checkbox>
           </div>
+          <div class="form-group">
+            <b-form-checkbox v-model="expansionPack">
+              <span class="checkbox-label">Is this an expansion pack or DLC?</span>
+              <p>Expansion packs are only selectable in some leagues.</p>
+            </b-form-checkbox>
+          </div>
 
           <div class="form-group">
             <label for="requestNote" class="control-label">Any other notes?</label>
@@ -150,6 +156,7 @@
         earlyAccess: false,
         freeToPlay: false,
         releasedInternationally: false,
+        expansionPack: false,
         eligibilityLevel: 0,
         possibleEligibilityLevels: null,
         piecewiseStyle: {
@@ -214,8 +221,8 @@
           earlyAccess: this.earlyAccess,
           freeToPlay: this.freeToPlay,
           releasedInternationally: this.releasedInternationally,
+          expansionPack: this.expansionPack,
           eligibilityLevel: this.eligibilityLevel
-
         };
         axios
           .post('/api/game/CreateMasterGameRequest', request)
@@ -243,6 +250,7 @@
         this.earlyAccess = false;
         this.freeToPlay = false;
         this.releasedInternationally = false;
+        this.expansionPack = false;
         this.eligibilityLevel = 0;
         this.$validator.reset();
       },
