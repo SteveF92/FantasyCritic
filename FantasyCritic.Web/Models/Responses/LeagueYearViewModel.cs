@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Web.Models.RoundTrip;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
@@ -24,7 +25,7 @@ namespace FantasyCritic.Web.Models.Responses
             StandardGames = leagueYear.Options.StandardGames;
             GamesToDraft = leagueYear.Options.GamesToDraft;
             CounterPicks = leagueYear.Options.CounterPicks;
-            MaximumEligibilityLevel = new EligibilityLevelViewModel(leagueYear.Options.MaximumEligibilityLevel, false);
+            EligibilitySettings = new EligibilitySettingsViewModel(leagueYear.Options.AllowedEligibilitySettings, false);
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
@@ -102,7 +103,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int StandardGames { get; }
         public int GamesToDraft { get; }
         public int CounterPicks { get; }
-        public EligibilityLevelViewModel MaximumEligibilityLevel { get; }
+        public EligibilitySettingsViewModel EligibilitySettings { get; }
         public string DraftSystem { get; }
         public string PickupSystem { get; }
         public string ScoringSystem { get; }
