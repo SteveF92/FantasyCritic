@@ -11,8 +11,8 @@ namespace FantasyCritic.Lib.Domain
     public class MasterGameRequest
     {
         public MasterGameRequest(Guid requestID, FantasyCriticUser user, Instant requestTimestamp, string requestNote, 
-            string gameName, int? steamID, int? openCriticID, string estimatedReleaseDate, Maybe<EligibilityLevel> eligibilityLevel,
-            bool? yearlyInstallment, bool? earlyAccess, bool? freeToPlay, bool? releasedInternationally, bool? expansionPack,
+            string gameName, int? steamID, int? openCriticID, string estimatedReleaseDate, EligibilityLevel eligibilityLevel,
+            bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally, bool expansionPack,
             bool answered, Instant? responseTimestamp, string responseNote, Maybe<MasterGame> masterGame, bool hidden)
         {
             RequestID = requestID;
@@ -47,12 +47,12 @@ namespace FantasyCritic.Lib.Domain
         public int? SteamID { get; }
         public int? OpenCriticID { get; }
         public string EstimatedReleaseDate { get; }
-        public Maybe<EligibilityLevel> EligibilityLevel { get; }
-        public bool? YearlyInstallment { get; }
-        public bool? EarlyAccess { get; }
-        public bool? FreeToPlay { get; }
-        public bool? ReleasedInternationally { get; }
-        public bool? ExpansionPack { get; }
+        public EligibilityLevel EligibilityLevel { get; }
+        public bool YearlyInstallment { get; }
+        public bool EarlyAccess { get; }
+        public bool FreeToPlay { get; }
+        public bool ReleasedInternationally { get; }
+        public bool ExpansionPack { get; }
 
         //Answer
         public bool Answered { get; }

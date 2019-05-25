@@ -249,7 +249,8 @@ namespace FantasyCritic.MySQL
             {
                 masterGameID = masterGame.Value.MasterGameID;
             }
-            string sql = "update tbl_mastergame_request set Answered = 1, ResponseTimestamp = @responseTime, ResponseNote = @responseNote, MasterGameID = @masterGameID where RequestID = @requestID;";
+            string sql = "update tbl_mastergame_request set Answered = 1, ResponseTimestamp = @responseTime, " +
+                         "ResponseNote = @responseNote, MasterGameID = @masterGameID where RequestID = @requestID;";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql,
@@ -282,12 +283,7 @@ namespace FantasyCritic.MySQL
             List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
             foreach (var entity in entities)
             {
-                Maybe<EligibilityLevel> eligibilityLevel = Maybe<EligibilityLevel>.None;
-                if (entity.EligibilityLevel.HasValue)
-                {
-                    eligibilityLevel = eligibilityLevels.Single(x => x.Level == entity.EligibilityLevel.Value);
-                }
-
+                EligibilityLevel eligibilityLevel = eligibilityLevels.Single(x => x.Level == entity.EligibilityLevel);
                 Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
                 if (entity.MasterGameID.HasValue)
                 {
@@ -313,12 +309,7 @@ namespace FantasyCritic.MySQL
                     return Maybe<MasterGameRequest>.None;
                 }
 
-                var eligibilityLevel = Maybe<EligibilityLevel>.None;
-                if (entity.EligibilityLevel.HasValue)
-                {
-                    eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel.Value);
-                }
-
+                var eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel);
                 Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
                 if (entity.MasterGameID.HasValue)
                 {

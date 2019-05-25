@@ -14,10 +14,8 @@ namespace FantasyCritic.Web.Models.Responses
             EstimatedReleaseDate = domain.EstimatedReleaseDate;
             SteamID = domain.SteamID;
             OpenCriticID = domain.OpenCriticID;
-            if (domain.EligibilityLevel.HasValue)
-            {
-                EligibilityLevel = domain.EligibilityLevel.Value.Level;
-            }
+
+            EligibilityLevel = domain.EligibilityLevel.Level;
             YearlyInstallment = domain.YearlyInstallment;
             EarlyAccess = domain.EarlyAccess;
             FreeToPlay = domain.FreeToPlay;
@@ -41,12 +39,12 @@ namespace FantasyCritic.Web.Models.Responses
         public string EstimatedReleaseDate { get; }
         public int? SteamID { get; }
         public int? OpenCriticID { get; }
-        public int? EligibilityLevel { get; }
-        public bool? YearlyInstallment { get; }
-        public bool? EarlyAccess { get; }
-        public bool? FreeToPlay { get; }
-        public bool? ReleasedInternationally { get; }
-        public bool? ExpansionPack { get; }
+        public int EligibilityLevel { get; }
+        public bool YearlyInstallment { get; }
+        public bool EarlyAccess { get; }
+        public bool FreeToPlay { get; }
+        public bool ReleasedInternationally { get; }
+        public bool ExpansionPack { get; }
         public string RequestNote { get; }
 
         //Response

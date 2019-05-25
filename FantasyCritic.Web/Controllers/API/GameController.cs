@@ -136,12 +136,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            Maybe<EligibilityLevel> eligibilityLevel = Maybe<EligibilityLevel>.None;
-            if (request.EligibilityLevel.HasValue)
-            {
-                eligibilityLevel = await _interLeagueService.GetEligibilityLevel(request.EligibilityLevel.Value);
-            }
-            
+            EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(request.EligibilityLevel);
             MasterGameRequest domainRequest = request.ToDomain(currentUser, _clock.GetCurrentInstant(), eligibilityLevel);
 
             await _interLeagueService.CreateMasterGameRequest(domainRequest);

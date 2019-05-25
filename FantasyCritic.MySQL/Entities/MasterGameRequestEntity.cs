@@ -27,10 +27,8 @@ namespace FantasyCritic.MySQL.Entities
             SteamID = domain.SteamID;
             OpenCriticID = domain.OpenCriticID;
             EstimatedReleaseDate = domain.EstimatedReleaseDate;
-            if (domain.EligibilityLevel.HasValue)
-            {
-                EligibilityLevel = domain.EligibilityLevel.Value.Level;
-            }
+
+            EligibilityLevel = domain.EligibilityLevel.Level;
             YearlyInstallment = domain.YearlyInstallment;
             EarlyAccess = domain.EarlyAccess;
             FreeToPlay = domain.FreeToPlay;
@@ -60,12 +58,12 @@ namespace FantasyCritic.MySQL.Entities
         public int? SteamID { get; set; }
         public int? OpenCriticID { get; set; }
         public string EstimatedReleaseDate { get; set; }
-        public int? EligibilityLevel { get; set; }
-        public bool? YearlyInstallment { get; set; }
-        public bool? EarlyAccess { get; set; }
-        public bool? FreeToPlay { get; set; }
-        public bool? ReleasedInternationally { get; set; }
-        public bool? ExpansionPack { get; set; }
+        public int EligibilityLevel { get; set; }
+        public bool YearlyInstallment { get; set; }
+        public bool EarlyAccess { get; set; }
+        public bool FreeToPlay { get; set; }
+        public bool ReleasedInternationally { get; set; }
+        public bool ExpansionPack { get; set; }
 
         //Response
         public bool Answered { get; set; }
@@ -75,7 +73,7 @@ namespace FantasyCritic.MySQL.Entities
         
         public bool Hidden { get; set; }
 
-        public MasterGameRequest ToDomain(FantasyCriticUser user, Maybe<EligibilityLevel> eligibilityLevel, Maybe<MasterGame> masterGame)
+        public MasterGameRequest ToDomain(FantasyCriticUser user, EligibilityLevel eligibilityLevel, Maybe<MasterGame> masterGame)
         {
             Instant requestTimestamp = LocalDateTime.FromDateTime(RequestTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
             Instant? responseTimestamp = null;
