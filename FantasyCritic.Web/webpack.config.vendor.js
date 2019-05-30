@@ -13,7 +13,7 @@ module.exports = () => {
   })
 
   return [{
-    mode: (isDevBuild ? 'development' : 'production' ),
+    mode: ('production'),
     stats: { modules: false },
     resolve: {
       extensions: ['.js']
