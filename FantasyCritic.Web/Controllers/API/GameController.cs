@@ -70,7 +70,7 @@ namespace FantasyCritic.Web.Controllers.API
                 gameName = gameName.ToLower();
                 var distances = masterGames
                     .Select(x =>
-                        new Tuple<MasterGame, int>(x, Levenshtein.CalculateLevenshteinDistance(gameName, x.GameName)));
+                        new Tuple<MasterGame, int>(x, MasterGameSearching.CalculateLevenshteinDistance(gameName, x.GameName)));
 
                 var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
 
@@ -92,7 +92,7 @@ namespace FantasyCritic.Web.Controllers.API
                 gameName = gameName.ToLower();
                 var distances = masterGames
                     .Select(x =>
-                        new Tuple<MasterGameYear, int>(x, Levenshtein.CalculateLevenshteinDistance(gameName, x.MasterGame.GameName)));
+                        new Tuple<MasterGameYear, int>(x, MasterGameSearching.CalculateLevenshteinDistance(gameName, x.MasterGame.GameName)));
 
                 var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
 

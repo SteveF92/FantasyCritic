@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Utilities
 {
-    public static class Levenshtein
+    public static class MasterGameSearching
     {
         //https://stackoverflow.com/a/9453762
         public static int CalculateLevenshteinDistance(string a, string b)
