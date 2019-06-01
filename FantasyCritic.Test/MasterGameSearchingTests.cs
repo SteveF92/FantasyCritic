@@ -26,11 +26,38 @@ namespace FantasyCritic.Test
         }
 
         [Test]
-        public async Task BasicSearchTest()
+        public async Task ExactTest()
         {
             var searchResults = await SearchGames("Sekiro: Shadows Die Twice");
 
-            Assert.AreEqual(1, searchResults.Count);
+            Assert.GreaterOrEqual(1, searchResults.Count);
+            Assert.AreEqual("96f5e8e3-672b-4626-b47e-4bff3a6c4430", searchResults[0].MasterGameID.ToString());
+        }
+
+        [Test]
+        public async Task PartOfStringTest()
+        {
+            var searchResults = await SearchGames("Sekiro");
+
+            Assert.GreaterOrEqual(1, searchResults.Count);
+            Assert.AreEqual("96f5e8e3-672b-4626-b47e-4bff3a6c4430", searchResults[0].MasterGameID.ToString());
+        }
+
+        [Test]
+        public async Task MispelledStringTest()
+        {
+            var searchResults = await SearchGames("Sakiro: Shadows Die Twice");
+
+            Assert.GreaterOrEqual(1, searchResults.Count);
+            Assert.AreEqual("96f5e8e3-672b-4626-b47e-4bff3a6c4430", searchResults[0].MasterGameID.ToString());
+        }
+
+        [Test]
+        public async Task MispelledPartStringTest()
+        {
+            var searchResults = await SearchGames("Sakiro");
+
+            Assert.GreaterOrEqual(1, searchResults.Count);
             Assert.AreEqual("96f5e8e3-672b-4626-b47e-4bff3a6c4430", searchResults[0].MasterGameID.ToString());
         }
     }
