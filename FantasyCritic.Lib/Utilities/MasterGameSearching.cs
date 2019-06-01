@@ -10,7 +10,6 @@ namespace FantasyCritic.Lib.Utilities
 {
     public static class MasterGameSearching
     {
-        private static readonly int MaxDistance = 10;
         private static readonly int MaxDistanceGames = 5;
 
         public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames)
@@ -19,7 +18,7 @@ namespace FantasyCritic.Lib.Utilities
             var distances = masterGames
                 .Select(x => new Tuple<MasterGame, double>(x, GetDistance(gameName, x.GameName)));
 
-            var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
+            var lowDistance = distances.OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
 
             var matchingMasterGames = masterGames
                 .Where(x => x.GameName.ToLower().Contains(gameName))
@@ -34,7 +33,7 @@ namespace FantasyCritic.Lib.Utilities
             var distances = masterGames
                 .Select(x => new Tuple<MasterGameYear, double>(x, GetDistance(gameName, x.MasterGame.GameName)));
 
-            var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
+            var lowDistance = distances.OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
 
             var matchingMasterGames = masterGames
                 .Where(x => x.MasterGame.GameName.ToLower().Contains(gameName))
@@ -45,11 +44,12 @@ namespace FantasyCritic.Lib.Utilities
 
         private static double GetDistance(string source, string target)
         {
-            return CalculateLevenshteinDistance(source, target);
+            var longestCommon = source.LongestCommonSubsequence(target);
+            return longestCommon.Length;
         }
 
         //https://stackoverflow.com/a/9453762
-        private static int CalculateLevenshteinDistance(string a, string b)
+        private static int CalculateLevenshteinDistance(this string a, string b)
         {
             if (string.IsNullOrEmpty(a) && String.IsNullOrEmpty(b))
             {
