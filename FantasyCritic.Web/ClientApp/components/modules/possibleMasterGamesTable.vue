@@ -18,7 +18,7 @@
               <span v-show="game.isReleased">(Released)</span>
             </td>
             <td class="no-mobile">
-              <eligibilityBadge :eligibilityLevel="game.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
+              <eligibilityBadge :eligibilityLevel="game.eligibilitySettings.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
             </td>
             <td class="select-cell">
               <b-button size="sm" variant="info" v-on:click="selectGame(game)">Select</b-button>

@@ -9,7 +9,8 @@
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames"
+                                  :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel"
                                   v-on:input="newGameSelected"></possibleMasterGamesTable>
 
         <label v-if="bidMasterGame" for="bidMasterGame" class="control-label">Selected Game: {{bidMasterGame.gameName}}</label>

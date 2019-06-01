@@ -45,7 +45,7 @@
           {{data.item.addedTimestamp | date}}
         </template>
         <template slot="eligibilityLevel" slot-scope="data">
-          <eligibilityBadge :eligibilityLevel="data.item.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
+          <eligibilityBadge :eligibilityLevel="data.item.eligibilitySettings.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
         </template>
       </b-table>
     </div>
