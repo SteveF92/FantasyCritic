@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class MasterGameYear
+    public class MasterGameYear : IEquatable<MasterGameYear>
     {
         public MasterGameYear(MasterGame masterGame, int year)
         {
@@ -42,5 +42,28 @@ namespace FantasyCritic.Lib.Domain
         public decimal? AverageDraftPosition { get; }
         public decimal? HypeFactor { get; }
         public decimal? DateAdjustedHypeFactor { get; set; }
+
+        public bool Equals(MasterGameYear other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(MasterGame, other.MasterGame) && Year == other.Year;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((MasterGameYear) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((MasterGame != null ? MasterGame.GetHashCode() : 0) * 397) ^ Year;
+            }
+        }
     }
 }

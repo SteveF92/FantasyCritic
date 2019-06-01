@@ -25,8 +25,6 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly FantasyCriticUserManager _userManager;
         private readonly InterLeagueService _interLeagueService;
         private readonly IClock _clock;
-        private static readonly int MaxDistance = 10;
-        private static readonly int MaxDistanceGames = 5;
 
         public GameController(FantasyCriticUserManager userManager, InterLeagueService interLeagueService, IClock clock)
         {
@@ -63,21 +61,13 @@ namespace FantasyCritic.Web.Controllers.API
 
         public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame(string gameName)
         {
-            IReadOnlyList<MasterGame> masterGames = await _interLeagueService.GetMasterGames();
-            IEnumerable<MasterGame> matchingMasterGames = new List<MasterGame>();
-            if (!string.IsNullOrWhiteSpace(gameName))
+            if (string.IsNullOrWhiteSpace(gameName))
             {
-                gameName = gameName.ToLower();
-                var distances = masterGames
-                    .Select(x =>
-                        new Tuple<MasterGame, int>(x, MasterGameSearching.CalculateLevenshteinDistance(gameName, x.GameName)));
-
-                var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
-
-                matchingMasterGames = masterGames
-                    .Where(x => x.GameName.ToLower().Contains(gameName))
-                    .Concat(lowDistance).Distinct();
+                return new List<MasterGameViewModel>();
             }
+
+            IReadOnlyList<MasterGame> masterGames = await _interLeagueService.GetMasterGames();
+            IReadOnlyList<MasterGame> matchingMasterGames = MasterGameSearching.SearchMasterGames(gameName, masterGames);
             List<MasterGameViewModel> viewModels = matchingMasterGames.Select(x => new MasterGameViewModel(x, _clock)).ToList();
 
             return viewModels;
@@ -85,21 +75,13 @@ namespace FantasyCritic.Web.Controllers.API
 
         public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(string gameName, int year)
         {
-            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
-            IEnumerable<MasterGameYear> matchingMasterGames = new List<MasterGameYear>();
-            if (!string.IsNullOrWhiteSpace(gameName))
+            if (string.IsNullOrWhiteSpace(gameName))
             {
-                gameName = gameName.ToLower();
-                var distances = masterGames
-                    .Select(x =>
-                        new Tuple<MasterGameYear, int>(x, MasterGameSearching.CalculateLevenshteinDistance(gameName, x.MasterGame.GameName)));
-
-                var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
-
-                matchingMasterGames = masterGames
-                    .Where(x => x.MasterGame.GameName.ToLower().Contains(gameName))
-                    .Concat(lowDistance).Distinct();
+                return new List<MasterGameYearViewModel>();
             }
+
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
+            IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
             List<MasterGameYearViewModel> viewModels = matchingMasterGames.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
 
             return viewModels;

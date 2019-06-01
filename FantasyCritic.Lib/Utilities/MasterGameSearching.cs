@@ -3,19 +3,59 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain;
+using FuzzyString;
 
 namespace FantasyCritic.Lib.Utilities
 {
     public static class MasterGameSearching
     {
-        //https://stackoverflow.com/a/9453762
-        public static int CalculateLevenshteinDistance(string a, string b)
+        private static readonly int MaxDistance = 10;
+        private static readonly int MaxDistanceGames = 5;
+
+        public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames)
         {
-            if (String.IsNullOrEmpty(a) && String.IsNullOrEmpty(b))
+            gameName = gameName.ToLower();
+            var distances = masterGames
+                .Select(x => new Tuple<MasterGame, double>(x, GetDistance(gameName, x.GameName)));
+
+            var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
+
+            var matchingMasterGames = masterGames
+                .Where(x => x.GameName.ToLower().Contains(gameName))
+                .Concat(lowDistance).Distinct();
+
+            return matchingMasterGames.ToList();
+        }
+
+        public static IReadOnlyList<MasterGameYear> SearchMasterGameYears(string gameName, IEnumerable<MasterGameYear> masterGames)
+        {
+            gameName = gameName.ToLower();
+            var distances = masterGames
+                .Select(x => new Tuple<MasterGameYear, double>(x, GetDistance(gameName, x.MasterGame.GameName)));
+
+            var lowDistance = distances.Where(x => x.Item2 < MaxDistance).OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
+
+            var matchingMasterGames = masterGames
+                .Where(x => x.MasterGame.GameName.ToLower().Contains(gameName))
+                .Concat(lowDistance).Distinct();
+
+            return matchingMasterGames.ToList();
+        }
+
+        private static double GetDistance(string source, string target)
+        {
+            return CalculateLevenshteinDistance(source, target);
+        }
+
+        //https://stackoverflow.com/a/9453762
+        private static int CalculateLevenshteinDistance(string a, string b)
+        {
+            if (string.IsNullOrEmpty(a) && String.IsNullOrEmpty(b))
             {
                 return 0;
             }
-            if (String.IsNullOrEmpty(a))
+            if (string.IsNullOrEmpty(a))
             {
                 return b.Length;
             }
