@@ -214,16 +214,14 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError("That game has already been released.", true));
             }
 
-            if (masterGame.ReleaseDate.HasValue)
+            if (released && masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year < year)
             {
-                if (released && masterGame.ReleaseDate.Value.Year < year)
-                {
-                    claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
-                }
-                else if (!released && masterGame.ReleaseDate.Value.Year > year && !counterPick)
-                {
-                    claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
-                }
+                claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
+            }
+
+            if (!released && masterGame.MinimumReleaseYear > year && !counterPick)
+            {
+                claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
             }
 
             bool hasScore = masterGame.CriticScore.HasValue;
