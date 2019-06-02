@@ -14,37 +14,25 @@ namespace FantasyCritic.Lib.Utilities
 
         public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames)
         {
-            gameName = gameName.ToLower();
             var distances = masterGames
                 .Select(x => new Tuple<MasterGame, double>(x, GetDistance(gameName, x.GameName)));
 
-            var lowDistance = distances.OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
-
-            var matchingMasterGames = masterGames
-                .Where(x => x.GameName.ToLower().Contains(gameName))
-                .Concat(lowDistance).Distinct();
-
-            return matchingMasterGames.ToList();
+            var mostSimilar = distances.OrderByDescending(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
+            return mostSimilar.ToList();
         }
 
         public static IReadOnlyList<MasterGameYear> SearchMasterGameYears(string gameName, IEnumerable<MasterGameYear> masterGames)
         {
-            gameName = gameName.ToLower();
             var distances = masterGames
                 .Select(x => new Tuple<MasterGameYear, double>(x, GetDistance(gameName, x.MasterGame.GameName)));
 
-            var lowDistance = distances.OrderBy(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
-
-            var matchingMasterGames = masterGames
-                .Where(x => x.MasterGame.GameName.ToLower().Contains(gameName))
-                .Concat(lowDistance).Distinct();
-
-            return matchingMasterGames.ToList();
+            var mostSimilar = distances.OrderByDescending(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
+            return mostSimilar.ToList();
         }
 
         private static double GetDistance(string source, string target)
         {
-            var longestCommon = source.LongestCommonSubsequence(target);
+            var longestCommon = source.ToLowerInvariant().LongestCommonSubsequence(target.ToLowerInvariant());
             return longestCommon.Length;
         }
 
