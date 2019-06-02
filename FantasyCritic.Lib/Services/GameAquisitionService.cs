@@ -38,7 +38,7 @@ namespace FantasyCritic.Lib.Services
             LeagueOptions yearOptions = leagueYear.Options;
             if (request.MasterGame.HasValue && !request.CounterPick)
             {
-                var masterGameErrors = GetMasterGameErrors(leagueYear.Options, request.MasterGame.Value, leagueYear.Year, request.CounterPick);
+                var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, request.CounterPick);
                 claimErrors.AddRange(masterGameErrors);
             }
 
@@ -106,7 +106,7 @@ namespace FantasyCritic.Lib.Services
             associationErrors.AddRange(basicErrors);
 
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
-            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear.Value.Options, request.MasterGame, leagueYear.Value.Year, request.PublisherGame.CounterPick);
+            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear.Value, request.MasterGame, leagueYear.Value.Year, request.PublisherGame.CounterPick);
             associationErrors.AddRange(masterGameErrors);
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
@@ -168,13 +168,25 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueOptions yearOptions, MasterGame masterGame, int year, bool counterPick)
+        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool counterPick)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
-            var eligibilityErrors = yearOptions.AllowedEligibilitySettings.GameIsEligible(masterGame);
-            claimErrors.AddRange(eligibilityErrors);
-
+            var overriddenEligibility = leagueYear.GetOverriddenEligibility(masterGame);
+            if (overriddenEligibility.HasValue)
+            {
+                if (!overriddenEligibility.Value)
+                {
+                    claimErrors.Add(new ClaimError("That game has been specifically banned by your league.", false));
+                }
+            }
+            else
+            {
+                //Normal eligibility (not manually set)
+                var eligibilityErrors = leagueYear.Options.AllowedEligibilitySettings.GameIsEligible(masterGame);
+                claimErrors.AddRange(eligibilityErrors);
+            }
+            
             bool released = masterGame.IsReleased(_clock);
             if (released)
             {
