@@ -172,10 +172,10 @@ namespace FantasyCritic.Lib.Services
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
-            bool eligible = masterGame.IsEligible(yearOptions.AllowedEligibilitySettings.EligibilityLevel);
-            if (!eligible)
+            bool remakeEligible = masterGame.IsEligible(yearOptions.AllowedEligibilitySettings.EligibilityLevel);
+            if (!remakeEligible)
             {
-                claimErrors.Add(new ClaimError("That game is not eligible under this league's settings.", true));
+                claimErrors.Add(new ClaimError("That game is not eligible under this league 'remake level' settings.", true));
             }
 
             bool earlyAccessEligible = (!masterGame.EligibilitySettings.EarlyAccess || yearOptions.AllowedEligibilitySettings.EarlyAccess);
