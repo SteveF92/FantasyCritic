@@ -123,11 +123,6 @@ namespace FantasyCritic.Lib.Domain
 
         public override string ToString() => GameName;
 
-        public bool IsEligible(EligibilityLevel eligibilityLevel)
-        {
-            return EligibilitySettings.EligibilityLevel.Level <= eligibilityLevel.Level;
-        }
-
         public bool Equals(MasterGame other)
         {
             if (ReferenceEquals(null, other)) return false;
