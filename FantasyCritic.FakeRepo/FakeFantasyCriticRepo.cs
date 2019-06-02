@@ -295,6 +295,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<SystemWideValues> GetSystemWideValues()
         {
             return Task.FromResult(new SystemWideValues(7m, -1m));

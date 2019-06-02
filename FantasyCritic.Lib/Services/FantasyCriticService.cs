@@ -107,10 +107,17 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
             }
 
-            LeagueYear newLeagueYear = new LeagueYear(league, parameters.Year, options, leagueYear.Value.PlayStatus);
+            var eligibilityOverrides = await GetEligibilityOverrides(league, parameters.Year);
+
+            LeagueYear newLeagueYear = new LeagueYear(league, parameters.Year, options, leagueYear.Value.PlayStatus, eligibilityOverrides);
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear);
 
             return Result.Ok();
+        }
+
+        public Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year)
+        {
+            return _fantasyCriticRepo.GetEligibilityOverrides(league, year);
         }
 
         public Task AddNewLeagueYear(League league, int year, LeagueOptions options)

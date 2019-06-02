@@ -54,7 +54,7 @@ namespace FantasyCritic.MySQL.Entities
         public string ScoringSystem { get; set; }
         public string PlayStatus { get; set; }
 
-        public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel)
+        public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel, IEnumerable<EligibilityOverride> eligibilityOverrides)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
@@ -64,7 +64,7 @@ namespace FantasyCritic.MySQL.Entities
 
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, eligibilitySettings, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
 
-            return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus));
+            return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides);
         }
     }
 }

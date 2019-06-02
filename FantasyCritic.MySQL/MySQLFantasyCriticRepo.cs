@@ -91,7 +91,8 @@ namespace FantasyCritic.MySQL
                 }
 
                 var eligibilityLevel = await _masterGameRepo.GetEligibilityLevel(yearEntity.MaximumEligibilityLevel);
-                LeagueYear year = yearEntity.ToDomain(requestLeague, eligibilityLevel);
+                var eligibilityOverrides = await GetEligibilityOverrides(requestLeague, requestYear);
+                LeagueYear year = yearEntity.ToDomain(requestLeague, eligibilityLevel, eligibilityOverrides);
                 return year;
             }
         }
@@ -118,7 +119,8 @@ namespace FantasyCritic.MySQL
                     }
 
                     var eligibilityLevel = await _masterGameRepo.GetEligibilityLevel(entity.MaximumEligibilityLevel);
-                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel);
+                    var eligibilityOverrides = await GetEligibilityOverrides(league, entity.Year);
+                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel, eligibilityOverrides);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -987,6 +989,11 @@ namespace FantasyCritic.MySQL
                     transaction.Commit();
                 }
             }
+        }
+
+        public Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<SystemWideValues> GetSystemWideValues()
