@@ -8,6 +8,11 @@ namespace FantasyCritic.MySQL.Entities
 {
     internal class EligibilityOverrideEntity
     {
+        public EligibilityOverrideEntity()
+        {
+
+        }
+
         public EligibilityOverrideEntity(League league, int year, EligibilityOverride domain)
         {
             LeagueID = league.LeagueID;

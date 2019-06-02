@@ -85,7 +85,6 @@ namespace FantasyCritic.Web
             //services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             //services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
-
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticRoleManager>();
             services.AddScoped<GameAquisitionService>();
