@@ -991,9 +991,35 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year)
+        public async Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year)
         {
-            throw new NotImplementedException();
+            string sql = "select * from tbl_league_eligibilityoverride where LeagueID = @leagueID and Year = @year;";
+            var queryObject = new
+            {
+                leagueID = league.LeagueID,
+                year
+            };
+
+            IEnumerable<EligibilityOverrideEntity> results;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                results = await connection.QueryAsync<EligibilityOverrideEntity>(sql, queryObject);
+            }
+
+            List<EligibilityOverride> domainObjects = new List<EligibilityOverride>();
+            foreach (var result in results)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGame(result.MasterGameID);
+                if (masterGame.HasNoValue)
+                {
+                    throw new Exception($"Cannot find game {masterGame.Value.MasterGameID} for eligibility override. This should not happen.");
+                }
+
+                EligibilityOverride domain = result.ToDomain(masterGame.Value);
+                domainObjects.Add(domain);
+            }
+
+            return domainObjects;
         }
 
         public async Task<SystemWideValues> GetSystemWideValues()
