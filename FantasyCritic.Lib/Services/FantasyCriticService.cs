@@ -399,5 +399,15 @@ namespace FantasyCritic.Lib.Services
             var leagueYears = await GetLeagueYears(year);
             return leagueYears.Where(x => x.League.PublicLeague).Where(x => x.Year == year).OrderByDescending(x => x.League.NumberOfFollowers).ToList();
         }
+
+        public Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool? eligible)
+        {
+            if (!eligible.HasValue)
+            {
+                return _fantasyCriticRepo.DeleteEligibilityOverride(leagueYear, masterGame);
+            }
+
+            return _fantasyCriticRepo.SetEligibilityOverride(leagueYear, masterGame, eligible.Value);
+        }
     }
 }

@@ -300,6 +300,16 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<SystemWideValues> GetSystemWideValues()
         {
             return Task.FromResult(new SystemWideValues(7m, -1m));

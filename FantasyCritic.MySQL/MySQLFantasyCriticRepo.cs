@@ -1022,6 +1022,55 @@ namespace FantasyCritic.MySQL
             return domainObjects;
         }
 
+        public async Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await DeleteEligibilityOverride(leagueYear, masterGame, connection, transaction);
+                    transaction.Commit();
+                }
+            }
+        }
+
+        public async Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible)
+        {
+            string sql = "insert into tbl_league_eligibilityoverride(LeagueID,Year,MasterGameID,Eligible) VALUES " +
+                         "(@leagueID,@year,@masterGameID,@eligible)";
+
+            var insertObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year,
+                masterGameID = masterGame.MasterGameID,
+                eligible
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await DeleteEligibilityOverride(leagueYear, masterGame, connection, transaction);
+                    await connection.ExecuteAsync(sql, insertObject, transaction);
+                    transaction.Commit();
+                }
+            }
+        }
+
+        private async Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            string sql = "delete from tbl_league_eligibilityoverride where LeagueID = @leagueID and Year = @year and MasterGameID = @masterGameID;";
+            var queryObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year,
+                masterGameID = masterGame.MasterGameID
+            };
+
+            await connection.ExecuteAsync(sql, queryObject, transaction);
+        }
+
         public async Task<SystemWideValues> GetSystemWideValues()
         {
             using (var connection = new MySqlConnection(_connectionString))

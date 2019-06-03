@@ -948,5 +948,43 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SetGameEligibilityOverride([FromBody] EligiblityOverrideRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+            if (masterGame.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            await _fantasyCriticService.SetEligibilityOverride(leagueYear.Value, masterGame.Value, request.Eligible);
+
+            return Ok();
+        }
     }
 }
