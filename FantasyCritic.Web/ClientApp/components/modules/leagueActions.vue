@@ -90,6 +90,9 @@
             <li class="fake-link action">
               <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit Game Settings</router-link>
             </li>
+            <li class="fake-link action" v-b-modal="'manageEligibilityOverridesModal'" v-show="leagueYear.playStatus.draftFinished">
+              Manually Set Game Eligibility
+            </li>
             <li class="fake-link action" v-b-modal="'changeLeagueOptionsForm'">
               Change League Options
             </li>
@@ -126,6 +129,7 @@
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
+        <manageEligibilityOverridesModal :leagueYear="leagueYear"></manageEligibilityOverridesModal>
       </div>
     </div>
   </div>
@@ -154,6 +158,7 @@
   import ManagerDraftCounterPickForm from "components/modules/modals/managerDraftCounterPickForm";
   import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
   import LeagueOptionsModal from "components/modules/modals/leagueOptionsModal";
+  import ManageEligibilityOverridesModal from "components/modules/modals/manageEligibilityOverridesModal";
 
   export default {
     data() {
@@ -181,7 +186,8 @@
       UndoLastDraftActionModal,
       ManagerDraftCounterPickForm,
       AddNewLeagueYearForm,
-      LeagueOptionsModal
+      LeagueOptionsModal,
+      ManageEligibilityOverridesModal
     },
     methods: {
       gameBid(bidInfo) {
