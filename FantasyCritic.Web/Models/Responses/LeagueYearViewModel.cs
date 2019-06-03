@@ -95,6 +95,7 @@ namespace FantasyCritic.Web.Models.Responses
 
             PlayStatus = new PlayStatusViewModel(playStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
             AvailableCounterPicks = availableCounterPicks.Select(x => new PublisherGameViewModel(x, clock)).OrderBy(x => x.GameName).ToList();
+            EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, clock)).ToList();
         }
 
         public Guid LeagueID { get; }
@@ -110,6 +111,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool UnlinkedGameExists { get; }
         public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
+        public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
         public PublisherViewModel UserPublisher { get; }
         public PlayStatusViewModel PlayStatus { get; }
         public IReadOnlyList<PublisherGameViewModel> AvailableCounterPicks { get; }

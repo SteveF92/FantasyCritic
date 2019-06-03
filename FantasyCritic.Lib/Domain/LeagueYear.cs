@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueYear : IEquatable<LeagueYear>
     {
-        private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverrides;
+        private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverridesDictionary;
 
         public LeagueYear(League league, int year, LeagueOptions options, PlayStatus playStatus, IEnumerable<EligibilityOverride> eligibilityOverrides)
         {
@@ -20,13 +20,15 @@ namespace FantasyCritic.Lib.Domain
             Year = year;
             Options = options;
             PlayStatus = playStatus;
-            _eligibilityOverrides = eligibilityOverrides.ToDictionary(x => x.MasterGame);
+            EligibilityOverrides = eligibilityOverrides.ToList();
+            _eligibilityOverridesDictionary = EligibilityOverrides.ToDictionary(x => x.MasterGame);
         }
 
         public League League { get; }
         public int Year { get; }
         public LeagueOptions Options { get; }
         public PlayStatus PlayStatus { get; }
+        public IReadOnlyList<EligibilityOverride> EligibilityOverrides { get; }
 
         public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 
@@ -34,7 +36,7 @@ namespace FantasyCritic.Lib.Domain
 
         public bool? GetOverriddenEligibility(MasterGame masterGame)
         {
-            bool found = _eligibilityOverrides.TryGetValue(masterGame, out var eligibilityOverride);
+            bool found = _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);
             if (!found)
             {
                 return null;
