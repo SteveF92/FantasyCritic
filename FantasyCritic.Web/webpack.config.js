@@ -15,7 +15,7 @@ module.exports = () => {
   })
 
   return [{
-    mode: ('production'),
+    mode: ('development'),
     stats: { modules: false },
     entry: { 'main': './ClientApp/boot-app.js' },
     resolve: {
