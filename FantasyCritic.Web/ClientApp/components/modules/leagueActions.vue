@@ -129,7 +129,7 @@
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
-        <manageEligibilityOverridesModal :leagueYear="leagueYear"></manageEligibilityOverridesModal>
+        <manageEligibilityOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameEligibilitySet" v-on:gameEligiblityReset="gameEligiblityReset"></manageEligibilityOverridesModal>
       </div>
     </div>
   </div>
@@ -351,6 +351,26 @@
       draftOrderEdited() {
         let actionInfo = {
           message: 'Draft order has been changed',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      gameEligibilitySet(gameInfo) {
+        let message = "";
+        if (gameInfo.eligible) {
+          message = gameInfo.gameName + ' was marked as eligible.';
+        } else {
+          message = gameInfo.gameName + ' was marked as ineligible.';
+        }
+        let actionInfo = {
+          message: message,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      gameEligiblityReset(gameInfo) {
+        let actionInfo = {
+          message: gameInfo.gameName + "'s eligibilty was reset to normal.",
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);

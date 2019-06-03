@@ -1026,6 +1026,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
+                await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await DeleteEligibilityOverride(leagueYear, masterGame, connection, transaction);
@@ -1049,6 +1050,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
+                await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await DeleteEligibilityOverride(leagueYear, masterGame, connection, transaction);

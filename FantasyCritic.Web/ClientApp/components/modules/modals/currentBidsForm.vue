@@ -24,29 +24,30 @@
 </template>
 
 <script>
-    import Vue from "vue";
-    import axios from "axios";
-    export default {
-        props: ['currentBids'],
-        methods: {
-          cancelBid(bid) {
-            var model = {
-              bidID: bid.bidID
-            };
-            axios
-              .post('/api/league/DeletePickupBid', model)
-              .then(response => {
-                var bidInfo = {
-                  gameName: bid.masterGame.gameName,
-                  bidAmount: bid.bidAmount
-                };
-                this.$emit('bidCanceled', bidInfo);
-              })
-              .catch(response => {
+  import Vue from "vue";
+  import axios from "axios";
 
-              });
-          }
+  export default {
+      props: ['currentBids'],
+      methods: {
+        cancelBid(bid) {
+          var model = {
+            bidID: bid.bidID
+          };
+          axios
+            .post('/api/league/DeletePickupBid', model)
+            .then(response => {
+              var bidInfo = {
+                gameName: bid.masterGame.gameName,
+                bidAmount: bid.bidAmount
+              };
+              this.$emit('bidCanceled', bidInfo);
+            })
+            .catch(response => {
+
+            });
         }
+      }
     }
 </script>
 <style scoped>

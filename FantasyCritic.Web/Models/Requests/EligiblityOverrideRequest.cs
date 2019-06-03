@@ -15,7 +15,6 @@ namespace FantasyCritic.Web.Models.Requests
         public int Year { get; set; }
         [Required]
         public Guid MasterGameID { get; set; }
-        [Required]
         public bool? Eligible { get; set; }
     }
 }
