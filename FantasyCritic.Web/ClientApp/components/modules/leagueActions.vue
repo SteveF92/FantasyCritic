@@ -370,7 +370,7 @@
       },
       gameEligiblityReset(gameInfo) {
         let actionInfo = {
-          message: gameInfo.gameName + "'s eligibilty was reset to normal.",
+          message: gameInfo.gameName + "'s eligibility was reset to normal.",
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
