@@ -18,6 +18,9 @@
           <li class="fake-link action" v-b-modal="'leagueOptionsModal'">
             See League Options
           </li>
+          <li class="fake-link action" v-b-modal="'eligibilityOverridesModal'">
+            See Eligibility Overrides
+          </li>
         </ul>
       </div>
       <div v-if="leagueYear.userPublisher">
@@ -106,6 +109,7 @@
 
         <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
         <currentBidsForm :currentBids="currentBids" v-on:bidCanceled="bidCanceled"></currentBidsForm>
+        <eligibilityOverridesModal :eligibilityOverrides="leagueYear.eligibilityOverrides"></eligibilityOverridesModal>
 
         <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
@@ -132,6 +136,7 @@
 
   import BidGameForm from "components/modules/modals/bidGameForm";
   import CurrentBidsForm from "components/modules/modals/currentBidsForm";
+  import EligibilityOverridesModal from "components/modules/modals/eligibilityOverridesModal";
   import ChangePublisherNameForm from "components/modules/modals/changePublisherNameForm";
   import PlayerDraftGameForm from "components/modules/modals/playerDraftGameForm";
   import PlayerDraftCounterPickForm from "components/modules/modals/playerDraftCounterPickForm";
@@ -160,6 +165,7 @@
     components: {
       BidGameForm,
       CurrentBidsForm,
+      EligibilityOverridesModal,
       ChangePublisherNameForm,
       PlayerDraftGameForm,
       PlayerDraftCounterPickForm,
