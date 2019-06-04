@@ -255,6 +255,17 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyList<MasterGameChangeRequest>> GetAllMasterGameChangeRequests()
+        {
+            var sql = "select * from tbl_mastergame_changerequest where Answered = 0";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<MasterGameChangeRequestEntity> entities = await connection.QueryAsync<MasterGameChangeRequestEntity>(sql);
+                return await ConvertMasterGameChangeRequestEntities(entities);
+            }
+        }
+
         public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
         {
             Guid? masterGameID = null;

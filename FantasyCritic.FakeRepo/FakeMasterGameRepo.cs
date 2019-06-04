@@ -24,6 +24,11 @@ namespace FantasyCritic.FakeRepo
             _masterGames = MasterGameFactory.GetMasterGames();
         }
 
+        public Task<IReadOnlyList<MasterGameChangeRequest>> GetAllMasterGameChangeRequests()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
         {
             throw new NotImplementedException();

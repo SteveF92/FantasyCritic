@@ -35,6 +35,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task DismissMasterGameRequest(MasterGameRequest masterGameRequest);
         Task DismissMasterGameChangeRequest(MasterGameChangeRequest request);
         Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests();
+        Task<IReadOnlyList<MasterGameChangeRequest>> GetAllMasterGameChangeRequests();
         Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame);
     }
 }

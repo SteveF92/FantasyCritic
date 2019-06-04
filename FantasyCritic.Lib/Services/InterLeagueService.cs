@@ -119,6 +119,11 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.GetAllMasterGameRequests();
         }
 
+        public Task<IReadOnlyList<MasterGameChangeRequest>> GetAllMasterGameChangeRequests()
+        {
+            return _masterGameRepo.GetAllMasterGameChangeRequests();
+        }
+
         public Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
         {
             return _masterGameRepo.GetMasterGameRequestsForUser(user);

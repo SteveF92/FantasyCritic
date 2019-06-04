@@ -91,6 +91,14 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
+        public async Task<ActionResult<List<MasterGameChangeRequestViewModel>>> ActiveMasterGameChangeRequests()
+        {
+            IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetAllMasterGameChangeRequests();
+
+            var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, _clock)).ToList();
+            return viewModels;
+        }
+
         [HttpPost]
         public async Task<IActionResult> RefreshCriticInfo()
         {
