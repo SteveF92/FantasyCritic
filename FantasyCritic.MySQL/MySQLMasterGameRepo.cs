@@ -231,6 +231,19 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task CreateMasterGameChangeRequest(MasterGameChangeRequest domainRequest)
+        {
+            var entity = new MasterGameChangeRequestEntity(domainRequest);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
+                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@Answered,@ResponseTimestamp,@ResponseNote,@Hidden);",
+                    entity);
+            }
+        }
+
         public async Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests()
         {
             var sql = "select * from tbl_mastergame_request where Answered = 0";

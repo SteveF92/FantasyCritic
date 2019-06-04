@@ -39,6 +39,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task CreateMasterGameChangeRequest(MasterGameChangeRequest domainRequest)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task DeleteMasterGameRequest(MasterGameRequest request)
         {
             throw new NotImplementedException();
