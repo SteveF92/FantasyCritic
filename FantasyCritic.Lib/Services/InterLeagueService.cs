@@ -129,6 +129,11 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.GetMasterGameRequest(requestID);
         }
 
+        public Task<Maybe<MasterGameChangeRequest>> GetMasterGameChangeRequest(Guid requestID)
+        {
+            return _masterGameRepo.GetMasterGameChangeRequest(requestID);
+        }
+
         public Task DeleteMasterGameRequest(MasterGameRequest request)
         {
             return _masterGameRepo.DeleteMasterGameRequest(request);
@@ -149,9 +154,9 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.DismissMasterGameRequest(masterGameRequest);
         }
 
-        public Task<Maybe<MasterGameChangeRequest>> GetMasterGameChangeRequest(Guid requestID)
+        public Task DismissMasterGameChangeRequest(MasterGameChangeRequest request)
         {
-            return _masterGameRepo.GetMasterGameChangeRequest(requestID);
+            return _masterGameRepo.DismissMasterGameChangeRequest(request);
         }
     }
 }

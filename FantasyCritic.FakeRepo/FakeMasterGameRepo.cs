@@ -64,6 +64,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task DismissMasterGameChangeRequest(MasterGameChangeRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests()
         {
             throw new NotImplementedException();

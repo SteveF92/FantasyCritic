@@ -404,5 +404,20 @@ namespace FantasyCritic.MySQL
                     dismissObject);
             }
         }
+
+        public async Task DismissMasterGameChangeRequest(MasterGameChangeRequest request)
+        {
+            var dismissObject = new
+            {
+                requestID = request.RequestID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "update tbl_mastergame_changerequest SET Hidden = 1 where RequestID = @requestID;",
+                    dismissObject);
+            }
+        }
     }
 }
