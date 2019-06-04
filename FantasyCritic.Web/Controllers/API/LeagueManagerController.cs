@@ -606,6 +606,12 @@ namespace FantasyCritic.Web.Controllers.API
 
         private async Task<IActionResult> UpdateManualCriticScore(Guid publisherID, Guid publisherGameID, decimal? manualCriticScore)
         {
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest();
+            }
+
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
             if (!ModelState.IsValid)
@@ -952,6 +958,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> SetGameEligibilityOverride([FromBody] EligiblityOverrideRequest request)
         {
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest();
+            }
+
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
             if (!ModelState.IsValid)
