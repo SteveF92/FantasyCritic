@@ -238,8 +238,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
-                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@Answered,@ResponseTimestamp,@ResponseNote,@Hidden);",
+                    "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,OpenCriticID,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
+                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@Answered,@ResponseTimestamp,@ResponseNote,@Hidden);",
                     entity);
             }
         }

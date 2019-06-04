@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Utilities;
+using FantasyCritic.Web.Extensions;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Requests
@@ -41,16 +42,7 @@ namespace FantasyCritic.Web.Models.Requests
                 }
             }
 
-            int? openCriticID = null;
-            var openCriticGameIDString = SubstringSearching.GetBetween(OpenCriticLink, "/game/", "/");
-            if (openCriticGameIDString.IsSuccess)
-            {
-                bool parseResult = int.TryParse(openCriticGameIDString.Value, out int openCriticIDResult);
-                if (parseResult)
-                {
-                    openCriticID = openCriticIDResult;
-                }
-            }
+            int? openCriticID = URLParsingExtensions.GetOpenCriticIDFromURL(OpenCriticLink);
 
             return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, EstimatedReleaseDate, eligibilityLevel,
                 YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, false, null, null, Maybe<MasterGame>.None, false);

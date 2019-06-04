@@ -23,6 +23,7 @@ namespace FantasyCritic.MySQL.Entities
             RequestTimestamp = domain.RequestTimestamp.ToDateTimeUtc();
             RequestNote = domain.RequestNote;
             MasterGameID = domain.MasterGame.MasterGameID;
+            OpenCriticID = domain.OpenCriticID;
 
             Answered = domain.Answered;
             ResponseTimestamp = domain.ResponseTimestamp?.ToDateTimeUtc();
@@ -37,6 +38,7 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime RequestTimestamp { get; set; }
         public string RequestNote { get; set; }
         public Guid MasterGameID { get; set; }
+        public int? OpenCriticID { get; set; }
 
         //Response
         public bool Answered { get; set; }
@@ -54,7 +56,7 @@ namespace FantasyCritic.MySQL.Entities
                 responseTimestamp = LocalDateTime.FromDateTime(ResponseTimestamp.Value).InZoneStrictly(DateTimeZone.Utc).ToInstant();
             }
 
-            return new MasterGameChangeRequest(RequestID, user, requestTimestamp, RequestNote, masterGame, Answered, responseTimestamp, ResponseNote, Hidden);
+            return new MasterGameChangeRequest(RequestID, user, requestTimestamp, RequestNote, masterGame, OpenCriticID, Answered, responseTimestamp, ResponseNote, Hidden);
         }
     }
 }
