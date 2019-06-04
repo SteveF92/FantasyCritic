@@ -228,6 +228,33 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> DismissMasterGameChangeRequest([FromBody] MasterGameChangeRequestDismissRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            Maybe<MasterGameChangeRequest> maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
+            if (maybeRequest.HasNoValue)
+            {
+                return BadRequest("That request does not exist.");
+            }
+
+            var domainRequest = maybeRequest.Value;
+            if (domainRequest.User.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            await _interLeagueService.DismissMasterGameChangeRequest(domainRequest);
+            return Ok();
+        }
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<List<MasterGameRequestViewModel>>> MyMasterGameRequests()
         {
@@ -236,6 +263,17 @@ namespace FantasyCritic.Web.Controllers.API
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetMasterGameRequestsForUser(currentUser);
 
             var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, _clock)).ToList();
+            return viewModels;
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<MasterGameChangeRequestViewModel>>> MyMasterGameChangeRequests()
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetMasterGameChangeRequestsForUser(currentUser);
+
+            var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, _clock)).ToList();
             return viewModels;
         }
 
