@@ -95,6 +95,11 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult(masterGame);
         }
 
+        public Task<IReadOnlyList<MasterGameChangeRequest>> GetMasterGameChangeRequestsForUser(FantasyCriticUser user)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID)
         {
             throw new NotImplementedException();

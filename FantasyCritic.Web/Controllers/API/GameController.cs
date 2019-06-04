@@ -271,7 +271,7 @@ namespace FantasyCritic.Web.Controllers.API
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
-            IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetMasterGameChangeRequestsForUser(currentUser);
+            IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetMasterGameChangeRequestsForUser(currentUser);
 
             var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, _clock)).ToList();
             return viewModels;

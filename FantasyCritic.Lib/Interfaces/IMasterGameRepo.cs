@@ -27,6 +27,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task CreateMasterGameRequest(MasterGameRequest domainRequest);
         Task CreateMasterGameChangeRequest(MasterGameChangeRequest domainRequest);
         Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user);
+        Task<IReadOnlyList<MasterGameChangeRequest>> GetMasterGameChangeRequestsForUser(FantasyCriticUser user);
         Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID);
         Task<Maybe<MasterGameChangeRequest>> GetMasterGameChangeRequest(Guid requestID);
         Task DeleteMasterGameRequest(MasterGameRequest request);

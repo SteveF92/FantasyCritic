@@ -251,7 +251,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 IEnumerable<MasterGameRequestEntity> entities = await connection.QueryAsync<MasterGameRequestEntity>(sql);
-                return await ConvertMasterGameEntities(entities);
+                return await ConvertMasterGameRequestEntities(entities);
             }
         }
 
@@ -284,11 +284,22 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 IEnumerable<MasterGameRequestEntity> entities = await connection.QueryAsync<MasterGameRequestEntity>(sql, new { userID = user.UserID });
-                return await ConvertMasterGameEntities(entities);
+                return await ConvertMasterGameRequestEntities(entities);
             }
         }
 
-        private async Task<IReadOnlyList<MasterGameRequest>> ConvertMasterGameEntities(IEnumerable<MasterGameRequestEntity> entities)
+        public async Task<IReadOnlyList<MasterGameChangeRequest>> GetMasterGameChangeRequestsForUser(FantasyCriticUser user)
+        {
+            var sql = "select * from tbl_mastergame_changerequest where UserID = @userID and Hidden = 0";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<MasterGameChangeRequestEntity> entities = await connection.QueryAsync<MasterGameChangeRequestEntity>(sql, new { userID = user.UserID });
+                return await ConvertMasterGameChangeRequestEntities(entities);
+            }
+        }
+
+        private async Task<IReadOnlyList<MasterGameRequest>> ConvertMasterGameRequestEntities(IEnumerable<MasterGameRequestEntity> entities)
         {
             var eligibilityLevels = await GetEligibilityLevels();
             var masterGames = await GetMasterGames();
@@ -304,6 +315,21 @@ namespace FantasyCritic.MySQL
                 }
 
                 MasterGameRequest domain = entity.ToDomain(users.Single(x => x.UserID == entity.UserID), eligibilityLevel, masterGame);
+                domainRequests.Add(domain);
+            }
+
+            return domainRequests;
+        }
+
+        private async Task<IReadOnlyList<MasterGameChangeRequest>> ConvertMasterGameChangeRequestEntities(IEnumerable<MasterGameChangeRequestEntity> entities)
+        {
+            var masterGames = await GetMasterGames();
+            var users = await _userStore.GetAllUsers();
+            List<MasterGameChangeRequest> domainRequests = new List<MasterGameChangeRequest>();
+            foreach (var entity in entities)
+            {
+                var masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID);
+                MasterGameChangeRequest domain = entity.ToDomain(users.Single(x => x.UserID == entity.UserID), masterGame);
                 domainRequests.Add(domain);
             }
 
