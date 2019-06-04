@@ -288,6 +288,22 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote)
+        {
+            string sql = "update tbl_mastergame_changerequest set Answered = 1, ResponseTimestamp = @responseTime, " +
+                         "ResponseNote = @responseNote where RequestID = @requestID;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql,
+                    new
+                    {
+                        requestID = masterGameRequest.RequestID,
+                        responseTime = responseTime.ToDateTimeUtc(),
+                        responseNote
+                    });
+            }
+        }
+
         public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
         {
             var sql = "select * from tbl_mastergame_request where UserID = @userID and Hidden = 0";

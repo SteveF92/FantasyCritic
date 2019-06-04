@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Web.Models.Requests
 {
-    public class CompleteMasterGameRequestRequest
+    public class CompleteMasterGameChangeRequestRequest
     {
         [Required]
         public Guid RequestID { get; set; }
         [Required]
         public string ResponseNote { get; set; }
-        public Guid? MasterGameID { get; set; }
     }
 }

@@ -83,6 +83,21 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CompleteMasterGameChangeRequest([FromBody] CompleteMasterGameChangeRequestRequest request)
+        {
+            Maybe<MasterGameChangeRequest> maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
+            if (maybeRequest.HasNoValue)
+            {
+                return BadRequest("That request does not exist.");
+            }
+
+            Instant instant = _clock.GetCurrentInstant();
+            await _interLeagueService.CompleteMasterGameChangeRequest(maybeRequest.Value, instant, request.ResponseNote);
+
+            return Ok();
+        }
+
         public async Task<ActionResult<List<MasterGameRequestViewModel>>> ActiveMasterGameRequests()
         {
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
