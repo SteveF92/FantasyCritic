@@ -105,6 +105,7 @@
     </div>
     <div>
       <leagueOptionsModal :league="league" :leagueYear="leagueYear"></leagueOptionsModal>
+      <eligibilityOverridesModal :eligibilityOverrides="leagueYear.eligibilityOverrides"></eligibilityOverridesModal>
 
       <div v-if="leagueYear.userPublisher">
         <playerDraftGameForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :userPublisher="leagueYear.userPublisher" :isManager="league.isManager" :year="leagueYear.year" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
@@ -112,7 +113,6 @@
 
         <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
         <currentBidsForm :currentBids="currentBids" v-on:bidCanceled="bidCanceled"></currentBidsForm>
-        <eligibilityOverridesModal :eligibilityOverrides="leagueYear.eligibilityOverrides"></eligibilityOverridesModal>
 
         <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
