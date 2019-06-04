@@ -335,6 +335,31 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<Maybe<MasterGameChangeRequest>> GetMasterGameChangeRequest(Guid requestID)
+        {
+            var sql = "select * from tbl_mastergame_changerequest where RequestID = @requestID";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                MasterGameChangeRequestEntity entity = await connection.QuerySingleOrDefaultAsync<MasterGameChangeRequestEntity>(sql, new { requestID });
+                if (entity == null)
+                {
+                    return Maybe<MasterGameChangeRequest>.None;
+                }
+
+                var masterGame = await GetMasterGame(entity.MasterGameID);
+
+                if (masterGame.HasNoValue)
+                {
+                    throw new Exception($"Something has gone horribly wrong with master game change requests. ID: {requestID}");
+                }
+
+                var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
+
+                return entity.ToDomain(user, masterGame.Value);
+            }
+        }
+
         public async Task DeleteMasterGameRequest(MasterGameRequest request)
         {
             var deleteObject = new
@@ -346,6 +371,21 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync(
                     "delete from tbl_mastergame_request where RequestID = @requestID;",
+                    deleteObject);
+            }
+        }
+
+        public async Task DeleteMasterGameChangeRequest(MasterGameChangeRequest request)
+        {
+            var deleteObject = new
+            {
+                requestID = request.RequestID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "delete from tbl_mastergame_changerequest where RequestID = @requestID;",
                     deleteObject);
             }
         }
