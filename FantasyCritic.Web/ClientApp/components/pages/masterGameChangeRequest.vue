@@ -36,7 +36,7 @@
                 <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
               </td>
               <td class="select-cell">
-                
+
                 <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
                 <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
               </td>
@@ -45,15 +45,23 @@
         </table>
       </div>
     </div>
-    <div class="row">
+    <p>
+      <strong>
+        If you see an issue with a game on the site, for example an incorrect release date, you can send me a note and I'll get it fixed. 
+      </strong>
+    </p>
+    <p v-show="masterGame">
+      <strong>
+        Also, you can use this form to let me know if I am missing a link to a game's OpenCritic page.
+      </strong>
+    </p>
+    <p v-show="!masterGame">
+      <strong>
+        You can suggest a correction by clicking a link on a master game's page.
+      </strong>
+    </p>
+    <div class="row" v-if="masterGame">
       <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-        <p>
-          <strong>
-            If you see an issue with a game on the site, for example an incorrect release date, you can send me a note and I'll get it fixed. Also, you can use this form
-            to let me know if I am missing a link to a game's OpenCritic page.
-          </strong>
-        </p>
-
         <h2 v-if="masterGame">{{masterGame.gameName}}</h2>
         <masterGameDetails :masterGame="masterGame"></masterGameDetails>
 

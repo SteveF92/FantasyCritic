@@ -10,6 +10,9 @@
       <div class="col-12 col-lg-6">
         <b-button variant="info" :to="{ name: 'masterGameRequest' }" v-show="isAuth" class="nav-link request-button">Request new Master Game</b-button>
       </div>
+      <div class="col-12 col-lg-6">
+        <b-button variant="info" :to="{ name: 'masterGameChangeRequest' }" v-show="isAuth" class="nav-link request-button">Suggest a Correction</b-button>
+      </div>
     </div>
     <hr />
     <div class="row games-table" v-if="gamesForYear && gamesForYear.length > 0">
