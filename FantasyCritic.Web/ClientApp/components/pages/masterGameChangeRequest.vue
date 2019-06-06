@@ -25,6 +25,9 @@
                 <span><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
               </td>
               <td>
+                <span> {{request.requestNote}} </span>
+              </td>
+              <td>
                 <span v-show="request.responseNote"> {{request.responseNote}} </span>
                 <span v-show="!request.responseNote">&lt;Pending&gt;</span>
               </td>
@@ -124,7 +127,7 @@
       },
       sendMasterGameChangeRequestRequest() {
         let request = {
-          masterGameID: this.masterGameID,
+          masterGameID: this.masterGame.masterGameID,
           requestNote: this.requestNote,
           openCriticLink: this.openCriticLink
         };
