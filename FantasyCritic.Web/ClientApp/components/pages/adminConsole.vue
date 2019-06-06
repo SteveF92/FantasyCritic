@@ -11,6 +11,10 @@
       <hr />
     </div>
     <div>
+      <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master game change requests</b-button>
+      <hr />
+    </div>
+    <div>
       <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
       <hr />
     </div>

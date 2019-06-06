@@ -23,6 +23,7 @@ import AdminConsole from "components/pages/adminConsole";
 import MasterGameRequest from "components/pages/masterGameRequest";
 import MasterGameChangeRequest from "components/pages/masterGameChangeRequest";
 import ActiveMasterGameRequests from "components/pages/activeMasterGameRequests";
+import ActiveMasterGameChangeRequests from "components/pages/activeMasterGameChangeRequests";
 import MasterGameCreator from "components/pages/masterGameCreator";
 
 export const routes = [
@@ -266,6 +267,16 @@ export const routes = [
     name: "activeMasterGameRequests",
     meta: {
       title: "Active Master Game Requests",
+      isPublic: false,
+      adminOnly: true
+    }
+  },
+  {
+    path: "/activeMasterGameChangeRequests",
+    component: ActiveMasterGameChangeRequests,
+    name: "activeMasterGameChangeRequests",
+    meta: {
+      title: "Active Master Game Change Requests",
       isPublic: false,
       adminOnly: true
     }
