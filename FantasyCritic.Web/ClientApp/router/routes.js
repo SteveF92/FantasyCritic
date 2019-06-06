@@ -21,6 +21,7 @@ import PublicLeagues from "components/pages/publicLeagues";
 import LeagueHistory from "components/pages/leagueHistory";
 import AdminConsole from "components/pages/adminConsole";
 import MasterGameRequest from "components/pages/masterGameRequest";
+import MasterGameChangeRequest from "components/pages/masterGameChangeRequest";
 import ActiveMasterGameRequests from "components/pages/activeMasterGameRequests";
 import MasterGameCreator from "components/pages/masterGameCreator";
 
@@ -143,6 +144,14 @@ export const routes = [
     name: "masterGameRequest",
     meta: {
       title: "Request a Master Game"
+    }
+  },
+  {
+    path: "/masterGameChangeRequest",
+    component: MasterGameChangeRequest,
+    name: "masterGameChangeRequest",
+    meta: {
+      title: "Request a Master Game Change"
     }
   },
   {

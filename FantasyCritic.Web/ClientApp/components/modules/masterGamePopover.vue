@@ -39,7 +39,12 @@
             <div v-if="masterGame.openCriticID">
               <a :href="openCriticLink(masterGame)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
             </div>
-            <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}"><strong>View full details</strong></router-link>
+            <div>
+              <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}"><strong>View full details</strong></router-link>
+            </div>
+            <div>
+              <router-link class="text-primary" :to="{ name: 'masterGameChangeRequest', query: { mastergameid: masterGame.masterGameID }}"><strong>Suggest a correction</strong></router-link>
+            </div>
           </div>
           <div class="close-button fake-link" v-on:click="closePopover">
             <font-awesome-icon icon="times" size="lg" :style="{ color: 'd6993a' }"/>
