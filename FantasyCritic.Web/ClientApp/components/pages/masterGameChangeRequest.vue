@@ -50,11 +50,11 @@
             to let me know if I am missing a link to a game's OpenCritic page.
           </strong>
         </p>
-        <form v-on:submit.prevent="sendMasterGameChangeRequestRequest">
-          <div class="form-group">
-            <masterGamePopover v-if="masterGame" ref="gamePopoverWrapperRef" :masterGame="masterGame" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
-          </div>
 
+        <h2 v-if="masterGame">{{masterGame.gameName}}</h2>
+        <masterGameDetails :masterGame="masterGame"></masterGameDetails>
+
+        <form v-on:submit.prevent="sendMasterGameChangeRequestRequest">
           <div class="form-group">
             <label for="requestNote" class="control-label">What seems to be the issue?</label>
             <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
@@ -80,6 +80,7 @@
   import vueSlider from 'vue-slider-component';
   import Popper from 'vue-popperjs';
   import MasterGamePopover from "components/modules/masterGamePopover";
+  import MasterGameDetails  from "components/modules/masterGameDetails";
 
   export default {
     data() {
@@ -101,6 +102,7 @@
     },
     components: {
       MasterGamePopover,
+      MasterGameDetails,
       vueSlider,
       'popper': Popper,
     },
