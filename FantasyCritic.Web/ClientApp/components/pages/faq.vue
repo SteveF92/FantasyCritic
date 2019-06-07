@@ -88,8 +88,8 @@
       </p>
       <h3>How many games should I set as “Games to draft”?</h3>
       <p class="text-well">
-        The standard is that ⅔ of your games should be draft games. If you are in a 6 person league, the default is 9 games per player, 6 of them being selected at the draft,
-        and 1 counter pick. That leaves you with 3 pickup games per team.
+        The standard is that half of your games should be draft games. If you are in a 6 person league, the default is 12 games per player, 6 of them being selected at the draft,
+        and 1 counter pick. That leaves you with 6 pickup games per player.
       </p>
       <h3>The site says I need to create a "Publisher", what does that mean?</h3>
       <p class="text-well">
@@ -280,9 +280,10 @@
       </p>
       <h3>I see a score on OpenCritic but not in my league. Why?</h3>
       <p class="text-well">
-        I refresh the database about once every other day. I don't want to hit OpenCritic's API more frequently than I have to, as doing so involves a bunch of rapid requests. Additionally, I have
-        to manually enter the "OpenCritic ID" for every game in the master games list. OpenCritic doesn't usually add a game until it is close to release, so I need to check frequently to see if
-        they have added new games. If you notice a particular game that is missing a score, feel free to let me know. If a score is just out of sync, it'll be fixed soon.
+        My database probably hasn't refreshed yet. That happens every two hours. I don't want to hit OpenCritic's API more frequently than I have to, as doing so
+        involves a bunch of rapid requests. Additionally, I have to manually enter the "OpenCritic ID" for every game in the master games list.
+        OpenCritic doesn't usually add a game until it is close to release, so I need to check frequently to see if they have added new games. If you notice a particular
+        game that is missing a score, feel free to let me know. If a score is just out of sync, it'll be fixed soon.
       </p>
       <h3>I see a score on the site but not on OpenCritic? Why?</h3>
       <p class="text-well">
@@ -381,7 +382,9 @@
       </h3>
       <p class="text-well">
         It's up to your league and ultimately up to your league manager. League managers can override the eligibility rules and assign
-        the game you want to your team. Your league should agree on whether or not they want to allow the exception, though.
+        the game you want to your team during the draft. Additionally, outside of the draft, the league manager can manually 'allow' or 'ban'
+        a specific game, which either allows or blocks players from bidding on the game. Whether you are making these exemptions at the draft or
+        during the year, your league should agree on whether or not they want to allow the exception.
       </p>
       <h3>
         How do episodic games work?
