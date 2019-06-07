@@ -41,6 +41,11 @@
       <b-button variant="danger" size="sm" v-on:click="setEligibility(overrideMasterGame, false)">Ban Game</b-button>
       <b-button variant="success" size="sm" v-on:click="setEligibility(overrideMasterGame, true)">Allow Game</b-button>
     </div>
+    <br />
+    <div v-if="errorInfo" class="alert alert-danger">
+      <h3 class="alert-heading">Error!</h3>
+      <p class="text-white">{{errorInfo}}</p>
+    </div>
   </b-modal>
 </template>
 
@@ -52,7 +57,8 @@
       return {
         overrideGameName: "",
         overrideMasterGame: null,
-        possibleMasterGames: []
+        possibleMasterGames: [],
+        errorInfo: ""
       }
     },
     components: {
@@ -81,7 +87,7 @@
             this.$emit('gameEligiblityReset', gameInfo);
           })
           .catch(response => {
-
+            this.errorInfo = response.response.data;
           });
       },
       searchGame() {
@@ -114,16 +120,17 @@
             this.clearData();
           })
           .catch(response => {
-
+            this.errorInfo = response.response.data;
           });
       },
       clearData() {
         this.overrideGameName = "";
         this.overrideMasterGame = null;
         this.possibleMasterGames = [];
+        this.errorInfo = "";
       },
       newGameSelected() {
-
+        this.errorInfo = "";
       }
     }
   }

@@ -994,6 +994,39 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            if (masterGame.Value.ReleaseDate.HasValue && masterGame.Value.ReleaseDate.Value.Year < leagueYear.Value.Year)
+            {
+                return BadRequest("You can't change the override setting of a game that game out in a previous year.");
+            }
+
+            bool alreadyEligible = !leagueYear.Value.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.Value).Any();
+            bool isAllowing = request.Eligible.HasValue && request.Eligible.Value;
+            bool isBanning = request.Eligible.HasValue && !request.Eligible.Value;
+
+            if (isAllowing && alreadyEligible)
+            {
+                return BadRequest("That game is already eligible in your league.");
+            }
+
+            if (isBanning && !alreadyEligible)
+            {
+                return BadRequest("That game is already ineligible in your league.");
+            }
+
+            if (!isAllowing)
+            {
+                var publishers = await _publisherService.GetPublishersInLeagueForYear(league.Value, leagueYear.Value.Year);
+                var matchingPublisherGame = publishers
+                    .SelectMany(x => x.PublisherGames)
+                    .FirstOrDefault(x =>
+                        x.MasterGame.HasValue &&
+                        x.MasterGame.Value.MasterGame.MasterGameID == masterGame.Value.MasterGameID);
+                if (matchingPublisherGame != null)
+                {
+                    return BadRequest("You can't change the override setting of a game that someone in your league has.");
+                }
+            }
+
             await _fantasyCriticService.SetEligibilityOverride(leagueYear.Value, masterGame.Value, request.Eligible);
 
             return Ok();
