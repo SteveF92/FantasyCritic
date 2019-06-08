@@ -17,6 +17,7 @@
               <th scope="col">OpenCritic ID</th>
               <th scope="col"></th>
               <th scope="col"></th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
@@ -28,7 +29,10 @@
                 <a v-if="request.openCriticID" :href="openCriticLink(request.openCriticID)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
               </td>
               <td class="select-cell">
-                <b-button variant="danger" size="sm" v-on:click="createResponse(request)">Respond</b-button>
+                <b-button variant="info" size="sm" v-on:click="createResponse(request)">Respond</b-button>
+              </td>
+              <td class="select-cell">
+                <b-button variant="info" size="sm" v-on:click="generateSQL(request)">Generate SQL</b-button>
               </td>
               <td class="select-cell">
                 <b-button variant="danger" size="sm" v-on:click="linkToOpenCritic(request)">Link to OpenCritic</b-button>
@@ -36,6 +40,14 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div v-if="generatedSQL" class="row">
+        <div class="col-xl-8 col-lg-10 col-md-12 text-well">
+          <div class="form-group">
+            <label for="generated SQL" class="control-label">GeneratedSQL</label>
+            <input v-model="generatedSQL" id="generatedSQL" name="generatedSQL" class="form-control input" />
+          </div>
+        </div>
       </div>
       <div v-if="requestSelected">
         <h3>Respond to Request</h3>
@@ -69,7 +81,8 @@
         showResponded: false,
         showLinked: false,
         requestSelected: null,
-        responseNote: ""
+        responseNote: "",
+        generatedSQL: ""
       }
     },
     computed: {
@@ -124,6 +137,9 @@
           .catch(error => {
             this.errorInfo = error.response;
           });
+      },
+      generateSQL(request) {
+        this.generatedSQL = "select * from tbl_mastergame where MasterGameID = '" + request.masterGame.masterGameID + "';"
       }
     },
     mounted() {
