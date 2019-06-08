@@ -200,7 +200,10 @@
     },
     mounted() {
       let masterGameID = this.$route.query.mastergameid;
-      this.fetchMasterGame(masterGameID);
+      if (masterGameID) {
+        this.fetchMasterGame(masterGameID);
+      }
+      
       this.fetchMyRequests();
     }
   }
