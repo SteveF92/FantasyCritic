@@ -2,6 +2,7 @@
   <div>
     <h1>Active Master Game Change Requests</h1>
     <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
+    <div v-if="showLinked" class="alert alert-success">Game has been linked to OpenCritic</div>
 
     <div v-if="activeRequests && activeRequests.length === 0" class="alert alert-info">No active requests.</div>
 
@@ -20,17 +21,17 @@
           </thead>
           <tbody>
             <tr v-for="request in activeRequests">
-              <td>{{request.masterGame.gameName}}</td>
+              <td><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></td>
               <td>{{request.requesterDisplayName}}</td>
               <td>{{request.requestNote}}</td>
               <td>
-                  <a v-if="request.openCriticID" :href="openCriticLink(request.openCriticID)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
+                <a v-if="request.openCriticID" :href="openCriticLink(request.openCriticID)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
               </td>
               <td class="select-cell">
                 <b-button variant="danger" size="sm" v-on:click="createResponse(request)">Respond</b-button>
               </td>
               <td class="select-cell">
-                <b-button variant="danger" size="sm">Link to OpenCritic</b-button>
+                <b-button variant="danger" size="sm" v-on:click="linkToOpenCritic(request)">Link to OpenCritic</b-button>
               </td>
             </tr>
           </tbody>
@@ -59,18 +60,23 @@
 </template>
 <script>
   import axios from 'axios';
+  import MasterGamePopover from "components/modules/masterGamePopover";
 
   export default {
     data() {
       return {
         activeRequests: null,
         showResponded: false,
+        showLinked: false,
         requestSelected: null,
         responseNote: ""
       }
     },
     computed: {
 
+    },
+    components: {
+      MasterGamePopover
     },
     methods: {
       fetchMyRequests() {
@@ -103,6 +109,21 @@
       openCriticLink(openCriticID) {
         return "https://opencritic.com/game/" + openCriticID + "/a";
       },
+      linkToOpenCritic(request) {
+        let linkRequest = {
+          masterGameID: request.masterGame.masterGameID,
+          openCriticID: request.openCriticID
+        };
+
+        axios
+          .post('/api/admin/LinkGameToOpenCritic', linkRequest)
+          .then(response => {
+            this.showLinked = true;
+          })
+          .catch(error => {
+            this.errorInfo = error.response;
+          });
+      }
     },
     mounted() {
       this.fetchMyRequests();

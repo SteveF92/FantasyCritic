@@ -98,6 +98,21 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> LinkGameToOpenCritic([FromBody] LinkGameToOpenCriticRequest request)
+        {
+            Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+            if (masterGame.HasNoValue)
+            {
+                return BadRequest("Bad master game");
+            }
+
+            await _interLeagueService.LinkToOpenCritic(masterGame.Value, request.OpenCriticID);
+            await _adminService.RefreshCaches();
+
+            return Ok();
+        }
+
         public async Task<ActionResult<List<MasterGameRequestViewModel>>> ActiveMasterGameRequests()
         {
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();

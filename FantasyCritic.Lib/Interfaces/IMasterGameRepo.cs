@@ -38,5 +38,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<MasterGameChangeRequest>> GetAllMasterGameChangeRequests();
         Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame);
         Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote);
+        Task LinkToOpenCritic(MasterGame masterGame, int openCriticID);
     }
 }

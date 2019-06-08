@@ -173,5 +173,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _masterGameRepo.DismissMasterGameChangeRequest(request);
         }
+
+        public Task LinkToOpenCritic(MasterGame masterGame, int openCriticID)
+        {
+            return _masterGameRepo.LinkToOpenCritic(masterGame, openCriticID);
+        }
     }
 }

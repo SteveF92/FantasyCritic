@@ -472,5 +472,21 @@ namespace FantasyCritic.MySQL
                     dismissObject);
             }
         }
+
+        public async Task LinkToOpenCritic(MasterGame masterGame, int openCriticID)
+        {
+            var linkObject = new
+            {
+                masterGameID = masterGame.MasterGameID,
+                openCriticID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "update tbl_mastergame SET OpenCriticID = @openCriticID where MasterGameID = @masterGameID;",
+                    linkObject);
+            }
+        }
     }
 }
