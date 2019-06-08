@@ -134,6 +134,9 @@
           });
       },
       sendMasterGameChangeRequestRequest() {
+        if (!this.requestNote && this.openCriticLink) {
+          this.requestNote = "Link to OpenCritic";
+        }
         let request = {
           masterGameID: this.masterGame.masterGameID,
           requestNote: this.requestNote,

@@ -23,7 +23,9 @@
               <td>{{request.masterGame.gameName}}</td>
               <td>{{request.requesterDisplayName}}</td>
               <td>{{request.requestNote}}</td>
-              <td>{{request.openCriticID}}</td>
+              <td>
+                  <a v-if="request.openCriticID" :href="openCriticLink(request.openCriticID)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
+              </td>
               <td class="select-cell">
                 <b-button variant="danger" size="sm" v-on:click="createResponse(request)">Respond</b-button>
               </td>
@@ -97,7 +99,10 @@
           .catch(error => {
             this.errorInfo = error.response;
           });
-      }
+      },
+      openCriticLink(openCriticID) {
+        return "https://opencritic.com/game/" + openCriticID + "/a";
+      },
     },
     mounted() {
       this.fetchMyRequests();

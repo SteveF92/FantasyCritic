@@ -12,16 +12,19 @@ namespace FantasyCritic.Web.Models.Responses
             RequesterDisplayName = domain.User.DisplayName;
             MasterGame = new MasterGameViewModel(domain.MasterGame, clock);
 
+            RequestNote = domain.RequestNote;
+            OpenCriticID = domain.OpenCriticID;
+
             Answered = domain.Answered;
             ResponseNote = domain.ResponseNote;
             ResponseTimestamp = domain.ResponseTimestamp;
             Hidden = domain.Hidden;
-            RequestNote = domain.RequestNote;
         }
 
         public Guid RequestID { get; }
         public string RequesterDisplayName { get; }
         public string RequestNote { get; }
+        public int? OpenCriticID { get; }
         public MasterGameViewModel MasterGame { get; }
 
         //Response
