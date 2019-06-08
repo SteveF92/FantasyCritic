@@ -102,6 +102,7 @@
       },
       assignGame(request) {
         this.requestSelected = request;
+        this.responseNote = "Got that added, thanks!";
       },
       respondToRequest() {
         let request = {

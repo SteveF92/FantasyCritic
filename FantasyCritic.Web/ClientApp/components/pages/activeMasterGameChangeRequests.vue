@@ -91,6 +91,7 @@
       },
       createResponse(request) {
         this.requestSelected = request;
+        this.responseNote = "Got that fixed, thanks!";
       },
       respondToRequest() {
         let request = {
