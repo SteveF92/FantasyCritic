@@ -400,14 +400,36 @@ namespace FantasyCritic.Lib.Services
             return leagueYears.Where(x => x.League.PublicLeague).Where(x => x.Year == year).OrderByDescending(x => x.League.NumberOfFollowers).ToList();
         }
 
-        public Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool? eligible)
+        public async Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool? eligible)
         {
             if (!eligible.HasValue)
             {
-                return _fantasyCriticRepo.DeleteEligibilityOverride(leagueYear, masterGame);
+                await _fantasyCriticRepo.DeleteEligibilityOverride(leagueYear, masterGame);
+            }
+            else
+            {
+                await _fantasyCriticRepo.SetEligibilityOverride(leagueYear, masterGame, eligible.Value);
             }
 
-            return _fantasyCriticRepo.SetEligibilityOverride(leagueYear, masterGame, eligible.Value);
+            var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            var managerPublisher = allPublishers.Single(x => x.User.UserID == leagueYear.League.LeagueManager.UserID);
+
+            string description;
+            if (!eligible.HasValue)
+            {
+                description = $"{masterGame.GameName}'s eligibility setting was reset to normal.";
+            }
+            else if (eligible.Value)
+            {
+                description = $"{masterGame.GameName} was manually set to 'Eligible'";
+            }
+            else
+            {
+                description = $"{masterGame.GameName} was manually set to 'Ineligible'";
+            }
+
+            LeagueAction eligibilityAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Eligibility Setting Changed", description, true);
+            await _fantasyCriticRepo.AddLeagueAction(eligibilityAction);
         }
     }
 }
