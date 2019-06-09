@@ -14,6 +14,8 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
+using FantasyCritic.Web.Models.Requests.League;
+using FantasyCritic.Web.Models.Requests.Shared;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.RoundTrip;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
