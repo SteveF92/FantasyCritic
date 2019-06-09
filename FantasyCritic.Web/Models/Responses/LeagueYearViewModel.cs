@@ -14,7 +14,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueYearViewModel
     {
-        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Publisher userPublisher,
+        public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Maybe<Publisher> userPublisher,
             IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> users, Maybe<Publisher> nextDraftPublisher, DraftPhase draftPhase,
             IEnumerable<PublisherGame> availableCounterPicks, LeagueOptions options, SystemWideValues systemWideValues, IEnumerable<LeagueInvite> invitedPlayers,
             bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager, Maybe<FantasyCriticUser> accessingUser)
@@ -33,9 +33,9 @@ namespace FantasyCritic.Web.Models.Responses
             Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x =>
                 new PublisherViewModel(x, clock, nextDraftPublisher, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague)).ToList();
 
-            if (!(userPublisher is null))
+            if (userPublisher.HasValue)
             {
-                UserPublisher = new PublisherViewModel(userPublisher, clock, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague);
+                UserPublisher = new PublisherViewModel(userPublisher.Value, clock, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague);
             }
 
             List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();

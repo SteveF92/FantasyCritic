@@ -209,7 +209,7 @@ namespace FantasyCritic.Web.Controllers.API
             Maybe<Publisher> nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
             DraftPhase draftPhase = await _draftService.GetDraftPhase(leagueYear.Value);
 
-            Publisher userPublisher = null;
+            Maybe<Publisher> userPublisher = Maybe<Publisher>.None;
             if (userIsInLeague)
             {
                 userPublisher = publishersInLeague.SingleOrDefault(x => x.User.UserID == currentUser.UserID);
