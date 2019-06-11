@@ -1,5 +1,5 @@
-import 'core-js/es6/promise'
-import 'core-js/es6/array'
+import 'core-js/es/promise'
+import 'core-js/es/array'
 
 import { app } from './app'
 

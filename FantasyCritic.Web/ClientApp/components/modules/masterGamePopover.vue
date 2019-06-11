@@ -64,7 +64,7 @@
   import axios from "axios";
   import moment from "moment";
   import Popper from 'vue-popperjs';
-  import 'vue-popperjs/dist/css/vue-popper.css';
+  import 'vue-popperjs/dist/vue-popper.css';
 
   export default {
     data() {
