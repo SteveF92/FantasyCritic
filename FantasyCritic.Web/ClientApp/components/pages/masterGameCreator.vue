@@ -116,14 +116,12 @@
         gameName: "",
         estimatedReleaseDate: "",
         releaseDate: "",
-        eligibilitySettings: {
-            eligibilityLevel: 0,
-            yearlyInstallment: false,
-            earlyAccess: false,
-            freeToPlay: false,
-            releasedInternationally: false,
-            expansionPack: false,
-          },
+        eligibilityLevel: 0,
+        yearlyInstallment: false,
+        earlyAccess: false,
+        freeToPlay: false,
+        releasedInternationally: false,
+        expansionPack: false,
         possibleEligibilityLevels: null,
         piecewiseStyle: {
           "backgroundColor": "#ccc",
@@ -174,14 +172,12 @@
           estimatedReleaseDate: this.estimatedReleaseDate,
           releaseDate: this.releaseDate,
           openCriticID: this.openCriticID,
-          eligibilitySettings: {
-            eligibilityLevel: this.eligibilityLevel,
-            yearlyInstallment: this.yearlyInstallment,
-            earlyAccess: this.earlyAccess,
-            freeToPlay: this.freeToPlay,
-            releasedInternationally: this.releasedInternationally,
-            expansionPack: this.expansionPack,
-          }
+          eligibilityLevel: this.eligibilityLevel,
+          yearlyInstallment: this.yearlyInstallment,
+          earlyAccess: this.earlyAccess,
+          freeToPlay: this.freeToPlay,
+          releasedInternationally: this.releasedInternationally,
+          expansionPack: this.expansionPack
         };
         axios
           .post('/api/admin/CreateMasterGame', request)
@@ -204,12 +200,12 @@
         this.releaseDate = this.$route.query.releaseDate;
         this.steamID = this.$route.query.steamID;
         this.openCriticID = this.$route.query.openCriticID;
-        this.eligibilitySettings.eligibilityLevel = this.$route.query.eligibilityLevel;
-        this.eligibilitySettings.yearlyInstallment = this.$route.query.yearlyInstallment;
-        this.eligibilitySettings.earlyAccess = this.$route.query.earlyAccess;
-        this.eligibilitySettings.freeToPlay = this.$route.query.freeToPlay;
-        this.eligibilitySettings.releasedInternationally = this.$route.query.releasedInternationally;
-        this.eligibilitySettings.expansionPack = this.$route.query.expansionPack;
+        this.eligibilityLevel = this.$route.query.eligibilityLevel;
+        this.yearlyInstallment = this.$route.query.yearlyInstallment;
+        this.earlyAccess = this.$route.query.earlyAccess;
+        this.freeToPlay = this.$route.query.freeToPlay;
+        this.releasedInternationally = this.$route.query.releasedInternationally;
+        this.expansionPack = this.$route.query.expansionPack;
         this.requestNote = this.$route.query.requestNote;
       }
     },
