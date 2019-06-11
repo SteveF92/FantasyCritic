@@ -15,7 +15,7 @@ module.exports = () => {
   })
 
   return [{
-    mode: ('development'),
+    mode: (isDevBuild ? 'development' : 'production'),
     stats: { modules: false },
     entry: { 'main': './ClientApp/boot-app.js' },
     resolve: {
@@ -38,6 +38,7 @@ module.exports = () => {
       filename: '[name].js',
       publicPath: '/dist/'
     },
+    devtool: 'eval-source-map',
     module: {
       rules: [
         {
