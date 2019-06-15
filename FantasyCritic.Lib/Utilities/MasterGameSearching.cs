@@ -12,27 +12,49 @@ namespace FantasyCritic.Lib.Utilities
     {
         private static readonly int MaxDistanceGames = 5;
 
-        public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames)
+        public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames) 
         {
-            var distances = masterGames
+            var subsequenceMatches = masterGames
                 .Select(x => new Tuple<MasterGame, double>(x, GetDistance(gameName, x.GameName)));
 
-            var mostSimilar = distances.OrderByDescending(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
-            return mostSimilar.ToList();
+            var substringMatches = masterGames
+                .Select(x => new Tuple<MasterGame, double>(x, GetSubstringCount(gameName, x.GameName)));
+
+            var combinedSequences = substringMatches.Select(x => Tuple.Create(x.Item1, x.Item2 * 2))
+                .Concat(subsequenceMatches)
+                .OrderByDescending(x => x.Item2)
+                .Select(x => x.Item1)
+                .Take(MaxDistanceGames * 2);
+
+            return combinedSequences.ToList();
         }
 
         public static IReadOnlyList<MasterGameYear> SearchMasterGameYears(string gameName, IEnumerable<MasterGameYear> masterGames)
         {
-            var distances = masterGames
+            var subsequenceMatches = masterGames
                 .Select(x => new Tuple<MasterGameYear, double>(x, GetDistance(gameName, x.MasterGame.GameName)));
 
-            var mostSimilar = distances.OrderByDescending(x => x.Item2).Select(x => x.Item1).Take(MaxDistanceGames);
-            return mostSimilar.ToList();
+            var substringMatches = masterGames
+                .Select(x => new Tuple<MasterGameYear, double>(x, GetSubstringCount(gameName, x.MasterGame.GameName)));
+
+            var combinedSequences = substringMatches.Select(x => Tuple.Create(x.Item1, x.Item2 * 2))
+                .Concat(subsequenceMatches)
+                .OrderByDescending(x => x.Item2)
+                .Select(x => x.Item1)
+                .Take(MaxDistanceGames * 2);
+
+            return combinedSequences.ToList();
         }
 
         private static double GetDistance(string source, string target)
         {
             var longestCommon = source.ToLowerInvariant().LongestCommonSubsequence(target.ToLowerInvariant());
+            return longestCommon.Length;
+        }
+
+        private static double GetSubstringCount(string source, string target)
+        {
+            var longestCommon = source.ToLowerInvariant().LongestCommonSubstring(target.ToLowerInvariant());
             return longestCommon.Length;
         }
 
