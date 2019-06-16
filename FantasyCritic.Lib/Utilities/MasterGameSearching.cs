@@ -10,7 +10,7 @@ namespace FantasyCritic.Lib.Utilities
 {
     public static class MasterGameSearching
     {
-        private static readonly int MaxDistanceGames = 5;
+        private static readonly int MaxCloseMatchGames = 5;
 
         public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames) 
         {
@@ -18,13 +18,15 @@ namespace FantasyCritic.Lib.Utilities
                 .Select(x => new Tuple<MasterGame, double>(x, GetDistance(gameName, x.GameName)));
 
             var substringMatches = masterGames
-                .Select(x => new Tuple<MasterGame, double>(x, GetSubstringCount(gameName, x.GameName)));
+                .Select(x => new Tuple<MasterGame, double>(x, GetPercentInCommon(gameName, x.GameName)));
 
-            var combinedSequences = substringMatches.Select(x => Tuple.Create(x.Item1, x.Item2 * 2))
-                .Concat(subsequenceMatches)
+            var perfectMatches = substringMatches.Where(x => Math.Abs(x.Item2 - 1.0) < .01);
+            var filteredSubsequenceMatches = subsequenceMatches
                 .OrderByDescending(x => x.Item2)
-                .Select(x => x.Item1)
-                .Take(MaxDistanceGames * 2);
+                .Take(MaxCloseMatchGames);
+            var combinedSequences = perfectMatches
+                .Concat(filteredSubsequenceMatches)
+                .Select(x => x.Item1);
 
             return combinedSequences.ToList();
         }
@@ -35,13 +37,15 @@ namespace FantasyCritic.Lib.Utilities
                 .Select(x => new Tuple<MasterGameYear, double>(x, GetDistance(gameName, x.MasterGame.GameName)));
 
             var substringMatches = masterGames
-                .Select(x => new Tuple<MasterGameYear, double>(x, GetSubstringCount(gameName, x.MasterGame.GameName)));
+                .Select(x => new Tuple<MasterGameYear, double>(x, GetPercentInCommon(gameName, x.MasterGame.GameName)));
 
-            var combinedSequences = substringMatches.Select(x => Tuple.Create(x.Item1, x.Item2 * 2))
-                .Concat(subsequenceMatches)
+            var perfectMatches = substringMatches.Where(x => Math.Abs(x.Item2 - 1.0) < .01);
+            var filteredSubsequenceMatches = subsequenceMatches
                 .OrderByDescending(x => x.Item2)
-                .Select(x => x.Item1)
-                .Take(MaxDistanceGames * 2);
+                .Take(MaxCloseMatchGames);
+            var combinedSequences = perfectMatches
+                .Concat(filteredSubsequenceMatches)
+                .Select(x => x.Item1);
 
             return combinedSequences.ToList();
         }
@@ -52,10 +56,11 @@ namespace FantasyCritic.Lib.Utilities
             return longestCommon.Length;
         }
 
-        private static double GetSubstringCount(string source, string target)
+        private static double GetPercentInCommon(string source, string target)
         {
             var longestCommon = source.ToLowerInvariant().LongestCommonSubstring(target.ToLowerInvariant());
-            return longestCommon.Length;
+            double percent = (double)longestCommon.Length / target.Length;
+            return percent;
         }
 
         //https://stackoverflow.com/a/9453762
