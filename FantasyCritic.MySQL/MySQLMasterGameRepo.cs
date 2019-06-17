@@ -135,7 +135,14 @@ namespace FantasyCritic.MySQL
                 setFirstTimestamp = ", FirstCriticScoreTimestamp = CURRENT_TIMESTAMP ";
             }
 
-            string sql = $"update tbl_mastergame set ReleaseDate = @releaseDate, CriticScore = @criticScore {setFirstTimestamp} where MasterGameID = @masterGameID";
+            string setReleaseDate = "";
+            if (!masterGame.DoNotRefreshDate)
+            {
+                setFirstTimestamp = ", ReleaseDate = @releaseDate ";
+            }
+
+            string sql = $"update tbl_mastergame set CriticScore = @criticScore {setReleaseDate} {setFirstTimestamp} where MasterGameID = @masterGameID";
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql,
