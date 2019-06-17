@@ -149,8 +149,8 @@ namespace FantasyCritic.MySQL
                     new
                     {
                         masterGameID = masterGame.MasterGameID,
-                        releaseDate = releaseDate,
-                        criticScore = openCriticGame.Score
+                        criticScore = openCriticGame.Score,
+                        releaseDate,
                     });
             }
         }

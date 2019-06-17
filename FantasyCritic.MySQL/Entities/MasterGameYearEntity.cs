@@ -25,7 +25,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool ExpansionPack { get; set; }
         public string BoxartFileName { get; set; }
         public DateTime? FirstCriticScoreTimestamp { get; set; }
-        public bool DoNotRefresh { get; set; }
+        public bool DoNotRefreshDate { get; set; }
         public decimal PercentStandardGame { get; set; }
         public decimal PercentCounterPick { get; set; }
         public decimal EligiblePercentStandardGame { get; set; }
@@ -53,7 +53,7 @@ namespace FantasyCritic.MySQL.Entities
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack);
 
             var masterGame =  new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, 
-                eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefresh, addedTimestamp);
+                eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefreshDate, addedTimestamp);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, AverageDraftPosition, HypeFactor, DateAdjustedHypeFactor);
         }
