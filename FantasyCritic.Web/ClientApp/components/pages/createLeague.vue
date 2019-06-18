@@ -102,7 +102,7 @@
                 be restrictive here and allow exemptions if need be.
               </div>
               <vue-slider v-model="maximumEligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                          piecewise piecewise-label :piecewise-style="piecewiseStyle">
+                          :marks="marks" :tooltip="'always'">
               </vue-slider>
               <div class="eligibility-description">
                 <h3>{{ selectedEligibilityLevel.name }}</h3>
@@ -195,8 +195,9 @@
   import axios from "axios";
   import vueSlider from 'vue-slider-component';
   import Popper from 'vue-popperjs';
+  import 'vue-slider-component/theme/antd.css'
 
-export default {
+  export default {
     data() {
         return {
           errorInfo: "",
@@ -214,13 +215,7 @@ export default {
           allowExpansions: false,
           publicLeague: true,
           testLeague: false,
-          possibleLeagueOptions: null,
-          piecewiseStyle: {
-            "backgroundColor": "#ccc",
-            "visibility": "visible",
-            "width": "12px",
-            "height": "20px"
-          }
+          possibleLeagueOptions: null
         }
     },
     components: {
@@ -244,6 +239,17 @@ export default {
       selectedEligibilityLevel() {
         let matchingLevel = _.filter(this.possibleLeagueOptions.eligibilityLevels, { 'level': this.maximumEligibilityLevel });
         return matchingLevel[0];
+      },
+      marks() {
+        if (!this.possibleLeagueOptions.eligibilityLevels) {
+          return [];
+        }
+
+        let levels =  this.possibleLeagueOptions.eligibilityLevels.map(function (v) {
+          return v.level;
+        });
+
+        return levels;
       }
     },
     methods: {
