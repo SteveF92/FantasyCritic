@@ -45,9 +45,9 @@
           <div class="form-group eligibility-section">
             <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
             <vue-slider v-model="selectedLeagueOptions.maximumEligibilityLevel" :min="minimumEligibilityLevel" :max="maximumEligibilityLevel"
-                        piecewise piecewise-label :piecewise-style="piecewiseStyle">
+                        :marks="marks" :tooltip="'always'">
             </vue-slider>
-            <div>
+            <div class="eligibility-description">
               <h3>{{ selectedEligibilityLevel.name }}</h3>
               <p>{{ selectedEligibilityLevel.description }}</p>
               <p>Examples: </p>
@@ -102,19 +102,14 @@
   import Vue from "vue";
   import axios from "axios";
   import vueSlider from 'vue-slider-component';
+  import 'vue-slider-component/theme/antd.css'
 
   export default {
     data() {
       return {
         errorInfo: "",
         possibleLeagueOptions: null,
-        selectedLeagueOptions: null,
-        piecewiseStyle: {
-          "backgroundColor": "#ccc",
-          "visibility": "visible",
-          "width": "12px",
-          "height": "20px"
-        }
+        selectedLeagueOptions: null
       }
     },
     props: ['leagueid', 'year'],
@@ -135,7 +130,19 @@
       selectedEligibilityLevel() {
         let matchingLevel = _.filter(this.possibleLeagueOptions.eligibilityLevels, { 'level': this.selectedLeagueOptions.maximumEligibilityLevel });
         return matchingLevel[0];
+      },
+      marks() {
+        if (!this.possibleLeagueOptions.eligibilityLevels) {
+          return [];
+        }
+
+        let levels =  this.possibleLeagueOptions.eligibilityLevels.map(function (v) {
+          return v.level;
+        });
+
+        return levels;
       }
+
     },
     methods: {
       fetchLeagueOptions() {
