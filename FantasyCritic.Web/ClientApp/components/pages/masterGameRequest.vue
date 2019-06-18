@@ -76,7 +76,7 @@
               Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
             </p>
             <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                        piecewise piecewise-label :piecewise-style="piecewiseStyle">
+                        :marks="marks" :tooltip="'always'">
             </vue-slider>
             <div class="eligibility-description">
               <h3>{{ selectedEligibilityLevel.name }}</h3>
@@ -139,6 +139,7 @@
   import vueSlider from 'vue-slider-component';
   import Popper from 'vue-popperjs';
   import MasterGamePopover from "components/modules/masterGamePopover";
+  import 'vue-slider-component/theme/antd.css'
 
   export default {
     data() {
@@ -158,13 +159,7 @@
         releasedInternationally: false,
         expansionPack: false,
         eligibilityLevel: 0,
-        possibleEligibilityLevels: null,
-        piecewiseStyle: {
-          "backgroundColor": "#ccc",
-          "visibility": "visible",
-          "width": "12px",
-          "height": "20px"
-        }
+        possibleEligibilityLevels: null
       }
     },
     components: {
@@ -189,6 +184,17 @@
       selectedEligibilityLevel() {
         let matchingLevel = _.filter(this.possibleEligibilityLevels, { 'level': this.eligibilityLevel });
         return matchingLevel[0];
+      },
+      marks() {
+        if (!this.possibleEligibilityLevels) {
+          return [];
+        }
+
+        let levels =  this.possibleEligibilityLevels.map(function (v) {
+          return v.level;
+        });
+
+        return levels;
       }
     },
     methods: {
