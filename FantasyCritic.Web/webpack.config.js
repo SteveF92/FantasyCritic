@@ -14,24 +14,26 @@ module.exports = () => {
     filename: 'style.css'
   })
 
-  return [{
+  let configObject = {
     mode: (isDevBuild ? 'development' : 'production'),
     stats: { modules: false },
     entry: { 'main': './ClientApp/boot-app.js' },
     resolve: {
       extensions: ['.js', '.vue'],
-      alias: isDevBuild ? {
-        'vue$': 'vue/dist/vue',
-        'components': path.resolve(__dirname, './ClientApp/components'),
-        'views': path.resolve(__dirname, './ClientApp/views'),
-        'utils': path.resolve(__dirname, './ClientApp/utils'),
-        'api': path.resolve(__dirname, './ClientApp/store/api')
-      } : {
-        'components': path.resolve(__dirname, './ClientApp/components'),
-        'views': path.resolve(__dirname, './ClientApp/views'),
-        'utils': path.resolve(__dirname, './ClientApp/utils'),
-        'api': path.resolve(__dirname, './ClientApp/store/api')
-      }
+      alias: isDevBuild
+        ? {
+          'vue$': 'vue/dist/vue',
+          'components': path.resolve(__dirname, './ClientApp/components'),
+          'views': path.resolve(__dirname, './ClientApp/views'),
+          'utils': path.resolve(__dirname, './ClientApp/utils'),
+          'api': path.resolve(__dirname, './ClientApp/store/api')
+        }
+        : {
+          'components': path.resolve(__dirname, './ClientApp/components'),
+          'views': path.resolve(__dirname, './ClientApp/views'),
+          'utils': path.resolve(__dirname, './ClientApp/utils'),
+          'api': path.resolve(__dirname, './ClientApp/store/api')
+        }
     },
     output: {
       path: path.join(__dirname, bundleOutputDir),
@@ -55,7 +57,6 @@ module.exports = () => {
           test: /\.scss$/,
           use: ['style-loader', 'css-loader', 'sass-loader']
         }
-
       ]
     },
     plugins: [
@@ -64,20 +65,30 @@ module.exports = () => {
         context: __dirname,
         manifest: require('./wwwroot/dist/vendor-manifest.json')
       })
-    ].concat(isDevBuild ? [
-      // Plugins that apply in development builds only
-      new webpack.SourceMapDevToolPlugin({
-        filename: '[file].map', // Remove this line if you prefer inline source maps
-        moduleFilenameTemplate: path.relative(bundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
-      })
-    ] : [
-      extractCSS,
-      // Compress extracted CSS.
-      new OptimizeCSSPlugin({
-        cssProcessorOptions: {
-          safe: true
-        }
-      })
-    ])
-  }]
+    ].concat(isDevBuild
+      ? [
+        // Plugins that apply in development builds only
+        new webpack.SourceMapDevToolPlugin({
+          filename: '[file].map', // Remove this line if you prefer inline source maps
+          moduleFilenameTemplate:
+            path.relative(bundleOutputDir,
+              '[resourcePath]') // Point sourcemap entries to the original file locations on disk
+        })
+      ]
+      : [
+        extractCSS,
+        // Compress extracted CSS.
+        new OptimizeCSSPlugin({
+          cssProcessorOptions: {
+            safe: true
+          }
+        })
+      ])
+  };
+
+  if (isDevBuild) {
+    configObject.devtool = "eval-source-map";
+  }
+
+  return [configObject];
 }
