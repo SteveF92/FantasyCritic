@@ -221,7 +221,7 @@
         Both players get 0 points in this case. This should be considered a good result for the counter picker and a bad result for the person who actually chose the game.
       </p>
       <h3>Scoring Examples</h3>
-      <table class="table table-striped table-bordered">
+      <table class="table table-striped table-bordered table-responsive-sm">
         <thead>
           <tr class="bg-primary">
             <th>Game Name</th>
