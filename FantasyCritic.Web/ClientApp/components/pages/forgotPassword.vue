@@ -5,14 +5,14 @@
       <hr />
 
       <div v-if="showSent" class="alert alert-success">Forgot password email has been sent. Please check your email.</div>
-      <form v-on:submit.prevent="sendForgotPasswordRequest">
-        <div class="form-group col-8 offset-2">
+      <form v-on:submit.prevent="sendForgotPasswordRequest" class="col-lg-8 offset-lg-2 col-md-12 offset-md-0">
+        <div class="form-group">
           <label for="emailAddress" class="control-label">Email Address</label>
           <input v-model="emailAddress" v-validate="'required|email'" type="text" class="form-control input" />
           <span class="text-danger">{{ errors.first('emailAddress') }}</span>
         </div>
         <div class="form-group">
-          <div class="col-3 offset-9">
+          <div class="right-button">
             <input type="submit" class="btn btn-primary" value="Submit" :disabled="!formIsValid" />
           </div>
         </div>

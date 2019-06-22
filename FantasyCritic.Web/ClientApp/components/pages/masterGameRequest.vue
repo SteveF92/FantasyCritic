@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="col-md-10 offset-md-1 col-sm-12">
+    <div class="col-md-10 offset-md-1 col-sm-12 offset-sm-0">
       <h1>Master Game Request</h1>
       <hr />
       <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
       <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
       <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
-      <div class="col-lg-10 col-md-12 offset-lg-1">
+      <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
         <div v-if="myRequests.length !== 0">
           <div class="row">
             <h3>My Current Requests</h3>
@@ -46,7 +46,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-10 col-md-12 offset-1 text-well">
+          <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0 text-well">
             <p>
               <strong>
                 If there's a game you want to see added to the site, you can fill out this form and I'll look into adding the game.
@@ -128,7 +128,7 @@
               </div>
 
               <div class="form-group">
-                <div class="col-2 offset-10">
+                <div class="right-button">
                   <input type="submit" class="btn btn-primary" value="Submit" :disabled="!formIsValid" />
                 </div>
               </div>

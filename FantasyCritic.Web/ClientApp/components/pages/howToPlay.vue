@@ -55,7 +55,7 @@
       </div>
       <hr />
       <div class="row">
-        <div class="col-lg-8 col-md-12">
+        <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
           <h2>Create a League</h2>
           <div class="text-well">
             Rally your friends and start a fantasy critic league of your own.
@@ -79,7 +79,7 @@
       <hr />
 
       <div class="row">
-        <div class="col-lg-8 col-md-12">
+        <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
           <h2>Plan your draft</h2>
           <div class="text-well">
             <p>
@@ -109,7 +109,7 @@
       <hr />
 
       <div class="row">
-        <div class="col-lg-8 col-md-12">
+        <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
           <h2>Draft your games</h2>
           <div class="text-well">
             <p>
@@ -126,7 +126,7 @@
       <hr />
 
       <div class="row">
-        <div class="col-lg-8 col-md-12">
+        <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
           <h2>Watch the releases</h2>
           <div class="text-well">
             Throughout the year, check in on your game’s release dates!
@@ -141,10 +141,12 @@
       </div>
       <hr />
 
-      <h3>
-        If you have any more questions, check out our <router-link :to="{ name: 'faq' }" title="FAQ">FAQ</router-link> page,
-        or <router-link :to="{ name: 'contact' }" title="Contact">contact</router-link> me directly!
-      </h3>
+      <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
+        <h3>
+          If you have any more questions, check out our <router-link :to="{ name: 'faq' }" title="FAQ">FAQ</router-link> page,
+          or <router-link :to="{ name: 'contact' }" title="Contact">contact</router-link> me directly!
+        </h3>
+      </div>
     </div>
   </div>
 </template>
