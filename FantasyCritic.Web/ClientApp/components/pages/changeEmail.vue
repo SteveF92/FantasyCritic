@@ -1,16 +1,18 @@
 <template>
-    <div>
-        <h1>Change Email Address</h1>
-        <hr />
-        <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="changeEmail">
-          <div class="alert alert-warning">Click the button below to change your email address to {{newEmailAddress}}</div>
-          <div class="form-group">
-              <div class="col-md-offset-2 col-md-10">
-                  <input type="submit" class="btn btn-primary" value="Change Email Address" />
-              </div>
+  <div>
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Change Email Address</h1>
+      <hr />
+      <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="changeEmail">
+        <div class="alert alert-warning">Click the button below to change your email address to {{newEmailAddress}}</div>
+        <div class="form-group">
+          <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-primary" value="Change Email Address" />
           </div>
-        </form>
+        </div>
+      </form>
     </div>
+  </div>
 </template>
 
 <script>

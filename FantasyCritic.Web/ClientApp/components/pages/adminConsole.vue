@@ -1,46 +1,48 @@
 <template>
   <div>
-    <h1>Admin Console</h1>
-    <div class="alert alert-danger" v-show="errorInfo">{{errorInfo}}</div>
-    <div class="alert alert-info" v-show="isBusy">Request is processing...</div>
-    <div class="alert alert-success" v-show="jobSuccess">{{jobSuccess}} sucessfully run.</div>
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Admin Console</h1>
+      <div class="alert alert-danger" v-show="errorInfo">{{errorInfo}}</div>
+      <div class="alert alert-info" v-show="isBusy">Request is processing...</div>
+      <div class="alert alert-success" v-show="jobSuccess">{{jobSuccess}} sucessfully run.</div>
 
-    <h2>Actions</h2>
-    <div>
-      <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">View master game requests</b-button>
-      <hr />
-    </div>
-    <div>
-      <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master game change requests</b-button>
-      <hr />
-    </div>
-    <div>
-      <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
-      <hr />
-    </div>
-    <div>
-      <b-button variant="info" v-on:click="refreshCriticScores">Refresh Critic Scores</b-button>
-      <hr />
-    </div>
-    <div>
-      <b-button variant="info" v-on:click="updateFantasyPoints">Update Fantasy Points</b-button>
-      <hr />
-    </div>
-    <div>
-      <b-button variant="info" v-on:click="processBids">Process Bids</b-button>
-      <hr />
-    </div>
-    <div>
-      <b-button variant="info" v-on:click="turnOnBidProcessing">Turn on bid processing mode</b-button>
-      <hr />
-    </div>
-    <div>
-      <b-button variant="info" v-on:click="turnOffBidProcessing">Turn off bid processing mode</b-button>
-      <hr />
-    </div>
-    <div>
-      <b-button variant="info" v-on:click="refreshCaches">Refresh Caches</b-button>
-      <hr />
+      <h2>Actions</h2>
+      <div>
+        <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">View master game requests</b-button>
+        <hr />
+      </div>
+      <div>
+        <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master game change requests</b-button>
+        <hr />
+      </div>
+      <div>
+        <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
+        <hr />
+      </div>
+      <div>
+        <b-button variant="info" v-on:click="refreshCriticScores">Refresh Critic Scores</b-button>
+        <hr />
+      </div>
+      <div>
+        <b-button variant="info" v-on:click="updateFantasyPoints">Update Fantasy Points</b-button>
+        <hr />
+      </div>
+      <div>
+        <b-button variant="info" v-on:click="processBids">Process Bids</b-button>
+        <hr />
+      </div>
+      <div>
+        <b-button variant="info" v-on:click="turnOnBidProcessing">Turn on bid processing mode</b-button>
+        <hr />
+      </div>
+      <div>
+        <b-button variant="info" v-on:click="turnOffBidProcessing">Turn off bid processing mode</b-button>
+        <hr />
+      </div>
+      <div>
+        <b-button variant="info" v-on:click="refreshCaches">Refresh Caches</b-button>
+        <hr />
+      </div>
     </div>
   </div>
 </template>

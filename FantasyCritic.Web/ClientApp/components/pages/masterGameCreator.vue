@@ -1,101 +1,104 @@
 <template>
   <div>
-    <h1>Create Master Game</h1>
-    <div v-if="createdGame" class="alert alert-success">Master Game created: {{createdGame.masterGameID}}</div>
-    <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
-    <div v-if="openCriticID || steamID">
-      <h2>Links</h2>
-      <ul>
-        <li>
-          <a v-if="openCriticID" :href="openCriticLink" target="_blank">OpenCritic Link <font-awesome-icon icon="external-link-alt" /></a>
-          <span v-else>No OpenCritic Link</span>
-        </li>
-        <li>
-          <a v-if="steamID" :href="steamLink" target="_blank">Steam Link <font-awesome-icon icon="external-link-alt" /></a>
-          <span v-else>No Steam Link</span>
-        </li>
-      </ul>
-    </div>
-    <div class="row" v-if="requestNote">
-      <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-        <h2>Request Note</h2>
-        <p>{{requestNote}}</p>
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Create Master Game</h1>
+      <hr />
+      <div v-if="createdGame" class="alert alert-success">Master Game created: {{createdGame.masterGameID}}</div>
+      <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
+      <div v-if="openCriticID || steamID">
+        <h2>Links</h2>
+        <ul>
+          <li>
+            <a v-if="openCriticID" :href="openCriticLink" target="_blank">OpenCritic Link <font-awesome-icon icon="external-link-alt" /></a>
+            <span v-else>No OpenCritic Link</span>
+          </li>
+          <li>
+            <a v-if="steamID" :href="steamLink" target="_blank">Steam Link <font-awesome-icon icon="external-link-alt" /></a>
+            <span v-else>No Steam Link</span>
+          </li>
+        </ul>
       </div>
-    </div>
-    <hr />
-    <div class="row">
-      <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-        <form v-on:submit.prevent="createMasterGame">
-          <div class="form-group">
-            <label for="gameName" class="control-label">Game Name</label>
-            <input v-model="gameName" v-validate="'required'" id="gameName" name="gameName" class="form-control input" />
-            <span class="text-danger">{{ errors.first('gameName') }}</span>
-          </div>
-
-          <div class="form-group">
-            <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
-            <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
-          </div>
-          <div class="form-group">
-            <label for="releaseDate" class="control-label">Release Date</label>
-            <input v-model="releaseDate" id="releaseDate" name="releaseDate" class="form-control input" />
-          </div>
-
-          <div class="form-group">
-            <label for="openCriticID" class="control-label">Open Critic ID</label>
-            <input v-model="openCriticID" id="openCriticID" name="openCriticID" class="form-control input" />
-          </div>
-
-          <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
-            <label class="control-label eligibility-slider-label">Eligibility Level</label>
-            <p class="eligibility-explanation">
-              Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
-            </p>
-            <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                        :marks="marks" :tooltip="'always'">
-            </vue-slider>
-            <div class="eligibility-description" v-if="selectedEligibilityLevel">
-              <h3>{{ selectedEligibilityLevel.name }}</h3>
-              <p>{{ selectedEligibilityLevel.description }}</p>
-              <p>Examples: </p>
-              <ul>
-                <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-              </ul>
+      <div class="row" v-if="requestNote">
+        <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
+          <h2>Request Note</h2>
+          <p>{{requestNote}}</p>
+        </div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
+          <form v-on:submit.prevent="createMasterGame">
+            <div class="form-group">
+              <label for="gameName" class="control-label">Game Name</label>
+              <input v-model="gameName" v-validate="'required'" id="gameName" name="gameName" class="form-control input" />
+              <span class="text-danger">{{ errors.first('gameName') }}</span>
             </div>
-          </div>
 
-          <div class="form-group">
-            <b-form-checkbox v-model="yearlyInstallment">
-              <span class="checkbox-label">Yearly installment?</span>
-            </b-form-checkbox>
-          </div>
-          <div class="form-group">
-            <b-form-checkbox v-model="earlyAccess">
-              <span class="checkbox-label">Early access?</span>
-            </b-form-checkbox>
-          </div>
-          <div class="form-group">
-            <b-form-checkbox v-model="freeToPlay">
-              <span class="checkbox-label">Free to Play?</span>
-            </b-form-checkbox>
-          </div>
-          <div class="form-group">
-            <b-form-checkbox v-model="releasedInternationally">
-              <span class="checkbox-label">Released Internationally?</span>
-            </b-form-checkbox>
-          </div>
-          <div class="form-group">
-            <b-form-checkbox v-model="expansionPack">
-              <span class="checkbox-label">Expansion Pack?</span>
-            </b-form-checkbox>
-          </div>
-
-          <div class="form-group">
-            <div class="col-md-offset-2 col-md-4">
-              <input type="submit" class="btn btn-primary" value="Submit" />
+            <div class="form-group">
+              <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
+              <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
             </div>
-          </div>
-        </form>
+            <div class="form-group">
+              <label for="releaseDate" class="control-label">Release Date</label>
+              <input v-model="releaseDate" id="releaseDate" name="releaseDate" class="form-control input" />
+            </div>
+
+            <div class="form-group">
+              <label for="openCriticID" class="control-label">Open Critic ID</label>
+              <input v-model="openCriticID" id="openCriticID" name="openCriticID" class="form-control input" />
+            </div>
+
+            <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
+              <label class="control-label eligibility-slider-label">Eligibility Level</label>
+              <p class="eligibility-explanation">
+                Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
+              </p>
+              <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
+                          :marks="marks" :tooltip="'always'">
+              </vue-slider>
+              <div class="eligibility-description" v-if="selectedEligibilityLevel">
+                <h3>{{ selectedEligibilityLevel.name }}</h3>
+                <p>{{ selectedEligibilityLevel.description }}</p>
+                <p>Examples: </p>
+                <ul>
+                  <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <b-form-checkbox v-model="yearlyInstallment">
+                <span class="checkbox-label">Yearly installment?</span>
+              </b-form-checkbox>
+            </div>
+            <div class="form-group">
+              <b-form-checkbox v-model="earlyAccess">
+                <span class="checkbox-label">Early access?</span>
+              </b-form-checkbox>
+            </div>
+            <div class="form-group">
+              <b-form-checkbox v-model="freeToPlay">
+                <span class="checkbox-label">Free to Play?</span>
+              </b-form-checkbox>
+            </div>
+            <div class="form-group">
+              <b-form-checkbox v-model="releasedInternationally">
+                <span class="checkbox-label">Released Internationally?</span>
+              </b-form-checkbox>
+            </div>
+            <div class="form-group">
+              <b-form-checkbox v-model="expansionPack">
+                <span class="checkbox-label">Expansion Pack?</span>
+              </b-form-checkbox>
+            </div>
+
+            <div class="form-group">
+              <div class="col-md-offset-2 col-md-4">
+                <input type="submit" class="btn btn-primary" value="Submit" />
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>

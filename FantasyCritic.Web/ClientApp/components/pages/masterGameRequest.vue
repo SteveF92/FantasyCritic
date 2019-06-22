@@ -1,135 +1,140 @@
 <template>
   <div>
-    <h1>Master Game Request</h1>
-    <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
-    <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
-    <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
-    <div class="col-xl-8 col-lg-10 col-md-12" v-if="myRequests.length !== 0">
-      <div class="row">
-        <h3>My Current Requests</h3>
-      </div>
-      <div class="row">
-        <table class="table table-sm table-responsive-sm table-bordered table-striped">
-          <thead>
-            <tr class="bg-primary">
-              <th scope="col" class="game-column">Game Name</th>
-              <th scope="col">Response</th>
-              <th scope="col">Response Time</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="request in myRequests">
-              <td>
-                <span v-if="request.masterGame"><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
-                <span v-show="!request.masterGame"> {{request.gameName}} </span>
-              </td>
-              <td>
-                <span v-show="request.responseNote"> {{request.responseNote}} </span>
-                <span v-show="!request.responseNote">&lt;Pending&gt;</span>
-              </td>
-              <td>
-                <span v-show="request.responseTimestamp"> {{request.responseTimestamp | dateTime}} </span>
-                <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
-              </td>
-              <td class="select-cell">
-                
-                <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
-                <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-        <p>
-          <strong>
-            If there's a game you want to see added to the site, you can fill out this form and I'll look into adding the game.
-            You can check back on this page to see the status of previous requests, as well.
-          </strong>
-        </p>
-        <form v-on:submit.prevent="sendMasterGameRequestRequest">
-          <div class="form-group">
-            <label for="gameName" class="control-label">Game Name</label>
-            <input v-model="gameName" v-validate="'required'" id="gameName" name="gameName" class="form-control input" />
-            <span class="text-danger">{{ errors.first('gameName') }}</span>
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Master Game Request</h1>
+      <hr />
+      <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
+      <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
+      <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
+      <div class="col-lg-10 col-md-12 offset-lg-1">
+        <div v-if="myRequests.length !== 0">
+          <div class="row">
+            <h3>My Current Requests</h3>
           </div>
+          <div class="row">
+            <table class="table table-sm table-responsive-sm table-bordered table-striped">
+              <thead>
+                <tr class="bg-primary">
+                  <th scope="col" class="game-column">Game Name</th>
+                  <th scope="col">Response</th>
+                  <th scope="col">Response Time</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="request in myRequests">
+                  <td>
+                    <span v-if="request.masterGame"><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
+                    <span v-show="!request.masterGame"> {{request.gameName}} </span>
+                  </td>
+                  <td>
+                    <span v-show="request.responseNote"> {{request.responseNote}} </span>
+                    <span v-show="!request.responseNote">&lt;Pending&gt;</span>
+                  </td>
+                  <td>
+                    <span v-show="request.responseTimestamp"> {{request.responseTimestamp | dateTime}} </span>
+                    <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
+                  </td>
+                  <td class="select-cell">
 
-          <div class="form-group">
-            <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
-            <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
+                    <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
+                    <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="form-group">
-            <label for="steamLink" class="control-label">Link to Steam Page (Optional)</label>
-            <input v-model="steamLink" id="steamLink" name="steamLink" class="form-control input" />
-          </div>
-          <div class="form-group">
-            <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
-            <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
-          </div>
-
-          <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
-            <label class="control-label eligibility-slider-label">Eligibility Level</label>
-            <p class="eligibility-explanation">
-              Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
+        </div>
+        <div class="row">
+          <div class="col-lg-10 col-md-12 offset-1 text-well">
+            <p>
+              <strong>
+                If there's a game you want to see added to the site, you can fill out this form and I'll look into adding the game.
+                You can check back on this page to see the status of previous requests, as well.
+              </strong>
             </p>
-            <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                        :marks="marks" :tooltip="'always'">
-            </vue-slider>
-            <div class="eligibility-description">
-              <h3>{{ selectedEligibilityLevel.name }}</h3>
-              <p>{{ selectedEligibilityLevel.description }}</p>
-              <p>Examples: </p>
-              <ul>
-                <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-              </ul>
-            </div>
-          </div>
+            <form v-on:submit.prevent="sendMasterGameRequestRequest">
+              <div class="form-group">
+                <label for="gameName" class="control-label">Game Name</label>
+                <input v-model="gameName" v-validate="'required'" id="gameName" name="gameName" class="form-control input" />
+                <span class="text-danger">{{ errors.first('gameName') }}</span>
+              </div>
 
-          <div class="form-group">
-            <b-form-checkbox v-model="yearlyInstallment">
-              <span class="checkbox-label">Is this game a yearly installment?</span>
-              <p>Check this for games like yearly sports titles.</p>
-            </b-form-checkbox>
-          </div>
-          <div class="form-group">
-            <b-form-checkbox v-model="earlyAccess">
-              <span class="checkbox-label">Is this game currently in early access?</span>
-              <p>Games that are already playable in early access are only selectable in some leagues.</p>
-            </b-form-checkbox>
-          </div>
-          <div class="form-group">
-            <b-form-checkbox v-model="freeToPlay">
-              <span class="checkbox-label">Is this game free to play?</span>
-              <p>Check this for free to play games.</p>
-            </b-form-checkbox>
-          </div>
-          <div class="form-group">
-            <b-form-checkbox v-model="releasedInternationally">
-              <span class="checkbox-label">Has this game already been released in a non-English speaking region?</span>
-              <p>Games that are already playable in other regions are only selectable in some leagues.</p>
-            </b-form-checkbox>
-          </div>
-          <div class="form-group">
-            <b-form-checkbox v-model="expansionPack">
-              <span class="checkbox-label">Is this an expansion pack or DLC?</span>
-              <p>Expansion packs are only selectable in some leagues.</p>
-            </b-form-checkbox>
-          </div>
+              <div class="form-group">
+                <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
+                <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
+              </div>
+              <div class="form-group">
+                <label for="steamLink" class="control-label">Link to Steam Page (Optional)</label>
+                <input v-model="steamLink" id="steamLink" name="steamLink" class="form-control input" />
+              </div>
+              <div class="form-group">
+                <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
+                <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
+              </div>
 
-          <div class="form-group">
-            <label for="requestNote" class="control-label">Any other notes?</label>
-            <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
-          </div>
+              <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
+                <label class="control-label eligibility-slider-label">Eligibility Level</label>
+                <p class="eligibility-explanation">
+                  Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
+                </p>
+                <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
+                            :marks="marks" :tooltip="'always'">
+                </vue-slider>
+                <div class="eligibility-description">
+                  <h3>{{ selectedEligibilityLevel.name }}</h3>
+                  <p>{{ selectedEligibilityLevel.description }}</p>
+                  <p>Examples: </p>
+                  <ul>
+                    <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
+                  </ul>
+                </div>
+              </div>
 
-          <div class="form-group">
-            <div class="col-md-offset-2 col-md-4">
-              <input type="submit" class="btn btn-primary" value="Submit" :disabled="!formIsValid" />
-            </div>
+              <div class="form-group">
+                <b-form-checkbox v-model="yearlyInstallment">
+                  <span class="checkbox-label">Is this game a yearly installment?</span>
+                  <p>Check this for games like yearly sports titles.</p>
+                </b-form-checkbox>
+              </div>
+              <div class="form-group">
+                <b-form-checkbox v-model="earlyAccess">
+                  <span class="checkbox-label">Is this game currently in early access?</span>
+                  <p>Games that are already playable in early access are only selectable in some leagues.</p>
+                </b-form-checkbox>
+              </div>
+              <div class="form-group">
+                <b-form-checkbox v-model="freeToPlay">
+                  <span class="checkbox-label">Is this game free to play?</span>
+                  <p>Check this for free to play games.</p>
+                </b-form-checkbox>
+              </div>
+              <div class="form-group">
+                <b-form-checkbox v-model="releasedInternationally">
+                  <span class="checkbox-label">Has this game already been released in a non-English speaking region?</span>
+                  <p>Games that are already playable in other regions are only selectable in some leagues.</p>
+                </b-form-checkbox>
+              </div>
+              <div class="form-group">
+                <b-form-checkbox v-model="expansionPack">
+                  <span class="checkbox-label">Is this an expansion pack or DLC?</span>
+                  <p>Expansion packs are only selectable in some leagues.</p>
+                </b-form-checkbox>
+              </div>
+
+              <div class="form-group">
+                <label for="requestNote" class="control-label">Any other notes?</label>
+                <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
+              </div>
+
+              <div class="form-group">
+                <div class="col-2 offset-10">
+                  <input type="submit" class="btn btn-primary" value="Submit" :disabled="!formIsValid" />
+                </div>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>

@@ -1,11 +1,13 @@
 <template>
-    <div>
-        <h1>Register</h1>
-        <hr />
-        <div class="col-md-6">
-          <registerForm></registerForm>
-        </div>
+  <div>
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Register</h1>
+      <hr />
+      <div class="col-8 offset-2">
+        <registerForm></registerForm>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>

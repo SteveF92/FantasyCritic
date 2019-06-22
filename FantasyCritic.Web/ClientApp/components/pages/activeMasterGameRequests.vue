@@ -1,12 +1,11 @@
 <template>
   <div>
-    <h1>Active Master Game Requests</h1>
-    <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Active Master Game Requests</h1>
+      <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
 
-    <div v-if="activeRequests && activeRequests.length === 0" class="alert alert-info">No active requests.</div>
-
-    <div class="col-xl-8 col-lg-10 col-md-12" v-if="activeRequests && activeRequests.length !== 0">
-      <div class="row">
+      <div v-if="activeRequests && activeRequests.length === 0" class="alert alert-info">No active requests.</div>
+      <div class="row" v-if="activeRequests && activeRequests.length !== 0">
         <table class="table table-sm table-responsive-sm table-bordered table-striped">
           <thead>
             <tr class="bg-primary">

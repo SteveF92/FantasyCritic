@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1>Frequently Asked Questions</h1>
-    <hr />
-    <div class="col-lg-8 col-md-10 col-sm-12">
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Frequently Asked Questions</h1>
+      <hr />
       <h2>Contents</h2>
       <ul>
         <li><a href="#general">General</a></li>

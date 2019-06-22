@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1>About</h1>
-    <hr />
-    <div class="col-lg-8 col-md-10 col-sm-12">
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>About</h1>
+      <hr />
       <div class="text-well">
         <p>
           Fantasy Critic was created by me, Steve Fallon. The visual design for the site was created by <a href="http://dalemahabir.rocks/" target="_blank">Dale Mahabir <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
@@ -76,12 +76,12 @@
           <li><a href="https://wildermuth.com/">Shawn Wildermuth</a>, whose ASP.NET Core + Vue.JS gave me a great introduction to Vue.JS.</li>
           <li><a href="https://github.com/TrilonIO/aspnetcore-Vue-starter">Mark Piesak</a>, for his excellent ASP.NET Core + Vue.JS template, which forms the foundation of this website.</li>
         </ul>
-        
+
       </div>
+      <hr />
+      <h2>A few statistics...</h2>
+      <siteCounts></siteCounts>
     </div>
-    <hr />
-    <h2>A few statistics...</h2>
-    <siteCounts></siteCounts>
   </div>
 </template>
 <script>

@@ -1,56 +1,58 @@
 <template>
   <div>
-    <div class="row league-header">
-      <h1 class="header">Master Games List</h1>
-      <div class="year-selector">
-        <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" />
+    <div class="col-lg-10 offset-lg-1 col-md-12">
+      <div class="row">
+        <h1 class="header">Master Games List</h1>
+        <!--<div class="year-selector">
+          <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" />
+        </div>-->
       </div>
-    </div>
-    <div class="row">
-      <div class="col-12 col-lg-6">
-        <b-button variant="info" :to="{ name: 'masterGameRequest' }" v-show="isAuth" class="nav-link request-button">Request new Master Game</b-button>
+      <div class="row">
+        <div class="col-12 col-lg-6">
+          <b-button variant="info" :to="{ name: 'masterGameRequest' }" v-show="isAuth" class="nav-link request-button">Request new Master Game</b-button>
+        </div>
+        <div class="col-12 col-lg-6">
+          <b-button variant="info" :to="{ name: 'masterGameChangeRequest' }" v-show="isAuth" class="nav-link request-button">Suggest a Correction</b-button>
+        </div>
       </div>
-      <div class="col-12 col-lg-6">
-        <b-button variant="info" :to="{ name: 'masterGameChangeRequest' }" v-show="isAuth" class="nav-link request-button">Suggest a Correction</b-button>
+      <hr />
+      <div class="row" v-if="gamesForYear && gamesForYear.length > 0">
+
+        <b-table :sort-by.sync="sortBy"
+                 :sort-desc.sync="sortDesc"
+                 :items="gamesForYear"
+                 :fields="gameFields"
+                 bordered
+                 :small="tableIsSmall"
+                 responsive
+                 striped>
+          <template slot="gameName" slot-scope="data">
+            <masterGamePopover :masterGame="data.item"></masterGamePopover>
+          </template>
+          <template slot="releaseDate" slot-scope="data">
+            {{getReleaseDate(data.item)}}
+          </template>
+          <template slot="criticScore" slot-scope="data">
+            <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
+            <span v-else>--</span>
+          </template>
+          <template slot="dateAdjustedHypeFactor" slot-scope="data">
+            {{data.item.dateAdjustedHypeFactor | score(1)}}
+          </template>
+          <template slot="eligiblePercentStandardGame" slot-scope="data">
+            {{data.item.eligiblePercentStandardGame | percent(1)}}
+          </template>
+          <template slot="eligiblePercentCounterPick" slot-scope="data">
+            {{data.item.eligiblePercentCounterPick | percent(1)}}
+          </template>
+          <template slot="addedTimestamp" slot-scope="data">
+            {{data.item.addedTimestamp | date}}
+          </template>
+          <template slot="eligibilityLevel" slot-scope="data">
+            <eligibilityBadge :eligibilityLevel="data.item.eligibilitySettings.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
+          </template>
+        </b-table>
       </div>
-    </div>
-    <hr />
-    <div class="row games-table" v-if="gamesForYear && gamesForYear.length > 0">
-      
-      <b-table :sort-by.sync="sortBy"
-               :sort-desc.sync="sortDesc"
-               :items="gamesForYear"
-               :fields="gameFields"
-               bordered
-               :small="tableIsSmall"
-               responsive
-               striped>
-        <template slot="gameName" slot-scope="data">
-          <masterGamePopover :masterGame="data.item"></masterGamePopover>
-        </template>
-        <template slot="releaseDate" slot-scope="data">
-          {{getReleaseDate(data.item)}}
-        </template>
-        <template slot="criticScore" slot-scope="data">
-          <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
-          <span v-else>--</span>
-        </template>
-        <template slot="dateAdjustedHypeFactor" slot-scope="data">
-          {{data.item.dateAdjustedHypeFactor | score(1)}}
-        </template>
-        <template slot="eligiblePercentStandardGame" slot-scope="data">
-          {{data.item.eligiblePercentStandardGame | percent(1)}}
-        </template>
-        <template slot="eligiblePercentCounterPick" slot-scope="data">
-          {{data.item.eligiblePercentCounterPick | percent(1)}}
-        </template>
-        <template slot="addedTimestamp" slot-scope="data">
-          {{data.item.addedTimestamp | date}}
-        </template>
-        <template slot="eligibilityLevel" slot-scope="data">
-          <eligibilityBadge :eligibilityLevel="data.item.eligibilitySettings.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
-        </template>
-      </b-table>
     </div>
   </div>
 </template>
@@ -73,10 +75,10 @@
           { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' },
           { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
-          { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary','sm-screen-minimum'], tdClass: 'sm-screen-minimum' },
-          { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary','sm-screen-minimum'], tdClass: 'sm-screen-minimum' },
-          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' },
-          { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' }
+          { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' },
+          { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+          { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' }
         ],
         sortBy: 'dateAdjustedHypeFactor',
         sortDesc: true
@@ -97,7 +99,7 @@
         return this.$store.getters.tokenIsCurrent();
       },
       tableIsSmall() {
-        if (window.innerWidth < 768) {
+        if (window.innerWidth < 500) {
           return true;
         }
 
@@ -143,17 +145,9 @@
   }
 </script>
 <style scoped>
-  .header {
-    max-width: 80%;
-  }
   .year-selector {
     position: absolute;
     right: 0px;
-  }
-
-  .games-table {
-    margin-left: 15px;
-    margin-right: 15px;
   }
 
   .request-button {

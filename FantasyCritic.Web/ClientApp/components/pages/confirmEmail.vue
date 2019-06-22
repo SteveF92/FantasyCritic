@@ -1,47 +1,49 @@
 <template>
   <div>
-    <h1>Confirm Your Email</h1>
-    <div v-if="accountConfirmed" class="alert alert-success">
-      <span>Email Confirmation Successful!</span>
-      <span>You will be redirected in a few seconds...</span>
-    </div>
-    <div v-else>
-      <div class="alert alert-danger" v-show="errorInfo">
-        {{errorInfo}}
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Confirm Your Email</h1>
+      <div v-if="accountConfirmed" class="alert alert-success">
+        <span>Email Confirmation Successful!</span>
+        <span>You will be redirected in a few seconds...</span>
       </div>
-      <div v-if="isBusy" class="alert alert-info">
-        <div>Confirming Email...</div>
-      </div>
-      <div v-if="attemptFailed" class="alert alert-warning">
-        <div>If you are having issues, check out our <a href="/faq#bidding-system" target="_blank" class="text-secondary">FAQ</a> page.</div>
-      </div>
-
-      <b-button variant="primary" v-on:click="confirmFromURL" :disabled="isBusy">Click to confirm your email automatically</b-button>
-
-      <hr />
-
-      <h2>Manual Confirmation</h2>
-      <h5>If you are having issues with confirming your email, try using this form.</h5>
-      <h6>Check the email you received for how to fill out this form.</h6>
-      <form method="post" class="form-horizontal col-md-6" role="form" v-on:submit.prevent="manualConfirm">
-        <div class="form-group">
-          <label for="manaulUserID" class="control-label">User ID</label>
-          <input v-model="manaulUserID" v-validate="'required'" id="manaulUserID" name="manaulUserID" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('manaulUserID') }}</span>
+      <div v-else>
+        <div class="alert alert-danger" v-show="errorInfo">
+          {{errorInfo}}
+        </div>
+        <div v-if="isBusy" class="alert alert-info">
+          <div>Confirming Email...</div>
+        </div>
+        <div v-if="attemptFailed" class="alert alert-warning">
+          <div>If you are having issues, check out our <a href="/faq#bidding-system" target="_blank" class="text-secondary">FAQ</a> page.</div>
         </div>
 
-        <div class="form-group">
-          <label for="manualConfirmCode" class="control-label">Confirmation Code</label>
-          <input v-model="manualConfirmCode" v-validate="'required'" id="manualConfirmCode" name="manualConfirmCode" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('manualConfirmCode') }}</span>
-        </div>
+        <b-button variant="primary" v-on:click="confirmFromURL" :disabled="isBusy">Click to confirm your email automatically</b-button>
 
-        <div class="register-button-area">
-          <button type="submit" class="btn btn-primary register-button" :disabled="!formIsValid || isBusy">
-            Confirm Email Manually
-          </button>
-        </div>
-      </form>
+        <hr />
+
+        <h2>Manual Confirmation</h2>
+        <h5>If you are having issues with confirming your email, try using this form.</h5>
+        <h6>Check the email you received for how to fill out this form.</h6>
+        <form method="post" class="form-horizontal col-md-6" role="form" v-on:submit.prevent="manualConfirm">
+          <div class="form-group">
+            <label for="manaulUserID" class="control-label">User ID</label>
+            <input v-model="manaulUserID" v-validate="'required'" id="manaulUserID" name="manaulUserID" type="text" class="form-control input" />
+            <span class="text-danger">{{ errors.first('manaulUserID') }}</span>
+          </div>
+
+          <div class="form-group">
+            <label for="manualConfirmCode" class="control-label">Confirmation Code</label>
+            <input v-model="manualConfirmCode" v-validate="'required'" id="manualConfirmCode" name="manualConfirmCode" type="text" class="form-control input" />
+            <span class="text-danger">{{ errors.first('manualConfirmCode') }}</span>
+          </div>
+
+          <div class="register-button-area">
+            <button type="submit" class="btn btn-primary register-button" :disabled="!formIsValid || isBusy">
+              Confirm Email Manually
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>

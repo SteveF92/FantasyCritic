@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h1>Active Master Game Change Requests</h1>
-    <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
-    <div v-if="showLinked" class="alert alert-success">Game has been linked to OpenCritic</div>
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Active Master Game Change Requests</h1>
+      <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
+      <div v-if="showLinked" class="alert alert-success">Game has been linked to OpenCritic</div>
 
-    <div v-if="activeRequests && activeRequests.length === 0" class="alert alert-info">No active requests.</div>
+      <div v-if="activeRequests && activeRequests.length === 0" class="alert alert-info">No active requests.</div>
 
-    <div class="col-xl-8 col-lg-10 col-md-12" v-if="activeRequests && activeRequests.length !== 0">
-      <div class="row">
+      <div class="row" v-if="activeRequests && activeRequests.length !== 0">
         <table class="table table-sm table-responsive-sm table-bordered table-striped">
           <thead>
             <tr class="bg-primary">
@@ -40,30 +40,31 @@
             </tr>
           </tbody>
         </table>
-      </div>
-      <div v-if="generatedSQL" class="row">
-        <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-          <div class="form-group">
-            <label for="generated SQL" class="control-label">GeneratedSQL</label>
-            <input v-model="generatedSQL" id="generatedSQL" name="generatedSQL" class="form-control input" />
+
+        <div v-if="generatedSQL" class="row">
+          <div class="col-xl-8 col-lg-10 col-md-12 text-well">
+            <div class="form-group">
+              <label for="generated SQL" class="control-label">GeneratedSQL</label>
+              <input v-model="generatedSQL" id="generatedSQL" name="generatedSQL" class="form-control input" />
+            </div>
           </div>
         </div>
-      </div>
-      <div v-if="requestSelected">
-        <h3>Respond to Request</h3>
-        <div class="row">
-          <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-            <form v-on:submit.prevent="respondToRequest">
-              <div class="form-group">
-                <label for="responseNote" class="control-label">Response Note</label>
-                <input v-model="responseNote" id="responseNote" name="responseNote" class="form-control input" />
-              </div>
-              <div class="form-group">
-                <div class="col-md-offset-2 col-md-4">
-                  <input type="submit" class="btn btn-primary" value="Submit" />
+        <div v-if="requestSelected">
+          <h3>Respond to Request</h3>
+          <div class="row">
+            <div class="col-xl-8 col-lg-10 col-md-12 text-well">
+              <form v-on:submit.prevent="respondToRequest">
+                <div class="form-group">
+                  <label for="responseNote" class="control-label">Response Note</label>
+                  <input v-model="responseNote" id="responseNote" name="responseNote" class="form-control input" />
                 </div>
-              </div>
-            </form>
+                <div class="form-group">
+                  <div class="col-md-offset-2 col-md-4">
+                    <input type="submit" class="btn btn-primary" value="Submit" />
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

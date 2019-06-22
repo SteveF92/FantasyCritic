@@ -1,28 +1,30 @@
 <template>
   <div>
-    <div v-if="forbidden">
-      <div class="alert alert-danger" role="alert">
-        You do not have permission to view this league.
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <div v-if="forbidden">
+        <div class="alert alert-danger" role="alert">
+          You do not have permission to view this league.
+        </div>
       </div>
-    </div>
-    <div v-if="league">
-      <h1>League History: {{league.leagueName}} (Year {{year}})</h1>
-      <hr />
-      <div class="history-table">
-        <b-table :sort-by.sync="sortBy"
-                 :sort-desc.sync="sortDesc"
-                 :items="leagueActions"
-                 :fields="actionFields"
-                 bordered
-                 striped
-                 responsive>
-          <template slot="timestamp" slot-scope="data">
-            {{data.item.timestamp | dateTime}}
-          </template>
-          <template slot="managerAction" slot-scope="data">
-            {{data.item.managerAction | yesNo}}
-          </template>
-        </b-table>
+      <div v-if="league">
+        <h1>League History: {{league.leagueName}} (Year {{year}})</h1>
+        <hr />
+        <div class="history-table">
+          <b-table :sort-by.sync="sortBy"
+                   :sort-desc.sync="sortDesc"
+                   :items="leagueActions"
+                   :fields="actionFields"
+                   bordered
+                   striped
+                   responsive>
+            <template slot="timestamp" slot-scope="data">
+              {{data.item.timestamp | dateTime}}
+            </template>
+            <template slot="managerAction" slot-scope="data">
+              {{data.item.managerAction | yesNo}}
+            </template>
+          </b-table>
+        </div>
       </div>
     </div>
   </div>

@@ -1,23 +1,25 @@
 <template>
   <div>
-    <div class="row league-header">
-      <h1 class="header">Public Leagues</h1>
-      <div class="year-selector">
-        <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchPublicLeaguesForYear" />
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <div class="row league-header">
+        <h1 class="header">Public Leagues</h1>
+        <div class="year-selector">
+          <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchPublicLeaguesForYear" />
+        </div>
       </div>
-    </div>
-    <div class="row leagues-table" v-if="publicLeagues && publicLeagues.length > 0">
-      <b-table :sort-by.sync="sortBy"
-               :sort-desc.sync="sortDesc"
-               :items="publicLeagues"
-               :fields="leagueFields"
-               bordered
-               striped
-               responsive>
-        <template slot="leagueName" slot-scope="data">
-          <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear }}">{{data.item.leagueName}}</router-link>
-        </template>
-      </b-table>
+      <div class="row" v-if="publicLeagues && publicLeagues.length > 0">
+        <b-table :sort-by.sync="sortBy"
+                 :sort-desc.sync="sortDesc"
+                 :items="publicLeagues"
+                 :fields="leagueFields"
+                 bordered
+                 striped
+                 responsive>
+          <template slot="leagueName" slot-scope="data">
+            <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear }}">{{data.item.leagueName}}</router-link>
+          </template>
+        </b-table>
+      </div>
     </div>
   </div>
 </template>
@@ -78,10 +80,5 @@
   .year-selector {
     position: absolute;
     right: 0px;
-  }
-
-  .leagues-table {
-    margin-left: 15px;
-    margin-right: 15px;
   }
 </style>
