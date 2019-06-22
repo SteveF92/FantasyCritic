@@ -1,28 +1,30 @@
 <template>
   <div>
-    <div class="row hero-area">
-      <div class="col-sm-5 offset-sm-1 col-12 hero-message-area">
-        <div class="hero-message">
-          <h1 class="hero-message-header shadowed">
-            Fantasy Football...
-            <br />
-            for video games!
-          </h1>
-          <p class="shadowed hero-message-details">
-            Fantasy Critic is a game where you get to play as your own "fantasy" video game publisher. It's your job to choose the best reviewing games to publish!
-          </p>
+    <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
+      <div class="row hero-area">
+        <div class="col-md-5 offset-md-1 col-sm-12 hero-message-area">
+          <div class="hero-message">
+            <h1 class="hero-message-header shadowed">
+              Fantasy Football...
+              <br />
+              for video games!
+            </h1>
+            <p class="shadowed hero-message-details">
+              Fantasy Critic is a game where you get to play as your own "fantasy" video game publisher. It's your job to choose the best reviewing games to publish!
+            </p>
+          </div>
         </div>
-      </div>
-      <div class="col-sm-6 col-12 registration-area">
-        <div class="registration-box shadowed">
-          <h2>Sign up for free</h2>
-          <registerForm></registerForm>
+        <div class="col-md-6 col-sm-12 registration-area">
+          <div class="registration-box shadowed">
+            <h2>Sign up for free</h2>
+            <registerForm></registerForm>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="row welcome-area">
-      <div class="col-md-6 col-sm-12 welcome-heading">
+      <div class="col-md-5 offset-md-1 col-sm-12 welcome-heading">
         <h1>Play free forever!</h1>
       </div>
       <div class="col-md-6 col-sm-12">
@@ -36,10 +38,10 @@
     </div>
 
     <div class="row justify-content-center">
-      <div class="col-lg-6 computer-image-area">
+      <div class="col-xl-4 offset-xl-1 col-lg-5 offset-lg-1 col-md-0 offset-md-0 computer-image-area">
         <img src="/images/monitor-mock.png" class="computer-image" />
       </div>
-      <div class="col-lg-6 col-8 get-started-area">
+      <div class="col-lg-5 col-md-12 get-started-area">
         <div class="get-started-message">
           <h2>How to get Started</h2>
         </div>
@@ -82,7 +84,7 @@
       </div>
     </div>
 
-    <div class="features-area">
+    <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1 features-area">
       <h2 class="features-heading">Features and Highlights</h2>
       <div class="feature-highlights-area">
         <div class="row">
@@ -128,7 +130,7 @@
     </div>
 
     <div class="row">
-      <div class="col-lg-6 col-md-12">
+      <div class="col-lg-5 col-md-12 offset-lg-1 col-md-0">
         <h2>Frequently Asked Questions</h2>
         <div class="full-welcome">
           <homeFaq></homeFaq>
@@ -146,12 +148,14 @@
         </div>
       </div>
 
-      <div class="col-lg-6 col-md-12">
+      <div class="col-lg-5 col-md-10 offset-lg-0 offset-md-1">
         <tweets></tweets>
       </div>
     </div>
 
-    <h2>So far we have...</h2>
+    <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
+      <h2>So far we have...</h2>
+    </div>
     <siteCounts></siteCounts>
   </div>
 </template>
@@ -243,6 +247,9 @@
 
   .get-started-area {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .starting-step {
@@ -263,6 +270,7 @@
 
   .features-area {
     background-color: #414141;
+    padding-bottom: 15px;
   }
 
   .features-heading {
