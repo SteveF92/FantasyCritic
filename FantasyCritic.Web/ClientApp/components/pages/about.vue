@@ -79,9 +79,13 @@
 
       </div>
       <hr />
-      <h2>A few statistics...</h2>
-      <siteCounts></siteCounts>
     </div>
+
+    <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
+      <h2>A few statistics...</h2>
+    </div>
+
+    <siteCounts></siteCounts>
   </div>
 </template>
 <script>
