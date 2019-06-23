@@ -42,6 +42,11 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
+                if (masterGame.DoNotRefreshAnything)
+                {
+                    continue;
+                }
+
                 if (masterGame.IsReleased(_clock) && masterGame.ReleaseDate.HasValue)
                 {
                     var year = masterGame.ReleaseDate.Value.Year;

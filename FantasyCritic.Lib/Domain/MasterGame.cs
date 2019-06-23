@@ -11,7 +11,8 @@ namespace FantasyCritic.Lib.Domain
         private readonly decimal? _criticScore;
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            int minimumReleaseYear, EligibilitySettings eligibilitySettings, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, Instant addedTimestamp)
+            int minimumReleaseYear, EligibilitySettings eligibilitySettings, string boxartFileName, Instant? firstCriticScoreTimestamp,
+            bool doNotRefreshDate, bool doNotRefreshAnything, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -25,12 +26,13 @@ namespace FantasyCritic.Lib.Domain
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
             DoNotRefreshDate = doNotRefreshDate;
+            DoNotRefreshAnything = doNotRefreshAnything;
             AddedTimestamp = addedTimestamp;
         }
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
             int minimumReleaseYear, EligibilitySettings eligibilitySettings, IReadOnlyList<MasterSubGame> subGames, string boxartFileName, 
-            Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, Instant addedTimestamp)
+            Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -44,6 +46,7 @@ namespace FantasyCritic.Lib.Domain
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
             DoNotRefreshDate = doNotRefreshDate;
+            DoNotRefreshAnything = doNotRefreshAnything;
             AddedTimestamp = addedTimestamp;
         }
 
@@ -56,6 +59,7 @@ namespace FantasyCritic.Lib.Domain
         public string BoxartFileName { get; }
         public Instant? FirstCriticScoreTimestamp { get; }
         public bool DoNotRefreshDate { get; }
+        public bool DoNotRefreshAnything { get; }
         public Instant AddedTimestamp { get; }
 
         public decimal? CriticScore
