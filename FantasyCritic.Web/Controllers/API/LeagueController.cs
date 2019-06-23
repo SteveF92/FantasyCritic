@@ -744,6 +744,7 @@ namespace FantasyCritic.Web.Controllers.API
             var yesterday = currentDate.PlusDays(-1);
 
             var orderedByReleaseDate = myMasterGames
+                .Distinct()
                 .Where(x => x.MasterGame.ReleaseDate.HasValue)
                 .Where(x => x.MasterGame.ReleaseDate.Value > yesterday)
                 .OrderBy(x => x.MasterGame.ReleaseDate.Value)
