@@ -73,6 +73,9 @@
           </b-card>
         </div>
       </div>
+
+      <h5 v-if="isAdmin"><router-link :to="{ name: 'adminConsole' }">Admin Console</router-link></h5>
+
     </div>
   </div>
 </template>
