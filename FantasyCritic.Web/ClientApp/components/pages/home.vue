@@ -19,7 +19,7 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card title="Leagues">
+          <b-card title="Leagues" class="homepage-section">
             <b-tabs justified>
               <b-tab title="My Leagues" active>
                 <ul>
@@ -40,7 +40,7 @@
                   <label>You are not following any public leagues!</label>
                 </div>
               </b-tab>
-              <b-tab title="Test Leagues">
+              <b-tab title="Test Leagues" v-if="anyTestLeagues">
                 <ul>
                   <li v-for="league in myLeagues" v-if="league.testLeague">
                     <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
@@ -50,8 +50,27 @@
             </b-tabs>
           </b-card>
         </div>
+
         <div class="col-lg-4 col-md-12">
-          <tweets></tweets>
+          <hr class="d-md-block d-lg-none" />
+          <tweets class="homepage-section"></tweets>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="row">
+        <div class="col-lg-8 col-md-12">
+          <b-card title="Upcoming Games" class="homepage-section">
+
+          </b-card>
+        </div>
+
+        <div class="col-lg-4 col-md-12">
+          <hr class="d-md-block d-lg-none" />
+          <b-card title="Popular Public Leagues" class="homepage-section">
+
+          </b-card>
         </div>
       </div>
     </div>
@@ -155,6 +174,11 @@
     justify-content: center;
     text-align: center;
   }
+
+  .homepage-section {
+    min-height: 700px;
+  }
+
   .main-buttons {
     display: flex;
     flex-direction: row;
