@@ -1,6 +1,6 @@
 <template>
   <div>
-    <faqCollapse :accordianID="faqAccordian" :collapseID="1" defaultVisible>
+    <faqCollapse defaultVisible>
       <div slot="question">
         Why should I play FantasyCritic?
       </div>
@@ -8,7 +8,7 @@
         It’s a great catalyst for discussing video games with your friends, and gets everyone invested in checking out the year’s best video games.
       </div>
     </faqCollapse>
-    <faqCollapse :accordianID="faqAccordian" :collapseID="2">
+    <faqCollapse>
       <div slot="question">
         Does this cost money?
       </div>
@@ -17,7 +17,7 @@
         In the future, it is possible that I will consider adding advertising or opening a Patreon, but I’m never going to charge people to play.
       </div>
     </faqCollapse>
-    <faqCollapse :accordianID="faqAccordian" :collapseID="3">
+    <faqCollapse>
       <div slot="question">
         How many players can be in a league?
       </div>
@@ -25,7 +25,7 @@
         Anywhere from 2 to 14. Somewhere between 4 and 8 is probably optimal, but you’ll do fine anywhere in that range.
       </div>
     </faqCollapse>
-    <faqCollapse :accordianID="faqAccordian" :collapseID="4">
+    <faqCollapse>
       <div slot="question">
         How long does a league last?
       </div>
