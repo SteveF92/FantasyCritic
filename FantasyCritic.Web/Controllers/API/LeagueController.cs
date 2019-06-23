@@ -38,7 +38,7 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly DraftService _draftService;
         private readonly PublisherService _publisherService;
         private readonly IClock _clock;
-        private readonly IHubContext<UpdateHub> _hubcontext;
+        private readonly IHubContext<UpdateHub> _hubContext;
         private readonly ILogger<LeagueController> _logger;
 
         public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
@@ -52,7 +52,7 @@ namespace FantasyCritic.Web.Controllers.API
             _draftService = draftService;
             _publisherService = publisherService;
             _clock = clock;
-            _hubcontext = hubcontext;
+            _hubContext = hubcontext;
             _logger = logger;
         }
 
@@ -654,11 +654,11 @@ namespace FantasyCritic.Web.Controllers.API
             ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, false, true);
             bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value);
             var viewModel = new PlayerClaimResultViewModel(result);
-            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             if (draftCompleted)
             {
-                await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
+                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
             }
 
             return Ok(viewModel);
