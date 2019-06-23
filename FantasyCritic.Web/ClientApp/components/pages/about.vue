@@ -46,6 +46,38 @@
         </p>
       </div>
       <hr />
+      <h2><a name="privacy">Privacy Policy</a></h2>
+      <div class="text-well">
+        <p>
+          Your privacy is important to us. As much as possible, we try to limit the amount of data we collect from you. That said, there are certain things which are necessary for the site to function.
+          By using this site, you agree to these terms.
+        </p>
+        <p>
+          <h4>Data we gather</h4>
+          Making an account on the site requires an email address. We don't ask for your real name or any other personally identifiable information. All passwords are stored using industry standard
+          hashing + salting. The site is open source, so if you are intersted, you can check that part out for yourself.
+          <br />
+          Additionally, the site uses Google Analytics to track engagement with the site (which pages are used, what devices users are accessing the site from).
+          However, we do not use Google's "Demographics and Interest Reports" feature, so we are not collecting any data about users advertising interests, age groups, etc.
+        </p>
+        <p>
+          <h4>Public Information</h4>
+          Users can choose to partipate in leagues that are accessible to the public, or to keep their leagues private. User email addresses are not exposed to other users in either case.
+        </p>
+        <p>
+          <h4>Cookies</h4>
+          Fantasy Critic uses JSON Web Tokens stored in your browser's local storage to manage authentication. These are not exactly cookies, but they function similarly.
+        </p>
+        <p>
+          <h4>Advertising</h4>
+          At this time, Fantasy Critic does not run any ads. If this ever changes, this policy will be updated.
+        </p>
+        <p>
+          <h4>Children’s Privacy</h4>
+          Fantasy Critic is not intended to be used by anyone under the age of 13, in compliance with the Children's Online Privacy Protection Act.
+        </p>
+      </div>
+      <hr />
       <h2>Technical Credits</h2>
       <div class="text-well">
         <h3>Software Packages</h3>

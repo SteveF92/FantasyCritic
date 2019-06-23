@@ -26,6 +26,8 @@
         <span class="text-danger">{{ errors.first('confirmPassword') }}</span>
       </div>
 
+      <div class="alert alert-info" v-show="emailAddress">By using this site, you agree to our <a href="/about#privacy" target="_blank">Privacy Policy</a>.</div>
+
       <div class="register-button-area">
         <button type="submit" class="btn btn-primary register-button" :disabled="!formIsValid">
           Sign Up
