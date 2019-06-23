@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row league-summary">
-      <div class="col-lg-6 col-md-12" v-for="publisher in publishers">
+      <div class="col-xl-6 col-lg-12" v-for="publisher in publishers">
         <minimalPlayerGameTable :publisher="publisher" :options="options" :yearFinished="leagueYear.supportedYear.finished"></minimalPlayerGameTable>
       </div>
     </div>
