@@ -3,17 +3,25 @@
            :fields="leagueFields"
            thead-class="hidden_header"
            bordered
-           striped
-           >
+           striped>
     <template slot="leagueName" slot-scope="data">
-      <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear }}" class="league-link">{{data.item.leagueName}}</router-link>
-      <div class="manager">Manager: {{data.item.leagueManager.displayName}}</div>
+      <div class="row-flex">
+        <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear }}">
+          <font-awesome-icon class="league-icon" :icon="leagueIcon" v-show="leagueIcon !== 'user'" />
+          <font-awesome-icon class="league-icon" icon="user-cog" v-show="leagueIcon === 'user' && data.item.leagueManager.userID === userID" />
+          <font-awesome-icon class="league-icon" icon="user" v-show="leagueIcon === 'user' && data.item.leagueManager.userID !== userID" />
+        </router-link>
+        <div>
+          <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear }}" class="league-link">{{data.item.leagueName}}</router-link>
+          <div class="manager" v-if="data.item.leagueManager">Manager: {{data.item.leagueManager.displayName}}</div>
+        </div>
+      </div>
     </template>
   </b-table>
 </template>
 <script>
   export default {
-    props: ['leagues'],
+    props: ['leagues', 'leagueIcon', 'userID'],
     data() {
       return {
         leagueFields: [
@@ -26,6 +34,16 @@
 <style scoped>
 table >>> .hidden_header {
   display: none;
+}
+
+.row-flex {
+  display: flex;
+}
+
+.league-icon{
+  width: 45px;
+  height: 45px;
+  margin-right: 10px;
 }
 
 .league-link {

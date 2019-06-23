@@ -30,7 +30,13 @@ import {
   faUsers,
   faCalendarAlt,
   faCalendarDay,
-  faExclamationCircle
+  faExclamationCircle,
+  faUserCog,
+  faUser,
+  faUserCheck,
+  faCog,
+  faExclamationTriangle,
+  faAtom
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -87,8 +93,14 @@ library.add(
   faUsers,
   faCalendarAlt,
   faCalendarDay,
-  faExclamationCircle
-  );
+  faExclamationCircle,
+  faExclamationTriangle,
+  faUserCog,
+  faUser,
+  faUserCheck,
+  faCog,
+  faAtom
+);
 
 export {
   FontAwesomeIcon,

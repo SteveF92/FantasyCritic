@@ -22,25 +22,25 @@
           <b-card title="Leagues" class="homepage-section">
             <b-tabs>
               <b-tab title="My Leagues">
-                <leagueTable :leagues="nonTestLeagues"></leagueTable>
+                <leagueTable :leagues="nonTestLeagues" :leagueIcon="'user'" :userID="userInfo.userID"></leagueTable>
               </b-tab>
               <b-tab v-if="anyInvitedLeagues">
                 <template slot="title">
                   League Invites
                   <font-awesome-icon icon="exclamation-circle" size="lg" />
                 </template>
-                <leagueTable :leagues="invitedLeagues"></leagueTable>
+                <leagueTable :leagues="invitedLeagues" :leagueIcon="'envelope'" :userID="userInfo.userID"></leagueTable>
               </b-tab>
               <b-tab title="Followed Leagues">
                 <div v-if="anyFollowedLeagues">
-                  <leagueTable :leagues="myFollowedLeagues"></leagueTable>
+                  <leagueTable :leagues="myFollowedLeagues" :leagueIcon="'users'" :userID="userInfo.userID"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not following any public leagues!</label>
                 </div>
               </b-tab>
               <b-tab title="Test Leagues" v-if="anyTestLeagues">
-                <leagueTable :leagues="testLeagues"></leagueTable>
+                <leagueTable :leagues="testLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>
               </b-tab>
             </b-tabs>
           </b-card>

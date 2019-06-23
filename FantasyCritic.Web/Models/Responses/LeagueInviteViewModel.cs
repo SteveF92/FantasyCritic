@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Web.Controllers.API;
 
 namespace FantasyCritic.Web.Models.Responses
 {
@@ -16,6 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueName = league.LeagueName;
             ActiveYear = league.Years.Max();
             InviteName = inviteName;
+            LeagueManager = new PlayerViewModel(league, league.LeagueManager);
         }
 
         public Guid InviteID { get; }
@@ -23,6 +25,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string LeagueName { get; }
         public int ActiveYear { get; }
         public string InviteName { get; }
+        public PlayerViewModel LeagueManager { get; }
 
         public static LeagueInviteViewModel CreateWithEmailAddress(LeagueInvite invite)
         {

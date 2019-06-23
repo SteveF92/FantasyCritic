@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FantasyCritic.Lib.Domain;
 
@@ -7,6 +8,7 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public FantasyCriticUserViewModel(FantasyCriticUser user, IEnumerable<string> roles)
         {
+            UserID = user.UserID;
             DisplayName = user.DisplayName;
             DisplayNumber = user.DisplayNumber;
             EmailAddress = user.EmailAddress;
@@ -14,6 +16,7 @@ namespace FantasyCritic.Web.Models.Responses
             EmailConfirmed = user.EmailConfirmed;
         }
 
+        public Guid UserID { get; }
         public string DisplayName { get; }
         public int DisplayNumber { get; }
         public string EmailAddress { get; }
