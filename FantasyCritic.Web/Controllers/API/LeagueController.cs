@@ -106,7 +106,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         [AllowAnonymous]
         [HttpGet("{year}")]
-        public async Task<IActionResult> PublicLeagues(int year)
+        public async Task<IActionResult> PublicLeagues(int year, int? count)
         {
             IReadOnlyList<LeagueYear> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(year);
 
@@ -114,6 +114,11 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var leagueYear in publicLeagueYears)
             {
                 viewModels.Add(new PublicLeagueYearViewModel(leagueYear));
+            }
+
+            if (count.HasValue)
+            {
+                viewModels = viewModels.Take(count.Value).ToList();
             }
 
             return Ok(viewModels);
