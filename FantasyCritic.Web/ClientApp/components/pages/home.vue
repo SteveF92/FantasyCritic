@@ -69,7 +69,21 @@
         <div class="col-lg-4 col-md-12">
           <hr class="d-md-block d-lg-none" />
           <b-card title="Popular Public Leagues" class="homepage-section">
+            <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
 
+            <div class="row" v-if="publicLeagues && publicLeagues.length > 0">
+              <b-table :sort-by.sync="sortBy"
+                       :sort-desc.sync="sortDesc"
+                       :items="publicLeagues"
+                       :fields="leagueFields"
+                       bordered
+                       striped
+                       responsive>
+                <template slot="leagueName" slot-scope="data">
+                  <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear }}">{{data.item.leagueName}}</router-link>
+                </template>
+              </b-table>
+            </div>
           </b-card>
         </div>
       </div>
@@ -93,7 +107,16 @@
         myLeagues: [],
         invitedLeagues: [],
         myFollowedLeagues: [],
-        fetchingLeagues: true
+        fetchingLeagues: true,
+        selectedYear: null,
+        supportedYears: [],
+        publicLeagues: [],
+        leagueFields: [
+          { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+          { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' },
+        ],
+        sortBy: 'numberOfFollowers',
+        sortDesc: true
       }
     },
     components: {
@@ -161,10 +184,32 @@
             this.myFollowedLeagues = response.data;
           })
           .catch(returnedError => (this.error = returnedError));
-      }
+      },
+      async fetchSupportedYears() {
+        axios
+          .get('/api/game/SupportedYears')
+          .then(response => {
+            this.supportedYears = response.data;
+            this.selectedYear = this.supportedYears[0];
+            this.fetchPublicLeaguesForYear(this.selectedYear);
+          })
+          .catch(response => {
+
+          });
+      },
+      async fetchPublicLeaguesForYear(year) {
+        axios
+          .get('/api/league/PublicLeagues/' + year)
+          .then(response => {
+            this.publicLeagues = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
     },
     async mounted() {
-      await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues()]);
+      await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears()]);
     }
   }
 </script>
