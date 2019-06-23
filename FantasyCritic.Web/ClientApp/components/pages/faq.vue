@@ -16,45 +16,68 @@
       <hr />
 
       <h2><a name="general">General</a></h2>
-      <h3>Something about the site is broken!</h3>
-      <p class="text-well">
-        Sounds likely. We’re just getting started here at Fantasy Critic and there are bound to be issues.
-        Honestly, most issues can be fixed by refreshing the page.
-        Beyond that, the best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">GitHub <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
-        Contacting me on Twitter or Reddit is also an option.
-      </p>
-      <h3>Something goes wrong when I try to confirm my email address.</h3>
-      <p class="text-well">
-        I've heard this from a few people now, and I haven't been able to identify the cause. It seems to be inconsistent as most people have no problems. I do have a list of potential solutions, though.
-        <ol>
-          <li>Try pressing CTRL+F5 when you are on the site and then clicking the link in the email again.</li>
-          <li>Try an incognito window.</li>
-          <li>Login first then try clicking the link.</li>
-          <li>Logout first then try clicking the link.</li>
-          <li>Try resending the email by clicking on "Manage Account" in the dropdown that comes up when you click your username in the top right, and using that link.</li>
-          <li>Try a combination of these things.</li>
-          <li>If all else fails, contact me.</li>
-        </ol>
-      </p>
-      <h3>How can I follow updates for the site?</h3>
-      <p class="text-well">
-        Follow us on twitter <a href="https://twitter.com/fantasy_critic" target="_blank">@fantasy_critic <font-awesome-icon icon="external-link-alt" size="sm" /></a> and join our <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">subreddit <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
-      </p>
-      <h3>Why should I play FantasyCritic?</h3>
-      <p class="text-well">
-        It’s a great catalyst for discussing video games with your friends, and gets everyone invested in checking out the year’s best video games.
-      </p>
-      <h3>Does this cost money?</h3>
-      <p class="text-well">
-        No. It’s totally free.
-      </p>
-      <h3>Wait really? What’s the catch?</h3>
-      <p class="text-well">
-        There isn’t one. For now, this is a passion project for me and I’m comfortable eating the cost of servers and advertising.
-        In the future, it is possible that I will consider adding advertising or opening a Patreon, but I’m never going to charge people to play.
-      </p>
-      <br />
-
+      <faqCollapse :accordianID="generalAccordian" :collapseID="1">
+        <div slot="question">
+          Something about the site is broken!
+        </div>
+        <div slot="answer">
+          Sounds likely. We’re just getting started here at Fantasy Critic and there are bound to be issues.
+          Honestly, most issues can be fixed by refreshing the page.
+          Beyond that, the best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">GitHub <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
+          Contacting me on Twitter or Reddit is also an option.
+        </div>
+      </faqCollapse>
+      <faqCollapse :accordianID="generalAccordian" :collapseID="2">
+        <div slot="question">
+          Something goes wrong when I try to confirm my email address.
+        </div>
+        <div slot="answer">
+          I've heard this from a few people now, and I haven't been able to identify the cause. It seems to be inconsistent as most people have no problems. I do have a list of potential solutions, though.
+          <ol>
+            <li>Try pressing CTRL+F5 when you are on the site and then clicking the link in the email again.</li>
+            <li>Try an incognito window.</li>
+            <li>Login first then try clicking the link.</li>
+            <li>Logout first then try clicking the link.</li>
+            <li>Try resending the email by clicking on "Manage Account" in the dropdown that comes up when you click your username in the top right, and using that link.</li>
+            <li>Try a combination of these things.</li>
+            <li>If all else fails, contact me.</li>
+          </ol>
+        </div>
+      </faqCollapse>
+      <faqCollapse :accordianID="generalAccordian" :collapseID="3">
+        <div slot="question">
+          How can I follow updates for the site?
+        </div>
+        <div slot="answer">
+          Follow us on twitter <a href="https://twitter.com/fantasy_critic" target="_blank">@fantasy_critic <font-awesome-icon icon="external-link-alt" size="sm" /></a>
+          and join our <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">subreddit <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
+        </div>
+      </faqCollapse>
+      <faqCollapse :accordianID="generalAccordian" :collapseID="4">
+        <div slot="question">
+          Why should I play FantasyCritic?
+        </div>
+        <div slot="answer">
+          It’s a great catalyst for discussing video games with your friends, and gets everyone invested in checking out the year’s best video games.
+        </div>
+      </faqCollapse>
+      <faqCollapse :accordianID="generalAccordian" :collapseID="5">
+        <div slot="question">
+          Does this cost money?
+        </div>
+        <div slot="answer">
+          No. It’s totally free.
+        </div>
+      </faqCollapse>
+      <faqCollapse :accordianID="generalAccordian" :collapseID="6">
+        <div slot="question">
+          Wait really? What’s the catch?
+        </div>
+        <div slot="answer">
+          There isn’t one. For now, this is a passion project for me and I’m comfortable eating the cost of servers and advertising.
+          In the future, it is possible that I will consider adding advertising or opening a Patreon, but I’m never going to charge people to play.
+        </div>
+      </faqCollapse>
       <h2><a name="league-creation">League Creation</a></h2>
       <h3>How many players can be in a league?</h3>
       <p class="text-well">
@@ -414,3 +437,12 @@
     </div>
   </div>
 </template>
+<script>
+  import FaqCollapse from "components/modules/faqCollapse";
+
+  export default {
+    components: {
+      FaqCollapse
+    }
+  }
+</script>

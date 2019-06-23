@@ -1,7 +1,7 @@
 <template>
   <b-card no-body class="mb-1">
     <b-card-header header-tag="header" class="p-1" role="tab">
-      <b-btn block href="#" v-b-toggle="'accordion-' + collapseID" variant="primary">
+      <b-btn block href="#" v-b-toggle="'accordion-' + collapseID" variant="secondary">
         <font-awesome-icon icon="plus-circle" size="lg" transform="down-2" class="when-closed faq-icon" />
         <font-awesome-icon icon="minus-circle" size="lg" transform="down-2" class="when-opened faq-icon" />
         <slot name="question"></slot>
