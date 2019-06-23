@@ -7,7 +7,7 @@
     </div>
 
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <div class="text-well welcome-area">
+      <div class="text-well welcome-area" v-if="userInfo">
         <div class="row welcome-header">
           <h1>Welcome {{userInfo.displayName}}!</h1>
         </div>
@@ -136,7 +136,7 @@
         publicLeagues: [],
         leagueFields: [
           { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-          { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' },
+          { key: 'numberOfFollowers', label: 'Followers', sortable: true, thClass: 'bg-primary' },
         ],
         sortBy: 'numberOfFollowers',
         sortDesc: true,
@@ -217,7 +217,7 @@
       },
       async fetchPublicLeaguesForYear(year) {
         axios
-          .get('/api/league/PublicLeagues/' + year)
+          .get('/api/league/PublicLeagues/' + year + "?count=10")
           .then(response => {
             this.publicLeagues = response.data;
           })
