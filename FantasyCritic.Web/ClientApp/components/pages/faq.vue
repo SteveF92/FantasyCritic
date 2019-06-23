@@ -295,49 +295,51 @@
         </div>
       </faqCollapse>
       <faqCollapse>
-        <div slot="question">Scoring Examples</div>
-        <table class="table table-striped table-bordered table-responsive-sm">
-          <thead>
-            <tr class="bg-primary">
-              <th>Game Name</th>
-              <th>OpenCritic Score</th>
-              <th>Fantasy Points</th>
-              <th>Counter Pick Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Dragon Ball FighterZ</td>
-              <td>86</td>
-              <td>16</td>
-              <td>-16</td>
-            </tr>
-            <tr>
-              <td>Shadow of the Tomb Raider</td>
-              <td>80</td>
-              <td>10</td>
-              <td>-10</td>
-            </tr>
-            <tr>
-              <td>Fallout 76</td>
-              <td>52</td>
-              <td>-18</td>
-              <td>18</td>
-            </tr>
-            <tr>
-              <td>Red Dead Redemption 2</td>
-              <td>97</td>
-              <td>34</td>
-              <td>-34</td>
-            </tr>
-            <tr>
-              <td>Kingdom Hearts III</td>
-              <td>Delayed to 2019</td>
-              <td>0</td>
-              <td>0</td>
-            </tr>
-          </tbody>
-        </table>
+        <div slot="question">Can I see some scoring examples?</div>
+        <div slot="answer">
+          <table class="table table-striped table-bordered table-responsive-sm">
+            <thead>
+              <tr class="bg-primary">
+                <th>Game Name</th>
+                <th>OpenCritic Score</th>
+                <th>Fantasy Points</th>
+                <th>Counter Pick Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dragon Ball FighterZ</td>
+                <td>86</td>
+                <td>16</td>
+                <td>-16</td>
+              </tr>
+              <tr>
+                <td>Shadow of the Tomb Raider</td>
+                <td>80</td>
+                <td>10</td>
+                <td>-10</td>
+              </tr>
+              <tr>
+                <td>Fallout 76</td>
+                <td>52</td>
+                <td>-18</td>
+                <td>18</td>
+              </tr>
+              <tr>
+                <td>Red Dead Redemption 2</td>
+                <td>97</td>
+                <td>34</td>
+                <td>-34</td>
+              </tr>
+              <tr>
+                <td>Kingdom Hearts III</td>
+                <td>Delayed to 2019</td>
+                <td>0</td>
+                <td>0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </faqCollapse>
       <faqCollapse>
         <div slot="question">What order are counter picks chosen in?</div>
@@ -509,7 +511,8 @@
       <faqCollapse>
         <div slot="question">What do I get if I win?</div>
         <div slot="answer">
-          That’s totally up to your league. This site doesn’t provide any prizes. Look to fantasy sports for advice on how to structure any winnings you want to play for.
+          That’s totally up to your league. This site doesn’t provide any prizes. Look to fantasy sports for advice on how to structure any winnings you want to play for. My personal favorite
+          is to end the year with a group dinner where the winner doesn't pay, and then do the draft for the next year right after that.
         </div>
       </faqCollapse>
     </div>
