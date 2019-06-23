@@ -22,41 +22,25 @@
           <b-card title="Leagues" class="homepage-section">
             <b-tabs>
               <b-tab title="My Leagues">
-                <ul>
-                  <li v-for="league in myLeagues" v-if="!league.testLeague">
-                    <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-                  </li>
-                </ul>
+                <leagueTable :leagues="nonTestLeagues"></leagueTable>
               </b-tab>
               <b-tab v-if="anyInvitedLeagues">
                 <template slot="title">
                   League Invites
                   <font-awesome-icon icon="exclamation-circle" size="lg" />
                 </template>
-                <ul>
-                  <li v-for="league in invitedLeagues" v-if="!league.testLeague">
-                    <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-                  </li>
-                </ul>
+                <leagueTable :leagues="invitedLeagues"></leagueTable>
               </b-tab>
               <b-tab title="Followed Leagues">
                 <div v-if="anyFollowedLeagues">
-                  <ul>
-                    <li v-for="league in myFollowedLeagues">
-                      <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-                    </li>
-                  </ul>
+                  <leagueTable :leagues="myFollowedLeagues"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not following any public leagues!</label>
                 </div>
               </b-tab>
               <b-tab title="Test Leagues" v-if="anyTestLeagues">
-                <ul>
-                  <li v-for="league in myLeagues" v-if="league.testLeague">
-                    <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
-                  </li>
-                </ul>
+                <leagueTable :leagues="testLeagues"></leagueTable>
               </b-tab>
             </b-tabs>
           </b-card>
@@ -98,7 +82,7 @@
               <b-table :sort-by.sync="sortBy"
                        :sort-desc.sync="sortDesc"
                        :items="publicLeagues"
-                       :fields="leagueFields"
+                       :fields="publicLeagueFields"
                        bordered
                        striped
                        small>
@@ -123,6 +107,7 @@
   import _ from "lodash";
   import Tweets from "components/modules/tweets";
   import MasterGamePopover from "components/modules/masterGamePopover";
+  import LeagueTable from "components/modules/leagueTable";
 
   export default {
     data() {
@@ -134,7 +119,7 @@
         selectedYear: null,
         supportedYears: [],
         publicLeagues: [],
-        leagueFields: [
+        publicLeagueFields: [
           { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
           { key: 'numberOfFollowers', label: 'Followers', sortable: true, thClass: 'bg-primary' },
         ],
@@ -149,7 +134,8 @@
     },
     components: {
       Tweets,
-      MasterGamePopover
+      MasterGamePopover,
+      LeagueTable
     },
     computed: {
       anyManagedLeagues() {
@@ -166,6 +152,12 @@
       },
       anyFollowedLeagues() {
         return this.myFollowedLeagues.length > 0;
+      },
+      nonTestLeagues() {
+        return _.filter(this.myLeagues, ['testLeague', false]);
+      },
+      testLeagues() {
+        return _.filter(this.myLeagues, ['testLeague', true]);
       },
       noLeagues() {
         return (!(this.anyPlayerLeagues || this.anyManagedLeagues));
