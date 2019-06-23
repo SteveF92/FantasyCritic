@@ -110,6 +110,8 @@ namespace FantasyCritic.MySQL
                 List<LeagueYear> leagueYears = new List<LeagueYear>();
                 IReadOnlyList<League> leagues = await GetAllLeagues();
                 Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
+                var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
+
                 foreach (var entity in yearEntities)
                 {
                     var success = leaguesDictionary.TryGetValue(entity.LeagueID, out League league);
@@ -119,7 +121,11 @@ namespace FantasyCritic.MySQL
                     }
 
                     var eligibilityLevel = await _masterGameRepo.GetEligibilityLevel(entity.MaximumEligibilityLevel);
-                    var eligibilityOverrides = await GetEligibilityOverrides(league, entity.Year);
+                    bool hasOverrides = allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides);
+                    if (!hasOverrides)
+                    {
+                        eligibilityOverrides = new List<EligibilityOverride>();
+                    }
                     LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel, eligibilityOverrides);
                     leagueYears.Add(leagueYear);
                 }
@@ -1020,6 +1026,38 @@ namespace FantasyCritic.MySQL
             }
 
             return domainObjects;
+        }
+
+        private async Task<IReadOnlyDictionary<Guid, IReadOnlyList<EligibilityOverride>>> GetAllEligibilityOverrides(int year)
+        {
+            string sql = "select * from tbl_league_eligibilityoverride where Year = @year;";
+            var queryObject = new
+            {
+                year
+            };
+
+            IEnumerable<EligibilityOverrideEntity> results;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                results = await connection.QueryAsync<EligibilityOverrideEntity>(sql, queryObject);
+            }
+
+            List<Tuple<Guid, EligibilityOverride>> domainObjects = new List<Tuple<Guid, EligibilityOverride>>();
+            foreach (var result in results)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGame(result.MasterGameID);
+                if (masterGame.HasNoValue)
+                {
+                    throw new Exception($"Cannot find game {masterGame.Value.MasterGameID} for eligibility override. This should not happen.");
+                }
+
+                EligibilityOverride domain = result.ToDomain(masterGame.Value);
+                domainObjects.Add(new Tuple<Guid, EligibilityOverride>(result.LeagueID, domain));
+            }
+
+            var dictionary = domainObjects.GroupBy(x => x.Item1).ToDictionary(x => x.Key, y => (IReadOnlyList<EligibilityOverride>)y.Select(z => z.Item2).ToList());
+
+            return dictionary;
         }
 
         public async Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame)
