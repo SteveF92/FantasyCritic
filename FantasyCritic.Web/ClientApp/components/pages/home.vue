@@ -72,8 +72,20 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card title="Upcoming Games" class="homepage-section">
-
+          <b-card title="My Upcoming Games" class="homepage-section">
+            <div class="row" v-if="upcomingGames && upcomingGames.length > 0">
+              <b-table :sort-by.sync="sortBy"
+                       :sort-desc.sync="sortDesc"
+                       :items="upcomingGames"
+                       :fields="upcomingGamesFields"
+                       bordered
+                       striped
+                       small>
+                <template slot="gameName" slot-scope="data">
+                  <masterGamePopover :masterGame="data.item"></masterGamePopover>
+                </template>
+              </b-table>
+            </div>
           </b-card>
         </div>
 
@@ -89,7 +101,7 @@
                        :fields="leagueFields"
                        bordered
                        striped
-                       responsive>
+                       small>
                 <template slot="leagueName" slot-scope="data">
                   <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear }}">{{data.item.leagueName}}</router-link>
                 </template>
@@ -110,6 +122,7 @@
   import axios from "axios";
   import _ from "lodash";
   import Tweets from "components/modules/tweets";
+  import MasterGamePopover from "components/modules/masterGamePopover";
 
   export default {
     data() {
@@ -126,11 +139,17 @@
           { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' },
         ],
         sortBy: 'numberOfFollowers',
-        sortDesc: true
+        sortDesc: true,
+        upcomingGames: [],
+        upcomingGamesFields: [
+          { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+          { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        ],
       }
     },
     components: {
-      Tweets
+      Tweets,
+      MasterGamePopover
     },
     computed: {
       anyManagedLeagues() {
@@ -206,9 +225,19 @@
 
           });
       },
+      async fetchUpcomingGames() {
+        axios
+          .get('/api/league/MyUpcomingGames/')
+          .then(response => {
+            this.upcomingGames = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
     },
     async mounted() {
-      await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears()]);
+      await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchUpcomingGames()]);
     }
   }
 </script>
