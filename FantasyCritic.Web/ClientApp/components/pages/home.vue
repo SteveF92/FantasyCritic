@@ -6,17 +6,55 @@
       <span>If you are having issues, check out our <a href="/faq#technical" class="text-secondary" target="_blank">FAQ</a> page.</span>
     </div>
 
-    <div class="col-md-10 offset-md-1 col-sm-12 text-well welcome-area">
-      <div class="row welcome-header">
-        <h1>Welcome {{userInfo.displayName}}!</h1>
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <div class="text-well welcome-area">
+        <div class="row welcome-header">
+          <h1>Welcome {{userInfo.displayName}}!</h1>
+        </div>
+        <div class="row main-buttons">
+          <b-button variant="primary" :to="{ name: 'createLeague' }" class="main-button">Create a League</b-button>
+          <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
+        </div>
       </div>
-      <div class="row main-buttons">
-        <b-button variant="primary" :to="{ name: 'createLeague' }" class="main-button">Create a League</b-button>
-        <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
+
+      <div class="row">
+        <div class="col-lg-8 col-md-12">
+          <b-card title="Leagues">
+            <b-tabs justified>
+              <b-tab title="My Leagues" active>
+                <ul>
+                  <li v-for="league in myLeagues" v-if="!league.testLeague">
+                    <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+                  </li>
+                </ul>
+              </b-tab>
+              <b-tab title="Followed Leagues">
+                <div v-if="anyFollowedLeagues">
+                  <ul>
+                    <li v-for="league in myFollowedLeagues">
+                      <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+                    </li>
+                  </ul>
+                </div>
+                <div v-else>
+                  <label>You are not following any public leagues!</label>
+                </div>
+              </b-tab>
+              <b-tab title="Test Leagues">
+                <ul>
+                  <li v-for="league in myLeagues" v-if="league.testLeague">
+                    <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+                  </li>
+                </ul>
+              </b-tab>
+            </b-tabs>
+          </b-card>
+        </div>
+        <div class="col-lg-4 col-md-12">
+          <tweets></tweets>
+        </div>
       </div>
     </div>
-
-
   </div>
 </template>
 
@@ -111,6 +149,7 @@
 <style scoped>
   .welcome-area{
     margin-top: 10px;
+    margin-bottom: 20px;
   }
   .welcome-header {
     justify-content: center;
