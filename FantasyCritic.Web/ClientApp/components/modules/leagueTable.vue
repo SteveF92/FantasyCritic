@@ -1,6 +1,7 @@
 <template>
   <b-table :items="leagues"
            :fields="leagueFields"
+           thead-class="hidden_header"
            bordered
            striped>
     <template slot="leagueName" slot-scope="data">
@@ -14,9 +15,14 @@
     data() {
       return {
         leagueFields: [
-          { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+          { key: 'leagueName' },
         ]
       }
     }
   }
 </script>
+<style scoped>
+table >>> .hidden_header {
+  display: none;
+}
+</style>
