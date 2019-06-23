@@ -20,10 +20,21 @@
       <div class="row">
         <div class="col-lg-8 col-md-12">
           <b-card title="Leagues" class="homepage-section">
-            <b-tabs justified>
-              <b-tab title="My Leagues" active>
+            <b-tabs>
+              <b-tab title="My Leagues">
                 <ul>
                   <li v-for="league in myLeagues" v-if="!league.testLeague">
+                    <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
+                  </li>
+                </ul>
+              </b-tab>
+              <b-tab v-if="anyInvitedLeagues">
+                <template slot="title">
+                  League Invites
+                  <font-awesome-icon icon="exclamation-circle" size="lg" />
+                </template>
+                <ul>
+                  <li v-for="league in invitedLeagues" v-if="!league.testLeague">
                     <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: league.activeYear }}">{{league.leagueName}}</router-link>
                   </li>
                 </ul>
@@ -107,7 +118,6 @@
         myLeagues: [],
         invitedLeagues: [],
         myFollowedLeagues: [],
-        fetchingLeagues: true,
         selectedYear: null,
         supportedYears: [],
         publicLeagues: [],
@@ -146,17 +156,6 @@
       },
       isAdmin() {
         return this.$store.getters.isAdmin;
-      },
-      shouldShowLearnToPlay() {
-        if (this.fetchingLeagues) {
-          return false;
-        }
-
-        if (this.noLeagues) {
-          return true;
-        }
-
-        return false;
       }
     },
     methods: {
