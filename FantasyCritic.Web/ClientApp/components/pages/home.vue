@@ -19,7 +19,7 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card title="Leagues" class="homepage-section">
+          <b-card title="Leagues" class="homepage-section" v-if="userInfo">
             <b-tabs>
               <b-tab title="My Leagues">
                 <leagueTable :leagues="nonTestLeagues" :leagueIcon="'user'" :userID="userInfo.userID"></leagueTable>
@@ -243,10 +243,6 @@
     text-align: center;
   }
 
-  .homepage-section {
-    min-height: 700px;
-  }
-
   .main-buttons {
     display: flex;
     flex-direction: row;
@@ -257,4 +253,9 @@
     margin-top: 5px;
     min-width: 200px;
   }
+
+  div >>> div.card {
+    background: rgba(50, 50, 50, 0.8);
+  }
+
 </style>
