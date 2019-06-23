@@ -37,7 +37,6 @@
   </div>
 </template>
 
-
 <script>
   import FaqCollapse from "components/modules/faqCollapse";
 
