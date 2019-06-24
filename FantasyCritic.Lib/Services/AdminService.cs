@@ -82,6 +82,8 @@ namespace FantasyCritic.Lib.Services
             _logger.LogInformation("Done refreshing critic scores");
 
             await Task.Delay(1000);
+            await RefreshCaches();
+            await Task.Delay(1000);
             await UpdateFantasyPoints();
         }
 
