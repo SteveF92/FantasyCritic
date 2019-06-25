@@ -6,6 +6,11 @@
       <div v-if="changeEmailSent" class="alert alert-success">
         Check your existing email address for an email with instructions to change to your new email address.
       </div>
+      <div v-if="emailError" class="alert alert-danger">
+        There was an error sending the confirmation email.
+        Contact me on <a href="https://twitter.com/fantasy_critic">Twitter<font-awesome-icon icon="external-link-alt" size="sm" /></a>
+        and we'll get it sorted out.
+      </div>
       <div v-if="userInfo">
         <dl class="row">
           <dt class="col-sm-3">Display Name</dt>
@@ -42,7 +47,8 @@
   export default {
     data() {
       return {
-        changeEmailSent: false
+        changeEmailSent: false,
+        emailError: ""
       }
     },
     components: {
@@ -67,7 +73,7 @@
                   });
               })
               .catch(response => {
-
+                this.emailError = response.response.data;
               });
       },
       passwordChanged() {
