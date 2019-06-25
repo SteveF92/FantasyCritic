@@ -40,8 +40,11 @@
             </tr>
           </tbody>
         </table>
+      </div>
 
-        <div v-if="generatedSQL" class="row">
+      <div v-if="generatedSQL">
+        <h3>Generated SQL</h3>
+        <div class="row">
           <div class="col-xl-8 col-lg-10 col-md-12 text-well">
             <div class="form-group">
               <label for="generated SQL" class="control-label">GeneratedSQL</label>
@@ -49,25 +52,27 @@
             </div>
           </div>
         </div>
-        <div v-if="requestSelected">
-          <h3>Respond to Request</h3>
-          <div class="row">
-            <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-              <form v-on:submit.prevent="respondToRequest">
-                <div class="form-group">
-                  <label for="responseNote" class="control-label">Response Note</label>
-                  <input v-model="responseNote" id="responseNote" name="responseNote" class="form-control input" />
+      </div>
+
+      <div v-if="requestSelected">
+        <h3>Respond to Request</h3>
+        <div class="row">
+          <div class="col-xl-8 col-lg-10 col-md-12 text-well">
+            <form v-on:submit.prevent="respondToRequest">
+              <div class="form-group">
+                <label for="responseNote" class="control-label">Response Note</label>
+                <input v-model="responseNote" id="responseNote" name="responseNote" class="form-control input" />
+              </div>
+              <div class="form-group">
+                <div class="col-md-offset-2 col-md-4">
+                  <input type="submit" class="btn btn-primary" value="Submit" />
                 </div>
-                <div class="form-group">
-                  <div class="col-md-offset-2 col-md-4">
-                    <input type="submit" class="btn btn-primary" value="Submit" />
-                  </div>
-                </div>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
