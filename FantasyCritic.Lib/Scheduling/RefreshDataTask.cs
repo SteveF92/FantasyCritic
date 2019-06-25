@@ -22,6 +22,10 @@ namespace FantasyCritic.Lib.Scheduling
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+#if DEBUG
+            Console.WriteLine("Not refreshing stats - DEBUG version");
+            return;
+#endif
             var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
             using (var scope = serviceScopeFactory.CreateScope())
