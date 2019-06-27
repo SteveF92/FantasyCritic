@@ -17,14 +17,15 @@
             <span v-else>No Steam Link</span>
           </li>
         </ul>
+        <hr />
       </div>
       <div class="row" v-if="requestNote">
         <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
           <h2>Request Note</h2>
           <p>{{requestNote}}</p>
         </div>
+        <hr />
       </div>
-      <hr />
       <div class="row">
         <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
           <form v-on:submit.prevent="createMasterGame">
