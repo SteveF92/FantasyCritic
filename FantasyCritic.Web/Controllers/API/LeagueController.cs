@@ -773,13 +773,25 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            HashSet<MasterGame> publisherMasterGames = publishersInLeague
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .Distinct()
+                .ToHashSet();
+
             IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
             IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
 
             List<PossibleMasterGameYearViewModel> viewModels = new List<PossibleMasterGameYearViewModel>();
             foreach (var masterGame in matchingMasterGames)
             {
-                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, false, true);
+                var eligibilityErrors = leagueYear.Value.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
+                bool isEligible = !eligibilityErrors.Any();
+                bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
+
+                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, taken, isEligible);
                 viewModels.Add(viewModel);
             }
 
