@@ -11,6 +11,7 @@ using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
@@ -759,5 +760,30 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
+        public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> MasterGameYear(string gameName, int year, Guid leagueID)
+        {
+            if (string.IsNullOrWhiteSpace(gameName))
+            {
+                return new List<PossibleMasterGameYearViewModel>();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
+            IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
+
+            List<PossibleMasterGameYearViewModel> viewModels = new List<PossibleMasterGameYearViewModel>();
+            foreach (var masterGame in matchingMasterGames)
+            {
+                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, false, true);
+                viewModels.Add(viewModel);
+            }
+
+            return viewModels;
+        }
     }
 }

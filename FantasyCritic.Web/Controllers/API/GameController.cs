@@ -60,34 +60,6 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModel;
         }
 
-        public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame(string gameName)
-        {
-            if (string.IsNullOrWhiteSpace(gameName))
-            {
-                return new List<MasterGameViewModel>();
-            }
-
-            IReadOnlyList<MasterGame> masterGames = await _interLeagueService.GetMasterGames();
-            IReadOnlyList<MasterGame> matchingMasterGames = MasterGameSearching.SearchMasterGames(gameName, masterGames);
-            List<MasterGameViewModel> viewModels = matchingMasterGames.Select(x => new MasterGameViewModel(x, _clock)).ToList();
-
-            return viewModels;
-        }
-
-        public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(string gameName, int year)
-        {
-            if (string.IsNullOrWhiteSpace(gameName))
-            {
-                return new List<MasterGameYearViewModel>();
-            }
-
-            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
-            IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
-            List<MasterGameYearViewModel> viewModels = matchingMasterGames.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
-
-            return viewModels;
-        }
-
         [HttpGet("{year}")]
         public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(int year)
         {

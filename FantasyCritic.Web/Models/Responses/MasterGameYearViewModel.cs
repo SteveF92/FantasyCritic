@@ -72,11 +72,10 @@ namespace FantasyCritic.Web.Models.Responses
 
         public decimal PercentStandardGame { get; }
         public decimal PercentCounterPick { get; }
-        public decimal EligiblePercentStandardGame { get; set; }
-        public decimal EligiblePercentCounterPick { get; set; }
+        public decimal EligiblePercentStandardGame { get; }
+        public decimal EligiblePercentCounterPick { get; }
         public decimal? AverageDraftPosition { get; }
-        public decimal? HypeFactor { get; set; }
-        public decimal? DateAdjustedHypeFactor { get; set; }
-
+        public decimal? HypeFactor { get; }
+        public decimal? DateAdjustedHypeFactor { get; }
     }
 }
