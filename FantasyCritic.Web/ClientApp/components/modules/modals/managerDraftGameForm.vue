@@ -96,7 +96,7 @@
             this.possibleMasterGames = [];
             this.draftResult = null;
             axios
-                .get('/api/game/MasterGameYear?gameName=' + this.searchGameName + '&year=' + this.year)
+                .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year)
                 .then(response => {
                   this.possibleMasterGames = response.data;
                   this.searched = true;
