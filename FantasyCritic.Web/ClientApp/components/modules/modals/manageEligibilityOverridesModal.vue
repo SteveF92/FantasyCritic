@@ -94,7 +94,7 @@
         this.overrideMasterGame = null;
         this.possibleMasterGames = [];
         axios
-          .get('/api/league/PossibleMasterGames?gameName=' + this.overrideGameName)
+          .get('/api/league/PossibleMasterGames?gameName=' + this.overrideGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
           .then(response => {
             this.possibleMasterGames = response.data;
           })

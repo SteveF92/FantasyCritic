@@ -105,7 +105,7 @@
             this.possibleMasterGames = [];
             this.claimResult = null;
             axios
-                .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year)
+                .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publishers[0].leagueID)
                 .then(response => {
                   this.possibleMasterGames = response.data;
                   this.searched = true;

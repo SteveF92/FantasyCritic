@@ -84,7 +84,7 @@
             this.possibleMasterGames = [];
             this.associateResult = null;
             axios
-              .get('/api/league/PossibleMasterGames?gameName=' + this.associateGameName + '&year=' + this.year)
+              .get('/api/league/PossibleMasterGames?gameName=' + this.associateGameName + '&year=' + this.year + '&leagueid=' + this.publishers[0].leagueID)
               .then(response => {
                   this.possibleMasterGames = response.data;
               })
