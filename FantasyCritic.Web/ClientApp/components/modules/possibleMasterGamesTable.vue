@@ -4,31 +4,31 @@
           <tr class="bg-primary">
             <th>Game Name</th>
             <th>Estimated Release Date</th>
-            <th class="no-mobile">Eligibility Level</th>
+            <th class="no-mobile">Status</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="game in possibleGames">
             <td>
-              <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="game" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
+              <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="game.masterGame" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
             </td>
-            <td v-bind:class="{ 'text-danger': game.isReleased }" class="release-date">
-              <span>{{game.estimatedReleaseDate}}</span>
-              <span v-show="game.isReleased">(Released)</span>
+            <td v-bind:class="{ 'text-danger': game.masterGame.isReleased }" class="release-date">
+              <span>{{game.masterGame.estimatedReleaseDate}}</span>
+              <span v-show="game.masterGame.isReleased">(Released)</span>
             </td>
             <td class="no-mobile">
-              <eligibilityBadge :eligibilityLevel="game.eligibilitySettings.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
+              <statusBadge :taken="game.taken" :isEligible="game.isEligble"></statusBadge>
             </td>
             <td class="select-cell">
-              <b-button size="sm" variant="info" v-on:click="selectGame(game)">Select</b-button>
+              <b-button size="sm" variant="info" v-on:click="selectGame(game.masterGame)">Select</b-button>
             </td>
           </tr>
         </tbody>
     </table>
 </template>
 <script>
-  import EligibilityBadge from "components/modules/eligibilityBadge";
+  import StatusBadge from "components/modules/statusBadge";
   import MasterGamePopover from "components/modules/masterGamePopover";
 
   export default {
@@ -39,13 +39,13 @@
       }
     },
     components: {
-      EligibilityBadge,
+      StatusBadge,
       MasterGamePopover
     },
     props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
     methods: {
-      selectGame(game) {
-        this.selectedMasterGame = game;
+      selectGame(masterGame) {
+        this.selectedMasterGame = masterGame;
         this.$emit('input', this.selectedMasterGame);
       },
       newPopoverShown(masterGame) {
