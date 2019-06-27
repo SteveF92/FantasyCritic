@@ -760,7 +760,7 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
-        public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> MasterGameYear(string gameName, int year, Guid leagueID)
+        public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> PossibleMasterGames(string gameName, int year, Guid leagueID)
         {
             if (string.IsNullOrWhiteSpace(gameName))
             {

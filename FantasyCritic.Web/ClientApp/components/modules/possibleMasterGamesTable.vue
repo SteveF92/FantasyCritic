@@ -18,7 +18,7 @@
               <span v-show="game.masterGame.isReleased">(Released)</span>
             </td>
             <td class="no-mobile">
-              <statusBadge :taken="game.taken" :isEligible="game.isEligble"></statusBadge>
+              <statusBadge :taken="game.taken" :isEligible="game.isEligible"></statusBadge>
             </td>
             <td class="select-cell">
               <b-button size="sm" variant="info" v-on:click="selectGame(game.masterGame)">Select</b-button>
