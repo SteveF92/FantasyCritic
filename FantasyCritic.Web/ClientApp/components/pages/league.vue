@@ -11,21 +11,23 @@
           {{errorInfo}}
         </div>
 
-        <div class="row league-header">
-          <div class="league-name-area">
-            <h1 class="league-name">{{ league.leagueName }}</h1>
-            <div v-if="!league.userIsInLeague && isAuth" class="follow-buttons">
-              <b-button v-if="!league.userIsFollowingLeague" variant="primary" v-on:click="followLeague">Follow</b-button>
-              <b-button v-if="league.userIsFollowingLeague" variant="secondary" v-on:click="unfollowLeague">Unfollow</b-button>
-            </div>
-          </div>
-          <div class="year-selector">
-            <div>
-              <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear" />
+        <div class="row">
+          <div class="league-header-row">
+            <div class="league-header-flex">
+              <div>
+                <h1>{{ league.leagueName }}</h1>
+              </div>
+
+              <div class="selector-area">
+                <div v-if="!league.userIsInLeague && isAuth">
+                  <b-button v-if="!league.userIsFollowingLeague" variant="primary" v-on:click="followLeague">Follow</b-button>
+                  <b-button v-if="league.userIsFollowingLeague" variant="secondary" v-on:click="unfollowLeague">Unfollow</b-button>
+                </div>
+                <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear" class="year-selector" />
+              </div>
             </div>
           </div>
         </div>
-
         <hr />
 
         <div>
@@ -332,17 +334,8 @@
     }
   }
 </script>
-<style>
-  .year-selector {
-    position: absolute;
-    right: 0px;
-  }
-  .year-selector div {
-    float:left;
-  }
-  .league-header {
-    margin-left: 0px;
-  }
+<style scoped>
+  
   .league-manager-info {
     display: flex;
     flex-direction: row;
@@ -352,13 +345,21 @@
     padding-top: 3px;
   }
 
-  .league-name {
-    float:left;
+  .league-header-row {
+    width: 100%;
   }
 
-  .follow-buttons {
-    float:left;
-    margin-left: 10px;
-    margin-top: 5px;
+  .league-header-flex {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .selector-area{
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .year-selector {
+    width: 100px;
   }
 </style>
