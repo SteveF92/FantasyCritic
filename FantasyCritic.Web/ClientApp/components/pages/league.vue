@@ -124,6 +124,7 @@
         </div>
       </div>
     </div>
+    <audio src="/sounds/quite-impressed.mp3" id="draft-notification-sound"></audio>
   </div>
 </template>
 
@@ -161,11 +162,14 @@
     },
     computed: {
       nextPublisherUp() {
+        if (!this.leagueYear || !this.leagueYear.publishers) {
+          return null;
+        }
         let next = _.find(this.leagueYear.publishers, ['nextToDraft', true]);
         return next;
       },
       userIsNextInDraft() {
-        if (this.nextPublisherUp && this.leagueYear.userPublisher) {
+        if (this.nextPublisherUp && this.leagueYear && this.leagueYear.userPublisher) {
           return this.nextPublisherUp.publisherID === this.leagueYear.userPublisher.publisherID
         }
 
@@ -330,7 +334,12 @@
     watch: {
       '$route'(to, from) {
           this.fetchLeagueYear();
+      },
+      userIsNextInDraft: function (val, oldVal) {
+        if (val && val !== oldVal) {
+          document.getElementById('draft-notification-sound').play();
         }
+      }
     }
   }
 </script>
