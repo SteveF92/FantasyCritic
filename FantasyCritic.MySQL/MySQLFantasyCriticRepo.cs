@@ -1049,7 +1049,7 @@ namespace FantasyCritic.MySQL
 
         private async Task<IReadOnlyDictionary<Guid, IReadOnlyList<EligibilityOverride>>> GetAllEligibilityOverrides(int year)
         {
-            string sql = "select tbl_league_eligibilityoverride.* from tbl_league_eligibilityoverride" +
+            string sql = "select tbl_league_eligibilityoverride.* from tbl_league_eligibilityoverride " +
                          "join tbl_league on (tbl_league.LeagueID = tbl_league_eligibilityoverride.LeagueID) " +
                          "where Year = @year and IsDeleted = 0;";
             var queryObject = new
