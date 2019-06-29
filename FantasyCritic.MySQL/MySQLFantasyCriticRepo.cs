@@ -14,6 +14,7 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL.Entities;
 using MoreLinq;
 using MySql.Data.MySqlClient;
+using NLog;
 using NLog.Targets.Wrappers;
 
 namespace FantasyCritic.MySQL
@@ -23,6 +24,7 @@ namespace FantasyCritic.MySQL
         private readonly string _connectionString;
         private readonly IReadOnlyFantasyCriticUserStore _userStore;
         private readonly IMasterGameRepo _masterGameRepo;
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public MySQLFantasyCriticRepo(string connectionString, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo)
         {
@@ -41,7 +43,7 @@ namespace FantasyCritic.MySQL
                 };
 
                 LeagueEntity leagueEntity = await connection.QuerySingleAsync<LeagueEntity>(
-                    "select * from vw_league where LeagueID = @leagueID", queryObject);
+                    "select * from vw_league where LeagueID = @leagueID and IsDeleted = 0", queryObject);
 
                 FantasyCriticUser manager = await _userStore.FindByIdAsync(leagueEntity.LeagueManager.ToString(), CancellationToken.None);
 
@@ -57,7 +59,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var leagueEntities = await connection.QueryAsync<LeagueEntity>("select * from vw_league");
+                var leagueEntities = await connection.QueryAsync<LeagueEntity>("select * from vw_league where IsDeleted = 0");
 
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year");
                 List<League> leagues = new List<League>();
@@ -117,7 +119,8 @@ namespace FantasyCritic.MySQL
                     var success = leaguesDictionary.TryGetValue(entity.LeagueID, out League league);
                     if (!success)
                     {
-                        throw new Exception($"Cannot find league for league-year (should never happen) LeagueID: {entity.LeagueID}");
+                        _logger.Warn($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
+                        continue;
                     }
 
                     var eligibilityLevel = await _masterGameRepo.GetEligibilityLevel(entity.MaximumEligibilityLevel);
@@ -226,7 +229,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var bidEntities = await connection.QueryAsync<PickupBidEntity>("select * from vw_league_pickupbid where Year = @year and Successful is NULL", new { year });
+                var bidEntities = await connection.QueryAsync<PickupBidEntity>("select * from vw_league_pickupbid where Year = @year and Successful is NULL and IsDeleted = 0", new { year });
 
                 Dictionary<LeagueYear, List<PickupBid>> pickupBidsByLeagueYear = leagueYears.ToDictionary(x => x, y => new List<PickupBid>());
 
@@ -465,8 +468,8 @@ namespace FantasyCritic.MySQL
                     userID = currentUser.UserID,
                 };
 
-                leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select vw_league.* from vw_league join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.UserID = @userID;", queryObject);
+                var sql = "select vw_league.* from vw_league join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;";
+                leagueEntities = await connection.QueryAsync<LeagueEntity>(sql, queryObject);
             }
 
             IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
@@ -483,8 +486,10 @@ namespace FantasyCritic.MySQL
             IEnumerable<LeagueEntity> leagueEntities;
             using (var connection = new MySqlConnection(_connectionString))
             {
+                var sql = "select vw_league.* from vw_league join tbl_user_followingleague on (vw_league.LeagueID = tbl_user_followingleague.LeagueID) " +
+                          "where tbl_user_followingleague.UserID = @userID and IsDeleted = 0;";
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                    "select vw_league.* from vw_league join tbl_user_followingleague on (vw_league.LeagueID = tbl_user_followingleague.LeagueID) where tbl_user_followingleague.UserID = @userID;",
+                    sql,
                     query);
             }
 
@@ -736,7 +741,10 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
-                    "select * from tbl_league_publishergame join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) where tbl_league_publisher.Year = @year;",
+                    "select tbl_league_publishergame.* from tbl_league_publishergame " +
+                    "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                    "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                    "where tbl_league_publisher.Year = @year and IsDeleted = 0;",
                     query);
 
                 List<PublisherGame> domainGames = new List<PublisherGame>();
@@ -765,7 +773,9 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 PublisherEntity publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEntity>(
-                    "select * from tbl_league_publisher where tbl_league_publisher.PublisherID = @publisherID;",
+                    "select tbl_league_publisher.* from tbl_league_publisher " +
+                    "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                    "where tbl_league_publisher.PublisherID = @publisherID and IsDeleted = 0;",
                     query);
 
                 if (publisherEntity == null)
@@ -792,7 +802,10 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 PublisherGameEntity gameEntity = await connection.QueryFirstOrDefaultAsync<PublisherGameEntity>(
-                    "select * from tbl_league_publishergame where tbl_league_publishergame.PublisherGameID = @publisherGameID;",
+                    "select tbl_league_publishergame.* from tbl_league_publishergame " +
+                    "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                    "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                    "where tbl_league_publishergame.PublisherGameID = @publisherGameID and IsDeleted = 0;",
                     query);
 
                 if (gameEntity is null)
@@ -913,7 +926,10 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
-                    "select * from tbl_league_publishergame where tbl_league_publishergame.PublisherID = @publisherID;",
+                    "select tbl_league_publishergame.* from tbl_league_publishergame " +
+                    "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                    "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                    "where tbl_league_publishergame.PublisherID = @publisherID and IsDeleted = 0;",
                     query);
 
                 List<PublisherGame> domainGames = new List<PublisherGame>();
@@ -942,7 +958,10 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
-                    "select * from tbl_league_publishergame where tbl_league_publishergame.PublisherID in @publisherIDs;",
+                    "select tbl_league_publishergame.* from tbl_league_publishergame " +
+                    "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                    "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                    "where tbl_league_publishergame.PublisherID in @publisherIDs and IsDeleted = 0;",
                     query);
 
                 List<PublisherGame> domainGames = new List<PublisherGame>();
@@ -1030,7 +1049,9 @@ namespace FantasyCritic.MySQL
 
         private async Task<IReadOnlyDictionary<Guid, IReadOnlyList<EligibilityOverride>>> GetAllEligibilityOverrides(int year)
         {
-            string sql = "select * from tbl_league_eligibilityoverride where Year = @year;";
+            string sql = "select tbl_league_eligibilityoverride.* from tbl_league_eligibilityoverride" +
+                         "join tbl_league on (tbl_league.LeagueID = tbl_league_eligibilityoverride.LeagueID) " +
+                         "where Year = @year and IsDeleted = 0;";
             var queryObject = new
             {
                 year
@@ -1219,7 +1240,7 @@ namespace FantasyCritic.MySQL
                 return connection.ExecuteScalarAsync<bool>(
                     "select count(1) from vw_league " +
                     "join tbl_league_year on (vw_league.LeagueID = tbl_league_year.LeagueID) " +
-                    "where PlayStatus <> 'NotStartedDraft' and vw_league.LeagueID = @leagueID;",
+                    "where PlayStatus <> 'NotStartedDraft' and vw_league.LeagueID = @leagueID and IsDeleted = 0;",
                     selectObject);
             }
         }
@@ -1307,7 +1328,9 @@ namespace FantasyCritic.MySQL
                 var league = await GetLeagueByID(entity.LeagueID);
                 if (league.HasNoValue)
                 {
-                    throw new Exception($"Cannot find league for league (should never happen) LeagueID: {entity.LeagueID}");
+                    //League has probably been deleted.
+                    _logger.Warn($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
+                    continue;
                 }
 
                 if (entity.UserID.HasValue)
