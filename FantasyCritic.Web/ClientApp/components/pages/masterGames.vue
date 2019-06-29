@@ -3,9 +3,9 @@
     <div class="col-lg-10 offset-lg-1 col-md-12">
       <div class="row">
         <h1 class="header">Master Games List</h1>
-        <!--<div class="year-selector">
+        <div class="year-selector">
           <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" />
-        </div>-->
+        </div>
       </div>
       <div class="row">
         <div class="col-12 col-lg-6">
