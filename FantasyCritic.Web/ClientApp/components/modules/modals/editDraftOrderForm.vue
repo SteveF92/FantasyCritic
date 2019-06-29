@@ -6,7 +6,7 @@
     <div class="fluid container draft-order-editor">
       <draggable class="list-group" element="ul" v-model="desiredDraftOrder" :options="dragOptions" @start="isDragging=true" @end="isDragging=false">
         <transition-group type="transition" :name="'flip-list'">
-          <li class="list-group-item" v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition">
+          <li class="draft-order-item" v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition">
             <font-awesome-icon icon="bars" />
             <span class="badge">{{publisher.draftPosition}}</span>
             {{publisher.publisherName}} ({{publisher.playerName}})
@@ -113,16 +113,16 @@
     min-height: 20px;
   }
 
-  .list-group-item {
+  .draft-order-item {
     position: relative;
     display: block;
     padding: 10px 15px;
     margin-bottom: -1px;
-    background-color: #5B6977;
+    background-color: #5B6977 !important;
     border: 1px solid #ddd;
   }
 
-  .list-group-item i {
+  .draft-order-item i {
     cursor: pointer;
   }
 </style>
