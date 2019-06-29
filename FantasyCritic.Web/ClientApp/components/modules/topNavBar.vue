@@ -2,8 +2,8 @@
     <div>
       <nav class="navbar navbar-expand bg-white main-nav">
         <router-link :to="{ name: 'welcome' }" class="navbar-brand">
-          <img class="full-logo" src="/images/horizontal-logo.png" />
-          <img class="minimal-logo" src="/images/minimal-logo.png" />
+          <img class="full-logo" src="/images/horizontal-logo.svg" />
+          <img class="minimal-logo" src="/images/minimal-logo.svg" />
         </router-link>
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
@@ -130,6 +130,10 @@
 
   .top-nav-button {
     margin-right: 5px;
+  }
+
+  .full-logo, .minimal-logo {
+    height: 47px;
   }
 
   @media only screen and (max-width: 940px) {
