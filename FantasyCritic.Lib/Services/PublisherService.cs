@@ -88,5 +88,19 @@ namespace FantasyCritic.Lib.Services
 
             return result;
         }
+
+        public async Task<Result> SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
+        {
+            var requiredNumbers = Enumerable.Range(1, bidPriorities.Count).ToList();
+            var requestedDraftNumbers = bidPriorities.Select(x => x.Value);
+            bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedDraftNumbers);
+            if (!allRequiredPresent)
+            {
+                return Result.Fail("Some of the positions are not valid.");
+            }
+
+            await _fantasyCriticRepo.SetBidPriorityOrder(bidPriorities);
+            return Result.Ok();
+        }
     }
 }

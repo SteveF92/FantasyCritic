@@ -980,7 +980,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions)
+        public async Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
         {
             int tempPosition = draftPositions.Select(x => x.Value).Max() + 1;
             using (var connection = new MySqlConnection(_connectionString))
@@ -1272,6 +1272,42 @@ namespace FantasyCritic.MySQL
                 var masterGameYearRefresh = connection.ExecuteAsync("CALL `sp_caching_updateMasterGameYear`();");
                 var systemWideValuesRefresh = connection.ExecuteAsync("CALL `sp_caching_updateSystemWideValues`();");
                 await Task.WhenAll(masterGameYearRefresh, systemWideValuesRefresh);
+            }
+        }
+
+        public async Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
+        {
+            int tempPosition = bidPriorities.Select(x => x.Value).Max() + 1;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    foreach (var bidPriority in bidPriorities)
+                    {
+                        await connection.ExecuteAsync(
+                            "update tbl_league_pickupbid set Priority = @bidPriority where BidID = @bidID",
+                            new
+                            {
+                                bidID = bidPriority.Key.BidID,
+                                bidPriority = tempPosition
+                            }, transaction);
+                        tempPosition++;
+                    }
+
+                    foreach (var bidPriority in bidPriorities)
+                    {
+                        await connection.ExecuteAsync(
+                            "update tbl_league_pickupbid set Priority = @bidPriority where BidID = @bidID",
+                            new
+                            {
+                                bidID = bidPriority.Key.BidID,
+                                bidPriority = bidPriority.Value
+                            }, transaction);
+                    }
+
+                    transaction.Commit();
+                }
             }
         }
 

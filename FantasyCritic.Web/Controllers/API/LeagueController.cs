@@ -580,6 +580,50 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> SetBidPriorities([FromBody] BidPriorityOrderRequest request)
+        {
+            Maybe<Publisher> publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser.UserID != publisher.Value.User.UserID)
+            {
+                return Forbid();
+            }
+
+            var activeBids = await _fantasyCriticService.GetActiveAcquistitionBids(publisher.Value);
+
+            if (activeBids.Count != request.BidPriorities.Count)
+            {
+                return BadRequest();
+            }
+
+            List<KeyValuePair<PickupBid, int>> bidPriorities = new List<KeyValuePair<PickupBid, int>>();
+            for (var index = 0; index < request.BidPriorities.Count; index++)
+            {
+                var requestBid = request.BidPriorities[index];
+                var activeBid = activeBids.SingleOrDefault(x => x.BidID == requestBid);
+                if (activeBid is null)
+                {
+                    return BadRequest();
+                }
+
+                bidPriorities.Add(new KeyValuePair<PickupBid, int>(activeBid, index + 1));
+            }
+
+            Result result = await _publisherService.SetBidPriorityOrder(bidPriorities);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DraftGame([FromBody] DraftGameRequest request)
         {
             if (!ModelState.IsValid)

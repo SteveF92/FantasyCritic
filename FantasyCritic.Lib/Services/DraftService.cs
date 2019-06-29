@@ -115,7 +115,7 @@ namespace FantasyCritic.Lib.Services
             await _publisherService.RemovePublisherGame(leagueYear, publisher, newestGame);
         }
 
-        public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IEnumerable<KeyValuePair<Publisher, int>> draftPositions)
+        public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
         {
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
             int publishersCount = publishersInLeague.Count;

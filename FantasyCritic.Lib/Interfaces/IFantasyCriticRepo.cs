@@ -65,7 +65,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task StartDraft(LeagueYear leagueYear);
         Task CompleteDraft(LeagueYear leagueYear);
         Task SetDraftPause(LeagueYear leagueYear, bool pause);
-        Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions);
+        Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions);
         Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year);
         Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame);
         Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible);
@@ -80,7 +80,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task DeleteLeague(League league);
         Task DeleteLeagueActions(Publisher publisher);
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
-
+        Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
         Task RefreshCaches();
     }

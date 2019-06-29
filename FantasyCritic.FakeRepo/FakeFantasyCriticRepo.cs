@@ -290,7 +290,8 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task SetDraftOrder(IEnumerable<KeyValuePair<Publisher, int>> draftPositions)
+
+        public Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
         {
             throw new NotImplementedException();
         }
@@ -362,6 +363,11 @@ namespace FantasyCritic.FakeRepo
             }
 
             return Task.FromResult(false);
+        }
+
+        public Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
+        {
+            throw new NotImplementedException();
         }
 
         public Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults)
