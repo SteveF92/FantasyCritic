@@ -105,8 +105,9 @@
 
         <h3>Other Credits</h3>
         <ul>
-          <li><a href="https://wildermuth.com/">Shawn Wildermuth</a>, whose ASP.NET Core + Vue.JS gave me a great introduction to Vue.JS.</li>
-          <li><a href="https://github.com/TrilonIO/aspnetcore-Vue-starter">Mark Piesak</a>, for his excellent ASP.NET Core + Vue.JS template, which forms the foundation of this website.</li>
+          <li><a href="https://wildermuth.com/" target="_blank">Shawn Wildermuth</a>, whose ASP.NET Core + Vue.JS gave me a great introduction to Vue.JS.</li>
+          <li><a href="https://github.com/TrilonIO/aspnetcore-Vue-starter" target="_blank">Mark Piesak</a>, for his excellent ASP.NET Core + Vue.JS template, which forms the foundation of this website.</li>
+          <li><a href="https://notificationsounds.com" target="_blank">Notification Sounds</a>, for the draft notification sound. (Creative Commons)</li>
         </ul>
 
       </div>
