@@ -1,7 +1,16 @@
+@using FantasyCritic.Web.Extensions;
+
 @{ ViewData["Title"] = "Fantasy Critic"; }
 
 <div id="vue-app"></div>
 
 @section scripts {
-    <script src="~/dist/main.js.gz" asp-append-version="true"></script>
+    @if (RazorExtensions.IsReleaseBuild())
+    {
+        <script src="~/dist/main.js.gz" asp-append-version="true"></script>
+    }
+    else
+    {
+        <script src="~/dist/main.js" asp-append-version="true"></script>
+    }
 }
