@@ -22,6 +22,7 @@ using FantasyCritic.Web.Models.RoundTrip;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -729,6 +730,11 @@ namespace FantasyCritic.Web.Controllers.API
             List<MasterGameYear> myMasterGames = new List<MasterGameYear>();
             foreach (var league in myLeagues)
             {
+                if (league.TestLeague)
+                {
+                    continue;
+                }
+
                 var userPublisher = await _publisherService.GetPublisher(league, currentYear.Year, currentUser);
                 if (userPublisher.HasNoValue)
                 {
