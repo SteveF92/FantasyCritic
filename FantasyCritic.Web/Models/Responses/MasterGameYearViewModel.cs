@@ -16,6 +16,7 @@ namespace FantasyCritic.Web.Models.Responses
             MasterGameID = masterGame.MasterGame.MasterGameID;
             GameName = masterGame.MasterGame.GameName;
             EstimatedReleaseDate = masterGame.MasterGame.EstimatedReleaseDate;
+            SortableEstimatedReleaseDate = masterGame.MasterGame.SortableEstimatedReleaseDate;
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
             IsReleased = masterGame.MasterGame.IsReleased(clock);
             CriticScore = masterGame.MasterGame.CriticScore;
@@ -39,6 +40,7 @@ namespace FantasyCritic.Web.Models.Responses
             MasterGameID = masterSubGame.MasterGameID;
             GameName = masterSubGame.GameName;
             EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
+            SortableEstimatedReleaseDate = masterSubGame.SortableEstimatedReleaseDate;
             ReleaseDate = masterSubGame.ReleaseDate;
             IsReleased = masterSubGame.IsReleased(clock);
             CriticScore = masterSubGame.CriticScore;
@@ -60,6 +62,7 @@ namespace FantasyCritic.Web.Models.Responses
         public Guid MasterGameID { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
+        public LocalDate SortableEstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public bool IsReleased { get; }
         public decimal? CriticScore { get; }

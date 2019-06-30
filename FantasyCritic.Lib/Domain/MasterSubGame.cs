@@ -7,12 +7,14 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterSubGame
     {
-        public MasterSubGame(Guid masterSubGameID, Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear)
+        public MasterSubGame(Guid masterSubGameID, Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate sortableEstimatedReleaseDate, 
+            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear)
         {
             MasterSubGameID = masterSubGameID;
             MasterGameID = masterGameID;
             GameName = gameName;
             EstimatedReleaseDate = estimatedReleaseDate;
+            SortableEstimatedReleaseDate = sortableEstimatedReleaseDate;
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
             CriticScore = criticScore;
@@ -23,6 +25,7 @@ namespace FantasyCritic.Lib.Domain
         public Guid MasterGameID { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
+        public LocalDate SortableEstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
         public decimal? CriticScore { get; }
