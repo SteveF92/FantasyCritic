@@ -91,7 +91,8 @@
     },
     watch: {
       currentBids(newValue, oldValue) {
-        if (!oldValue || (oldValue.constructor === Array && oldValue.length === 0)) {
+        if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array &&
+          oldValue.length !== newValue.length)) {
           this.clearData();
         }
       }

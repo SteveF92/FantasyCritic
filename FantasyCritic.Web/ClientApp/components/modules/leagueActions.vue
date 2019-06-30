@@ -200,7 +200,8 @@
       bidCanceled(bidInfo) {
         let actionInfo = {
           message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
-          fetchLeagueYear: true
+          fetchLeagueYear: true,
+          fetchCurrentBids: true
         };
         this.$emit('actionTaken', actionInfo);
       },
