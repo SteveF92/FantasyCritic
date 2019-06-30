@@ -10,6 +10,7 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
         [Required]
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
+        public LocalDate SortableEstimatedReleaseDate { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         [Required]
         public int MinimumReleaseYear { get; set; }
@@ -18,7 +19,8 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
         {
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, false, false, false, false, false);
 
-            Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, ReleaseDate, null, null, MinimumReleaseYear,
+            Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, SortableEstimatedReleaseDate,
+                ReleaseDate, null, null, MinimumReleaseYear,
                 eligibilitySettings, "", null, false, false, timestamp);
             return masterGame;
         }
