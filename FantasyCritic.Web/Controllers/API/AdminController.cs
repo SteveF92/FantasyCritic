@@ -138,41 +138,6 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetOpenCriticGames([FromBody] OpenCriticSearchRequest request)
-        {
-            int id = request.MinimumOpenCriticID;
-            var masterGames = await _interLeagueService.GetMasterGames();
-            while (true)
-            {
-                var openCriticGame = await _openCriticService.GetOpenCriticGame(id);
-                if (openCriticGame.HasNoValue)
-                {
-                    return Ok();
-                }
-
-                if (masterGames.Any(x => x.OpenCriticID.HasValue && x.OpenCriticID.Value == id))
-                {
-                    id++;
-                    continue;
-                }
-
-                EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(0);
-                int minimumReleaseYear = 2018;
-                if (openCriticGame.Value.ReleaseDate.HasValue)
-                {
-                    minimumReleaseYear = openCriticGame.Value.ReleaseDate.Value.Year;
-                }
-                var eligibilitySettings = new EligibilitySettings(eligibilityLevel, false, false, false, false, false);
-
-                MasterGame masterGame = new MasterGame(Guid.NewGuid(), openCriticGame.Value.Name, openCriticGame.Value.ReleaseDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    openCriticGame.Value.ReleaseDate, id, openCriticGame.Value.Score, minimumReleaseYear, eligibilitySettings, "", null, false, false, _clock.GetCurrentInstant());
-                await _interLeagueService.CreateMasterGame(masterGame);
-
-                id++;
-            }
-        }
-
-        [HttpPost]
         public async Task<IActionResult> UpdateFantasyPoints()
         {
             await _adminService.UpdateFantasyPoints();
