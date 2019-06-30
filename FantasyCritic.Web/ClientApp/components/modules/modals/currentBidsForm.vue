@@ -37,15 +37,30 @@
     components: {
       draggable,
     },
-    props: ['currentBids'],
+    props: ['publisher','currentBids'],
     data() {
-        return {
-          desiredBidPriorities: [],
-        }
+      return {
+        desiredBidPriorities: []
+      }
     },
     methods: {
       setBidPriorityOrder() {
+        let desiredBidPriorityIDs = this.desiredBidPriorities.map(function (v) {
+          return v.bidID;
+        });
+        var model = {
+          publisherID: this.publisher.publisherID,
+          BidPriorities: desiredBidPriorityIDs
+        };
+        axios
+          .post('/api/league/SetBidPriorities', model)
+          .then(response => {
+            this.$refs.currentBidsFormRef.hide();
+            this.$emit('bidPriorityEdited');
+          })
+          .catch(response => {
 
+          });
       },
       cancelBid(bid) {
         var model = {
@@ -72,14 +87,10 @@
       this.clearData();
     },
     watch: {
-      isDragging(newValue) {
-        if (newValue) {
-          this.delayedDragging = true;
-          return;
+      currentBids(newValue, oldValue) {
+        if (!oldValue || (oldValue.constructor === Array && oldValue.length === 0)) {
+          this.clearData();
         }
-        this.$nextTick(() => {
-          this.delayedDragging = false;
-        });
       }
     }
   }
