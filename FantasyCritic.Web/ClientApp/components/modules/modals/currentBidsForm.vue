@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="currentBidsForm" ref="currentBidsFormRef" title="My Current Bids" hide-footer>
+  <b-modal id="currentBidsForm" ref="currentBidsFormRef" title="My Current Bids" @hidden="clearData">
     <label>
       Drag and drop to change order.
     </label>
@@ -25,6 +25,9 @@
         </tr>
       </draggable>
     </table>
+    <div slot="modal-footer">
+      <input type="submit" class="btn btn-primary" value="Set Priority Order" v-on:click="setBidPriorityOrder" />
+    </div>
   </b-modal>
 </template>
 

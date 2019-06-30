@@ -264,6 +264,9 @@
         if (actionInfo.fetchLeague) {
           this.fetchLeague();
         }
+        if (actionInfo.fetchCurrentBids) {
+          this.fetchCurrentBids();
+        }
         let toast = this.$toasted.show(actionInfo.message, {
           theme: "primary",
           position: "top-right",

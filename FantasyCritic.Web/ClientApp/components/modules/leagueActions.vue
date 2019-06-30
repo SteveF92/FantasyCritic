@@ -112,7 +112,7 @@
         <playerDraftCounterPickForm :userPublisher="leagueYear.userPublisher" :availableCounterPicks="leagueYear.availableCounterPicks" v-on:counterPickDrafted="counterPickDrafted"></playerDraftCounterPickForm>
 
         <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
-        <currentBidsForm :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidCanceled="bidCanceled"></currentBidsForm>
+        <currentBidsForm :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
 
         <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
@@ -352,6 +352,14 @@
         let actionInfo = {
           message: 'Draft order has been changed',
           fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      bidPriorityEdited() {
+        let actionInfo = {
+          message: 'Bid priority has been changed',
+          fetchLeagueYear: true,
+          fetchCurrentBids: true
         };
         this.$emit('actionTaken', actionInfo);
       },
