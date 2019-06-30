@@ -1,8 +1,8 @@
 <template>
   <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" @hidden="clearData">
-    <p>
+    <label>
       Drag and drop to change order.
-    </p>
+    </label>
     <div class="fluid container draft-order-editor">
       <draggable class="list-group" element="ul" v-model="desiredDraftOrder" :options="dragOptions" @start="isDragging=true" @end="isDragging=false">
         <transition-group type="transition" :name="'flip-list'">
@@ -30,7 +30,7 @@
       draggable,
     },
     props: ['leagueYear'],
-      data() {
+    data() {
         return {
           desiredDraftOrder: [],
           isDragging: false,
