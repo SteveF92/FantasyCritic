@@ -14,7 +14,7 @@
         <div class="row">
           <div class="league-header-row">
             <div class="league-header-flex">
-              <div>
+              <div class="league-name">
                 <h1>{{ league.leagueName }}</h1>
               </div>
 
@@ -373,5 +373,11 @@
 
   .year-selector {
     width: 100px;
+  }
+
+  .league-name {
+    display: block;
+    width: calc(100% - 195px);
+    word-wrap: break-word;
   }
 </style>
