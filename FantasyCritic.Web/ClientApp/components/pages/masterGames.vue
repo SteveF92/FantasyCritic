@@ -29,7 +29,7 @@
           <template slot="gameName" slot-scope="data">
             <masterGamePopover :masterGame="data.item"></masterGamePopover>
           </template>
-          <template slot="releaseDate" slot-scope="data">
+          <template slot="sortableEstimatedReleaseDate" slot-scope="data">
             {{getReleaseDate(data.item)}}
           </template>
           <template slot="criticScore" slot-scope="data">
@@ -72,7 +72,7 @@
         gamesForYear: [],
         gameFields: [
           { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
-          { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+          { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' },
           { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
           { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' },
