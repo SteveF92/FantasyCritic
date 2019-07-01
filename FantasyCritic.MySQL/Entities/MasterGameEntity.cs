@@ -20,7 +20,7 @@ namespace FantasyCritic.MySQL.Entities
             MasterGameID = masterGame.MasterGameID;
             GameName = masterGame.GameName;
             EstimatedReleaseDate = masterGame.EstimatedReleaseDate;
-            ReleaseDate = masterGame.SortableEstimatedReleaseDate.ToDateTimeUnspecified();
+            SortableEstimatedReleaseDate = masterGame.SortableEstimatedReleaseDate.ToDateTimeUnspecified();
             ReleaseDate = masterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGame.OpenCriticID;
             CriticScore = masterGame.CriticScore;
