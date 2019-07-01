@@ -706,9 +706,14 @@ namespace FantasyCritic.MySQL
             var usersDictionary = allUsers.ToDictionary(x => x.UserID, y => y);
             var allLeagues = await GetAllLeagues();
             var leaguesDictionary = allLeagues.ToDictionary(x => x.LeagueID, y => y);
+
+            string sql = "select tbl_league_publisher.* from tbl_league_publisher " +
+                         "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                         "where tbl_league_publisher.Year = @year and tbl_league.IsDeleted = 0;";
+
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var publisherEntities = await connection.QueryAsync<PublisherEntity>("select * from tbl_league_publisher where tbl_league_publisher.Year = @year;", query);
+                var publisherEntities = await connection.QueryAsync<PublisherEntity>(sql, query);
 
                 IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(year);
                 Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherEntities.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
