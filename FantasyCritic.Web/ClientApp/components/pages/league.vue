@@ -364,6 +364,7 @@
   .league-header-flex {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .selector-area{
@@ -377,7 +378,7 @@
 
   .league-name {
     display: block;
-    width: calc(100% - 195px);
-    word-wrap: break-word;
+    max-width: 100%;
+    word-break: break-all;
   }
 </style>
