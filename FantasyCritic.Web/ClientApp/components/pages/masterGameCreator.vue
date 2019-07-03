@@ -40,6 +40,10 @@
               <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
             </div>
             <div class="form-group">
+              <label for="sortableEstimatedReleaseDate" class="control-label">Sortable Estimated Release Date</label>
+              <input v-model="sortableEstimatedReleaseDate" id="sortableEstimatedReleaseDate" name="sortableEstimatedReleaseDate" class="form-control input" />
+            </div>
+            <div class="form-group">
               <label for="releaseDate" class="control-label">Release Date</label>
               <input v-model="releaseDate" id="releaseDate" name="releaseDate" class="form-control input" />
             </div>
@@ -120,6 +124,7 @@
         openCriticID: null,
         gameName: "",
         estimatedReleaseDate: "",
+        sortableEstimatedReleaseDate: "",
         releaseDate: "",
         eligibilityLevel: 0,
         yearlyInstallment: false,
@@ -181,6 +186,7 @@
         let request = {
           gameName: this.gameName,
           estimatedReleaseDate: this.estimatedReleaseDate,
+          sortableEstimatedReleaseDate: this.sortableEstimatedReleaseDate,
           releaseDate: this.releaseDate,
           openCriticID: this.openCriticID,
           eligibilityLevel: this.eligibilityLevel,
