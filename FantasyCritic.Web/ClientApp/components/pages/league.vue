@@ -188,6 +188,7 @@
           .get('/api/League/GetLeague/' + this.leagueid)
           .then(response => {
             this.league = response.data;
+            document.title = this.league.leagueName + " - Fantasy Critic";
           })
           .catch(returnedError => {
             this.error = returnedError;
