@@ -2,11 +2,22 @@
   <div>
     <div class="col-lg-10 offset-lg-1 col-md-12">
       <div class="row">
-        <h1 class="header">Master Games List</h1>
-        <div class="year-selector">
-          <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" />
+        <div class="header-row">
+          <div class="header-flex">
+            <div class="page-name">
+              <h1 class="header">Master Games List</h1>
+            </div>
+
+            <div class="selector-area">
+              <b-form-checkbox v-model="unreleasedOnly" class="unreleased-checkbox">
+                <span class="checkbox-label">Show only unreleased games</span>
+              </b-form-checkbox>
+              <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" class="year-selector" />
+            </div>
+          </div>
         </div>
       </div>
+
       <div class="row">
         <div class="col-12 col-lg-6">
           <b-button variant="info" :to="{ name: 'masterGameRequest' }" v-show="isAuth" class="nav-link request-button">Request new Master Game</b-button>
@@ -16,11 +27,10 @@
         </div>
       </div>
       <hr />
-      <div class="row" v-if="gamesForYear && gamesForYear.length > 0">
-
+      <div class="row" v-if="gamesToShow && gamesToShow.length > 0">
         <b-table :sort-by.sync="sortBy"
                  :sort-desc.sync="sortDesc"
-                 :items="gamesForYear"
+                 :items="gamesToShow"
                  :fields="gameFields"
                  bordered
                  :small="tableIsSmall"
@@ -68,6 +78,7 @@
     data() {
       return {
         selectedYear: null,
+        unreleasedOnly: false,
         supportedYears: [],
         gamesForYear: [],
         gameFields: [
@@ -104,6 +115,13 @@
         }
 
         return false;
+      },
+      gamesToShow() {
+        if (!this.unreleasedOnly) {
+          return this.gamesForYear;
+        }
+
+        return _.filter(this.gamesForYear, { 'isReleased': false });
       }
     },
     methods: {
@@ -145,12 +163,32 @@
   }
 </script>
 <style scoped>
+  .header-row {
+    width: 100%;
+  }
+
+  .header-flex {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .selector-area{
+    display: flex;
+    align-items: flex-start;
+  }
+
   .year-selector {
-    position: absolute;
-    right: 0px;
+    width: 100px;
   }
 
   .request-button {
     width: 100%;
+  }
+
+
+  .unreleased-checkbox {
+    margin-top: 8px;
+    margin-right: 8px;
   }
 </style>
