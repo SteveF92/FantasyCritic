@@ -243,7 +243,7 @@
   }
 
   .eligibility-section {
-    margin-bottom: 10px;
+    margin-bottom: 30px;
   }
 
   .eligibility-description {
