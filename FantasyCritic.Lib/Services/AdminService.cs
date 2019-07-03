@@ -112,6 +112,7 @@ namespace FantasyCritic.Lib.Services
         public async Task RefreshCaches()
         {
             _logger.LogInformation("Refreshing caches");
+            await _fantasyCriticRepo.UpdateReleaseDateEstimates();
             await _fantasyCriticRepo.RefreshCaches();
             _logger.LogInformation("Done refreshing caches");
         }

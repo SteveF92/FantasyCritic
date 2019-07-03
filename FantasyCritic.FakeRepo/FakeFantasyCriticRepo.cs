@@ -379,5 +379,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task UpdateReleaseDateEstimates()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

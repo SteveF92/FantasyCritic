@@ -83,5 +83,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
         Task RefreshCaches();
+        Task UpdateReleaseDateEstimates();
     }
 }

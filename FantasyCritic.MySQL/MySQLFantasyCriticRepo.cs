@@ -1280,6 +1280,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task UpdateReleaseDateEstimates()
+        {
+            var sql = "UPDATE tbl_mastergame SET SortableEstimatedReleaseDate = ReleaseDate, EstimatedReleaseDate = ReleaseDate where ReleaseDate is not NULL;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql);
+            }
+        }
+
         public async Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
         {
             int tempPosition = bidPriorities.Select(x => x.Value).Max() + 1;
