@@ -144,6 +144,19 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        public async Task<ActionResult<List<LeagueActionViewModel>>> GetCurrentFailingBids()
+        {
+            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
+
+            var results = await _fantasyCriticService.GetBidProcessingDryRun(systemWideValues, currentYear.Year);
+            IEnumerable<LeagueAction> failingBids = results.LeagueActions.Where(x => x.Description.Contains("Tried to"));
+            var vms = failingBids.Select(x => new LeagueActionViewModel(x, _clock));
+
+            return Ok(vms);
+        }
+
         [HttpPost]
         public async Task<IActionResult> ProcessPickups()
         {

@@ -28,6 +28,10 @@
         <hr />
       </div>
       <div>
+        <b-button variant="info" :to="{ name: 'currentFailingBids' }">Current Failing Bids</b-button>
+        <hr />
+      </div>
+      <div>
         <b-button variant="info" v-on:click="processBids">Process Bids</b-button>
         <hr />
       </div>

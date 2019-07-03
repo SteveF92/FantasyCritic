@@ -282,12 +282,19 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);
         }
 
-        public async Task ProcessPickups(SystemWideValues systemWideValues, int year)
+        public async Task<BidProcessingResults> GetBidProcessingDryRun(SystemWideValues systemWideValues, int year)
         {
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
             BidProcessingResults results = _bidProcessingService.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock, supportedYears);
+
+            return results;
+        }
+
+        public async Task ProcessPickups(SystemWideValues systemWideValues, int year)
+        {
+            var results = await GetBidProcessingDryRun(systemWideValues, year);
             await _fantasyCriticRepo.SaveProcessedBidResults(results);
         }
 

@@ -25,6 +25,7 @@ import MasterGameChangeRequest from "components/pages/masterGameChangeRequest";
 import ActiveMasterGameRequests from "components/pages/activeMasterGameRequests";
 import ActiveMasterGameChangeRequests from "components/pages/activeMasterGameChangeRequests";
 import MasterGameCreator from "components/pages/masterGameCreator";
+import CurrentFailingBids from "components/pages/currentFailingBids";
 
 export const routes = [
   {
@@ -287,6 +288,16 @@ export const routes = [
     name: "masterGameCreator",
     meta: {
       title: "Master Game Creator",
+      isPublic: false,
+      adminOnly: true
+    }
+  },
+  {
+    path: "/currentFailingBids",
+    component: CurrentFailingBids,
+    name: "currentFailingBids",
+    meta: {
+      title: "Current Failing Bids",
       isPublic: false,
       adminOnly: true
     }
