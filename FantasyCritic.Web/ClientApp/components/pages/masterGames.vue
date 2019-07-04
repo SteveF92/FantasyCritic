@@ -17,7 +17,7 @@
           </div>
         </div>
       </div>
-
+      <hr />
       <div class="row">
         <div class="col-12 col-lg-6">
           <b-button variant="info" :to="{ name: 'masterGameRequest' }" v-show="isAuth" class="nav-link request-button">Request new Master Game</b-button>
@@ -26,7 +26,7 @@
           <b-button variant="info" :to="{ name: 'masterGameChangeRequest' }" v-show="isAuth" class="nav-link request-button">Suggest a Correction</b-button>
         </div>
       </div>
-      <hr />
+
       <div class="row" v-if="gamesToShow && gamesToShow.length > 0">
         <b-table :sort-by.sync="sortBy"
                  :sort-desc.sync="sortDesc"
@@ -184,8 +184,8 @@
 
   .request-button {
     width: 100%;
+    margin-bottom: 15px;
   }
-
 
   .unreleased-checkbox {
     margin-top: 8px;
