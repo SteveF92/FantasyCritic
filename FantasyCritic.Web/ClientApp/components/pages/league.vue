@@ -380,6 +380,6 @@
   .league-name {
     display: block;
     max-width: 100%;
-    word-break: break-all;
+    word-wrap: break-word; 
   }
 </style>
