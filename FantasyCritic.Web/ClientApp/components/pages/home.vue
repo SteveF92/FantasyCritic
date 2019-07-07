@@ -20,18 +20,18 @@
       <div class="row">
         <div class="col-lg-8 col-md-12">
           <b-card title="Leagues" class="homepage-section" v-if="userInfo">
-            <b-tabs>
-              <b-tab title="My Leagues">
+            <b-tabs pills>
+              <b-tab title="My Leagues" title-item-class="tab-header">
                 <leagueTable :leagues="nonTestLeagues" :leagueIcon="'user'" :userID="userInfo.userID"></leagueTable>
               </b-tab>
-              <b-tab v-if="anyInvitedLeagues">
+              <b-tab v-if="anyInvitedLeagues" title-item-class="tab-header">
                 <template slot="title">
                   League Invites
                   <font-awesome-icon icon="exclamation-circle" size="lg" />
                 </template>
                 <leagueTable :leagues="invitedLeagues" :leagueIcon="'envelope'" :userID="userInfo.userID"></leagueTable>
               </b-tab>
-              <b-tab title="Followed Leagues">
+              <b-tab title="Followed Leagues" title-item-class="tab-header">
                 <div v-if="anyFollowedLeagues">
                   <leagueTable :leagues="myFollowedLeagues" :leagueIcon="'users'" :userID="userInfo.userID"></leagueTable>
                 </div>
@@ -39,7 +39,7 @@
                   <label>You are not following any public leagues!</label>
                 </div>
               </b-tab>
-              <b-tab title="Test Leagues" v-if="anyTestLeagues">
+              <b-tab title="Test Leagues" v-if="anyTestLeagues" title-item-class="tab-header">
                 <leagueTable :leagues="testLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>
               </b-tab>
             </b-tabs>
@@ -268,4 +268,13 @@
     background: rgba(50, 50, 50, 0.8);
   }
 
+  div >>> .tab-header a{
+    border-radius: 0px;
+    font-weight: bolder;
+    color: white;   
+  }
+
+  div >>> .tab-header .active{
+    background-color: #414141;
+  }
 </style>
