@@ -801,9 +801,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             var orderedByReleaseDate = myMasterGames
                 .Distinct()
-                .Where(x => x.MasterGame.ReleaseDate.HasValue)
-                .Where(x => x.MasterGame.ReleaseDate.Value > yesterday)
-                .OrderBy(x => x.MasterGame.ReleaseDate.Value)
+                .Where(x => x.MasterGame.SortableEstimatedReleaseDate > yesterday)
+                .OrderBy(x => x.MasterGame.SortableEstimatedReleaseDate)
                 .Take(10);
 
             List<MasterGameYearViewModel> viewModels = orderedByReleaseDate.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();

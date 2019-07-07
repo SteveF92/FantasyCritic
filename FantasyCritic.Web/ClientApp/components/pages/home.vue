@@ -68,6 +68,9 @@
                 <template slot="gameName" slot-scope="data">
                   <masterGamePopover :masterGame="data.item"></masterGamePopover>
                 </template>
+                <template slot="sortableEstimatedReleaseDate" slot-scope="data">
+                  {{getReleaseDate(data.item)}}
+                </template>
               </b-table>
             </div>
           </b-card>
@@ -108,6 +111,7 @@
   import Tweets from "components/modules/tweets";
   import MasterGamePopover from "components/modules/masterGamePopover";
   import LeagueTable from "components/modules/leagueTable";
+  import moment from "moment";
 
   export default {
     data() {
@@ -128,7 +132,7 @@
         upcomingGames: [],
         upcomingGamesFields: [
           { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-          { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+          { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         ],
       }
     },
@@ -227,6 +231,12 @@
 
           });
       },
+      getReleaseDate(game) {
+        if (game.releaseDate) {
+          return moment(game.releaseDate).format('YYYY-MM-DD');
+        }
+        return game.estimatedReleaseDate + ' (Estimated)'
+      }
     },
     async mounted() {
       await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchUpcomingGames()]);
