@@ -1,7 +1,6 @@
 <template>
   <div class="tweet-area">
     <div class="tweet-timeline">
-      <h2>Recent Tweets</h2>
       <Timeline :id="'fantasy_critic'" :sourceType="'profile'" :options="{ theme: 'dark', tweetLimit: '3' }" />
     </div>
   </div>
