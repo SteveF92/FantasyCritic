@@ -5,7 +5,7 @@
         <div class="publisher-image">
           <font-awesome-icon icon="user-circle" size="4x" />
         </div>
-        <h4>{{leagueYear.userPublisher.publisherName}}</h4>
+        <h4 class="publisher-name">{{leagueYear.userPublisher.publisherName}}</h4>
         <span>User: {{leagueYear.userPublisher.playerName}}</span>
         <hr />
       </div>
@@ -394,6 +394,9 @@
     border-style: solid;
     background-color: #414141;
     padding-left: 5px;
+  }
+  .publisher-name{
+    word-break: break-word;
   }
   .publisher-image {
     text-align: center;

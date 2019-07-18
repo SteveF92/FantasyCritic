@@ -1,23 +1,19 @@
 <template>
-  <div class="player-table" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
-    <table class="table table-bordered table-striped">
+  <div class="player-summary bg-secondary" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
+    <div class="publisher-player-names">
+      <div class="publisher-name">
+        <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">
+          {{ publisher.publisherName }}
+          <font-awesome-icon icon="info-circle" />
+        </router-link>
+
+      </div>
+      <div class="player-name">
+        Player: {{publisher.playerName}}
+      </div>
+    </div>
+    <table class="table table-striped">
       <thead>
-        <tr class="bg-secondary">
-          <th scope="col" colspan="4">
-            <div class="publisher-player-names">
-              <span class="publisher-name">
-                <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">
-                  {{ publisher.publisherName }}
-                  <font-awesome-icon icon="info-circle" />
-                </router-link>
-                
-              </span>
-              <span class="player-name">
-                Player: {{publisher.playerName}}
-              </span>
-            </div>
-          </th>
-        </tr>
         <tr class="bg-secondary">
           <th scope="col" class="game-column">Game</th>
           <th scope="col" class="score-column">Critic</th>
@@ -91,9 +87,12 @@
     }
 </script>
 <style scoped>
-  .player-table {
+  .player-summary {
     margin-bottom: 10px;
     padding: 5px;
+    border: solid;
+    border-width: 1px;
+    padding: 0;
   }
 
   .publisher-is-next {
@@ -102,37 +101,50 @@
     border-style: solid;
     padding: 0;
   }
+
   .publisher-is-next table thead tr.table-primary th {
     background-color: #ED9D2B;
   }
-  .player-table table {
+
+  .player-summary table {
     margin-bottom: 0px;
   }
 
   .publisher-player-names {
     margin: 15px;
-    padding-bottom: 20px;
-    
+    margin-bottom: 0;
   }
+
   .publisher-name {
-    float: left;
     font-weight: bold;
     text-transform: uppercase;
     font-size: 1.1em;
     color: #D6993A;
+    word-wrap: break-word;
   }
+
   .player-name {
-    float: right;
     color: #D6993A;
+    font-weight: bold;
   }
 
 </style>
 <style>
-  .player-table table thead tr th {
+  .player-summary table {
+    border-collapse: collapse;
+    border-style: hidden;
+  }
+
+  .player-summary table td {
+    border: 1px solid white;
+  }
+
+  .player-summary table thead tr th {
     height: 35px;
     padding: 5px;
   }
-  .player-table table tbody tr td {
+
+  .player-summary table tbody tr td {
     height: 35px;
     padding: 5px;
   }
