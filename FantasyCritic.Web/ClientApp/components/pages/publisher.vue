@@ -1,7 +1,9 @@
 <template>
   <div v-if="publisher">
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <h1>{{publisher.publisherName}}</h1>
+      <div class="publisher-name">
+        <h1>{{publisher.publisherName}}</h1>
+      </div>
 
       <div v-if="publisher.publicLeague && !(publisher.userIsInLeague || publisher.outstandingInvite)" class="alert alert-info" role="info">
         You are viewing a public league.
@@ -74,3 +76,10 @@
         }
     }
 </script>
+<style scoped>
+  .publisher-name {
+    display: block;
+    max-width: 100%;
+    word-wrap: break-word; 
+  }
+</style>

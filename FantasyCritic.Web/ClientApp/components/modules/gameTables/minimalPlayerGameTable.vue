@@ -107,12 +107,15 @@
   }
 
   .player-summary table {
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 
   .publisher-player-names {
     margin: 15px;
     margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .publisher-name {
@@ -120,7 +123,7 @@
     text-transform: uppercase;
     font-size: 1.1em;
     color: #D6993A;
-    word-wrap: break-word;
+    word-break: break-word;
   }
 
   .player-name {

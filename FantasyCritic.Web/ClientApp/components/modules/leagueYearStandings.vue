@@ -20,7 +20,7 @@
             </td>
             <td>
               <span v-if="player.publisher">
-                <router-link class="text-primary" :to="{ name: 'publisher', params: { publisherid: player.publisher.publisherID }}">{{ player.publisher.publisherName }}</router-link>
+                <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: player.publisher.publisherID }}">{{ player.publisher.publisherName }}</router-link>
                 <span v-if="showRemove && league.leagueManager.userID !== player.user.userID">
                   <b-button variant="danger" size="sm" v-on:click="removeUser(player.user)">Remove</b-button>
                 </span>
@@ -61,7 +61,7 @@
       },
       sortedPlayers() {
         return _.sortBy(this.leagueYear.players, [function (x) { return x.projectedFantasyPoints; }]).reverse();
-        return ;
+        return;
       }
     },
     methods: {
@@ -105,3 +105,26 @@
     }
   }
 </script>
+<style scoped>
+  .publisher-name {
+      display: block;
+      word-wrap: break-word;
+      max-width: 300px;
+    }
+  @media only screen and (min-width: 1550px) {
+    .publisher-name {
+      max-width: 650px;
+    }
+  }
+  @media only screen and (max-width: 1549px) {
+    .publisher-name {
+      max-width: 150px;
+    }
+  }
+  @media only screen and (max-width: 768px) {
+    .publisher-name {
+      max-width: 200px;
+    }
+  }
+
+</style>
