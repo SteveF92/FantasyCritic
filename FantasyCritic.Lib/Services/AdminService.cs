@@ -135,7 +135,7 @@ namespace FantasyCritic.Lib.Services
                 }
 
                 List<MasterGameHypeScores> hypeScores = new List<MasterGameHypeScores>();
-                var masterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
+                var masterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, false);
                 foreach (var masterGame in masterGames)
                 {
                     decimal hypeFactor = (101 - masterGame.AverageDraftPosition ?? 0m) * masterGame.PercentStandardGame;

@@ -60,16 +60,17 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
+        public async Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year, bool useCache)
         {
-            if (_masterGameYearsCache.ContainsKey(year))
+            if (useCache && _masterGameYearsCache.ContainsKey(year))
             {
                 return _masterGameYearsCache[year].Values.ToList();
             }
 
+            string sqlSource = useCache ? "tbl_caching_mastergameyear" : "vw_cacher_mastergameyear";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from tbl_caching_mastergameyear where Year = @year;", new { year });
+                var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>($"select * from {sqlSource} where Year = @year;", new { year });
                 var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tbl_mastergame_subgame;");
 
                 var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
@@ -108,7 +109,7 @@ namespace FantasyCritic.MySQL
         {
             if (!_masterGameYearsCache.ContainsKey(year))
             {
-                await GetMasterGameYears(year);
+                await GetMasterGameYears(year, true);
             }
 
             var yearCache = _masterGameYearsCache[year];

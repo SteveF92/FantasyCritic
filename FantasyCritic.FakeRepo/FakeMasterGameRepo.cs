@@ -140,7 +140,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
+        public Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year, bool useCache)
         {
             var masterGameYears = _masterGames.Select(x => new MasterGameYear(x, year)).ToList();
             return Task.FromResult<IReadOnlyList<MasterGameYear>>(masterGameYears);

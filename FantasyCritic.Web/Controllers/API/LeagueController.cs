@@ -830,7 +830,7 @@ namespace FantasyCritic.Web.Controllers.API
                 .Distinct()
                 .ToHashSet();
 
-            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
             IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
 
             List<PossibleMasterGameYearViewModel> viewModels = new List<PossibleMasterGameYearViewModel>();

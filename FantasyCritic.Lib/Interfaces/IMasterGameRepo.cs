@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Interfaces
     public interface IMasterGameRepo
     {
         Task<IReadOnlyList<MasterGame>> GetMasterGames();
-        Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year);
+        Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year, bool useCache);
         Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);
         Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year);
         Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame);
