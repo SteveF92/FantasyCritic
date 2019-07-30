@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using Microsoft.Extensions.Logging;
@@ -16,15 +17,18 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
+        private readonly IMasterGameRepo _masterGameRepo;
         private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
         private readonly IClock _clock;
         private readonly ILogger<OpenCriticService> _logger;
 
-        public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<OpenCriticService> logger)
+        public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
+            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<OpenCriticService> logger)
         {
             _fantasyCriticService = fantasyCriticService;
             _fantasyCriticRepo = fantasyCriticRepo;
+            _masterGameRepo = masterGameRepo;
             _interLeagueService = interLeagueService;
             _openCriticService = openCriticService;
             _clock = clock;
@@ -121,7 +125,34 @@ namespace FantasyCritic.Lib.Services
 
         private async Task UpdateHypeFactor()
         {
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            HypeConstants hypeConstants = await _fantasyCriticRepo.GetHypeConstants();
+            foreach (var supportedYear in supportedYears)
+            {
+                if (supportedYear.Finished || !supportedYear.OpenForPlay)
+                {
+                    continue;
+                }
 
+                List<MasterGameHypeScores> hypeScores = new List<MasterGameHypeScores>();
+                var masterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
+                foreach (var masterGame in masterGames)
+                {
+                    decimal hypeFactor = (101 - masterGame.AverageDraftPosition ?? 0m) * masterGame.PercentStandardGame;
+                    decimal dateAdjustedHypeFactor = (101 - masterGame.AverageDraftPosition ?? 0m) * masterGame.EligiblePercentStandardGame;
+                    decimal bidAdjustedHypeFactor = Math.Max((101 - masterGame.AverageDraftPosition ?? 0m), masterGame.AverageBidAmount ?? 0m) * masterGame.EligiblePercentStandardGame;
+                    decimal linearRegressionHypeFactor = hypeConstants.BaseScore + 
+                                                         (masterGame.EligiblePercentStandardGame * hypeConstants.StandardGameConstant) -
+                                                         (masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant) +
+                                                         (masterGame.AverageDraftPosition ?? 0m * hypeConstants.AverageDraftPositionConstant) +
+                                                         (masterGame.AverageBidAmount ?? 0m * hypeConstants.AverageBidAmountConstant);
+
+                    hypeScores.Add(new MasterGameHypeScores(masterGame, hypeFactor, dateAdjustedHypeFactor, bidAdjustedHypeFactor, linearRegressionHypeFactor));
+                }
+
+                await _masterGameRepo.UpdateHypeFactors(hypeScores);
+            }
+            
         }
     }
 }

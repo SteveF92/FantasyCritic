@@ -1287,6 +1287,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<HypeConstants> GetHypeConstants()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var result = await connection.QuerySingleAsync<HypeConstantsEntity>("select * from tbl_caching_systemwidevalues;");
+                return result.ToDomain();
+            }
+        }
+
         public async Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
         {
             int tempPosition = bidPriorities.Select(x => x.Value).Max() + 1;

@@ -33,8 +33,11 @@ namespace FantasyCritic.MySQL.Entities
         public decimal EligiblePercentStandardGame { get; set; }
         public decimal EligiblePercentCounterPick { get; set; }
         public decimal AverageDraftPosition { get; set; }
+        public decimal? AverageBidAmount { get; set; }
         public decimal? HypeFactor { get; set; }
         public decimal? DateAdjustedHypeFactor { get; set; }
+        public decimal? BidAdjustedHypeFactor { get; set; }
+        public decimal? LinearRegressionHypeFactor { get; set; }
         public DateTime AddedTimestamp { get; set; }
 
         public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel, int year)
@@ -64,7 +67,8 @@ namespace FantasyCritic.MySQL.Entities
                 OpenCriticID, CriticScore, MinimumReleaseYear, eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, 
                 DoNotRefreshDate, DoNotRefreshAnything, addedTimestamp);
 
-            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, AverageDraftPosition, HypeFactor, DateAdjustedHypeFactor);
+            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 
+                AverageDraftPosition, AverageBidAmount, HypeFactor, DateAdjustedHypeFactor, BidAdjustedHypeFactor, LinearRegressionHypeFactor);
         }
     }
 }

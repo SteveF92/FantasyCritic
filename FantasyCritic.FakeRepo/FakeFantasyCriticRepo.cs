@@ -384,5 +384,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task<HypeConstants> GetHypeConstants()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

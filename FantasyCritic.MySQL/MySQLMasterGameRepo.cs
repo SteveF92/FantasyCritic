@@ -495,5 +495,10 @@ namespace FantasyCritic.MySQL
                     linkObject);
             }
         }
+
+        public Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

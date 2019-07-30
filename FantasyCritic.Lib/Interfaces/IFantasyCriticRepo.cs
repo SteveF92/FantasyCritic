@@ -84,5 +84,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
         Task UpdateSystemWideValues();
         Task UpdateReleaseDateEstimates();
+        Task<HypeConstants> GetHypeConstants();
     }
 }

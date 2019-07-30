@@ -14,8 +14,9 @@ namespace FantasyCritic.Lib.Domain
             Year = year;
         }
 
-        public MasterGameYear(MasterGame masterGame, int year, decimal percentStandardGame, decimal percentCounterPick, decimal eligiblePercentStandardGame, decimal eligiblePercentCounterPick, decimal averageDraftPosition, 
-            decimal? hypeFactor, decimal? dateAdjustedHypeFactor)
+        public MasterGameYear(MasterGame masterGame, int year, decimal percentStandardGame, decimal percentCounterPick, decimal eligiblePercentStandardGame, 
+            decimal eligiblePercentCounterPick, decimal averageDraftPosition, decimal? averageBidAmount,
+            decimal? hypeFactor, decimal? dateAdjustedHypeFactor, decimal? bidAdjustedHypeFactor, decimal? linearRegressionHypeFactor)
         {
             MasterGame = masterGame;
             Year = year;
@@ -24,6 +25,7 @@ namespace FantasyCritic.Lib.Domain
             EligiblePercentStandardGame = eligiblePercentStandardGame;
             EligiblePercentCounterPick = eligiblePercentCounterPick;
             AverageDraftPosition = averageDraftPosition;
+            AverageBidAmount = averageBidAmount;
             if (AverageDraftPosition == 0m)
             {
                 AverageDraftPosition = null;
@@ -31,17 +33,22 @@ namespace FantasyCritic.Lib.Domain
 
             HypeFactor = hypeFactor;
             DateAdjustedHypeFactor = dateAdjustedHypeFactor;
+            BidAdjustedHypeFactor = bidAdjustedHypeFactor;
+            LinearRegressionHypeFactor = linearRegressionHypeFactor;
         }
 
         public MasterGame MasterGame { get; }
         public int Year { get; }
         public decimal PercentStandardGame { get; }
         public decimal PercentCounterPick { get; }
-        public decimal EligiblePercentStandardGame { get; set; }
-        public decimal EligiblePercentCounterPick { get; set; }
+        public decimal EligiblePercentStandardGame { get; }
+        public decimal EligiblePercentCounterPick { get; }
         public decimal? AverageDraftPosition { get; }
         public decimal? HypeFactor { get; }
-        public decimal? DateAdjustedHypeFactor { get; set; }
+        public decimal? DateAdjustedHypeFactor { get; }
+        public decimal? BidAdjustedHypeFactor { get; }
+        public decimal? LinearRegressionHypeFactor { get; }
+        public decimal? AverageBidAmount { get; }
 
         public bool Equals(MasterGameYear other)
         {
