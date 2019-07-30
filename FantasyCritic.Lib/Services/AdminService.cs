@@ -140,12 +140,17 @@ namespace FantasyCritic.Lib.Services
                 {
                     decimal hypeFactor = (101 - masterGame.AverageDraftPosition ?? 0m) * masterGame.PercentStandardGame;
                     decimal dateAdjustedHypeFactor = (101 - masterGame.AverageDraftPosition ?? 0m) * masterGame.EligiblePercentStandardGame;
-                    decimal bidAdjustedHypeFactor = Math.Max((101 - masterGame.AverageDraftPosition ?? 0m), masterGame.AverageBidAmount ?? 0m) * masterGame.EligiblePercentStandardGame;
-                    decimal linearRegressionHypeFactor = hypeConstants.BaseScore + 
-                                                         (masterGame.EligiblePercentStandardGame * hypeConstants.StandardGameConstant) -
-                                                         (masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant) +
-                                                         (masterGame.AverageDraftPosition ?? 0m * hypeConstants.AverageDraftPositionConstant) +
-                                                         (masterGame.AverageBidAmount ?? 0m * hypeConstants.AverageBidAmountConstant);
+                    decimal bidAdjustedHypeFactor = Math.Max((101 - masterGame.AverageDraftPosition ?? 0m), masterGame.AverageWinningBid ?? 0m) * masterGame.EligiblePercentStandardGame;
+
+                    decimal notNullAverageDraftPosition = masterGame.AverageDraftPosition ?? 0m;
+                    decimal notNullAverageWinningBid = masterGame.AverageWinningBid ?? 0m;
+
+                    decimal standardGame = masterGame.EligiblePercentStandardGame * hypeConstants.StandardGameConstant;
+                    decimal counterPick = masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant;
+                    decimal averageDraftPosition = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
+                    decimal averageWinningBid = notNullAverageWinningBid * hypeConstants.AverageWinningBidConstant;
+
+                    decimal linearRegressionHypeFactor = hypeConstants.BaseScore + standardGame - counterPick + averageDraftPosition + averageWinningBid;
 
                     hypeScores.Add(new MasterGameHypeScores(masterGame, hypeFactor, dateAdjustedHypeFactor, bidAdjustedHypeFactor, linearRegressionHypeFactor));
                 }
