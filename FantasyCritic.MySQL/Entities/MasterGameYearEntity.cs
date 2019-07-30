@@ -18,6 +18,7 @@ namespace FantasyCritic.MySQL.Entities
         public MasterGameYearEntity(MasterGameHypeScores masterGameHypeScores)
         {
             MasterGameID = masterGameHypeScores.MasterGameYear.MasterGame.MasterGameID;
+            Year = masterGameHypeScores.MasterGameYear.Year;
             GameName = masterGameHypeScores.MasterGameYear.MasterGame.GameName;
             EstimatedReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.EstimatedReleaseDate;
             SortableEstimatedReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.SortableEstimatedReleaseDate.ToDateTimeUnspecified();
@@ -49,6 +50,7 @@ namespace FantasyCritic.MySQL.Entities
         }
 
         public Guid MasterGameID { get; set; }
+        public int Year { get; set; }
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
         public DateTime? SortableEstimatedReleaseDate { get; set; }
