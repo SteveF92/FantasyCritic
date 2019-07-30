@@ -11,13 +11,13 @@ namespace FantasyCritic.MySQL.Entities
     {
         public decimal BaseScore { get; set; }
         public decimal StandardGameConstant { get; set; }
-        public decimal CounterpickConstant { get; set; }
+        public decimal CounterPickConstant { get; set; }
         public decimal AverageDraftPositionConstant { get; set; }
         public decimal AverageBidAmountConstant { get; set; }
 
         public HypeConstants ToDomain()
         {
-            return new HypeConstants(BaseScore, StandardGameConstant, CounterpickConstant, AverageDraftPositionConstant, AverageBidAmountConstant);
+            return new HypeConstants(BaseScore, StandardGameConstant, CounterPickConstant, AverageDraftPositionConstant, AverageBidAmountConstant);
         }
     }
 }

@@ -1291,7 +1291,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var result = await connection.QuerySingleAsync<HypeConstantsEntity>("select * from tbl_caching_systemwidevalues;");
+                var result = await connection.QuerySingleAsync<HypeConstantsEntity>("select * from tbl_meta_hypeconstants;");
                 return result.ToDomain();
             }
         }
