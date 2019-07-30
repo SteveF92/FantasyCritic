@@ -15,7 +15,7 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public MasterGameYear(MasterGame masterGame, int year, decimal percentStandardGame, decimal percentCounterPick, decimal eligiblePercentStandardGame, 
-            decimal eligiblePercentCounterPick, decimal averageDraftPosition, decimal? averageBidAmount,
+            decimal eligiblePercentCounterPick, decimal? averageDraftPosition, decimal? averageBidAmount,
             decimal? hypeFactor, decimal? dateAdjustedHypeFactor, decimal? bidAdjustedHypeFactor, decimal? linearRegressionHypeFactor)
         {
             MasterGame = masterGame;

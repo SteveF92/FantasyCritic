@@ -497,9 +497,9 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores)
+        public async Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores)
         {
-            throw new NotImplementedException();
+            List<MasterGameYearEntity> masterGameYearEntities = hypeScores.Select(x => new MasterGameYearEntity(x)).ToList();
         }
     }
 }

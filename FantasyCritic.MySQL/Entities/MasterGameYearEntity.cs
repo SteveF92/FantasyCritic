@@ -10,6 +10,44 @@ namespace FantasyCritic.MySQL.Entities
 {
     internal class MasterGameYearEntity
     {
+        public MasterGameYearEntity()
+        {
+
+        }
+
+        public MasterGameYearEntity(MasterGameHypeScores masterGameHypeScores)
+        {
+            MasterGameID = masterGameHypeScores.MasterGameYear.MasterGame.MasterGameID;
+            GameName = masterGameHypeScores.MasterGameYear.MasterGame.GameName;
+            EstimatedReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.EstimatedReleaseDate;
+            SortableEstimatedReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.SortableEstimatedReleaseDate.ToDateTimeUnspecified();
+            ReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
+            OpenCriticID = masterGameHypeScores.MasterGameYear.MasterGame.OpenCriticID;
+            CriticScore = masterGameHypeScores.MasterGameYear.MasterGame.CriticScore;
+            MinimumReleaseYear = masterGameHypeScores.MasterGameYear.MasterGame.MinimumReleaseYear;
+            EligibilityLevel = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.EligibilityLevel.Level;
+            YearlyInstallment = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.YearlyInstallment;
+            EarlyAccess = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.EarlyAccess;
+            FreeToPlay = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.FreeToPlay;
+            ReleasedInternationally = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.ReleasedInternationally;
+            ExpansionPack = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.ExpansionPack;
+            BoxartFileName = masterGameHypeScores.MasterGameYear.MasterGame.BoxartFileName;
+            FirstCriticScoreTimestamp = masterGameHypeScores.MasterGameYear.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
+            DoNotRefreshDate = masterGameHypeScores.MasterGameYear.MasterGame.DoNotRefreshDate;
+            DoNotRefreshAnything = masterGameHypeScores.MasterGameYear.MasterGame.DoNotRefreshAnything;
+            PercentStandardGame = masterGameHypeScores.MasterGameYear.PercentStandardGame;
+            PercentCounterPick = masterGameHypeScores.MasterGameYear.PercentCounterPick;
+            EligiblePercentStandardGame = masterGameHypeScores.MasterGameYear.EligiblePercentStandardGame;
+            EligiblePercentCounterPick = masterGameHypeScores.MasterGameYear.EligiblePercentCounterPick;
+            AverageDraftPosition = masterGameHypeScores.MasterGameYear.AverageDraftPosition;
+            AverageBidAmount = masterGameHypeScores.MasterGameYear.AverageBidAmount;
+            HypeFactor = masterGameHypeScores.HypeFactor;
+            DateAdjustedHypeFactor = masterGameHypeScores.DateAdjustedHypeFactor;
+            BidAdjustedHypeFactor = masterGameHypeScores.BidAdjustedHypeFactor;
+            LinearRegressionHypeFactor = masterGameHypeScores.LinearRegressionHypeFactor;
+            AddedTimestamp = masterGameHypeScores.MasterGameYear.MasterGame.AddedTimestamp.ToDateTimeUtc();
+        }
+
         public Guid MasterGameID { get; set; }
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
@@ -32,7 +70,7 @@ namespace FantasyCritic.MySQL.Entities
         public decimal PercentCounterPick { get; set; }
         public decimal EligiblePercentStandardGame { get; set; }
         public decimal EligiblePercentCounterPick { get; set; }
-        public decimal AverageDraftPosition { get; set; }
+        public decimal? AverageDraftPosition { get; set; }
         public decimal? AverageBidAmount { get; set; }
         public decimal? HypeFactor { get; set; }
         public decimal? DateAdjustedHypeFactor { get; set; }
