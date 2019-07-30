@@ -67,7 +67,7 @@ namespace FantasyCritic.MySQL
                 return _masterGameYearsCache[year].Values.ToList();
             }
 
-            string sqlSource = useCache ? "tbl_caching_mastergameyear" : "vw_cacher_mastergameyear";
+            string sqlSource = useCache ? "tbl_caching_mastergameyear" : "vw_cacher_mastergame";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>($"select * from {sqlSource} where Year = @year;", new { year });
