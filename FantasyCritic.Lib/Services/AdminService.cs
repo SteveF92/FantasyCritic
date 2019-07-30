@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -113,8 +114,14 @@ namespace FantasyCritic.Lib.Services
         {
             _logger.LogInformation("Refreshing caches");
             await _fantasyCriticRepo.UpdateReleaseDateEstimates();
-            await _fantasyCriticRepo.RefreshCaches();
+            await _fantasyCriticRepo.UpdateSystemWideValues();
+            await UpdateHypeFactor();
             _logger.LogInformation("Done refreshing caches");
+        }
+
+        private async Task UpdateHypeFactor()
+        {
+
         }
     }
 }

@@ -1270,13 +1270,11 @@ namespace FantasyCritic.MySQL
             }   
         }
 
-        public async Task RefreshCaches()
+        public async Task UpdateSystemWideValues()
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var masterGameYearRefresh = connection.ExecuteAsync("CALL `sp_caching_updateMasterGameYear`();");
-                var systemWideValuesRefresh = connection.ExecuteAsync("CALL `sp_caching_updateSystemWideValues`();");
-                await Task.WhenAll(masterGameYearRefresh, systemWideValuesRefresh);
+                await connection.ExecuteAsync("CALL `sp_caching_updateSystemWideValues`();");
             }
         }
 

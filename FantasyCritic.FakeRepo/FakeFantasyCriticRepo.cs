@@ -375,7 +375,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task RefreshCaches()
+        public Task UpdateSystemWideValues()
         {
             throw new NotImplementedException();
         }

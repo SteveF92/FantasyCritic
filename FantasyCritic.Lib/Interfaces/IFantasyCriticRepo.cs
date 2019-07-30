@@ -82,7 +82,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
         Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
-        Task RefreshCaches();
+        Task UpdateSystemWideValues();
         Task UpdateReleaseDateEstimates();
     }
 }
