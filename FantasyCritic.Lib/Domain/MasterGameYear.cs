@@ -25,7 +25,7 @@ namespace FantasyCritic.Lib.Domain
             EligiblePercentStandardGame = eligiblePercentStandardGame;
             EligiblePercentCounterPick = eligiblePercentCounterPick;
             AverageDraftPosition = averageDraftPosition;
-            AverageBidAmount = averageBidAmount;
+            AverageWinningBid = averageBidAmount;
             if (AverageDraftPosition == 0m)
             {
                 AverageDraftPosition = null;
@@ -44,11 +44,12 @@ namespace FantasyCritic.Lib.Domain
         public decimal EligiblePercentStandardGame { get; }
         public decimal EligiblePercentCounterPick { get; }
         public decimal? AverageDraftPosition { get; }
+        public decimal? AverageWinningBid { get; }
         public decimal? HypeFactor { get; }
         public decimal? DateAdjustedHypeFactor { get; }
         public decimal? BidAdjustedHypeFactor { get; }
         public decimal? LinearRegressionHypeFactor { get; }
-        public decimal? AverageBidAmount { get; }
+        
 
         public bool Equals(MasterGameYear other)
         {

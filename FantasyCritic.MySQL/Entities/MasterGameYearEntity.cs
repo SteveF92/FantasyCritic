@@ -40,7 +40,7 @@ namespace FantasyCritic.MySQL.Entities
             EligiblePercentStandardGame = masterGameHypeScores.MasterGameYear.EligiblePercentStandardGame;
             EligiblePercentCounterPick = masterGameHypeScores.MasterGameYear.EligiblePercentCounterPick;
             AverageDraftPosition = masterGameHypeScores.MasterGameYear.AverageDraftPosition;
-            AverageBidAmount = masterGameHypeScores.MasterGameYear.AverageBidAmount;
+            AverageWinningBid = masterGameHypeScores.MasterGameYear.AverageWinningBid;
             HypeFactor = masterGameHypeScores.HypeFactor;
             DateAdjustedHypeFactor = masterGameHypeScores.DateAdjustedHypeFactor;
             BidAdjustedHypeFactor = masterGameHypeScores.BidAdjustedHypeFactor;
@@ -71,7 +71,7 @@ namespace FantasyCritic.MySQL.Entities
         public decimal EligiblePercentStandardGame { get; set; }
         public decimal EligiblePercentCounterPick { get; set; }
         public decimal? AverageDraftPosition { get; set; }
-        public decimal? AverageBidAmount { get; set; }
+        public decimal? AverageWinningBid { get; set; }
         public decimal? HypeFactor { get; set; }
         public decimal? DateAdjustedHypeFactor { get; set; }
         public decimal? BidAdjustedHypeFactor { get; set; }
@@ -106,7 +106,7 @@ namespace FantasyCritic.MySQL.Entities
                 DoNotRefreshDate, DoNotRefreshAnything, addedTimestamp);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 
-                AverageDraftPosition, AverageBidAmount, HypeFactor, DateAdjustedHypeFactor, BidAdjustedHypeFactor, LinearRegressionHypeFactor);
+                AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, BidAdjustedHypeFactor, LinearRegressionHypeFactor);
         }
     }
 }

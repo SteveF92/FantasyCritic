@@ -14,13 +14,13 @@ namespace FantasyCritic.Lib.Domain
             StandardGameConstant = standardGameConstant;
             CounterPickConstant = counterPickConstant;
             AverageDraftPositionConstant = averageDraftPositionConstant;
-            AverageBidAmountConstant = averageBidAmountConstant;
+            AverageWinningBidConstant = averageBidAmountConstant;
         }
 
         public decimal BaseScore { get; }
         public decimal StandardGameConstant { get; }
         public decimal CounterPickConstant { get; }
         public decimal AverageDraftPositionConstant { get; }
-        public decimal AverageBidAmountConstant { get; }
+        public decimal AverageWinningBidConstant { get; }
     }
 }
