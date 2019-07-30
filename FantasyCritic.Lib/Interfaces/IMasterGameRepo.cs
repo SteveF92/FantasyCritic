@@ -39,6 +39,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame);
         Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote);
         Task LinkToOpenCritic(MasterGame masterGame, int openCriticID);
-        Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores);
+        Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores, int year);
     }
 }

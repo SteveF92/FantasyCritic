@@ -497,9 +497,20 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores)
+        public async Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores, int year)
         {
             List<MasterGameYearEntity> masterGameYearEntities = hypeScores.Select(x => new MasterGameYearEntity(x)).ToList();
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync("delete from tbl_caching_mastergameyear where Year = @year", new {year});
+                    await connection.BulkInsertAsync(masterGameYearEntities, "tbl_caching_mastergameyear", 500);
+                    transaction.Commit();
+                }
+            }
         }
     }
 }

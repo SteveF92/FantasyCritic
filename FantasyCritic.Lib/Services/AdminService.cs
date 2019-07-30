@@ -150,7 +150,7 @@ namespace FantasyCritic.Lib.Services
                     hypeScores.Add(new MasterGameHypeScores(masterGame, hypeFactor, dateAdjustedHypeFactor, bidAdjustedHypeFactor, linearRegressionHypeFactor));
                 }
 
-                await _masterGameRepo.UpdateHypeFactors(hypeScores);
+                await _masterGameRepo.UpdateHypeFactors(hypeScores, supportedYear.Year);
             }
             
         }

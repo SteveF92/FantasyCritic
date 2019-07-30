@@ -44,7 +44,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores)
+        public Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores, int year)
         {
             throw new NotImplementedException();
         }
