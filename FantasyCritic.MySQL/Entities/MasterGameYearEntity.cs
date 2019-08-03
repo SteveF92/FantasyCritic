@@ -39,6 +39,7 @@ namespace FantasyCritic.MySQL.Entities
             EligiblePercentStandardGame = masterGameHypeScores.MasterGameYear.EligiblePercentStandardGame;
             EligiblePercentCounterPick = masterGameHypeScores.MasterGameYear.EligiblePercentCounterPick;
             NumberOfBids = masterGameHypeScores.MasterGameYear.NumberOfBids;
+            TotalBidAmount = masterGameHypeScores.MasterGameYear.TotalBidAmount;
             AverageDraftPosition = masterGameHypeScores.MasterGameYear.AverageDraftPosition;
             AverageWinningBid = masterGameHypeScores.MasterGameYear.AverageWinningBid;
             HypeFactor = masterGameHypeScores.HypeFactor;
@@ -69,6 +70,7 @@ namespace FantasyCritic.MySQL.Entities
         public double EligiblePercentStandardGame { get; set; }
         public double EligiblePercentCounterPick { get; set; }
         public int NumberOfBids { get; set; }
+        public int TotalBidAmount { get; set; }
         public double? AverageDraftPosition { get; set; }
         public double? AverageWinningBid { get; set; }
         public double HypeFactor { get; set; }
@@ -103,8 +105,8 @@ namespace FantasyCritic.MySQL.Entities
                 OpenCriticID, CriticScore, LocalDate.FromDateTime(MinimumReleaseDate), eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, 
                 false, false, addedTimestamp);
 
-            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, NumberOfBids,
-                AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);
+            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 
+                NumberOfBids, TotalBidAmount, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);
         }
     }
 }
