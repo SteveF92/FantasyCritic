@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain
     public class MasterSubGame
     {
         public MasterSubGame(Guid masterSubGameID, Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate sortableEstimatedReleaseDate, 
-            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear)
+            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseDate)
         {
             MasterSubGameID = masterSubGameID;
             MasterGameID = masterGameID;
@@ -18,7 +18,7 @@ namespace FantasyCritic.Lib.Domain
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
             CriticScore = criticScore;
-            MinimumReleaseYear = minimumReleaseYear;
+            MinimumReleaseDate = minimumReleaseDate;
         }
 
         public Guid MasterSubGameID { get; }
@@ -29,7 +29,7 @@ namespace FantasyCritic.Lib.Domain
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
         public decimal? CriticScore { get; }
-        public int MinimumReleaseYear { get; }
+        public int MinimumReleaseDate { get; }
 
         public bool IsReleased(IClock clock)
         {

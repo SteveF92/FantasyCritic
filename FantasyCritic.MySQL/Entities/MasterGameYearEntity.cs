@@ -25,7 +25,7 @@ namespace FantasyCritic.MySQL.Entities
             ReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGameHypeScores.MasterGameYear.MasterGame.OpenCriticID;
             CriticScore = masterGameHypeScores.MasterGameYear.MasterGame.CriticScore;
-            MinimumReleaseYear = masterGameHypeScores.MasterGameYear.MasterGame.MinimumReleaseYear;
+            MinimumReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.MinimumReleaseDate.ToDateTimeUnspecified();
             EligibilityLevel = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.EligibilityLevel.Level;
             YearlyInstallment = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.YearlyInstallment;
             EarlyAccess = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.EarlyAccess;
@@ -55,7 +55,7 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
-        public int MinimumReleaseYear { get; set; }
+        public DateTime MinimumReleaseDate { get; set; }
         public int EligibilityLevel { get; set; }
         public bool YearlyInstallment { get; set; }
         public bool EarlyAccess { get; set; }
@@ -100,7 +100,7 @@ namespace FantasyCritic.MySQL.Entities
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack);
 
             var masterGame =  new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, 
-                OpenCriticID, CriticScore, MinimumReleaseYear, eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, 
+                OpenCriticID, CriticScore, LocalDate.FromDateTime(MinimumReleaseDate), eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, 
                 false, false, addedTimestamp);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, NumberOfBids,

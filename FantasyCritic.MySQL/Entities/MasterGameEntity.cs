@@ -24,7 +24,7 @@ namespace FantasyCritic.MySQL.Entities
             ReleaseDate = masterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGame.OpenCriticID;
             CriticScore = masterGame.CriticScore;
-            MinimumReleaseYear = masterGame.MinimumReleaseYear;
+            MinimumReleaseDate = masterGame.MinimumReleaseDate.ToDateTimeUnspecified();
             EligibilityLevel = masterGame.EligibilitySettings.EligibilityLevel.Level;
             YearlyInstallment = masterGame.EligibilitySettings.YearlyInstallment;
             EarlyAccess = masterGame.EligibilitySettings.EarlyAccess;
@@ -41,7 +41,7 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
-        public int MinimumReleaseYear { get; set; }
+        public DateTime MinimumReleaseDate { get; set; }
         public int EligibilityLevel { get; set; }
         public bool YearlyInstallment { get; set; }
         public bool EarlyAccess { get; set; }
@@ -78,7 +78,7 @@ namespace FantasyCritic.MySQL.Entities
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack);
 
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear, 
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, LocalDate.FromDateTime(MinimumReleaseDate), 
                 eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, addedTimestamp);
         }
     }

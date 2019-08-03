@@ -46,7 +46,7 @@ namespace FantasyCritic.Lib.Domain
                 return false;
             }
 
-            if (_leagueYear < MasterGame.Value.MasterGame.MinimumReleaseYear)
+            if (_leagueYear < MasterGame.Value.MasterGame.MinimumReleaseDate.Year)
             {
                 return false;
             }

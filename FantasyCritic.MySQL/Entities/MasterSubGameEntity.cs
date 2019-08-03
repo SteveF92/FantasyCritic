@@ -18,7 +18,7 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
-        public int MinimumReleaseYear { get; set; }
+        public int MinimumReleaseDate { get; set; }
 
         public MasterSubGame ToDomain()
         {
@@ -35,7 +35,7 @@ namespace FantasyCritic.MySQL.Entities
             }
 
             return new MasterSubGame(MasterSubGameID, MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, 
-                releaseDate, OpenCriticID, CriticScore, MinimumReleaseYear);
+                releaseDate, OpenCriticID, CriticScore, MinimumReleaseDate);
         }
     }
 }

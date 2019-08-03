@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain
         private readonly decimal? _criticScore;
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate, 
-            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear, EligibilitySettings eligibilitySettings, 
+            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings, 
             string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
@@ -21,7 +21,7 @@ namespace FantasyCritic.Lib.Domain
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
             _criticScore = criticScore;
-            MinimumReleaseYear = minimumReleaseYear;
+            MinimumReleaseDate = minimumReleaseDate;
             EligibilitySettings = eligibilitySettings;
             SubGames = new List<MasterSubGame>();
             BoxartFileName = boxartFileName;
@@ -32,7 +32,7 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate,
-            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear, EligibilitySettings eligibilitySettings, 
+            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings, 
             IReadOnlyList<MasterSubGame> subGames, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
             bool doNotRefreshAnything, Instant addedTimestamp)
         {
@@ -43,7 +43,7 @@ namespace FantasyCritic.Lib.Domain
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
             _criticScore = criticScore;
-            MinimumReleaseYear = minimumReleaseYear;
+            MinimumReleaseDate = minimumReleaseDate;
             EligibilitySettings = eligibilitySettings;
             SubGames = subGames;
             BoxartFileName = boxartFileName;
@@ -103,7 +103,7 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        public int MinimumReleaseYear { get; }
+        public LocalDate MinimumReleaseDate { get; }
         public EligibilitySettings EligibilitySettings { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
 

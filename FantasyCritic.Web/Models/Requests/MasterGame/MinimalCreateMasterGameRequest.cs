@@ -13,14 +13,14 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
         public LocalDate SortableEstimatedReleaseDate { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         [Required]
-        public int MinimumReleaseYear { get; set; }
+        public int MinimumReleaseDate { get; set; }
 
         public Lib.Domain.MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp)
         {
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, false, false, false, false, false);
 
             Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, SortableEstimatedReleaseDate,
-                ReleaseDate, null, null, MinimumReleaseYear,
+                ReleaseDate, null, null, MinimumReleaseDate,
                 eligibilitySettings, "", null, false, false, timestamp);
             return masterGame;
         }

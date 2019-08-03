@@ -29,7 +29,7 @@ namespace FantasyCritic.FakeRepo.Factories
         }
 
         private static MasterGame CreateMasterGame(string guid, string name, string estimatedReleaseDate, LocalDate sortableEstimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore,
-            int minimumReleaseYear, int eligibilityLevelID, bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally, bool expansionPack,
+            int minimumReleaseDate, int eligibilityLevelID, bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally, bool expansionPack,
             string boxartFileName, string firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, string addedTimestamp)
         {
             EligibilityLevel eligibilityLevel = EligibilityLevelFactory.GetEligibilityLevels().Single(x => x.Level == eligibilityLevelID);
@@ -37,7 +37,7 @@ namespace FantasyCritic.FakeRepo.Factories
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, false, false, false, false, false);
 
             var game = new MasterGame(Guid.Parse(guid), name, estimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, openCriticID,
-                criticScore, minimumReleaseYear, eligibilitySettings, boxartFileName, 
+                criticScore, minimumReleaseDate, eligibilitySettings, boxartFileName, 
                 InstantPattern.ExtendedIso.Parse(firstCriticScoreTimestamp).GetValueOrThrow(), doNotRefreshDate, doNotRefreshAnything,
                 InstantPattern.ExtendedIso.Parse(addedTimestamp).GetValueOrThrow());
 

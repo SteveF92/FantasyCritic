@@ -64,7 +64,7 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(int year)
         {
             IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
-            var relevantGames = masterGames.Where(x => x.MasterGame.MinimumReleaseYear >= year);
+            var relevantGames = masterGames.Where(x => x.MasterGame.MinimumReleaseDate.Year >= year);
 
             var supportedYears = await GetSupportedYears();
             var finishedYears = supportedYears.Where(x => x.Finished);

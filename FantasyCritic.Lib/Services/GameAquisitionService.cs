@@ -198,7 +198,7 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
             }
 
-            if (!released && masterGame.MinimumReleaseYear > year && !counterPick)
+            if (!released && masterGame.MinimumReleaseDate.Year > year && !counterPick)
             {
                 claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
             }
