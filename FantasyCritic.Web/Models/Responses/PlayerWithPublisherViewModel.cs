@@ -26,7 +26,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueOptions options, SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague, SupportedYear supportedYear)
         {
             User = new PlayerViewModel(leagueYear.League, user);
-            Publisher = new PublisherViewModel(publisher, clock, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague);
+            Publisher = new PublisherViewModel(publisher, clock, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague, leagueYear.Options.ScoringSystem, systemWideValues);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
             ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished);
         }

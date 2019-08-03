@@ -318,7 +318,16 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Requested player is not in requested league.");
             }
 
-            var publisherViewModel = new PublisherViewModel(publisher.Value, _clock, userIsInLeague, publisher.Value.League.PublicLeague, userIsInvitedToLeague);
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.League.LeagueID, publisher.Value.Year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Something went really wrong, no options are set up for this league.");
+            }
+
+            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+
+            var publisherViewModel = new PublisherViewModel(publisher.Value, _clock, userIsInLeague, publisher.Value.League.PublicLeague,
+                userIsInvitedToLeague, leagueYear.Value.Options.ScoringSystem, systemWideValues);
             return Ok(publisherViewModel);
         }
 

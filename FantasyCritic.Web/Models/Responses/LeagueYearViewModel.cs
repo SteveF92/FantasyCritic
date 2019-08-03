@@ -30,12 +30,16 @@ namespace FantasyCritic.Web.Models.Responses
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
-            Publishers = publishers.OrderBy(x => x.DraftPosition).Select(x =>
-                new PublisherViewModel(x, clock, nextDraftPublisher, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague)).ToList();
+            Publishers = publishers
+                .OrderBy(x => x.DraftPosition)
+                .Select(x => new PublisherViewModel(x, clock, nextDraftPublisher, userIsInLeague, leagueYear.League.PublicLeague,
+                    userIsInvitedToLeague, leagueYear.Options.ScoringSystem, systemWideValues))
+                .ToList();
 
             if (userPublisher.HasValue)
             {
-                UserPublisher = new PublisherViewModel(userPublisher.Value, clock, userIsInLeague, leagueYear.League.PublicLeague, userIsInvitedToLeague);
+                UserPublisher = new PublisherViewModel(userPublisher.Value, clock, userIsInLeague, leagueYear.League.PublicLeague,
+                    userIsInvitedToLeague, leagueYear.Options.ScoringSystem, systemWideValues);
             }
 
             List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
@@ -94,7 +98,9 @@ namespace FantasyCritic.Web.Models.Responses
             }
 
             PlayStatus = new PlayStatusViewModel(playStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
-            AvailableCounterPicks = availableCounterPicks.Select(x => new PublisherGameViewModel(x, clock)).OrderBy(x => x.GameName).ToList();
+            AvailableCounterPicks = availableCounterPicks
+                .Select(x => new PublisherGameViewModel(x, clock, leagueYear.Options.ScoringSystem, systemWideValues))
+                .OrderBy(x => x.GameName).ToList();
             EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, clock)).ToList();
         }
 

@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherGameViewModel
     {
-        public PublisherGameViewModel(PublisherGame publisherGame, IClock clock)
+        public PublisherGameViewModel(PublisherGame publisherGame, IClock clock, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
         {
             PublisherGameID = publisherGame.PublisherGameID;
             GameName = publisherGame.GameName;
@@ -18,6 +19,7 @@ namespace FantasyCritic.Web.Models.Responses
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
             CounterPick = publisherGame.CounterPick;
             FantasyPoints = publisherGame.FantasyPoints;
+            ProjectedFantasyPoints = publisherGame.GetProjectedFantasyPoints(scoringSystem, systemWideValues);
 
             Linked = publisherGame.MasterGame.HasValue;
             if (Linked)
@@ -54,6 +56,7 @@ namespace FantasyCritic.Web.Models.Responses
         public DateTime? ReleaseDate { get; }
         public decimal? FantasyPoints { get; }
         public decimal? CriticScore { get; }
+        public decimal ProjectedFantasyPoints { get; }
         public MasterGameYearViewModel MasterGame { get; }
 
         public bool Linked { get; }
