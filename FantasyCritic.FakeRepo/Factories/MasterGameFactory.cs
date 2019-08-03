@@ -14,12 +14,12 @@ namespace FantasyCritic.FakeRepo.Factories
             List<MasterGame> games = new List<MasterGame>();
 
             var sekiro = CreateMasterGame("96f5e8e3-672b-4626-b47e-4bff3a6c4430", "Sekiro: Shadows Die Twice", "2019-03-22", new LocalDate(2019, 3, 22), 
-                new LocalDate(2019, 3, 22), 6630, 89.9200m, 2019, 0, false, false, false, false, false, "Sekiro_art.jpg", 
+                new LocalDate(2019, 3, 22), 6630, 89.9200m, new LocalDate(2019, 1, 1), 0, false, false, false, false, false, "Sekiro_art.jpg", 
                 "2019-03-20T15:30:00Z", false, false, "2019-01-22T15:30:00Z");
             var metroidPrime = CreateMasterGame("914fc4e8-1013-46a4-b7e1-c1ca0d60ab96", "Metroid Prime 4", "TBA", LocalDate.MaxIsoValue, null, null,
-                null, 2020, 0, false, false, false, false, false, null, "2019-03-20T15:30:00Z", false, false, "2019-01-22T15:30:00Z");
+                null, new LocalDate(2020, 1, 1), 0, false, false, false, false, false, null, "2019-03-20T15:30:00Z", false, false, "2019-01-22T15:30:00Z");
             var civSix = CreateMasterGame("3729b47d-35b6-48c3-8acd-a57364617b8e", "Sid Meier's Civilization VI: Rise and Fall", "2018-02-08", new LocalDate(2018, 2, 8), 
-                new LocalDate(2018, 2, 8), 5405, 82.6250m, 2019, 0, false, false, false, false, true, 
+                new LocalDate(2018, 2, 8), 5405, 82.6250m, new LocalDate(2019, 1, 1), 0, false, false, false, false, true, 
                 null, "2019-03-20T15:30:00Z", false, false, "2019-01-22T15:30:00Z");
             games.Add(sekiro);
             games.Add(metroidPrime);
@@ -29,7 +29,7 @@ namespace FantasyCritic.FakeRepo.Factories
         }
 
         private static MasterGame CreateMasterGame(string guid, string name, string estimatedReleaseDate, LocalDate sortableEstimatedReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore,
-            int minimumReleaseDate, int eligibilityLevelID, bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally, bool expansionPack,
+            LocalDate minimumReleaseDate, int eligibilityLevelID, bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally, bool expansionPack,
             string boxartFileName, string firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, string addedTimestamp)
         {
             EligibilityLevel eligibilityLevel = EligibilityLevelFactory.GetEligibilityLevels().Single(x => x.Level == eligibilityLevelID);

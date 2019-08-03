@@ -48,8 +48,12 @@ namespace FantasyCritic.Web.Controllers.API
         {
             EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(viewModel.EligibilityLevel);
             Instant instant = _clock.GetCurrentInstant();
+            LocalDate tomorrow = instant
+                .InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York"))
+                .LocalDateTime.Date.PlusDays(1);
+
             var currentYear = await _interLeagueService.GetCurrentYear();
-            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, currentYear);
+            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, currentYear, tomorrow);
             await _interLeagueService.CreateMasterGame(masterGame);
             await Task.Delay(1000);
             await _adminService.RefreshCaches();
