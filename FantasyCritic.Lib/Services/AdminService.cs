@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using Microsoft.Extensions.Logging;
@@ -117,7 +118,10 @@ namespace FantasyCritic.Lib.Services
         public async Task RefreshCaches()
         {
             _logger.LogInformation("Refreshing caches");
-            await _fantasyCriticRepo.UpdateReleaseDateEstimates();
+
+            LocalDate tomorrow = _clock.GetToday().PlusDays(1);
+            await _fantasyCriticRepo.UpdateReleaseDateEstimates(tomorrow);
+
             await _fantasyCriticRepo.UpdateSystemWideValues();
             await UpdateHypeFactor();
             _logger.LogInformation("Done refreshing caches");

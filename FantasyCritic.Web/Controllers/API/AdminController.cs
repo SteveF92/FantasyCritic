@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models;
@@ -48,9 +49,7 @@ namespace FantasyCritic.Web.Controllers.API
         {
             EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(viewModel.EligibilityLevel);
             Instant instant = _clock.GetCurrentInstant();
-            LocalDate tomorrow = instant
-                .InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York"))
-                .LocalDateTime.Date.PlusDays(1);
+            LocalDate tomorrow = instant.ToEasternDate().PlusDays(1);
 
             var currentYear = await _interLeagueService.GetCurrentYear();
             MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, currentYear, tomorrow);

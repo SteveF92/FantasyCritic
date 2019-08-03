@@ -380,7 +380,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task UpdateReleaseDateEstimates()
+        public Task UpdateReleaseDateEstimates(LocalDate tomorrow)
         {
             throw new NotImplementedException();
         }

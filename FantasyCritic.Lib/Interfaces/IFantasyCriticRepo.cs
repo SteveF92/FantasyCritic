@@ -7,6 +7,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.OpenCritic;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Interfaces
 {
@@ -83,7 +84,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
         Task UpdateSystemWideValues();
-        Task UpdateReleaseDateEstimates();
+        Task UpdateReleaseDateEstimates(LocalDate tomorrow);
         Task<HypeConstants> GetHypeConstants();
     }
 }
