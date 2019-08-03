@@ -43,6 +43,8 @@ namespace FantasyCritic.Lib.Domain
         public double HypeFactor { get; }
         public double DateAdjustedHypeFactor { get; }
         public double LinearRegressionHypeFactor { get; }
+
+        public override string ToString() => $"{MasterGame}-{Year}";
         
 
         public bool Equals(MasterGameYear other)

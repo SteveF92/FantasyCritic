@@ -129,11 +129,6 @@ namespace FantasyCritic.Lib.Services
             HypeConstants hypeConstants = await _fantasyCriticRepo.GetHypeConstants();
             foreach (var supportedYear in supportedYears)
             {
-                if (supportedYear.Finished || !supportedYear.OpenForPlay)
-                {
-                    continue;
-                }
-
                 List<MasterGameHypeScores> hypeScores = new List<MasterGameHypeScores>();
                 var masterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, false);
                 foreach (var masterGame in masterGames)
