@@ -56,7 +56,7 @@ namespace FantasyCritic.Lib.Domain
         public Guid MasterGameID { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
-        public LocalDate SortableEstimatedReleaseDate { get; }
+        public LocalDate? SortableEstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
 

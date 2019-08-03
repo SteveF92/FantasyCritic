@@ -21,7 +21,7 @@ namespace FantasyCritic.MySQL.Entities
             Year = masterGameHypeScores.MasterGameYear.Year;
             GameName = masterGameHypeScores.MasterGameYear.MasterGame.GameName;
             EstimatedReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.EstimatedReleaseDate;
-            SortableEstimatedReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.SortableEstimatedReleaseDate.ToDateTimeUnspecified();
+            SortableEstimatedReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.SortableEstimatedReleaseDate?.ToDateTimeUnspecified();
             ReleaseDate = masterGameHypeScores.MasterGameYear.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGameHypeScores.MasterGameYear.MasterGame.OpenCriticID;
             CriticScore = masterGameHypeScores.MasterGameYear.MasterGame.CriticScore;
