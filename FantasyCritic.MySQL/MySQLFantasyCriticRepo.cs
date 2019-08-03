@@ -1285,8 +1285,12 @@ namespace FantasyCritic.MySQL
             var sql2 = "UPDATE tbl_mastergame SET MinimumReleaseDate = @tomorrow WHERE MinimumReleaseDate < @tomorrow AND ReleaseDate IS NULL;";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(sql);
-                await connection.ExecuteAsync(sql2, new {tomorrow = tomorrow.ToDateTimeUnspecified()});
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(sql);
+                    await connection.ExecuteAsync(sql2, new { tomorrow = tomorrow.ToDateTimeUnspecified() });
+                    transaction.Commit();
+                }
             }
         }
 
