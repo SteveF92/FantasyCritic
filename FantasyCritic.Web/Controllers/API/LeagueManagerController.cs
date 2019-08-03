@@ -407,13 +407,13 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.LeagueYear.League.LeagueID);
             if (league.HasNoValue)
             {
                 return BadRequest();
             }
 
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.Year);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.LeagueYear.Year);
             if (leagueYear.HasNoValue)
             {
                 return BadRequest();
@@ -472,13 +472,13 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.LeagueYear.League.LeagueID);
             if (league.HasNoValue)
             {
                 return BadRequest();
             }
 
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.Year);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.LeagueYear.Year);
             if (leagueYear.HasNoValue)
             {
                 return BadRequest();
@@ -544,7 +544,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.LeagueYear.League.LeagueID);
             if (league.HasNoValue)
             {
                 return BadRequest();
@@ -561,7 +561,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.Year);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.LeagueYear.Year);
             if (leagueYear.HasNoValue)
             {
                 return BadRequest();
@@ -587,7 +587,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.League.LeagueID, publisher.Value.Year);
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.LeagueYear.League.LeagueID, publisher.Value.LeagueYear.Year);
             if (leagueYear.HasNoValue)
             {
                 return BadRequest();
@@ -627,7 +627,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.LeagueYear.League.LeagueID);
             if (league.HasNoValue)
             {
                 return BadRequest();
@@ -644,7 +644,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.Year);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.LeagueYear.Year);
             if (leagueYear.HasNoValue)
             {
                 return BadRequest();
@@ -688,7 +688,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == request.Year);
             if (supportedYear is null)
             {
@@ -742,7 +742,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var usersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
-            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var readyToSetDraftOrder = _draftService.LeagueIsReadyToSetDraftOrder(publishersInLeague, usersInLeague);
             if (!readyToSetDraftOrder)
             {
@@ -787,7 +787,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.League.LeagueID);
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.LeagueYear.League.LeagueID);
             if (league.HasNoValue)
             {
                 return BadRequest();
@@ -798,7 +798,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.Year);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.LeagueYear.Year);
             if (leagueYear.HasNoValue)
             {
                 return BadRequest();
@@ -809,7 +809,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't draft a game if the draft isn't active.");
             }
 
-            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value.League, leagueYear.Value.Year);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var nextPublisher = _draftService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
             if (nextPublisher.HasNoValue)
             {
@@ -944,7 +944,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Can only undo when the draft is paused.");
             }
 
-            var publishers = await _publisherService.GetPublishersInLeagueForYear(league.Value, leagueYear.Value.Year);
+            var publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             bool hasGames = publishers.SelectMany(x => x.PublisherGames).Any();
             if (!hasGames)
             {
@@ -1017,7 +1017,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (!isAllowing)
             {
-                var publishers = await _publisherService.GetPublishersInLeagueForYear(league.Value, leagueYear.Value.Year);
+                var publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
                 var matchingPublisherGame = publishers
                     .SelectMany(x => x.PublisherGames)
                     .FirstOrDefault(x =>

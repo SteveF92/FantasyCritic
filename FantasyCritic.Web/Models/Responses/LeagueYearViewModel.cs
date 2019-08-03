@@ -32,14 +32,12 @@ namespace FantasyCritic.Web.Models.Responses
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
             Publishers = publishers
                 .OrderBy(x => x.DraftPosition)
-                .Select(x => new PublisherViewModel(x, clock, nextDraftPublisher, userIsInLeague, leagueYear.League.PublicLeague,
-                    userIsInvitedToLeague, leagueYear.Options.ScoringSystem, systemWideValues))
+                .Select(x => new PublisherViewModel(x, clock, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues))
                 .ToList();
 
             if (userPublisher.HasValue)
             {
-                UserPublisher = new PublisherViewModel(userPublisher.Value, clock, userIsInLeague, leagueYear.League.PublicLeague,
-                    userIsInvitedToLeague, leagueYear.Options.ScoringSystem, systemWideValues);
+                UserPublisher = new PublisherViewModel(userPublisher.Value, clock, userIsInLeague, userIsInvitedToLeague, systemWideValues);
             }
 
             List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();

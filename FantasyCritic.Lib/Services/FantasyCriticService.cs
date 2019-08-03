@@ -93,7 +93,7 @@ namespace FantasyCritic.Lib.Services
                 throw new Exception($"League year cannot be found: {parameters.LeagueID}|{parameters.Year}");
             }
 
-            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(league, parameters.Year);
+            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
 
             int maxStandardGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick)).DefaultIfEmpty(0).Max();
             int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).DefaultIfEmpty(0).Max();
@@ -130,21 +130,17 @@ namespace FantasyCritic.Lib.Services
             Maybe<MasterGameYear> masterGameYear = Maybe<MasterGameYear>.None;
             if (request.MasterGame.HasValue)
             {
-                masterGameYear = new MasterGameYear(request.MasterGame.Value, request.Publisher.Year);
+                masterGameYear = new MasterGameYear(request.MasterGame.Value, request.Publisher.LeagueYear.Year);
             }
 
             PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null, 
                 masterGameYear, request.DraftPosition, request.OverallDraftPosition);
 
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            Maybe<LeagueYear> leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);
-            if (leagueYear.HasNoValue)
-            {
-                throw new Exception("Something has gone terribly wrong with league years.");
-            }
+            LeagueYear leagueYear = request.Publisher.LeagueYear;
 
-            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
-            ClaimResult claimResult = _gameAcquisitionService.CanClaimGame(request, supportedYears, leagueYear.Value, publishersForYear);
+            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.LeagueYear);
+            ClaimResult claimResult = _gameAcquisitionService.CanClaimGame(request, supportedYears, leagueYear, publishersForYear);
 
             if (!claimResult.Success)
             {
@@ -193,10 +189,10 @@ namespace FantasyCritic.Lib.Services
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(publisher.League, publisher.Year);
-            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.League, publisher.Year);
+            var leagueYear = publisher.LeagueYear;
+            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
 
-            var claimResult = _gameAcquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear.Value, publishersForYear);
+            var claimResult = _gameAcquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -204,8 +200,7 @@ namespace FantasyCritic.Lib.Services
 
             var nextPriority = pickupBids.Count + 1;
 
-            
-            PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear.Value, masterGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
+            PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
             await _fantasyCriticRepo.CreatePickupBid(currentBid);
 
             return claimResult;
@@ -242,7 +237,7 @@ namespace FantasyCritic.Lib.Services
 
             foreach (var publisher in allPublishersForYear)
             {
-                var key = new LeagueYearKey(publisher.League.LeagueID, publisher.Year);
+                var key = new LeagueYearKey(publisher.LeagueYear.League.LeagueID, publisher.LeagueYear.Year);
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
                     var leagueYear = leagueYearDictionary[key];
@@ -259,7 +254,7 @@ namespace FantasyCritic.Lib.Services
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
 
-            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
             foreach (var publisher in publishersInLeague)
             {
                 foreach (var publisherGame in publisher.PublisherGames)
@@ -319,7 +314,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var year in league.Years)
             {
                 var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
-                var publishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year);
+                var publishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.Value);
                 foreach (var publisher in publishers)
                 {
                     await _fantasyCriticRepo.DeleteLeagueActions(publisher);
@@ -418,7 +413,7 @@ namespace FantasyCritic.Lib.Services
                 await _fantasyCriticRepo.SetEligibilityOverride(leagueYear, masterGame, eligible.Value);
             }
 
-            var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
             var managerPublisher = allPublishers.Single(x => x.User.UserID == leagueYear.League.LeagueManager.UserID);
 
             string description;

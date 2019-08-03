@@ -117,7 +117,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
         {
-            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
             int publishersCount = publishersInLeague.Count;
             if (publishersCount != draftPositions.Count())
             {
@@ -197,7 +197,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<DraftPhase> GetDraftPhase(LeagueYear leagueYear)
         {
-            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
             return GetDraftPhase(leagueYear, publishers);
         }
 
@@ -245,7 +245,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<bool> CompleteDraft(LeagueYear leagueYear)
         {
-            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
+            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
 
             int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
             int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);

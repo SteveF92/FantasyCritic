@@ -10,26 +10,26 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherViewModel
     {
-        public PublisherViewModel(Publisher publisher, IClock clock, bool userIsInLeague, bool publicLeague,
-            bool outstandingInvite, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
-        : this(publisher, clock, Maybe<Publisher>.None, userIsInLeague, publicLeague, outstandingInvite, scoringSystem, systemWideValues)
+        public PublisherViewModel(Publisher publisher, IClock clock, bool userIsInLeague,
+            bool outstandingInvite, SystemWideValues systemWideValues)
+        : this(publisher, clock, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues)
         {
 
         }
 
-        public PublisherViewModel(Publisher publisher, IClock clock, Maybe<Publisher> nextDraftPublisher, bool userIsInLeague,
-            bool publicLeague, bool outstandingInvite, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
+        public PublisherViewModel(Publisher publisher, IClock clock, Maybe<Publisher> nextDraftPublisher,
+            bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues)
         {
             PublisherID = publisher.PublisherID;
-            LeagueID = publisher.League.LeagueID;
+            LeagueID = publisher.LeagueYear.League.LeagueID;
             PublisherName = publisher.PublisherName;
-            LeagueName = publisher.League.LeagueName;
+            LeagueName = publisher.LeagueYear.League.LeagueName;
             PlayerName = publisher.User.DisplayName;
-            Year = publisher.Year;
+            Year = publisher.LeagueYear.Year;
             DraftPosition = publisher.DraftPosition;
             Games = publisher.PublisherGames
                 .OrderBy(x => x.Timestamp)
-                .Select(x => new PublisherGameViewModel(x, clock, scoringSystem, systemWideValues))
+                .Select(x => new PublisherGameViewModel(x, clock, publisher.LeagueYear.Options.ScoringSystem, systemWideValues))
                 .ToList();
 
             AverageCriticScore = publisher.AverageCriticScore;
@@ -42,7 +42,7 @@ namespace FantasyCritic.Web.Models.Responses
             }
 
             UserIsInLeague = userIsInLeague;
-            PublicLeague = publicLeague;
+            PublicLeague = publisher.LeagueYear.Options.PublicLeague;
             OutstandingInvite = outstandingInvite;
         }
 

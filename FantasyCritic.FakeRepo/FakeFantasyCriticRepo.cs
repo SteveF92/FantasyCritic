@@ -78,6 +78,11 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult<IReadOnlyList<League>>(leaguesForUser);
         }
 
+        public Task<IReadOnlyList<LeagueYear>> GetLeaguesYearsForUser(FantasyCriticUser user, int year)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser user)
         {
             return Task.FromResult<IReadOnlyList<League>>(new List<League>());
@@ -138,15 +143,13 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult<Maybe<Publisher>>(_publishers.SingleOrDefault(x => x.PublisherID == publisherID));
         }
 
-        public Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
+        public Task<Maybe<Publisher>> GetPublisher(LeagueYear leagueYear, FantasyCriticUser user)
         {
             var publisher = _publishers
-                .Where(x => x.League.Equals(league))
-                .Where(x => x.Year == year)
+                .Where(x => x.LeagueYear.Equals(leagueYear))
                 .Where(x => x.User.Equals(user))
                 .SingleOrDefault();
             return Task.FromResult<Maybe<Publisher>>(publisher);
-
         }
 
         public Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID)
@@ -160,20 +163,24 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year)
+        public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear)
         {
             var publishers = _publishers
-                .Where(x => x.League.Equals(league))
-                .Where(x => x.Year == year)
+                .Where(x => x.LeagueYear.Equals(leagueYear))
                 .ToList();
             return Task.FromResult<IReadOnlyList<Publisher>>(publishers);
+        }
+
+        public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> usersInLeague)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year, IEnumerable<FantasyCriticUser> usersInLeague)
         {
             var publishers = _publishers
-                .Where(x => x.League.Equals(league))
-                .Where(x => x.Year == year)
+                .Where(x => x.LeagueYear.League.Equals(league))
+                .Where(x => x.LeagueYear.Year == year)
                 .ToList();
             return Task.FromResult<IReadOnlyList<Publisher>>(publishers);
         }
@@ -181,7 +188,7 @@ namespace FantasyCritic.FakeRepo
         public Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year)
         {
             var publishers = _publishers
-                .Where(x => x.Year == year)
+                .Where(x => x.LeagueYear.Year == year)
                 .ToList();
             return Task.FromResult<IReadOnlyList<Publisher>>(publishers);
         }

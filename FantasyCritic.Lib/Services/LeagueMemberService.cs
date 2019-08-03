@@ -128,6 +128,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeaguesForUser(user);
         }
 
+        public Task<IReadOnlyList<LeagueYear>> GetLeaguesYearsForUser(FantasyCriticUser user, int year)
+        {
+            return _fantasyCriticRepo.GetLeaguesYearsForUser(user, year);
+        }
+
         public Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser user)
         {
             return _fantasyCriticRepo.GetLeagueInvites(user);
@@ -147,7 +152,8 @@ namespace FantasyCritic.Lib.Services
         {
             foreach (var year in league.Years)
             {
-                var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year);
+                var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
+                var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.Value);
                 var deletePublisher = allPublishers.SingleOrDefault(x => x.User.UserID == removeUser.UserID);
                 if (deletePublisher != null)
                 {

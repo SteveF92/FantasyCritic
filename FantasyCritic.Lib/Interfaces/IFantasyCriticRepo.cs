@@ -22,8 +22,9 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<League>> GetAllLeagues();
         Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
         Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
-        Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser currentUser);
-        Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser);
+        Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user);
+        Task<IReadOnlyList<LeagueYear>> GetLeaguesYearsForUser(FantasyCriticUser user, int year);
+        Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser user);
         Task FollowLeague(League league, FantasyCriticUser user);
         Task UnfollowLeague(League league, FantasyCriticUser user);
 
@@ -38,11 +39,11 @@ namespace FantasyCritic.Lib.Interfaces
         Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
 
         Task<Maybe<Publisher>> GetPublisher(Guid publisherID);
-        Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user);
+        Task<Maybe<Publisher>> GetPublisher(LeagueYear leagueYear, FantasyCriticUser user);
         Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID);
         Task CreatePublisher(Publisher publisher);
-        Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year);
-        Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year, IEnumerable<FantasyCriticUser> usersInLeague);
+        Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear);
+        Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> usersInLeague);
         Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year);
         Task AddPublisherGame(PublisherGame publisherGame);
         Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);

@@ -26,7 +26,7 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public async Task<Publisher> CreatePublisher(League league, int year, FantasyCriticUser user, string publisherName, IEnumerable<Publisher> existingPublishers)
+        public async Task<Publisher> CreatePublisher(LeagueYear leagueYear, FantasyCriticUser user, string publisherName, IEnumerable<Publisher> existingPublishers)
         {
             int draftPosition = 1;
             if (existingPublishers.Any())
@@ -34,25 +34,25 @@ namespace FantasyCritic.Lib.Services
                 draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
             }
 
-            Publisher publisher = new Publisher(Guid.NewGuid(), league, user, year, publisherName, draftPosition, new List<PublisherGame>(), 100);
+            Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear, user, publisherName, draftPosition, new List<PublisherGame>(), 100);
             await _fantasyCriticRepo.CreatePublisher(publisher);
             return publisher;
         }
 
-        public async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year)
+        public async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear)
         {
-            var users = await _leagueMemberService.GetUsersInLeague(league);
-            return await _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year, users);
+            var users = await _leagueMemberService.GetUsersInLeague(leagueYear.League);
+            return await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear, users);
         }
 
-        public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(League league, int year, IEnumerable<FantasyCriticUser> users)
+        public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> users)
         {
-            return _fantasyCriticRepo.GetPublishersInLeagueForYear(league, year, users);
+            return _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear, users);
         }
 
-        public Task<Maybe<Publisher>> GetPublisher(League league, int year, FantasyCriticUser user)
+        public Task<Maybe<Publisher>> GetPublisher(LeagueYear leagueYear, FantasyCriticUser user)
         {
-            return _fantasyCriticRepo.GetPublisher(league, year, user);
+            return _fantasyCriticRepo.GetPublisher(leagueYear, user);
         }
 
         public Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
@@ -67,8 +67,8 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
         {
-            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.League, leagueYear.Year);
-            IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.Year == leagueYear.Year).ToList();
+            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
+            IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.LeagueYear.Year == leagueYear.Year).ToList();
             IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != publisher.User.UserID).ToList();
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
 
