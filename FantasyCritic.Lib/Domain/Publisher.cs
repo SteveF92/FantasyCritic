@@ -113,7 +113,7 @@ namespace FantasyCritic.Lib.Domain
             return PublisherID.GetHashCode();
         }
 
-        public void AquireGame(PublisherGame game, uint bidAmount)
+        public void AcquireGame(PublisherGame game, uint bidAmount)
         {
             PublisherGames = PublisherGames.Concat(new []{ game }).ToList();
             Budget -= bidAmount;
