@@ -63,13 +63,13 @@ namespace FantasyCritic.Lib.Domain
 
         public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
         {
-            decimal? criticScoreToUse = CalculateFantasyPoints(scoringSystem, counterPick);
-            if (!criticScoreToUse.HasValue)
+            decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick);
+            if (fantasyPoints.HasValue)
             {
-                criticScoreToUse = Convert.ToDecimal(LinearRegressionHypeFactor);
+                return fantasyPoints.Value;
             }
 
-            return scoringSystem.GetPointsForScore(criticScoreToUse.Value, counterPick);
+            return scoringSystem.GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), counterPick);
         }
 
         public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
