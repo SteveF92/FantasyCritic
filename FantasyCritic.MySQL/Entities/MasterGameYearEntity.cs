@@ -34,8 +34,6 @@ namespace FantasyCritic.MySQL.Entities
             ExpansionPack = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.ExpansionPack;
             BoxartFileName = masterGameHypeScores.MasterGameYear.MasterGame.BoxartFileName;
             FirstCriticScoreTimestamp = masterGameHypeScores.MasterGameYear.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
-            DoNotRefreshDate = masterGameHypeScores.MasterGameYear.MasterGame.DoNotRefreshDate;
-            DoNotRefreshAnything = masterGameHypeScores.MasterGameYear.MasterGame.DoNotRefreshAnything;
             PercentStandardGame = masterGameHypeScores.MasterGameYear.PercentStandardGame;
             PercentCounterPick = masterGameHypeScores.MasterGameYear.PercentCounterPick;
             EligiblePercentStandardGame = masterGameHypeScores.MasterGameYear.EligiblePercentStandardGame;
@@ -65,8 +63,6 @@ namespace FantasyCritic.MySQL.Entities
         public bool ExpansionPack { get; set; }
         public string BoxartFileName { get; set; }
         public DateTime? FirstCriticScoreTimestamp { get; set; }
-        public bool DoNotRefreshDate { get; set; }
-        public bool DoNotRefreshAnything { get; set; }
         public double PercentStandardGame { get; set; }
         public double PercentCounterPick { get; set; }
         public double EligiblePercentStandardGame { get; set; }
@@ -103,7 +99,7 @@ namespace FantasyCritic.MySQL.Entities
 
             var masterGame =  new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, 
                 OpenCriticID, CriticScore, MinimumReleaseYear, eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, 
-                DoNotRefreshDate, DoNotRefreshAnything, addedTimestamp);
+                false, false, addedTimestamp);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 
                 AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);
