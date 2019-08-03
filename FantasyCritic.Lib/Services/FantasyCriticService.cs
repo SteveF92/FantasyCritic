@@ -21,13 +21,13 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
         private readonly IClock _clock;
-        private readonly GameAquisitionService _gameAquisitionService;
+        private readonly GameAcquisitionService _gameAcquisitionService;
         private readonly LeagueMemberService _leagueMemberService;
         private readonly PublisherService _publisherService;
         private readonly InterLeagueService _interLeagueService;
         private readonly BidProcessingService _bidProcessingService;
 
-        public FantasyCriticService(GameAquisitionService gameAquisitionService, LeagueMemberService leagueMemberService, 
+        public FantasyCriticService(GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService, 
             PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock, BidProcessingService bidProcessingService)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -36,7 +36,7 @@ namespace FantasyCritic.Lib.Services
             _leagueMemberService = leagueMemberService;
             _publisherService = publisherService;
             _interLeagueService = interLeagueService;
-            _gameAquisitionService = gameAquisitionService;
+            _gameAcquisitionService = gameAcquisitionService;
             _bidProcessingService = bidProcessingService;
         }
 
@@ -144,7 +144,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.League, request.Publisher.Year);
-            ClaimResult claimResult = _gameAquisitionService.CanClaimGame(request, supportedYears, leagueYear.Value, publishersForYear);
+            ClaimResult claimResult = _gameAcquisitionService.CanClaimGame(request, supportedYears, leagueYear.Value, publishersForYear);
 
             if (!claimResult.Success)
             {
@@ -161,7 +161,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<ClaimResult> AssociateGame(AssociateGameDomainRequest request)
         {
-            ClaimResult claimResult = await _gameAquisitionService.CanAssociateGame(request);
+            ClaimResult claimResult = await _gameAcquisitionService.CanAssociateGame(request);
 
             if (!claimResult.Success)
             {
@@ -196,7 +196,7 @@ namespace FantasyCritic.Lib.Services
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(publisher.League, publisher.Year);
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.League, publisher.Year);
 
-            var claimResult = _gameAquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear.Value, publishersForYear);
+            var claimResult = _gameAcquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear.Value, publishersForYear);
             if (!claimResult.Success)
             {
                 return claimResult;

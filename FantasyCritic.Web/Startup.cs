@@ -87,7 +87,7 @@ namespace FantasyCritic.Web
 
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticRoleManager>();
-            services.AddScoped<GameAquisitionService>();
+            services.AddScoped<GameAcquisitionService>();
             services.AddScoped<LeagueMemberService>();
             services.AddScoped<PublisherService>();
             services.AddScoped<InterLeagueService>();

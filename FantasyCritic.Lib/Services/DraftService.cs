@@ -18,12 +18,12 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
         private readonly IClock _clock;
-        private readonly GameAquisitionService _gameAquisitionService;
+        private readonly GameAcquisitionService _gameAcquisitionService;
         private readonly LeagueMemberService _leagueMemberService;
         private readonly PublisherService _publisherService;
         private readonly InterLeagueService _interLeagueService;
 
-        public DraftService(GameAquisitionService gameAquisitionService, LeagueMemberService leagueMemberService,
+        public DraftService(GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
             PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -32,7 +32,7 @@ namespace FantasyCritic.Lib.Services
             _leagueMemberService = leagueMemberService;
             _publisherService = publisherService;
             _interLeagueService = interLeagueService;
-            _gameAquisitionService = gameAquisitionService;
+            _gameAcquisitionService = gameAcquisitionService;
         }
 
         public async Task<StartDraftResult> GetStartDraftResult(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> usersInLeague)

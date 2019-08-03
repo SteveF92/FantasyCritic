@@ -12,11 +12,11 @@ namespace FantasyCritic.Lib.Services
 {
     public class BidProcessingService
     {
-        private readonly GameAquisitionService _gameAquisitionService;
+        private readonly GameAcquisitionService _gameAcquisitionService;
 
-        public BidProcessingService(GameAquisitionService gameAquisitionService)
+        public BidProcessingService(GameAcquisitionService gameAcquisitionService)
         {
-            _gameAquisitionService = gameAquisitionService;
+            _gameAcquisitionService = gameAcquisitionService;
         }
 
         public BidProcessingResults ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
@@ -68,7 +68,7 @@ namespace FantasyCritic.Lib.Services
 
                 var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, false, false, activeBid.MasterGame, null, null);
                 var publishersForLeagueAndYear = currentPublisherStates.Where(x => x.League.LeagueID == leagueYear.League.LeagueID && x.Year == leagueYear.Year);
-                var claimResult = _gameAquisitionService.CanClaimGame(gameRequest, supportedYears, leagueYear, publishersForLeagueAndYear);
+                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, supportedYears, leagueYear, publishersForLeagueAndYear);
 
                 if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames))
                 {
