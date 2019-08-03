@@ -106,7 +106,7 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                await _fantasyCriticService.UpdateFantasyPoints(systemWideValues, supportedYear.Year);
+                await _fantasyCriticService.UpdateFantasyPoints(supportedYear.Year);
             }
 
             _logger.LogInformation("Done updating fantasy points");

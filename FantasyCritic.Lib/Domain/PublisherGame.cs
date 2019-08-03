@@ -56,7 +56,47 @@ namespace FantasyCritic.Lib.Domain
 
         public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues)
         {
-            return scoringSystem.GetProjectedPointsForGame(this, systemWideValues);
+            decimal? criticScoreToUse = CalculateFantasyPoints(scoringSystem);
+            if (!criticScoreToUse.HasValue)
+            {
+                if (MasterGame.HasValue)
+                {
+                    criticScoreToUse = Convert.ToDecimal(MasterGame.Value.LinearRegressionHypeFactor);
+                }
+                else
+                {
+                    return systemWideValues.GetAveragePoints(CounterPick);
+                }
+            }
+
+            return scoringSystem.GetPointsForScore(criticScoreToUse.Value, CounterPick);
+        }
+
+        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem)
+        {
+            decimal criticScoreToUse;
+            if (ManualCriticScore.HasValue)
+            {
+                criticScoreToUse = ManualCriticScore.Value;
+            }
+            else if (MasterGame.HasNoValue)
+            {
+                return null;
+            }
+            else if (MasterGame.Value.MasterGame.CriticScore.HasValue)
+            {
+                criticScoreToUse = MasterGame.Value.MasterGame.CriticScore.Value;
+            }
+            else if (!WillRelease())
+            {
+                return 0m;
+            }
+            else
+            {
+                return null;
+            }
+
+            return scoringSystem.GetPointsForScore(criticScoreToUse, CounterPick);
         }
 
         public override string ToString() => GameName;

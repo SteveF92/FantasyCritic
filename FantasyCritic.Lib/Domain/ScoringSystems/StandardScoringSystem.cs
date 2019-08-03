@@ -11,71 +11,24 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
     {
         public override string Name => "Standard";
 
-        protected override decimal? GetPointsInternal(PublisherGame publisherGame, IClock clock, SystemWideValues systemWideValues)
+        public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
         {
-            if (publisherGame.MasterGame.HasNoValue)
+            decimal fantasyPoints = 0m;
+            decimal criticPointsOver90 = (criticScore - 90);
+            if (criticPointsOver90 > 0)
             {
-                decimal? unlinkedManualScore = publisherGame.ManualCriticScore;
-                if (unlinkedManualScore.HasValue)
-                {
-                    return GetPointsForScore(publisherGame, unlinkedManualScore.Value, systemWideValues);
-                }
-                return null;
+                fantasyPoints += criticPointsOver90;
             }
 
-            if (!publisherGame.WillRelease())
+            decimal criticPointsOver70 = (criticScore - 70);
+            fantasyPoints += criticPointsOver70;
+
+            if (counterPick)
             {
-                return 0m;
+                fantasyPoints *= -1;
             }
 
-            if (!publisherGame.MasterGame.Value.MasterGame.IsReleased(clock))
-            {
-                return null;
-            }
-
-            decimal? possibleManualScore = publisherGame.ManualCriticScore;
-            if (possibleManualScore.HasValue)
-            {
-                return GetPointsForScore(publisherGame, possibleManualScore.Value, systemWideValues);
-            }
-
-            decimal? possibleCriticScore = publisherGame.MasterGame.Value.MasterGame.CriticScore;
-            if (!possibleCriticScore.HasValue)
-            {
-                return 0m;
-            }
-
-            return GetPointsForScore(publisherGame, possibleCriticScore.Value, systemWideValues);
-        }
-
-        protected override decimal GetPointsForScore(PublisherGame publisherGame, decimal? criticScore, SystemWideValues systemWideValues)
-        {
-            if (criticScore.HasValue)
-            {
-                decimal fantasyPoints = 0m;
-                decimal criticPointsOver90 = (criticScore.Value - 90);
-                if (criticPointsOver90 > 0)
-                {
-                    fantasyPoints += criticPointsOver90;
-                }
-
-                decimal criticPointsOver70 = (criticScore.Value - 70);
-                fantasyPoints += criticPointsOver70;
-
-                if (publisherGame.CounterPick)
-                {
-                    fantasyPoints *= -1;
-                }
-
-                return fantasyPoints;
-            }
-
-            if (publisherGame.CounterPick)
-            {
-                return systemWideValues.AverageCounterPickPoints;
-            }
-
-            return systemWideValues.AverageStandardGamePoints;
+            return fantasyPoints;
         }
     }
 }

@@ -16,5 +16,15 @@ namespace FantasyCritic.Lib.Domain
 
         public decimal AverageStandardGamePoints { get; }
         public decimal AverageCounterPickPoints { get; }
+
+        public decimal GetAveragePoints(bool counterPick)
+        {
+            if (!counterPick)
+            {
+                return AverageStandardGamePoints;
+            }
+
+            return AverageCounterPickPoints;
+        }
     }
 }
