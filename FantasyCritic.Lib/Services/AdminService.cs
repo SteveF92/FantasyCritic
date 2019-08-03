@@ -137,11 +137,11 @@ namespace FantasyCritic.Lib.Services
                 var masterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, false);
                 foreach (var masterGame in masterGames)
                 {
-                    double hypeFactor = (101 - masterGame.AverageDraftPosition ?? 0) * masterGame.PercentStandardGame;
-                    double dateAdjustedHypeFactor = (101 - masterGame.AverageDraftPosition ?? 0) * masterGame.EligiblePercentStandardGame;
-
                     double notNullAverageDraftPosition = masterGame.AverageDraftPosition ?? 0;
                     double notNullAverageWinningBid = masterGame.AverageWinningBid ?? 0;
+
+                    double hypeFactor = (101 - notNullAverageDraftPosition) * masterGame.PercentStandardGame;
+                    double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * masterGame.EligiblePercentStandardGame;
 
                     double standardGame = masterGame.EligiblePercentStandardGame * hypeConstants.StandardGameConstant;
                     double counterPick = masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant;
@@ -156,7 +156,6 @@ namespace FantasyCritic.Lib.Services
 
                 await _masterGameRepo.UpdateHypeFactors(hypeScores, supportedYear.Year);
             }
-            
         }
     }
 }
