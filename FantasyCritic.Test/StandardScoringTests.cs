@@ -119,7 +119,7 @@ namespace FantasyCritic.Test
             ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
             var eligibilitySettings = new EligibilitySettings(StandardEligibilityLevel, false, false, false, false, false);
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), new LocalDate(2018, 10, 20), null, null, new LocalDate(2018, 1, 1), eligibilitySettings, "", 
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2019, 10, 20), new LocalDate(2019, 10, 20), null, null, new LocalDate(2019, 1, 1), eligibilitySettings, "", 
                 fakeClock.GetCurrentInstant(), false, false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null, 2018);
 
