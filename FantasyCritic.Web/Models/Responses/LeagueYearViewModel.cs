@@ -52,7 +52,8 @@ namespace FantasyCritic.Web.Models.Responses
                 }
                 else
                 {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, options, systemWideValues, userIsInLeague, userIsInvitedToLeague, supportedYear));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, options, systemWideValues,
+                        userIsInLeague, userIsInvitedToLeague, supportedYear));
                 }
             }
 

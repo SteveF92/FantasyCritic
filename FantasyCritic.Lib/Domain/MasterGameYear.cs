@@ -61,6 +61,22 @@ namespace FantasyCritic.Lib.Domain
             return true;
         }
 
+        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick, SystemWideValues systemWideValues, bool simpleProjections)
+        {
+            decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick);
+            if (fantasyPoints.HasValue)
+            {
+                return fantasyPoints.Value;
+            }
+
+            if (simpleProjections)
+            {
+                return systemWideValues.GetAveragePoints(counterPick);
+            }
+
+            return scoringSystem.GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), counterPick);
+        }
+
         public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
         {
             decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick);

@@ -46,14 +46,14 @@ namespace FantasyCritic.Lib.Domain
             return MasterGame.Value.WillRelease();
         }
 
-        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues)
+        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections)
         {
             if (MasterGame.HasNoValue)
             {
                 return systemWideValues.GetAveragePoints(CounterPick);
             }
 
-            return MasterGame.Value.GetProjectedFantasyPoints(scoringSystem, CounterPick);
+            return MasterGame.Value.GetProjectedFantasyPoints(scoringSystem, CounterPick, systemWideValues, simpleProjections);
         }
 
         public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem)

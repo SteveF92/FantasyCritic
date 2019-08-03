@@ -63,9 +63,9 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        public decimal GetProjectedFantasyPoints(LeagueOptions options, SystemWideValues systemWideValues, bool yearFinished)
+        public decimal GetProjectedFantasyPoints(LeagueOptions options, SystemWideValues systemWideValues, bool yearFinished, bool simpleProjections)
         {
-            var currentGamesScore =  PublisherGames.Sum(x => x.GetProjectedFantasyPoints(options.ScoringSystem, systemWideValues));
+            var currentGamesScore =  PublisherGames.Sum(x => x.GetProjectedFantasyPoints(options.ScoringSystem, systemWideValues, simpleProjections));
             var availableSlots = GetAvailableSlots(options, yearFinished);
             var emptySlotsScore = availableSlots * systemWideValues.AverageStandardGamePoints;
             return currentGamesScore + emptySlotsScore;

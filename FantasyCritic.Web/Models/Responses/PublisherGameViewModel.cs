@@ -19,7 +19,8 @@ namespace FantasyCritic.Web.Models.Responses
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
             CounterPick = publisherGame.CounterPick;
             FantasyPoints = publisherGame.FantasyPoints;
-            ProjectedFantasyPoints = publisherGame.GetProjectedFantasyPoints(scoringSystem, systemWideValues);
+            SimpleProjectedFantasyPoints = publisherGame.GetProjectedFantasyPoints(scoringSystem, systemWideValues, true);
+            AdvancedProjectedFantasyPoints = publisherGame.GetProjectedFantasyPoints(scoringSystem, systemWideValues, false);
 
             Linked = publisherGame.MasterGame.HasValue;
             if (Linked)
@@ -56,7 +57,8 @@ namespace FantasyCritic.Web.Models.Responses
         public DateTime? ReleaseDate { get; }
         public decimal? FantasyPoints { get; }
         public decimal? CriticScore { get; }
-        public decimal ProjectedFantasyPoints { get; }
+        public decimal SimpleProjectedFantasyPoints { get; }
+        public decimal AdvancedProjectedFantasyPoints { get; }
         public MasterGameYearViewModel MasterGame { get; }
 
         public bool Linked { get; }
