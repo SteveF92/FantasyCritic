@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FantasyCritic.Lib.Domain.ScoringSystems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,7 +50,46 @@ namespace FantasyCritic.Lib.Domain
         public double LinearRegressionHypeFactor { get; }
 
         public override string ToString() => $"{MasterGame}-{Year}";
-        
+
+        public bool WillRelease()
+        {
+            if (Year < MasterGame.MinimumReleaseDate.Year)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
+        {
+            decimal? criticScoreToUse = CalculateFantasyPoints(scoringSystem, counterPick);
+            if (!criticScoreToUse.HasValue)
+            {
+                criticScoreToUse = Convert.ToDecimal(LinearRegressionHypeFactor);
+            }
+
+            return scoringSystem.GetPointsForScore(criticScoreToUse.Value, counterPick);
+        }
+
+        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
+        {
+            decimal criticScoreToUse;
+            if (MasterGame.CriticScore.HasValue)
+            {
+                criticScoreToUse = MasterGame.CriticScore.Value;
+            }
+            else if (!WillRelease())
+            {
+                return 0m;
+            }
+            else
+            {
+                return null;
+            }
+
+            return scoringSystem.GetPointsForScore(criticScoreToUse, counterPick);
+        }
 
         public bool Equals(MasterGameYear other)
         {

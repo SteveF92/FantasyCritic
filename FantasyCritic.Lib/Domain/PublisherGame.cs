@@ -10,10 +10,8 @@ namespace FantasyCritic.Lib.Domain
 {
     public class PublisherGame
     {
-        private readonly int _leagueYear;
-
         public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, decimal? fantasyPoints, 
-            Maybe<MasterGameYear> masterGame, int? draftPosition, int? overallDraftPosition, int leagueYear)
+            Maybe<MasterGameYear> masterGame, int? draftPosition, int? overallDraftPosition)
         {
             PublisherID = publisherID;
             PublisherGameID = publisherGameID;
@@ -25,7 +23,6 @@ namespace FantasyCritic.Lib.Domain
             MasterGame = masterGame;
             DraftPosition = draftPosition;
             OverallDraftPosition = overallDraftPosition;
-            _leagueYear = leagueYear;
         }
 
         public Guid PublisherID { get; }
@@ -46,57 +43,31 @@ namespace FantasyCritic.Lib.Domain
                 return false;
             }
 
-            if (_leagueYear < MasterGame.Value.MasterGame.MinimumReleaseDate.Year)
-            {
-                return false;
-            }
-
-            return true;
+            return MasterGame.Value.WillRelease();
         }
 
         public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues)
         {
-            decimal? criticScoreToUse = CalculateFantasyPoints(scoringSystem);
-            if (!criticScoreToUse.HasValue)
+            if (MasterGame.HasNoValue)
             {
-                if (MasterGame.HasValue)
-                {
-                    criticScoreToUse = Convert.ToDecimal(MasterGame.Value.LinearRegressionHypeFactor);
-                }
-                else
-                {
-                    return systemWideValues.GetAveragePoints(CounterPick);
-                }
+                return systemWideValues.GetAveragePoints(CounterPick);
             }
 
-            return scoringSystem.GetPointsForScore(criticScoreToUse.Value, CounterPick);
+            return MasterGame.Value.GetProjectedFantasyPoints(scoringSystem, CounterPick);
         }
 
         public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem)
         {
-            decimal criticScoreToUse;
             if (ManualCriticScore.HasValue)
             {
-                criticScoreToUse = ManualCriticScore.Value;
+                return scoringSystem.GetPointsForScore(ManualCriticScore.Value, CounterPick);
             }
-            else if (MasterGame.HasNoValue)
-            {
-                return null;
-            }
-            else if (MasterGame.Value.MasterGame.CriticScore.HasValue)
-            {
-                criticScoreToUse = MasterGame.Value.MasterGame.CriticScore.Value;
-            }
-            else if (!WillRelease())
-            {
-                return 0m;
-            }
-            else
+            if (MasterGame.HasNoValue)
             {
                 return null;
             }
 
-            return scoringSystem.GetPointsForScore(criticScoreToUse, CounterPick);
+            return MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick);
         }
 
         public override string ToString() => GameName;

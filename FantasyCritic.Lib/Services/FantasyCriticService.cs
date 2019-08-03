@@ -134,7 +134,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null, 
-                masterGameYear, request.DraftPosition, request.OverallDraftPosition, request.Publisher.Year);
+                masterGameYear, request.DraftPosition, request.OverallDraftPosition);
 
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
             Maybe<LeagueYear> leagueYear = await _fantasyCriticRepo.GetLeagueYear(request.Publisher.League, request.Publisher.Year);

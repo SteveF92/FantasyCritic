@@ -48,7 +48,7 @@ namespace FantasyCritic.MySQL.Entities
         public PublisherGame ToDomain(Maybe<MasterGameYear> masterGame, int leagueYear)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, instant, CounterPick, ManualCriticScore, FantasyPoints, masterGame, DraftPosition, OverallDraftPosition, leagueYear);
+            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, instant, CounterPick, ManualCriticScore, FantasyPoints, masterGame, DraftPosition, OverallDraftPosition);
             return domain;
         }
     }
