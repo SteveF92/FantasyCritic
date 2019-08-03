@@ -67,7 +67,7 @@ namespace FantasyCritic.MySQL
                 return _masterGameYearsCache[year].Values.ToList();
             }
 
-            string sqlSource = useCache ? "tbl_caching_mastergameyear" : "vw_cacher_mastergame";
+            string sqlSource = useCache ? "tbl_mastergame_mastergameyear" : "vw_mastergame_mastergameyear";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>($"select * from {sqlSource} where Year = @year;", new { year });
@@ -507,8 +507,8 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync("delete from tbl_caching_mastergameyear where Year = @year", new {year});
-                    await connection.BulkInsertAsync(masterGameYearEntities, "tbl_caching_mastergameyear", 500, transaction, excludeFields);
+                    await connection.ExecuteAsync("delete from tbl_mastergame_mastergameyear where Year = @year", new {year});
+                    await connection.BulkInsertAsync(masterGameYearEntities, "tbl_mastergame_mastergameyear", 500, transaction, excludeFields);
                     transaction.Commit();
                 }
             }
