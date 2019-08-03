@@ -15,7 +15,7 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public MasterGameYear(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame,
-            double eligiblePercentCounterPick, double? averageDraftPosition, double? averageBidAmount,
+            double eligiblePercentCounterPick, int numberOfBids, double? averageDraftPosition, double? averageBidAmount,
             double hypeFactor, double dateAdjustedHypeFactor, double linearRegressionHypeFactor)
         {
             MasterGame = masterGame;
@@ -24,6 +24,7 @@ namespace FantasyCritic.Lib.Domain
             PercentCounterPick = percentCounterPick;
             EligiblePercentStandardGame = eligiblePercentStandardGame;
             EligiblePercentCounterPick = eligiblePercentCounterPick;
+            NumberOfBids = numberOfBids;
             AverageDraftPosition = averageDraftPosition;
             AverageWinningBid = averageBidAmount;
 
@@ -38,6 +39,7 @@ namespace FantasyCritic.Lib.Domain
         public double PercentCounterPick { get; }
         public double EligiblePercentStandardGame { get; }
         public double EligiblePercentCounterPick { get; }
+        public int NumberOfBids { get; }
         public double? AverageDraftPosition { get; }
         public double? AverageWinningBid { get; }
         public double HypeFactor { get; }
