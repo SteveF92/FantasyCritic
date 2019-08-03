@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class HypeConstants
     {
-        public HypeConstants(decimal baseScore, decimal standardGameConstant, decimal counterPickConstant, decimal averageDraftPositionConstant, decimal averageBidAmountConstant)
+        public HypeConstants(double baseScore, double standardGameConstant, double counterPickConstant, double averageDraftPositionConstant, double averageBidAmountConstant)
         {
             BaseScore = baseScore;
             StandardGameConstant = standardGameConstant;
@@ -17,10 +17,10 @@ namespace FantasyCritic.Lib.Domain
             AverageWinningBidConstant = averageBidAmountConstant;
         }
 
-        public decimal BaseScore { get; }
-        public decimal StandardGameConstant { get; }
-        public decimal CounterPickConstant { get; }
-        public decimal AverageDraftPositionConstant { get; }
-        public decimal AverageWinningBidConstant { get; }
+        public double BaseScore { get; }
+        public double StandardGameConstant { get; }
+        public double CounterPickConstant { get; }
+        public double AverageDraftPositionConstant { get; }
+        public double AverageWinningBidConstant { get; }
     }
 }

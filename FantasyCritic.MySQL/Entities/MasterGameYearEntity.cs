@@ -44,7 +44,6 @@ namespace FantasyCritic.MySQL.Entities
             AverageWinningBid = masterGameHypeScores.MasterGameYear.AverageWinningBid;
             HypeFactor = masterGameHypeScores.HypeFactor;
             DateAdjustedHypeFactor = masterGameHypeScores.DateAdjustedHypeFactor;
-            BidAdjustedHypeFactor = masterGameHypeScores.BidAdjustedHypeFactor;
             LinearRegressionHypeFactor = masterGameHypeScores.LinearRegressionHypeFactor;
             AddedTimestamp = masterGameHypeScores.MasterGameYear.MasterGame.AddedTimestamp.ToDateTimeUtc();
         }
@@ -68,16 +67,15 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime? FirstCriticScoreTimestamp { get; set; }
         public bool DoNotRefreshDate { get; set; }
         public bool DoNotRefreshAnything { get; set; }
-        public decimal PercentStandardGame { get; set; }
-        public decimal PercentCounterPick { get; set; }
-        public decimal EligiblePercentStandardGame { get; set; }
-        public decimal EligiblePercentCounterPick { get; set; }
-        public decimal? AverageDraftPosition { get; set; }
-        public decimal? AverageWinningBid { get; set; }
-        public decimal? HypeFactor { get; set; }
-        public decimal? DateAdjustedHypeFactor { get; set; }
-        public decimal? BidAdjustedHypeFactor { get; set; }
-        public decimal? LinearRegressionHypeFactor { get; set; }
+        public double PercentStandardGame { get; set; }
+        public double PercentCounterPick { get; set; }
+        public double EligiblePercentStandardGame { get; set; }
+        public double EligiblePercentCounterPick { get; set; }
+        public double? AverageDraftPosition { get; set; }
+        public double? AverageWinningBid { get; set; }
+        public double HypeFactor { get; set; }
+        public double DateAdjustedHypeFactor { get; set; }
+        public double LinearRegressionHypeFactor { get; set; }
         public DateTime AddedTimestamp { get; set; }
 
         public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel, int year)
@@ -108,7 +106,7 @@ namespace FantasyCritic.MySQL.Entities
                 DoNotRefreshDate, DoNotRefreshAnything, addedTimestamp);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 
-                AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, BidAdjustedHypeFactor, LinearRegressionHypeFactor);
+                AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);
         }
     }
 }

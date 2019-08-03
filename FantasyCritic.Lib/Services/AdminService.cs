@@ -138,21 +138,20 @@ namespace FantasyCritic.Lib.Services
                 var masterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, false);
                 foreach (var masterGame in masterGames)
                 {
-                    decimal hypeFactor = (101 - masterGame.AverageDraftPosition ?? 0m) * masterGame.PercentStandardGame;
-                    decimal dateAdjustedHypeFactor = (101 - masterGame.AverageDraftPosition ?? 0m) * masterGame.EligiblePercentStandardGame;
-                    decimal bidAdjustedHypeFactor = Math.Max((101 - masterGame.AverageDraftPosition ?? 0m), masterGame.AverageWinningBid ?? 0m) * masterGame.EligiblePercentStandardGame;
+                    double hypeFactor = (101 - masterGame.AverageDraftPosition ?? 0) * masterGame.PercentStandardGame;
+                    double dateAdjustedHypeFactor = (101 - masterGame.AverageDraftPosition ?? 0) * masterGame.EligiblePercentStandardGame;
 
-                    decimal notNullAverageDraftPosition = masterGame.AverageDraftPosition ?? 0m;
-                    decimal notNullAverageWinningBid = masterGame.AverageWinningBid ?? 0m;
+                    double notNullAverageDraftPosition = masterGame.AverageDraftPosition ?? 0;
+                    double notNullAverageWinningBid = masterGame.AverageWinningBid ?? 0;
 
-                    decimal standardGame = masterGame.EligiblePercentStandardGame * hypeConstants.StandardGameConstant;
-                    decimal counterPick = masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant;
-                    decimal averageDraftPosition = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
-                    decimal averageWinningBid = notNullAverageWinningBid * hypeConstants.AverageWinningBidConstant;
+                    double standardGame = masterGame.EligiblePercentStandardGame * hypeConstants.StandardGameConstant;
+                    double counterPick = masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant;
+                    double averageDraftPosition = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
+                    double averageWinningBid = notNullAverageWinningBid * hypeConstants.AverageWinningBidConstant;
 
-                    decimal linearRegressionHypeFactor = hypeConstants.BaseScore + standardGame - counterPick + averageDraftPosition + averageWinningBid;
+                    double linearRegressionHypeFactor = hypeConstants.BaseScore + standardGame - counterPick + averageDraftPosition + averageWinningBid;
 
-                    hypeScores.Add(new MasterGameHypeScores(masterGame, hypeFactor, dateAdjustedHypeFactor, bidAdjustedHypeFactor, linearRegressionHypeFactor));
+                    hypeScores.Add(new MasterGameHypeScores(masterGame, hypeFactor, dateAdjustedHypeFactor, linearRegressionHypeFactor));
                 }
 
                 await _masterGameRepo.UpdateHypeFactors(hypeScores, supportedYear.Year);

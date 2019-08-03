@@ -73,12 +73,12 @@ namespace FantasyCritic.Web.Models.Responses
         public string BoxartFileName { get; }
         public Instant AddedTimestamp { get; }
 
-        public decimal PercentStandardGame { get; }
-        public decimal PercentCounterPick { get; }
-        public decimal EligiblePercentStandardGame { get; }
-        public decimal EligiblePercentCounterPick { get; }
-        public decimal? AverageDraftPosition { get; }
-        public decimal? HypeFactor { get; }
-        public decimal? DateAdjustedHypeFactor { get; }
+        public double PercentStandardGame { get; }
+        public double PercentCounterPick { get; }
+        public double EligiblePercentStandardGame { get; }
+        public double EligiblePercentCounterPick { get; }
+        public double? AverageDraftPosition { get; }
+        public double HypeFactor { get; }
+        public double DateAdjustedHypeFactor { get; }
     }
 }

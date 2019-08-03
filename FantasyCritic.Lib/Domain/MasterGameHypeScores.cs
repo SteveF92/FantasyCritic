@@ -8,19 +8,17 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGameHypeScores
     {
-        public MasterGameHypeScores(MasterGameYear masterGameYear, decimal hypeFactor, decimal dateAdjustedHypeFactor, decimal bidAdjustedHypeFactor, decimal linearRegressionHypeFactor)
+        public MasterGameHypeScores(MasterGameYear masterGameYear, double hypeFactor, double dateAdjustedHypeFactor, double linearRegressionHypeFactor)
         {
             MasterGameYear = masterGameYear;
             HypeFactor = hypeFactor;
             DateAdjustedHypeFactor = dateAdjustedHypeFactor;
-            BidAdjustedHypeFactor = bidAdjustedHypeFactor;
             LinearRegressionHypeFactor = linearRegressionHypeFactor;
         }
 
         public MasterGameYear MasterGameYear { get; }
-        public decimal HypeFactor { get; }
-        public decimal DateAdjustedHypeFactor { get; }
-        public decimal BidAdjustedHypeFactor { get; }
-        public decimal LinearRegressionHypeFactor { get; }
+        public double HypeFactor { get; }
+        public double DateAdjustedHypeFactor { get; }
+        public double LinearRegressionHypeFactor { get; }
     }
 }
