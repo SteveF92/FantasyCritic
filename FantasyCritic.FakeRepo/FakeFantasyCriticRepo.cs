@@ -380,11 +380,6 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task UpdateReleaseDateEstimates(LocalDate tomorrow)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<HypeConstants> GetHypeConstants()
         {
             throw new NotImplementedException();

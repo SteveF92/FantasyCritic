@@ -151,6 +151,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task UpdateReleaseDateEstimates(LocalDate tomorrow)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame)
         {
             throw new NotImplementedException();

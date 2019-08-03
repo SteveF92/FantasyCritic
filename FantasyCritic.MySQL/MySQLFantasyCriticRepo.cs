@@ -1279,21 +1279,6 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task UpdateReleaseDateEstimates(LocalDate tomorrow)
-        {
-            var sql = "UPDATE tbl_mastergame SET MinimumReleaseDate = ReleaseDate, SortableEstimatedReleaseDate = ReleaseDate, EstimatedReleaseDate = ReleaseDate where ReleaseDate is not NULL;";
-            var sql2 = "UPDATE tbl_mastergame SET MinimumReleaseDate = @tomorrow WHERE MinimumReleaseDate < @tomorrow AND ReleaseDate IS NULL;";
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                using (var transaction = await connection.BeginTransactionAsync())
-                {
-                    await connection.ExecuteAsync(sql);
-                    await connection.ExecuteAsync(sql2, new { tomorrow = tomorrow.ToDateTimeUnspecified() });
-                    transaction.Commit();
-                }
-            }
-        }
-
         public async Task<HypeConstants> GetHypeConstants()
         {
             using (var connection = new MySqlConnection(_connectionString))

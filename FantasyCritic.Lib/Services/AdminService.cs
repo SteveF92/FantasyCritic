@@ -120,7 +120,7 @@ namespace FantasyCritic.Lib.Services
             _logger.LogInformation("Refreshing caches");
 
             LocalDate tomorrow = _clock.GetToday().PlusDays(1);
-            await _fantasyCriticRepo.UpdateReleaseDateEstimates(tomorrow);
+            await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
             await _fantasyCriticRepo.UpdateSystemWideValues();
             await UpdateHypeFactor();
