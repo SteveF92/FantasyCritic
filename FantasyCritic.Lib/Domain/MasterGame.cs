@@ -10,7 +10,7 @@ namespace FantasyCritic.Lib.Domain
     {
         private readonly decimal? _criticScore;
 
-        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate sortableEstimatedReleaseDate, 
+        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate, 
             LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear, EligibilitySettings eligibilitySettings, 
             string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, Instant addedTimestamp)
         {
@@ -31,7 +31,7 @@ namespace FantasyCritic.Lib.Domain
             AddedTimestamp = addedTimestamp;
         }
 
-        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate sortableEstimatedReleaseDate,
+        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate,
             LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int minimumReleaseYear, EligibilitySettings eligibilitySettings, 
             IReadOnlyList<MasterSubGame> subGames, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
             bool doNotRefreshAnything, Instant addedTimestamp)

@@ -84,7 +84,7 @@ namespace FantasyCritic.MySQL.Entities
                 releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
             }
 
-            LocalDate sortableEstimatedReleaseDate = LocalDate.MaxIsoValue;
+            LocalDate? sortableEstimatedReleaseDate = null;
             if (SortableEstimatedReleaseDate.HasValue)
             {
                 sortableEstimatedReleaseDate = LocalDate.FromDateTime(SortableEstimatedReleaseDate.Value);
