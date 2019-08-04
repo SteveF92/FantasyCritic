@@ -42,7 +42,7 @@
     components: {
       MasterGamePopover
     },
-    props: ['game', 'yearFinished', 'advancedProjections'],
+    props: ['game', 'yearFinished'],
     computed: {
       releaseDate() {
             return moment(this.game.releaseDate).format('MMMM Do, YYYY');

@@ -27,8 +27,11 @@
           <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller"></minimalBlankPlayerGameRow>
           <tr class="minimal-game-row">
             <td id="total-description">
-              <span id="total-description-text">
+              <span id="total-description-text" v-if="!advancedProjections">
                 Total Fantasy Points
+              </span>
+              <span id="total-description-text" v-else>
+                Projected Fantasy Points
               </span>
             </td>
             <template v-if="!advancedProjections">
@@ -173,6 +176,9 @@
   .score-column {
     width: 30px;
     text-align: center;
+    font-weight: bold;
+    height: 20px;
+    line-height: 20px;
   }
 
   #total-description {
