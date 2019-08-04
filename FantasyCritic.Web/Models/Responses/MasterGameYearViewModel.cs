@@ -20,6 +20,7 @@ namespace FantasyCritic.Web.Models.Responses
             SortableEstimatedReleaseDate = masterGame.MasterGame.SortableEstimatedReleaseDate ?? LocalDate.MaxIsoValue;
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
             IsReleased = masterGame.MasterGame.IsReleased(clock);
+            WillRelease = masterGame.WillRelease();
             CriticScore = masterGame.MasterGame.CriticScore;
             AveragedScore = masterGame.MasterGame.AveragedScore;
             EligibilitySettings = new EligibilitySettingsViewModel(masterGame.MasterGame.EligibilitySettings, false);
@@ -45,6 +46,7 @@ namespace FantasyCritic.Web.Models.Responses
             SortableEstimatedReleaseDate = masterSubGame.SortableEstimatedReleaseDate;
             ReleaseDate = masterSubGame.ReleaseDate;
             IsReleased = masterSubGame.IsReleased(clock);
+            WillRelease = masterGame.WillRelease();
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
             EligibilitySettings = new EligibilitySettingsViewModel(masterGame.MasterGame.EligibilitySettings, false);
@@ -68,6 +70,7 @@ namespace FantasyCritic.Web.Models.Responses
         public LocalDate SortableEstimatedReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public bool IsReleased { get; }
+        public bool WillRelease { get; }
         public decimal? CriticScore { get; }
         public bool AveragedScore { get; }
         public EligibilitySettingsViewModel EligibilitySettings { get; }

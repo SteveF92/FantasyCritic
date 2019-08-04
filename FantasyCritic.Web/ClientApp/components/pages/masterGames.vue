@@ -50,10 +50,10 @@
             {{data.item.dateAdjustedHypeFactor | score(1)}}
           </template>
           <template slot="projectedFantasyPoints" slot-scope="data">
-            <template v-if="data.item.isReleased">
+            <template v-if="data.item.isReleased || !data.item.willRelease">
               {{data.item.projectedFantasyPoints | score(1)}}
             </template>
-            <template v-else="!data.item.isReleased">
+            <template v-else>
               <em>~{{data.item.projectedFantasyPoints | score(1)}}</em>
             </template>
           </template>
