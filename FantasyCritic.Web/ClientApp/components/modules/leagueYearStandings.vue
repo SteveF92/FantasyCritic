@@ -131,11 +131,11 @@
   }
 
    .projections-label {
-    margin-top: 10px;
+    margin-top: 14px;
   }
 
   .toggle {
-    margin-top: 7px;
+    margin-top: 4px;
   }
 
   .publisher-name {
