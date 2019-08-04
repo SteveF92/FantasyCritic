@@ -66,12 +66,7 @@
     components: {
       ToggleButton
     },
-    props: ['league', 'leagueYear'],
-    data() {
-      return {
-        advancedProjections: false
-      }
-    },
+    props: ['league', 'leagueYear', 'advancedProjections'],
     computed: {
       showRemove() {
         return (this.league.isManager && this.league.neverStarted);
