@@ -11,14 +11,14 @@ namespace FantasyCritic.Web.Models.Responses
     public class PublisherViewModel
     {
         public PublisherViewModel(Publisher publisher, IClock clock, bool userIsInLeague,
-            bool outstandingInvite, SystemWideValues systemWideValues)
-        : this(publisher, clock, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues)
+            bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished)
+        : this(publisher, clock, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues, yearFinished)
         {
 
         }
 
         public PublisherViewModel(Publisher publisher, IClock clock, Maybe<Publisher> nextDraftPublisher,
-            bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues)
+            bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished)
         {
             PublisherID = publisher.PublisherID;
             LeagueID = publisher.LeagueYear.League.LeagueID;
@@ -34,6 +34,7 @@ namespace FantasyCritic.Web.Models.Responses
 
             AverageCriticScore = publisher.AverageCriticScore;
             TotalFantasyPoints = publisher.TotalFantasyPoints;
+            TotalProjectedPoints = publisher.GetProjectedFantasyPoints(publisher.LeagueYear.Options, systemWideValues, yearFinished, true);
             Budget = publisher.Budget;
 
             if (nextDraftPublisher.HasValue && nextDraftPublisher.Value.PublisherID == publisher.PublisherID)
@@ -56,6 +57,7 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<PublisherGameViewModel> Games { get; }
         public decimal? AverageCriticScore { get; }
         public decimal TotalFantasyPoints { get; }
+        public decimal TotalProjectedPoints { get; }
         public uint Budget { get; }
         public bool NextToDraft { get; }
         public bool UserIsInLeague { get; }

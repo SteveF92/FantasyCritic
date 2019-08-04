@@ -314,8 +314,9 @@ namespace FantasyCritic.Web.Controllers.API
 
 
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == publisher.Value.LeagueYear.Year);
 
-            var publisherViewModel = new PublisherViewModel(publisher.Value, _clock, userIsInLeague, userIsInvitedToLeague, systemWideValues);
+            var publisherViewModel = new PublisherViewModel(publisher.Value, _clock, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
             return Ok(publisherViewModel);
         }
 

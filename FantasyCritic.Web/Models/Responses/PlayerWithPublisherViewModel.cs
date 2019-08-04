@@ -27,7 +27,7 @@ namespace FantasyCritic.Web.Models.Responses
             SupportedYear supportedYear)
         {
             User = new PlayerViewModel(leagueYear.League, user);
-            Publisher = new PublisherViewModel(publisher, clock, userIsInLeague, userIsInvitedToLeague, systemWideValues);
+            Publisher = new PublisherViewModel(publisher, clock, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
             SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, true);
             AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, false);

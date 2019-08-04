@@ -31,7 +31,13 @@
                 Total Fantasy Points
               </span>
             </td>
-            <td id="total-column" class="success" colspan="2">{{publisher.totalFantasyPoints | score}}</td>
+            <template v-if="!advancedProjections">
+              <td id="total-column" class="bg-success" colspan="2">{{publisher.totalFantasyPoints | score}}</td>
+            </template>
+            <template v-else>
+              <td id="total-column" class="bg-info"><em>~{{publisher.totalFantasyPoints | score}}</em></td>
+              <td id="total-column" class="bg-success">{{publisher.totalProjectedPoints | score}}</td>
+            </template>
           </tr>
       </tbody>
       <tbody v-if="!tableIsValid">
@@ -61,28 +67,33 @@
         },
         props: ['publisher', 'options', 'yearFinished'],
         computed: {
-            games() {
-                return this.publisher.games;
-            },
-            standardGames() {
-                return _.filter(this.games, { 'counterPick': false });
-            },
-            counterPicks() {
-                return _.filter(this.games, { 'counterPick': true });
-            },
-            standardFiller() {
-                var numberStandardGames = this.standardGames.length;
-                var openSlots = this.options.standardGameSlots - numberStandardGames;
-                return openSlots;
-            },
-            counterPickFiller() {
-                var numberCounterPicked = this.counterPicks.length;
-                var openSlots = this.options.counterPickSlots - numberCounterPicked;
-                return openSlots;
-            },
-            tableIsValid() {
-              return (this.standardGames.length <= this.options.standardGameSlots) && (this.counterPicks.length <= this.options.counterPickSlots);
+          games() {
+              return this.publisher.games;
+          },
+          standardGames() {
+              return _.filter(this.games, { 'counterPick': false });
+          },
+          counterPicks() {
+              return _.filter(this.games, { 'counterPick': true });
+          },
+          standardFiller() {
+              var numberStandardGames = this.standardGames.length;
+              var openSlots = this.options.standardGameSlots - numberStandardGames;
+              return openSlots;
+          },
+          counterPickFiller() {
+              var numberCounterPicked = this.counterPicks.length;
+              var openSlots = this.options.counterPickSlots - numberCounterPicked;
+              return openSlots;
+          },
+          tableIsValid() {
+            return (this.standardGames.length <= this.options.standardGameSlots) && (this.counterPicks.length <= this.options.counterPickSlots);
+          },
+          advancedProjections: {
+            get() {
+              return this.$store.getters.advancedProjections;
             }
+          }
         }
     }
 </script>
