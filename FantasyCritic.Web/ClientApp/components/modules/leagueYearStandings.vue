@@ -1,6 +1,14 @@
 <template>
   <div>
-    <h2>Standings</h2>
+    <div class="header">
+      <h2>Standings</h2>
+      <span>
+        <label class="projections-label">Advanced Projections</label>
+        <toggle-button class="toggle" :class="{ 'toggle-on': advancedProjections }" v-model="advancedProjections" :sync="true"
+                       :labels="{checked: 'On', unchecked: 'Off'}" :css-colors="true" :font-size="13"/>
+      </span>
+    </div>
+    
     <div class="table-responsive">
       <table class="table table-bordered table-striped table-sm">
         <thead>
@@ -38,7 +46,7 @@
                 </span>
               </span>
             </td>
-            <td>{{player.projectedFantasyPoints | score(2)}}</td>
+            <td>{{getProjectedPoints(player) | score(2)}}</td>
             <td>{{player.totalFantasyPoints | score(2)}}</td>
             <td>
               <span v-if="player.publisher">{{player.publisher.budget | money}}</span>
@@ -52,19 +60,35 @@
 <script>
   import Vue from "vue";
   import axios from "axios";
+  import { ToggleButton } from 'vue-js-toggle-button'
 
   export default {
+    components: {
+      ToggleButton
+    },
     props: ['league', 'leagueYear'],
+    data() {
+      return {
+        advancedProjections: false
+      }
+    },
     computed: {
       showRemove() {
         return (this.league.isManager && this.league.neverStarted);
       },
       sortedPlayers() {
-        return _.sortBy(this.leagueYear.players, [function (x) { return x.projectedFantasyPoints; }]).reverse();
+        let vueObject = this;
+        return _.sortBy(this.leagueYear.players, [function (x) { return vueObject.getProjectedPoints(x); }]).reverse();
         return;
       }
     },
     methods: {
+      getProjectedPoints(player) {
+        if (this.advancedProjections) {
+          return player.advancedProjectedFantasyPoints;
+        }
+        return player.simpleProjectedFantasyPoints;
+      },
       removeUser(user) {
         var model = {
           leagueID: this.leagueYear.leagueID,
@@ -106,6 +130,19 @@
   }
 </script>
 <style scoped>
+  .header{
+    display:flex;
+    justify-content: space-between;
+  }
+
+   .projections-label {
+    margin-top: 10px;
+  }
+
+  .toggle {
+    margin-top: 7px;
+  }
+
   .publisher-name {
       display: block;
       word-wrap: break-word;

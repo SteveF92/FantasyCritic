@@ -31,6 +31,7 @@
     "vee-validate": "^2.2.13",
     "vue": "^2.6.10",
     "vue-analytics": "5.17.0",
+    "vue-js-toggle-button": "^1.3.2",
     "vue-popperjs": "^2.0.4",
     "vue-router": "^3.0.7",
     "vue-server-renderer": "^2.6.10",

@@ -129,3 +129,13 @@ div.alert {
     text-align: right;
     margin-right: 10px;
 }
+
+.toggle .v-switch-core {
+    background-color: #414141 !important;
+}
+.toggle .v-switch-core .v-switch-button {
+    background-color: white !important;
+}
+.toggle-on .v-switch-core {
+    background-color: #D6993A !important;
+}
