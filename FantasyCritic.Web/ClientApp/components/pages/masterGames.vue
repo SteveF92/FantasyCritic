@@ -49,14 +49,6 @@
           <template slot="dateAdjustedHypeFactor" slot-scope="data">
             {{data.item.dateAdjustedHypeFactor | score(1)}}
           </template>
-          <template slot="projectedFantasyPoints" slot-scope="data">
-            <template v-if="data.item.isReleased || !data.item.willRelease">
-              {{data.item.projectedFantasyPoints | score(1)}}
-            </template>
-            <template v-else>
-              <em>~{{data.item.projectedFantasyPoints | score(1)}}</em>
-            </template>
-          </template>
           <template slot="eligiblePercentStandardGame" slot-scope="data">
             {{data.item.eligiblePercentStandardGame | percent(1)}}
           </template>
@@ -94,7 +86,6 @@
           { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' },
           { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
-          { key: 'projectedFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary' },
           { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary','md-screen-minimum'], tdClass: 'md-screen-minimum' },
           { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
           { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },

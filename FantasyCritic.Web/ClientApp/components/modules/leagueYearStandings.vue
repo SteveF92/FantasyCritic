@@ -2,7 +2,7 @@
   <div>
     <div class="header">
       <h2>Standings</h2>
-      <span>
+      <span v-if="false">
         <label class="projections-label">Advanced Projections</label>
         <toggle-button class="toggle" :class="{ 'toggle-on': advancedProjections }" v-model="advancedProjections" :sync="true"
                        :labels="{checked: 'On', unchecked: 'Off'}" :css-colors="true" :font-size="13"/>
