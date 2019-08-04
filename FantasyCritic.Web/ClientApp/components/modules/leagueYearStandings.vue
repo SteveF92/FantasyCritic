@@ -66,7 +66,7 @@
     components: {
       ToggleButton
     },
-    props: ['league', 'leagueYear', 'advancedProjections'],
+    props: ['league', 'leagueYear'],
     computed: {
       showRemove() {
         return (this.league.isManager && this.league.neverStarted);
@@ -75,6 +75,14 @@
         let vueObject = this;
         return _.sortBy(this.leagueYear.players, [function (x) { return vueObject.getProjectedPoints(x); }]).reverse();
         return;
+      },
+      advancedProjections: {
+        get() {
+          return this.$store.getters.advancedProjections;
+        },
+        set (value) {
+          this.$store.commit('setAdvancedProjections', value)
+        }
       }
     },
     methods: {
