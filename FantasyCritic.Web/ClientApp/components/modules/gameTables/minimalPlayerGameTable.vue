@@ -35,7 +35,7 @@
               <td id="total-column" class="bg-success" colspan="2">{{publisher.totalFantasyPoints | score}}</td>
             </template>
             <template v-else>
-              <td id="total-column" class="bg-info" colspan="2"><em>~{{publisher.totalFantasyPoints | score}}</em></td>
+              <td id="total-column" class="bg-info" colspan="2"><em>~{{publisher.totalProjectedPoints | score}}</em></td>
             </template>
           </tr>
       </tbody>
