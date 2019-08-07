@@ -117,7 +117,7 @@
                            :currentBids="currentBids" :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
           </div>
           <div class="col-xl-9 col-lg-8 col-md-12">
-            <leagueYearStandings :league="league" :leagueYear="leagueYear" :advancedProjections="advancedProjections" v-on:actionTaken="actionTaken"></leagueYearStandings>
+            <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
             <h2>Summary</h2>
             <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
           </div>
