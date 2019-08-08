@@ -15,8 +15,8 @@ namespace FantasyCritic.Stats
             MasterGameID = masterGameYear.MasterGame.MasterGameID;
             GameName = masterGameYear.MasterGame.GameName;
             DateAdjustedHypeFactor = masterGameYear.DateAdjustedHypeFactor;
-            TotalBidAmount = masterGameYear.TotalBidAmount;
-            EligiblePercentCounterPick = masterGameYear.EligiblePercentCounterPick;
+            BidPercentile = masterGameYear.BidPercentile;
+            EligiblePercentCounterPick = masterGameYear.EligiblePercentCounterPick * 100;
 
             if (masterGameYear.MasterGame.CriticScore.HasValue)
             {
@@ -32,7 +32,7 @@ namespace FantasyCritic.Stats
         public Guid MasterGameID { get; }
         public string GameName { get; }
         public double DateAdjustedHypeFactor { get; }
-        public int TotalBidAmount { get; }
+        public double BidPercentile { get; }
         public double EligiblePercentCounterPick { get; }
         public decimal CriticScore { get; }
     }
