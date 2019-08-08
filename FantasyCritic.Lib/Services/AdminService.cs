@@ -143,13 +143,11 @@ namespace FantasyCritic.Lib.Services
                     double hypeFactor = (101 - notNullAverageDraftPosition) * masterGame.PercentStandardGame;
                     double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * masterGame.EligiblePercentStandardGame;
 
-                    double standardGame = masterGame.EligiblePercentStandardGame * hypeConstants.StandardGameConstant;
-                    double counterPick = masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant;
-                    double averageDraftPosition = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
-                    double averageWinningBid = notNullAverageWinningBid * hypeConstants.AverageWinningBidConstant;
-                    double numberOfBids = masterGame.NumberOfBids * hypeConstants.NumberOfBidsConstant;
+                    double counterPickCalulation = masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant;
+                    double bidPercentileCalculation = masterGame.BidPercentile * hypeConstants.BidPercentileConstant;
+                    double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
 
-                    double linearRegressionHypeFactor = hypeConstants.BaseScore + standardGame - counterPick + averageDraftPosition + averageWinningBid + numberOfBids;
+                    double linearRegressionHypeFactor = hypeConstants.BaseScore - counterPickCalulation + bidPercentileCalculation + hypeFactorCalculation;
 
                     hypeScores.Add(new MasterGameHypeScores(masterGame, hypeFactor, dateAdjustedHypeFactor, linearRegressionHypeFactor));
                 }

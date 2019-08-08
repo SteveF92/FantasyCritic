@@ -53,8 +53,10 @@ namespace FantasyCritic.Stats
 
             double baseScore = double.Parse(splitString[2]);
             double counterPickConstant = double.Parse(splitString[4]);
-            double totalBidAmountConstant = double.Parse(splitString[8]);
-            double dateAdjustedHypeFactorConstant = double.Parse(splitString[12]);
+            double bidPercentileConstant = double.Parse(splitString[8]);
+            double hypeFactorConstant = double.Parse(splitString[12]);
+
+            HypeConstants hypeConstants = new HypeConstants(baseScore, counterPickConstant, bidPercentileConstant, hypeFactorConstant);
 
             File.Delete(fileName);
         }

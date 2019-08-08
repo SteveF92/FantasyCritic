@@ -8,22 +8,18 @@ namespace FantasyCritic.Lib.Domain
 {
     public class HypeConstants
     {
-        public HypeConstants(double baseScore, double standardGameConstant, double counterPickConstant, double averageDraftPositionConstant, 
-            double averageBidAmountConstant, double numberOfBidsConstant)
+        public HypeConstants(double baseScore, double counterPickConstant, double bidPercentileConstant, double hypeFactorConstant)
         {
             BaseScore = baseScore;
-            StandardGameConstant = standardGameConstant;
             CounterPickConstant = counterPickConstant;
-            AverageDraftPositionConstant = averageDraftPositionConstant;
-            AverageWinningBidConstant = averageBidAmountConstant;
-            NumberOfBidsConstant = numberOfBidsConstant;
+            BidPercentileConstant = bidPercentileConstant;
+            HypeFactorConstant = hypeFactorConstant;
         }
 
         public double BaseScore { get; }
-        public double StandardGameConstant { get; }
         public double CounterPickConstant { get; }
-        public double AverageDraftPositionConstant { get; }
-        public double AverageWinningBidConstant { get; }
-        public double NumberOfBidsConstant { get; }
+        public double BidPercentileConstant { get; }
+        public double HypeFactorConstant { get; }
+
     }
 }
