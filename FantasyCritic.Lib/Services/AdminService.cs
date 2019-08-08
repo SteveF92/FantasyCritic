@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using CsvHelper;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
+using FantasyCritic.Lib.Statistics;
+using FantasyCritic.Stats;
 using Microsoft.Extensions.Logging;
 using NodaTime;
+using RDotNet;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -123,8 +128,50 @@ namespace FantasyCritic.Lib.Services
             await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
             await _fantasyCriticRepo.UpdateSystemWideValues();
+            await UpdateHypeConstants();
             await UpdateHypeFactor();
             _logger.LogInformation("Done refreshing caches");
+        }
+
+        private async Task UpdateHypeConstants()
+        {
+            REngine.SetEnvironmentVariables();
+            var engine = REngine.GetInstance();
+            string rscript = Encoding.UTF8.GetString(Resource.MasterGameStatisticsScript);
+
+            var masterGames = await _masterGameRepo.GetMasterGameYears(2019, true);
+
+            var gamesToOutput = masterGames
+                .Where(x => x.Year == 2019)
+                .Where(x => x.DateAdjustedHypeFactor > 0)
+                .Where(x => !x.WillRelease() || x.MasterGame.CriticScore.HasValue);
+
+            var outputModels = gamesToOutput.Select(x => new MasterGameYearRInput(x));
+
+            string fileName = Guid.NewGuid() + ".csv";
+            using (var writer = new StreamWriter(fileName))
+            using (var csv = new CsvWriter(writer))
+            {
+                csv.WriteRecords(outputModels);
+            }
+
+            var args_r = new string[1] { fileName };
+            engine.SetCommandLineArguments(args_r);
+
+            CharacterVector vector = engine.Evaluate(rscript).AsCharacter();
+            string result = vector[0];
+            var splitString = result.Split(' ');
+
+            double baseScore = double.Parse(splitString[2]);
+            double counterPickConstant = double.Parse(splitString[4]);
+            double bidPercentileConstant = double.Parse(splitString[8]);
+            double hypeFactorConstant = double.Parse(splitString[12]);
+
+            HypeConstants hypeConstants = new HypeConstants(baseScore, counterPickConstant, bidPercentileConstant, hypeFactorConstant);
+
+            await _masterGameRepo.UpdateHypeConstants(hypeConstants);
+
+            File.Delete(fileName);
         }
 
         private async Task UpdateHypeFactor()
