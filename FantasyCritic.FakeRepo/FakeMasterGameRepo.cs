@@ -49,6 +49,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task UpdateHypeConstants(HypeConstants hypeConstants)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task CreateMasterGame(MasterGame masterGame)
         {
             throw new NotImplementedException();

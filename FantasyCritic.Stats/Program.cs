@@ -58,6 +58,8 @@ namespace FantasyCritic.Stats
 
             HypeConstants hypeConstants = new HypeConstants(baseScore, counterPickConstant, bidPercentileConstant, hypeFactorConstant);
 
+            await masterGameRepo.UpdateHypeConstants(hypeConstants);
+
             File.Delete(fileName);
         }
     }

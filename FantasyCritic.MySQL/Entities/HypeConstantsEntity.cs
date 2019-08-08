@@ -9,6 +9,19 @@ namespace FantasyCritic.MySQL.Entities
 {
     public class HypeConstantsEntity
     {
+        public HypeConstantsEntity()
+        {
+
+        }
+
+        public HypeConstantsEntity(HypeConstants domain)
+        {
+            BaseScore = domain.BaseScore;
+            CounterPickConstant = domain.CounterPickConstant;
+            BidPercentileConstant = domain.BidPercentileConstant;
+            HypeFactorConstant = domain.HypeFactorConstant;
+        }
+
         public double BaseScore { get; set;  }
         public double CounterPickConstant { get; set; }
         public double BidPercentileConstant { get; set; }

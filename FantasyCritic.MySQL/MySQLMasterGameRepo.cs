@@ -529,5 +529,23 @@ namespace FantasyCritic.MySQL
                 }
             }
         }
+
+        public async Task UpdateHypeConstants(HypeConstants hypeConstants)
+        {
+            var entity = new HypeConstantsEntity(hypeConstants);
+            string sql =
+                "insert into tbl_meta_hypeconstants(BaseScore,CounterPickConstant,BidPercentileConstant,HypeFactorConstant) VALUES " +
+                "(@BaseScore,@CounterPickConstant,@BidPercentileConstant,@HypeFactorConstant)";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync("delete from tbl_meta_hypeconstants;");
+                    await connection.ExecuteAsync(sql, entity);
+                    transaction.Commit();
+                }
+            }
+        }
     }
 }
