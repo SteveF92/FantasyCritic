@@ -10,6 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
+    <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
