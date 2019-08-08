@@ -4,7 +4,9 @@ library(tidyr)
 #library(ggplot2)
 
 # read CSV file
-dat <- read.csv('./CleanMasterGames2.csv')
+args <- commandArgs()
+inputFilePath <- args[2]
+dat <- read.csv(inputFilePath)
 
 # select meaningful + response vars
 ds <- dat %>%
