@@ -128,12 +128,12 @@ namespace FantasyCritic.Lib.Services
             await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
             await _fantasyCriticRepo.UpdateSystemWideValues();
-            await UpdateHypeConstants();
-            await UpdateHypeFactor();
+            var hypeConstants = await GetHypeConstants();
+            await UpdateHypeFactor(hypeConstants);
             _logger.LogInformation("Done refreshing caches");
         }
 
-        private async Task UpdateHypeConstants()
+        private async Task<HypeConstants> GetHypeConstants()
         {
             REngine.SetEnvironmentVariables();
             var engine = REngine.GetInstance();
@@ -169,15 +169,12 @@ namespace FantasyCritic.Lib.Services
 
             HypeConstants hypeConstants = new HypeConstants(baseScore, counterPickConstant, bidPercentileConstant, hypeFactorConstant);
 
-            await _masterGameRepo.UpdateHypeConstants(hypeConstants);
-
-            File.Delete(fileName);
+            return hypeConstants;
         }
 
-        private async Task UpdateHypeFactor()
+        private async Task UpdateHypeFactor(HypeConstants hypeConstants)
         {
             var supportedYears = await _interLeagueService.GetSupportedYears();
-            HypeConstants hypeConstants = await _fantasyCriticRepo.GetHypeConstants();
             foreach (var supportedYear in supportedYears)
             {
                 List<MasterGameHypeScores> hypeScores = new List<MasterGameHypeScores>();
