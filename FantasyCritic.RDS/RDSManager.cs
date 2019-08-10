@@ -50,7 +50,7 @@ namespace FantasyCritic.RDS
                 var domainObjects = orderedSnaps
                     .Select(x =>
                     new DatabaseSnapshotInfo(x.DBSnapshotIdentifier,
-                        Instant.FromDateTimeUtc(x.SnapshotCreateTime),
+                        Instant.FromDateTimeUtc(x.SnapshotCreateTime.ToUniversalTime()),
                         x.PercentProgress,
                         x.Status))
                     .ToList();
