@@ -12,7 +12,6 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Statistics;
-using FantasyCritic.Stats;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using RDotNet;
@@ -162,12 +161,18 @@ namespace FantasyCritic.Lib.Services
             string result = vector[0];
             var splitString = result.Split(' ');
 
-            double baseScore = double.Parse(splitString[2]);
-            double counterPickConstant = double.Parse(splitString[4]);
-            double bidPercentileConstant = double.Parse(splitString[8]);
-            double hypeFactorConstant = double.Parse(splitString[12]);
+            File.Delete(fileName);
 
-            HypeConstants hypeConstants = new HypeConstants(baseScore, counterPickConstant, bidPercentileConstant, hypeFactorConstant);
+            double baseScore = double.Parse(splitString[2]);
+            double standardGameConstant = double.Parse(splitString[4]);
+            double counterPickConstant = double.Parse(splitString[8]);
+            double hypeFactorConstant = double.Parse(splitString[12]);
+            double averageDraftPositionConstant = double.Parse(splitString[16]);
+            double totalBidAmountConstant = double.Parse(splitString[20]);
+            double bidPercentileConstant = double.Parse(splitString[24]);
+
+            HypeConstants hypeConstants = new HypeConstants(baseScore, standardGameConstant, counterPickConstant,
+                hypeFactorConstant, averageDraftPositionConstant, totalBidAmountConstant, bidPercentileConstant);
 
             return hypeConstants;
         }
@@ -187,11 +192,20 @@ namespace FantasyCritic.Lib.Services
                     double hypeFactor = (101 - notNullAverageDraftPosition) * masterGame.PercentStandardGame;
                     double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * masterGame.EligiblePercentStandardGame;
 
-                    double counterPickCalulation = masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant;
-                    double bidPercentileCalculation = masterGame.BidPercentile * hypeConstants.BidPercentileConstant;
+                    double standardGameCalculation = masterGame.EligiblePercentStandardGame * hypeConstants.StandardGameConstant;
+                    double counterPickCalculation = masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant;
                     double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
+                    double averageDraftPositionCalculation = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
+                    double totalBidCalculation = masterGame.TotalBidAmount * hypeConstants.TotalBidAmountConstant;
+                    double bidPercentileCalculation = masterGame.BidPercentile * hypeConstants.BidPercentileConstant;
 
-                    double linearRegressionHypeFactor = hypeConstants.BaseScore - counterPickCalulation + bidPercentileCalculation + hypeFactorCalculation;
+                    double linearRegressionHypeFactor = hypeConstants.BaseScore 
+                                                        + standardGameCalculation 
+                                                        + counterPickCalculation 
+                                                        + hypeFactorCalculation 
+                                                        + averageDraftPositionCalculation 
+                                                        + totalBidCalculation 
+                                                        + bidPercentileCalculation;
 
                     hypeScores.Add(new MasterGameHypeScores(masterGame, hypeFactor, dateAdjustedHypeFactor, linearRegressionHypeFactor));
                 }

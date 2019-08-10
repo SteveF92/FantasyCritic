@@ -10,7 +10,7 @@ dat <- read.csv(inputFilePath)
 
 # select meaningful + response vars
 ds <- dat %>%
-  select(EligiblePercentCounterPick, BidPercentile, DateAdjustedHypeFactor, CriticScore)
+  select(EligiblePercentStandardGame,EligiblePercentCounterPick,DateAdjustedHypeFactor,AverageDraftPosition,TotalBidAmount,BidPercentile,CriticScore)
 
 # Replacing all zeroes to NA:
 ds[ds == 0] <- NA
