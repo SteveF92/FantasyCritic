@@ -12,6 +12,7 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Statistics;
+using FantasyCritic.Lib.Utilities;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using RDotNet;
@@ -44,6 +45,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task RefreshCriticInfo()
         {
+            return;
             _logger.LogInformation("Refreshing critic scores");
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var masterGames = await _interLeagueService.GetMasterGames();
@@ -138,6 +140,11 @@ namespace FantasyCritic.Lib.Services
         {
             Instant time = _clock.GetCurrentInstant();
             return _rdsManager.SnapshotRDS(time);
+        }
+
+        public Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentDatabaseSnapshots()
+        {
+            return _rdsManager.GetRecentSnapshots();
         }
 
         private async Task<HypeConstants> GetHypeConstants()

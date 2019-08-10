@@ -51,6 +51,10 @@
         <b-button variant="info" v-on:click="snapshotDatabase">Snapshot Database</b-button>
         <hr />
       </div>
+      <div>
+        <b-button variant="info" v-on:click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
+        <hr />
+      </div>
     </div>
   </div>
 </template>
@@ -159,7 +163,20 @@
             this.isBusy = false;
             this.errorInfo = returnedError.response.data;
           });
-      }
+      },
+      getRecentDatabaseSnapshots() {
+        this.isBusy = true;
+        axios
+          .post('/api/admin/GetRecentDatabaseSnapshots')
+          .then(response => {
+            this.isBusy = false;
+            this.jobSuccess = "Getting snapshots";
+          })
+          .catch(returnedError => {
+            this.isBusy = false;
+            this.errorInfo = returnedError.response.data;
+          });
+      },
     }
   }
 </script>

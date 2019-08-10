@@ -8,6 +8,9 @@ using Amazon.Runtime.Internal.Auth;
 using NodaTime;
 using FantasyCritic.Lib.Interfaces;
 using System.Globalization;
+using System.Linq;
+using System.Collections.Generic;
+using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.RDS
 {
@@ -22,14 +25,37 @@ namespace FantasyCritic.RDS
 
         public async Task SnapshotRDS(Instant snapshotTime)
         {
-            AmazonRDSClient rdsClient = new AmazonRDSClient();
-            var date = snapshotTime.InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).LocalDateTime.Date;
-            var dateString = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            var random = Guid.NewGuid().ToString().Substring(0, 1);
-            string snapName = "AdminSnap-" + dateString + "-" + random;
+            using (AmazonRDSClient rdsClient = new AmazonRDSClient())
+            {
+                var date = snapshotTime.InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).LocalDateTime.Date;
+                var dateString = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                var random = Guid.NewGuid().ToString().Substring(0, 1);
+                string snapName = "AdminSnap-" + dateString + "-" + random;
 
-            CreateDBSnapshotRequest request = new CreateDBSnapshotRequest(snapName, _instanceName);
-            await rdsClient.CreateDBSnapshotAsync(request, CancellationToken.None);
+                CreateDBSnapshotRequest request = new CreateDBSnapshotRequest(snapName, _instanceName);
+                await rdsClient.CreateDBSnapshotAsync(request, CancellationToken.None);
+            }       
+        }
+
+        public async Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentSnapshots()
+        {
+            using (AmazonRDSClient rdsClient = new AmazonRDSClient())
+            {
+                DescribeDBSnapshotsRequest request = new DescribeDBSnapshotsRequest()
+                {
+                    DBInstanceIdentifier = _instanceName
+                };
+                DescribeDBSnapshotsResponse snaps = await rdsClient.DescribeDBSnapshotsAsync(request, CancellationToken.None);
+                var orderedSnaps = snaps.DBSnapshots.OrderByDescending(x => x.SnapshotCreateTime).Take(5);
+                var domainObjects = orderedSnaps
+                    .Select(x =>
+                    new DatabaseSnapshotInfo(x.DBSnapshotIdentifier,
+                        Instant.FromDateTimeUtc(x.SnapshotCreateTime),
+                        x.PercentProgress,
+                        x.Status))
+                    .ToList();
+                return domainObjects;
+            }
         }
     }
 }

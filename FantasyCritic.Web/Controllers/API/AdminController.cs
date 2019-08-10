@@ -11,6 +11,7 @@ using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Requests.Admin;
@@ -227,6 +228,12 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> SnapshotDatabase()
         {
             await _adminService.SnapshotDatabase();
+            return Ok();
+        }
+
+        public async Task<IActionResult> GetRecentDatabaseSnapshots()
+        {
+            IReadOnlyList<DatabaseSnapshotInfo> snaps = await _adminService.GetRecentDatabaseSnapshots();
             return Ok();
         }
     }
