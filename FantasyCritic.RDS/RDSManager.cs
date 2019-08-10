@@ -27,9 +27,7 @@ namespace FantasyCritic.RDS
 
         public async Task SnapshotRDS(Instant snapshotTime)
         {
-            var credentials = new BasicAWSCredentials(_accessKey, _secretKey);
-            var region = Amazon.RegionEndpoint.GetBySystemName(_region);
-            AmazonRDSClient rdsClient = new AmazonRDSClient(credentials, region);
+            AmazonRDSClient rdsClient = new AmazonRDSClient();
 
             CreateDBSnapshotRequest request = new CreateDBSnapshotRequest("AutoSnap - " + snapshotTime, _instanceName);
             await rdsClient.CreateDBSnapshotAsync(request, CancellationToken.None);
