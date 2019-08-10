@@ -46,7 +46,7 @@ namespace FantasyCritic.RDS
                     DBInstanceIdentifier = _instanceName
                 };
                 DescribeDBSnapshotsResponse snaps = await rdsClient.DescribeDBSnapshotsAsync(request, CancellationToken.None);
-                var orderedSnaps = snaps.DBSnapshots.OrderByDescending(x => x.SnapshotCreateTime).Take(5);
+                var orderedSnaps = snaps.DBSnapshots.OrderByDescending(x => x.SnapshotCreateTime);
                 var domainObjects = orderedSnaps
                     .Select(x =>
                     new DatabaseSnapshotInfo(x.DBSnapshotIdentifier,
