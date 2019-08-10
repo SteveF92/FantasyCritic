@@ -222,5 +222,12 @@ namespace FantasyCritic.Web.Controllers.API
             await _adminService.RefreshCaches();
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SnapshotDatabase()
+        {
+            await _adminService.SnapshotDatabase();
+            return Ok();
+        }
     }
 }
