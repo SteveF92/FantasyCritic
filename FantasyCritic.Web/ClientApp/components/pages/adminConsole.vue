@@ -55,6 +55,8 @@
         <b-button variant="info" v-on:click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
         <hr />
       </div>
+      <div v-if="recentSnapshots"></div>
+      <b-table :items="recentSnapshots" striped bordered></b-table>
     </div>
   </div>
 </template>
@@ -66,7 +68,8 @@
       return {
         isBusy: false,
         errorInfo: "",
-        jobSuccess: ""
+        jobSuccess: "",
+        recentSnapshots: null
       }
     },
     computed: {
@@ -167,8 +170,9 @@
       getRecentDatabaseSnapshots() {
         this.isBusy = true;
         axios
-          .post('/api/admin/GetRecentDatabaseSnapshots')
+          .get('/api/admin/GetRecentDatabaseSnapshots')
           .then(response => {
+            this.recentSnapshots = response.data;
             this.isBusy = false;
             this.jobSuccess = "Getting snapshots";
           })

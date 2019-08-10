@@ -234,7 +234,9 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> GetRecentDatabaseSnapshots()
         {
             IReadOnlyList<DatabaseSnapshotInfo> snaps = await _adminService.GetRecentDatabaseSnapshots();
-            return Ok();
+
+            var vms = snaps.Select(x => new DatabaseSnapshotInfoViewModel(x));
+            return Ok(vms);
         }
     }
 }
