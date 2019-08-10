@@ -13,16 +13,10 @@ namespace FantasyCritic.RDS
 {
     public class RDSManager : IRDSManager
     {
-        private readonly string _accessKey;
-        private readonly string _secretKey;
-        private readonly string _region;
         private readonly string _instanceName;
 
-        public RDSManager(string accessKey, string secretKey, string region, string instanceName)
+        public RDSManager(string instanceName)
         {
-            _accessKey = accessKey;
-            _secretKey = secretKey;
-            _region = region;
             _instanceName = instanceName;
         }
 

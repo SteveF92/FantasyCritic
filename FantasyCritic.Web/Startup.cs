@@ -57,9 +57,6 @@ namespace FantasyCritic.Web
             var audience = Configuration["Tokens:Audience"];
             IClock clock = SystemClock.Instance;
 
-            var awsAccessKey = Configuration["AWS:accessKey"];
-            var awsSecretKey = Configuration["AWS:secretKey"];
-            var awsRegion = Configuration["AWS:region"];
             var rdsInstanceName = Configuration["AWS:rdsInstanceName"];
 
             // Add application services.
@@ -80,7 +77,7 @@ namespace FantasyCritic.Web
             services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore)));
             services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
-            services.AddScoped<IRDSManager>(factory => new RDSManager(awsAccessKey, awsSecretKey, awsRegion, rdsInstanceName));
+            services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
 
             //Fake Repos (for testing without a database)
             //var userStore = new FakeFantasyCriticUserStore(clock);
