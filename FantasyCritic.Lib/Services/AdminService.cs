@@ -20,6 +20,7 @@ namespace FantasyCritic.Lib.Services
 {
     public class AdminService
     {
+        private readonly IRDSManager _rdsManager;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
         private readonly IMasterGameRepo _masterGameRepo;
@@ -29,7 +30,7 @@ namespace FantasyCritic.Lib.Services
         private readonly ILogger<OpenCriticService> _logger;
 
         public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
-            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<OpenCriticService> logger)
+            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<OpenCriticService> logger, IRDSManager rdsManager)
         {
             _fantasyCriticService = fantasyCriticService;
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -38,6 +39,7 @@ namespace FantasyCritic.Lib.Services
             _openCriticService = openCriticService;
             _clock = clock;
             _logger = logger;
+            _rdsManager = rdsManager;
         }
 
         public async Task RefreshCriticInfo()
@@ -130,6 +132,12 @@ namespace FantasyCritic.Lib.Services
             var hypeConstants = await GetHypeConstants();
             await UpdateHypeFactor(hypeConstants);
             _logger.LogInformation("Done refreshing caches");
+        }
+
+        public Task SnapshotDatabase()
+        {
+            Instant time = _clock.GetCurrentInstant();
+            return _rdsManager.SnapshotRDS(time);
         }
 
         private async Task<HypeConstants> GetHypeConstants()

@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
+using FantasyCritic.RDS;
 using FantasyCritic.SendGrid;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Services;
@@ -56,8 +57,13 @@ namespace FantasyCritic.Web
             var audience = Configuration["Tokens:Audience"];
             IClock clock = SystemClock.Instance;
 
+            var awsAccessKey = Configuration["AWS:accessKey"];
+            var awsSecretKey = Configuration["AWS:secretKey"];
+            var awsRegion = Configuration["AWS:region"];
+            var rdsInstanceName = Configuration["AWS:rdsInstanceName"];
+
             // Add application services.
-            
+
             var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
             SendGridEmailSender sendGridEmailSender = new SendGridEmailSender();
 
@@ -74,6 +80,7 @@ namespace FantasyCritic.Web
             services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore)));
             services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
+            services.AddScoped<IRDSManager>(factory => new RDSManager(awsAccessKey, awsSecretKey, awsRegion, rdsInstanceName));
 
             //Fake Repos (for testing without a database)
             //var userStore = new FakeFantasyCriticUserStore(clock);
