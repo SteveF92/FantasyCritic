@@ -27,5 +27,13 @@ namespace FantasyCritic.Lib.Domain
         public double AverageDraftPositionConstant { get; }
         public double TotalBidAmountConstant { get; }
         public double BidPercentileConstant { get; }
+
+        public override string ToString()
+        {
+            return
+                $"BaseScore= {BaseScore}  StandardGameConstant= {StandardGameConstant}  CounterPickConstant= {CounterPickConstant}  " +
+                $"HypeFactorConstant= {HypeFactorConstant}  AverageDraftPositionConstant= {AverageDraftPositionConstant}  " +
+                $"TotalBidAmountConstant= {TotalBidAmountConstant} BidPercentileConstant = {BidPercentileConstant}";
+        }
     }
 }

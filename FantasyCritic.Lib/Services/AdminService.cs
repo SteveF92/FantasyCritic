@@ -45,7 +45,6 @@ namespace FantasyCritic.Lib.Services
 
         public async Task RefreshCriticInfo()
         {
-            return;
             _logger.LogInformation("Refreshing critic scores");
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var masterGames = await _interLeagueService.GetMasterGames();
@@ -149,6 +148,7 @@ namespace FantasyCritic.Lib.Services
 
         private async Task<HypeConstants> GetHypeConstants()
         {
+            _logger.LogInformation("Getting Hype Constants");
             REngine.SetEnvironmentVariables();
             var engine = REngine.GetInstance();
             string rscript = Encoding.UTF8.GetString(Resource.MasterGameStatisticsScript);
@@ -188,6 +188,9 @@ namespace FantasyCritic.Lib.Services
 
             HypeConstants hypeConstants = new HypeConstants(baseScore, standardGameConstant, counterPickConstant,
                 hypeFactorConstant, averageDraftPositionConstant, totalBidAmountConstant, bidPercentileConstant);
+
+            _logger.LogInformation($"Hype Constants: {hypeConstants}");
+
 
             return hypeConstants;
         }
