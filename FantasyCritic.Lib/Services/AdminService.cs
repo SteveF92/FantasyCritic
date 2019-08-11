@@ -151,8 +151,8 @@ namespace FantasyCritic.Lib.Services
             _logger.LogInformation("Getting Hype Constants");
             REngine.SetEnvironmentVariables();
             var engine = REngine.GetInstance();
-            byte[] rawScript = Resource.MasterGameStatisticsScript;
-            string rscript = Encoding.UTF8.GetString(rawScript);
+
+            string rscript = File.ReadAllText("Statistics/MasterGameStatisticsScript.R");
 
             var masterGames = await _masterGameRepo.GetMasterGameYears(2019, true);
 
@@ -191,7 +191,6 @@ namespace FantasyCritic.Lib.Services
                 hypeFactorConstant, averageDraftPositionConstant, totalBidAmountConstant, bidPercentileConstant);
 
             _logger.LogInformation($"Hype Constants: {hypeConstants}");
-
 
             return hypeConstants;
         }
