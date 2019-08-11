@@ -152,7 +152,7 @@ namespace FantasyCritic.Lib.Services
             REngine.SetEnvironmentVariables();
             var engine = REngine.GetInstance();
 
-            string rscript = File.ReadAllText("Statistics/MasterGameStatisticsScript.R");
+            string rscript = Resource.MasterGameStatisticsScript;
 
             var masterGames = await _masterGameRepo.GetMasterGameYears(2019, true);
 

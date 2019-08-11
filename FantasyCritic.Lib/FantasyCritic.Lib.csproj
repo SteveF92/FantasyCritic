@@ -39,6 +39,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Statistics\Resource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Statistics\Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Statistics\MasterGameStatisticsScript.R">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
