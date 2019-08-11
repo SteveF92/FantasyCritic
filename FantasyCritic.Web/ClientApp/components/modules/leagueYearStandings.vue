@@ -136,6 +136,7 @@
   .header{
     display:flex;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
    .projections-label {
