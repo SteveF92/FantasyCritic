@@ -151,7 +151,8 @@ namespace FantasyCritic.Lib.Services
             _logger.LogInformation("Getting Hype Constants");
             REngine.SetEnvironmentVariables();
             var engine = REngine.GetInstance();
-            string rscript = Encoding.UTF8.GetString(Resource.MasterGameStatisticsScript);
+            byte[] rawScript = Resource.MasterGameStatisticsScript;
+            string rscript = Encoding.UTF8.GetString(rawScript);
 
             var masterGames = await _masterGameRepo.GetMasterGameYears(2019, true);
 
