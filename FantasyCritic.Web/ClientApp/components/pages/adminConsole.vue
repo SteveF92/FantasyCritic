@@ -6,57 +6,35 @@
       <div class="alert alert-info" v-show="isBusy">Request is processing...</div>
       <div class="alert alert-success" v-show="jobSuccess">{{jobSuccess}} sucessfully run.</div>
 
-      <h2>Actions</h2>
+      <h2>Requests</h2>
       <div>
         <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">View master game requests</b-button>
-        <hr />
-      </div>
-      <div>
         <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master game change requests</b-button>
-        <hr />
-      </div>
-      <div>
         <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
-        <hr />
       </div>
+
+      <h2>Data Actions</h2>
       <div>
+        <b-button variant="info" v-on:click="fullRefresh">Full Refresh</b-button>
         <b-button variant="info" v-on:click="refreshCriticScores">Refresh Critic Scores</b-button>
-        <hr />
-      </div>
-      <div>
         <b-button variant="info" v-on:click="updateFantasyPoints">Update Fantasy Points</b-button>
-        <hr />
+        <b-button variant="info" v-on:click="refreshCaches">Refresh Caches</b-button>
       </div>
+
+      <h2>Bids</h2>
       <div>
         <b-button variant="info" :to="{ name: 'currentFailingBids' }">Current Failing Bids</b-button>
-        <hr />
-      </div>
-      <div>
-        <b-button variant="info" v-on:click="processBids">Process Bids</b-button>
-        <hr />
-      </div>
-      <div>
-        <b-button variant="info" v-on:click="turnOnBidProcessing">Turn on bid processing mode</b-button>
-        <hr />
-      </div>
-      <div>
+        <b-button variant="warning" v-on:click="turnOnBidProcessing">Turn on bid processing mode</b-button>
         <b-button variant="info" v-on:click="turnOffBidProcessing">Turn off bid processing mode</b-button>
-        <hr />
+        <b-button variant="danger" v-on:click="processBids">Process Bids</b-button>
       </div>
-      <div>
-        <b-button variant="info" v-on:click="refreshCaches">Refresh Caches</b-button>
-        <hr />
-      </div>
-      <div>
-        <b-button variant="info" v-on:click="snapshotDatabase">Snapshot Database</b-button>
-        <hr />
-      </div>
+
+      <h2>Database</h2>
       <div>
         <b-button variant="info" v-on:click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
-        <hr />
+        <b-button variant="warning" v-on:click="snapshotDatabase">Snapshot Database</b-button>
       </div>
-      <div v-if="recentSnapshots"></div>
-      <b-table :items="recentSnapshots" striped bordered></b-table>
+      <b-table v-if="recentSnapshots" :items="recentSnapshots" striped bordered></b-table>
     </div>
   </div>
 </template>
@@ -76,6 +54,19 @@
 
     },
     methods: {
+      fullRefresh() {
+        this.isBusy = true;
+        axios
+          .post('/api/admin/fullRefresh')
+          .then(response => {
+            this.isBusy = false;
+            this.jobSuccess = "Refresh Critic Scores";
+          })
+          .catch(returnedError => {
+            this.isBusy = false;
+            this.errorInfo = returnedError.response.data;
+          });
+      },
       refreshCriticScores() {
         this.isBusy = true;
         axios

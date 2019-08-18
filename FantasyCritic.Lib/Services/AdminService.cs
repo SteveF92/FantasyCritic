@@ -43,6 +43,19 @@ namespace FantasyCritic.Lib.Services
             _rdsManager = rdsManager;
         }
 
+        public async Task FullDataRefresh()
+        {
+            await RefreshCriticInfo();
+
+            await Task.Delay(1000);
+            await RefreshCaches();
+            await Task.Delay(1000);
+
+            await UpdateFantasyPoints();
+            await Task.Delay(1000);
+            await RefreshCaches();
+        }
+
         public async Task RefreshCriticInfo()
         {
             _logger.LogInformation("Refreshing critic scores");
@@ -93,11 +106,6 @@ namespace FantasyCritic.Lib.Services
             }
 
             _logger.LogInformation("Done refreshing critic scores");
-
-            await Task.Delay(1000);
-            await RefreshCaches();
-            await Task.Delay(1000);
-            await UpdateFantasyPoints();
         }
 
         public async Task UpdateFantasyPoints()
@@ -117,9 +125,6 @@ namespace FantasyCritic.Lib.Services
             }
 
             _logger.LogInformation("Done updating fantasy points");
-
-            await Task.Delay(1000);
-            await RefreshCaches();
         }
 
         public async Task RefreshCaches()

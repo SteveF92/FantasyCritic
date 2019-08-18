@@ -135,6 +135,13 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> FullDataRefresh()
+        {
+            await _adminService.FullDataRefresh();
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RefreshCriticInfo()
         {
             await _adminService.RefreshCriticInfo();

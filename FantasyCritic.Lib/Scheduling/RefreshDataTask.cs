@@ -31,7 +31,7 @@ namespace FantasyCritic.Lib.Scheduling
             using (var scope = serviceScopeFactory.CreateScope())
             {
                 var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
-                await adminService.RefreshCriticInfo();
+                await adminService.FullDataRefresh();
             }
         }
     }
