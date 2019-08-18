@@ -57,7 +57,7 @@
       fullRefresh() {
         this.isBusy = true;
         axios
-          .post('/api/admin/fullRefresh')
+          .post('/api/admin/FullDataRefresh')
           .then(response => {
             this.isBusy = false;
             this.jobSuccess = "Full Data Refresh";
