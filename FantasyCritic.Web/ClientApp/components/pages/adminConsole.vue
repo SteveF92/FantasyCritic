@@ -4,7 +4,7 @@
       <h1>Admin Console</h1>
       <div class="alert alert-danger" v-show="errorInfo">{{errorInfo}}</div>
       <div class="alert alert-info" v-show="isBusy">Request is processing...</div>
-      <div class="alert alert-success" v-show="jobSuccess">{{jobSuccess}} sucessfully run.</div>
+      <div class="alert alert-success" v-show="jobSuccess">'{{jobSuccess}}' sucessfully run.</div>
 
       <h2>Requests</h2>
       <div>
@@ -60,7 +60,7 @@
           .post('/api/admin/fullRefresh')
           .then(response => {
             this.isBusy = false;
-            this.jobSuccess = "Refresh Critic Scores";
+            this.jobSuccess = "Full Data Refresh";
           })
           .catch(returnedError => {
             this.isBusy = false;
@@ -138,7 +138,7 @@
           .post('/api/admin/refreshCaches')
           .then(response => {
             this.isBusy = false;
-            this.jobSuccess = "Caches Refreshed";
+            this.jobSuccess = "Refresh Caches";
           })
           .catch(returnedError => {
             this.isBusy = false;
