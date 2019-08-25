@@ -130,7 +130,7 @@ namespace FantasyCritic.Lib.Services
 
         public Task<IReadOnlyList<LeagueYear>> GetLeaguesYearsForUser(FantasyCriticUser user, int year)
         {
-            return _fantasyCriticRepo.GetLeaguesYearsForUser(user, year);
+            return _fantasyCriticRepo.GetLeagueYearsForUser(user, year);
         }
 
         public Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser user)

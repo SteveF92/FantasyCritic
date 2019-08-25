@@ -478,7 +478,7 @@ namespace FantasyCritic.MySQL
             return leagues;
         }
 
-        public async Task<IReadOnlyList<LeagueYear>> GetLeaguesYearsForUser(FantasyCriticUser user, int year)
+        public async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {

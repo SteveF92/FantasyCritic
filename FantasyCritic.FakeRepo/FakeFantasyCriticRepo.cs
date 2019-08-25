@@ -78,7 +78,7 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult<IReadOnlyList<League>>(leaguesForUser);
         }
 
-        public Task<IReadOnlyList<LeagueYear>> GetLeaguesYearsForUser(FantasyCriticUser user, int year)
+        public Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year)
         {
             throw new NotImplementedException();
         }

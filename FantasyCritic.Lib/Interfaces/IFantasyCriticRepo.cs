@@ -23,7 +23,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
         Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
         Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user);
-        Task<IReadOnlyList<LeagueYear>> GetLeaguesYearsForUser(FantasyCriticUser user, int year);
+        Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year);
         Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser user);
         Task FollowLeague(League league, FantasyCriticUser user);
         Task UnfollowLeague(League league, FantasyCriticUser user);
