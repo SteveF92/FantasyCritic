@@ -75,6 +75,7 @@ namespace FantasyCritic.Web
             //services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
             //services.AddScoped<IMasterGameRepo>(factory => new MySQLMasterGameRepo(connectionString, userStore));
             //services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore)));
+            //services.AddScoped<IRoyaleRepo>(factory => new MySQLRoyaleRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore)));
             //services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             //services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
@@ -85,6 +86,7 @@ namespace FantasyCritic.Web
             services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
             services.AddScoped<IMasterGameRepo>(factory => new FakeMasterGameRepo(userStore));
             services.AddScoped<IFantasyCriticRepo>(factory => new FakeFantasyCriticRepo(userStore, new FakeMasterGameRepo(userStore)));
+            services.AddScoped<IRoyaleRepo>(factory => new FakeRoyaleRepo(userStore, new FakeMasterGameRepo(userStore)));
             services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
@@ -98,6 +100,7 @@ namespace FantasyCritic.Web
             services.AddScoped<DraftService>();
             services.AddScoped<BidProcessingService>();
             services.AddScoped<FantasyCriticService>();
+            services.AddScoped<RoyaleService>();
 
             services.AddTransient<IEmailSender>(factory => sendGridEmailSender);
             services.AddTransient<ISMSSender, SMSSender>();
