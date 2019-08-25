@@ -68,27 +68,27 @@ namespace FantasyCritic.Web
 
             //Repository Setup. Uncomment either the MySQL section OR the fake repo section. Not both.
             //MySQL Repos
-            string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
-            var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
-            services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
-            services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
-            services.AddScoped<IMasterGameRepo>(factory => new MySQLMasterGameRepo(connectionString, userStore));
-            services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore)));
-            services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
-            services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
-            services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
-
-            //Fake Repos (for testing without a database)
-            //var userStore = new FakeFantasyCriticUserStore(clock);
-            //var roleStore = new FakeFantasyCriticRoleStore();
+            //string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            //var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
+            //var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             //services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
             //services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
-            //services.AddScoped<IMasterGameRepo>(factory => new FakeMasterGameRepo(userStore));
-            //services.AddScoped<IFantasyCriticRepo>(factory => new FakeFantasyCriticRepo(userStore, new FakeMasterGameRepo(userStore)));
+            //services.AddScoped<IMasterGameRepo>(factory => new MySQLMasterGameRepo(connectionString, userStore));
+            //services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore)));
             //services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             //services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
+            //Fake Repos (for testing without a database)
+            var userStore = new FakeFantasyCriticUserStore(clock);
+            var roleStore = new FakeFantasyCriticRoleStore();
+            services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
+            services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
+            services.AddScoped<IMasterGameRepo>(factory => new FakeMasterGameRepo(userStore));
+            services.AddScoped<IFantasyCriticRepo>(factory => new FakeFantasyCriticRepo(userStore, new FakeMasterGameRepo(userStore)));
+            services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
+            services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
+
+            services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticRoleManager>();
             services.AddScoped<GameAcquisitionService>();
