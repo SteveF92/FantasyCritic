@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Royale;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
@@ -56,6 +58,16 @@ namespace FantasyCritic.Lib.Domain
         public bool WillRelease()
         {
             if (Year < MasterGame.MinimumReleaseDate.Year)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool WillReleaseInQuarter(YearQuarter yearQuarter)
+        {
+            if (yearQuarter.LastDateOfQuarter < MasterGame.MinimumReleaseDate)
             {
                 return false;
             }

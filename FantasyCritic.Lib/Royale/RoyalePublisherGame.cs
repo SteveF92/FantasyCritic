@@ -4,47 +4,50 @@ using System.Text;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Royale;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
     public class RoyalePublisherGame
     {
-        public RoyalePublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, 
-            decimal? fantasyPoints, MasterGameYear masterGame)
+        public RoyalePublisherGame(Guid publisherID, Guid publisherGameID, RoyaleYearQuarter yearQuarter, MasterGameYear masterGame, Instant timestamp, 
+            decimal amountSpent, decimal advertisingMoney, decimal? fantasyPoints)
         {
             PublisherID = publisherID;
             PublisherGameID = publisherGameID;
-            GameName = gameName;
-            Timestamp = timestamp;
-            CounterPick = counterPick;
-            FantasyPoints = fantasyPoints;
+            YearQuarter = yearQuarter;
             MasterGame = masterGame;
+            Timestamp = timestamp;
+            AmountSpent = amountSpent;
+            AdvertisingMoney = advertisingMoney;
+            FantasyPoints = fantasyPoints;
         }
 
         public Guid PublisherID { get; }
         public Guid PublisherGameID { get; }
-        public string GameName { get; }
-        public Instant Timestamp { get; }
-        public bool CounterPick { get; }
-        public decimal? FantasyPoints { get; }
+        public RoyaleYearQuarter YearQuarter { get; }
         public MasterGameYear MasterGame { get; }
-
+        public Instant Timestamp { get; }
+        public decimal AmountSpent { get; }
+        public decimal AdvertisingMoney { get; }
+        public decimal? FantasyPoints { get; }
+        
         public bool WillRelease()
         {
-            return MasterGame.WillRelease();
+            return MasterGame.WillReleaseInQuarter(YearQuarter.YearQuarter);
         }
 
         public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections)
         {
-            return MasterGame.GetProjectedFantasyPoints(scoringSystem, CounterPick, systemWideValues, simpleProjections);
+            return MasterGame.GetProjectedFantasyPoints(scoringSystem, false, systemWideValues, simpleProjections);
         }
 
         public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem)
         {
-            return MasterGame.CalculateFantasyPoints(scoringSystem, CounterPick);
+            return MasterGame.CalculateFantasyPoints(scoringSystem, false);
         }
 
-        public override string ToString() => GameName;
+        public override string ToString() => MasterGame.MasterGame.GameName;
     }
 }
