@@ -88,7 +88,7 @@ namespace FantasyCritic.Lib.Domain
                 return 0;
             }
 
-            return options.StandardGames - PublisherGames.Count;
+            return options.StandardGames - PublisherGames.Count(x => !x.CounterPick);
         }
 
         public bool Equals(Publisher other)
