@@ -11,11 +11,10 @@ namespace FantasyCritic.Lib.Domain
 {
     public class RoyalePublisherGame
     {
-        public RoyalePublisherGame(Guid publisherID, Guid publisherGameID, RoyaleYearQuarter yearQuarter, MasterGameYear masterGame, Instant timestamp, 
+        public RoyalePublisherGame(Guid publisherID, RoyaleYearQuarter yearQuarter, MasterGameYear masterGame, Instant timestamp, 
             decimal amountSpent, decimal advertisingMoney, decimal? fantasyPoints)
         {
             PublisherID = publisherID;
-            PublisherGameID = publisherGameID;
             YearQuarter = yearQuarter;
             MasterGame = masterGame;
             Timestamp = timestamp;
@@ -25,7 +24,6 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public Guid PublisherID { get; }
-        public Guid PublisherGameID { get; }
         public RoyaleYearQuarter YearQuarter { get; }
         public MasterGameYear MasterGame { get; }
         public Instant Timestamp { get; }
