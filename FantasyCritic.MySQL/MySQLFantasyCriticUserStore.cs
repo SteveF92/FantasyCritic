@@ -361,6 +361,21 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task ClearOldRefreshTokens(FantasyCriticUser user)
+        {
+            DateTime cutoff = _clock.GetCurrentInstant().ToDateTimeUtc().AddDays(-7);
+            int minimumKeep = 5;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                IEnumerable<DateTime> tokenTimestamps = await connection.QueryAsync<DateTime>("select CreatedTimestamp from tbl_user_refreshtoken where UserID = @UserID;", new { user.UserID });
+                var tokensToKeep = tokenTimestamps.OrderByDescending(x => x).Take(minimumKeep);
+                var oldEnoughTokens = tokenTimestamps.Where(x => x < cutoff);
+                var tokensToDelete = oldEnoughTokens.Except(tokensToKeep);
+                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID and CreatedTimestamp in @tokensToDelete", new { user.UserID, tokensToDelete });
+            }
+        }
+
         public async Task<int> GetOpenDisplayNumber(string displayName)
         {
             var allUsers = await GetAllUsers();

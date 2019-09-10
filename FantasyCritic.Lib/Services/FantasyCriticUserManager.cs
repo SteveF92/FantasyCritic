@@ -47,6 +47,11 @@ namespace FantasyCritic.Lib.Services
             return _userStore.RemoveAllRefreshTokens(user);
         }
 
+        public Task ClearOldRefreshTokens(FantasyCriticUser user)
+        {
+            return _userStore.ClearOldRefreshTokens(user);
+        }
+
         public Task<int> GetOpenDisplayNumber(string displayName)
         {
             return _userStore.GetOpenDisplayNumber(displayName);

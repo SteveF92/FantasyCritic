@@ -308,6 +308,7 @@ namespace FantasyCritic.Web.Controllers.API
             var jwtToken = _tokenService.GenerateAccessToken(usersClaims);
             var refreshToken = _tokenService.GenerateRefreshToken();
             await _userManager.AddRefreshToken(user, refreshToken);
+            await _userManager.ClearOldRefreshTokens(user);
             var jwtString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
             return new ObjectResult(new

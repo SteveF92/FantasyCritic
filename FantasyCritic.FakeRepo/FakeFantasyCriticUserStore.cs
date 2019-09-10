@@ -221,6 +221,11 @@ namespace FantasyCritic.FakeRepo
             return Task.CompletedTask;
         }
 
+        public Task ClearOldRefreshTokens(FantasyCriticUser user)
+        {
+            return Task.CompletedTask;
+        }
+
         public void Dispose()
         {
 

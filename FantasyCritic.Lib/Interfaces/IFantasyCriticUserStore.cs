@@ -13,5 +13,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddRefreshToken(FantasyCriticUser user, string refreshToken);
         Task RemoveRefreshToken(FantasyCriticUser user, string refreshToken);
         Task RemoveAllRefreshTokens(FantasyCriticUser user);
+        Task ClearOldRefreshTokens(FantasyCriticUser user);
     }
 }
