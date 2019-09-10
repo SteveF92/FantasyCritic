@@ -3,6 +3,10 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.MySQL
 {
@@ -18,6 +22,16 @@ namespace FantasyCritic.MySQL
             _connectionString = connectionString;
             _userStore = userStore;
             _masterGameRepo = masterGameRepo;
+        }
+
+        public Task CreatePublisher(RoyalePublisher publisher)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
+        {
+            throw new NotImplementedException();
         }
     }
 }
