@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="gamesToShow && gamesToShow.length > 0">
+      <div class="row" v-if="showGames">
         <b-table :sort-by.sync="sortBy"
                  :sort-desc.sync="sortDesc"
                  :items="gamesToShow"
@@ -71,6 +71,7 @@
           </template>
         </b-table>
       </div>
+      <Loader :loading="!showGames" />
     </div>
   </div>
 </template>
@@ -81,6 +82,7 @@
   import moment from "moment";
   import MasterGamePopover from "components/modules/masterGamePopover";
   import EligibilityBadge from "components/modules/eligibilityBadge";
+  import Loader from "components/modules/loader";
 
   export default {
     data() {
@@ -106,7 +108,8 @@
     },
     components: {
       MasterGamePopover,
-      EligibilityBadge
+      EligibilityBadge,
+      Loader
     },
     computed: {
       maximumEligibilityLevel() {
@@ -131,6 +134,9 @@
         }
 
         return _.filter(this.gamesForYear, { 'isReleased': false });
+      },
+      showGames() {
+        return this.gamesToShow && this.gamesToShow.length > 0
       }
     },
     methods: {
