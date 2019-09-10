@@ -33,5 +33,10 @@ namespace FantasyCritic.MySQL
         {
             throw new NotImplementedException();
         }
+
+        public Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

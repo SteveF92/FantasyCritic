@@ -29,5 +29,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

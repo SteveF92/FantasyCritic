@@ -12,5 +12,6 @@ namespace FantasyCritic.Lib.Interfaces
     {
         Task CreatePublisher(RoyalePublisher publisher);
         Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user);
+        Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters();
     }
 }

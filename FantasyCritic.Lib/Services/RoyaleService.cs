@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Royale;
+using NLog.Targets.Wrappers;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -16,6 +17,11 @@ namespace FantasyCritic.Lib.Services
         public RoyaleService(IRoyaleRepo royaleRepo)
         {
             _royaleRepo = royaleRepo;
+        }
+
+        public Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters()
+        {
+            return _royaleRepo.GetYearQuarters();
         }
 
         public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user, string publisherName)
