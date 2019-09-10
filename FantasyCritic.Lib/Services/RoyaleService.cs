@@ -36,6 +36,11 @@ namespace FantasyCritic.Lib.Services
             return _royaleRepo.GetPublisher(yearQuarter, user);
         }
 
+        public Task<Maybe<RoyalePublisher>> GetPublisher(Guid publisherID)
+        {
+            return _royaleRepo.GetPublisher(publisherID);
+        }
+
         public Task<RoyalePublisherGame> PurchaseGame(RoyalePublisher publisher, MasterGame masterGame)
         {
             throw new NotImplementedException();

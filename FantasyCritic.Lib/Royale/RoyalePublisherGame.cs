@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
-using FantasyCritic.Lib.Enums;
-using FantasyCritic.Lib.Royale;
 using NodaTime;
 
-namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.Royale
 {
     public class RoyalePublisherGame
     {

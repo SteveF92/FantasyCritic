@@ -34,5 +34,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task<Maybe<RoyalePublisher>> GetPublisher(Guid publisherID)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

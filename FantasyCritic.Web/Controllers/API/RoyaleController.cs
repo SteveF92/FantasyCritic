@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Web.Models.Requests.Royale;
 using FantasyCritic.Web.Models.Responses.Royale;
@@ -33,6 +34,7 @@ namespace FantasyCritic.Web.Controllers.API
             _userManager = userManager;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> RoyaleQuarters()
         {
             IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
@@ -63,6 +65,20 @@ namespace FantasyCritic.Web.Controllers.API
 
             RoyalePublisher publisher = await _royaleService.CreatePublisher(selectedQuarter, currentUser, request.PublisherName);
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetRoyalePublisher(Guid id)
+        {
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(id);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock);
+            return Ok(viewModel);
         }
     }
 }
