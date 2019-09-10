@@ -69,6 +69,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            if (!supportedYears.Any(x => x.OpenForCreation && x.Year == request.InitialYear))
+            {
+                return BadRequest();
+            }
+
             EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(request.MaximumEligibilityLevel);
             LeagueCreationParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel);
             var league = await _fantasyCriticService.CreateLeague(domainRequest);
