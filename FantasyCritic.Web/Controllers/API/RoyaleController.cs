@@ -40,7 +40,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModels);
         }
 
-        public async Task<IActionResult> CreatePublisher(CreateRoyalePublisherRequest request)
+        public async Task<IActionResult> CreatePublisher([FromBody] CreateRoyalePublisherRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             if (currentUser is null)

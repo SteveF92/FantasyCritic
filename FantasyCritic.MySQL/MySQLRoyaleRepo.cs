@@ -30,14 +30,37 @@ namespace FantasyCritic.MySQL
             _fantasyCriticRepo = fantasyCriticRepo;
         }
 
-        public Task CreatePublisher(RoyalePublisher publisher)
+        public async Task CreatePublisher(RoyalePublisher publisher)
         {
-            throw new NotImplementedException();
+            RoyalePublisherEntity entity = new RoyalePublisherEntity(publisher);
+            string sql = "insert into tbl_royale_publisher (PublisherID,UserID,Year,Quarter,PublisherName,Budget) " +
+                         "VALUES (@PublisherID,@UserID,@Year,@Quarter,@PublisherName,@Budget)";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, entity);
+            }
         }
 
-        public Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
+        public async Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
         {
-            throw new NotImplementedException();
+            string sql = "select * from tbl_royale_publisher where UserID = @userID and Year = @year and Quarter = @quarter;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(sql,
+                    new
+                    {
+                        userID = user.UserID,
+                        year = yearQuarter.YearQuarter.Year,
+                        quarter = yearQuarter.YearQuarter.Quarter
+                    });
+                if (entity is null)
+                {
+                    return Maybe<RoyalePublisher>.None;
+                }
+
+                var domain = entity.ToDomain(yearQuarter, user, new List<RoyalePublisherGame>());
+                return domain;
+            }
         }
 
         public async Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters()
