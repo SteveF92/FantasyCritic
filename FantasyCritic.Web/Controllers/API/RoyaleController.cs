@@ -33,6 +33,13 @@ namespace FantasyCritic.Web.Controllers.API
             _userManager = userManager;
         }
 
+        public async Task<IActionResult> RoyaleQuarters()
+        {
+            IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
+            var viewModels = supportedQuarters.Select(x => new RoyaleYearQuarterViewModel(x));
+            return Ok(viewModels);
+        }
+
         public async Task<IActionResult> CreatePublisher(CreateRoyalePublisherRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -56,13 +63,6 @@ namespace FantasyCritic.Web.Controllers.API
 
             RoyalePublisher publisher = await _royaleService.CreatePublisher(selectedQuarter, currentUser, request.PublisherName);
             return Ok();
-        }
-
-        public async Task<IActionResult> RoyaleQuarters()
-        {
-            IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
-            var viewModels = supportedQuarters.Select(x => new RoyaleYearQuarterViewModel(x));
-            return Ok(viewModels);
         }
     }
 }
