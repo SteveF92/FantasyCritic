@@ -71,7 +71,8 @@
           </template>
         </b-table>
       </div>
-      <Loader :loading="!showGames" />
+
+      <font-awesome-icon icon="circle-notch" size="4x" spin v-else />
     </div>
   </div>
 </template>
@@ -82,7 +83,6 @@
   import moment from "moment";
   import MasterGamePopover from "components/modules/masterGamePopover";
   import EligibilityBadge from "components/modules/eligibilityBadge";
-  import Loader from "components/modules/loader";
 
   export default {
     data() {
@@ -108,8 +108,7 @@
     },
     components: {
       MasterGamePopover,
-      EligibilityBadge,
-      Loader
+      EligibilityBadge
     },
     computed: {
       maximumEligibilityLevel() {
