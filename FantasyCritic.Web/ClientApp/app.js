@@ -31,7 +31,6 @@ Vue.use(VueAnalytics, {
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.component('font-awesome-layers', FontAwesomeLayers);
 Vue.component('font-awesome-layers-text', FontAwesomeLayersText);
-Vue.prototype.$http = axios;
 sync(store, router);
 
 axios.interceptors.response.use(function (response) {
