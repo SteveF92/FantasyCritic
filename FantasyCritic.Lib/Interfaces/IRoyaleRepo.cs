@@ -15,5 +15,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters();
         Task<Maybe<RoyalePublisher>> GetPublisher(Guid publisherID);
         Task PurchaseGame(RoyalePublisherGame game);
+        Task SellGame(RoyalePublisherGame publisherGame);
     }
 }

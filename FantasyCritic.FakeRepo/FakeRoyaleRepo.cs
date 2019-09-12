@@ -44,5 +44,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task SellGame(RoyalePublisherGame publisherGame)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

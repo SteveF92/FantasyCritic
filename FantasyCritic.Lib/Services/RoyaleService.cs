@@ -89,9 +89,24 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok(game);
         }
 
-        public Task SellGame(RoyalePublisher publisher, RoyalePublisherGame game)
+        public async Task<Result> SellGame(RoyalePublisher publisher, RoyalePublisherGame publisherGame)
         {
-            throw new NotImplementedException();
+            if (publisherGame.MasterGame.MasterGame.IsReleased(_clock))
+            {
+                return Result.Fail("Game has been released.");
+            }
+            if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
+            {
+                return Result.Fail("Game has a score.");
+            }
+
+            if (!publisher.PublisherGames.Contains(publisherGame))
+            {
+                return Result.Fail("Publisher doesn't have that game.");
+            }
+
+            await _royaleRepo.SellGame(publisherGame);
+            return Result.Ok();
         }
 
         public Task SetAdvertising(RoyalePublisher publisher, RoyalePublisherGame game, decimal advertisingMoney)

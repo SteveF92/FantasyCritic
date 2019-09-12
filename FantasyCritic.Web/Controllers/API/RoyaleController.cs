@@ -44,6 +44,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModels);
         }
 
+        [HttpPost]
         public async Task<IActionResult> CreatePublisher([FromBody] CreateRoyalePublisherRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -83,6 +84,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModel);
         }
 
+        [HttpPost]
         public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -112,6 +114,41 @@ namespace FantasyCritic.Web.Controllers.API
             if (purchaseResult.IsFailure)
             {
                 return BadRequest(purchaseResult.Error);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SellGame([FromBody] SellRoyaleGameRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser is null)
+            {
+                return BadRequest();
+            }
+
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            if (!publisher.Value.User.Equals(currentUser))
+            {
+                return Forbid();
+            }
+
+            var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
+            if (publisherGame is null)
+            {
+                return BadRequest();
+            }
+
+            var sellResult = await _royaleService.SellGame(publisher.Value, publisherGame);
+            if (sellResult.IsFailure)
+            {
+                return BadRequest(sellResult.Error);
             }
 
             return Ok();

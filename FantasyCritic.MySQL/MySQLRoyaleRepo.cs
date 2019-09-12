@@ -102,7 +102,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(gameAddSQL, entity, transaction);
                     await connection.ExecuteAsync(budgetDescreaseSQL,
-                        new {amountSpent = game.AmountSpent, publisherID = game.PublisherID});
+                        new {amountSpent = game.AmountSpent, publisherID = game.PublisherID}, transaction);
                     transaction.Commit();
                 }
             }
@@ -153,6 +153,23 @@ namespace FantasyCritic.MySQL
                     domains.Add(domain);
                 }
                 return domains;
+            }
+        }
+
+        public async Task SellGame(RoyalePublisherGame publisherGame)
+        {
+            string gameRemoveSQL = "DELETE FROM tbl_royale_publishergame WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
+            string budgetIncreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget + @amountGained WHERE PublisherID = @publisherID";
+            var amountGained = publisherGame.AmountSpent / 2;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(gameRemoveSQL, new { masterGameID = publisherGame.MasterGame.MasterGame.MasterGameID, publisherID = publisherGame.PublisherID }, transaction);
+                    await connection.ExecuteAsync(budgetIncreaseSQL, new { amountGained, publisherID = publisherGame.PublisherID }, transaction);
+                    transaction.Commit();
+                }
             }
         }
     }

@@ -5,7 +5,7 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Royale
 {
-    public class RoyalePublisherGame
+    public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     {
         public RoyalePublisherGame(Guid publisherID, RoyaleYearQuarter yearQuarter, MasterGameYear masterGame, Instant timestamp, 
             decimal amountSpent, decimal advertisingMoney, decimal? fantasyPoints)
@@ -34,5 +34,28 @@ namespace FantasyCritic.Lib.Royale
         public decimal? CalculateFantasyPoints() => MasterGame.CalculateFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
 
         public override string ToString() => MasterGame.MasterGame.GameName;
+
+        public bool Equals(RoyalePublisherGame other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return PublisherID.Equals(other.PublisherID) && Equals(MasterGame, other.MasterGame);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((RoyalePublisherGame) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (PublisherID.GetHashCode() * 397) ^ (MasterGame != null ? MasterGame.GetHashCode() : 0);
+            }
+        }
     }
 }
