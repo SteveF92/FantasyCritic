@@ -53,7 +53,12 @@ namespace FantasyCritic.Lib.Domain
                 return systemWideValues.GetAveragePoints(CounterPick);
             }
 
-            return MasterGame.Value.GetProjectedFantasyPoints(scoringSystem, CounterPick, systemWideValues, simpleProjections);
+            if (simpleProjections)
+            {
+                return MasterGame.Value.GetSimpleProjectedFantasyPoints(systemWideValues, CounterPick);
+            }
+
+            return MasterGame.Value.GetProjectedFantasyPoints(scoringSystem, CounterPick);
         }
 
         public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem)

@@ -21,6 +21,8 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
             throw new Exception($"Scoring system not implemented: {scoringSystemName}");
         }
 
+        public static ScoringSystem GetRoyaleScoringSystem() => new StandardScoringSystem();
+
         public static IReadOnlyList<ScoringSystem> GetAllPossibleValues()
         {
             return new List<ScoringSystem>(){new StandardScoringSystem()};

@@ -88,6 +88,25 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task PurchaseGame(RoyalePublisherGame game)
+        {
+            string gameAddSQL = "INSERT INTO tbl_royale_publishergame(PublisherID,MasterGameID,Timestamp,AmountSpent,AdvertisingMoney,FantasyPoints) VALUES " +
+                "(@PublisherID,@MasterGameID,@Timestamp,@AmountSpent,@AdvertisingMoney,@FantasyPoints)";
+            string budgetDescreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @amountSpent WHERE PublisherID = @publisherID";
+
+            RoyalePublisherGameEntity entity = new RoyalePublisherGameEntity(game);
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(gameAddSQL, entity, transaction);
+                    await connection.ExecuteAsync(budgetDescreaseSQL,
+                        new {amountSpent = game.AmountSpent, publisherID = game.PublisherID});
+                    transaction.Commit();
+                }
+            }
+        }
 
         public async Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters()
         {

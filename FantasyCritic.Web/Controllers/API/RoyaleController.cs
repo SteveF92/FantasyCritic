@@ -21,17 +21,19 @@ namespace FantasyCritic.Web.Controllers.API
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class RoyaleController : Controller
     {
-        private readonly RoyaleService _royaleService;
         private readonly IClock _clock;
         private readonly ILogger<RoyaleController> _logger;
         private readonly FantasyCriticUserManager _userManager;
+        private readonly RoyaleService _royaleService;
+        private readonly InterLeagueService _interLeagueService;
 
-        public RoyaleController(RoyaleService royaleService, IClock clock, ILogger<RoyaleController> logger, FantasyCriticUserManager userManager)
+        public RoyaleController(IClock clock, ILogger<RoyaleController> logger, FantasyCriticUserManager userManager, RoyaleService royaleService, InterLeagueService interLeagueService)
         {
-            _royaleService = royaleService;
             _clock = clock;
             _logger = logger;
             _userManager = userManager;
+            _royaleService = royaleService;
+            _interLeagueService = interLeagueService;
         }
 
         [AllowAnonymous]
@@ -79,6 +81,40 @@ namespace FantasyCritic.Web.Controllers.API
 
             var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock);
             return Ok(viewModel);
+        }
+
+        public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser is null)
+            {
+                return BadRequest();
+            }
+
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            if (!publisher.Value.User.Equals(currentUser))
+            {
+                return Forbid();
+            }
+
+            var masterGame = await _interLeagueService.GetMasterGameYear(request.MasterGameID, publisher.Value.YearQuarter.YearQuarter.Year);
+            if (masterGame.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var purchaseResult = await _royaleService.PurchaseGame(publisher.Value, masterGame.Value);
+            if (purchaseResult.IsFailure)
+            {
+                return BadRequest(purchaseResult.Error);
+            }
+
+            return Ok();
         }
     }
 }

@@ -27,20 +27,11 @@ namespace FantasyCritic.Lib.Royale
         public decimal AdvertisingMoney { get; }
         public decimal? FantasyPoints { get; }
         
-        public bool WillRelease()
-        {
-            return MasterGame.WillReleaseInQuarter(YearQuarter.YearQuarter);
-        }
+        public bool WillRelease() => MasterGame.WillReleaseInQuarter(YearQuarter.YearQuarter);
 
-        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections)
-        {
-            return MasterGame.GetProjectedFantasyPoints(scoringSystem, false, systemWideValues, simpleProjections);
-        }
+        public decimal GetProjectedFantasyPoints() => MasterGame.GetProjectedFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
 
-        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem)
-        {
-            return MasterGame.CalculateFantasyPoints(scoringSystem, false);
-        }
+        public decimal? CalculateFantasyPoints() => MasterGame.CalculateFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
 
         public override string ToString() => MasterGame.MasterGame.GameName;
     }
