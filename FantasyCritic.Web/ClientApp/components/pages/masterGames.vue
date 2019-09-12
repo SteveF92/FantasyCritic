@@ -72,7 +72,9 @@
         </b-table>
       </div>
 
-      <font-awesome-icon icon="spinner" size="4x" pulse v-else />
+      <div v-else class="spinner">
+        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
+      </div>
     </div>
   </div>
 </template>
@@ -204,5 +206,10 @@
   .unreleased-checkbox {
     margin-top: 8px;
     margin-right: 8px;
+  }
+
+  .spinner {
+    display: flex;
+    justify-content: space-around;
   }
 </style>
