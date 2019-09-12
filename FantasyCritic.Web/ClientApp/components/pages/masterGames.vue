@@ -28,12 +28,30 @@
       </div>
 
       <div class="row" v-if="showGames">
+        <b-col>
+          <b-input-group class="mt-3 col-md-6 col-sm-12 float-right">
+            <template v-slot:append>
+              <b-button :disabled="!filter" @click="filter = ''">
+                <font-awesome-icon icon="times" size="lg" :style="{ color: 'd6993a' }" />
+              </b-button>
+            </template>
+            <b-form-input
+              v-model="filter"
+              type="search"
+              id="filterInput"
+              placeholder="Search by game name"
+            ></b-form-input>
+          </b-input-group>
+        </b-col>
+
         <b-table :sort-by.sync="sortBy"
                  :sort-desc.sync="sortDesc"
                  :items="gamesToShow"
                  :fields="gameFields"
-                 bordered
+                 :filter="filter"
+                 :filterIncludedFields="filterOn"
                  :small="tableIsSmall"
+                 bordered
                  responsive
                  striped>
           <template slot="gameName" slot-scope="data">
@@ -89,6 +107,8 @@
       return {
         selectedYear: null,
         unreleasedOnly: false,
+        filter: null,
+        filterOn: 'gameName',
         supportedYears: [],
         gamesForYear: [],
         gameFields: [
