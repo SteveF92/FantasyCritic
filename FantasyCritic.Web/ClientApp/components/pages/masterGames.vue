@@ -72,7 +72,7 @@
         </b-table>
       </div>
 
-      <font-awesome-icon icon="circle-notch" size="4x" spin v-else />
+      <font-awesome-icon icon="spinner" size="4x" pulse v-else />
     </div>
   </div>
 </template>
