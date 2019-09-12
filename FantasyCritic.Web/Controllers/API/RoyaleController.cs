@@ -18,7 +18,7 @@ using FantasyCritic.Web.Models.RoundTrip;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class RoyaleController : Controller
     {
         private readonly IClock _clock;
