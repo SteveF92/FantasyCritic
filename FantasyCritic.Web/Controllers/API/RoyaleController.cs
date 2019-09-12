@@ -153,5 +153,40 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SetAdvertisingMoney([FromBody] SetAdvertisingMoneyRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser is null)
+            {
+                return BadRequest();
+            }
+
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            if (!publisher.Value.User.Equals(currentUser))
+            {
+                return Forbid();
+            }
+
+            var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
+            if (publisherGame is null)
+            {
+                return BadRequest();
+            }
+
+            var setAdvertisingMoneyResult = await _royaleService.SetAdvertisingMoney(publisher.Value, publisherGame, request.AdvertisingMoney);
+            if (setAdvertisingMoneyResult.IsFailure)
+            {
+                return BadRequest(setAdvertisingMoneyResult.Error);
+            }
+
+            return Ok();
+        }
     }
 }

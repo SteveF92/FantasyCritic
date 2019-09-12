@@ -172,5 +172,23 @@ namespace FantasyCritic.MySQL
                 }
             }
         }
+
+        public async Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney)
+        {
+            string advertisingMoneySetSQL = "UPDATE tbl_royale_publishergame SET AdvertisingMoney = @advertisingMoney WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
+            string budgetDescreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @advertisingMoney WHERE PublisherID = @publisherID";
+            var masterGameID = publisherGame.MasterGame.MasterGame.MasterGameID;
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(advertisingMoneySetSQL, new { advertisingMoney, publisherID = publisherGame.PublisherID, masterGameID }, transaction);
+                    await connection.ExecuteAsync(budgetDescreaseSQL, new { advertisingMoney, publisherID = publisherGame.PublisherID }, transaction);
+                    transaction.Commit();
+                }
+            }
+        }
     }
 }

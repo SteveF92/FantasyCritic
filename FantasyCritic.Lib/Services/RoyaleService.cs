@@ -109,9 +109,29 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public Task SetAdvertising(RoyalePublisher publisher, RoyalePublisherGame game, decimal advertisingMoney)
+        public async Task<Result> SetAdvertisingMoney(RoyalePublisher publisher, RoyalePublisherGame publisherGame, decimal advertisingMoney)
         {
-            throw new NotImplementedException();
+            if (publisherGame.MasterGame.MasterGame.IsReleased(_clock))
+            {
+                return Result.Fail("Game has been released.");
+            }
+            if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
+            {
+                return Result.Fail("Game has a score.");
+            }
+
+            if (!publisher.PublisherGames.Contains(publisherGame))
+            {
+                return Result.Fail("Publisher doesn't have that game.");
+            }
+
+            if (advertisingMoney > 10m)
+            {
+                return Result.Fail("Can't allocate more than 10 dollars in advertising money.");
+            }
+
+            await _royaleRepo.SetAdvertisingMoney(publisherGame, advertisingMoney);
+            return Result.Ok();
         }
     }
 }

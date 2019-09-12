@@ -49,5 +49,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
