@@ -10,7 +10,7 @@ module.exports = () => {
   console.log('Building for \x1b[33m%s\x1b[0m', process.env.NODE_ENV)
 
   const isDevBuild = !(process.env.NODE_ENV && process.env.NODE_ENV === 'production')
-  
+
   const extractCSS = new MiniCssExtractPlugin({
     filename: 'style.css'
   })
@@ -19,6 +19,9 @@ module.exports = () => {
     mode: (isDevBuild ? 'development' : 'production'),
     stats: { modules: false },
     entry: { 'main': './ClientApp/boot-app.js' },
+    devServer: {
+      contentBase: path.join(__dirname, 'wwwroot')
+    },
     resolve: {
       extensions: ['.js', '.vue'],
       alias: isDevBuild
