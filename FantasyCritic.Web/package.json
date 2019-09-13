@@ -11,6 +11,7 @@
   },
   "license": "MIT",
   "scripts": {
+    "start": "webpack-dev-server --open",
     "dev": "cross-env ASPNETCORE_ENVIRONMENT=Development NODE_ENV=development dotnet run",
     "build": "npm run build-vendor:prod && npm run build:prod",
     "build:prod": "cross-env NODE_ENV=production webpack --progress --hide-modules",
