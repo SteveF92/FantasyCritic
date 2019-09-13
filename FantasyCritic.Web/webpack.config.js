@@ -20,7 +20,15 @@ module.exports = () => {
     stats: { modules: false },
     entry: { 'main': './ClientApp/boot-app.js' },
     devServer: {
-      contentBase: path.join(__dirname, 'wwwroot')
+      contentBase: path.join(__dirname, 'wwwroot'),
+      proxy: {
+        // Route the api calls to the acutal site
+        '/api/**': {
+          target: 'https://www.fantasycritic.games',
+          secure: false,
+          changeOrigin: true
+        }
+      }
     },
     resolve: {
       extensions: ['.js', '.vue'],
