@@ -4,8 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const bundleOutputDir = './wwwroot/dist'
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
-const CompressionPlugin = require('compression-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+var CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = () => {
   console.log('Building for \x1b[33m%s\x1b[0m', process.env.NODE_ENV)
@@ -20,23 +19,6 @@ module.exports = () => {
     mode: (isDevBuild ? 'development' : 'production'),
     stats: { modules: false },
     entry: { 'main': './ClientApp/boot-app.js' },
-    devServer: {
-      contentBase: path.join(__dirname, 'wwwroot'),
-      host: 'localhost',
-      publicPath: '/',
-      historyApiFallback: true,
-      open: true,
-      hot: true,
-      inline: true,
-      proxy: {
-        // Route the api calls to the acutal site
-        '/api/**': {
-          target: 'https://www.fantasycritic.games',
-          secure: false,
-          changeOrigin: true
-        }
-      }
-    },
     resolve: {
       extensions: ['.js', '.vue'],
       alias: isDevBuild
@@ -111,14 +93,6 @@ module.exports = () => {
 
   if (isDevBuild) {
     configObject.devtool = "eval-source-map";
-  }
-
-  if (true) {
-    configObject.plugins.push(
-      new HtmlWebpackPlugin({
-        template: './ClientApp/index.ejs',
-        minify: { collapseWhitespace: true }
-    }))
   }
 
   return [configObject];
