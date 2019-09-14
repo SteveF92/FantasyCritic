@@ -76,7 +76,7 @@ module.exports = () => {
             '[resourcePath]') // Point sourcemap entries to the original file locations on disk
       }),
       new HtmlWebpackPlugin({
-        template: './ClientApp/index.ejs',
+        template: './ClientApp/index.ejs', // convert index ejs template to html
         minify: { collapseWhitespace: true }
       })
     ]
