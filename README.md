@@ -9,7 +9,7 @@ You can see the site at  <a href="https://www.fantasycritic.games/">fantasycriti
 ### ClientApp
 ClientApp is the root directory for the front-end UI. In it contains a Vue.js client application. See the official [Vue.js documentation](https://vuejs.org/) for more
 information. The project is configured to start its own instance of the client app in the background when the ASP.NET Core app starts in development mode. The client
-app can also be run via webpack dev server, instead of the ASP.NET core app. Note, when using the webpack dev server, the client app will point the the 
+app can also be run via webpack dev server, instead of the ASP.NET core app. Note, when using the webpack dev server, the client app will point the 
 [official website](https://www.fantasycritic.games/), instead of the local ASP.NET core app.
 ```sh
 > npm run client
