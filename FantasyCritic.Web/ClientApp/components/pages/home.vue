@@ -13,6 +13,7 @@
         </div>
         <div class="row main-buttons">
           <b-button variant="primary" :to="{ name: 'createLeague' }" class="main-button">Create a League</b-button>
+          <b-button variant="primary" :to="{ name: 'fantasyRoyale', params: {year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter }}" class="main-button">Play Fantasy Royale</b-button>
           <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
         </div>
       </div>
@@ -122,6 +123,7 @@
         myFollowedLeagues: [],
         selectedYear: null,
         supportedYears: [],
+        activeRoyaleYearQuarter: null,
         publicLeagues: [],
         publicLeagueFields: [
           { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
@@ -211,6 +213,16 @@
 
           });
       },
+      async fetchActiveRoyaleYearQuarter() {
+        axios
+          .get('/api/royale/ActiveRoyaleQuarter')
+          .then(response => {
+            this.activeRoyaleYearQuarter = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
       async fetchPublicLeaguesForYear(year) {
         axios
           .get('/api/league/PublicLeagues/' + year + "?count=10")
@@ -239,7 +251,7 @@
       }
     },
     async mounted() {
-      await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchUpcomingGames()]);
+      await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchUpcomingGames(), this.fetchActiveRoyaleYearQuarter()]);
     }
   }
 </script>

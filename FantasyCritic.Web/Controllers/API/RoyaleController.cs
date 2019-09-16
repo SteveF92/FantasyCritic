@@ -14,6 +14,7 @@ using FantasyCritic.Lib.Royale;
 using FantasyCritic.Web.Models.Requests.Royale;
 using FantasyCritic.Web.Models.Responses.Royale;
 using FantasyCritic.Web.Models.RoundTrip;
+using MoreLinq;
 
 namespace FantasyCritic.Web.Controllers.API
 {
@@ -42,6 +43,15 @@ namespace FantasyCritic.Web.Controllers.API
             IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
             var viewModels = supportedQuarters.Select(x => new RoyaleYearQuarterViewModel(x));
             return Ok(viewModels);
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> ActiveRoyaleQuarter()
+        {
+            IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
+            var activeQuarter = supportedQuarters.Where(x => x.OpenForPlay).MaxBy(x => x.YearQuarter).Single();
+            var viewModel = new RoyaleYearQuarterViewModel(activeQuarter);
+            return Ok(viewModel);
         }
 
         [HttpPost]
