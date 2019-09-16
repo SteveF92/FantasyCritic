@@ -8,6 +8,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Royale;
+using MoreLinq;
 using NLog.Targets.Wrappers;
 using NodaTime;
 
@@ -29,6 +30,20 @@ namespace FantasyCritic.Lib.Services
         public Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters()
         {
             return _royaleRepo.GetYearQuarters();
+        }
+
+        public async Task<RoyaleYearQuarter> GetActiveYearQuarter()
+        {
+            IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await GetYearQuarters();
+            var activeQuarter = supportedQuarters.Where(x => x.OpenForPlay).MaxBy(x => x.YearQuarter).Single();
+            return activeQuarter;
+        }
+
+        public async Task<Maybe<RoyaleYearQuarter>> GetYearQuarter(int year, int quarter)
+        {
+            IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await GetYearQuarters();
+            var requestedQuarter = supportedQuarters.SingleOrDefault(x => x.YearQuarter.Year == year && x.YearQuarter.Quarter == quarter);
+            return requestedQuarter;
         }
 
         public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user, string publisherName)

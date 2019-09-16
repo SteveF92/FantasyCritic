@@ -49,8 +49,7 @@ namespace FantasyCritic.Web.Controllers.API
         [AllowAnonymous]
         public async Task<IActionResult> ActiveRoyaleQuarter()
         {
-            IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
-            var activeQuarter = supportedQuarters.Where(x => x.OpenForPlay).MaxBy(x => x.YearQuarter).Single();
+            var activeQuarter = await _royaleService.GetActiveYearQuarter();
             var viewModel = new RoyaleYearQuarterViewModel(activeQuarter);
             return Ok(viewModel);
         }
@@ -59,14 +58,13 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpGet("{year}/{quarter}")]
         public async Task<IActionResult> RoyaleQuarter(int year, int quarter)
         {
-            IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
-            var requestedQuarter = supportedQuarters.SingleOrDefault(x => x.YearQuarter.Year == year && x.YearQuarter.Quarter == quarter);
-            if (requestedQuarter is null)
+            var requestedQuarter = await _royaleService.GetYearQuarter(year, quarter);
+            if (requestedQuarter.HasNoValue)
             {
                 return NotFound();
             }
 
-            var viewModel = new RoyaleYearQuarterViewModel(requestedQuarter);
+            var viewModel = new RoyaleYearQuarterViewModel(requestedQuarter.Value);
             return Ok(viewModel);
         }
 
@@ -94,6 +92,27 @@ namespace FantasyCritic.Web.Controllers.API
 
             RoyalePublisher publisher = await _royaleService.CreatePublisher(selectedQuarter, currentUser, request.PublisherName);
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{year}/{quarter}")]
+        public async Task<IActionResult> GetUserRoyalePublisher(int year, int quarter)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var yearQuarter = await _royaleService.GetYearQuarter(year, quarter);
+            if (yearQuarter.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(yearQuarter.Value, currentUser);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock);
+            return Ok(viewModel);
         }
 
         [AllowAnonymous]

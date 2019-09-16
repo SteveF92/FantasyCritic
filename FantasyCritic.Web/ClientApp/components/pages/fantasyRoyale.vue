@@ -3,10 +3,14 @@
     <div class="col-md-10 offset-md-1 col-sm-12">
       <h1>Fantasy Royale</h1>
 
-      <div v-if="!userPublisher" class="alert alert-info">
+      <div v-if="!userRoyalePublisher" class="alert alert-info">
         Create your publisher to start playing!
         <b-button variant="primary" v-b-modal="'createRoyalePublisher'">Create Publisher</b-button>
         <createRoyalePublisherForm :royaleYearQuarter="royaleYearQuarter"></createRoyalePublisherForm>
+      </div>
+      <div v-if="userRoyalePublisher">
+        My Publisher
+        {{userRoyalePublisher.publisherName}}
       </div>
       <h2>Leaderboards {{year}}-Q{{quarter}}</h2>
     </div>
@@ -26,7 +30,7 @@
     },
     data() {
       return {
-        userPublisher: null,
+        userRoyalePublisher: null,
         royaleYearQuarter: null
       }
     },
@@ -41,9 +45,19 @@
 
           });
       },
+      async fetchUserRoyalePublisher() {
+        axios
+          .get('/api/royale/GetUserRoyalePublisher/' + this.year + '/' + this.quarter)
+          .then(response => {
+            this.userRoyalePublisher = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
     },
     async mounted() {
-      await this.fetchRoyaleYearQuarter();
+      await Promise.all([this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher()]);
     },
   }
 </script>
