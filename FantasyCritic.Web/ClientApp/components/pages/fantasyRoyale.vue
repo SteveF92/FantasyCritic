@@ -3,16 +3,15 @@
     <div class="col-md-10 offset-md-1 col-sm-12">
       <h1>Fantasy Royale</h1>
 
-      <div v-if="!userRoyalePublisher" class="alert alert-info">
-        Create your publisher to start playing!
-        <b-button variant="primary" v-b-modal="'createRoyalePublisher'">Create Publisher</b-button>
-        <createRoyalePublisherForm :royaleYearQuarter="royaleYearQuarter"></createRoyalePublisherForm>
+      <div v-if="!isBusy">
+        <div v-if="!userRoyalePublisher" class="alert alert-info">
+          Create your publisher to start playing!
+          <b-button variant="primary" v-b-modal="'createRoyalePublisher'">Create Publisher</b-button>
+          <createRoyalePublisherForm :royaleYearQuarter="royaleYearQuarter"></createRoyalePublisherForm>
+        </div>
+        <b-button v-if="userRoyalePublisher" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID }}">View My Publisher</b-button>
+        <h2>Leaderboards {{year}}-Q{{quarter}}</h2>
       </div>
-      <div v-if="userRoyalePublisher">
-        My Publisher
-        {{userRoyalePublisher.publisherName}}
-      </div>
-      <h2>Leaderboards {{year}}-Q{{quarter}}</h2>
     </div>
   </div>
 </template>
@@ -31,7 +30,8 @@
     data() {
       return {
         userRoyalePublisher: null,
-        royaleYearQuarter: null
+        royaleYearQuarter: null,
+        isBusy: true
       }
     },
     methods: {
@@ -50,6 +50,7 @@
           .get('/api/royale/GetUserRoyalePublisher/' + this.year + '/' + this.quarter)
           .then(response => {
             this.userRoyalePublisher = response.data;
+            this.isBusy = false;
           })
           .catch(response => {
 

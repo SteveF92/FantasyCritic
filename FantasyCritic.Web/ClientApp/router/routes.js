@@ -27,6 +27,7 @@ import ActiveMasterGameChangeRequests from "components/pages/activeMasterGameCha
 import MasterGameCreator from "components/pages/masterGameCreator";
 import CurrentFailingBids from "components/pages/currentFailingBids";
 import FantasyRoyale from "components/pages/fantasyRoyale";
+import RoyalePublisher from "components/pages/royalePublisher";
 
 export const routes = [
   {
@@ -314,5 +315,17 @@ export const routes = [
       year: route.params.year,
       quarter: route.params.quarter
     })
-  }
+  },
+  {
+    path: "/royalePublisher/:publisherid",
+    component: RoyalePublisher,
+    name: "royalePublisher",
+    meta: {
+      title: "Royale Publisher",
+      isPublic: true
+    },
+    props: (route) => ({
+      publisherid: route.params.publisherid
+    })
+  },
 ];
