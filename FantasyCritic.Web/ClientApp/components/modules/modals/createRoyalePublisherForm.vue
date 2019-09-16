@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="createPublisher" ref="createPublisherRef" title="Create Publisher" @hidden="clearData">
+  <b-modal id="createRoyalePublisher" ref="createRoyalePublisherRef" title="Create Publisher" @hidden="clearData">
     <div class="form-horizontal">
       <div class="form-group">
         <label for="publisherName" class="control-label">Publisher Name</label>
@@ -7,7 +7,7 @@
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Create Publisher" v-on:click="createPublisher" :disabled="!publisherName" />
+      <input type="submit" class="btn btn-primary" value="Create Publisher" v-on:click="createRoyalePublisher" :disabled="!publisherName" />
     </div>
   </b-modal>
 </template>
@@ -24,16 +24,16 @@
     },
     props: ['royaleYearQuarter'],
     methods: {
-      createPublisher() {
+      createRoyalePublisher() {
         var model = {
           year: this.royaleYearQuarter.year,
           quarter: this.royaleYearQuarter.quarter,
           publisherName: this.publisherName
         };
         axios
-          .post('/api/royale/createPublisher', model)
+          .post('/api/royale/createRoyalePublisher', model)
           .then(response => {
-            this.$refs.createPublisherRef.hide();
+            this.$refs.createRoyalePublisherRef.hide();
           })
           .catch(response => {
 

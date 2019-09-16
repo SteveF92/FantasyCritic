@@ -15,6 +15,7 @@ using FantasyCritic.Web.Models.Requests.Royale;
 using FantasyCritic.Web.Models.Responses.Royale;
 using FantasyCritic.Web.Models.RoundTrip;
 using MoreLinq;
+using Org.BouncyCastle.Bcpg.Sig;
 
 namespace FantasyCritic.Web.Controllers.API
 {
@@ -54,8 +55,23 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModel);
         }
 
+        [AllowAnonymous]
+        [HttpGet("{year}/{quarter}")]
+        public async Task<IActionResult> RoyaleQuarter(int year, int quarter)
+        {
+            IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
+            var requestedQuarter = supportedQuarters.SingleOrDefault(x => x.YearQuarter.Year == year && x.YearQuarter.Quarter == quarter);
+            if (requestedQuarter is null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new RoyaleYearQuarterViewModel(requestedQuarter);
+            return Ok(viewModel);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreatePublisher([FromBody] CreateRoyalePublisherRequest request)
+        public async Task<IActionResult> CreateRoyalePublisher([FromBody] CreateRoyalePublisherRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             if (currentUser is null)
