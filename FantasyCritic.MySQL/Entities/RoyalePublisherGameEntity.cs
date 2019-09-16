@@ -36,6 +36,12 @@ namespace FantasyCritic.MySQL.Entities
 
         public RoyalePublisherGame ToDomain(RoyaleYearQuarter yearQuarter, MasterGameYear masterGameYear)
         {
+            if (Timestamp.Kind != DateTimeKind.Utc)
+            {
+                LocalDateTime localDateTime = LocalDateTime.FromDateTime(Timestamp);
+                Instant instant = localDateTime.InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).ToInstant();
+                return new RoyalePublisherGame(PublisherID, yearQuarter, masterGameYear, instant, AmountSpent, AdvertisingMoney, FantasyPoints);
+            }
             return new RoyalePublisherGame(PublisherID, yearQuarter, masterGameYear, Instant.FromDateTimeUtc(Timestamp), AmountSpent, AdvertisingMoney, FantasyPoints);
         }
     }

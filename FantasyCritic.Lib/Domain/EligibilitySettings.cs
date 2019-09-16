@@ -28,6 +28,12 @@ namespace FantasyCritic.Lib.Domain
         public bool ReleasedInternationally { get; }
         public bool ExpansionPack { get; }
 
+        public static EligibilitySettings GetRoyaleEligibilitySettings()
+        {
+            var level = new EligibilityLevel(2, "Remake", "A remake that modernizes gameplay without fundamentally changing it.", new List<string>());
+            return new EligibilitySettings(level, false, false, false, false, false);
+        }
+
         public IReadOnlyList<ClaimError> GameIsEligible(MasterGame masterGame)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();

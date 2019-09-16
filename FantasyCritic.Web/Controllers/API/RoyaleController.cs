@@ -14,24 +14,28 @@ using FantasyCritic.Lib.Royale;
 using FantasyCritic.Web.Models.Requests.Royale;
 using FantasyCritic.Web.Models.Responses.Royale;
 using FantasyCritic.Web.Models.RoundTrip;
+using MoreLinq;
+using Org.BouncyCastle.Bcpg.Sig;
 
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class RoyaleController : Controller
     {
-        private readonly RoyaleService _royaleService;
         private readonly IClock _clock;
         private readonly ILogger<RoyaleController> _logger;
         private readonly FantasyCriticUserManager _userManager;
+        private readonly RoyaleService _royaleService;
+        private readonly InterLeagueService _interLeagueService;
 
-        public RoyaleController(RoyaleService royaleService, IClock clock, ILogger<RoyaleController> logger, FantasyCriticUserManager userManager)
+        public RoyaleController(IClock clock, ILogger<RoyaleController> logger, FantasyCriticUserManager userManager, RoyaleService royaleService, InterLeagueService interLeagueService)
         {
-            _royaleService = royaleService;
             _clock = clock;
             _logger = logger;
             _userManager = userManager;
+            _royaleService = royaleService;
+            _interLeagueService = interLeagueService;
         }
 
         [AllowAnonymous]
@@ -42,7 +46,30 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModels);
         }
 
-        public async Task<IActionResult> CreatePublisher([FromBody] CreateRoyalePublisherRequest request)
+        [AllowAnonymous]
+        public async Task<IActionResult> ActiveRoyaleQuarter()
+        {
+            var activeQuarter = await _royaleService.GetActiveYearQuarter();
+            var viewModel = new RoyaleYearQuarterViewModel(activeQuarter);
+            return Ok(viewModel);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{year}/{quarter}")]
+        public async Task<IActionResult> RoyaleQuarter(int year, int quarter)
+        {
+            var requestedQuarter = await _royaleService.GetYearQuarter(year, quarter);
+            if (requestedQuarter.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new RoyaleYearQuarterViewModel(requestedQuarter.Value);
+            return Ok(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRoyalePublisher([FromBody] CreateRoyalePublisherRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             if (currentUser is null)
@@ -68,6 +95,27 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [AllowAnonymous]
+        [HttpGet("{year}/{quarter}")]
+        public async Task<IActionResult> GetUserRoyalePublisher(int year, int quarter)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var yearQuarter = await _royaleService.GetYearQuarter(year, quarter);
+            if (yearQuarter.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(yearQuarter.Value, currentUser);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock);
+            return Ok(viewModel);
+        }
+
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRoyalePublisher(Guid id)
         {
@@ -79,6 +127,111 @@ namespace FantasyCritic.Web.Controllers.API
 
             var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock);
             return Ok(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser is null)
+            {
+                return BadRequest();
+            }
+
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            if (!publisher.Value.User.Equals(currentUser))
+            {
+                return Forbid();
+            }
+
+            var masterGame = await _interLeagueService.GetMasterGameYear(request.MasterGameID, publisher.Value.YearQuarter.YearQuarter.Year);
+            if (masterGame.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var purchaseResult = await _royaleService.PurchaseGame(publisher.Value, masterGame.Value);
+            if (purchaseResult.IsFailure)
+            {
+                return BadRequest(purchaseResult.Error);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SellGame([FromBody] SellRoyaleGameRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser is null)
+            {
+                return BadRequest();
+            }
+
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            if (!publisher.Value.User.Equals(currentUser))
+            {
+                return Forbid();
+            }
+
+            var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
+            if (publisherGame is null)
+            {
+                return BadRequest();
+            }
+
+            var sellResult = await _royaleService.SellGame(publisher.Value, publisherGame);
+            if (sellResult.IsFailure)
+            {
+                return BadRequest(sellResult.Error);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetAdvertisingMoney([FromBody] SetAdvertisingMoneyRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser is null)
+            {
+                return BadRequest();
+            }
+
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            if (!publisher.Value.User.Equals(currentUser))
+            {
+                return Forbid();
+            }
+
+            var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
+            if (publisherGame is null)
+            {
+                return BadRequest();
+            }
+
+            var setAdvertisingMoneyResult = await _royaleService.SetAdvertisingMoney(publisher.Value, publisherGame, request.AdvertisingMoney);
+            if (setAdvertisingMoneyResult.IsFailure)
+            {
+                return BadRequest(setAdvertisingMoneyResult.Error);
+            }
+
+            return Ok();
         }
     }
 }

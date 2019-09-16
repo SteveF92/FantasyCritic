@@ -88,6 +88,25 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task PurchaseGame(RoyalePublisherGame game)
+        {
+            string gameAddSQL = "INSERT INTO tbl_royale_publishergame(PublisherID,MasterGameID,Timestamp,AmountSpent,AdvertisingMoney,FantasyPoints) VALUES " +
+                "(@PublisherID,@MasterGameID,@Timestamp,@AmountSpent,@AdvertisingMoney,@FantasyPoints)";
+            string budgetDescreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @amountSpent WHERE PublisherID = @publisherID";
+
+            RoyalePublisherGameEntity entity = new RoyalePublisherGameEntity(game);
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(gameAddSQL, entity, transaction);
+                    await connection.ExecuteAsync(budgetDescreaseSQL,
+                        new {amountSpent = game.AmountSpent, publisherID = game.PublisherID}, transaction);
+                    transaction.Commit();
+                }
+            }
+        }
 
         public async Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters()
         {
@@ -134,6 +153,41 @@ namespace FantasyCritic.MySQL
                     domains.Add(domain);
                 }
                 return domains;
+            }
+        }
+
+        public async Task SellGame(RoyalePublisherGame publisherGame)
+        {
+            string gameRemoveSQL = "DELETE FROM tbl_royale_publishergame WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
+            string budgetIncreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget + @amountGained WHERE PublisherID = @publisherID";
+            var amountGained = publisherGame.AmountSpent / 2;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(gameRemoveSQL, new { masterGameID = publisherGame.MasterGame.MasterGame.MasterGameID, publisherID = publisherGame.PublisherID }, transaction);
+                    await connection.ExecuteAsync(budgetIncreaseSQL, new { amountGained, publisherID = publisherGame.PublisherID }, transaction);
+                    transaction.Commit();
+                }
+            }
+        }
+
+        public async Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney)
+        {
+            string advertisingMoneySetSQL = "UPDATE tbl_royale_publishergame SET AdvertisingMoney = @advertisingMoney WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
+            string budgetDescreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @advertisingMoney WHERE PublisherID = @publisherID";
+            var masterGameID = publisherGame.MasterGame.MasterGame.MasterGameID;
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(advertisingMoneySetSQL, new { advertisingMoney, publisherID = publisherGame.PublisherID, masterGameID }, transaction);
+                    await connection.ExecuteAsync(budgetDescreaseSQL, new { advertisingMoney, publisherID = publisherGame.PublisherID }, transaction);
+                    transaction.Commit();
+                }
             }
         }
     }

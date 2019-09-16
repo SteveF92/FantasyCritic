@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="gamesToShow && gamesToShow.length > 0">
+      <div class="row" v-if="showGames">
         <b-table :sort-by.sync="sortBy"
                  :sort-desc.sync="sortDesc"
                  :items="gamesToShow"
@@ -70,6 +70,10 @@
             <eligibilityBadge :eligibilityLevel="data.item.eligibilitySettings.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
           </template>
         </b-table>
+      </div>
+
+      <div v-else class="spinner">
+        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
       </div>
     </div>
   </div>
@@ -131,6 +135,9 @@
         }
 
         return _.filter(this.gamesForYear, { 'isReleased': false });
+      },
+      showGames() {
+        return this.gamesToShow && this.gamesToShow.length > 0
       }
     },
     methods: {
@@ -199,5 +206,10 @@
   .unreleased-checkbox {
     margin-top: 8px;
     margin-right: 8px;
+  }
+
+  .spinner {
+    display: flex;
+    justify-content: space-around;
   }
 </style>

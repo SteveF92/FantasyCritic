@@ -5,7 +5,7 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Royale
 {
-    public class RoyalePublisherGame
+    public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     {
         public RoyalePublisherGame(Guid publisherID, RoyaleYearQuarter yearQuarter, MasterGameYear masterGame, Instant timestamp, 
             decimal amountSpent, decimal advertisingMoney, decimal? fantasyPoints)
@@ -27,21 +27,35 @@ namespace FantasyCritic.Lib.Royale
         public decimal AdvertisingMoney { get; }
         public decimal? FantasyPoints { get; }
         
-        public bool WillRelease()
-        {
-            return MasterGame.WillReleaseInQuarter(YearQuarter.YearQuarter);
-        }
+        public bool WillRelease() => MasterGame.WillReleaseInQuarter(YearQuarter.YearQuarter);
 
-        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections)
-        {
-            return MasterGame.GetProjectedFantasyPoints(scoringSystem, false, systemWideValues, simpleProjections);
-        }
+        public decimal GetProjectedFantasyPoints() => MasterGame.GetProjectedFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
 
-        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem)
-        {
-            return MasterGame.CalculateFantasyPoints(scoringSystem, false);
-        }
+        public decimal? CalculateFantasyPoints() => MasterGame.CalculateFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
 
         public override string ToString() => MasterGame.MasterGame.GameName;
+
+        public bool Equals(RoyalePublisherGame other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return PublisherID.Equals(other.PublisherID) && Equals(MasterGame, other.MasterGame);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((RoyalePublisherGame) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (PublisherID.GetHashCode() * 397) ^ (MasterGame != null ? MasterGame.GetHashCode() : 0);
+            }
+        }
     }
 }

@@ -75,22 +75,6 @@ namespace FantasyCritic.Lib.Domain
             return true;
         }
 
-        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick, SystemWideValues systemWideValues, bool simpleProjections)
-        {
-            decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick);
-            if (fantasyPoints.HasValue)
-            {
-                return fantasyPoints.Value;
-            }
-
-            if (simpleProjections)
-            {
-                return systemWideValues.GetAveragePoints(counterPick);
-            }
-
-            return scoringSystem.GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), counterPick);
-        }
-
         public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
         {
             decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick);
@@ -100,6 +84,22 @@ namespace FantasyCritic.Lib.Domain
             }
 
             return scoringSystem.GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), counterPick);
+        }
+
+        public decimal GetRoyaleGameCost()
+        {
+            decimal projectedPoints = ScoringSystem.GetRoyaleScoringSystem().GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), false);
+            if (projectedPoints < 5m)
+            {
+                projectedPoints = 5m;
+            }
+
+            return projectedPoints;
+        }
+
+        public decimal GetSimpleProjectedFantasyPoints(SystemWideValues systemWideValues, bool counterPick)
+        {
+            return systemWideValues.GetAveragePoints(counterPick);
         }
 
         public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
