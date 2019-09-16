@@ -166,13 +166,17 @@
                 <div class="text-well">
                   <h2>Other Options</h2>
                   <div>
-                    <b-form-checkbox v-model="publicLeague">
+                    <b-form-checkbox v-model="leagueVisibility"
+                                     value="public"
+                                     unchecked-value="test">
                       <span class="checkbox-label">Public League</span>
                       <p>If checked, everyone will be able to see your league. Players still need to be invited to join. If unchecked, your league will only be viewable by its members.</p>
                     </b-form-checkbox>
                   </div>
                   <div>
-                    <b-form-checkbox v-model="testLeague">
+                    <b-form-checkbox v-model="leagueVisibility"
+                                     value="test"
+                                     unchecked-value="public">
                       <span class="checkbox-label">Test League</span>
                       <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
                     </b-form-checkbox>
@@ -215,8 +219,7 @@
           allowFreeToPlay: false,
           allowReleasedInternationally: false,
           allowExpansions: false,
-          publicLeague: true,
-          testLeague: false,
+          leagueVisibility: 'public',
           possibleLeagueOptions: null
         }
     },
@@ -225,6 +228,12 @@
       'popper': Popper,
     },
     computed: {
+      publicLeague() {
+        return this.leagueVisibility === 'public'
+      },
+      testLeague(){
+        return this.leagueVisibility === 'test'
+      },
       formIsValid() {
         return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
       },
@@ -321,7 +330,7 @@
         if (this.counterPicks === 0) {
           this.counterPicks = 1;
         }
-        
+
       }
     },
     mounted() {
