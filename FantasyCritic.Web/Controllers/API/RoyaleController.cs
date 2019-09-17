@@ -129,6 +129,16 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModel);
         }
 
+        [AllowAnonymous]
+        [HttpGet("{year}/{quarter}")]
+        public async Task<IActionResult> RoyaleStandings(int year, int quarter)
+        {
+            IReadOnlyList<RoyalePublisher> publishers = await _royaleService.GetAllPublishers(year, quarter);
+            var viewModels = publishers.Select(x => new RoyalePublisherViewModel(x, _clock));
+            var sorted = viewModels.OrderByDescending(x => x.TotalFantasyPoints);
+            return Ok(sorted);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
         {

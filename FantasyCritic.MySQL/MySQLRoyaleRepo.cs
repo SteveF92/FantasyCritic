@@ -88,6 +88,65 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)
+        {
+            string sql = "select * from tbl_royale_publisher where Year = @year and Quarter = @quarter";
+
+            var yearQuarter = await GetYearQuarter(year, quarter);
+            if (yearQuarter.HasNoValue)
+            {
+                return new List<RoyalePublisher>();
+            }
+
+            var users = await _userStore.GetAllUsers();
+            var publisherGames = await GetAllPublisherGames(yearQuarter.Value);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var entities = await connection.QueryAsync<RoyalePublisherEntity>(sql, new {year, quarter} );
+
+                List<RoyalePublisher> domainPublishers = new List<RoyalePublisher>();
+                foreach (var entity in entities)
+                {
+                    var user = users.SingleOrDefault(x => x.UserID == entity.UserID);
+                    if (user is null)
+                    {
+                        continue;
+                    }
+
+                    var domain = entity.ToDomain(yearQuarter.Value, user, new List<RoyalePublisherGame>());
+                    domainPublishers.Add(domain);
+                }
+
+                return domainPublishers;
+            }
+        }
+
+        private async Task<object> GetAllPublisherGames(RoyaleYearQuarter yearQuarter)
+        {
+            string sql = "SELECT * FROM tbl_royale_publishergame " +
+                         "JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID " +
+                         "WHERE tbl_royale_publisher.Year = @year AND tbl_royale_publisher.Quarter = @quarter; ";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var entities = await connection.QueryAsync<RoyalePublisherGameEntity>(sql,
+                    new
+                    {
+                        year = yearQuarter.YearQuarter.Year,
+                        quarter = yearQuarter.YearQuarter.Quarter
+                    });
+                List<RoyalePublisherGame> domains = new List<RoyalePublisherGame>();
+                foreach (var entity in entities)
+                {
+                    var masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
+                    var domain = entity.ToDomain(yearQuarter, masterGame.Value);
+                    domains.Add(domain);
+                }
+                return domains;
+            }
+        }
+
         public async Task PurchaseGame(RoyalePublisherGame game)
         {
             string gameAddSQL = "INSERT INTO tbl_royale_publishergame(PublisherID,MasterGameID,Timestamp,AmountSpent,AdvertisingMoney,FantasyPoints) VALUES " +

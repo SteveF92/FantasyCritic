@@ -11,6 +11,13 @@
         </div>
         <b-button v-if="userRoyalePublisher" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID }}">View My Publisher</b-button>
         <h2>Leaderboards {{year}}-Q{{quarter}}</h2>
+        <b-table striped bordered small :items="royaleStandings" :fields="standingsFields">
+          <template slot="publisherName" slot-scope="data">
+            <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
+              {{ data.item.publisherName }}
+            </router-link>
+          </template>
+        </b-table>
       </div>
     </div>
   </div>
@@ -31,7 +38,13 @@
       return {
         userRoyalePublisher: null,
         royaleYearQuarter: null,
-        isBusy: true
+        royaleStandings: null,
+        isBusy: true,
+        standingsFields: [
+          { key: 'publisherName', label: 'Publisher', thClass:'bg-primary' },
+          { key: 'playerName', label: 'Player Name', thClass: 'bg-primary' },
+          { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' }
+        ],
       }
     },
     methods: {
@@ -40,6 +53,16 @@
           .get('/api/royale/RoyaleQuarter/' + this.year + '/' + this.quarter)
           .then(response => {
             this.royaleYearQuarter = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
+      async fetchRoyaleStandings() {
+        axios
+          .get('/api/royale/RoyaleStandings/' + this.year + '/' + this.quarter)
+          .then(response => {
+            this.royaleStandings = response.data;
           })
           .catch(response => {
 
@@ -58,7 +81,7 @@
       },
     },
     async mounted() {
-      await Promise.all([this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher()]);
+      await Promise.all([this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
     },
   }
 </script>

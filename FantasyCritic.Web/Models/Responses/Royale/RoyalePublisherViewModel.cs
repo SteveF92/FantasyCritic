@@ -18,6 +18,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale
             PublisherName = domain.PublisherName;
             PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, clock)).ToList();
             Budget = domain.Budget;
+            TotalFantasyPoints = domain.GetTotalFantasyPoints(clock);
         }
 
         public Guid PublisherID { get; }
@@ -26,5 +27,6 @@ namespace FantasyCritic.Web.Models.Responses.Royale
         public string PublisherName { get; }
         public IReadOnlyList<RoyalePublisherGameViewModel> PublisherGames { get; }
         public decimal Budget { get; }
+        public decimal TotalFantasyPoints { get; }
     }
 }

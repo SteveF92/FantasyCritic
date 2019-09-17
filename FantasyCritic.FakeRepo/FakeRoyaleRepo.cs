@@ -54,5 +54,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

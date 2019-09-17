@@ -63,6 +63,11 @@ namespace FantasyCritic.Lib.Services
             return _royaleRepo.GetPublisher(publisherID);
         }
 
+        public Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)
+        {
+            return _royaleRepo.GetAllPublishers(year, quarter);
+        }
+
         public async Task<Result<RoyalePublisherGame>> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
         {
             if (publisher.PublisherGames.Count >= MAX_GAMES)

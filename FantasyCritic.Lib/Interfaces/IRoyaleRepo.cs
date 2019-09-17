@@ -17,5 +17,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task PurchaseGame(RoyalePublisherGame game);
         Task SellGame(RoyalePublisherGame publisherGame);
         Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney);
+        Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter);
     }
 }
