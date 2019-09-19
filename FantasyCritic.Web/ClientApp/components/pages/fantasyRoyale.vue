@@ -9,8 +9,12 @@
           <b-button variant="primary" v-b-modal="'createRoyalePublisher'">Create Publisher</b-button>
           <createRoyalePublisherForm :royaleYearQuarter="royaleYearQuarter"></createRoyalePublisherForm>
         </div>
-        <b-button v-if="userRoyalePublisher" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID }}">View My Publisher</b-button>
-        <h2>Leaderboards {{year}}-Q{{quarter}}</h2>
+
+        <div class="leaderboard-header">
+          <h2>Leaderboards {{year}}-Q{{quarter}}</h2>
+          <b-button v-if="userRoyalePublisher" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID }}">View My Publisher</b-button>
+        </div>
+        
         <b-table striped bordered small :items="royaleStandings" :fields="standingsFields">
           <template slot="publisherName" slot-scope="data">
             <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
@@ -76,7 +80,7 @@
             this.isBusy = false;
           })
           .catch(response => {
-
+            this.isBusy = false;
           });
       },
     },
@@ -85,3 +89,9 @@
     },
   }
 </script>
+<style scoped>
+  .leaderboard-header{
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
