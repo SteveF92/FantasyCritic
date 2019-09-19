@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -18,13 +19,15 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly IRoyaleRepo _royaleRepo;
         private readonly IClock _clock;
+        private readonly IMasterGameRepo _masterGameRepo;
 
         public const int MAX_GAMES = 25;
 
-        public RoyaleService(IRoyaleRepo royaleRepo, IClock clock)
+        public RoyaleService(IRoyaleRepo royaleRepo, IClock clock, IMasterGameRepo masterGameRepo)
         {
             _royaleRepo = royaleRepo;
             _clock = clock;
+            _masterGameRepo = masterGameRepo;
         }
 
         public Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters()
@@ -66,6 +69,16 @@ namespace FantasyCritic.Lib.Services
         public Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)
         {
             return _royaleRepo.GetAllPublishers(year, quarter);
+        }
+
+        public async Task<IReadOnlyList<MasterGameYear>> GetMasterGamesForYearQuarter(YearQuarter yearQuarter)
+        {
+            IEnumerable<MasterGameYear> masterGameYears = await _masterGameRepo.GetMasterGameYears(yearQuarter.Year, true);
+
+            masterGameYears = masterGameYears.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate >= yearQuarter.FirstDateOfQuarter);
+            masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false));
+
+            return masterGameYears.ToList();
         }
 
         public async Task<Result<RoyalePublisherGame>> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)

@@ -14,20 +14,23 @@
 
         <div class="col-md-12 col-lg-6">
           <h4>Remaining Budget: {{publisher.budget | money}}</h4>
-          <b-button variant="primary" class="main-button">Purchase a Game</b-button>
+          <b-button variant="primary" v-b-modal="'royalePurchaseGameForm'">Purchase a Game</b-button>
+          <royalePurchaseGameForm :yearQuarter="publisher.yearQuarter"></royalePurchaseGameForm>
         </div>
       </div>
 
       <h1>Games</h1>
-      <b-table striped bordered small :items="publisher.publisherGames">
-      </b-table>
+      <b-table striped bordered small :items="publisher.publisherGames"></b-table>
     </div>
+    
   </div>
 </template>
 
 <script>
   import Vue from "vue";
   import axios from "axios";
+
+  import RoyalePurchaseGameForm from "components/modules/modals/royalePurchaseGameForm";
 
   export default {
     props: ['publisherID'],
@@ -38,6 +41,7 @@
       }
     },
     components: {
+      RoyalePurchaseGameForm
     },
     props: ['publisherid'],
     methods: {

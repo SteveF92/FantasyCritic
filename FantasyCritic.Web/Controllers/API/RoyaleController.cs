@@ -10,8 +10,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Royale;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Royale;
+using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.Royale;
 using FantasyCritic.Web.Models.RoundTrip;
 using MoreLinq;
@@ -242,6 +246,32 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             return Ok();
+        }
+
+        public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string gameName, int year, int quarter)
+        {
+            var yearQuarter = await _royaleService.GetYearQuarter(year, quarter);
+            if (yearQuarter.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var masterGames = await _royaleService.GetMasterGamesForYearQuarter(yearQuarter.Value.YearQuarter);
+            if (!string.IsNullOrWhiteSpace(gameName))
+            {
+                masterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
+            }
+            else
+            {
+                masterGames = masterGames
+                    .Where(x => x.WillReleaseInQuarter(yearQuarter.Value.YearQuarter))
+                    .Where(x => !x.MasterGame.IsReleased(_clock))
+                    .Take(10)
+                    .ToList();
+            }
+
+            var viewModels = masterGames.Select(masterGame => new PossibleRoyaleMasterGameViewModel(masterGame, _clock, yearQuarter.Value)).ToList();
+            return viewModels;
         }
     }
 }
