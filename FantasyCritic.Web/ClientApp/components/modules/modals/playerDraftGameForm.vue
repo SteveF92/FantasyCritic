@@ -157,8 +157,6 @@
             this.possibleMasterGames = [];
             this.searched = false;
             this.showingUnlistedField = false;
-            this.claimCounterPick = false;
-            this.claimPublisher = null;
           },
           newGameSelected() {
             this.draftResult = null;
