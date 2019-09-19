@@ -33,7 +33,8 @@
         axios
           .post('/api/royale/createRoyalePublisher', model)
           .then(response => {
-            this.$refs.createRoyalePublisherRef.hide();
+            let publisherid = response.data;
+            this.$router.push({ name: "royalePublisher", params: { publisherid: publisherid } });
           })
           .catch(response => {
 

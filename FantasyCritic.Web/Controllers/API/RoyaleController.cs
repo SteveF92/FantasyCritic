@@ -91,7 +91,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             RoyalePublisher publisher = await _royaleService.CreatePublisher(selectedQuarter, currentUser, request.PublisherName);
-            return Ok();
+            return Ok(publisher.PublisherID);
         }
 
         [AllowAnonymous]
