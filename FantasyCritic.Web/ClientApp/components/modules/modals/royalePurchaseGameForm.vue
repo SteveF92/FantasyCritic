@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="royalePurchaseGameForm" ref="royalePurchaseGameFormRef" size="lg" title="Select Game" hide-footer @hidden="clearData">
+  <b-modal id="royalePurchaseGameForm" ref="royalePurchaseGameFormRef" size="lg" title="Purchase Game" hide-footer @hidden="clearData">
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="PurchaseGameName" class="control-label">Game Name</label>

@@ -266,11 +266,12 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGames = masterGames
                     .Where(x => x.WillReleaseInQuarter(yearQuarter.Value.YearQuarter))
                     .Where(x => !x.MasterGame.IsReleased(_clock))
+                    .Where(x => !EligibilitySettings.GetRoyaleEligibilitySettings().GameIsEligible(x.MasterGame).Any())
                     .Take(10)
                     .ToList();
             }
 
-            var viewModels = masterGames.Select(masterGame => new PossibleRoyaleMasterGameViewModel(masterGame, _clock, yearQuarter.Value)).ToList();
+            var viewModels = masterGames.Select(masterGame => new PossibleRoyaleMasterGameViewModel(masterGame, _clock, yearQuarter.Value, false)).ToList();
             return viewModels;
         }
     }

@@ -815,6 +815,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> PossibleMasterGames(string gameName, int year, Guid leagueID)
         {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             if (string.IsNullOrWhiteSpace(gameName))
             {
                 return new List<PossibleMasterGameYearViewModel>();
@@ -834,6 +835,18 @@ namespace FantasyCritic.Web.Controllers.API
                 .Distinct()
                 .ToHashSet();
 
+            var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
+            if (userPublisher is null)
+            {
+                return BadRequest();
+            }
+
+            HashSet<MasterGame> myPublisherMasterGames = userPublisher.PublisherGames
+                .Where(x => x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .Distinct()
+                .ToHashSet();
+
             IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
             IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
 
@@ -843,8 +856,9 @@ namespace FantasyCritic.Web.Controllers.API
                 var eligibilityErrors = leagueYear.Value.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
                 bool isEligible = !eligibilityErrors.Any();
                 bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
+                bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
 
-                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, taken, isEligible);
+                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, taken, alreadyOwned, isEligible);
                 viewModels.Add(viewModel);
             }
 

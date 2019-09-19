@@ -4,6 +4,8 @@
           <tr class="bg-primary">
             <th>Game Name</th>
             <th>Estimated Release Date</th>
+            <th class="no-mobile">Status</th>
+            <th>Cost</th>
             <th></th>
           </tr>
         </thead>
@@ -16,6 +18,10 @@
               <span>{{game.masterGame.estimatedReleaseDate}}</span>
               <span v-show="game.masterGame.isReleased">(Released)</span>
             </td>
+            <td class="no-mobile">
+              <statusBadge :alreadyOwned="game.alreadyOwned" :taken="false" :isEligible="game.isEligible"></statusBadge>
+            </td>
+            <td>{{game.masterGame.projectedFantasyPoints | money}}</td>
             <td class="select-cell">
               <b-button size="sm" variant="info" v-on:click="selectGame(game.masterGame)">Select</b-button>
             </td>
