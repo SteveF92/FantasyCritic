@@ -18,6 +18,7 @@ namespace FantasyCritic.Lib.OpenCritic
     {
         private readonly HttpClient _client;
         private readonly ILogger<OpenCriticService> _logger;
+        private readonly LocalDate DefaultOpenCriticReleaseDate = new LocalDate(2020, 12, 31);
 
         public OpenCriticService(HttpClient client, ILogger<OpenCriticService> logger)
         {
@@ -32,16 +33,25 @@ namespace FantasyCritic.Lib.OpenCritic
                 var gameResponse = await _client.GetStringAsync($"game/{openCriticGameID}");
                 JObject parsedGameResponse = JObject.Parse(gameResponse);
 
+                var gameName = parsedGameResponse.GetValue("name").Value<string>();
                 LocalDate? earliestReleaseDate = null;
-                var firstReleaseDateString = parsedGameResponse.GetValue("firstReleaseDate").Value<string>();
+                var releaseDateToken = parsedGameResponse.GetValue("firstReleaseDate");
+                var firstReleaseDateString = releaseDateToken.Value<string>();
                 if (!string.IsNullOrWhiteSpace(firstReleaseDateString))
                 {
-                    var earliestDateTime = parsedGameResponse.GetValue("firstReleaseDate").Value<DateTime>();
+                    var earliestDateTime = releaseDateToken.Value<DateTime>();
                     earliestReleaseDate = LocalDate.FromDateTime(earliestDateTime);
+                    if (earliestReleaseDate == DefaultOpenCriticReleaseDate)
+                    {
+                        earliestReleaseDate = null;
+                    }
                 }
 
-                var gameName = parsedGameResponse.GetValue("name").Value<string>();
                 var score = parsedGameResponse.GetValue("topCriticScore").Value<decimal?>();
+                if (score == -1m)
+                {
+                    score = null;
+                }
 
                 var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate);
                 return openCriticGame;
