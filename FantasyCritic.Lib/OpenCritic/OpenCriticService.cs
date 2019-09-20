@@ -29,46 +29,21 @@ namespace FantasyCritic.Lib.OpenCritic
         {
             try
             {
-                var gameResponse = await _client.GetStringAsync($"/api/game?id={openCriticGameID}");
+                var gameResponse = await _client.GetStringAsync($"game/{openCriticGameID}");
                 JObject parsedGameResponse = JObject.Parse(gameResponse);
 
-                List<LocalDate> releaseDates = new List<LocalDate>();
-                var platforms = parsedGameResponse.GetValue("Platforms");
-                foreach (var platform in platforms.Children())
-                {
-                    var gamePlatforms = platform.SelectToken("GamesPlatforms");
-                    var releaseDateToken = gamePlatforms.SelectToken("releaseDate");
-                    if (releaseDateToken == null)
-                    {
-                        continue;
-                    }
-
-                    string releaseDateString = releaseDateToken.Value<string>();
-                    if (string.IsNullOrWhiteSpace(releaseDateString))
-                    {
-                        continue;
-                    }
-
-                    DateTime releaseDateResult = releaseDateToken.Value<DateTime>();
-                    LocalDate releaseDate = LocalDate.FromDateTime(releaseDateResult);
-
-                    releaseDates.Add(releaseDate);
-                }
-
                 LocalDate? earliestReleaseDate = null;
-                if (releaseDates.Any())
+                var firstReleaseDateString = parsedGameResponse.GetValue("firstReleaseDate").Value<string>();
+                if (!string.IsNullOrWhiteSpace(firstReleaseDateString))
                 {
-                    earliestReleaseDate = releaseDates.Min();
-                }
-                 
-                var scoreResponse = await _client.GetStringAsync($"/api/game/score?id={openCriticGameID}");
-                var parsedResult = JsonConvert.DeserializeObject<OpenCriticScoreResponse>(scoreResponse);
-                if (parsedResult == null)
-                {
-                    return Maybe<OpenCriticGame>.None;
+                    var earliestDateTime = parsedGameResponse.GetValue("firstReleaseDate").Value<DateTime>();
+                    earliestReleaseDate = LocalDate.FromDateTime(earliestDateTime);
                 }
 
-                var openCriticGame = new OpenCriticGame(parsedResult, earliestReleaseDate);
+                var gameName = parsedGameResponse.GetValue("name").Value<string>();
+                var score = parsedGameResponse.GetValue("topCriticScore").Value<decimal?>();
+
+                var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate);
                 return openCriticGame;
             }
             catch (HttpRequestException httpEx)
