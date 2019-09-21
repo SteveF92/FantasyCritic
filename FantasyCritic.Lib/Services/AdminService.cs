@@ -88,6 +88,10 @@ namespace FantasyCritic.Lib.Services
                 {
                     await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame.Value);
                 }
+                else
+                {
+                    _logger.LogWarning($"Getting an open critic game failed (empty return): {masterGame.GameName} | [{masterGame.OpenCriticID.Value}]");
+                }
 
                 foreach (var subGame in masterGame.SubGames)
                 {

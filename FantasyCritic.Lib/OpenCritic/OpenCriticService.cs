@@ -31,6 +31,10 @@ namespace FantasyCritic.Lib.OpenCritic
             try
             {
                 var gameResponse = await _client.GetStringAsync($"game/{openCriticGameID}");
+                if (string.IsNullOrWhiteSpace(gameResponse))
+                { 
+                    return Maybe<OpenCriticGame>.None;
+                }
                 JObject parsedGameResponse = JObject.Parse(gameResponse);
 
                 var gameName = parsedGameResponse.GetValue("name").Value<string>();
