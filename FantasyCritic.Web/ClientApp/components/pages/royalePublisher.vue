@@ -20,7 +20,7 @@
       </div>
 
       <h1>Games</h1>
-      <b-table striped bordered small :items="publisher.publisherGames" :fields="gameFields">
+      <b-table striped bordered small responsive :items="publisher.publisherGames" :fields="gameFields" v-if="publisher.publisherGames.length !== 0">
         <template slot="masterGame" slot-scope="data">
           <masterGamePopover :masterGame="data.item.masterGame"> </masterGamePopover>
         </template>
@@ -32,6 +32,7 @@
         </template>
         <template slot="advertisingMoney" slot-scope="data">
           {{ data.item.advertisingMoney | money }}
+          <b-button variant="info" class="set-advertising-button" size="sm">Set Budget</b-button>
         </template>
         <template slot="criticScore" slot-scope="data">
           <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
@@ -43,7 +44,13 @@
         <template slot="timestamp" slot-scope="data">
           {{ data.item.timestamp | date }}
         </template>
+        <template slot="sellGame" slot-scope="data">
+          <b-button variant="danger">Sell Game</b-button>
+        </template>
       </b-table>
+      <div v-else class="alert alert-info">
+        You have not bought any games yet!
+      </div>
     </div>
     
   </div>
@@ -70,7 +77,8 @@
           { key: 'advertisingMoney', label: 'Advertising Money', thClass: 'bg-primary' },
           { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary' },
           { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary' },
-          { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary' }
+          { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary' },
+          { key: 'sellGame', label: '', thClass: 'bg-primary' }
         ]
       }
     },

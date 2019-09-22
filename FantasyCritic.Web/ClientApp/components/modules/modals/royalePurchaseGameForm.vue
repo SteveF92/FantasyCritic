@@ -10,6 +10,7 @@
           </span>
         </div>
 
+        <h3 class="text-black" v-if="searchedTop">Top games</h3>
         <possibleRoyaleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="purchaseMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleRoyaleMasterGamesTable>
 
         <div v-show="searched && !purchaseMasterGame && possibleMasterGames.length === 0" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
@@ -51,6 +52,7 @@
             purchaseResult: null,
             possibleMasterGames: [],
             searched: false,
+            searchedTop: false,
             isBusy: false
           }
       },
@@ -66,6 +68,7 @@
       methods: {
         searchGame() {
           this.searched = false;
+          this.searchedTop = false;
           this.purchaseResult = null;
           this.possibleMasterGames = [];
 
@@ -83,6 +86,9 @@
                 this.searched = true;
                 this.showingUnlistedField = false;
                 this.purchaseMasterGame = null;
+                if (!this.searchGameName) {
+                  this.searchedTop = true;
+                }
               })
               .catch(response => {
 
@@ -153,8 +159,7 @@
 .game-search-input{
   margin-bottom: 15px;
 }
-.override-checkbox {
-  margin-left: 10px;
-  margin-top: 8px;
+.text-black {
+  color: black;
 }
 </style>
