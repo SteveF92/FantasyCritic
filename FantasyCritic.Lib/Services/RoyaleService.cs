@@ -118,7 +118,7 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult("Not enough budget.");
             }
 
-            RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, _clock.GetCurrentInstant(), gameCost, 0m, 0m);
+            RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, _clock.GetCurrentInstant(), gameCost, 0m, null);
             await _royaleRepo.PurchaseGame(game);
             return new ClaimResult();
         }

@@ -20,7 +20,30 @@
       </div>
 
       <h1>Games</h1>
-      <b-table striped bordered small :items="publisher.publisherGames"></b-table>
+      <b-table striped bordered small :items="publisher.publisherGames" :fields="gameFields">
+        <template slot="masterGame" slot-scope="data">
+          <masterGamePopover :masterGame="data.item.masterGame"> </masterGamePopover>
+        </template>
+        <template slot="releaseDate" slot-scope="data">
+          {{getReleaseDate(data.item.masterGame)}}
+        </template>
+        <template slot="amountSpent" slot-scope="data">
+          {{ data.item.amountSpent | money }}
+        </template>
+        <template slot="advertisingMoney" slot-scope="data">
+          {{ data.item.advertisingMoney | money }}
+        </template>
+        <template slot="criticScore" slot-scope="data">
+          <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
+          <span v-else>--</span>
+        </template>
+        <template slot="fantasyPoints" slot-scope="data">
+          {{ data.item.fantasyPoints | score }}
+        </template>
+        <template slot="timestamp" slot-scope="data">
+          {{ data.item.timestamp | date }}
+        </template>
+      </b-table>
     </div>
     
   </div>
@@ -29,6 +52,8 @@
 <script>
   import Vue from "vue";
   import axios from "axios";
+  import MasterGamePopover from "components/modules/masterGamePopover";
+  import moment from "moment";
 
   import RoyalePurchaseGameForm from "components/modules/modals/royalePurchaseGameForm";
 
@@ -36,12 +61,22 @@
     props: ['publisherID'],
     data() {
       return {
-          errorInfo: "",
-          publisher: null
+        errorInfo: "",
+        publisher: null,
+        gameFields: [
+          { key: 'masterGame', label: 'Game', thClass:'bg-primary' },
+          { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+          { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary' },
+          { key: 'advertisingMoney', label: 'Advertising Money', thClass: 'bg-primary' },
+          { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary' },
+          { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary' },
+          { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary' }
+        ]
       }
     },
     components: {
-      RoyalePurchaseGameForm
+      RoyalePurchaseGameForm,
+      MasterGamePopover
     },
     props: ['publisherid'],
     methods: {
@@ -55,12 +90,21 @@
       },
       gamePurchased(purchaseInfo) {
         this.fetchPublisher();
-        let message = purchaseInfo.gameName + " was purchased for $" + purchaseInfo.purchaseCost
+        let message = purchaseInfo.gameName + " was purchased for " + this.$options.filters.money(purchaseInfo.purchaseCost);
         let toast = this.$toasted.show(message, {
           theme: "primary",
           position: "top-right",
           duration: 5000
         });
+      },
+      getReleaseDate(game) {
+        if (game.releaseDate) {
+          return moment(game.releaseDate).format('YYYY-MM-DD');
+        }
+        return game.estimatedReleaseDate + ' (Estimated)'
+      },
+      openCriticLink(game) {
+        return "https://opencritic.com/game/" + game.openCriticID + "/a";
       }
     },
     mounted() {
