@@ -244,9 +244,15 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string gameName, int year, int quarter)
+        public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string gameName, Guid publisherID)
         {
-            var yearQuarter = await _royaleService.GetYearQuarter(year, quarter);
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(publisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var yearQuarter = await _royaleService.GetYearQuarter(publisher.Value.YearQuarter.YearQuarter.Year, publisher.Value.YearQuarter.YearQuarter.Quarter);
             if (yearQuarter.HasNoValue)
             {
                 return BadRequest();
@@ -267,7 +273,9 @@ namespace FantasyCritic.Web.Controllers.API
                     .ToList();
             }
 
-            var viewModels = masterGames.Select(masterGame => new PossibleRoyaleMasterGameViewModel(masterGame, _clock, yearQuarter.Value, false)).ToList();
+            var viewModels = masterGames.Select(masterGame =>
+                new PossibleRoyaleMasterGameViewModel(masterGame, _clock, yearQuarter.Value, publisher.Value.PublisherGames.Any(y =>
+                    y.MasterGame.MasterGame.Equals(masterGame.MasterGame)))).ToList();
             return viewModels;
         }
     }

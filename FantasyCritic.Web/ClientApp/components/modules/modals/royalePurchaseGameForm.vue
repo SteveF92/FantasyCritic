@@ -71,10 +71,10 @@
 
           let apiString = '';
           if (this.searchGameName) {
-            apiString = '/api/royale/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.yearQuarter.year + '&quarter=' + this.yearQuarter.quarter;
+            apiString = '/api/royale/PossibleMasterGames?gameName=' + this.searchGameName + '&publisherID=' + this.userRoyalePublisher.publisherID;
           }
           else {
-            apiString = '/api/royale/PossibleMasterGames?year=' + this.yearQuarter.year + '&quarter=' + this.yearQuarter.quarter;
+            apiString = '/api/royale/PossibleMasterGames?publisherID=' + this.userRoyalePublisher.publisherID;
           }
           axios
               .get(apiString)
@@ -131,6 +131,8 @@
           this.purchaseResult = null;
           this.possibleMasterGames = [];
           this.searched = false;
+          this.searchGame();
+
         },
         newGameSelected() {
           this.purchaseResult = null;
