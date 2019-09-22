@@ -62,7 +62,7 @@
             return this.purchaseMasterGame;
           }
         },
-        props: ['yearQuarter'],
+        props: ['yearQuarter', 'userRoyalePublisher'],
         methods: {
           searchGame() {
             this.searched = false;
@@ -104,14 +104,11 @@
 
             var request = {
                 publisherID: this.userRoyalePublisher.publisherID,
-                gameName: gameName,
-                counterPick: this.purchaseCounterPick,
                 masterGameID: masterGameID,
-                managerOverride: this.purchaseOverride
             };
 
             axios
-              .post('/api/league/PurchaseGame', request)
+              .post('/api/royale/PurchaseGame', request)
               .then(response => {
                   this.purchaseResult = response.data;
                   if (!this.purchaseResult.success) {
@@ -119,10 +116,6 @@
                     return;
                   }
                   this.$refs.royalePurchaseGameFormRef.hide();
-                  var purchaseInfo = {
-                    gameName
-                  };
-                  this.$emit('gameDrafted', purchaseInfo);
                   this.clearData();
                 })
                 .catch(response => {

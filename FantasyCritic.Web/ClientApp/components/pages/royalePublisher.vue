@@ -15,7 +15,7 @@
         <div class="col-md-12 col-lg-6">
           <h4>Remaining Budget: {{publisher.budget | money}}</h4>
           <b-button variant="primary" v-b-modal="'royalePurchaseGameForm'">Purchase a Game</b-button>
-          <royalePurchaseGameForm :yearQuarter="publisher.yearQuarter"></royalePurchaseGameForm>
+          <royalePurchaseGameForm :yearQuarter="publisher.yearQuarter" :userRoyalePublisher = "publisher"></royalePurchaseGameForm>
         </div>
       </div>
 
