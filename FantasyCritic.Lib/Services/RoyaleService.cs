@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Royale;
 using MoreLinq;
@@ -81,45 +82,45 @@ namespace FantasyCritic.Lib.Services
             return masterGameYears.ToList();
         }
 
-        public async Task<Result<RoyalePublisherGame>> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
+        public async Task<ClaimResult> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
         {
             if (publisher.PublisherGames.Count >= MAX_GAMES)
             {
-                return Result.Fail<RoyalePublisherGame>("Roster is full.");
+                return new ClaimResult("Roster is full.");
             }
             if (publisher.PublisherGames.Select(x => x.MasterGame).Contains(masterGame))
             {
-                return Result.Fail<RoyalePublisherGame>("Publisher already has that game.");
+                return new ClaimResult("Publisher already has that game.");
             }
             if (!masterGame.WillReleaseInQuarter(publisher.YearQuarter.YearQuarter))
             {
-                return Result.Fail<RoyalePublisherGame>("Game will not release this quarter.");
+                return new ClaimResult("Game will not release this quarter.");
             }
             if (masterGame.MasterGame.IsReleased(_clock))
             {
-                return Result.Fail<RoyalePublisherGame>("Game has been released.");
+                return new ClaimResult("Game has been released.");
             }
             if (masterGame.MasterGame.CriticScore.HasValue)
             {
-                return Result.Fail<RoyalePublisherGame>("Game has a score.");
+                return new ClaimResult("Game has a score.");
             }
 
             var eligibilityErrors = EligibilitySettings.GetRoyaleEligibilitySettings().GameIsEligible(masterGame.MasterGame);
             if (eligibilityErrors.Any())
             {
-                return Result.Fail<RoyalePublisherGame>("Game is not eligible under Royale rules.");
+                return new ClaimResult("Game is not eligible under Royale rules.");
             }
 
             var currentBudget = publisher.Budget;
             var gameCost = masterGame.GetRoyaleGameCost();
             if (currentBudget < gameCost)
             {
-                return Result.Fail<RoyalePublisherGame>("Not enough budget.");
+                return new ClaimResult("Not enough budget.");
             }
 
             RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, _clock.GetCurrentInstant(), gameCost, 0m, 0m);
             await _royaleRepo.PurchaseGame(game);
-            return Result.Ok(game);
+            return new ClaimResult();
         }
 
         public async Task<Result> SellGame(RoyalePublisher publisher, RoyalePublisherGame publisherGame)

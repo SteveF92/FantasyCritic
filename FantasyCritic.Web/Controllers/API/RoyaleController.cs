@@ -170,12 +170,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var purchaseResult = await _royaleService.PurchaseGame(publisher.Value, masterGame.Value);
-            if (purchaseResult.IsFailure)
-            {
-                return BadRequest(purchaseResult.Error);
-            }
-
-            return Ok();
+            var viewModel = new PlayerClaimResultViewModel(purchaseResult);
+            return Ok(viewModel);
         }
 
         [HttpPost]

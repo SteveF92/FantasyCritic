@@ -44,97 +44,102 @@
     import axios from "axios";
     import PossibleRoyaleMasterGamesTable from "components/modules/possibleRoyaleMasterGamesTable";
     export default {
-        data() {
-            return {
-              searchGameName: null,
-              purchaseMasterGame: null,
-              purchaseResult: null,
-              possibleMasterGames: [],
-              searched: false,
-              isBusy: false
-            }
-        },
-        components: {
-            PossibleRoyaleMasterGamesTable
-        },
-        computed: {
-          formIsValid() {
-            return this.purchaseMasterGame;
+      data() {
+          return {
+            searchGameName: null,
+            purchaseMasterGame: null,
+            purchaseResult: null,
+            possibleMasterGames: [],
+            searched: false,
+            isBusy: false
           }
-        },
-        props: ['yearQuarter', 'userRoyalePublisher'],
-        methods: {
-          searchGame() {
-            this.searched = false;
-            this.purchaseResult = null;
-            this.possibleMasterGames = [];
-
-            let apiString = '';
-            if (this.searchGameName) {
-              apiString = '/api/royale/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.yearQuarter.year + '&quarter=' + this.yearQuarter.quarter;
-            }
-            else {
-              apiString = '/api/royale/PossibleMasterGames?year=' + this.yearQuarter.year + '&quarter=' + this.yearQuarter.quarter;
-            }
-            axios
-                .get(apiString)
-                .then(response => {
-                  this.possibleMasterGames = response.data;
-                  this.searched = true;
-                  this.showingUnlistedField = false;
-                  this.purchaseMasterGame = null;
-                })
-                .catch(response => {
-
-                });
-          },
-          addGame() {
-            this.isBusy = true;
-            var gameName = "";
-            if (this.purchaseMasterGame !== null) {
-              gameName = this.purchaseMasterGame.gameName;
-            } else if (this.purchaseUnlistedGame !== null) {
-              gameName = this.purchaseUnlistedGame;
-            }
-
-            var masterGameID = null;
-            if (this.purchaseMasterGame !== null) {
-                masterGameID = this.purchaseMasterGame.masterGameID;
-            }
-
-            var request = {
-                publisherID: this.userRoyalePublisher.publisherID,
-                masterGameID: masterGameID,
-            };
-
-            axios
-              .post('/api/royale/PurchaseGame', request)
-              .then(response => {
-                  this.purchaseResult = response.data;
-                  if (!this.purchaseResult.success) {
-                    this.isBusy = false;
-                    return;
-                  }
-                  this.$refs.royalePurchaseGameFormRef.hide();
-                  this.clearData();
-                })
-                .catch(response => {
-                      
-                });
-          },
-          clearData() {
-            this.isBusy = false;
-            this.searchGameName = null;
-            this.purchaseMasterGame = null;
-            this.purchaseResult = null;
-            this.possibleMasterGames = [];
-            this.searched = false;
-          },
-          newGameSelected() {
-            this.purchaseResult = null;
-          }
+      },
+      components: {
+          PossibleRoyaleMasterGamesTable
+      },
+      computed: {
+        formIsValid() {
+          return this.purchaseMasterGame;
         }
+      },
+      props: ['yearQuarter', 'userRoyalePublisher'],
+      methods: {
+        searchGame() {
+          this.searched = false;
+          this.purchaseResult = null;
+          this.possibleMasterGames = [];
+
+          let apiString = '';
+          if (this.searchGameName) {
+            apiString = '/api/royale/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.yearQuarter.year + '&quarter=' + this.yearQuarter.quarter;
+          }
+          else {
+            apiString = '/api/royale/PossibleMasterGames?year=' + this.yearQuarter.year + '&quarter=' + this.yearQuarter.quarter;
+          }
+          axios
+              .get(apiString)
+              .then(response => {
+                this.possibleMasterGames = response.data;
+                this.searched = true;
+                this.showingUnlistedField = false;
+                this.purchaseMasterGame = null;
+              })
+              .catch(response => {
+
+              });
+        },
+        addGame() {
+          this.isBusy = true;
+
+          var masterGameID = null;
+          if (this.purchaseMasterGame !== null) {
+              masterGameID = this.purchaseMasterGame.masterGameID;
+          }
+
+          var request = {
+              publisherID: this.userRoyalePublisher.publisherID,
+              masterGameID: masterGameID,
+          };
+
+          axios
+            .post('/api/royale/PurchaseGame', request)
+            .then(response => {
+                this.purchaseResult = response.data;
+                if (!this.purchaseResult.success) {
+                  this.isBusy = false;
+                  return;
+                }
+
+                let gameName = this.purchaseMasterGame.gameName;
+                let purchaseCost = this.purchaseMasterGame.projectedFantasyPoints;
+                var purchaseInfo = {
+                  gameName,
+                  purchaseCost
+                };
+                this.$emit('gamePurchased', purchaseInfo);
+                this.clearData();
+                this.$refs.royalePurchaseGameFormRef.hide();
+              })
+              .catch(response => {
+                      
+              });
+        },
+        clearData() {
+          this.isBusy = false;
+          this.searchGameName = null;
+          this.purchaseMasterGame = null;
+          this.purchaseResult = null;
+          this.possibleMasterGames = [];
+          this.searched = false;
+        },
+        newGameSelected() {
+          this.purchaseResult = null;
+        }
+    },
+    mounted() {
+      this.searchGame();
     }
+  }
 </script>
 <style scoped>
 .add-game-button{

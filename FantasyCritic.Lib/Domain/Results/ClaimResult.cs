@@ -5,6 +5,24 @@ namespace FantasyCritic.Lib.Domain.Results
 {
     public class ClaimResult
     {
+        public ClaimResult()
+        : this(new List<ClaimError>())
+        {
+
+        }
+
+        public ClaimResult(string claimError)
+        : this(new ClaimError(claimError, false))
+        {
+
+        }
+
+        public ClaimResult(ClaimError error)
+        : this (new List<ClaimError>(){error})
+        {
+
+        }
+
         public ClaimResult(IEnumerable<ClaimError> errors)
         {
             Success = !errors.Any();
