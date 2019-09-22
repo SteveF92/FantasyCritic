@@ -54,7 +54,15 @@ namespace FantasyCritic.Lib.OpenCritic
                 var score = parsedGameResponse.GetValue("topCriticScore").Value<decimal?>();
                 if (score == -1m)
                 {
-                    score = null;
+                    score = parsedGameResponse.GetValue("averageScore").Value<decimal?>();
+                    if (score != -1m)
+                    {
+                        _logger.LogWarning($"Using averageScore for game: {openCriticGameID}");
+                    }
+                    else
+                    {
+                        score = null;
+                    }
                 }
 
                 var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate);
