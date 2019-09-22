@@ -111,7 +111,7 @@ namespace FantasyCritic.Web
 
             services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
             {
-                client.BaseAddress = new Uri("https://thanos.opencritic.com/api/");
+                client.BaseAddress = new Uri("https://api.opencritic.com/api/");
             });
 
             services.AddScoped<AdminService>();
