@@ -44,6 +44,7 @@
     import Vue from "vue";
     import axios from "axios";
     import PossibleRoyaleMasterGamesTable from "components/modules/possibleRoyaleMasterGamesTable";
+
     export default {
       data() {
           return {
