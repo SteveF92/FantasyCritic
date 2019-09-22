@@ -219,7 +219,7 @@ namespace FantasyCritic.MySQL
         {
             string gameRemoveSQL = "DELETE FROM tbl_royale_publishergame WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
             string budgetIncreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget + @amountGained WHERE PublisherID = @publisherID";
-            var amountGained = publisherGame.AmountSpent / 2;
+            var amountGained = (publisherGame.AmountSpent / 2) + publisherGame.AdvertisingMoney;
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
