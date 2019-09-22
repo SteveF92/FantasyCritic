@@ -52,7 +52,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user, string publisherName)
         {
-            RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, new List<RoyalePublisherGame>(), 200m);
+            RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, new List<RoyalePublisherGame>(), 100m);
             await _royaleRepo.CreatePublisher(publisher);
             return publisher;
         }
