@@ -12,30 +12,21 @@
 
         <possibleRoyaleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="purchaseMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleRoyaleMasterGamesTable>
 
-        <!--<div v-show="searched && !purchaseMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+        <div v-show="searched && !purchaseMasterGame && possibleMasterGames.length === 0" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
-            <span class="col-12 col-md-7" v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
-            <span class="col-12 col-md-7" v-show="possibleMasterGames.length === 0">No games were found.</span>
-            <b-button variant="primary" v-on:click="showUnlistedField" size="sm" class="col-12 col-md-5">Select unlisted game</b-button>
-          </div>
-
-          <div v-if="showingUnlistedField">
-            <label for="purchaseUnlistedGame" class="control-label">Custom Game Name</label>
-            <div class="input-group game-search-input">
-              <input v-model="purchaseUnlistedGame" id="purchaseUnlistedGame" name="purchaseUnlistedGame" type="text" class="form-control input" />
-            </div>
-            <div>Enter the full name of the game you want.</div>
-            <div v-show="!isManager">Your league manager can link this custom game with a "master game" later.</div>
-            <div v-show="isManager">You as league manager can link this custom game with a "master game" later.</div>
+            <span class="col-12 col-md-7" >No games were found.</span>
           </div>
         </div>
 
-        <label v-if="purchaseMasterGame" for="purchaseMasterGame" class="control-label">Selected Game: {{purchaseMasterGame.gameName}}</label>-->
+        <label v-if="purchaseMasterGame" for="purchaseMasterGame" class="control-label">Selected Game: {{purchaseMasterGame.gameName}}</label>
       </div>
     </form>
-    <!--<form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
+
+    <div class="form-horizontal">
       <div>
-        <input type="submit" class="btn btn-primary add-game-button" value="Draft Game" v-if="formIsValid" :disabled="isBusy" />
+        <b-button variant="primary" class="add-game-button" v-on:click="addGame" v-if="formIsValid" :disabled="isBusy">
+          Purchase Game for {{purchaseMasterGame.projectedFantasyPoints | money}}
+        </b-button>
       </div>
       <div v-if="purchaseResult && !purchaseResult.success" class="alert purchase-error" v-bind:class="{ 'alert-danger': !purchaseResult.overridable, 'alert-warning': purchaseResult.overridable }">
         <h3 class="alert-heading" v-if="purchaseResult.overridable">Warning!</h3>
@@ -43,19 +34,8 @@
         <ul>
           <li v-for="error in purchaseResult.errors">{{error}}</li>
         </ul>
-
-        <div class="form-check" v-if="purchaseResult.overridable">
-          <span>
-            <label v-show="!isManager" class="form-check-label">Your league manager can override these warnings.</label>
-            <label v-show="isManager" class="form-check-label">
-              <span>You as league manager can override these warnings.</span>
-              <br />
-              <span>Use the "Select Next Game" button under "Manager Actions".</span>
-            </label>
-          </span>
-        </div>
       </div>
-    </form>-->
+    </div>
   </b-modal>
 </template>
 
@@ -85,6 +65,7 @@
         props: ['yearQuarter'],
         methods: {
           searchGame() {
+            this.searched = false;
             this.purchaseResult = null;
             this.possibleMasterGames = [];
 
