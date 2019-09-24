@@ -159,6 +159,11 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("Publisher doesn't have that game.");
             }
 
+            if (advertisingMoney < 0m)
+            {
+                return Result.Fail("Can't allocate negative dollars in advertising money.");
+            }
+
             if (advertisingMoney > 10m)
             {
                 return Result.Fail("Can't allocate more than 10 dollars in advertising money.");

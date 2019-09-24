@@ -34,7 +34,7 @@
         </template>
         <template slot="advertisingMoney" slot-scope="data">
           {{ data.item.advertisingMoney | money }}
-          <b-button variant="info" class="set-advertising-button" size="sm" v-if="userIsPublisher">Set Budget</b-button>
+          <b-button variant="info" size="sm" v-if="userIsPublisher" v-on:click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
         <template slot="criticScore" slot-scope="data">
           <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
@@ -56,10 +56,25 @@
     </div>
 
     <b-modal id="sellRoyaleGameModal" ref="sellRoyaleGameModalRef" title="Sell Game" @ok="sellGame">
-      <div v-if="gameToSell">
-        <p>Are you sure you want to sell <strong>{{gameToSell.masterGame.gameName}}</strong>?</p>
+      <div v-if="gameToModify">
+        <p>Are you sure you want to sell <strong>{{gameToModify.masterGame.gameName}}</strong>?</p>
         <p>You will get back half the money you bought it for, and any advertising money currently assigned to it.</p>
-        <p>Money to recieve: <strong>{{gameToSell.amountSpent / 2 + gameToSell.advertisingMoney | money}}</strong></p>
+        <p>Money to recieve: <strong>{{gameToModify.amountSpent / 2 + gameToModify.advertisingMoney | money}}</strong></p>
+      </div>
+    </b-modal>
+
+    <b-modal id="setAdvertisingMoneyModal" ref="setAdvertisingMoneyModalRef" title="Set Advertising Budget" @ok="setBudget">
+      <div v-if="gameToModify">
+        <p>How much money do you want to allocate to <strong>{{gameToModify.masterGame.gameName}}</strong>?</p>
+        <p>Each dollar allocated will increase your fantasy points received by 5%</p>
+        <p>You can spend up to $10 for a bonus of 50%.</p>
+        <p>You can adjust this up until the game (or reviews) come out.</p>
+        <div class="form-group row">
+          <label for="advertisingBudgetToSet" class="col-sm-2 col-form-label">Budget</label>
+          <div class="col-sm-10">
+            <input class="form-control" v-model="advertisingBudgetToSet">
+          </div>
+        </div>
       </div>
     </b-modal>
   </div>
@@ -79,7 +94,8 @@
       return {
         errorInfo: "",
         publisher: null,
-        gameToSell: null,
+        gameToModify: null,
+        advertisingBudgetToSet: 0,
         gameFields: [
           { key: 'masterGame', label: 'Game', thClass:'bg-primary', stickyColumn: true },
           { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
@@ -129,30 +145,51 @@
         });
       },
       setGameToSell(publisherGame) {
-        this.gameToSell = publisherGame;
+        this.gameToModify = publisherGame;
         this.$refs.sellRoyaleGameModalRef.show();
       },
       sellGame() {
-          var request = {
-            publisherID: this.publisher.publisherID,
-            masterGameID: this.gameToSell.masterGame.masterGameID
-          };
+        var request = {
+          publisherID: this.publisher.publisherID,
+          masterGameID: this.gameToModify.masterGame.masterGameID
+        };
 
-          axios
-            .post('/api/royale/SellGame', request)
-            .then(response => {
-                this.fetchPublisher();
-                let message = this.gameToSell.masterGame.gameName + " was sold for " + this.$options.filters.money(this.gameToSell.amountSpent / 2);
-                let toast = this.$toasted.show(message, {
-                  theme: "primary",
-                  position: "top-right",
-                  duration: 5000
-                });
-              })
-            .catch(response => {
+        axios
+          .post('/api/royale/SellGame', request)
+          .then(response => {
+              this.fetchPublisher();
+              let message = this.gameToModify.masterGame.gameName + " was sold for " + this.$options.filters.money(this.gameToModify.amountSpent / 2);
+              let toast = this.$toasted.show(message, {
+                theme: "primary",
+                position: "top-right",
+                duration: 5000
+              });
+            })
+          .catch(response => {
 
-            });
-        },
+          });
+      },
+      setGameToSetBudget(publisherGame) {
+        this.gameToModify = publisherGame;
+        this.$refs.setAdvertisingMoneyModalRef.show();
+      },
+      setBudget() {
+        var request = {
+          publisherID: this.publisher.publisherID,
+          masterGameID: this.gameToModify.masterGame.masterGameID,
+          advertisingMoney: this.advertisingBudgetToSet
+        };
+
+        axios
+          .post('/api/royale/SetAdvertisingMoney', request)
+          .then(response => {
+            this.fetchPublisher();
+            this.advertisingBudgetToSet = 0;
+            })
+          .catch(response => {
+            this.advertisingBudgetToSet = 0;
+          });
+      },
       getReleaseDate(game) {
         if (game.releaseDate) {
           return moment(game.releaseDate).format('YYYY-MM-DD');

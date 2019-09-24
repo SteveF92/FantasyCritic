@@ -234,8 +234,9 @@ namespace FantasyCritic.MySQL
 
         public async Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney)
         {
+            decimal amountToSpend = advertisingMoney - publisherGame.AdvertisingMoney;
             string advertisingMoneySetSQL = "UPDATE tbl_royale_publishergame SET AdvertisingMoney = @advertisingMoney WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
-            string budgetDescreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @advertisingMoney WHERE PublisherID = @publisherID";
+            string budgetDescreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @amountToSpend WHERE PublisherID = @publisherID";
             var masterGameID = publisherGame.MasterGame.MasterGame.MasterGameID;
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -244,7 +245,7 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync(advertisingMoneySetSQL, new { advertisingMoney, publisherID = publisherGame.PublisherID, masterGameID }, transaction);
-                    await connection.ExecuteAsync(budgetDescreaseSQL, new { advertisingMoney, publisherID = publisherGame.PublisherID }, transaction);
+                    await connection.ExecuteAsync(budgetDescreaseSQL, new { amountToSpend, publisherID = publisherGame.PublisherID }, transaction);
                     transaction.Commit();
                 }
             }
