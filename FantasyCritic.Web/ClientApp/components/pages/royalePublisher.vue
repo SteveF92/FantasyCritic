@@ -132,7 +132,7 @@
         this.gameToSell = publisherGame;
         this.$refs.sellRoyaleGameModalRef.show();
       },
-      sellGame(publisherGame) {
+      sellGame() {
           var request = {
             publisherID: this.publisher.publisherID,
             masterGameID: this.gameToSell.masterGame.masterGameID
