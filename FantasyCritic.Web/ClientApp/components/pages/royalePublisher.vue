@@ -47,7 +47,7 @@
           {{ data.item.timestamp | date }}
         </template>
         <template slot="sellGame" slot-scope="data">
-          <b-button variant="danger" v-on:click="setGameToSell(data.item)">Sell Game</b-button>
+          <b-button block variant="danger" v-on:click="setGameToSell(data.item)">Sell</b-button>
         </template>
       </b-table>
       <div v-else class="alert alert-info">
