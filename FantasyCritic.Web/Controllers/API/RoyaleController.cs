@@ -19,12 +19,11 @@ using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.Royale;
 using FantasyCritic.Web.Models.RoundTrip;
 using MoreLinq;
-using Org.BouncyCastle.Bcpg.Sig;
 
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "BetaTester")]
     public class RoyaleController : Controller
     {
         private readonly IClock _clock;

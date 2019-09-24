@@ -202,7 +202,7 @@ namespace FantasyCritic.MySQL
                 var entities = await connection.QueryAsync<RoyalePublisherGameEntity>(sql,
                     new
                     {
-                        publisherID = publisherID
+                        publisherID
                     });
                 List<RoyalePublisherGame> domains = new List<RoyalePublisherGame>();
                 foreach (var entity in entities)

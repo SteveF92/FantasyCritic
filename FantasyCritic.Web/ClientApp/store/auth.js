@@ -36,7 +36,8 @@ export default {
     userInfo: (state) => state.userInfo,
     newAccountCreated: (state) => state.newAccountCreated,
     storeIsBusy: (state) => state.isBusy,
-    isAdmin: (state) => (state.userInfo && state.userInfo.roles.includes("Admin"))
+    isAdmin: (state) => (state.userInfo && state.userInfo.roles.includes("Admin")),
+    isBetaTester: (state) => (state.userInfo && state.userInfo.roles.includes("BetaTester"))
   },
   actions: {
     doAuthentication(context, creds) {
