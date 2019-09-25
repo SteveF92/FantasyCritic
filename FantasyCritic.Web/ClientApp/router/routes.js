@@ -26,7 +26,7 @@ import ActiveMasterGameRequests from "components/pages/activeMasterGameRequests"
 import ActiveMasterGameChangeRequests from "components/pages/activeMasterGameChangeRequests";
 import MasterGameCreator from "components/pages/masterGameCreator";
 import CurrentFailingBids from "components/pages/currentFailingBids";
-import FantasyRoyale from "components/pages/fantasyRoyale";
+import CriticsRoyale from "components/pages/criticsRoyale";
 import RoyalePublisher from "components/pages/royalePublisher";
 
 export const routes = [
@@ -305,11 +305,11 @@ export const routes = [
     }
   },
   {
-    path: "/fantasyRoyale/:year/:quarter",
-    component: FantasyRoyale,
-    name: "fantasyRoyale",
+    path: "/criticsRoyale/:year/:quarter",
+    component: CriticsRoyale,
+    name: "criticsRoyale",
     meta: {
-      title: "Fantasy Royale"
+      title: "Critics Royale"
     },
     props: (route) => ({
       year: route.params.year,

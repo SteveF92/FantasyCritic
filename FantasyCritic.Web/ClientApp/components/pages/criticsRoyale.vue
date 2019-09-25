@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <h1>Fantasy Royale</h1>
+      <h1>Critics Royale</h1>
 
       <div v-if="!isBusy">
         <div v-if="!userRoyalePublisher" class="alert alert-info">
