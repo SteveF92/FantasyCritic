@@ -51,7 +51,12 @@
         </template>
       </b-table>
       <div v-else class="alert alert-info">
-        You have not bought any games yet!
+        <template v-if="userIsPublisher">
+          You have not bought any games yet!
+        </template>
+        <template v-else>
+          This publisher has not bought any games yet.
+        </template>
       </div>
     </div>
 
