@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Utilities
                 .Concat(filteredSubsequenceMatches)
                 .Select(x => x.Item1);
 
-            return combinedSequences.ToList();
+            return combinedSequences.Distinct().ToList();
         }
 
         public static IReadOnlyList<MasterGameYear> SearchMasterGameYears(string gameName, IEnumerable<MasterGameYear> masterGames)
@@ -47,7 +47,7 @@ namespace FantasyCritic.Lib.Utilities
                 .Concat(filteredSubsequenceMatches)
                 .Select(x => x.Item1);
 
-            return combinedSequences.ToList();
+            return combinedSequences.Distinct().ToList();
         }
 
         private static double GetDistance(string source, string target)

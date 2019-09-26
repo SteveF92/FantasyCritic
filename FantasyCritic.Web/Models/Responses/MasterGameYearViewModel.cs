@@ -15,6 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
         public MasterGameYearViewModel(MasterGameYear masterGame, IClock clock)
         {
             MasterGameID = masterGame.MasterGame.MasterGameID;
+            Year = masterGame.Year;
             GameName = masterGame.MasterGame.GameName;
             EstimatedReleaseDate = masterGame.MasterGame.EstimatedReleaseDate;
             SortableEstimatedReleaseDate = masterGame.MasterGame.SortableEstimatedReleaseDate ?? LocalDate.MaxIsoValue;
@@ -41,6 +42,7 @@ namespace FantasyCritic.Web.Models.Responses
         public MasterGameYearViewModel(MasterSubGame masterSubGame, MasterGameYear masterGame, IClock clock)
         {
             MasterGameID = masterSubGame.MasterGameID;
+            Year = masterGame.Year;
             GameName = masterSubGame.GameName;
             EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
             SortableEstimatedReleaseDate = masterSubGame.SortableEstimatedReleaseDate;
@@ -65,6 +67,7 @@ namespace FantasyCritic.Web.Models.Responses
         }
 
         public Guid MasterGameID { get; }
+        public int Year { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
         public LocalDate SortableEstimatedReleaseDate { get; }
