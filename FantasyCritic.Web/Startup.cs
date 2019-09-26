@@ -13,6 +13,7 @@ using FantasyCritic.MySQL;
 using FantasyCritic.RDS;
 using FantasyCritic.SendGrid;
 using FantasyCritic.Web.Hubs;
+using FantasyCritic.Web.Middleware;
 using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -225,6 +226,13 @@ namespace FantasyCritic.Web
                 .AddRedirectToHttps()
             );
 
+            // If not requesting /api*, rewrite to / so SPA app will be returned
+            app.UseSpaFallback(new SpaFallbackOptions()
+            {
+                ApiPathPrefix = "/api",
+                RewritePath = "/"
+            });
+
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = context =>
@@ -257,10 +265,6 @@ namespace FantasyCritic.Web
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
             });
         }
 
