@@ -1,33 +1,29 @@
 <template>
-    <table class="table table-sm table-bordered table-striped">
-        <thead>
-          <tr class="bg-primary">
-            <th>Game Name</th>
-            <th>Estimated Release Date</th>
-            <th class="no-mobile">Status</th>
-            <th>Cost</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="game in possibleGames">
-            <td>
-              <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="game.masterGame" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
-            </td>
-            <td v-bind:class="{ 'text-danger': game.masterGame.isReleased }" class="release-date">
-              <span>{{game.masterGame.estimatedReleaseDate}}</span>
-              <span v-show="game.masterGame.isReleased">(Released)</span>
-            </td>
-            <td class="no-mobile">
-              <statusBadge :alreadyOwned="game.alreadyOwned" :taken="false" :isEligible="game.isEligible"></statusBadge>
-            </td>
-            <td>{{game.cost | money}}</td>
-            <td class="select-cell">
-              <b-button size="sm" variant="info" v-on:click="selectGame(game)">Select</b-button>
-            </td>
-          </tr>
-        </tbody>
-    </table>
+  <div>
+    <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+
+    <b-table small bordered striped :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
+      <template slot="gameName" slot-scope="data">
+        <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
+      </template>
+      <template slot="sortableEstimatedReleaseDate" slot-scope="data">
+        <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
+          <span>{{data.item.masterGame.estimatedReleaseDate}}</span>
+          <span v-show="data.item.masterGame.isReleased">(Released)</span>
+        </div>
+      </template>
+      <template slot="eligibilityLevel" slot-scope="data">
+        <statusBadge :alreadyOwned="data.item.alreadyOwned" :taken="false" :isEligible="data.item.isEligible"></statusBadge>
+      </template>
+      <template slot="cost" slot-scope="data">
+        {{data.item.cost | money}}
+      </template>
+      <template slot="select" slot-scope="data">
+        <b-button size="sm" variant="info" v-on:click="selectGame(data.item)">Select</b-button>
+      </template>
+    </b-table>
+  </div>
+
 </template>
 <script>
   import StatusBadge from "components/modules/statusBadge";
@@ -36,8 +32,17 @@
   export default {
     data() {
       return {
+        perPage: 10,
+        currentPage: 1,
         selectedPossibleRoyaleGame: null,
-        lastPopoverShown: null
+        lastPopoverShown: null,
+        gameFields: [
+          { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
+          { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+          { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary' },
+          { key: 'select', label: '', thClass: 'bg-primary' }
+        ],
       }
     },
     components: {
@@ -45,6 +50,11 @@
       MasterGamePopover
     },
     props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
+    computed: {
+      rows() {
+        return this.possibleGames.length;
+      }
+    },
     methods: {
       selectGame(possibleRoyaleGame) {
         this.selectedPossibleRoyaleGame = possibleRoyaleGame;
