@@ -176,6 +176,7 @@
       },
       setGameToSetBudget(publisherGame) {
         this.gameToModify = publisherGame;
+        this.advertisingBudgetToSet = publisherGame.advertisingMoney;
         this.$refs.setAdvertisingMoneyModalRef.show();
       },
       setBudget() {
