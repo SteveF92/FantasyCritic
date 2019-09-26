@@ -11,22 +11,22 @@
         </div>
 
         <h3 class="text-black" v-if="searchedTop">Top games</h3>
-        <possibleRoyaleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="purchaseMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleRoyaleMasterGamesTable>
+        <possibleRoyaleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="purchaseRoyaleGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleRoyaleMasterGamesTable>
 
-        <div v-show="searched && !purchaseMasterGame && possibleMasterGames.length === 0" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+        <div v-show="searched && !purchaseRoyaleGame && possibleMasterGames.length === 0" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
             <span class="col-12 col-md-7" >No games were found.</span>
           </div>
         </div>
 
-        <label v-if="purchaseMasterGame" for="purchaseMasterGame" class="control-label">Selected Game: {{purchaseMasterGame.gameName}}</label>
+        <label v-if="purchaseRoyaleGame" for="purchaseRoyaleGame" class="control-label">Selected Game: {{purchaseRoyaleGame.masterGame.gameName}}</label>
       </div>
     </form>
 
     <div class="form-horizontal">
       <div>
         <b-button variant="primary" class="add-game-button" v-on:click="addGame" v-if="formIsValid" :disabled="isBusy">
-          Purchase Game for {{purchaseMasterGame.projectedFantasyPoints | money}}
+          Purchase Game for {{purchaseRoyaleGame.cost | money}}
         </b-button>
       </div>
       <div v-if="purchaseResult && !purchaseResult.success" class="alert purchase-error" v-bind:class="{ 'alert-danger': !purchaseResult.overridable, 'alert-warning': purchaseResult.overridable }">
@@ -49,7 +49,7 @@
       data() {
           return {
             searchGameName: null,
-            purchaseMasterGame: null,
+            purchaseRoyaleGame: null,
             purchaseResult: null,
             possibleMasterGames: [],
             searched: false,
@@ -62,7 +62,7 @@
       },
       computed: {
         formIsValid() {
-          return this.purchaseMasterGame;
+          return this.purchaseRoyaleGame;
         }
       },
       props: ['yearQuarter', 'userRoyalePublisher'],
@@ -86,7 +86,7 @@
                 this.possibleMasterGames = response.data;
                 this.searched = true;
                 this.showingUnlistedField = false;
-                this.purchaseMasterGame = null;
+                this.purchaseRoyaleGame = null;
                 if (!this.searchGameName) {
                   this.searchedTop = true;
                 }
@@ -99,8 +99,8 @@
           this.isBusy = true;
 
           var masterGameID = null;
-          if (this.purchaseMasterGame !== null) {
-              masterGameID = this.purchaseMasterGame.masterGameID;
+          if (this.purchaseRoyaleGame !== null) {
+              masterGameID = this.purchaseRoyaleGame.masterGame.masterGameID;
           }
 
           var request = {
@@ -117,8 +117,8 @@
                   return;
                 }
 
-                let gameName = this.purchaseMasterGame.gameName;
-                let purchaseCost = this.purchaseMasterGame.projectedFantasyPoints;
+                let gameName = this.purchaseRoyaleGame.masterGame.gameName;
+                let purchaseCost = this.purchaseRoyaleGame.cost;
                 var purchaseInfo = {
                   gameName,
                   purchaseCost
@@ -134,7 +134,7 @@
         clearData() {
           this.isBusy = false;
           this.searchGameName = null;
-          this.purchaseMasterGame = null;
+          this.purchaseRoyaleGame = null;
           this.purchaseResult = null;
           this.possibleMasterGames = [];
           this.searched = false;

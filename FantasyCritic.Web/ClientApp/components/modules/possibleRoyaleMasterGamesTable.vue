@@ -21,9 +21,9 @@
             <td class="no-mobile">
               <statusBadge :alreadyOwned="game.alreadyOwned" :taken="false" :isEligible="game.isEligible"></statusBadge>
             </td>
-            <td>{{game.masterGame.projectedFantasyPoints | money}}</td>
+            <td>{{game.cost | money}}</td>
             <td class="select-cell">
-              <b-button size="sm" variant="info" v-on:click="selectGame(game.masterGame)">Select</b-button>
+              <b-button size="sm" variant="info" v-on:click="selectGame(game)">Select</b-button>
             </td>
           </tr>
         </tbody>
@@ -36,7 +36,7 @@
   export default {
     data() {
       return {
-        selectedMasterGame: null,
+        selectedPossibleRoyaleGame: null,
         lastPopoverShown: null
       }
     },
@@ -46,9 +46,9 @@
     },
     props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
     methods: {
-      selectGame(masterGame) {
-        this.selectedMasterGame = masterGame;
-        this.$emit('input', this.selectedMasterGame);
+      selectGame(possibleRoyaleGame) {
+        this.selectedPossibleRoyaleGame = possibleRoyaleGame;
+        this.$emit('input', this.selectedPossibleRoyaleGame);
       },
       newPopoverShown(masterGame) {
         this.$refs.gamePopoverWrapperRef.forEach(function (popover) {
