@@ -28,8 +28,11 @@ import MasterGameCreator from "components/pages/masterGameCreator";
 import CurrentFailingBids from "components/pages/currentFailingBids";
 import CriticsRoyale from "components/pages/criticsRoyale";
 import RoyalePublisher from "components/pages/royalePublisher";
+import NotFound from "components/pages/notFound";
 
 export const routes = [
+  { path: '/404', component: NotFound },
+  { path: '*', redirect: '/404' },  
   {
     path: "/",
     component: Welcome,
