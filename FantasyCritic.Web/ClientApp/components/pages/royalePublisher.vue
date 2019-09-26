@@ -105,7 +105,7 @@
           { key: 'masterGame', label: 'Game', thClass:'bg-primary', stickyColumn: true },
           { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary' },
-          { key: 'advertisingMoney', label: 'Advertising Money', thClass: 'bg-primary' },
+          { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary' },
           { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary' },
           { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary' },
           { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary' }

@@ -23,6 +23,26 @@
           </template>
         </b-table>
       </div>
+
+      <h3>What is Critics Royale?</h3>
+      <p class="text-well">
+        Critics Royale is a new way to play Fantasy Critic - no league required. Every quarter, you will create a publisher that will compete against the entire site. Instead of drafting, you're given a 'budget'
+        which you will use to buy games that you believe will score well during that quarter. Your goal is to spend that money wisely and put together the best lineup of games that you can.
+      </p>
+      <h3>What's an "advertising budget"?</h3>
+      <div class="text-well">
+        <p>
+          You can choose to assign some of your budget (the same one you use to buy games) to boost the score you get for a game.
+          Every <strong>$1</strong> assigned to a game will increase it's points received by <strong>5%</strong>.
+        </p>
+        <p>
+          For example, a game that recieves a critic score of <strong>80</strong> usually gets you <strong>10</strong> points.
+          But, with an advertising budget of <strong>$5</strong>, it will be boosted by <strong>25%</strong>, giving you <strong>12.5</strong> points.
+        </p>
+        <p>
+          You can assign up to <strong>$10</strong> in budget to any single game.
+        </p>
+      </div>
     </div>
   </div>
 </template>
