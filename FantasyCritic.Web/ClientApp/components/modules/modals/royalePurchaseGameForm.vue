@@ -1,5 +1,11 @@
 <template>
   <b-modal id="royalePurchaseGameForm" ref="royalePurchaseGameFormRef" size="lg" title="Purchase Game" hide-footer @hidden="clearData">
+    <p class="text-black">
+      You can purchase up to 25 games, provided you have the money.
+      <br />
+      You currently have <strong>{{ownedGamesCount}}</strong> game(s).
+    </p>
+
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="PurchaseGameName" class="control-label">Game Name</label>
@@ -63,6 +69,9 @@
       computed: {
         formIsValid() {
           return this.purchaseRoyaleGame;
+        },
+        ownedGamesCount() {
+          return this.userRoyalePublisher.publisherGames.length;
         }
       },
       props: ['yearQuarter', 'userRoyalePublisher'],
