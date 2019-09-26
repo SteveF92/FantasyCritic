@@ -89,7 +89,7 @@ namespace FantasyCritic.Lib.Domain
         public decimal GetRoyaleGameCost()
         {
             decimal projectedPoints = ScoringSystem.GetRoyaleScoringSystem().GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), false);
-            projectedPoints *= 2;
+            projectedPoints *= 1.5m;
             if (projectedPoints < 2m)
             {
                 projectedPoints = 2m;
