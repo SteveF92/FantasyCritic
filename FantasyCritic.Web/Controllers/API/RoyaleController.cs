@@ -23,7 +23,7 @@ using MoreLinq;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "BetaTester")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class RoyaleController : Controller
     {
         private readonly IClock _clock;

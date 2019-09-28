@@ -13,7 +13,7 @@
         </div>
         <div class="row main-buttons" v-if="activeRoyaleYearQuarter">
           <b-button variant="primary" :to="{ name: 'createLeague' }" class="main-button">Create a League</b-button>
-          <b-button variant="primary" v-if="isBetaTester" :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter }}" class="main-button">Play Critics Royale</b-button>
+          <b-button variant="primary" :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter }}" class="main-button">Play Critics Royale</b-button>
           <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
         </div>
       </div>
