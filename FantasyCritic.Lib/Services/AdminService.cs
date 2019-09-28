@@ -52,8 +52,6 @@ namespace FantasyCritic.Lib.Services
             await Task.Delay(1000);
 
             await UpdateFantasyPoints();
-            await Task.Delay(1000);
-            await RefreshCaches();
         }
 
         public async Task RefreshCriticInfo()
