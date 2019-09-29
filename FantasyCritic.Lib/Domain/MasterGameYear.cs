@@ -67,6 +67,11 @@ namespace FantasyCritic.Lib.Domain
 
         public bool WillReleaseInQuarter(YearQuarter yearQuarter)
         {
+            if (MasterGame.ReleaseDate.HasValue && yearQuarter.FirstDateOfQuarter > MasterGame.ReleaseDate.Value)
+            {
+                return false;
+            }
+
             if (yearQuarter.LastDateOfQuarter < MasterGame.MinimumReleaseDate)
             {
                 return false;
