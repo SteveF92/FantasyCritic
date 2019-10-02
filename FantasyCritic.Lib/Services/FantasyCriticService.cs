@@ -252,7 +252,6 @@ namespace FantasyCritic.Lib.Services
         public async Task UpdateFantasyPoints(LeagueYear leagueYear)
         {
             Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
-            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
 
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
             foreach (var publisher in publishersInLeague)

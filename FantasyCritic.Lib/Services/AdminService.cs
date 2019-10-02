@@ -22,6 +22,7 @@ namespace FantasyCritic.Lib.Services
     public class AdminService
     {
         private readonly IRDSManager _rdsManager;
+        private readonly RoyaleService _royaleService;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
         private readonly IMasterGameRepo _masterGameRepo;
@@ -31,7 +32,8 @@ namespace FantasyCritic.Lib.Services
         private readonly ILogger<OpenCriticService> _logger;
 
         public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
-            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<OpenCriticService> logger, IRDSManager rdsManager)
+            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<OpenCriticService> logger, IRDSManager rdsManager,
+            RoyaleService royaleService)
         {
             _fantasyCriticService = fantasyCriticService;
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -41,6 +43,7 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
             _logger = logger;
             _rdsManager = rdsManager;
+            _royaleService = royaleService;
         }
 
         public async Task FullDataRefresh()
@@ -114,7 +117,6 @@ namespace FantasyCritic.Lib.Services
         {
             _logger.LogInformation("Updating fantasy points");
 
-            var systemWideValues = await _interLeagueService.GetSystemWideValues();
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
@@ -127,6 +129,20 @@ namespace FantasyCritic.Lib.Services
             }
 
             _logger.LogInformation("Done updating fantasy points");
+            _logger.LogInformation("Updating royale fantasy points");
+
+            var supportedQuarters = await _royaleService.GetYearQuarters();
+            foreach (var supportedQuarter in supportedQuarters)
+            {
+                if (supportedQuarter.Finished || !supportedQuarter.OpenForPlay)
+                {
+                    continue;
+                }
+
+                //await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
+            }
+
+            _logger.LogInformation("Done updating royale fantasy points");
         }
 
         public async Task RefreshCaches()

@@ -172,5 +172,10 @@ namespace FantasyCritic.Lib.Services
             await _royaleRepo.SetAdvertisingMoney(publisherGame, advertisingMoney);
             return Result.Ok();
         }
+
+        public async Task UpdateFantasyPoints(YearQuarter supportedQuarterYearQuarter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
