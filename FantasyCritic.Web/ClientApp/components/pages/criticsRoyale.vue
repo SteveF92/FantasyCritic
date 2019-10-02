@@ -14,14 +14,17 @@
           <h2>Leaderboards {{year}}-Q{{quarter}}</h2>
           <b-button v-if="userRoyalePublisher" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID }}">View My Publisher</b-button>
         </div>
-        
-        <b-table striped bordered small :items="royaleStandings" :fields="standingsFields">
-          <template slot="publisherName" slot-scope="data">
-            <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
-              {{ data.item.publisherName }}
-            </router-link>
-          </template>
-        </b-table>
+
+        <div v-if="royaleStandings">
+          <b-table striped bordered small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
+            <template slot="publisherName" slot-scope="data">
+              <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
+                {{ data.item.publisherName }}
+              </router-link>
+            </template>
+          </b-table>
+          <b-pagination class="pagination-dark" v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+        </div>
       </div>
 
       <h3>What is Critics Royale?</h3>
@@ -64,6 +67,8 @@
     },
     data() {
       return {
+        perPage: 10,
+        currentPage: 1,
         userRoyalePublisher: null,
         royaleYearQuarter: null,
         royaleStandings: null,
@@ -73,6 +78,11 @@
           { key: 'playerName', label: 'Player Name', thClass: 'bg-primary' },
           { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' }
         ],
+      }
+    },
+    computed: {
+      rows() {
+        return this.royaleStandings.length;
       }
     },
     methods: {

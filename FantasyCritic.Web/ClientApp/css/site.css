@@ -139,3 +139,13 @@ div.alert {
 .toggle-on .v-switch-core {
     background-color: #D6993A !important;
 }
+
+.pagination-dark li a, .pagination-dark li span {
+    background-color: #444444 !important;
+    font-weight: bold;
+}
+
+.pagination-dark li.active a, .pagination-dark li.active span {
+    background-color: #D6993A !important;
+    font-weight: bold;
+}
