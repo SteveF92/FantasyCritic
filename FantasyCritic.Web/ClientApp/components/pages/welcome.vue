@@ -37,6 +37,25 @@
       </div>
     </div>
 
+    <br />
+
+    <div class="row welcome-area">
+      <div class="col-md-5 offset-md-1 col-sm-12 welcome-heading">
+        <h1>
+          New Mode:
+          <br />
+          Critics Royale
+        </h1>
+      </div>
+      <div class="col-md-6 col-sm-12">
+        <p class="welcome-message">
+          Don't have a league to join? Want to start playing in the middle of the year? Our new "Critics Royale" mode is structured similar to Daily Fantasy Sports, allowing you to compete on your own against
+          the entire site for a leaderboard position. Instead of drafting, you're given a 'budget' which you use to select your games.
+          Your goal is to spend that money wisely and put together the best lineup of games that you can.
+        </p>
+      </div>
+    </div>
+
     <div class="row justify-content-center">
       <div class="col-xl-4 offset-xl-1 col-lg-5 offset-lg-1 col-md-0 offset-md-0 computer-image-area">
         <img src="/images/monitor-mock.png" class="computer-image" />
