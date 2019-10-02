@@ -149,7 +149,9 @@
       </div>
 
       <div class="col-lg-5 col-md-10 offset-lg-0 offset-md-1">
-        <tweets></tweets>
+        <div class="tweet-section">
+          <tweets></tweets>
+        </div>
       </div>
     </div>
 
@@ -298,5 +300,9 @@
 
   .faq-button {
     text-align: center;
+  }
+
+  .tweet-section {
+    margin-top: 15px;
   }
 </style>
