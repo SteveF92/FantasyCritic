@@ -127,5 +127,7 @@
   .leaderboard-header{
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
   }
 </style>
