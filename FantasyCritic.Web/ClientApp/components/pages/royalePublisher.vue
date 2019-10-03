@@ -37,11 +37,10 @@
           <b-button variant="info" size="sm" v-if="userIsPublisher" v-on:click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
         <template slot="criticScore" slot-scope="data">
-          <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
-          <span v-else>--</span>
+          {{ data.item.masterGame.criticScore | score(2) }}
         </template>
         <template slot="fantasyPoints" slot-scope="data">
-          {{ data.item.fantasyPoints | score }}
+          {{ data.item.fantasyPoints | score(2) }}
         </template>
         <template slot="timestamp" slot-scope="data">
           {{ data.item.timestamp | date }}
