@@ -31,7 +31,19 @@ namespace FantasyCritic.Lib.Royale
 
         public decimal GetProjectedFantasyPoints() => MasterGame.GetProjectedFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
 
-        public decimal? CalculateFantasyPoints() => MasterGame.CalculateFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
+        public decimal? CalculateFantasyPoints()
+        {
+            var basePoints = MasterGame.CalculateFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
+            if (!basePoints.HasValue)
+            {
+                return null;
+            }
+
+            var extraPoints = basePoints * AdvertisingMoney * 0.05m;
+            var modifiedPoints = basePoints + extraPoints;
+
+            return modifiedPoints;
+        }
 
         public override string ToString() => MasterGame.MasterGame.GameName;
 
