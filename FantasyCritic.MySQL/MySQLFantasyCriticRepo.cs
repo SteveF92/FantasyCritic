@@ -141,8 +141,7 @@ namespace FantasyCritic.MySQL
 
         public async Task UpdateFantasyPoints(Dictionary<Guid, decimal?> publisherGameScores)
         {
-            List<PublisherScoreUpdateEntity> updateEntities =
-                publisherGameScores.Select(x => new PublisherScoreUpdateEntity(x)).ToList();
+            List<PublisherScoreUpdateEntity> updateEntities = publisherGameScores.Select(x => new PublisherScoreUpdateEntity(x)).ToList();
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();

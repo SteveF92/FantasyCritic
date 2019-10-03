@@ -18,5 +18,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task SellGame(RoyalePublisherGame publisherGame);
         Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney);
         Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter);
+        Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores);
     }
 }

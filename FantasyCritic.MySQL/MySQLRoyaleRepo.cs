@@ -114,7 +114,9 @@ namespace FantasyCritic.MySQL
                         continue;
                     }
 
-                    var domain = entity.ToDomain(yearQuarter.Value, user, new List<RoyalePublisherGame>());
+                    var gamesForPublisher = publisherGames.Where(x => x.PublisherID == entity.PublisherID);
+
+                    var domain = entity.ToDomain(yearQuarter.Value, user, gamesForPublisher);
                     domainPublishers.Add(domain);
                 }
 
@@ -122,7 +124,23 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        private async Task<object> GetAllPublisherGames(RoyaleYearQuarter yearQuarter)
+        public async Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores)
+        {
+            List<RoyalePublisherScoreUpdateEntity> updateEntities = publisherGameScores.Select(x => new RoyalePublisherScoreUpdateEntity(x)).ToList();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(
+                        "update tbl_royale_publishergame SET FantasyPoints = @FantasyPoints where PublisherID = @PublisherID AND MasterGameID = @MasterGameID;",
+                        updateEntities, transaction);
+                    transaction.Commit();
+                }
+            }
+        }
+
+        private async Task<IReadOnlyList<RoyalePublisherGame>> GetAllPublisherGames(RoyaleYearQuarter yearQuarter)
         {
             string sql = "SELECT * FROM tbl_royale_publishergame " +
                          "JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID " +

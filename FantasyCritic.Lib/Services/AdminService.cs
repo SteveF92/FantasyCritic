@@ -139,7 +139,7 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                //await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
+                await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
             }
 
             _logger.LogInformation("Done updating royale fantasy points");

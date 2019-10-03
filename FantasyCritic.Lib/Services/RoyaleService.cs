@@ -173,9 +173,21 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
-        public async Task UpdateFantasyPoints(YearQuarter supportedQuarterYearQuarter)
+        public async Task UpdateFantasyPoints(YearQuarter yearQuarter)
         {
-            throw new NotImplementedException();
+            Dictionary<(Guid, Guid), decimal?> publisherGameScores = new Dictionary<(Guid, Guid), decimal?>();
+            var allPublishersForQuarter = await _royaleRepo.GetAllPublishers(yearQuarter.Year, yearQuarter.Quarter);
+
+            foreach (var publisher in allPublishersForQuarter)
+            {
+                foreach (var publisherGame in publisher.PublisherGames)
+                {
+                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints();
+                    publisherGameScores.Add((publisherGame.PublisherID, publisherGame.MasterGame.MasterGame.MasterGameID), fantasyPoints);
+                }
+            }
+
+            await _royaleRepo.UpdateFantasyPoints(publisherGameScores);
         }
     }
 }

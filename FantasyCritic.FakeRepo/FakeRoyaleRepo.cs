@@ -59,5 +59,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
