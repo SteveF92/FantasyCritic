@@ -127,16 +127,16 @@ namespace FantasyCritic.Lib.Services
         {
             if (publisherGame.MasterGame.MasterGame.IsReleased(_clock))
             {
-                return Result.Fail("Game has been released.");
+                return Result.Fail("That game has already been released.");
             }
             if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
             {
-                return Result.Fail("Game has a score.");
+                return Result.Fail("That game already has a score.");
             }
 
             if (!publisher.PublisherGames.Contains(publisherGame))
             {
-                return Result.Fail("Publisher doesn't have that game.");
+                return Result.Fail("You don't have that game.");
             }
 
             await _royaleRepo.SellGame(publisherGame);
@@ -147,26 +147,26 @@ namespace FantasyCritic.Lib.Services
         {
             if (publisherGame.MasterGame.MasterGame.IsReleased(_clock))
             {
-                return Result.Fail("Game has been released.");
+                return Result.Fail("That game has already been released.");
             }
             if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
             {
-                return Result.Fail("Game has a score.");
+                return Result.Fail("That game already has a score.");
             }
 
             if (!publisher.PublisherGames.Contains(publisherGame))
             {
-                return Result.Fail("Publisher doesn't have that game.");
+                return Result.Fail("You don't have that game.");
             }
 
             if (advertisingMoney < 0m)
             {
-                return Result.Fail("Can't allocate negative dollars in advertising money.");
+                return Result.Fail("You can't allocate negative dollars in advertising money.");
             }
 
             if (advertisingMoney > 10m)
             {
-                return Result.Fail("Can't allocate more than 10 dollars in advertising money.");
+                return Result.Fail("You can't allocate more than 10 dollars in advertising money.");
             }
 
             await _royaleRepo.SetAdvertisingMoney(publisherGame, advertisingMoney);

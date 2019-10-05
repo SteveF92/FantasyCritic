@@ -21,6 +21,9 @@
         </div>
       </div>
 
+      <hr />
+      <div class="alert alert-danger" v-if="errorInfo">{{errorInfo}}</div>
+
       <h1>Games</h1>
       <b-table striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" v-if="publisher.publisherGames.length !== 0">
         <template slot="masterGame" slot-scope="data">
@@ -170,7 +173,7 @@
               });
             })
           .catch(response => {
-
+            this.errorInfo = "You can't sell that game. " + response.response.data;
           });
       },
       setGameToSetBudget(publisherGame) {
@@ -193,6 +196,7 @@
             })
           .catch(response => {
             this.advertisingBudgetToSet = 0;
+            this.errorInfo = "You can't set that budget. " + response.response.data;
           });
       },
       getReleaseDate(game) {
