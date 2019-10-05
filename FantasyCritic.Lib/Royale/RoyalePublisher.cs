@@ -27,11 +27,11 @@ namespace FantasyCritic.Lib.Royale
         public IReadOnlyList<RoyalePublisherGame> PublisherGames { get; }
         public decimal Budget { get; }
 
-        public decimal GetTotalFantasyPoints(IClock clock)
+        public decimal GetTotalFantasyPoints()
         {
-            var points = PublisherGames.Where(x => x.MasterGame.MasterGame.IsReleased(clock) && x.FantasyPoints.HasValue)
-                .Sum(x => x.FantasyPoints.Value);
-            return points;
+            decimal? points = PublisherGames
+                .Sum(x => x.FantasyPoints);
+            return points ?? 0m;
         }
     }
 }

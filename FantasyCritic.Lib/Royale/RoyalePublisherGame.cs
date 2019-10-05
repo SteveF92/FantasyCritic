@@ -31,8 +31,12 @@ namespace FantasyCritic.Lib.Royale
 
         public decimal GetProjectedFantasyPoints() => MasterGame.GetProjectedFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
 
-        public decimal? CalculateFantasyPoints()
+        public decimal? CalculateFantasyPoints(IClock clock)
         {
+            if (!MasterGame.MasterGame.IsReleased(clock))
+            {
+                return 0m;
+            }
             var basePoints = MasterGame.CalculateFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
             if (!basePoints.HasValue)
             {

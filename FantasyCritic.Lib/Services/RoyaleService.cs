@@ -182,7 +182,7 @@ namespace FantasyCritic.Lib.Services
             {
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
-                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints();
+                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(_clock);
                     publisherGameScores.Add((publisherGame.PublisherID, publisherGame.MasterGame.MasterGame.MasterGameID), fantasyPoints);
                 }
             }
