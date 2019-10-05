@@ -33,8 +33,20 @@
           Critics Royale is a new way to play Fantasy Critic - no league required. Every quarter, you will create a publisher that will compete against the entire site. Instead of drafting, you're given a 'budget'
           which you will use to buy games that you believe will score well during that quarter. Your goal is to spend that money wisely and put together the best lineup of games that you can.
         </p>
-        <p>For now, I'm calling this a beta because I will continue to expand upon this as time goes on. One of the advantages of running a new game every quarter instead of every year
-        is that it will allow me to iterate and improve the game design faster than the main site.</p>
+        <p>
+          For now, I'm calling this a beta because I will continue to expand upon this as time goes on. One of the advantages of running a new game every quarter instead of every year
+          is that it will allow me to iterate and improve the game design faster than the main site.
+        </p>
+      </div>
+      <h3>How's it work?</h3>
+      <div class="text-well">
+        <p>
+          You'll be given a $100 "budget" with which to "buy" games to add them to your roster. Each game's price is set based upon how popular it is on the site. When the game
+          releases, you get points using the same system as the regular Fantasy Critic leagues. You can also boost your points by setting an "advertising budget" for a game before it
+          comes out. More on that below.
+        </p>
+        <p>If you lose confidence in a game, you can choose to "sell" it, and get back half the money you spent on it. You can't sell a game that has come out, or one that
+        has reviews already.</p>
       </div>
       <h3>What's an "advertising budget"?</h3>
       <div class="text-well">
@@ -45,9 +57,11 @@
         <p>
           For example, a game that recieves a critic score of <strong>80</strong> usually gets you <strong>10</strong> points.
           But, with an advertising budget of <strong>$5</strong>, it will be boosted by <strong>25%</strong>, giving you <strong>12.5</strong> points.
+          You don't need to spend even dollars to get a bonus, every cent counts.
         </p>
         <p>
-          You can assign up to <strong>$10</strong> in budget to any single game.
+          You can assign up to <strong>$10</strong> in budget to any single game. If a game has already been released or already has review scores, you can't
+          change it's advertising budget anymore.
         </p>
       </div>
     </div>
