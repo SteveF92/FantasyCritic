@@ -3,7 +3,7 @@
     <div class="col-md-10 offset-md-1 col-sm-12">
       <h1>Critics Royale (Beta)</h1>
 
-      <div v-if="!isBusy">
+      <div v-if="!userPublisherBusy">
         <div v-if="!userRoyalePublisher" class="alert alert-info">
           Create your publisher to start playing!
           <b-button variant="primary" v-b-modal="'createRoyalePublisher'">Create Publisher</b-button>
@@ -24,6 +24,9 @@
             </template>
           </b-table>
           <b-pagination class="pagination-dark" v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+        </div>
+        <div v-else class="spinner">
+          <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
         </div>
       </div>
 
@@ -86,7 +89,7 @@
         userRoyalePublisher: null,
         royaleYearQuarter: null,
         royaleStandings: null,
-        isBusy: true,
+        userPublisherBusy: true,
         standingsFields: [
           { key: 'publisherName', label: 'Publisher', thClass:'bg-primary' },
           { key: 'playerName', label: 'Player Name', thClass: 'bg-primary' },
@@ -117,7 +120,6 @@
             this.royaleStandings = response.data;
           })
           .catch(response => {
-
           });
       },
       async fetchUserRoyalePublisher() {
@@ -125,10 +127,10 @@
           .get('/api/royale/GetUserRoyalePublisher/' + this.year + '/' + this.quarter)
           .then(response => {
             this.userRoyalePublisher = response.data;
-            this.isBusy = false;
+            this.userPublisherBusy = false;
           })
           .catch(response => {
-            this.isBusy = false;
+            this.userPublisherBusy = false;
           });
       },
     },
@@ -143,5 +145,9 @@
     justify-content: space-between;
     flex-wrap: wrap;
     margin-bottom: 5px;
+  }
+  .spinner {
+    display: flex;
+    justify-content: space-around;
   }
 </style>
