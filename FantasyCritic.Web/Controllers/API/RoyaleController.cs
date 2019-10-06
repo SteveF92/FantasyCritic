@@ -137,7 +137,7 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> RoyaleStandings(int year, int quarter)
         {
             IReadOnlyList<RoyalePublisher> publishers = await _royaleService.GetAllPublishers(year, quarter);
-            var viewModels = publishers.Select(x => new RoyalePublisherViewModel(x, _clock));
+            var viewModels = publishers.Where(x => x.PublisherGames.Any()).Select(x => new RoyalePublisherViewModel(x, _clock));
             var sorted = viewModels.OrderByDescending(x => x.TotalFantasyPoints);
             return Ok(sorted);
         }
