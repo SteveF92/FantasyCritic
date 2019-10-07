@@ -159,6 +159,12 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail("You don't have that game.");
             }
 
+            decimal newDollarsToSpend = advertisingMoney - publisherGame.AdvertisingMoney;
+            if (publisher.Budget < newDollarsToSpend)
+            {
+                return Result.Fail("You don't have enough money.");
+            }
+
             if (advertisingMoney < 0m)
             {
                 return Result.Fail("You can't allocate negative dollars in advertising money.");
