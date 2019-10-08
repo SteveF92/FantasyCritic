@@ -2,7 +2,7 @@
   <div>
     <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
 
-    <b-table small bordered striped :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
+    <b-table small bordered striped responsive :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
       <template slot="gameName" slot-scope="data">
         <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
       </template>
