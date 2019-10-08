@@ -1,0 +1,13 @@
+dotnet publish -c Release -o C:\FantasyCritic\BuildArea\
+Write-Output "Stopping site"
+Stop-Website "FantasyCritic"
+Write-Output "Deleting files"
+Get-ChildItem C:\FantasyCritic\Binary\ -Recurse | Remove-Item -Recurse -Force
+Write-Output "Copying files"
+Copy-Item -Path "C:\FantasyCritic\BuildArea\*" -Destination "C:\FantasyCritic\Binary\" -Force -Recurse
+Write-Output "Copying Items"
+Copy-Item -Path "C:\Users\Administrator\Desktop\CopyFiles\appsettings.json" -Destination "C:\FantasyCritic\Binary\" -Force
+Copy-Item -Path "C:\Users\Administrator\Desktop\CopyFiles\EmailTemplates" -Destination "C:\FantasyCritic\Binary\" -Force -Recurse
+Write-Output "Starting site"
+Start-Website "FantasyCritic"
+Write-Output "Update finished"
