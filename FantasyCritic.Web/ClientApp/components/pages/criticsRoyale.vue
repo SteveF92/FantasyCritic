@@ -1,13 +1,32 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <h1>Critics Royale (Beta)</h1>
+      <div class="critic-royale-header-area">
+        <div>
+          <img class="critic-royale-header" src="/images/critic-royale-logo.svg" />
+        </div>
+      </div>
+
+      <div class="critic-royale-header-area-simple">
+        <h1>Critics Royale (Beta)</h1>
+      </div>
 
       <div v-if="!userPublisherBusy">
-        <div v-if="!userRoyalePublisher" class="alert alert-info">
+        <div v-if="!userRoyalePublisher && isAuth" class="alert alert-info">
           Create your publisher to start playing!
-          <b-button variant="primary" v-b-modal="'createRoyalePublisher'">Create Publisher</b-button>
+          <b-button class="login-button" variant="primary" v-b-modal="'createRoyalePublisher'">Create Publisher</b-button>
           <createRoyalePublisherForm :royaleYearQuarter="royaleYearQuarter"></createRoyalePublisherForm>
+        </div>
+        <div v-if="!userRoyalePublisher && !isAuth" class="alert alert-success">
+          Sign up or log in to start playing now!
+            <b-button class="login-button" variant="info" :to="{ name: 'login' }">
+              <span>Log In</span>
+              <font-awesome-icon class="full-nav" icon="sign-in-alt" />
+            </b-button>
+            <b-button variant="primary" :to="{ name: 'register' }">
+              <span>Sign Up</span>
+              <font-awesome-icon class="full-nav" icon="user-plus" />
+            </b-button>
         </div>
 
         <div class="leaderboard-header">
@@ -48,8 +67,10 @@
           releases, you get points using the same system as the regular Fantasy Critic leagues. You can also boost your points by setting an "advertising budget" for a game before it
           comes out. More on that below.
         </p>
-        <p>If you lose confidence in a game, you can choose to "sell" it, and get back half the money you spent on it. You can't sell a game that has come out, or one that
-        has reviews already.</p>
+        <p>
+          If you lose confidence in a game, you can choose to "sell" it, and get back half the money you spent on it. You can't sell a game that has come out, or one that
+          has reviews already.
+        </p>
       </div>
       <h3>What's an "advertising budget"?</h3>
       <div class="text-well">
@@ -100,7 +121,10 @@
     computed: {
       rows() {
         return this.royaleStandings.length;
-      }
+      },
+      isAuth() {
+          return this.$store.getters.tokenIsCurrent();
+      },
     },
     methods: {
       async fetchRoyaleYearQuarter() {
@@ -146,8 +170,40 @@
     flex-wrap: wrap;
     margin-bottom: 5px;
   }
+
   .spinner {
     display: flex;
     justify-content: space-around;
+  }
+
+  .critic-royale-header-area{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: #4A4A4A;
+    margin-right: 25%;
+    margin-left: 25%;
+    border-radius: 5px;
+  }
+
+  .critic-royale-header{
+    height: 300px;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    .critic-royale-header-area {
+      display: none;
+    }
+  }
+
+  @media only screen and (min-width: 1001px) {
+    .critic-royale-header-area-simple {
+      display: none;
+    }
+  }
+
+  .login-button {
+    margin-left: 15px;
   }
 </style>

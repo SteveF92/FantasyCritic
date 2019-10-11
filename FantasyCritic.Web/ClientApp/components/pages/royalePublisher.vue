@@ -122,8 +122,11 @@
       MasterGamePopover
     },
     computed: {
+      isAuth() {
+          return this.$store.getters.tokenIsCurrent();
+      },
       userIsPublisher() {
-        return (this.publisher.userID === this.$store.getters.userInfo.userID);
+        return this.isAuth && (this.publisher.userID === this.$store.getters.userInfo.userID);
       },
       allFields() {
           let conditionalFields = [];
