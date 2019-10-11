@@ -99,30 +99,30 @@
 </template>
 
 <script>
-    export default {
-        computed: {
-          isAuth() {
-              return this.$store.getters.tokenIsCurrent();
-          },
-          hasUserInfo() {
-            return this.$store.getters.userInfo;
-          },
-          displayName() {
-            return this.$store.getters.userInfo.displayName;
-          },
-          storeIsBusy() {
-            return this.$store.getters.storeIsBusy;
-          }
-        },
-        methods: {
-            logout() {
-                this.$store.dispatch("logout")
-                    .then(() => {
-                        this.$router.push({ name: "login" });
-                    });
-            }
-        }
+  export default {
+    computed: {
+      isAuth() {
+          return this.$store.getters.tokenIsCurrent();
+      },
+      hasUserInfo() {
+        return this.$store.getters.userInfo;
+      },
+      displayName() {
+        return this.$store.getters.userInfo.displayName;
+      },
+      storeIsBusy() {
+        return this.$store.getters.storeIsBusy;
+      }
+    },
+    methods: {
+      logout() {
+        this.$store.dispatch("logout")
+          .then(() => {
+              this.$router.push({ name: "login" });
+          });
+      }
     }
+  }
 </script>
 
 <style scoped>
