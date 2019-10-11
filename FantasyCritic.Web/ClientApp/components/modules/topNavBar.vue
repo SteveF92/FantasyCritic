@@ -8,19 +8,19 @@
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
             <li class="nav-item">
+              <router-link :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYear, quarter: activeRoyaleQuarter}}"
+                           class="nav-link top-nav-link optional-nav" title="Critics Royale">
+                <img class="critic-royale-nav minimal-nav topnav-icon" src="/images/critics-royale-top-nav.svg" />
+                <span class="full-nav">Royale</span>
+              </router-link>
+            </li>
+            <li class="nav-item">
               <router-link :to="{ name: 'howtoplay' }" class="nav-link top-nav-link optional-nav" title="How to Play">
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="book-open" size="lg" />
                 <span class="full-nav">How to Play</span>
               </router-link>
             </li>
-            <li class="nav-item">
-            <router-link :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYear, quarter: activeRoyaleQuarter}}"
-                         class="nav-link top-nav-link optional-nav" title="Critics Royale">
-              <img class="critic-royale-nav" src="/images/critics-royale-top-nav.svg" />
-              <span class="full-nav">Royale</span>
-            </router-link>
-            </li>
-            <li class="nav-item">
+            <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
               <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link optional-nav" title="FAQ">
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="question-circle" size="lg" />
                 <span class="full-nav">FAQ</span>
@@ -128,14 +128,6 @@
         return this.activeRoyaleYearQuarter.quarter;
       }
     },
-    methods: {
-      logout() {
-        this.$store.dispatch("logout")
-          .then(() => {
-              this.$router.push({ name: "login" });
-          });
-      }
-    },
     data() {
       return {
         activeRoyaleYearQuarter: null
@@ -150,6 +142,12 @@
           })
           .catch(response => {
 
+          });
+      },
+      logout() {
+        this.$store.dispatch("logout")
+          .then(() => {
+              this.$router.push({ name: "login" });
           });
       }
     },
@@ -181,49 +179,49 @@
     height: 23px;
   }
 
-  @media only screen and (max-width: 940px) {
+  @media only screen and (max-width: 980px) {
     .full-logo {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 941px) {
+  @media only screen and (min-width: 981px) {
     .minimal-logo {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 350px) {
+  @media only screen and (max-width: 365px) {
     .optional-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 400px) {
+  @media only screen and (max-width: 450px) {
     .optional-link {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 520px) {
+  @media only screen and (max-width: 600px) {
     .brand-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 425px) {
+  @media only screen and (max-width: 475px) {
     .topnav-icon {
       font-size: 15px;
     }
   }
 
-  @media only screen and (max-width: 730px) {
+  @media only screen and (max-width: 800px) {
     .full-nav {
       display: none;
     }
   }
 
-  @media screen and (min-width: 729px) and (max-width: 1100px) {
+  @media screen and (min-width: 799px) and (max-width: 1143px) {
     .minimal-nav {
       display: none;
     }
