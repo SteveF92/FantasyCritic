@@ -9,7 +9,7 @@
           <ul class="navbar-nav">
             <li class="nav-item">
               <router-link :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYear, quarter: activeRoyaleQuarter}}"
-                           class="nav-link top-nav-link optional-nav" title="Critics Royale">
+                           class="nav-link top-nav-link optional-nav critic-royale-nav-link" title="Critics Royale">
                 <img class="critic-royale-nav minimal-nav topnav-icon" src="/images/critics-royale-top-nav.svg" />
                 <span class="full-nav">Royale</span>
               </router-link>
@@ -176,7 +176,8 @@
   }
 
   .critic-royale-nav{
-    height: 23px;
+    height: 27px;
+    padding-bottom: 3px;
   }
 
   @media only screen and (max-width: 980px) {
@@ -212,6 +213,10 @@
   @media only screen and (max-width: 475px) {
     .topnav-icon {
       font-size: 15px;
+    }
+
+    .critic-royale-nav {
+      height: 22px;
     }
   }
 
