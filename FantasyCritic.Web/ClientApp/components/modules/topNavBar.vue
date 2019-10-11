@@ -14,6 +14,13 @@
               </router-link>
             </li>
             <li class="nav-item">
+            <router-link :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter }}"
+                         class="nav-link top-nav-link optional-nav" title="Critics Royale">
+              <img class="critic-royale-nav" src="/images/critics-royale-top-nav.svg" />
+              <span class="full-nav">Royale</span>
+            </router-link>
+            </li>
+            <li class="nav-item">
               <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link optional-nav" title="FAQ">
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="question-circle" size="lg" />
                 <span class="full-nav">FAQ</span>
@@ -134,6 +141,10 @@
 
   .full-logo, .minimal-logo {
     height: 47px;
+  }
+
+  .critic-royale-nav{
+    height: 23px;
   }
 
   @media only screen and (max-width: 940px) {
