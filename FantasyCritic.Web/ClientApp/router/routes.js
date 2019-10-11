@@ -312,7 +312,8 @@ export const routes = [
     component: CriticsRoyale,
     name: "criticsRoyale",
     meta: {
-      title: "Critics Royale"
+      title: "Critics Royale",
+      isPublic: true
     },
     props: (route) => ({
       year: route.params.year,

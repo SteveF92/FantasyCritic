@@ -14,7 +14,7 @@
               </router-link>
             </li>
             <li class="nav-item">
-            <router-link :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter }}"
+            <router-link :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYear, quarter: activeRoyaleQuarter}}"
                          class="nav-link top-nav-link optional-nav" title="Critics Royale">
               <img class="critic-royale-nav" src="/images/critics-royale-top-nav.svg" />
               <span class="full-nav">Royale</span>
@@ -99,6 +99,8 @@
 </template>
 
 <script>
+  import axios from "axios";
+
   export default {
     computed: {
       isAuth() {
@@ -112,6 +114,18 @@
       },
       storeIsBusy() {
         return this.$store.getters.storeIsBusy;
+      },
+      activeRoyaleYear() {
+        if (!this.activeRoyaleYearQuarter) {
+          return;
+        }
+        return this.activeRoyaleYearQuarter.year;
+      },
+      activeRoyaleQuarter() {
+        if (!this.activeRoyaleYearQuarter) {
+          return;
+        }
+        return this.activeRoyaleYearQuarter.quarter;
       }
     },
     methods: {
@@ -121,6 +135,26 @@
               this.$router.push({ name: "login" });
           });
       }
+    },
+    data() {
+      return {
+        activeRoyaleYearQuarter: null
+      }
+    },
+    methods: {
+      async fetchActiveRoyaleYearQuarter() {
+        axios
+          .get('/api/royale/ActiveRoyaleQuarter')
+          .then(response => {
+            this.activeRoyaleYearQuarter = response.data;
+          })
+          .catch(response => {
+
+          });
+      }
+    },
+    async mounted() {
+      await this.fetchActiveRoyaleYearQuarter();
     }
   }
 </script>
