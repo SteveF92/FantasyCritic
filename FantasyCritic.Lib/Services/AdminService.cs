@@ -152,7 +152,7 @@ namespace FantasyCritic.Lib.Services
             LocalDate tomorrow = _clock.GetToday().PlusDays(1);
             await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
-            await _fantasyCriticRepo.UpdateSystemWideValues();
+            //await _fantasyCriticRepo.UpdateSystemWideValues();
             var hypeConstants = await GetHypeConstants();
             await UpdateHypeFactor(hypeConstants);
             _logger.LogInformation("Done refreshing caches");
