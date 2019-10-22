@@ -178,5 +178,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _masterGameRepo.LinkToOpenCritic(masterGame, openCriticID);
         }
+
+        public Task UpdateSystemWideValues(SystemWideValues systemWideValues)
+        {
+            return _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
+        }
     }
 }

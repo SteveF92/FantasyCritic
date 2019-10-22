@@ -378,7 +378,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task UpdateSystemWideValues()
+        public Task UpdateSystemWideValues(SystemWideValues systemWideValues)
         {
             throw new NotImplementedException();
         }

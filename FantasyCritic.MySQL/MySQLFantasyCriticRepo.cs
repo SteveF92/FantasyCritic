@@ -1314,11 +1314,21 @@ namespace FantasyCritic.MySQL
             }   
         }
 
-        public async Task UpdateSystemWideValues()
+        public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
         {
+            string deleteSQL = "delete from tbl_caching_systemwidevalues;";
+            string insertSQL = "INSERT into tbl_caching_systemwidevalues VALUES (@AverageStandardGamePoints,@AverageCounterPickPoints);";
+
+            SystemWideValuesEntity entity = new SystemWideValuesEntity(systemWideValues);
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("CALL `sp_caching_updateSystemWideValues`();");
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(deleteSQL);
+                    await connection.ExecuteAsync(insertSQL, entity);
+                    transaction.Commit();
+                }
             }
         }
 

@@ -152,7 +152,7 @@ namespace FantasyCritic.Lib.Services
             LocalDate tomorrow = _clock.GetToday().PlusDays(1);
             await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
-            //await _fantasyCriticRepo.UpdateSystemWideValues();
+            await UpdateSystemWideValues();
             var hypeConstants = await GetHypeConstants();
             await UpdateHypeFactor(hypeConstants);
             _logger.LogInformation("Done refreshing caches");
@@ -167,6 +167,25 @@ namespace FantasyCritic.Lib.Services
         public Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentDatabaseSnapshots()
         {
             return _rdsManager.GetRecentSnapshots();
+        }
+
+        private async Task UpdateSystemWideValues()
+        {
+            List<PublisherGame> allGamesWithPoints = new List<PublisherGame>();
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            foreach (var supportedYear in supportedYears)
+            {
+                var publishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year);
+                var publisherGames = publishers.SelectMany(x => x.PublisherGames);
+                var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue).ToList();
+                allGamesWithPoints.AddRange(gamesWithPoints);
+            }
+
+            var averageStandardPoints = allGamesWithPoints.Where(x => !x.CounterPick).Average(x => x.FantasyPoints.Value);
+            var averageCounterPickPoints = allGamesWithPoints.Where(x => x.CounterPick).Average(x => x.FantasyPoints.Value);
+
+            var systemWideValues = new SystemWideValues(averageStandardPoints, averageCounterPickPoints);
+            await _interLeagueService.UpdateSystemWideValues(systemWideValues);
         }
 
         private async Task<HypeConstants> GetHypeConstants()
