@@ -385,6 +385,20 @@
           At the very end of the year. Usually scores don't change after the first few weeks a game has been out, but there's no reason to "lock" scores until it's time to determine the winner.
         </div>
       </faqCollapse>
+      <faqCollapse>
+        <div slot="question">How do projected points work?</div>
+        <div slot="answer">
+          The "simple" projected points are just the average number of points a player receives for a game. So, the average across the whole site. The "Advanced Projections" go much further, and attempt to
+          project what score an individual game will get using a linear regression algorithm based on popularity of games on the site versus the score the game ultimately gets.
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">What's the "Pre-Release projected points"?</div>
+        <div slot="answer">
+          This is the last "projected points" values before a game was reviewed. The idea is to compare what a game was projected to get vs. what it actually got.
+          I'm still testing this feature, and any games that were released before 2019-10-25 don't show up accurately for this field due to the way I was handling projections before that date.
+        </div>
+      </faqCollapse>
       <br />
 
       <h2><a name="eligibility">Eligibility</a></h2>

@@ -83,7 +83,10 @@ namespace FantasyCritic.MySQL
                     masterGames.Add(domain);
                 }
 
-                _masterGameYearsCache[year] = masterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
+                if (useCache)
+                {
+                    _masterGameYearsCache[year] = masterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
+                }
 
                 return masterGames;
             }
