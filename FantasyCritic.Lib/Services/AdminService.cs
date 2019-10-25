@@ -242,12 +242,27 @@ namespace FantasyCritic.Lib.Services
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
-                List<MasterGameHypeScores> hypeScores = new List<MasterGameHypeScores>();
-                var masterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, false);
-                foreach (var masterGame in masterGames)
+                if (supportedYear.Finished)
                 {
+                    continue;
+                }
+
+                List<MasterGameHypeScores> hypeScores = new List<MasterGameHypeScores>();
+                var cleanMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, false);
+                var cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, true);
+
+                var masterGameCacheLookup = cachedMasterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
+
+                foreach (var masterGame in cleanMasterGames)
+                {
+                    if (masterGame.MasterGame.CriticScore.HasValue)
+                    {
+                        var cachedMasterGame = masterGameCacheLookup[masterGame.MasterGame.MasterGameID];
+                        hypeScores.Add(new MasterGameHypeScores(masterGame, cachedMasterGame.HypeFactor, cachedMasterGame.DateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
+                        continue;
+                    }
+
                     double notNullAverageDraftPosition = masterGame.AverageDraftPosition ?? 0;
-                    double notNullAverageWinningBid = masterGame.AverageWinningBid ?? 0;
 
                     double hypeFactor = (101 - notNullAverageDraftPosition) * masterGame.PercentStandardGame;
                     double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * masterGame.EligiblePercentStandardGame;

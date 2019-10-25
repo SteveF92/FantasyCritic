@@ -36,6 +36,11 @@
               <span v-show="masterGame.dateAdjustedHypeFactor">{{masterGame.dateAdjustedHypeFactor | score(1)}}</span>
               <span v-show="!masterGame.dateAdjustedHypeFactor">Unhyped...</span>
             </div>
+            <div>
+              <strong v-if="!masterGame.criticScore">Projected Points: </strong>
+              <strong v-else>Pre-Release Projected Points: </strong>
+              <span v-show="masterGame.dateAdjustedHypeFactor">~{{masterGame.projectedFantasyPoints | score(1)}}</span>
+            </div>
             <div v-if="masterGame.openCriticID">
               <a :href="openCriticLink(masterGame)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
             </div>
