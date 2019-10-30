@@ -9,11 +9,12 @@ namespace FantasyCritic.Lib.Domain
 {
     public class SupportedYear : IComparable<SupportedYear>, IEquatable<SupportedYear>
     {
-        public SupportedYear(int year, bool openForCreation, bool openForPlay, LocalDate startDate, bool finished)
+        public SupportedYear(int year, bool openForCreation, bool openForPlay, bool openForBetaUsers, LocalDate startDate, bool finished)
         {
             Year = year;
             OpenForCreation = openForCreation;
             OpenForPlay = openForPlay;
+            OpenForBetaUsers = openForBetaUsers;
             StartDate = startDate;
             Finished = finished;
         }
@@ -21,6 +22,7 @@ namespace FantasyCritic.Lib.Domain
         public int Year { get; }
         public bool OpenForCreation { get; }
         public bool OpenForPlay { get; }
+        public bool OpenForBetaUsers { get; }
         public LocalDate StartDate { get; }
         public bool Finished { get; }
 

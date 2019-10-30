@@ -111,9 +111,17 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var supportedYears = await _interLeagueService.GetSupportedYears();
+            IReadOnlyList<SupportedYear> supportedYears = await _interLeagueService.GetSupportedYears();
             var openYears = supportedYears.Where(x => x.OpenForCreation).Select(x => x.Year);
             var availableYears = openYears.Except(league.Value.Years);
+
+            var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
+            if (userIsBetaUser)
+            {
+                var betaYears = supportedYears.Where(x => x.OpenForBetaUsers).Select(x => x.Year);
+                availableYears = availableYears.Concat(betaYears).Distinct();
+            }
+
             return Ok(availableYears);
         }
 

@@ -13,12 +13,13 @@ namespace FantasyCritic.MySQL.Entities
         public int Year { get; set; }
         public bool OpenForCreation { get; set; }
         public bool OpenForPlay { get; set; }
+        public bool OpenForBetaUsers { get; set; }
         public DateTime StartDate { get; set; }
         public bool Finished { get; set; }
 
         public SupportedYear ToDomain()
         {
-            return new SupportedYear(Year, OpenForCreation, OpenForPlay, LocalDate.FromDateTime(StartDate), Finished);
+            return new SupportedYear(Year, OpenForCreation, OpenForPlay, OpenForBetaUsers, LocalDate.FromDateTime(StartDate), Finished);
         }
     }
 }

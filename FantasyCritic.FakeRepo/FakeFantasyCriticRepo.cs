@@ -203,7 +203,7 @@ namespace FantasyCritic.FakeRepo
         {
             return Task.FromResult<IReadOnlyList<SupportedYear>> (new List<SupportedYear>()
             {
-                new SupportedYear(2019, true, true, new LocalDate(2018, 12, 7), false)
+                new SupportedYear(2019, true, true, true, new LocalDate(2018, 12, 7), false)
             });
         }
 

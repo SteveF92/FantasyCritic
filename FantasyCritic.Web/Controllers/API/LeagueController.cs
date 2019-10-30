@@ -61,9 +61,21 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> LeagueOptions()
         {
             var supportedYears = await _interLeagueService.GetSupportedYears();
-            var openYears = supportedYears.Where(x => x.OpenForCreation && !x.Finished).Select(x => x.Year);
+            var openYears = supportedYears.Where(x => x.OpenForCreation && !x.Finished);
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser != null)
+            {
+                var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
+                if (userIsBetaUser)
+                {
+                    var betaYears = supportedYears.Where(x => x.OpenForBetaUsers);
+                    openYears = openYears.Concat(betaYears).Distinct();
+                }
+            }
+            
+            var openYearInts = openYears.Select(x => x.Year);
             IReadOnlyList<EligibilityLevel> eligibilityLevels = await _interLeagueService.GetEligibilityLevels();
-            LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
+            LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYearInts, DraftSystem.GetAllPossibleValues(),
                 PickupSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), eligibilityLevels);
 
             return Ok(viewModel);
