@@ -70,7 +70,15 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var supportedYears = await _interLeagueService.GetSupportedYears();
-            if (!supportedYears.Any(x => x.OpenForCreation && x.Year == request.InitialYear))
+            var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.InitialYear);
+            if (selectedSupportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
+            bool yearIsOpen = selectedSupportedYear.OpenForCreation || (userIsBetaUser && selectedSupportedYear.OpenForBetaUsers);
+            if (!yearIsOpen)
             {
                 return BadRequest();
             }
@@ -146,7 +154,15 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var supportedYears = await _interLeagueService.GetSupportedYears();
-            if (!supportedYears.Select(x => x.Year).Contains(request.Year))
+            var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.Year);
+            if (selectedSupportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
+            bool yearIsOpen = selectedSupportedYear.OpenForCreation || (userIsBetaUser && selectedSupportedYear.OpenForBetaUsers);
+            if (!yearIsOpen)
             {
                 return BadRequest();
             }
