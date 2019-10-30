@@ -80,6 +80,26 @@ namespace FantasyCritic.Lib.Domain
             return true;
         }
 
+        public bool IsRelevantInYear(SupportedYear year)
+        {
+            if (MasterGame.AddedTimestamp.InUtc().Year > year.Year)
+            {
+                return false;
+            }
+
+            if (MasterGame.ReleaseDate.HasValue && MasterGame.ReleaseDate.Value.Year < year.Year)
+            {
+                return false;
+            }
+
+            if (DateAdjustedHypeFactor == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
         {
             decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick);

@@ -195,15 +195,26 @@ namespace FantasyCritic.Lib.Services
             var engine = REngine.GetInstance();
 
             string rscript = Resource.MasterGameStatisticsScript;
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            List<MasterGameYear> allMasterGameYears = new List<MasterGameYear>();
 
-            var masterGames = await _masterGameRepo.GetMasterGameYears(2019, true);
+            foreach (var supportedYear in supportedYears)
+            {
+                if (supportedYear.Year < 2019)
+                {
+                    continue;
+                }
 
-            var gamesToOutput = masterGames
-                .Where(x => x.Year == 2019)
-                .Where(x => x.DateAdjustedHypeFactor > 0)
-                .Where(x => !x.WillRelease() || x.MasterGame.CriticScore.HasValue);
+                var masterGamesForYear = await _masterGameRepo.GetMasterGameYears(2019, true);
+                var relevantGames = masterGamesForYear.Where(x => x.IsRelevantInYear(supportedYear));
+                if (!supportedYear.Finished)
+                {
+                    relevantGames = relevantGames.Where(x => !x.WillRelease() || x.MasterGame.CriticScore.HasValue);
+                }
+                allMasterGameYears.AddRange(relevantGames);
+            }
 
-            var outputModels = gamesToOutput.Select(x => new MasterGameYearRInput(x));
+            var outputModels = allMasterGameYears.Select(x => new MasterGameYearRInput(x));
 
             string fileName = Guid.NewGuid() + ".csv";
             using (var writer = new StreamWriter(fileName))
