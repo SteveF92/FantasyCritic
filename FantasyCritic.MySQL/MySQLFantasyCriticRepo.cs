@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -681,10 +682,23 @@ namespace FantasyCritic.MySQL
 
         public async Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
         {
+            string deleteUserSQL = "delete from tbl_league_hasuser where LeagueID = @leagueID and UserID = @userID;";
+            string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and UserID = @userID;";
+
+            var userDeleteObject = new
+            {
+                leagueID = league.LeagueID,
+                userID = removeUser.UserID
+            };
+
             using (var connection = new MySqlConnection(_connectionString))
             {
-                string sql = "delete from tbl_league_hasuser where LeagueID = @leagueID and UserID = @userID;";
-                await connection.ExecuteAsync(sql, new { leagueID = league.LeagueID, userID = removeUser.UserID });
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(deleteUserSQL, userDeleteObject, transaction);
+                    await connection.ExecuteAsync(deleteActiveUserSQL, userDeleteObject, transaction);
+                }
             }
         }
 
@@ -1398,18 +1412,34 @@ namespace FantasyCritic.MySQL
                 entities, transaction);
         }
 
-        private Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
+        private async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
         {
             var userAddObject = new
             {
                 leagueID = league.LeagueID,
-                userID = inviteUser.UserID
+                userID = inviteUser.UserID,
             };
 
+            var maxYear = league.Years.Max();
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync(
-                    "insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject, transaction);
+                    foreach (var year in league.Years)
+                    {
+                        var userActiveAddObject = new
+                        {
+                            leagueID = league.LeagueID,
+                            year,
+                            userID = inviteUser.UserID,
+                            active = year == maxYear
+                        };
+                        await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID,Active) VALUES (@leagueID,@year,@userID,@active);", 
+                            userActiveAddObject, transaction);
+                    }
+                }
             }
         }
 

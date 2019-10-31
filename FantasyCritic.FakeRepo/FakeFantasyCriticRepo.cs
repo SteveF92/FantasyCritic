@@ -67,6 +67,16 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult<IReadOnlyList<FantasyCriticUser>>(_usersInLeagues.Single(x => x.Key.Equals(league)).Value);
         }
 
+        public Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League requestLeague, int requestYear)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<FantasyCriticUser>> SetPlayerActive(League requestLeague, int requestYear, FantasyCriticUser user, bool active)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league)
         {
             return Task.FromResult<IReadOnlyList<FantasyCriticUser>>(new List<FantasyCriticUser>());
