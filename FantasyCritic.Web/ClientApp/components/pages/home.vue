@@ -209,7 +209,12 @@
         axios
           .get('/api/game/SupportedYears')
           .then(response => {
-            this.supportedYears = response.data;
+            let supportedYears = response.data;
+            let openYears = _.filter(supportedYears, { 'openForPlay': true });
+            let finishedYears = _.filter(supportedYears, { 'finished': true });
+            this.supportedYears = openYears.concat(finishedYears).map(function (v) {
+              return v.year;
+            });
             this.selectedYear = this.supportedYears[0];
             this.fetchPublicLeaguesForYear(this.selectedYear);
           })
