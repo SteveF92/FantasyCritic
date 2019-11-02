@@ -257,10 +257,10 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(vms);
         }
 
-        public async Task<ActionResult<List<int>>> SupportedYears()
+        public async Task<ActionResult<List<SupportedYearViewModel>>> SupportedYears()
         {
             var supportedYears = await GetSupportedYears();
-            return supportedYears.Select(x => x.Year).ToList();
+            return supportedYears.Select(x => new SupportedYearViewModel(x)).ToList();
         }
 
         private async Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
