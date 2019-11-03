@@ -64,7 +64,7 @@ namespace FantasyCritic.Lib.Domain
                 return MasterGame.Value.GetSimpleProjectedFantasyPoints(systemWideValues, CounterPick);
             }
 
-            return MasterGame.Value.GetAlwaysProjectedFantasyPoints(scoringSystem, CounterPick);
+            return MasterGame.Value.GetProjectedOrRealFantasyPoints(scoringSystem, CounterPick, clock);
         }
 
         public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, IClock clock)
@@ -78,7 +78,7 @@ namespace FantasyCritic.Lib.Domain
                 return null;
             }
 
-            return MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, clock);
+            return MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, clock, true);
         }
 
         public override string ToString() => GameName;
