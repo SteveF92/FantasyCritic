@@ -290,15 +290,6 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            foreach (var year in league.Value.Years)
-            {
-                var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
-                if (leagueYear.Value.PlayStatus.PlayStarted)
-                {
-                    return BadRequest("You can't add a player to a league that has already started playing");
-                }
-            }
-
             string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
             FantasyCriticUser inviteUser;
             if (!request.IsDisplayNameInvite())
