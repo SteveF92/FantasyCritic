@@ -27,10 +27,6 @@ namespace FantasyCritic.Lib.Royale
         public decimal AdvertisingMoney { get; }
         public decimal? FantasyPoints { get; }
         
-        public bool WillRelease() => MasterGame.WillReleaseInQuarter(YearQuarter.YearQuarter);
-
-        public decimal GetProjectedFantasyPoints() => MasterGame.GetProjectedFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false);
-
         public decimal? CalculateFantasyPoints(IClock clock)
         {
             if (!MasterGame.MasterGame.IsReleased(clock))

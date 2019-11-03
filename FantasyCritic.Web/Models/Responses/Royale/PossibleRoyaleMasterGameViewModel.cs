@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Royale;
-using FantasyCritic.Web.Models.RoundTrip;
 using NodaTime;
 
-namespace FantasyCritic.Web.Models.Responses
+namespace FantasyCritic.Web.Models.Responses.Royale
 {
     public class PossibleRoyaleMasterGameViewModel
     {

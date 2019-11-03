@@ -100,7 +100,7 @@ namespace FantasyCritic.Lib.Domain
             return true;
         }
 
-        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
+        public decimal GetProjectedOrRealFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
         {
             decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick);
             if (fantasyPoints.HasValue)
@@ -108,6 +108,11 @@ namespace FantasyCritic.Lib.Domain
                 return fantasyPoints.Value;
             }
 
+            return scoringSystem.GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), counterPick);
+        }
+
+        public decimal GetAlwaysProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
+        {
             return scoringSystem.GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), counterPick);
         }
 

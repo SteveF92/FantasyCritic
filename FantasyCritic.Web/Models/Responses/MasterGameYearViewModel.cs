@@ -35,7 +35,8 @@ namespace FantasyCritic.Web.Models.Responses
             AverageDraftPosition = masterGame.AverageDraftPosition;
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
-            ProjectedFantasyPoints = masterGame.GetProjectedFantasyPoints(new StandardScoringSystem(), false);
+            ProjectedFantasyPoints = masterGame.GetAlwaysProjectedFantasyPoints(new StandardScoringSystem(), false);
+            ProjectedOrRealFantasyPoints = masterGame.GetProjectedOrRealFantasyPoints(new StandardScoringSystem(), false);
             AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
         }
 
@@ -62,7 +63,8 @@ namespace FantasyCritic.Web.Models.Responses
             AverageDraftPosition = masterGame.AverageDraftPosition;
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
-            ProjectedFantasyPoints = masterGame.GetProjectedFantasyPoints(new StandardScoringSystem(), false);
+            ProjectedFantasyPoints = masterGame.GetAlwaysProjectedFantasyPoints(new StandardScoringSystem(), false);
+            ProjectedOrRealFantasyPoints = masterGame.GetProjectedOrRealFantasyPoints(new StandardScoringSystem(), false);
             AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
         }
 
@@ -90,5 +92,6 @@ namespace FantasyCritic.Web.Models.Responses
         public double HypeFactor { get; }
         public double DateAdjustedHypeFactor { get; }
         public decimal ProjectedFantasyPoints { get; }
+        public decimal ProjectedOrRealFantasyPoints { get; }
     }
 }

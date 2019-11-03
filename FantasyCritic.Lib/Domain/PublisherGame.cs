@@ -46,7 +46,7 @@ namespace FantasyCritic.Lib.Domain
             return MasterGame.Value.WillRelease();
         }
 
-        public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections)
+        public decimal GetProjectedOrRealFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections)
         {
             if (MasterGame.HasNoValue)
             {
@@ -64,7 +64,7 @@ namespace FantasyCritic.Lib.Domain
                 return MasterGame.Value.GetSimpleProjectedFantasyPoints(systemWideValues, CounterPick);
             }
 
-            return MasterGame.Value.GetProjectedFantasyPoints(scoringSystem, CounterPick);
+            return MasterGame.Value.GetAlwaysProjectedFantasyPoints(scoringSystem, CounterPick);
         }
 
         public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem)

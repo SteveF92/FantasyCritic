@@ -19,8 +19,8 @@ namespace FantasyCritic.Web.Models.Responses
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
             CounterPick = publisherGame.CounterPick;
             FantasyPoints = publisherGame.FantasyPoints;
-            SimpleProjectedFantasyPoints = publisherGame.GetProjectedFantasyPoints(scoringSystem, systemWideValues, true);
-            AdvancedProjectedFantasyPoints = publisherGame.GetProjectedFantasyPoints(scoringSystem, systemWideValues, false);
+            SimpleProjectedFantasyPoints = publisherGame.GetProjectedOrRealFantasyPoints(scoringSystem, systemWideValues, true);
+            AdvancedProjectedFantasyPoints = publisherGame.GetProjectedOrRealFantasyPoints(scoringSystem, systemWideValues, false);
 
             Linked = publisherGame.MasterGame.HasValue;
             if (Linked)
