@@ -135,21 +135,16 @@ namespace FantasyCritic.Lib.Domain
 
         public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
         {
-            decimal criticScoreToUse;
             if (MasterGame.CriticScore.HasValue)
             {
-                criticScoreToUse = MasterGame.CriticScore.Value;
+                return scoringSystem.GetPointsForScore(MasterGame.CriticScore.Value, counterPick);
             }
-            else if (!WillRelease())
+            if (!WillRelease())
             {
                 return 0m;
             }
-            else
-            {
-                return null;
-            }
 
-            return scoringSystem.GetPointsForScore(criticScoreToUse, counterPick);
+            return null;
         }
 
         public bool Equals(MasterGameYear other)
