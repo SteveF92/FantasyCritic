@@ -412,9 +412,9 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            //TODO
-            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(league.Value, currentUser);
-            if (!userIsInLeague)
+            
+            bool userIsActive = await _leagueMemberService.UserIsActiveInLeagueYear(league.Value, request.Year, currentUser);
+            if (!userIsActive)
             {
                 return Forbid();
             }

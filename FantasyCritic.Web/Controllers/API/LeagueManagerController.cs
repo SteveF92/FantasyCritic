@@ -725,10 +725,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var usersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
+            var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(league.Value, request.Year);
 
-            //TODO
-            bool readyToPlay = _draftService.LeagueIsReadyToPlay(supportedYear, publishersInLeague, usersInLeague);
+            bool readyToPlay = _draftService.LeagueIsReadyToPlay(supportedYear, publishersInLeague, activeUsers);
             if (!readyToPlay)
             {
                 return BadRequest();
@@ -772,10 +771,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            //TODO
-            var usersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
+            var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(league.Value, request.Year);
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-            var readyToSetDraftOrder = _draftService.LeagueIsReadyToSetDraftOrder(publishersInLeague, usersInLeague);
+            var readyToSetDraftOrder = _draftService.LeagueIsReadyToSetDraftOrder(publishersInLeague, activeUsers);
             if (!readyToSetDraftOrder)
             {
                 return BadRequest();

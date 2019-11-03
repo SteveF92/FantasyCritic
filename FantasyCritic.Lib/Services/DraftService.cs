@@ -65,9 +65,9 @@ namespace FantasyCritic.Lib.Services
             return new StartDraftResult(!errors.Any(), errors);
         }
 
-        public bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
+        public bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> activeUsers)
         {
-            if (publishersInLeague.Count() != usersInLeague.Count())
+            if (publishersInLeague.Count() != activeUsers.Count())
             {
                 return false;
             }
@@ -80,9 +80,9 @@ namespace FantasyCritic.Lib.Services
             return true;
         }
 
-        public bool LeagueIsReadyToPlay(SupportedYear supportedYear, IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> usersInLeague)
+        public bool LeagueIsReadyToPlay(SupportedYear supportedYear, IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> activeUsers)
         {
-            if (!LeagueIsReadyToSetDraftOrder(publishersInLeague, usersInLeague))
+            if (!LeagueIsReadyToSetDraftOrder(publishersInLeague, activeUsers))
             {
                 return false;
             }

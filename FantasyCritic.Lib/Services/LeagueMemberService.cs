@@ -30,6 +30,12 @@ namespace FantasyCritic.Lib.Services
             return playersInLeague.Any(x => x.UserID == user.UserID);
         }
 
+        public async Task<bool> UserIsActiveInLeagueYear(League league, int year, FantasyCriticUser user)
+        {
+            var activePlayers = await GetActivePlayersForLeagueYear(league, year);
+            return activePlayers.Any(x => x.UserID == user.UserID);
+        }
+
         public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league)
         {
             return _fantasyCriticRepo.GetUsersInLeague(league);
