@@ -241,7 +241,7 @@ namespace FantasyCritic.Lib.Services
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
                     var leagueYear = leagueYearDictionary[key];
-                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem);
+                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, _clock);
                     publisherGameScores.Add(publisherGame.PublisherGameID, fantasyPoints);
                 }
             }
@@ -258,7 +258,7 @@ namespace FantasyCritic.Lib.Services
             {
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
-                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem);
+                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, _clock);
                     publisherGameScores.Add(publisherGame.PublisherGameID, fantasyPoints);
                 }
             }

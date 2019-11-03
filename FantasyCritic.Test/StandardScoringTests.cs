@@ -33,7 +33,7 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), false, false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
             Assert.AreEqual(14.8095m, fantasyPoints);
         }
@@ -51,7 +51,7 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), false, false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, null, new MasterGameYear(masterGame, 2018), null, null);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
             Assert.AreEqual(13.8095m, fantasyPoints);
         }
@@ -69,7 +69,7 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), false, false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
             Assert.AreEqual(29.625m, fantasyPoints);
         }
@@ -87,7 +87,7 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), false, false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
             Assert.AreEqual(-4.1441m, fantasyPoints);
         }
@@ -105,7 +105,7 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), false, false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
             Assert.AreEqual(null, fantasyPoints);
         }
@@ -123,7 +123,7 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), false, false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
             Assert.AreEqual(0m, fantasyPoints);
         }
@@ -141,7 +141,7 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), false, false, fakeClock.GetCurrentInstant());
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, null, new MasterGameYear(masterGame, 2018), null, null);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
             Assert.AreEqual(4.1441m, fantasyPoints);
         }

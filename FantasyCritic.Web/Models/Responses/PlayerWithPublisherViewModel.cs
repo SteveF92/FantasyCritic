@@ -29,8 +29,8 @@ namespace FantasyCritic.Web.Models.Responses
             User = new PlayerViewModel(leagueYear.League, user);
             Publisher = new PublisherViewModel(publisher, clock, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
-            SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, true);
-            AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, false);
+            SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, true, clock);
+            AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, false, clock);
         }
 
         public Guid InviteID { get; }

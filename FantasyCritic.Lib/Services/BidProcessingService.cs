@@ -13,10 +13,12 @@ namespace FantasyCritic.Lib.Services
     public class BidProcessingService
     {
         private readonly GameAcquisitionService _gameAcquisitionService;
+        private readonly IClock _clock;
 
-        public BidProcessingService(GameAcquisitionService gameAcquisitionService)
+        public BidProcessingService(GameAcquisitionService gameAcquisitionService, IClock clock)
         {
             _gameAcquisitionService = gameAcquisitionService;
+            _clock = clock;
         }
 
         public BidProcessingResults ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
@@ -110,7 +112,7 @@ namespace FantasyCritic.Lib.Services
             return processedSet;
         }
 
-        private static IReadOnlyList<PickupBid> GetWinnableBids(IEnumerable<PickupBid> activeBidsForLeagueYear, LeagueOptions options, SystemWideValues systemWideValues)
+        private IReadOnlyList<PickupBid> GetWinnableBids(IEnumerable<PickupBid> activeBidsForLeagueYear, LeagueOptions options, SystemWideValues systemWideValues)
         {
             List<PickupBid> winnableBids = new List<PickupBid>();
 
@@ -127,7 +129,7 @@ namespace FantasyCritic.Lib.Services
                 {
                     var bestBids = gameGroup.MaxBy(x => x.BidAmount);
                     //TODO change projections
-                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.Publisher.GetProjectedFantasyPoints(options, systemWideValues, false, true));
+                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.Publisher.GetProjectedFantasyPoints(options, systemWideValues, false, true, _clock));
                     bestBid = bestBidsByProjectedScore.OrderByDescending(x => x.Publisher.DraftPosition).First();
                 }
 

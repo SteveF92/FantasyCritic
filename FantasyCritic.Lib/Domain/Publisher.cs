@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
@@ -63,9 +64,9 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        public decimal GetProjectedFantasyPoints(LeagueOptions options, SystemWideValues systemWideValues, bool yearFinished, bool simpleProjections)
+        public decimal GetProjectedFantasyPoints(LeagueOptions options, SystemWideValues systemWideValues, bool yearFinished, bool simpleProjections, IClock clock)
         {
-            var currentGamesScore =  PublisherGames.Sum(x => x.GetProjectedOrRealFantasyPoints(options.ScoringSystem, systemWideValues, simpleProjections));
+            var currentGamesScore =  PublisherGames.Sum(x => x.GetProjectedOrRealFantasyPoints(options.ScoringSystem, systemWideValues, simpleProjections, clock));
             var availableSlots = GetAvailableSlots(options, yearFinished);
             var emptySlotsScore = availableSlots * systemWideValues.AverageStandardGamePoints;
             return currentGamesScore + emptySlotsScore;

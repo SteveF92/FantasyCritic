@@ -46,14 +46,14 @@ namespace FantasyCritic.Lib.Domain
             return MasterGame.Value.WillRelease();
         }
 
-        public decimal GetProjectedOrRealFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections)
+        public decimal GetProjectedOrRealFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections, IClock clock)
         {
             if (MasterGame.HasNoValue)
             {
                 return systemWideValues.GetAveragePoints(CounterPick);
             }
 
-            decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem);
+            decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, clock);
             if (fantasyPoints.HasValue)
             {
                 return fantasyPoints.Value;
@@ -67,18 +67,18 @@ namespace FantasyCritic.Lib.Domain
             return MasterGame.Value.GetAlwaysProjectedFantasyPoints(scoringSystem, CounterPick);
         }
 
-        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem)
+        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, IClock clock)
         {
             if (ManualCriticScore.HasValue)
             {
-                return scoringSystem.GetPointsForScore(ManualCriticScore.Value, CounterPick);
+                return scoringSystem.GetPointsForScore(ManualCriticScore.Value, CounterPick); 
             }
             if (MasterGame.HasNoValue)
             {
                 return null;
             }
 
-            return MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick);
+            return MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, clock);
         }
 
         public override string ToString() => GameName;

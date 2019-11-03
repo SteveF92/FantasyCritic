@@ -100,9 +100,9 @@ namespace FantasyCritic.Lib.Domain
             return true;
         }
 
-        public decimal GetProjectedOrRealFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
+        public decimal GetProjectedOrRealFantasyPoints(ScoringSystem scoringSystem, bool counterPick, IClock clock)
         {
-            decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick);
+            decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick, clock);
             if (fantasyPoints.HasValue)
             {
                 return fantasyPoints.Value;
@@ -133,15 +133,21 @@ namespace FantasyCritic.Lib.Domain
             return systemWideValues.GetAveragePoints(counterPick);
         }
 
-        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
+        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, bool counterPick, IClock clock)
         {
-            if (MasterGame.CriticScore.HasValue)
-            {
-                return scoringSystem.GetPointsForScore(MasterGame.CriticScore.Value, counterPick);
-            }
             if (!WillRelease())
             {
                 return 0m;
+            }
+
+            if (!MasterGame.IsReleased(clock))
+            {
+                return null;
+            }
+
+            if (MasterGame.CriticScore.HasValue)
+            {
+                return scoringSystem.GetPointsForScore(MasterGame.CriticScore.Value, counterPick);
             }
 
             return null;
