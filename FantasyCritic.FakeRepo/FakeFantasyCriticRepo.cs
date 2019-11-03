@@ -398,6 +398,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<HypeConstants> GetHypeConstants()
         {
             throw new NotImplementedException();

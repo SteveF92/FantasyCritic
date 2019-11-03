@@ -478,6 +478,22 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)
+        {
+            var insertObjects = mostRecentActivePlayers.Select(x => new
+            {
+                leagueID = league.LeagueID,
+                userID = x.UserID,
+                year
+            });
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);", insertObjects);
+            }
+        }
+
         public async Task SetPlayerInActive(League league, int year, FantasyCriticUser user)
         {
             string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Year = @year and UserID = @userID;";

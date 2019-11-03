@@ -179,7 +179,7 @@ namespace FantasyCritic.Web.Controllers.API
                 throw new Exception("Most recent league year could not be found");
             }
 
-            await _fantasyCriticService.AddNewLeagueYear(league.Value, request.Year, mostRecentLeagueYear.Value.Options);
+            await _fantasyCriticService.AddNewLeagueYear(league.Value, request.Year, mostRecentLeagueYear.Value.Options, mostRecentLeagueYear.Value);
 
             return Ok();
         }
@@ -727,6 +727,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var usersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
 
+            //TODO
             bool readyToPlay = _draftService.LeagueIsReadyToPlay(supportedYear, publishersInLeague, usersInLeague);
             if (!readyToPlay)
             {
@@ -771,6 +772,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            //TODO
             var usersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var readyToSetDraftOrder = _draftService.LeagueIsReadyToSetDraftOrder(publishersInLeague, usersInLeague);

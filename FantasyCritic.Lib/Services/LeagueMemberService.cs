@@ -164,6 +164,11 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
         }
 
+        public Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year)
+        {
+            return _fantasyCriticRepo.GetActivePlayersForLeagueYear(league, year);
+        }
+
 
         private async Task<Maybe<LeagueInvite>> GetMatchingInvite(League league, string emailAddress)
         {

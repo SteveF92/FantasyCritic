@@ -120,9 +120,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetEligibilityOverrides(league, year);
         }
 
-        public Task AddNewLeagueYear(League league, int year, LeagueOptions options)
+        public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, LeagueYear mostRecentLeagueYear)
         {
-            return _fantasyCriticRepo.AddNewLeagueYear(league, year, options);
+            await _fantasyCriticRepo.AddNewLeagueYear(league, year, options);
+            var mostRecentActivePlayers = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league, mostRecentLeagueYear.Year);
+            await _fantasyCriticRepo.SetPlayersActive(league, year, mostRecentActivePlayers);
         }
 
         public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft)
