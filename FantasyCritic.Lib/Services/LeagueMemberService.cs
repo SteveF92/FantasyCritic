@@ -36,6 +36,16 @@ namespace FantasyCritic.Lib.Services
             return activePlayers.Any(x => x.UserID == user.UserID);
         }
 
+        public Task SetPlayerActive(League league, int year, FantasyCriticUser user)
+        {
+            return _fantasyCriticRepo.SetPlayerActive(league, year, user);
+        }
+
+        public Task SetPlayerInActive(League league, int year, FantasyCriticUser user)
+        {
+            return _fantasyCriticRepo.SetPlayerInActive(league, year, user);
+        }
+
         public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league)
         {
             return _fantasyCriticRepo.GetUsersInLeague(league);
