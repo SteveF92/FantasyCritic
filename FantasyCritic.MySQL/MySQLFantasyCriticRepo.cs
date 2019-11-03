@@ -442,6 +442,60 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year)
+        {
+            var query = new
+            {
+                leagueID = league.LeagueID,
+                year
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var results = await connection.QueryAsync<FantasyCriticUserEntity>(
+                    "select tbl_user.* from tbl_user join tbl_league_activeplayer on (tbl_user.UserID = tbl_league_activeplayer.UserID) " +
+                    "where tbl_league_activeplayer.LeagueID = @leagueID AND year = @year;",
+                    query);
+
+                var users = results.Select(x => x.ToDomain()).ToList();
+                return users;
+            }
+        }
+
+        public async Task SetPlayerActive(League league, int year, FantasyCriticUser user)
+        {
+            var insertObject = new
+            {
+                leagueID = league.LeagueID,
+                userID = user.UserID,
+                year
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);", insertObject);
+            }
+        }
+
+        public async Task SetPlayerInActive(League league, int year, FantasyCriticUser user)
+        {
+            string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Year = @year and UserID = @userID;";
+
+            var userDeleteObject = new
+            {
+                leagueID = league.LeagueID,
+                userID = user.UserID,
+                year
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync(deleteActiveUserSQL, userDeleteObject);
+            }
+        }
+
         public async Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league)
         {
             var query = new
@@ -1418,27 +1472,16 @@ namespace FantasyCritic.MySQL
             {
                 leagueID = league.LeagueID,
                 userID = inviteUser.UserID,
+                maxYear = league.Years.Max(),
             };
 
-            var maxYear = league.Years.Max();
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject, transaction);
-                    foreach (var year in league.Years)
-                    {
-                        var userActiveAddObject = new
-                        {
-                            leagueID = league.LeagueID,
-                            year,
-                            userID = inviteUser.UserID,
-                            active = year == maxYear
-                        };
-                        await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID,Active) VALUES (@leagueID,@year,@userID,@active);", 
-                            userActiveAddObject, transaction);
-                    }
+                    await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@maxYear,@userID);", userAddObject, transaction);
                 }
             }
         }

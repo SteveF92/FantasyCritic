@@ -21,8 +21,9 @@ namespace FantasyCritic.Lib.Interfaces
 
         Task<IReadOnlyList<League>> GetAllLeagues();
         Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
-        Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League requestLeague, int requestYear);
-        Task<IReadOnlyList<FantasyCriticUser>> SetPlayerActive(League requestLeague, int requestYear, FantasyCriticUser user, bool active);
+        Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year);
+        Task SetPlayerActive(League league, int year, FantasyCriticUser user);
+        Task SetPlayerInActive(League league, int year, FantasyCriticUser user);
         Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
         Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user);
         Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year);

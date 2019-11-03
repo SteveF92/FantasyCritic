@@ -72,7 +72,12 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyList<FantasyCriticUser>> SetPlayerActive(League requestLeague, int requestYear, FantasyCriticUser user, bool active)
+        public Task SetPlayerActive(League league, int year, FantasyCriticUser user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetPlayerInActive(League league, int year, FantasyCriticUser user)
         {
             throw new NotImplementedException();
         }
