@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="manageActivePlayers" ref="manageActivePlayersRef" title="Manage Active Players" @ok="confirmActivePlayers" @hidden="clearData">
+  <b-modal id="manageActivePlayers" ref="manageActivePlayersRef" title="Manage Active Players" @ok="confirmActivePlayers" @show="setData">
     <h4 class="text-black">Active Players for {{leagueYear.year}}</h4>
     <table class="table table-bordered table-striped table-sm" v-if="showTable">
       <thead>
@@ -43,6 +43,7 @@
         return !!matchingPlayer;
       },
       setCurrentActivePlayers() {
+        this.internalPlayerActive = {};
         let outerScope = this;
         this.league.players.forEach(function(player) {
           let playerIsActive = outerScope.userIsActive(player);
@@ -75,7 +76,7 @@
             this.$emit('activePlayersEdited');
           });
       },
-      clearData() {
+      setData() {
         this.setCurrentActivePlayers();
       }
     },
