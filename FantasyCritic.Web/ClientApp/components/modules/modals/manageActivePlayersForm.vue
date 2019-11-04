@@ -11,7 +11,7 @@
       <tbody>
         <tr v-for="player in league.players">
           <td>{{player.displayName}}</td>
-          <td>{{playerIsActive(player) | yesNo}}</td>
+          <td><input type="checkbox" v-model="internalPlayerActive[player.userID]"></td>
         </tr>
       </tbody>
     </table>
@@ -24,7 +24,7 @@
   export default {
     data() {
       return {
-
+        internalPlayerActive: {}
       }
     },
     props: ['league', 'leagueYear'],
@@ -43,13 +43,27 @@
             this.$emit('activePlayersEdited');
           });
       },
-      playerIsActive(player) {
+      userIsActive(user) {
         let matchingPlayer = _.find(this.leagueYear.players, function(item){
-          return item.user.userID === player.userID;
+          return item.user.userID === user.userID;
         });
 
         return matchingPlayer;
+      },
+      setCurrentActivePlayers() {
+        let outerScope = this;
+        this.league.players.forEach(function(player) {
+          let playerIsActive = outerScope.userIsActive(player);
+          if (playerIsActive) {
+            outerScope.internalPlayerActive[player.userID] = true;
+          } else {
+            outerScope.internalPlayerActive[player.userID] = false;
+          }
+        });
       }
+    },
+    mounted() {
+      this.setCurrentActivePlayers();
     }
   }
 </script>
