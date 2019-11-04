@@ -11,7 +11,7 @@
       <tbody>
         <tr v-for="player in league.players">
           <td>{{player.displayName}}</td>
-          <td>Active</td>
+          <td>{{playerIsActive(player) | yesNo}}</td>
         </tr>
       </tbody>
     </table>
@@ -42,6 +42,13 @@
           .then(response => {
             this.$emit('activePlayersEdited');
           });
+      },
+      playerIsActive(player) {
+        let matchingPlayer = _.find(this.leagueYear.players, function(item){
+          return item.user.userID === player.userID;
+        });
+
+        return matchingPlayer;
       }
     }
   }

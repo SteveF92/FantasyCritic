@@ -199,7 +199,7 @@ namespace FantasyCritic.Web.Controllers.API
                 currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             }
 
-            var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
+            var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
             var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
 
             bool userIsInLeague = false;
@@ -207,7 +207,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool isManager = false;
             if (currentUser != null)
             {
-                userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
+                userIsInLeague = activeUsers.Any(x => x.UserID == currentUser.UserID);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
                 isManager = (leagueYear.Value.League.LeagueManager.UserID == currentUser.UserID);
             }
@@ -217,14 +217,14 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value, usersInLeague);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value, activeUsers);
             var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == year);
             if (supportedYear is null)
             {
                 return BadRequest();
             }
 
-            StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear.Value, publishersInLeague, usersInLeague);
+            StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear.Value, publishersInLeague, activeUsers);
             Maybe<Publisher> nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
             DraftPhase draftPhase = await _draftService.GetDraftPhase(leagueYear.Value);
 
@@ -243,7 +243,7 @@ namespace FantasyCritic.Web.Controllers.API
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
 
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
-                leagueYear.Value.PlayStatus, startDraftResult, usersInLeague, nextDraftPublisher, draftPhase, availableCounterPicks,
+                leagueYear.Value.PlayStatus, startDraftResult, activeUsers, nextDraftPublisher, draftPhase, availableCounterPicks,
                 leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager, currentUser);
             return Ok(leagueViewModel);
         }
