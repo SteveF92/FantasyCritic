@@ -428,42 +428,54 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            if (league.Value.LeagueManager.UserID == request.UserID)
-            {
-                return BadRequest("Can't change the league manager's active status.");
-            }
+            var currentlyActivePlayers = await _leagueMemberService.GetActivePlayersForLeagueYear(league.Value, request.Year);
 
-            var editUser = await _userManager.FindByIdAsync(request.UserID.ToString());
-            if (editUser == null)
+            foreach (var userToChange in request.ActiveStatus)
             {
-                return BadRequest();
-            }
+                bool userIsCurrentlyActive = currentlyActivePlayers.Any(x => x.UserID == userToChange.Key);
+                if (userIsCurrentlyActive == userToChange.Value)
+                {
+                    //Nothing to change
+                    continue;
+                }
 
-            var playersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
-            bool userIsInLeague = playersInLeague.Any(x => x.UserID == editUser.UserID);
-            if (!userIsInLeague)
-            {
-                return BadRequest("That user is not in that league.");
-            }
+                if (league.Value.LeagueManager.UserID == userToChange.Key)
+                {
+                    return BadRequest("Can't change the league manager's active status.");
+                }
 
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(request.LeagueID, request.Year);
-            if (leagueYear.HasNoValue)
-            {
-                return BadRequest();
-            }
+                var editUser = await _userManager.FindByIdAsync(userToChange.Key.ToString());
+                if (editUser == null)
+                {
+                    return BadRequest();
+                }
 
-            if (leagueYear.Value.PlayStatus.PlayStarted)
-            {
-                return BadRequest("You can't change a player's status for a year that is already started.");
-            }
+                var playersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
+                bool userIsInLeague = playersInLeague.Any(x => x.UserID == editUser.UserID);
+                if (!userIsInLeague)
+                {
+                    return BadRequest("That user is not in that league.");
+                }
 
-            if (request.ActiveStatus)
-            {
-                await _leagueMemberService.SetPlayerActive(league.Value, request.Year, editUser);
-            }
-            else
-            {
-                await _leagueMemberService.SetPlayerInActive(league.Value, request.Year, editUser);
+                var leagueYear = await _fantasyCriticService.GetLeagueYear(request.LeagueID, request.Year);
+                if (leagueYear.HasNoValue)
+                {
+                    return BadRequest();
+                }
+
+                if (leagueYear.Value.PlayStatus.PlayStarted)
+                {
+                    return BadRequest("You can't change a player's status for a year that is already started.");
+                }
+
+                if (userToChange.Value)
+                {
+                    await _leagueMemberService.SetPlayerActive(league.Value, request.Year, editUser);
+                }
+                else
+                {
+                    await _leagueMemberService.SetPlayerInActive(league.Value, request.Year, editUser);
+                }
             }
 
             return Ok();

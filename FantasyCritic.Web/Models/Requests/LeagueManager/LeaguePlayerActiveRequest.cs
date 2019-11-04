@@ -10,7 +10,6 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
     {
         public Guid LeagueID { get; set; }
         public int Year { get; set; }
-        public Guid UserID { get; set; }
-        public bool ActiveStatus { get; set; }
+        public Dictionary<Guid, bool> ActiveStatus { get; set; }
     }
 }
