@@ -1,7 +1,7 @@
 <template>
   <b-modal id="manageActivePlayers" ref="manageActivePlayersRef" title="Manage Active Players" @ok="confirmActivePlayers" @hidden="clearData">
     <h4 class="text-black">Active Players for {{leagueYear.year}}</h4>
-    <table class="table table-bordered table-striped table-sm">
+    <table class="table table-bordered table-striped table-sm" v-if="showTable">
       <thead>
         <tr class="bg-primary">
           <th scope="col">User</th>
@@ -26,6 +26,7 @@
   export default {
     data() {
       return {
+        showTable: false,
         internalPlayerActive: {}
       }
     },
@@ -52,13 +53,20 @@
               manager: playerIsManager
             };
         });
+        this.showTable = true;
       },
       confirmActivePlayers() {
+        let playerStatus = {};
+        let playerActiveDict = this.internalPlayerActive;
+
+        Object.keys(playerActiveDict).forEach(function(key) {
+          playerStatus[key] = playerActiveDict[key].active;
+        });
+
         var model = {
           leagueID: this.league.leagueID,
           year: this.leagueYear.year,
-          userID: player.userID,
-          activeStatus: this.internalPlayerActive
+          activeStatus: playerStatus
         };
 
         axios

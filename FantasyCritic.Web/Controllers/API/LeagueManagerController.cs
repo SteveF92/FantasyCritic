@@ -408,7 +408,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> SetPlayerActiveStatus(LeaguePlayerActiveRequest request)
+        public async Task<IActionResult> SetPlayerActiveStatus([FromBody] LeaguePlayerActiveRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
