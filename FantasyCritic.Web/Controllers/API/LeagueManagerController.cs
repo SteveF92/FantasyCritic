@@ -408,18 +408,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public Task<IActionResult> SetPlayerActive([FromBody] LeaguePlayerActiveRequest request)
-        {
-            return SetPlayerActiveStatus(request, true);
-        }
-
-        [HttpPost]
-        public Task<IActionResult> SetPlayerInActive([FromBody] LeaguePlayerActiveRequest request)
-        {
-            return SetPlayerActiveStatus(request, false);
-        }
-
-        private async Task<IActionResult> SetPlayerActiveStatus(LeaguePlayerActiveRequest request, bool active)
+        public async Task<IActionResult> SetPlayerActiveStatus(LeaguePlayerActiveRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
 
@@ -468,7 +457,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't change a player's status for a year that is already started.");
             }
 
-            if (active)
+            if (request.ActiveStatus)
             {
                 await _leagueMemberService.SetPlayerActive(league.Value, request.Year, editUser);
             }

@@ -72,6 +72,9 @@
             <li class="fake-link action" v-b-modal="'invitePlayer'" v-show="!leagueYear.playStatus.playStarted">
               Invite a Player
             </li>
+            <li class="fake-link action" v-b-modal="'manageActivePlayers'" v-show="!leagueYear.playStatus.playStarted">
+              Manage Active Players
+            </li>
             <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">
               Edit Draft Order
             </li>
@@ -118,6 +121,7 @@
 
         <addNewLeagueYearForm :league="league" :isManager="league.isManager" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
         <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
+        <manageActivePlayersForm :league="league" :leagueYear="leagueYear" v-on:activePlayersEdited="activePlayersEdited"></manageActivePlayersForm>
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
         <managerDraftGameForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
         <managerDraftCounterPickForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :availableCounterPicks="leagueYear.availableCounterPicks"
@@ -149,6 +153,7 @@
   import ManagerDraftGameForm from "components/modules/modals/managerDraftGameForm";
   import ManagerAssociateGameForm from "components/modules/modals/managerAssociateGameForm";
   import InvitePlayerForm from "components/modules/modals/invitePlayerForm";
+  import ManageActivePlayersForm from "components/modules/modals/manageActivePlayersForm";
   import RemoveGameForm from "components/modules/modals/removeGameForm";
   import ManuallyScoreGameForm from "components/modules/modals/manuallyScoreGameForm";
   import ChangeLeagueOptionsForm from "components/modules/modals/changeLeagueOptionsForm";
@@ -178,6 +183,7 @@
       ManagerDraftGameForm,
       ManagerAssociateGameForm,
       InvitePlayerForm,
+      ManageActivePlayersForm,
       RemoveGameForm,
       ManuallyScoreGameForm,
       ChangeLeagueOptionsForm,
@@ -287,6 +293,14 @@
       playerInvited(inviteEmail) {
         let actionInfo = {
           message: 'Invite was sent to ' + inviteEmail,
+          fetchLeagueYear: true,
+          fetchLeague: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      activePlayersEdited() {
+        let actionInfo = {
+          message: 'Active players were changed.',
           fetchLeagueYear: true,
           fetchLeague: true
         };
