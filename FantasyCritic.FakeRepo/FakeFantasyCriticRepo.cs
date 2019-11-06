@@ -72,12 +72,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task SetPlayerActive(League league, int year, FantasyCriticUser user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetPlayerInActive(League league, int year, FantasyCriticUser user)
+        public Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange)
         {
             throw new NotImplementedException();
         }

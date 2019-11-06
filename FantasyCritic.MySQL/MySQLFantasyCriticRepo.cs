@@ -462,24 +462,9 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task SetPlayerActive(League league, int year, FantasyCriticUser user)
-        {
-            var insertObject = new
-            {
-                leagueID = league.LeagueID,
-                userID = user.UserID,
-                year
-            };
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);", insertObject);
-            }
-        }
-
         public async Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)
         {
+            string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
             var insertObjects = mostRecentActivePlayers.Select(x => new
             {
                 leagueID = league.LeagueID,
@@ -490,25 +475,41 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);", insertObjects);
+                await connection.ExecuteAsync(insertSQL, insertObjects);
             }
         }
 
-        public async Task SetPlayerInActive(League league, int year, FantasyCriticUser user)
+        public async Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange)
         {
             string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Year = @year and UserID = @userID;";
-
-            var userDeleteObject = new
-            {
-                leagueID = league.LeagueID,
-                userID = user.UserID,
-                year
-            };
+            string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync(deleteActiveUserSQL, userDeleteObject);
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    foreach (var userToChange in usersToChange)
+                    {
+                        var paramsObject = new
+                        {
+                            leagueID = leagueYear.League.LeagueID,
+                            userID = userToChange.Key.UserID,
+                            leagueYear.Year
+                        };
+
+                        if (userToChange.Value)
+                        {
+                            await connection.ExecuteAsync(insertSQL, paramsObject, transaction);
+                        }
+                        else
+                        {
+                            await connection.ExecuteAsync(deleteActiveUserSQL, paramsObject, transaction);
+                        }
+                    }
+
+                    transaction.Commit();
+                }
             }
         }
 

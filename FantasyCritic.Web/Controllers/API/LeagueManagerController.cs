@@ -439,42 +439,22 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't change a player's status for a year that is already started.");
             }
 
-            var currentlyActivePlayers = await _leagueMemberService.GetActivePlayersForLeagueYear(league.Value, request.Year);
-            foreach (var userToChange in request.ActiveStatus)
+            Dictionary<FantasyCriticUser, bool> userActiveStatus = new Dictionary<FantasyCriticUser, bool>();
+            foreach (var userKeyValue in request.ActiveStatus)
             {
-                bool userIsCurrentlyActive = currentlyActivePlayers.Any(x => x.UserID == userToChange.Key);
-                if (userIsCurrentlyActive == userToChange.Value)
-                {
-                    //Nothing to change
-                    continue;
-                }
-
-                if (league.Value.LeagueManager.UserID == userToChange.Key)
-                {
-                    return BadRequest("Can't change the league manager's active status.");
-                }
-
-                var editUser = await _userManager.FindByIdAsync(userToChange.Key.ToString());
-                if (editUser == null)
+                var domainUser = await _userManager.FindByIdAsync(userKeyValue.Key.ToString());
+                if (domainUser == null)
                 {
                     return BadRequest();
                 }
 
-                var playersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
-                bool userIsInLeague = playersInLeague.Any(x => x.UserID == editUser.UserID);
-                if (!userIsInLeague)
-                {
-                    return BadRequest("That user is not in that league.");
-                }
+                userActiveStatus.Add(domainUser, userKeyValue.Value);
+            }
 
-                if (userToChange.Value)
-                {
-                    await _leagueMemberService.SetPlayerActive(league.Value, request.Year, editUser);
-                }
-                else
-                {
-                    await _leagueMemberService.SetPlayerInActive(league.Value, request.Year, editUser);
-                }
+            var result = await _leagueMemberService.SetPlayerActiveStatus(leagueYear.Value, userActiveStatus);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
             }
 
             return Ok();

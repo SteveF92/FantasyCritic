@@ -36,14 +36,41 @@ namespace FantasyCritic.Lib.Services
             return activePlayers.Any(x => x.UserID == user.UserID);
         }
 
-        public Task SetPlayerActive(League league, int year, FantasyCriticUser user)
+        public async Task<Result> SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> userActiveStatus)
         {
-            return _fantasyCriticRepo.SetPlayerActive(league, year, user);
-        }
+            var currentlyActivePlayers = await GetActivePlayersForLeagueYear(leagueYear.League, leagueYear.Year);
+            var playersInLeague = await GetUsersInLeague(leagueYear.League);
 
-        public Task SetPlayerInActive(League league, int year, FantasyCriticUser user)
-        {
-            return _fantasyCriticRepo.SetPlayerInActive(league, year, user);
+            Dictionary<FantasyCriticUser, bool> usersToChange = new Dictionary<FantasyCriticUser, bool>();
+            foreach (var userToChange in userActiveStatus)
+            {
+                bool userIsCurrentlyActive = currentlyActivePlayers.Any(x => x.UserID == userToChange.Key.UserID);
+                if (userIsCurrentlyActive == userToChange.Value)
+                {
+                    //Nothing to change
+                    continue;
+                }
+
+                if (leagueYear.League.LeagueManager.UserID == userToChange.Key.UserID)
+                {
+                    return Result.Fail("Can't change the league manager's active status.");
+                }
+
+                bool userIsInLeague = playersInLeague.Any(x => x.UserID == userToChange.Key.UserID);
+                if (!userIsInLeague)
+                {
+                    return Result.Fail("That user is not in that league.");
+                }
+
+                usersToChange.Add(userToChange.Key, userToChange.Value);
+            }
+
+            if (usersToChange.Any())
+            {
+                await _fantasyCriticRepo.SetPlayerActiveStatus(leagueYear, usersToChange);
+            }
+
+            return Result.Ok();
         }
 
         public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league)
