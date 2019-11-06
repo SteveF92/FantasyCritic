@@ -63,7 +63,13 @@
         </div>
 
         <div v-if="leagueYear">
-          <div v-if="leagueYear.userIsInLeague && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
+          <div v-if="!leagueYear.userIsActive">
+            <div class="alert alert-warning" role="alert">
+              You are set to inactive for this year.
+            </div>
+          </div>
+
+          <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
             <h2>
               This year is not active yet!
             </h2>
@@ -72,7 +78,7 @@
             </ul>
           </div>
 
-          <div v-if="league.userIsInLeague && !leagueYear.userPublisher" class="alert alert-info">
+          <div v-if="leagueYear.userIsActive && !leagueYear.userPublisher" class="alert alert-info">
             You need to create your publisher for this year.
             <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
             <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>

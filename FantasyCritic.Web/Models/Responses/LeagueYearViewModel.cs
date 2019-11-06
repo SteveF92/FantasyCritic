@@ -30,6 +30,7 @@ namespace FantasyCritic.Web.Models.Responses
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
+            UserIsActive = activeUsers.Any(x => x.UserID == accessingUser.Unwrap(y => y.UserID));
             Publishers = publishers
                 .OrderBy(x => x.DraftPosition)
                 .Select(x => new PublisherViewModel(x, clock, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished))
@@ -114,6 +115,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string PickupSystem { get; }
         public string ScoringSystem { get; }
         public bool UnlinkedGameExists { get; }
+        public bool UserIsActive { get; }
         public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
         public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
