@@ -84,15 +84,18 @@
             <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
           </div>
 
-          <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite" class="alert alert-success">
-            <span v-if="league.isManager">
-              Things are all set to get started! <b-button variant="primary" v-b-modal="'startDraft'" class="mx-2">Start Drafting!</b-button>
-              <startDraftModal v-on:draftStarted="startDraft"></startDraftModal>
-            </span>
-            <span v-if="!league.isManager">
-              Things are all set to get started! Your league manager can choose when to begin the draft.
-            </span>
+          <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite">
+            <div class="alert alert-success">
+              <span v-if="league.isManager">
+                Things are all set to get started! <b-button variant="primary" v-b-modal="'startDraft'" class="mx-2">Start Drafting!</b-button>
+              </span>
+              <span v-if="!league.isManager">
+                Things are all set to get started! Your league manager can choose when to begin the draft.
+              </span>
+            </div>
+            <startDraftModal v-on:draftStarted="startDraft"></startDraftModal>
           </div>
+
           <div v-if="leagueYear.playStatus.draftIsPaused">
             <div class="alert alert-danger">
               <div v-show="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
