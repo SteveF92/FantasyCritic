@@ -352,6 +352,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(gameDeleteSQL, paramsObject, transaction);
                     await connection.ExecuteAsync(draftResetSQL, paramsObject, transaction);
+                    transaction.Commit();
                 }
             }
         }

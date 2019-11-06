@@ -11,9 +11,9 @@
 
   export default {
     methods: {
-      setPause() {
+      resetDraft() {
         this.$refs.resetDraftModalRef.hide();
-        this.$emit('resetDraft', pauseInfo);
+        this.$emit('resetDraft');
       }
     }
   }
