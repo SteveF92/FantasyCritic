@@ -428,8 +428,18 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var currentlyActivePlayers = await _leagueMemberService.GetActivePlayersForLeagueYear(league.Value, request.Year);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(request.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
 
+            if (leagueYear.Value.PlayStatus.PlayStarted)
+            {
+                return BadRequest("You can't change a player's status for a year that is already started.");
+            }
+
+            var currentlyActivePlayers = await _leagueMemberService.GetActivePlayersForLeagueYear(league.Value, request.Year);
             foreach (var userToChange in request.ActiveStatus)
             {
                 bool userIsCurrentlyActive = currentlyActivePlayers.Any(x => x.UserID == userToChange.Key);
@@ -455,17 +465,6 @@ namespace FantasyCritic.Web.Controllers.API
                 if (!userIsInLeague)
                 {
                     return BadRequest("That user is not in that league.");
-                }
-
-                var leagueYear = await _fantasyCriticService.GetLeagueYear(request.LeagueID, request.Year);
-                if (leagueYear.HasNoValue)
-                {
-                    return BadRequest();
-                }
-
-                if (leagueYear.Value.PlayStatus.PlayStarted)
-                {
-                    return BadRequest("You can't change a player's status for a year that is already started.");
                 }
 
                 if (userToChange.Value)
