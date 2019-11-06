@@ -5,56 +5,50 @@
       <span>
         <label class="projections-label">Advanced Projections</label>
         <toggle-button class="toggle" :class="{ 'toggle-on': advancedProjections }" v-model="advancedProjections" :sync="true"
-                       :labels="{checked: 'On', unchecked: 'Off'}" :css-colors="true" :font-size="13"/>
+                       :labels="{checked: 'On', unchecked: 'Off'}" :css-colors="true" :font-size="13" />
       </span>
     </div>
-    
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped table-sm">
-        <thead>
-          <tr class="bg-primary">
-            <th>User</th>
-            <th>Publisher</th>
-            <th>Points (Projected)</th>
-            <th>Points (Actual)</th>
-            <th>Budget</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="player in sortedPlayers">
-            <td>
-              <span v-if="player.user">{{ player.user.displayName }}</span>
-              <span v-if="!player.user">{{ player.inviteName }}</span>
-            </td>
-            <td>
-              <span v-if="player.publisher">
-                <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: player.publisher.publisherID }}">{{ player.publisher.publisherName }}</router-link>
-                <span v-if="showRemove && league.leagueManager.userID !== player.user.userID">
-                  <b-button variant="danger" size="sm" v-on:click="removeUser(player.user)">Remove</b-button>
-                </span>
-              </span>
-              <span v-if="player.user && !player.publisher">
-                &lt;Publisher Not Created&gt;
-                <span v-if="showRemove && league.leagueManager.userID !== player.user.userID">
-                  <b-button variant="danger" size="sm" v-on:click="removeUser(player.user)">Remove</b-button>
-                </span>
-              </span>
-              <span v-if="!player.user">
-                &lt;Invite Sent&gt;
-                <span v-if="showRemove">
-                  <b-button variant="danger" size="sm" v-on:click="rescindInvite(player.inviteID, player.inviteName)">Rescind Invite</b-button>
-                </span>
-              </span>
-            </td>
-            <td>{{getProjectedPoints(player) | score(2)}}</td>
-            <td>{{player.totalFantasyPoints | score(2)}}</td>
-            <td>
-              <span v-if="player.publisher">{{player.publisher.budget | money}}</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+
+
+    <b-table :sort-by.sync="sortBy"
+             :sort-desc.sync="sortDesc"
+             :items="this.leagueYear.players"
+             :fields="standingFields"
+             bordered
+             small
+             responsive
+             striped>
+      <template slot="userName" slot-scope="data">
+        <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
+        <span v-if="!data.item.user">{{ data.item.inviteName }}</span>
+      </template>
+      <template slot="publisher" slot-scope="data">
+        <span v-if="data.item.publisher">
+          <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: data.item.publisher.publisherID }}">{{ data.item.publisher.publisherName }}</router-link>
+          <span v-if="showRemove && league.leagueManager.userID !== data.item.user.userID">
+            <b-button variant="danger" size="sm" v-on:click="removeUser(data.item.user)">Remove</b-button>
+          </span>
+        </span>
+        <span v-if="data.item.user && !data.item.publisher">
+          &lt;Publisher Not Created&gt;
+          <span v-if="showRemove && league.leagueManager.userID !== data.item.user.userID">
+            <b-button variant="danger" size="sm" v-on:click="removeUser(data.item.user)">Remove</b-button>
+          </span>
+        </span>
+        <span v-if="!data.item.user">
+          &lt;Invite Sent&gt;
+          <span v-if="showRemove">
+            <b-button variant="danger" size="sm" v-on:click="rescindInvite(data.item.inviteID, data.item.inviteName)">Rescind Invite</b-button>
+          </span>
+        </span>
+      </template>
+      <template slot="simpleProjectedFantasyPoints" slot-scope="data">{{data.item.simpleProjectedFantasyPoints | score(2)}}</template>
+      <template slot="advancedProjectedFantasyPoints" slot-scope="data">{{data.item.advancedProjectedFantasyPoints | score(2)}}</template>
+      <template slot="totalFantasyPoints" slot-scope="data">{{data.item.totalFantasyPoints | score(2)}}</template>
+      <template slot="budget" slot-scope="data">
+        <span v-if="data.item.publisher">{{data.item.publisher.budget | money}}</span>
+      </template>
+    </b-table>
   </div>
 </template>
 <script>
@@ -67,31 +61,51 @@
       ToggleButton
     },
     props: ['league', 'leagueYear'],
+    data() {
+      return {
+        basicStandingFields: [
+          { key: 'userName', label: 'User', thClass:'bg-primary' },
+          { key: 'publisher', label: 'Publisher', thClass:'bg-primary' },
+          { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass:'bg-primary', sortable: true },
+          { key: 'budget', label: 'Budget', thClass:'bg-primary' },
+        ],
+        projectionFields: [
+          { key: 'simpleProjectedFantasyPoints', label: 'Points (Projected)', thClass:'bg-primary', sortable: true },
+          { key: 'advancedProjectedFantasyPoints', label: 'Points (Projected)', thClass:'bg-primary', sortable: true },
+        ],
+        sortBy: 'totalFantasyPoints',
+        sortDesc: true
+      }
+    },
     computed: {
+      standingFields() {
+        let copiedArray = this.basicStandingFields.slice(0);
+        if (this.advancedProjections) {
+          copiedArray.splice(2, 0, this.projectionFields[1]);
+        } else {
+          copiedArray.splice(2, 0, this.projectionFields[0]);
+        }
+
+        return copiedArray;
+      },
       showRemove() {
         return (this.league.isManager && this.league.neverStarted);
-      },
-      sortedPlayers() {
-        let vueObject = this;
-        return _.sortBy(this.leagueYear.players, [function (x) { return vueObject.getProjectedPoints(x); }]).reverse();
-        return;
       },
       advancedProjections: {
         get() {
           return this.$store.getters.advancedProjections;
         },
-        set (value) {
+        set(value) {
+          if (value && this.sortBy === 'simpleProjectedFantasyPoints') {
+            this.sortBy = 'advancedProjectedFantasyPoints';
+          } else if (!value && this.sortBy === 'advancedProjectedFantasyPoints') {
+            this.sortBy = 'simpleProjectedFantasyPoints';
+          }
           this.$store.commit('setAdvancedProjections', value)
         }
       }
     },
     methods: {
-      getProjectedPoints(player) {
-        if (this.advancedProjections) {
-          return player.advancedProjectedFantasyPoints;
-        }
-        return player.simpleProjectedFantasyPoints;
-      },
       removeUser(user) {
         var model = {
           leagueID: this.leagueYear.leagueID,
