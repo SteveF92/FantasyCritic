@@ -57,6 +57,9 @@
                 <span v-show="leagueYear.playStatus.draftIsActive">Pause Draft</span>
                 <span v-show="leagueYear.playStatus.draftIsPaused">Resume Draft</span>
               </li>
+              <li class="fake-link action" v-b-modal="'resetDraftModal'">
+                Reset Draft
+              </li>
               <li class="fake-link action" v-b-modal="'undoLastDraftActionModal'" v-show="leagueYear.playStatus.draftIsPaused">
                 Undo Last Drafted Game
               </li>
@@ -128,6 +131,7 @@
                                      :nextPublisherUp="nextPublisherUp" v-on:counterPickDrafted="managerCounterPickDrafted"></managerDraftCounterPickForm>
         <undoLastDraftActionModal v-on:undoLastDraftAction="undoLastDraftAction"></undoLastDraftActionModal>
         <setPauseModal v-on:setPause="setPause" :paused="leagueYear.playStatus.draftIsPaused"></setPauseModal>
+        <resetDraftModal v-on:resetDraft="resetDraft"></resetDraftModal>
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
@@ -159,6 +163,7 @@
   import ChangeLeagueOptionsForm from "components/modules/modals/changeLeagueOptionsForm";
   import EditDraftOrderForm from "components/modules/modals/editDraftOrderForm";
   import SetPauseModal from "components/modules/modals/setPauseModal";
+  import ResetDraftModal from "components/modules/modals/resetDraftModal";
   import UndoLastDraftActionModal from "components/modules/modals/undoLastDraftActionModal";
   import ManagerDraftCounterPickForm from "components/modules/modals/managerDraftCounterPickForm";
   import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
@@ -189,6 +194,7 @@
       ChangeLeagueOptionsForm,
       EditDraftOrderForm,
       SetPauseModal,
+      ResetDraftModal,
       UndoLastDraftActionModal,
       ManagerDraftCounterPickForm,
       AddNewLeagueYearForm,
@@ -272,7 +278,26 @@
 
           });
       },
-      undoLastDraftAction(pauseInfo) {
+      resetDraft() {
+        var model = {
+          leagueID: this.league.leagueID,
+          year: this.leagueYear.year
+        };
+        axios
+          .post('/api/leagueManager/ResetDraft', model)
+          .then(response => {
+            let actionInfo = {
+              message: "Draft has been reset.",
+              fetchLeague: true,
+              fetchLeagueYear: true
+            };
+            this.$emit('actionTaken', actionInfo);
+          })
+          .catch(response => {
+
+          });
+      },
+      undoLastDraftAction() {
         var model = {
           leagueID: this.league.leagueID,
           year: this.leagueYear.year
