@@ -6,8 +6,10 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PlayerViewModel
     {
-        public PlayerViewModel(League league, FantasyCriticUser user)
+
+        public PlayerViewModel(League league, FantasyCriticUser user, bool removable)
         {
+            Removable = removable;
             LeagueID = league.LeagueID.ToString();
             LeagueName = league.LeagueName;
             UserID = user.UserID.ToString();
@@ -18,5 +20,6 @@ namespace FantasyCritic.Web.Models.Responses
         public string LeagueName { get; }
         public string UserID { get; }
         public string DisplayName { get; }
+        public bool Removable { get; }
     }
 }

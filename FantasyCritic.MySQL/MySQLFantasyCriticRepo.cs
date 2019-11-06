@@ -793,8 +793,9 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync(deleteUserSQL, userDeleteObject, transaction);
                     await connection.ExecuteAsync(deleteActiveUserSQL, userDeleteObject, transaction);
+                    await connection.ExecuteAsync(deleteUserSQL, userDeleteObject, transaction);
+                    transaction.Commit();
                 }
             }
         }

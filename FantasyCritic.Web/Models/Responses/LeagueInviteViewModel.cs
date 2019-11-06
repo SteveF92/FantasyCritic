@@ -17,7 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueName = league.LeagueName;
             ActiveYear = league.Years.Max();
             InviteName = inviteName;
-            LeagueManager = new PlayerViewModel(league, league.LeagueManager);
+            LeagueManager = new PlayerViewModel(league, league.LeagueManager, true);
         }
 
         public Guid InviteID { get; }

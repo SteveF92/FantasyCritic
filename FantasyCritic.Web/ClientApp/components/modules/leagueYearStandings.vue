@@ -25,19 +25,19 @@
       <template slot="publisher" slot-scope="data">
         <span v-if="data.item.publisher">
           <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: data.item.publisher.publisherID }}">{{ data.item.publisher.publisherName }}</router-link>
-          <span v-if="showRemove && league.leagueManager.userID !== data.item.user.userID">
+          <span v-if="showRemove(data.item.user)">
             <b-button variant="danger" size="sm" v-on:click="removeUser(data.item.user)">Remove</b-button>
           </span>
         </span>
         <span v-if="data.item.user && !data.item.publisher">
           &lt;Publisher Not Created&gt;
-          <span v-if="showRemove && league.leagueManager.userID !== data.item.user.userID">
+          <span v-if="showRemove(data.item.user)">
             <b-button variant="danger" size="sm" v-on:click="removeUser(data.item.user)">Remove</b-button>
           </span>
         </span>
         <span v-if="!data.item.user">
           &lt;Invite Sent&gt;
-          <span v-if="showRemove">
+          <span v-if="league.isManager">
             <b-button variant="danger" size="sm" v-on:click="rescindInvite(data.item.inviteID, data.item.inviteName)">Rescind Invite</b-button>
           </span>
         </span>
@@ -88,9 +88,6 @@
 
         return copiedArray;
       },
-      showRemove() {
-        return (this.league.isManager && this.league.neverStarted);
-      },
       advancedProjections: {
         get() {
           return this.$store.getters.advancedProjections;
@@ -106,6 +103,17 @@
       }
     },
     methods: {
+      showRemove(user) {
+        if (!this.league.isManager) {
+          return false;
+        }
+
+        let matchingLeagueLevelPlayer = _.find(this.league.players, function(item){
+          return item.userID === user.userID;
+        });
+
+        return matchingLeagueLevelPlayer.removable;
+      },
       removeUser(user) {
         var model = {
           leagueID: this.leagueYear.leagueID,

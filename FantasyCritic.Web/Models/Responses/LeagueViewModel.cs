@@ -13,7 +13,7 @@ namespace FantasyCritic.Web.Models.Responses
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
-            LeagueManager = new PlayerViewModel(league, league.LeagueManager);
+            LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
             IsManager = isManager;
             Years = league.Years;
             ActiveYear = Years.Max();
@@ -24,12 +24,12 @@ namespace FantasyCritic.Web.Models.Responses
             NumberOfFollowers = league.NumberOfFollowers;
         }
 
-        public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUser> players, Maybe<LeagueInvite> outstandingInvite, FantasyCriticUser currentUser,
+        public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUserRemovable> players, Maybe<LeagueInvite> outstandingInvite, FantasyCriticUser currentUser,
             bool neverStarted, bool userIsInLeague, bool userIsFollowingLeague)
         {
             LeagueID = league.LeagueID;
             LeagueName = league.LeagueName;
-            LeagueManager = new PlayerViewModel(league, league.LeagueManager);
+            LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
             IsManager = isManager;
             Years = league.Years;
             ActiveYear = Years.Max();
@@ -39,7 +39,7 @@ namespace FantasyCritic.Web.Models.Responses
                 OutstandingInvite = LeagueInviteViewModel.CreateWithDisplayName(outstandingInvite.Value, currentUser);
             }
 
-            Players = players.Select(x => new PlayerViewModel(league, x)).ToList();
+            Players = players.Select(x => new PlayerViewModel(league, x.User, x.Removable)).ToList();
             NeverStarted = neverStarted;
             PublicLeague = league.PublicLeague;
             TestLeague = league.TestLeague;

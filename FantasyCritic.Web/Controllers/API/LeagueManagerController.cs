@@ -396,6 +396,12 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var year in league.Value.Years)
             {
                 var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
+                var publishersForYear = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+                if (!publishersForYear.Any(x => x.User.Equals(removeUser)))
+                {
+                    //User did not play in this year, safe to remove.
+                    continue;
+                }
                 if (leagueYear.Value.PlayStatus.PlayStarted)
                 {
                     return BadRequest("You can't remove a player from a league that has already started playing");

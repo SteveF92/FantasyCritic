@@ -17,16 +17,16 @@ namespace FantasyCritic.Web.Models.Responses
             InviteName = inviteName;
         }
 
-        public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user)
+        public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, bool removable)
         {
-            User = new PlayerViewModel(leagueYear.League, user);
+            User = new PlayerViewModel(leagueYear.League, user, removable);
         }
 
         public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, IClock clock,
             LeagueOptions options, SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague,
-            SupportedYear supportedYear)
+            SupportedYear supportedYear, bool removable)
         {
-            User = new PlayerViewModel(leagueYear.League, user);
+            User = new PlayerViewModel(leagueYear.League, user, removable);
             Publisher = new PublisherViewModel(publisher, clock, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
             SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, true, clock);

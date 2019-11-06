@@ -48,13 +48,13 @@ namespace FantasyCritic.Web.Models.Responses
                 var publisher = publishers.SingleOrDefault(x => x.User.UserID == user.UserID);
                 if (publisher is null)
                 {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, false));
                     allPublishersMade = false;
                 }
                 else
                 {
                     playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, options, systemWideValues,
-                        userIsInLeague, userIsInvitedToLeague, supportedYear));
+                        userIsInLeague, userIsInvitedToLeague, supportedYear, false));
                 }
             }
 

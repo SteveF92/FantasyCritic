@@ -78,6 +78,44 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetUsersInLeague(league);
         }
 
+        public async Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league)
+        {
+            var usersInLeague = await _fantasyCriticRepo.GetUsersInLeague(league);
+
+            List<LeagueYear> leagueYears = new List<LeagueYear>();
+            List<Publisher> allPublishers = new List<Publisher>();
+            foreach (var year in league.Years)
+            {
+                var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
+                leagueYears.Add(leagueYear.Value);
+                var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.Value);
+                allPublishers.AddRange(publishersForYear);
+            }
+
+            List<FantasyCriticUserRemovable> usersWithStatus = new List<FantasyCriticUserRemovable>();
+            foreach (var user in usersInLeague)
+            {
+                bool userRemovable = !league.LeagueManager.Equals(user);
+                foreach (var leagueYear in leagueYears)
+                {
+                    var publishersForYear = allPublishers.Where(x => x.LeagueYear.Year == leagueYear.Year);
+                    if (!publishersForYear.Any(x => x.User.Equals(user)))
+                    {
+                        //User did not play in this year, safe to remove.
+                        continue;
+                    }
+                    if (leagueYear.PlayStatus.PlayStarted)
+                    {
+                        userRemovable = false;
+                    }
+                }
+
+                usersWithStatus.Add(new FantasyCriticUserRemovable(user, userRemovable));
+            }
+
+            return usersWithStatus;
+        }
+
         public async Task<Result> InviteUserByEmail(League league, string inviteEmail)
         {
             var existingInvite = await GetMatchingInvite(league, inviteEmail);

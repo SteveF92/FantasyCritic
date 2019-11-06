@@ -154,7 +154,7 @@ namespace FantasyCritic.Web.Controllers.API
                 currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             }
 
-            var playersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
+            var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(league.Value);
             var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(league.Value);
             var leagueFollowers = await _fantasyCriticService.GetLeagueFollowers(league.Value);
 
@@ -165,7 +165,7 @@ namespace FantasyCritic.Web.Controllers.API
             Maybe<LeagueInvite> leagueInvite = Maybe<LeagueInvite>.None;
             if (currentUser != null)
             {
-                userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
+                userIsInLeague = playersInLeague.Any(x => x.User.UserID == currentUser.UserID);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
                 isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
                 userIsFollowingLeague = leagueFollowers.Any(x => x.UserID == currentUser.UserID);
