@@ -1525,6 +1525,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject, transaction);
                     await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@maxYear,@userID);", userAddObject, transaction);
+                    transaction.Commit();
                 }
             }
         }

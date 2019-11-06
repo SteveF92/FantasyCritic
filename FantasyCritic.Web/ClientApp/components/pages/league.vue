@@ -63,7 +63,7 @@
         </div>
 
         <div v-if="leagueYear">
-          <div v-if="!leagueYear.userIsActive">
+          <div v-if="!leagueYear.userIsActive && league.userIsInLeague">
             <div class="alert alert-warning" role="alert">
               You are set to inactive for this year.
             </div>
