@@ -331,6 +331,31 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task ResetDraft(LeagueYear leagueYear)
+        {
+            var publishers = await GetPublishersInLeagueForYear(leagueYear);
+
+            string gameDeleteSQL = "delete from tbl_league_publishergame where PublisherID in @publisherIDs";
+            string draftResetSQL = $"update tbl_league_year SET PlayStatus = '{PlayStatus.NotStartedDraft.Value}' WHERE LeagueID = @leagueID and Year = @year";
+
+            var paramsObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year,
+                publisherIDs = publishers.Select(x => x.PublisherID)
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(gameDeleteSQL, paramsObject, transaction);
+                    await connection.ExecuteAsync(draftResetSQL, paramsObject, transaction);
+                }
+            }
+        }
+
         public async Task SetDraftPause(LeagueYear leagueYear, bool pause)
         {
             string sql;

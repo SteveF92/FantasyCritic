@@ -763,7 +763,6 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == request.Year);
             if (supportedYear is null)
             {
@@ -772,6 +771,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(league.Value, request.Year);
 
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             bool readyToPlay = _draftService.LeagueIsReadyToPlay(supportedYear, publishersInLeague, activeUsers);
             if (!readyToPlay)
             {
@@ -780,6 +780,49 @@ namespace FantasyCritic.Web.Controllers.API
 
             await _draftService.StartDraft(leagueYear.Value);
             await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetDraft([FromBody] ResetDraftRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (leagueYear.Value.PlayStatus.Equals(PlayStatus.NotStartedDraft) || leagueYear.Value.PlayStatus.Equals(PlayStatus.DraftFinal))
+            {
+                return BadRequest();
+            }
+
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == request.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            await _draftService.ResetDraft(leagueYear.Value);
 
             return Ok();
         }

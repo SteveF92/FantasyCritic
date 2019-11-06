@@ -298,11 +298,15 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task SetDraftPause(LeagueYear leagueYear, bool pause)
+        public Task ResetDraft(LeagueYear leagueYear)
         {
             throw new NotImplementedException();
         }
 
+        public Task SetDraftPause(LeagueYear leagueYear, bool pause)
+        {
+            throw new NotImplementedException();
+        }
 
         public Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
         {

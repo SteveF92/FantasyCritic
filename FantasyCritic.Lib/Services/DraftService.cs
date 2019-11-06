@@ -264,5 +264,10 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.CompleteDraft(leagueYear);
             return true;
         }
+
+        public Task ResetDraft(LeagueYear leagueYear)
+        {
+            return _fantasyCriticRepo.ResetDraft(leagueYear);
+        }
     }
 }
