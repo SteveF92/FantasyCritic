@@ -30,6 +30,11 @@
         </div>
         <hr />
 
+        <div class="league-manager-info">
+          <h4>League Manager:</h4>
+          <span class="league-manager-info-item">{{ league.leagueManager.displayName }}</span>
+        </div>
+
         <div>
           <label>Followers: </label> {{league.numberOfFollowers}}
         </div>
@@ -47,15 +52,6 @@
           </p>
         </b-modal>
 
-        <div v-if="leagueYear && leagueYear.userIsInLeague && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
-          <h2>
-            This year is not active yet!
-          </h2>
-          <ul>
-            <li v-for="error in leagueYear.playStatus.startDraftErrors">{{error}}</li>
-          </ul>
-        </div>
-
         <div v-if="league.outstandingInvite" class="alert alert-info">
           You have been invited to join this league. Do you wish to join?
           <div class="row">
@@ -65,61 +61,68 @@
             </div>
           </div>
         </div>
-        <div v-if="leagueYear && league.userIsInLeague && !leagueYear.userPublisher" class="alert alert-info">
-          You need to create your publisher for this year.
-          <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
-          <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
-        </div>
 
-        <div v-if="leagueYear && !leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite" class="alert alert-success">
-          <span v-if="league.isManager">
-            Things are all set to get started! <b-button variant="primary" v-b-modal="'startDraft'" class="mx-2">Start Drafting!</b-button>
-            <startDraftModal v-on:draftStarted="startDraft"></startDraftModal>
-          </span>
-          <span v-if="!league.isManager">
-            Things are all set to get started! Your league manager can choose when to begin the draft.
-          </span>
-        </div>
-        <div v-if="leagueYear && leagueYear.playStatus.draftIsPaused">
-          <div class="alert alert-danger">
-            <div v-show="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
-            <div v-show="league.isManager">The draft has been paused. You can undo games that have been drafted. Press 'Resume Draft' to go back to picking games.</div>
+        <div v-if="leagueYear">
+          <div v-if="leagueYear.userIsInLeague && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
+            <h2>
+              This year is not active yet!
+            </h2>
+            <ul>
+              <li v-for="error in leagueYear.playStatus.startDraftErrors">{{error}}</li>
+            </ul>
           </div>
-        </div>
-        <div v-if="leagueYear && leagueYear.playStatus.draftIsActive && nextPublisherUp">
-          <div v-if="!userIsNextInDraft">
-            <div class="alert alert-info">
-              <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
-              <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft Counter-Picks!</div>
-              <div>Next to draft: <strong>{{nextPublisherUp.publisherName}}</strong></div>
-              <div v-show="league.isManager">To select the next player's game for them, Select 'Select Next Game' under 'Draft Management' in the sidebar!</div>
+
+          <div v-if="league.userIsInLeague && !leagueYear.userPublisher" class="alert alert-info">
+            You need to create your publisher for this year.
+            <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
+            <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
+          </div>
+
+          <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite" class="alert alert-success">
+            <span v-if="league.isManager">
+              Things are all set to get started! <b-button variant="primary" v-b-modal="'startDraft'" class="mx-2">Start Drafting!</b-button>
+              <startDraftModal v-on:draftStarted="startDraft"></startDraftModal>
+            </span>
+            <span v-if="!league.isManager">
+              Things are all set to get started! Your league manager can choose when to begin the draft.
+            </span>
+          </div>
+          <div v-if="leagueYear.playStatus.draftIsPaused">
+            <div class="alert alert-danger">
+              <div v-show="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
+              <div v-show="league.isManager">The draft has been paused. You can undo games that have been drafted. Press 'Resume Draft' to go back to picking games.</div>
             </div>
           </div>
-          <div v-else>
-            <div class="alert alert-success">
-              <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
-              <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
-              <div><strong>It is your turn to draft!</strong></div>
-              <div v-show="!leagueYear.playStatus.draftingCounterPicks">Select 'Draft Game' under 'Player Actions' in the sidebar!</div>
-              <div v-show="leagueYear.playStatus.draftingCounterPicks">Select 'Draft Counterpick' under 'Player Actions' in the sidebar!</div>
+          <div v-if="leagueYear.playStatus.draftIsActive && nextPublisherUp">
+            <div v-if="!userIsNextInDraft">
+              <div class="alert alert-info">
+                <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
+                <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft Counter-Picks!</div>
+                <div>Next to draft: <strong>{{nextPublisherUp.publisherName}}</strong></div>
+                <div v-show="league.isManager">To select the next player's game for them, Select 'Select Next Game' under 'Draft Management' in the sidebar!</div>
+              </div>
+            </div>
+            <div v-else>
+              <div class="alert alert-success">
+                <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
+                <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
+                <div><strong>It is your turn to draft!</strong></div>
+                <div v-show="!leagueYear.playStatus.draftingCounterPicks">Select 'Draft Game' under 'Player Actions' in the sidebar!</div>
+                <div v-show="leagueYear.playStatus.draftingCounterPicks">Select 'Draft Counterpick' under 'Player Actions' in the sidebar!</div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="league-manager-info">
-          <h4>League Manager:</h4>
-          <span class="league-manager-info-item">{{ league.leagueManager.displayName }}</span>
-        </div>
-
-        <div class="row" v-if="league && leagueYear">
-          <div class="col-xl-3 col-lg-4 col-md-12">
-            <leagueActions ref="leagueActionsRef" :league="league" :leagueYear="leagueYear"
-                           :currentBids="currentBids" :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
-          </div>
-          <div class="col-xl-9 col-lg-8 col-md-12">
-            <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
-            <h2>Summary</h2>
-            <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
+          <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-12">
+              <leagueActions ref="leagueActionsRef" :league="league" :leagueYear="leagueYear"
+                             :currentBids="currentBids" :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
+            </div>
+            <div class="col-xl-9 col-lg-8 col-md-12">
+              <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
+              <h2>Summary</h2>
+              <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
+            </div>
           </div>
         </div>
       </div>
