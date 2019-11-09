@@ -5,13 +5,17 @@
 
       <div v-if="actionedGames && actionedGames.length === 0" class="alert alert-info">No actioned games.</div>
       <div class="row" v-if="actionedGames && actionedGames.length !== 0">
-        <b-table striped :items="actionedGames"></b-table>
+        <masterGamesTable :masterGames="actionedGames"></masterGamesTable>
+      </div>
+      <div v-else class="spinner">
+        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
       </div>
     </div>
   </div>
 </template>
 <script>
   import axios from 'axios';
+  import MasterGamesTable from "components/modules/gameTables/masterGamesTable";
 
   export default {
     data() {
@@ -19,8 +23,8 @@
         actionedGames: null
       }
     },
-    computed: {
-
+    components: {
+      MasterGamesTable
     },
     methods: {
       fetchActionedGames() {
@@ -39,3 +43,9 @@
     }
   }
 </script>
+<style scoped>
+  .spinner {
+    display: flex;
+    justify-content: space-around;
+  }
+</style>
