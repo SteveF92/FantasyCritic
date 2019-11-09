@@ -213,6 +213,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetActivePickupBids(publisher);
         }
 
+        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActiveAcquistitionBids(SupportedYear supportedYear)
+        {
+            return _fantasyCriticRepo.GetActivePickupBids(supportedYear.Year);
+        }
+
         public Task<Maybe<PickupBid>> GetPickupBid(Guid bidID)
         {
             return _fantasyCriticRepo.GetPickupBid(bidID);

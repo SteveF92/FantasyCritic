@@ -25,7 +25,7 @@ import MasterGameChangeRequest from "components/pages/masterGameChangeRequest";
 import ActiveMasterGameRequests from "components/pages/activeMasterGameRequests";
 import ActiveMasterGameChangeRequests from "components/pages/activeMasterGameChangeRequests";
 import MasterGameCreator from "components/pages/masterGameCreator";
-import CurrentFailingBids from "components/pages/currentFailingBids";
+import CurrentActionedGames from "components/pages/currentActionedGames";
 import CriticsRoyale from "components/pages/criticsRoyale";
 import RoyalePublisher from "components/pages/royalePublisher";
 import NotFound from "components/pages/notFound";
@@ -298,11 +298,11 @@ export const routes = [
     }
   },
   {
-    path: "/currentFailingBids",
-    component: CurrentFailingBids,
-    name: "currentFailingBids",
+    path: "/currentActionedGames",
+    component: CurrentActionedGames,
+    name: "currentActionedGames",
     meta: {
-      title: "Current Failing Bids",
+      title: "Current Actioned Games",
       isPublic: false,
       adminOnly: true
     }

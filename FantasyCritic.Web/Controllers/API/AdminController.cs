@@ -152,16 +152,17 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        public async Task<ActionResult<List<LeagueActionViewModel>>> GetCurrentFailingBids()
+        public async Task<ActionResult<List<LeagueActionViewModel>>> GetCurrentActionedGames()
         {
-            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             var supportedYears = await _interLeagueService.GetSupportedYears();
-            var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
-
-            var results = await _fantasyCriticService.GetBidProcessingDryRun(systemWideValues, currentYear.Year);
-            IEnumerable<LeagueAction> failingBids = results.LeagueActions.Where(x => x.Description.Contains("Tried to"));
-            var vms = failingBids.Select(x => new LeagueActionViewModel(x, _clock));
-
+            List<MasterGame> masterGames = new List<MasterGame>();
+            foreach (var supportedYear in supportedYears)
+            {
+                var allBids = await _fantasyCriticService.GetActiveAcquistitionBids(supportedYear);
+                masterGames.AddRange(allBids.SelectMany(x => x.Value.Select(y => y.MasterGame)));
+            }
+            
+            var vms = masterGames.Distinct().Select(x => new MasterGameViewModel(x, _clock));
             return Ok(vms);
         }
 

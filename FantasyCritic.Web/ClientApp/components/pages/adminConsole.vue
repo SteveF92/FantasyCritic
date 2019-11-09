@@ -23,7 +23,7 @@
 
       <h2>Bids</h2>
       <div>
-        <b-button variant="info" :to="{ name: 'currentFailingBids' }">Current Failing Bids</b-button>
+        <b-button variant="info" :to="{ name: 'currentActionedGames' }">Current Actioned Games</b-button>
         <b-button variant="warning" v-on:click="turnOnBidProcessing">Turn on bid processing mode</b-button>
         <b-button variant="info" v-on:click="turnOffBidProcessing">Turn off bid processing mode</b-button>
         <b-button variant="danger" v-on:click="processBids">Process Bids</b-button>
