@@ -155,6 +155,13 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<ActionResult<List<LeagueActionViewModel>>> GetCurrentActionedGames()
         {
             var supportedYears = await _interLeagueService.GetSupportedYears();
+            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+            var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
+
+            var results = await _fantasyCriticService.GetBidProcessingDryRun(systemWideValues, currentYear.Year);
+            IEnumerable<LeagueAction> failingBids = results.LeagueActions.Where(x => x.IsFailed);
+            var failingGames = failingBids.Select(x => x.MasterGameName).Distinct();
+
             List<MasterGame> masterGames = new List<MasterGame>();
             foreach (var supportedYear in supportedYears)
             {

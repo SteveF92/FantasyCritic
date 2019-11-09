@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain.Requests;
+using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
     public class LeagueAction
     {
-        public LeagueAction(Publisher publisher, Instant timestamp, string actionType, string description, bool managerAction)
+        public LeagueAction(Publisher publisher, Instant timestamp, string actionType, string description,
+            bool managerAction)
         {
             Publisher = publisher;
             Timestamp = timestamp;
@@ -49,7 +51,7 @@ namespace FantasyCritic.Lib.Domain
                     Description = $"Claimed game: '{action.GameName}'";
                 }
             }
-            
+
             ManagerAction = managerAction;
         }
 
@@ -58,7 +60,8 @@ namespace FantasyCritic.Lib.Domain
             Timestamp = timestamp;
             Publisher = action.Publisher;
             ActionType = "Publisher Game Associated";
-            Description = $"Associated publisher game '{action.PublisherGame.GameName}' with master game '{action.MasterGame.GameName}'";
+            Description =
+                $"Associated publisher game '{action.PublisherGame.GameName}' with master game '{action.MasterGame.GameName}'";
             ManagerAction = true;
         }
 
@@ -85,7 +88,8 @@ namespace FantasyCritic.Lib.Domain
             Timestamp = timestamp;
             Publisher = action.PickupBid.Publisher;
             ActionType = "Pickup Failed";
-            Description = $"Tried to acquire game '{action.PickupBid.MasterGame.GameName}' with a bid of ${action.PickupBid.BidAmount}. Failure reason: {action.FailureReason}";
+            Description =
+                $"Tried to acquire game '{action.PickupBid.MasterGame.GameName}' with a bid of ${action.PickupBid.BidAmount}. Failure reason: {action.FailureReason}";
             ManagerAction = false;
         }
 
@@ -94,5 +98,16 @@ namespace FantasyCritic.Lib.Domain
         public string ActionType { get; }
         public string Description { get; }
         public bool ManagerAction { get; }
+
+        public bool IsFailed => ActionType == "Pickup Failed";
+
+        public string MasterGameName
+        {
+            get
+            {
+                var name = SubstringSearching.GetBetween(Description, "'", "'");
+                return name.IsFailure ? "" : name.Value;
+            }
+        }
     }
 }
