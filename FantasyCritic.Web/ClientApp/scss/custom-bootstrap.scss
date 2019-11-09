@@ -31,3 +31,7 @@ $grid-breakpoints: (
 .table tbody tr > td.success {
     background-color: $success;
 }
+
+tr.table-success td {
+    background-color: $success !important;
+}

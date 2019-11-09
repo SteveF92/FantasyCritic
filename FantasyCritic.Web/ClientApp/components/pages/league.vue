@@ -63,6 +63,11 @@
         </div>
 
         <div v-if="leagueYear">
+          <div v-if="leagueYear.playStatus.playStarted && leagueYear.supportedYear.finished">
+            <div class="alert alert-success" role="alert">
+              This year is finished! The winner is <strong>{{topPublisher.publisherName}}</strong>!
+            </div>
+          </div>
           <div v-if="!leagueYear.userIsActive && league.userIsInLeague">
             <div class="alert alert-warning" role="alert">
               You are set to inactive for this year.
@@ -190,6 +195,11 @@
       },
       isAuth() {
         return this.$store.getters.tokenIsCurrent();
+      },
+      topPublisher() {
+        if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
+          return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
+        }
       }
     },
     methods: {

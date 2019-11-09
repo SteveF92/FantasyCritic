@@ -12,7 +12,7 @@
 
     <b-table :sort-by.sync="sortBy"
              :sort-desc.sync="sortDesc"
-             :items="this.leagueYear.players"
+             :items="standings"
              :fields="standingFields"
              bordered
              small
@@ -99,6 +99,23 @@
             this.sortBy = 'simpleProjectedFantasyPoints';
           }
           this.$store.commit('setAdvancedProjections', value)
+        }
+      },
+      standings() {
+        let standings = this.leagueYear.players;
+        if (!standings) {
+            return [];
+        }
+        for (var i = 0; i < standings.length; ++i) {
+          if (this.leagueYear.supportedYear.finished && this.topPublisher.publisherID === standings[i].publisher.publisherID) {
+            standings[i]._rowVariant = 'success';
+          }
+        }
+        return standings;
+      },
+      topPublisher() {
+        if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
+          return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
         }
       }
     },
@@ -189,5 +206,4 @@
       max-width: 200px;
     }
   }
-
 </style>
