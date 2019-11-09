@@ -206,4 +206,7 @@
       max-width: 200px;
     }
   }
+  div >>> tr.table-success td {
+    font-weight: bolder;
+  }
 </style>

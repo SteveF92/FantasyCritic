@@ -24,24 +24,26 @@
         </ul>
       </div>
       <div v-if="leagueYear.userPublisher">
-        <h4>Player Actions</h4>
-        <ul class="actions-list">
-          <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
-            Draft Game
-          </li>
-          <li class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
-            Draft Counterpick
-          </li>
-          <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">
-            Make a Bid
-          </li>
-          <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
-            My Current Bids
-          </li>
-          <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
-            Change Publisher Name
-          </li>
-        </ul>
+        <div v-show="!leagueYear.supportedYear.finished">
+          <h4>Player Actions</h4>
+          <ul class="actions-list">
+            <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
+              Draft Game
+            </li>
+            <li class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
+              Draft Counterpick
+            </li>
+            <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">
+              Make a Bid
+            </li>
+            <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
+              My Current Bids
+            </li>
+            <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
+              Change Publisher Name
+            </li>
+          </ul>
+        </div>
 
         <div v-if="league.isManager">
           <div v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
