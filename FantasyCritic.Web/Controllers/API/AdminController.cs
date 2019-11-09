@@ -169,7 +169,7 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGames.AddRange(allBids.SelectMany(x => x.Value.Select(y => y.MasterGame)));
             }
             
-            var vms = masterGames.Distinct().Select(x => new MasterGameViewModel(x, _clock));
+            var vms = masterGames.Distinct().Select(x => new MasterGameViewModel(x, _clock, failingGames.Contains(x.GameName)));
             return Ok(vms);
         }
 

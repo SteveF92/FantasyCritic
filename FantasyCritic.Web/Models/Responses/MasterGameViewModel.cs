@@ -43,6 +43,12 @@ namespace FantasyCritic.Web.Models.Responses
             SubGames = null;
         }
 
+        public MasterGameViewModel(MasterGame masterGame, IClock clock, bool error)
+            : this(masterGame, clock)
+        {
+            Error = error;
+        }
+
         public Guid MasterGameID { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
@@ -56,5 +62,6 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<MasterGameViewModel> SubGames { get; }
         public string BoxartFileName { get; }
         public Instant AddedTimestamp { get; }
+        public bool Error { get; }
     }
 }

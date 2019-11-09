@@ -99,7 +99,7 @@ namespace FantasyCritic.Lib.Domain
         public string Description { get; }
         public bool ManagerAction { get; }
 
-        public bool IsFailed => ActionType == "Pickup Failed";
+        public bool IsFailed => Description.Contains("Game is no longer eligible");
 
         public string MasterGameName
         {

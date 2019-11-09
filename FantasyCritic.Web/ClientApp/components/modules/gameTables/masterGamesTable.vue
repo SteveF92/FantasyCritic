@@ -1,7 +1,7 @@
 <template>
   <b-table :sort-by.sync="sortBy"
            :sort-desc.sync="sortDesc"
-           :items="masterGames"
+           :items="gameRows"
            :fields="gameFields"
            bordered
            :small="tableIsSmall"
@@ -87,6 +87,18 @@
         }
 
         return false;
+      },
+      gameRows() {
+        let gameRows = this.masterGames;
+        if (!gameRows) {
+            return [];
+        }
+        for (var i = 0; i < gameRows.length; ++i) {
+          if (gameRows[i].error) {
+            gameRows[i]._rowVariant = 'danger';
+          }
+        }
+        return gameRows;
       }
     },
     methods: {
