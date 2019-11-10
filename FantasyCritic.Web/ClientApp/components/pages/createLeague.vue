@@ -18,62 +18,63 @@
               <span class="text-danger">{{ errors.first('leagueName') }}</span>
             </div>
             <hr />
+
             <div class="form-group">
-              <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-              <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
-              <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
-              <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
+              <label for="intialYear" class="control-label">Year to Play</label>
+              <p>
+                The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the Decemeber before the new year begins.
+              </p>
+              <select class="form-control" v-model="initialYear" id="initialYear">
+                <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
+              </select>
+              <span class="text-danger">{{ errors.first('initialYear') }}</span>
             </div>
 
-            <div v-if="readyToChooseNumbers()">
-              <hr />
-              <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
-
+            <div v-if="readyToSetupLeagueYear">
               <div class="form-group">
-                <label for="standardGames" class="control-label">Total Number of Games</label>
-                <p>
-                  This is the total number of games that each player will have on their roster.
-                </p>
-
-                <input v-model="standardGames" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
-                <span class="text-danger">{{ errors.first('standardGames') }}</span>
+                <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
+                <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
+                <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
+                <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
               </div>
+              
+              <div v-if="readyToChooseNumbers">
+                <hr />
+                <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
+                <div class="form-group">
+                  <label for="standardGames" class="control-label">Total Number of Games</label>
+                  <p>
+                    This is the total number of games that each player will have on their roster.
+                  </p>
 
-              <div class="form-group">
-                <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
-                <p>
-                  This is the number of games that will be chosen by each player at the draft.
-                  If this number is lower than the "Total Number of Games", the remainder will be
-                  <a href="/faq#bidding-system" target="_blank">
-                    Pickup Games.
-                  </a>
-                </p>
-                <input v-model="gamesToDraft" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
-                <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
-              </div>
+                  <input v-model="standardGames" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
+                  <span class="text-danger">{{ errors.first('standardGames') }}</span>
+                </div>
 
-              <div class="form-group">
-                <label for="counterPicks" class="control-label">Number of Counter Picks</label>
-                <p>
-                  Counter picks are essentially bets against a game. For more details,
-                  <a href="/faq#scoring" target="_blank">
-                    click here.
-                  </a>
-                </p>
-                <input v-model="counterPicks" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
-                <span class="text-danger">{{ errors.first('counterPicks') }}</span>
-              </div>
-              <hr />
+                <div class="form-group">
+                  <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
+                  <p>
+                    This is the number of games that will be chosen by each player at the draft.
+                    If this number is lower than the "Total Number of Games", the remainder will be
+                    <a href="/faq#bidding-system" target="_blank">
+                      Pickup Games.
+                    </a>
+                  </p>
+                  <input v-model="gamesToDraft" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
+                  <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
+                </div>
 
-              <div class="form-group">
-                <label for="intialYear" class="control-label">Year to Play</label>
-                <p>
-                  The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the Decemeber before the new year begins.
-                </p>
-                <select class="form-control" v-model="initialYear" id="initialYear">
-                  <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
-                </select>
-                <span class="text-danger">{{ errors.first('initialYear') }}</span>
+                <div class="form-group">
+                  <label for="counterPicks" class="control-label">Number of Counter Picks</label>
+                  <p>
+                    Counter picks are essentially bets against a game. For more details,
+                    <a href="/faq#scoring" target="_blank">
+                      click here.
+                    </a>
+                  </p>
+                  <input v-model="counterPicks" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
+                  <span class="text-danger">{{ errors.first('counterPicks') }}</span>
+                </div>
               </div>
               <hr />
             </div>
@@ -252,14 +253,17 @@
         });
 
         return levels;
+      },
+      readyToSetupLeagueYear() {
+        let leagueNameValid = this.veeFields['leagueName'] && this.veeFields['leagueName'].valid;
+        return leagueNameValid && this.initialYear;
+      },
+      readyToChooseNumbers() {
+        let intendedNumberOfPlayersValid = this.veeFields['intendedNumberOfPlayers'] && this.veeFields['intendedNumberOfPlayers'].valid;
+        return this.readyToSetupLeagueYear && intendedNumberOfPlayersValid;
       }
     },
     methods: {
-        readyToChooseNumbers() {
-          let leagueNameValid = this.veeFields['leagueName'] && this.veeFields['leagueName'].valid;
-          let intendedNumberOfPlayersValid = this.veeFields['intendedNumberOfPlayers'] && this.veeFields['intendedNumberOfPlayers'].valid;
-          return leagueNameValid && intendedNumberOfPlayersValid;
-        },
         readyToChooseLevels() {
           let standardGamesValid = this.veeFields['standardGames'] && this.veeFields['standardGames'].valid;
           let gamesToDraftValid = this.veeFields['gamesToDraft'] && this.veeFields['gamesToDraft'].valid;
