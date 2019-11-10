@@ -192,7 +192,7 @@
         return levels;
       },
       leagueYearSettings() {
-        if (!this.formIsValid || !this.readyToChooseNumbers || !this.readyToChooseLevels) {
+        if (!this.leagueYearSettingsAreValid) {
           return null;
         }
 
@@ -207,6 +207,9 @@
           allowReleasedInternationally: this.allowReleasedInternationally,
           allowExpansions: this.allowExpansions
         }
+      },
+      leagueYearSettingsAreValid() {
+        return this.readyToChooseNumbers && this.readyToChooseLevels && this.formIsValid;
       }
     },
     watch: {
@@ -223,53 +226,14 @@
         this.counterPicks = Math.floor(this.gamesToDraft / 6);
         if (this.counterPicks === 0) {
           this.counterPicks = 1;
-        } 
+        }
       },
-      standardGames: {
+      leagueYearSettings: {
         handler(val){
           this.$emit('input', this.leagueYearSettings);
         },
-      },
-      gamesToDraft: {
-        handler(val){
-          this.$emit('input', this.leagueYearSettings);
-        },
-      },
-      counterPicks: {
-        handler(val){
-          this.$emit('input', this.leagueYearSettings);
-        },
-      },
-      maximumEligibilityLevel: {
-        handler(val){
-          this.$emit('input', this.leagueYearSettings);
-        },
-      },
-      allowYearlyInstallments: {
-        handler(val){
-          this.$emit('input', this.leagueYearSettings);
-        },
-      },
-      allowEarlyAccess: {
-        handler(val){
-          this.$emit('input', this.leagueYearSettings);
-        },
-      },
-      allowFreeToPlay: {
-        handler(val){
-          this.$emit('input', this.leagueYearSettings);
-        },
-      },
-      allowReleasedInternationally: {
-        handler(val){
-          this.$emit('input', this.leagueYearSettings);
-        },
-      },
-      allowExpansions: {
-        handler(val){
-          this.$emit('input', this.leagueYearSettings);
-        },
-      },
+        deep: true
+      }
     },
     mounted() {
       this.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
