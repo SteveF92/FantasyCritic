@@ -226,13 +226,8 @@
         };
         this.$emit('actionTaken', actionInfo);
       },
-      newYearAdded() {
-        let actionInfo = {
-          message: 'A new year has been started',
-          fetchLeague: true,
-          fetchLeagueYear: true
-        };
-        this.$emit('actionTaken', actionInfo);
+      newYearAdded(year) {
+        this.$router.push({ name: "editLeague", params: { leagueid: this.league.leagueID, year: year } });
       },
       playerRemoved(removeInfo) {
         let actionInfo = {

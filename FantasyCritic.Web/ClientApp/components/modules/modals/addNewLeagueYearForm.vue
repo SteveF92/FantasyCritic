@@ -38,7 +38,7 @@
           .post('/api/leagueManager/AddNewLeagueYear', model)
           .then(response => {
             this.$refs.addNewLeagueYearRef.hide();
-            this.$emit('newYearAdded');
+            this.$emit('newYearAdded', this.selectedYear);
           })
           .catch(response => {
             this.error = response;
