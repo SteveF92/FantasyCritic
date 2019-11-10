@@ -34,7 +34,7 @@
         </div>
       </div>
 
-      <div v-if="leagueYearIsValid">
+      <div v-if="leagueYearIsValid || leagueYearEverValid">
         <hr />
         <div class="text-well">
           <h2>Other Options</h2>
@@ -57,8 +57,12 @@
           Reminder: All of these settings can always be changed later.
         </div>
 
+        <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">
+          Can't create league. Some of your settings are invalid.
+        </div>
+
         <div class="form-group">
-          <b-button class="col-10 offset-1" variant="primary" v-on:click="postRequest">Create League</b-button>
+          <b-button class="col-10 offset-1" variant="primary" v-on:click="postRequest" :disabled="!leagueYearIsValid">Create League</b-button>
         </div>
       </div>
     </div>
@@ -78,6 +82,7 @@
         leagueYearSettings: null,
         publicLeague: true,
         testLeague: false,
+        leagueYearEverValid: false
       }
     },
     components: {
@@ -93,7 +98,12 @@
           this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 30 &&
           this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 30 &&
           this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 5;
-        return this.readyToSetupLeagueYear && valid;
+
+        let allValid = this.readyToSetupLeagueYear && valid;
+        if (allValid) {
+          this.leagueYearEverValid = true;
+        }
+        return allValid;
       }
     },
     methods: {

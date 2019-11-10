@@ -9,7 +9,7 @@
       <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
     </div>
 
-    <div v-if="readyToChooseNumbers">
+    <div v-if="intendedNumberOfPlayersEverValid">
       <hr />
       <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
       <div class="form-group">
@@ -46,9 +46,7 @@
         <input v-model="local.counterPicks" @input="update('counterPicks', $event.target.value)" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
         <span class="text-danger">{{ errors.first('counterPicks') }}</span>
       </div>
-    </div>
 
-    <div v-if="readyToChooseLevels">
       <hr />
       <h3>Eligibility Settings</h3>
       <div class="alert alert-info">
@@ -138,6 +136,7 @@
     data() {
       return {
         intendedNumberOfPlayers: "",
+        intendedNumberOfPlayersEverValid: false
       }
     },
     components: {
@@ -145,16 +144,6 @@
       'popper': Popper,
     },
     computed: {
-      readyToChooseNumbers() {
-        let intendedNumberOfPlayersValid = this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 14;
-        return intendedNumberOfPlayersValid;
-      },
-      readyToChooseLevels() {
-        let standardGamesValid = this.value.standardGames >= 1 && this.value.standardGames <= 30;
-        let gamesToDraftValid = this.value.gamesToDraft >= 1 && this.value.gamesToDraft <= 30;
-        let counterPicksValid = this.value.counterPicks >= 0 && this.value.counterPicks <= 5;
-        return standardGamesValid && gamesToDraftValid && counterPicksValid && this.readyToChooseNumbers;
-      },
       minimumPossibleEligibilityLevel() {
         return 0;
       },
@@ -191,6 +180,12 @@
     },
     watch: {
       intendedNumberOfPlayers: function (val) {
+        if (!val) {
+          return;
+        }
+        if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 14) {
+          this.intendedNumberOfPlayersEverValid = true;
+        }
         let recommendedNumberOfGames = 72;
         this.value.standardGames = Math.floor(recommendedNumberOfGames / val);
         if (this.value.standardGames > 25) {
