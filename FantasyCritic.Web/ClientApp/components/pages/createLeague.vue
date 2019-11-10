@@ -34,7 +34,7 @@
         </div>
       </div>
 
-      <div v-if="readyToSetupLeagueYear && leagueYearSettings">
+      <div v-if="readyToSetupLeagueYear && leagueYearSettings.valid">
         <hr />
         <div class="text-well">
           <h2>Other Options</h2>
@@ -132,6 +132,19 @@
     },
     mounted() {
       this.fetchLeagueOptions();
+      this.leagueYearSettings = {
+        standardGames: "",
+        gamesToDraft: "",
+        counterPicks: "",
+        initialYear: "",
+        maximumEligibilityLevel: 2,
+        allowYearlyInstallments: false,
+        allowEarlyAccess: false,
+        allowFreeToPlay: false,
+        allowReleasedInternationally: false,
+        allowExpansions: false,
+        valid: false
+      }
     }
   }
 </script>

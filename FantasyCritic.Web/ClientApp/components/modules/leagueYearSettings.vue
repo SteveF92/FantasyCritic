@@ -18,7 +18,7 @@
           This is the total number of games that each player will have on their roster.
         </p>
 
-        <input v-model="standardGames" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
+        <input v-model="local.standardGames" @input="update('standardGames', $event.target.value)" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
         <span class="text-danger">{{ errors.first('standardGames') }}</span>
       </div>
 
@@ -31,7 +31,7 @@
             Pickup Games.
           </a>
         </p>
-        <input v-model="gamesToDraft" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
+        <input v-model="local.gamesToDraft" @input="update('gamesToDraft', $event.target.value)" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
         <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
       </div>
 
@@ -43,7 +43,7 @@
             click here.
           </a>
         </p>
-        <input v-model="counterPicks" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
+        <input v-model="local.counterPicks" @input="update('counterPicks', $event.target.value)" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
         <span class="text-danger">{{ errors.first('counterPicks') }}</span>
       </div>
     </div>
@@ -65,11 +65,11 @@
             click here.
           </a>
         </p>
-        <div class="alert alert-warning" v-show="maximumEligibilityLevel === 5">
+        <div class="alert alert-warning" v-show="local.maximumEligibilityLevel === 5">
           I really don't recommend using setting '5'. Games that fall under this category often don't even get re-reviewed when they are released on their new platforms. Again, I recomend that you
           be restrictive here and allow exemptions if need be.
         </div>
-        <vue-slider v-model="maximumEligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
+        <vue-slider v-model="local.maximumEligibilityLevel" @input="update('maximumEligibilityLevel', $event.target.value)" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
                     :marks="marks" :tooltip="'always'">
         </vue-slider>
         <div class="eligibility-description">
@@ -84,13 +84,13 @@
 
         <div>
           <div>
-            <b-form-checkbox v-model="allowYearlyInstallments">
+            <b-form-checkbox v-model="local.allowYearlyInstallments" @input="update('allowYearlyInstallments', local.allowYearlyInstallments)">
               <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
               <p>These are often pretty safe bets, so they may not be the most interesting choices.</p>
             </b-form-checkbox>
           </div>
           <div>
-            <b-form-checkbox v-model="allowEarlyAccess">
+            <b-form-checkbox v-model="local.allowEarlyAccess" @input="update('allowEarlyAccess', local.allowEarlyAccess)">
               <span class="checkbox-label">Allow Early Access Games</span>
               <p>
                 If this is left unchecked, a game that is already in early access will not be selectable, since it is already playable.
@@ -99,13 +99,13 @@
             </b-form-checkbox>
           </div>
           <div>
-            <b-form-checkbox v-model="allowFreeToPlay">
+            <b-form-checkbox v-model="local.allowFreeToPlay" @input="update('allowFreeToPlay', local.allowFreeToPlay)">
               <span class="checkbox-label">Allow Free to Play Games</span>
               <p>These are often hard to review and may not get a score.</p>
             </b-form-checkbox>
           </div>
           <div>
-            <b-form-checkbox v-model="allowReleasedInternationally">
+            <b-form-checkbox v-model="local.allowReleasedInternationally" @input="update('allowReleasedInternationally', local.allowReleasedInternationally)">
               <span class="checkbox-label">Allow games already released in other regions</span>
               <p>
                 If this is left unchecked, a game that has already been released in another region will not be selectable.
@@ -114,7 +114,7 @@
             </b-form-checkbox>
           </div>
           <div>
-            <b-form-checkbox v-model="allowExpansions">
+            <b-form-checkbox v-model="local.allowExpansions" @input="update('allowExpansions', local.allowExpansions)">
               <span class="checkbox-label">Allow expansion packs/DLC</span>
               <p>
                 If this is left unchecked, expansion packs and DLC will not be selectable. There's a lot of grey zone with these games and I recommend using the override system to allow
@@ -131,21 +131,13 @@
   import vueSlider from 'vue-slider-component';
   import Popper from 'vue-popperjs';
   import 'vue-slider-component/theme/antd.css'
+  import { cloneDeep, tap, set } from 'lodash'
 
   export default {
     props: ['year', 'possibleLeagueOptions', 'value'],
     data() {
       return {
         intendedNumberOfPlayers: "",
-        standardGames: "",
-        gamesToDraft: "",
-        counterPicks: "",
-        maximumEligibilityLevel: 0,
-        allowYearlyInstallments: false,
-        allowEarlyAccess: false,
-        allowFreeToPlay: false,
-        allowReleasedInternationally: false,
-        allowExpansions: false,
       }
     },
     components: {
@@ -177,7 +169,7 @@
         return maxEligibilityLevel.level;
       },
       selectedEligibilityLevel() {
-        let matchingLevel = _.filter(this.possibleLeagueOptions.eligibilityLevels, { 'level': this.maximumEligibilityLevel });
+        let matchingLevel = _.filter(this.possibleLeagueOptions.eligibilityLevels, { 'level': this.value.maximumEligibilityLevel });
         return matchingLevel[0];
       },
       marks() {
@@ -191,52 +183,38 @@
   
         return levels;
       },
-      leagueYearSettings() {
-        if (!this.leagueYearSettingsAreValid) {
-          return null;
-        }
-
-        return {
-          standardGames: this.standardGames,
-          gamesToDraft: this.gamesToDraft,
-          counterPicks: this.counterPicks,
-          maximumEligibilityLevel: this.maximumEligibilityLevel,
-          allowYearlyInstallments: this.allowYearlyInstallments,
-          allowEarlyAccess: this.allowEarlyAccess,
-          allowFreeToPlay: this.allowFreeToPlay,
-          allowReleasedInternationally: this.allowReleasedInternationally,
-          allowExpansions: this.allowExpansions
-        }
+      local() {
+        return this.value;
       },
       leagueYearSettingsAreValid() {
         return this.readyToChooseNumbers && this.readyToChooseLevels && this.formIsValid;
       }
     },
+    methods: {
+      update(key, value) {
+        this.value.valid = this.leagueYearSettingsAreValid;
+        this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
+      },
+    },
     watch: {
       intendedNumberOfPlayers: function (val) {
         let recommendedNumberOfGames = 72;
-        this.standardGames = Math.floor(recommendedNumberOfGames / val);
-        if (this.standardGames > 25) {
-          this.standardGames = 25;
+        this.value.standardGames = Math.floor(recommendedNumberOfGames / val);
+        if (this.value.standardGames > 25) {
+          this.value.standardGames = 25;
         }
-        if (this.standardGames < 10) {
-          this.standardGames = 10;
+        if (this.value.standardGames < 10) {
+          this.value.standardGames = 10;
         }
-        this.gamesToDraft = Math.floor(this.standardGames / 2);
-        this.counterPicks = Math.floor(this.gamesToDraft / 6);
-        if (this.counterPicks === 0) {
-          this.counterPicks = 1;
+        this.value.gamesToDraft = Math.floor(this.value.standardGames / 2);
+        this.value.counterPicks = Math.floor(this.value.gamesToDraft / 6);
+        if (this.value.counterPicks === 0) {
+          this.value.counterPicks = 1;
         }
-      },
-      leagueYearSettings: {
-        handler(val){
-          this.$emit('input', this.leagueYearSettings);
-        },
-        deep: true
+
+        this.value.valid = true;
+        this.$emit('input', this.local);
       }
-    },
-    mounted() {
-      this.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
     }
   }
 </script>
