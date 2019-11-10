@@ -25,9 +25,31 @@
           </select>
           <span class="text-danger">{{ errors.first('initialYear') }}</span>
         </div>
-        <div v-if="readyToSetupLeagueYear">
-          <hr />
+      </div>
+        
+      <div v-if="readyToSetupLeagueYear">
+        <hr />
+        <div class="text-well">
           <leagueYearSettings :year="initialYear" :possibleLeagueOptions="possibleLeagueOptions" v-model="leagueYearSettings"></leagueYearSettings>
+        </div>
+      </div>
+
+      <div v-if="readyToSetupLeagueYear && leagueYearSettings">
+        <hr />
+        <div class="text-well">
+          <h2>Other Options</h2>
+          <div>
+            <b-form-checkbox v-model="publicLeague">
+              <span class="checkbox-label">Public League</span>
+              <p>If checked, everyone will be able to see your league. Players still need to be invited to join. If unchecked, your league will only be viewable by its members.</p>
+            </b-form-checkbox>
+          </div>
+          <div>
+            <b-form-checkbox v-model="testLeague">
+              <span class="checkbox-label">Test League</span>
+              <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
+            </b-form-checkbox>
+          </div>
         </div>
       </div>
     </div>
@@ -48,7 +70,9 @@
           possibleLeagueOptions: null,
           leagueName: "",
           initialYear: "",
-          leagueYearSettings: null
+          leagueYearSettings: null,
+          publicLeague: true,
+          testLeague: false,
         }
     },
     components: {
@@ -102,7 +126,7 @@
       }
     },
     mounted() {
-        this.fetchLeagueOptions();
+      this.fetchLeagueOptions();
     }
 }
 </script>

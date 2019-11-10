@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h2>Game Settings</h2>
+    <p>Settings in this section can be different from year to year for your league.</p>
     <div class="form-group">
       <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
       <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
@@ -48,7 +50,7 @@
 
     <div v-if="readyToChooseLevels">
       <hr />
-      <h2>Eligibility Settings</h2>
+      <h3>Eligibility Settings</h3>
       <div class="alert alert-info">
         These options let you choose what games are available in your league. These settings can be overriden on a game by game basis, and I reccomend you lean towards being more restrictive,
         and allow specific exemptions if your entire league decides on one. The default options are the recommended settings.
@@ -134,7 +136,6 @@
     props: ['year', 'possibleLeagueOptions', 'value'],
     data() {
       return {
-        leagueYearSettings: null,
         intendedNumberOfPlayers: "",
         standardGames: "",
         gamesToDraft: "",
@@ -152,6 +153,9 @@
       'popper': Popper,
     },
     computed: {
+      formIsValid() {
+        return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
+      },
       readyToChooseNumbers() {
         let intendedNumberOfPlayersValid = this.veeFields['intendedNumberOfPlayers'] && this.veeFields['intendedNumberOfPlayers'].valid;
         return intendedNumberOfPlayersValid;
@@ -187,6 +191,23 @@
   
         return levels;
       },
+      leagueYearSettings() {
+        if (!this.formIsValid || !this.readyToChooseNumbers || !this.readyToChooseLevels) {
+          return null;
+        }
+
+        return {
+          standardGames: this.standardGames,
+          gamesToDraft: this.gamesToDraft,
+          counterPicks: this.counterPicks,
+          maximumEligibilityLevel: this.maximumEligibilityLevel,
+          allowYearlyInstallments: this.allowYearlyInstallments,
+          allowEarlyAccess: this.allowEarlyAccess,
+          allowFreeToPlay: this.allowFreeToPlay,
+          allowReleasedInternationally: this.allowReleasedInternationally,
+          allowExpansions: this.allowExpansions
+        }
+      }
     },
     watch: {
       intendedNumberOfPlayers: function (val) {
@@ -203,7 +224,52 @@
         if (this.counterPicks === 0) {
           this.counterPicks = 1;
         } 
-      }
+      },
+      standardGames: {
+        handler(val){
+          this.$emit('input', this.leagueYearSettings);
+        },
+      },
+      gamesToDraft: {
+        handler(val){
+          this.$emit('input', this.leagueYearSettings);
+        },
+      },
+      counterPicks: {
+        handler(val){
+          this.$emit('input', this.leagueYearSettings);
+        },
+      },
+      maximumEligibilityLevel: {
+        handler(val){
+          this.$emit('input', this.leagueYearSettings);
+        },
+      },
+      allowYearlyInstallments: {
+        handler(val){
+          this.$emit('input', this.leagueYearSettings);
+        },
+      },
+      allowEarlyAccess: {
+        handler(val){
+          this.$emit('input', this.leagueYearSettings);
+        },
+      },
+      allowFreeToPlay: {
+        handler(val){
+          this.$emit('input', this.leagueYearSettings);
+        },
+      },
+      allowReleasedInternationally: {
+        handler(val){
+          this.$emit('input', this.leagueYearSettings);
+        },
+      },
+      allowExpansions: {
+        handler(val){
+          this.$emit('input', this.leagueYearSettings);
+        },
+      },
     },
     mounted() {
       this.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
