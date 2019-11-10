@@ -65,15 +65,15 @@
 
   export default {
     data() {
-        return {
-          errorInfo: "",
-          possibleLeagueOptions: null,
-          leagueName: "",
-          initialYear: "",
-          leagueYearSettings: null,
-          publicLeague: true,
-          testLeague: false,
-        }
+      return {
+        errorInfo: "",
+        possibleLeagueOptions: null,
+        leagueName: "",
+        initialYear: "",
+        leagueYearSettings: null,
+        publicLeague: true,
+        testLeague: false,
+      }
     },
     components: {
       LeagueYearSettings
@@ -86,13 +86,13 @@
     },
     methods: {
       fetchLeagueOptions() {
-          axios
-              .get('/api/League/LeagueOptions')
-              .then(response => {
-                this.possibleLeagueOptions = response.data;
-                this.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
-              })
-              .catch(returnedError => (this.error = returnedError));
+        axios
+          .get('/api/League/LeagueOptions')
+          .then(response => {
+            this.possibleLeagueOptions = response.data;
+            this.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
+          })
+          .catch(returnedError => (this.error = returnedError));
       },
       postRequest() {
         let selectedLeagueOptions = {
@@ -128,7 +128,7 @@
     mounted() {
       this.fetchLeagueOptions();
     }
-}
+  }
 </script>
 <style scoped>
 label {
