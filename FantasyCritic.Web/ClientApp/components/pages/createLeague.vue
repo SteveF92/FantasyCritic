@@ -26,7 +26,7 @@
           <span class="text-danger">{{ errors.first('initialYear') }}</span>
         </div>
       </div>
-        
+
       <div v-if="readyToSetupLeagueYear">
         <hr />
         <div class="text-well">
@@ -50,6 +50,15 @@
               <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
             </b-form-checkbox>
           </div>
+        </div>
+
+        <hr />
+        <div class="alert alert-info disclaimer">
+          Reminder: All of these settings can always be changed later.
+        </div>
+
+        <div class="form-group">
+          <b-button class="col-10 offset-1" variant="primary" v-on:click="postRequest">Create League</b-button>
         </div>
       </div>
     </div>
@@ -97,16 +106,16 @@
       postRequest() {
         let selectedLeagueOptions = {
           leagueName: this.leagueName,
-          standardGames: this.standardGames,
-          gamesToDraft: this.gamesToDraft,
-          counterPicks: this.counterPicks,
           initialYear: this.initialYear,
-          maximumEligibilityLevel: this.maximumEligibilityLevel,
-          allowYearlyInstallments: this.allowYearlyInstallments,
-          allowEarlyAccess: this.allowEarlyAccess,
-          allowFreeToPlay: this.allowFreeToPlay,
-          allowReleasedInternationally: this.allowReleasedInternationally,
-          allowExpansions: this.allowExpansions,
+          standardGames: this.leagueYearSettings.standardGames,
+          gamesToDraft: this.leagueYearSettings.gamesToDraft,
+          counterPicks: this.leagueYearSettings.counterPicks,
+          maximumEligibilityLevel: this.leagueYearSettings.maximumEligibilityLevel,
+          allowYearlyInstallments: this.leagueYearSettings.allowYearlyInstallments,
+          allowEarlyAccess: this.leagueYearSettings.allowEarlyAccess,
+          allowFreeToPlay: this.leagueYearSettings.allowFreeToPlay,
+          allowReleasedInternationally: this.leagueYearSettings.allowReleasedInternationally,
+          allowExpansions: this.leagueYearSettings.allowExpansions,
           publicLeague: this.publicLeague,
           testLeague: this.testLeague,
           draftSystem: "Flexible",
