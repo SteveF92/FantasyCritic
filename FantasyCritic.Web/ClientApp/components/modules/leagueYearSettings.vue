@@ -1,17 +1,22 @@
 <template>
   <div>
-    <h2>Game Settings</h2>
-    <p>Settings in this section can be different from year to year for your league.</p>
-    <div class="form-group">
-      <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-      <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
-      <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
-      <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
+    <div v-if="!editMode">
+      <h2>Game Settings</h2>
+      <p>Settings in this section can be different from year to year for your league.</p>
+      <div class="form-group">
+        <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
+        <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
+        <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
+        <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
+      </div>
     </div>
 
-    <div v-if="intendedNumberOfPlayersEverValid">
-      <hr />
-      <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
+    <div v-if="intendedNumberOfPlayersEverValid || editMode">
+      <div v-show="!editMode">
+        <hr />
+        <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
+      </div>
+      
       <div class="form-group">
         <label for="standardGames" class="control-label">Total Number of Games</label>
         <p>
@@ -132,7 +137,7 @@
   import { cloneDeep, tap, set } from 'lodash'
 
   export default {
-    props: ['year', 'possibleLeagueOptions', 'value'],
+    props: ['year', 'possibleLeagueOptions', 'editMode', 'value'],
     data() {
       return {
         intendedNumberOfPlayers: "",

@@ -1,151 +1,55 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <div v-if="selectedLeagueOptions && possibleLeagueOptions">
-        <h1>Edit League: {{selectedLeagueOptions.leagueName}} (Year {{selectedLeagueOptions.year}})</h1>
-        <hr />
-        <form v-if="possibleLeagueOptions" method="post" class="form-horizontal" role="form" v-on:submit.prevent="postRequest">
-          <div class="text-well col-md-12 col-lg-10 offset-lg-1">
-            <div class="alert alert-danger" v-if="errorInfo">An error has occurred.</div>
+      <h1>Edit League Year Settings</h1>
+      <hr />
+      <div class="alert alert-danger" v-show="errorInfo">
+        <h2>Error!</h2>
+        <p>{{errorInfo}}</p>
+      </div>
 
-            <div class="form-group">
-              <label for="standardGames" class="control-label">Total Number of Games</label>
-              <p>
-                This is the total number of games that each player will have on their roster.
-              </p>
+      <div v-if="possibleLeagueOptions && leagueYearSettings">
+        <div class="text-well">
+          <leagueYearSettings :year="year" :possibleLeagueOptions="possibleLeagueOptions" :editMode="true" v-model="leagueYearSettings"></leagueYearSettings>
+        </div>
 
-              <input v-model="selectedLeagueOptions.standardGames" id="standardGames" name="standardGames" type="text" class="form-control input" />
-            </div>
 
-            <div class="form-group">
-              <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
-              <p>
-                This is the number of games that will be chosen by each player at the draft.
-                If this number is lower than the "Total Number of Games", the remainder will be
-                <a href="/faq#bidding-system" target="_blank">
-                  Pickup Games.
-                </a>
-              </p>
+        <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">
+          Some of your settings are invalid.
+        </div>
 
-              <input v-model="selectedLeagueOptions.gamesToDraft" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
-            </div>
-
-            <div class="form-group">
-              <label for="counterPicks" class="control-label">Number of Counter Picks</label>
-              <p>
-                Counter picks are essentially bets against a game. For more details,
-                <a href="/faq#scoring" target="_blank">
-                  click here.
-                </a>
-              </p>
-
-              <input v-model="selectedLeagueOptions.counterPicks" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
-            </div>
-            <hr />
-
-            <div class="form-group eligibility-section">
-              <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
-              <vue-slider v-model="selectedLeagueOptions.maximumEligibilityLevel" :min="minimumEligibilityLevel" :max="maximumEligibilityLevel"
-                          :marks="marks" :tooltip="'always'">
-              </vue-slider>
-              <div class="eligibility-description">
-                <h3>{{ selectedEligibilityLevel.name }}</h3>
-                <p>{{ selectedEligibilityLevel.description }}</p>
-                <p>Examples: </p>
-                <ul>
-                  <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-                </ul>
-              </div>
-              <div>
-                <h3>Other Options</h3>
-                <div>
-                  <b-form-checkbox id="yearly-checkbox"
-                                   v-model="selectedLeagueOptions.allowYearlyInstallments">
-                    <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
-                  </b-form-checkbox>
-                </div>
-                <div>
-                  <b-form-checkbox id="early-access-checkbox"
-                                   v-model="selectedLeagueOptions.allowEarlyAccess">
-                    <span class="checkbox-label">Allow Early Access games</span>
-                  </b-form-checkbox>
-                </div>
-                <div>
-                  <b-form-checkbox id="freetoplay-checkbox"
-                                   v-model="selectedLeagueOptions.allowFreeToPlay">
-                    <span class="checkbox-label">Allow Free to Play games</span>
-                  </b-form-checkbox>
-                </div>
-                <div>
-                  <b-form-checkbox id="released-internationally-checkbox"
-                                   v-model="selectedLeagueOptions.allowReleasedInternationally">
-                    <span class="checkbox-label">Allow games already released internationally</span>
-                  </b-form-checkbox>
-                </div>
-                <div>
-                  <b-form-checkbox id="expansion-pack-checkbox"
-                                   v-model="selectedLeagueOptions.allowExpansions">
-                    <span class="checkbox-label">Allow expansion packs/DLC</span>
-                  </b-form-checkbox>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <input type="submit" class="btn btn-primary col-10 offset-1" value="Edit League Settings" />
-            </div>
-          </div>
-        </form>
+        <div class="form-group">
+          <b-button class="col-10 offset-1" variant="primary" v-on:click="postRequest" :disabled="!leagueYearIsValid">Confirm Settings</b-button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-  import Vue from "vue";
   import axios from "axios";
-  import vueSlider from 'vue-slider-component';
-  import 'vue-slider-component/theme/antd.css'
+  import LeagueYearSettings from "components/modules/leagueYearSettings";
 
   export default {
     data() {
       return {
         errorInfo: "",
         possibleLeagueOptions: null,
-        selectedLeagueOptions: null
+        leagueYearSettings: null
+      }
+    },
+    components: {
+      LeagueYearSettings
+    },
+    computed: {
+      leagueYearIsValid() {
+        let valid = this.leagueYearSettings &&
+          this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 30 &&
+          this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 30 &&
+          this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 5;
+        return valid;
       }
     },
     props: ['leagueid', 'year'],
-    components: {
-      vueSlider
-    },
-    computed: {
-      minimumEligibilityLevel() {
-        return 0;
-      },
-      maximumEligibilityLevel() {
-        if (!this.possibleLeagueOptions.eligibilityLevels) {
-          return 0;
-        }
-        let maxEligibilityLevel = _.maxBy(this.possibleLeagueOptions.eligibilityLevels, 'level');
-        return maxEligibilityLevel.level;
-      },
-      selectedEligibilityLevel() {
-        let matchingLevel = _.filter(this.possibleLeagueOptions.eligibilityLevels, { 'level': this.selectedLeagueOptions.maximumEligibilityLevel });
-        return matchingLevel[0];
-      },
-      marks() {
-        if (!this.possibleLeagueOptions.eligibilityLevels) {
-          return [];
-        }
-
-        let levels =  this.possibleLeagueOptions.eligibilityLevels.map(function (v) {
-          return v.level;
-        });
-
-        return levels;
-      }
-
-    },
     methods: {
       fetchLeagueOptions() {
         axios
@@ -159,13 +63,13 @@
         axios
           .get('/api/League/GetLeagueYearOptions?leagueID=' + this.leagueid + '&year=' + this.year)
           .then(response => {
-            this.selectedLeagueOptions = response.data;
+            this.leagueYearSettings = response.data;
           })
           .catch(returnedError => (this.error = returnedError));
       },
       postRequest() {
         axios
-          .post('/api/leagueManager/EditLeagueYearSettings', this.selectedLeagueOptions)
+          .post('/api/leagueManager/EditLeagueYearSettings', this.leagueYearSettings)
           .then(this.responseHandler)
           .catch(this.catchHandler);
       },
@@ -182,35 +86,3 @@
     }
   }
 </script>
-<style scoped>
-  .eligibility-explanation {
-    margin-bottom: 50px;
-    max-width: 1300px;
-  }
-
-  .eligibility-section {
-    margin-bottom: 10px;
-  }
-
-  .eligibility-description {
-    margin-top: 25px;
-  }
-
-  .checkbox-label {
-    padding-left: 25px;
-  }
-
-  .disclaimer {
-    margin-top: 10px;
-  }
-
-  label {
-    font-size: 18px;
-  }
-
-</style>
-<style>
-  .vue-slider-piecewise-label {
-    color: white !important;
-  }
-</style>
