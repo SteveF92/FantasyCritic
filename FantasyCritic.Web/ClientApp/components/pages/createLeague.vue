@@ -65,11 +65,7 @@
   </div>
 </template>
 <script>
-  import Vue from "vue";
   import axios from "axios";
-  import vueSlider from 'vue-slider-component';
-  import Popper from 'vue-popperjs';
-  import 'vue-slider-component/theme/antd.css'
   import LeagueYearSettings from "components/modules/leagueYearSettings";
 
   export default {
