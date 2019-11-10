@@ -45,25 +45,148 @@
         <span class="text-danger">{{ errors.first('counterPicks') }}</span>
       </div>
     </div>
+
+    <div v-if="readyToChooseLevels">
+      <hr />
+      <h2>Eligibility Settings</h2>
+      <div class="alert alert-info">
+        These options let you choose what games are available in your league. These settings can be overriden on a game by game basis, and I reccomend you lean towards being more restrictive,
+        and allow specific exemptions if your entire league decides on one. The default options are the recommended settings.
+      </div>
+
+      <div class="form-group eligibility-section">
+        <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
+        <p class="eligibility-explanation">
+          Eligibility levels are designed to prevent people from taking "uninteresting" games. Every game on the site is assigned a 'level' to seperate 'new games' from remakes, remasters, ports, and everything
+          in between. Setting this to a low number means being more restrictive, setting it to a higher number means being more lenient. I reccommend setting '2'. For more details,
+          <a href="/faq#eligibility" target="_blank">
+            click here.
+          </a>
+        </p>
+        <div class="alert alert-warning" v-show="maximumEligibilityLevel === 5">
+          I really don't recommend using setting '5'. Games that fall under this category often don't even get re-reviewed when they are released on their new platforms. Again, I recomend that you
+          be restrictive here and allow exemptions if need be.
+        </div>
+        <vue-slider v-model="maximumEligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
+                    :marks="marks" :tooltip="'always'">
+        </vue-slider>
+        <div class="eligibility-description">
+          <h3>{{ selectedEligibilityLevel.name }}</h3>
+          <p>{{ selectedEligibilityLevel.description }}</p>
+          <p>Examples: </p>
+          <ul>
+            <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
+          </ul>
+        </div>
+        <br />
+
+        <div>
+          <div>
+            <b-form-checkbox v-model="allowYearlyInstallments">
+              <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
+              <p>These are often pretty safe bets, so they may not be the most interesting choices.</p>
+            </b-form-checkbox>
+          </div>
+          <div>
+            <b-form-checkbox v-model="allowEarlyAccess">
+              <span class="checkbox-label">Allow Early Access Games</span>
+              <p>
+                If this is left unchecked, a game that is already in early access will not be selectable, since it is already playable.
+                Games that are planned for early access that are not yet playable are always selectable.
+              </p>
+            </b-form-checkbox>
+          </div>
+          <div>
+            <b-form-checkbox v-model="allowFreeToPlay">
+              <span class="checkbox-label">Allow Free to Play Games</span>
+              <p>These are often hard to review and may not get a score.</p>
+            </b-form-checkbox>
+          </div>
+          <div>
+            <b-form-checkbox v-model="allowReleasedInternationally">
+              <span class="checkbox-label">Allow games already released in other regions</span>
+              <p>
+                If this is left unchecked, a game that has already been released in another region will not be selectable.
+                For example, a game that came out in Japan in 2018 and is getting an English release in 2019.
+              </p>
+            </b-form-checkbox>
+          </div>
+          <div>
+            <b-form-checkbox v-model="allowExpansions">
+              <span class="checkbox-label">Allow expansion packs/DLC</span>
+              <p>
+                If this is left unchecked, expansion packs and DLC will not be selectable. There's a lot of grey zone with these games and I recommend using the override system to allow
+                specific games, rather than the whole category.
+              </p>
+            </b-form-checkbox>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
+  import vueSlider from 'vue-slider-component';
+  import Popper from 'vue-popperjs';
+  import 'vue-slider-component/theme/antd.css'
+
   export default {
-    props: ['year', 'value'],
+    props: ['year', 'possibleLeagueOptions', 'value'],
     data() {
       return {
         leagueYearSettings: null,
         intendedNumberOfPlayers: "",
         standardGames: "",
         gamesToDraft: "",
-        counterPicks: ""
+        counterPicks: "",
+        maximumEligibilityLevel: 0,
+        allowYearlyInstallments: false,
+        allowEarlyAccess: false,
+        allowFreeToPlay: false,
+        allowReleasedInternationally: false,
+        allowExpansions: false,
       }
+    },
+    components: {
+      vueSlider,
+      'popper': Popper,
     },
     computed: {
       readyToChooseNumbers() {
         let intendedNumberOfPlayersValid = this.veeFields['intendedNumberOfPlayers'] && this.veeFields['intendedNumberOfPlayers'].valid;
         return intendedNumberOfPlayersValid;
-      }
+      },
+      readyToChooseLevels() {
+        let standardGamesValid = this.veeFields['standardGames'] && this.veeFields['standardGames'].valid;
+        let gamesToDraftValid = this.veeFields['gamesToDraft'] && this.veeFields['gamesToDraft'].valid;
+        let counterPicksValid = this.veeFields['counterPicks'] && this.veeFields['counterPicks'].valid;
+        return standardGamesValid && gamesToDraftValid && counterPicksValid && this.readyToChooseNumbers;
+      },
+      minimumPossibleEligibilityLevel() {
+        return 0;
+      },
+      maximumPossibleEligibilityLevel() {
+        if (!this.possibleLeagueOptions.eligibilityLevels) {
+          return 0;
+        }
+        let maxEligibilityLevel = _.maxBy(this.possibleLeagueOptions.eligibilityLevels, 'level');
+        return maxEligibilityLevel.level;
+      },
+      selectedEligibilityLevel() {
+        let matchingLevel = _.filter(this.possibleLeagueOptions.eligibilityLevels, { 'level': this.maximumEligibilityLevel });
+        return matchingLevel[0];
+      },
+      marks() {
+        if (!this.possibleLeagueOptions.eligibilityLevels) {
+          return [];
+        }
+  
+        let levels =  this.possibleLeagueOptions.eligibilityLevels.map(function (v) {
+          return v.level;
+        });
+  
+        return levels;
+      },
     },
     watch: {
       intendedNumberOfPlayers: function (val) {
@@ -82,6 +205,9 @@
         } 
       }
     },
+    mounted() {
+      this.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
+    }
   }
 </script>
 <style scoped>

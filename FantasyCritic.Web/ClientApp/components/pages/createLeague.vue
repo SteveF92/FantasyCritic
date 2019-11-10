@@ -27,7 +27,7 @@
         </div>
         <div v-if="readyToSetupLeagueYear">
           <hr />
-          <leagueYearSettings :year="initialYear" v-model="leagueYearSettings"></leagueYearSettings>
+          <leagueYearSettings :year="initialYear" :possibleLeagueOptions="possibleLeagueOptions" v-model="leagueYearSettings"></leagueYearSettings>
         </div>
       </div>
     </div>
