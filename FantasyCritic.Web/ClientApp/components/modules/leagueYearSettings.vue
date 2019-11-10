@@ -145,17 +145,14 @@
       'popper': Popper,
     },
     computed: {
-      formIsValid() {
-        return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
-      },
       readyToChooseNumbers() {
-        let intendedNumberOfPlayersValid = this.veeFields['intendedNumberOfPlayers'] && this.veeFields['intendedNumberOfPlayers'].valid;
+        let intendedNumberOfPlayersValid = this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 14;
         return intendedNumberOfPlayersValid;
       },
       readyToChooseLevels() {
-        let standardGamesValid = this.veeFields['standardGames'] && this.veeFields['standardGames'].valid;
-        let gamesToDraftValid = this.veeFields['gamesToDraft'] && this.veeFields['gamesToDraft'].valid;
-        let counterPicksValid = this.veeFields['counterPicks'] && this.veeFields['counterPicks'].valid;
+        let standardGamesValid = this.value.standardGames >= 1 && this.value.standardGames <= 30;
+        let gamesToDraftValid = this.value.gamesToDraft >= 1 && this.value.gamesToDraft <= 30;
+        let counterPicksValid = this.value.counterPicks >= 0 && this.value.counterPicks <= 5;
         return standardGamesValid && gamesToDraftValid && counterPicksValid && this.readyToChooseNumbers;
       },
       minimumPossibleEligibilityLevel() {
@@ -186,13 +183,9 @@
       local() {
         return this.value;
       },
-      leagueYearSettingsAreValid() {
-        return this.readyToChooseNumbers && this.readyToChooseLevels && this.formIsValid;
-      }
     },
     methods: {
       update(key, value) {
-        this.value.valid = this.leagueYearSettingsAreValid;
         this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
       },
     },
@@ -212,7 +205,6 @@
           this.value.counterPicks = 1;
         }
 
-        this.value.valid = true;
         this.$emit('input', this.local);
       }
     }

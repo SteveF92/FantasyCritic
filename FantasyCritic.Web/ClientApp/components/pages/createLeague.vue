@@ -34,7 +34,7 @@
         </div>
       </div>
 
-      <div v-if="readyToSetupLeagueYear && leagueYearSettings.valid">
+      <div v-if="leagueYearIsValid">
         <hr />
         <div class="text-well">
           <h2>Other Options</h2>
@@ -87,6 +87,13 @@
       readyToSetupLeagueYear() {
         let leagueNameValid = this.veeFields['leagueName'] && this.veeFields['leagueName'].valid;
         return leagueNameValid && this.initialYear;
+      },
+      leagueYearIsValid() {
+        let valid = this.leagueYearSettings &&
+          this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 30 &&
+          this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 30 &&
+          this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 5;
+        return this.readyToSetupLeagueYear && valid;
       }
     },
     methods: {
@@ -142,8 +149,7 @@
         allowEarlyAccess: false,
         allowFreeToPlay: false,
         allowReleasedInternationally: false,
-        allowExpansions: false,
-        valid: false
+        allowExpansions: false
       }
     }
   }
