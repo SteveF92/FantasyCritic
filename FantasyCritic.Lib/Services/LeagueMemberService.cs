@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -263,6 +264,23 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyList<LeagueInvite> playersInvited = await GetOutstandingInvitees(league);
             var invite = playersInvited.GetMatchingInvite(user);
             return invite;
+        }
+
+        public Task CreateInviteLink(League league)
+        {
+            LeagueInviteLink link = new LeagueInviteLink(Guid.NewGuid(), league, Guid.NewGuid(), true);
+            return _fantasyCriticRepo.SaveInviteLink(link);
+        }
+
+        public async Task<IReadOnlyList<LeagueInviteLink>> GetActiveInviteLinks(League league)
+        {
+            IReadOnlyList<LeagueInviteLink> inviteLinks = await _fantasyCriticRepo.GetInviteLinks(league);
+            return inviteLinks.Where(x => x.Active).ToList();
+        }
+
+        public Task DeactivateInviteLink(LeagueInviteLink inviteLink)
+        {
+            return _fantasyCriticRepo.DeactivateInviteLink(inviteLink);
         }
     }
 }

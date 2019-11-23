@@ -757,6 +757,43 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task SaveInviteLink(LeagueInviteLink inviteLink)
+        {
+            LeagueInviteLinkEntity entity = new LeagueInviteLinkEntity(inviteLink);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tbl_league_invitelink(InviteID,LeagueID,InviteCode,Active,Timestamp) VALUES " +
+                    "(@InviteID,@LeagueID,@InviteCode,@Active,@Timestamp);",
+                    entity);
+            }
+        }
+
+        public async Task DeactivateInviteLink(LeagueInviteLink inviteLink)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tbl_league_invitelink SET Active = 0 where InviteID = @inviteID;", new {inviteID =  inviteLink.InviteID});
+            }
+        }
+
+        public async Task<IReadOnlyList<LeagueInviteLink>> GetInviteLinks(League league)
+        {
+            var query = new
+            {
+                leagueID = league.LeagueID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var results = await connection.QueryAsync<LeagueInviteLinkEntity>("select * from tbl_league_invitelink where LeagueID = @leagueID;", query);
+
+                var inviteLinks = results.Select(x => x.ToDomain(league)).ToList();
+                return inviteLinks;
+            }
+        }
+
         public async Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
         {
             string deleteSQL = "delete from tbl_league_publisher where PublisherID = @publisherID;";

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -327,6 +328,91 @@ namespace FantasyCritic.Web.Controllers.API
 
             await _emailSender.SendLeagueInviteEmail(inviteUser.EmailAddress, league.Value, baseURL);
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateInviteLink([FromBody] CreateInviteLinkRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            await _leagueMemberService.CreateInviteLink(league.Value);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteInviteLink([FromBody] DeleteInviteLinkRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            var activeLinks = await _leagueMemberService.GetActiveInviteLinks(league.Value);
+            var thisLink = activeLinks.SingleOrDefault(x => x.InviteID == request.InviteID);
+            if (thisLink is null)
+            {
+                return BadRequest();
+            }
+
+            await _leagueMemberService.DeactivateInviteLink(thisLink);
+
+            return Ok();
+        }
+
+        [HttpGet("{leagueID}")]
+        public async Task<IActionResult> InviteLinks(Guid leagueID)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(leagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            IReadOnlyList<LeagueInviteLink> activeLinks = await _leagueMemberService.GetActiveInviteLinks(league.Value);
+            var viewModels = activeLinks.Select(x => new LeagueInviteLinkViewModel(x));
+            return Ok(viewModels);
         }
 
         [HttpPost]
