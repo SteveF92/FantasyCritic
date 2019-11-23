@@ -282,5 +282,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.DeactivateInviteLink(inviteLink);
         }
+
+        public Task<Maybe<LeagueInviteLink>> GetInviteLinkByInviteCode(Guid inviteCode)
+        {
+            return _fantasyCriticRepo.GetInviteLinkByInviteCode(inviteCode);
+        }
     }
 }

@@ -155,6 +155,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task<Maybe<LeagueInviteLink>> GetInviteLinkByInviteCode(Guid inviteCode)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
         {
             throw new NotImplementedException();

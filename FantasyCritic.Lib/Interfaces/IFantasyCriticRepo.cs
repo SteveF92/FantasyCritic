@@ -40,6 +40,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task SaveInviteLink(LeagueInviteLink inviteLink);
         Task DeactivateInviteLink(LeagueInviteLink inviteID);
         Task<IReadOnlyList<LeagueInviteLink>> GetInviteLinks(League league);
+        Task<Maybe<LeagueInviteLink>> GetInviteLinkByInviteCode(Guid inviteCode);
 
         Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
         Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);

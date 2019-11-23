@@ -794,6 +794,22 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<Maybe<LeagueInviteLink>> GetInviteLinkByInviteCode(Guid inviteCode)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var result = await connection.QuerySingleOrDefaultAsync<LeagueInviteLinkEntity>("select * from tbl_league_invitelink where InviteCode = @inviteCode;", new {inviteCode});
+
+                if (result is null)
+                {
+                    return Maybe<LeagueInviteLink>.None;
+                }
+
+                var league = await GetLeagueByID(result.LeagueID);
+                return result.ToDomain(league.Value);
+            }
+        }
+
         public async Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
         {
             string deleteSQL = "delete from tbl_league_publisher where PublisherID = @publisherID;";
