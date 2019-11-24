@@ -410,8 +410,10 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
+            int currentYear = league.Value.Years.Max();
+            string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
             IReadOnlyList<LeagueInviteLink> activeLinks = await _leagueMemberService.GetActiveInviteLinks(league.Value);
-            var viewModels = activeLinks.Select(x => new LeagueInviteLinkViewModel(x));
+            var viewModels = activeLinks.Select(x => new LeagueInviteLinkViewModel(x, currentYear, baseURL));
             return Ok(viewModels);
         }
 

@@ -140,6 +140,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SaveInviteLink(LeagueInviteLink inviteLink)
         {
             throw new NotImplementedException();
