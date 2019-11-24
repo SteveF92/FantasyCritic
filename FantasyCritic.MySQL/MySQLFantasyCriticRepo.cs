@@ -798,7 +798,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var result = await connection.QuerySingleOrDefaultAsync<LeagueInviteLinkEntity>("select * from tbl_league_invitelink where InviteCode = @inviteCode;", new {inviteCode});
+                var result = await connection.QuerySingleOrDefaultAsync<LeagueInviteLinkEntity>("select * from tbl_league_invitelink where InviteCode = @inviteCode and Active = 1;", new {inviteCode});
 
                 if (result is null)
                 {
@@ -1563,7 +1563,7 @@ namespace FantasyCritic.MySQL
                 entities, transaction);
         }
 
-        private async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
+        public async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
         {
             var userAddObject = new
             {

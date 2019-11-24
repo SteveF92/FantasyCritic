@@ -200,6 +200,28 @@ namespace FantasyCritic.Lib.Services
             return Result.Ok();
         }
 
+        public async Task<Result> AcceptInviteLink(LeagueInviteLink inviteLink, FantasyCriticUser inviteUser)
+        {
+            bool userInLeague = await UserIsInLeague(inviteLink.League, inviteUser);
+            if (userInLeague)
+            {
+                return Result.Fail("User is already in league.");
+            }
+
+            IReadOnlyList<FantasyCriticUser> players = await GetUsersInLeague(inviteLink.League);
+            IReadOnlyList<LeagueInvite> outstandingInvites = await GetOutstandingInvitees(inviteLink.League);
+            int totalPlayers = players.Count + outstandingInvites.Count;
+
+            if (totalPlayers >= 14)
+            {
+                return Result.Fail("A league cannot have more than 14 players.");
+            }
+
+            await _fantasyCriticRepo.AddPlayerToLeague(inviteLink.League, inviteUser);
+
+            return Result.Ok();
+        }
+
         public Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league)
         {
             return _fantasyCriticRepo.GetOutstandingInvitees(league);

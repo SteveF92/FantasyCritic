@@ -418,8 +418,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            //TODO how to accept the request?
-            Result result = await _leagueMemberService.AcceptInvite(league.Value, currentUser);
+            Result result = await _leagueMemberService.AcceptInviteLink(inviteLink.Value, currentUser);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);

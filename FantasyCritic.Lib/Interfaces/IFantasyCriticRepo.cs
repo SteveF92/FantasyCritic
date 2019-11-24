@@ -37,6 +37,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task SaveInvite(LeagueInvite leagueInvite);
         Task AcceptInvite(LeagueInvite leagueInvite, FantasyCriticUser user);
         Task DeleteInvite(LeagueInvite leagueInvite);
+        Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser);
         Task SaveInviteLink(LeagueInviteLink inviteLink);
         Task DeactivateInviteLink(LeagueInviteLink inviteID);
         Task<IReadOnlyList<LeagueInviteLink>> GetInviteLinks(League league);

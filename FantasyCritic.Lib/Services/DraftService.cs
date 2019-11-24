@@ -52,6 +52,11 @@ namespace FantasyCritic.Lib.Services
                 errors.Add("You need to have at least two players in the league.");
             }
 
+            if (usersInLeague.Count() > 14)
+            {
+                errors.Add("You cannot have more than 14 players in the league.");
+            }
+
             if (publishersInLeague.Count() != usersInLeague.Count())
             {
                 errors.Add("Not every player has created a publisher.");
@@ -72,7 +77,7 @@ namespace FantasyCritic.Lib.Services
                 return false;
             }
 
-            if (publishersInLeague.Count() < 2)
+            if (publishersInLeague.Count() < 2 || publishersInLeague.Count() > 14)
             {
                 return false;
             }
