@@ -125,7 +125,7 @@
         <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
         <addNewLeagueYearForm :league="league" :isManager="league.isManager" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
-        <invitePlayerForm :league="league" v-on:playerInvited="playerInvited"></invitePlayerForm>
+        <invitePlayerForm :league="league" v-on:playerInvited="playerInvited" v-on:linkCopied="linkCopied"></invitePlayerForm>
         <manageActivePlayersForm :league="league" :leagueYear="leagueYear" v-on:activePlayersEdited="activePlayersEdited"></manageActivePlayersForm>
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
         <managerDraftGameForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
@@ -317,6 +317,14 @@
           message: 'Invite was sent to ' + inviteEmail,
           fetchLeagueYear: true,
           fetchLeague: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      linkCopied() {
+        let actionInfo = {
+          message: 'Invite Link copied to clipboard.',
+          fetchLeagueYear: false,
+          fetchLeague: false
         };
         this.$emit('actionTaken', actionInfo);
       },

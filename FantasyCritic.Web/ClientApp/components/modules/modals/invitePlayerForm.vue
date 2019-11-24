@@ -8,7 +8,7 @@
       <label>This is the easiest way to invite player. Just send one link to anyone you want to invite.</label>
       <div v-for="inviteLink in inviteLinks" class="invite-link">
         <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly>
-        <b-button variant="info" size="sm" v-on:click="copyInviteLink(inviteLink)">Copy</b-button>
+        <b-button variant="info" size="sm" v-clipboard:copy="inviteLink.fullInviteLink" v-clipboard:success="inviteLinkCopied">Copy</b-button>
         <b-button variant="danger" size="sm" v-on:click="deleteInviteLink(inviteLink)">Delete</b-button>
       </div>
       <br />
@@ -106,6 +106,9 @@
           .catch(error => {
             this.errorInfo = error.response.data;
           });
+      },
+      inviteLinkCopied() {
+        this.$emit('linkCopied');
       },
       deleteInviteLink(inviteLink) {
         var model = {

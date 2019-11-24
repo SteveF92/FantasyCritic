@@ -9,12 +9,15 @@ import App from 'components/app-root';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import Toasted from 'vue-toasted';
 import VeeValidate from 'vee-validate';
-import VueAnalytics from 'vue-analytics'
+import VueAnalytics from 'vue-analytics';
+import VueClipboard from 'vue-clipboard2';
 
 import "./filters";
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 
+VueClipboard.config.autoSetContainer = true;
+Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
 Vue.use(VeeValidate, {
