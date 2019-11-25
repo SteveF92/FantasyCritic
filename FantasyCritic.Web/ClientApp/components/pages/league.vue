@@ -223,8 +223,12 @@
         return moment(date).format('MMMM Do, YYYY');
       },
       fetchLeague() {
+        let queryURL = '/api/League/GetLeague/' + this.leagueid;
+        if (this.inviteCode) {
+          queryURL += '?inviteCode=' + this.inviteCode;
+        }
         axios
-          .get('/api/League/GetLeague/' + this.leagueid)
+          .get(queryURL)
           .then(response => {
             this.league = response.data;
             document.title = this.league.leagueName + " - Fantasy Critic";
@@ -235,15 +239,19 @@
           });
       },
       fetchLeagueYear() {
-          axios
-              .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
-              .then(response => {
-                this.leagueYear = response.data;
-                this.selectedYear = this.leagueYear.year;
-                this.fetchCurrentBids();
-                this.fetchLeagueActions();
-              })
-            .catch(returnedError => (this.error = returnedError));
+        let queryURL = '/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year;
+        if (this.inviteCode) {
+          queryURL += '&inviteCode=' + this.inviteCode;
+        }
+        axios
+            .get(queryURL)
+            .then(response => {
+              this.leagueYear = response.data;
+              this.selectedYear = this.leagueYear.year;
+              this.fetchCurrentBids();
+              this.fetchLeagueActions();
+            })
+          .catch(returnedError => (this.error = returnedError));
       },
       fetchCurrentBids() {
         axios
@@ -391,10 +399,10 @@
     },
     async mounted() {
       this.selectedYear = this.year;
+      this.getInviteCode();
       this.fetchLeague();
       this.fetchLeagueYear();
       await this.startHubConnection();
-      this.getInviteCode();
     },
     watch: {
       '$route'(to, from) {

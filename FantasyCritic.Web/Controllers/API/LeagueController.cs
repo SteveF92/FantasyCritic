@@ -140,7 +140,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetLeague(Guid id)
+        public async Task<IActionResult> GetLeague(Guid id, Guid? inviteCode)
         {
             Maybe<League> league = await _fantasyCriticService.GetLeagueByID(id);
             if (league.HasNoValue)
@@ -172,7 +172,14 @@ namespace FantasyCritic.Web.Controllers.API
                 leagueInvite = inviteesToLeague.GetMatchingInvite(currentUser.EmailAddress);
             }
 
-            if (!userIsInLeague && !userIsInvitedToLeague && !league.Value.PublicLeague)
+            bool inviteCodeIsValid = false;
+            if (inviteCode.HasValue)
+            {
+                var activeLinks = await _leagueMemberService.GetActiveInviteLinks(league.Value);
+                inviteCodeIsValid = activeLinks.Any(x => x.Active && x.InviteCode == inviteCode.Value);
+            }
+
+            if (!userIsInLeague && !userIsInvitedToLeague && !league.Value.PublicLeague && !inviteCodeIsValid)
             {
                 return Forbid();
             }
@@ -185,7 +192,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> GetLeagueYear(Guid leagueID, int year)
+        public async Task<IActionResult> GetLeagueYear(Guid leagueID, int year, Guid? inviteCode)
         {
             Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
             if (leagueYear.HasNoValue)
@@ -212,7 +219,14 @@ namespace FantasyCritic.Web.Controllers.API
                 isManager = (leagueYear.Value.League.LeagueManager.UserID == currentUser.UserID);
             }
 
-            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
+            bool inviteCodeIsValid = false;
+            if (inviteCode.HasValue)
+            {
+                var activeLinks = await _leagueMemberService.GetActiveInviteLinks(leagueYear.Value.League);
+                inviteCodeIsValid = activeLinks.Any(x => x.Active && x.InviteCode == inviteCode.Value);
+            }
+
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !inviteCodeIsValid)
             {
                 return Forbid();
             }
