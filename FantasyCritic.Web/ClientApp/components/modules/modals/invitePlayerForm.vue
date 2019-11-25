@@ -5,7 +5,7 @@
     </div>
     <div>
       <h3 class="text-black">Invite Link</h3>
-      <label>This is the easiest way to invite player. Just send one link to anyone you want to invite.</label>
+      <label>This is the easiest way to invite players. Just send one link to anyone you want to invite.</label>
       <div v-for="inviteLink in inviteLinks" class="invite-link">
         <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly>
         <b-button variant="info" size="sm" v-clipboard:copy="inviteLink.fullInviteLink" v-clipboard:success="inviteLinkCopied">Copy</b-button>
