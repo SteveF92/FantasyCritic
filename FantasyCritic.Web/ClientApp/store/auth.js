@@ -5,7 +5,6 @@ export default {
   state: {
     jwt: null,
     expiration: null,
-    redirect: "",
     userInfo: null,
     newAccountCreated: false,
     isBusy: false
@@ -32,7 +31,6 @@ export default {
       }
     },
     token: (state) => state.jwt,
-    redirect: (state) => state.redirect,
     userInfo: (state) => state.userInfo,
     newAccountCreated: (state) => state.newAccountCreated,
     storeIsBusy: (state) => state.isBusy,
@@ -166,12 +164,6 @@ export default {
     },
     newAccountCreated(state) {
       state.newAccountCreated = true;
-    },
-    setRedirect(state, path) {
-      state.redirect = path;
-    },
-    clearRedirect(state) {
-      state.redirect = "";
     }
   }
 }

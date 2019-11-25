@@ -54,7 +54,17 @@
 
         <div v-if="inviteCode && !league.userIsInLeague" class="alert alert-info">
           You have been invited to join this league.
-          <b-button variant="primary" v-on:click="joinWithInviteLink()" class="mx-2">Join League</b-button>
+          <b-button variant="primary" v-if="isAuth" v-on:click="joinWithInviteLink()" class="mx-2">Join League</b-button>
+          <template v-else>
+            <b-button variant="primary" :to="{ name: 'login', query: { leagueid: league.leagueID, year: year, inviteCode: inviteCode }}">
+              <span>Log In</span>
+              <font-awesome-icon class="full-nav" icon="sign-in-alt" />
+            </b-button>
+            <b-button variant="primary" :to="{ name: 'register', query: { leagueid: league.leagueID, year: year, inviteCode: inviteCode }}">
+              <span>Sign Up</span>
+              <font-awesome-icon class="full-nav" icon="user-plus" />
+            </b-button>
+          </template>
         </div>
 
         <div v-if="league.outstandingInvite" class="alert alert-info">

@@ -66,13 +66,16 @@
                 };
                 this.$store.dispatch("doAuthentication", credentials)
                     .then(() => {
-                        this.isBusy = false;
-                        let redirect = this.$store.getters.redirect;
-                        if (!redirect) {
-                            redirect = "/";
-                        }
-                        this.$store.commit("clearRedirect");
-                        this.$router.push(redirect);
+                      this.isBusy = false;
+                      let leagueid = this.$route.query.leagueid;
+                      let inviteCode = this.$route.query.inviteCode;
+                      let year = this.$route.query.year;
+                      if (leagueid && inviteCode && year) {
+                        let routeObject = { name: 'league', params: { leagueid: leagueid, year: year }, query: { inviteCode: inviteCode } };
+                        this.$router.push(routeObject);
+                      } else {
+                        this.$router.push("/");
+                      }
                     })
                     .catch(returnedError => {
                         this.isBusy = false;

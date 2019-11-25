@@ -67,7 +67,15 @@
                 };
                 this.$store.dispatch("registerAccount", model)
                   .then(() => {
-                    this.$router.push({ name: "login" });
+                    let leagueid = this.$route.query.leagueid;
+                    let inviteCode = this.$route.query.inviteCode;
+                    let year = this.$route.query.year;
+                    if (leagueid && inviteCode && year) {
+                    let routeObject = { name: 'login', query: { leagueid: leagueid, year: year, inviteCode: inviteCode } };
+                      this.$router.push(routeObject);
+                    } else {
+                      this.$router.push({ name: "login" });
+                    }
                   })
                   .catch(returnedError => {
                     this.errorInfo = returnedError.response.data[0].description.replace("User name", "Email Address");
