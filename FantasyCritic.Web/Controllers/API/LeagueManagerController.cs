@@ -351,6 +351,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
+            IReadOnlyList<LeagueInviteLink> activeLinks = await _leagueMemberService.GetActiveInviteLinks(league.Value);
+            if (activeLinks.Count >= 2)
+            {
+                return BadRequest("You can't have more than 2 invite links active.");
+            }
+
             await _leagueMemberService.CreateInviteLink(league.Value);
 
             return Ok();
