@@ -284,7 +284,7 @@
               this.fetchLeagueYear();
             })
             .catch(response => {
-
+              this.errorInfo = "Something went wrong joining the league";
             });
       },
       startDraft() {
