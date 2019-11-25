@@ -418,6 +418,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            if (inviteLink.Value.League.LeagueID != request.LeagueID)
+            {
+                return BadRequest();
+            }
+
             Result result = await _leagueMemberService.AcceptInviteLink(inviteLink.Value, currentUser);
             if (result.IsFailure)
             {

@@ -52,6 +52,11 @@
           </p>
         </b-modal>
 
+        <div v-if="inviteCode && !league.userIsInLeague" class="alert alert-info">
+          You have been invited to join this league.
+          <b-button variant="primary" v-on:click="joinWithInviteLink()" class="mx-2">Join League</b-button>
+        </div>
+
         <div v-if="league.outstandingInvite" class="alert alert-info">
           You have been invited to join this league. Do you wish to join?
           <div class="row">
@@ -167,7 +172,8 @@
         currentBids: [],
         leagueActions: [],
         forbidden: false,
-        advancedProjections: false
+        advancedProjections: false,
+        inviteCode: null
       }
     },
     props: ['leagueid', 'year'],
@@ -266,6 +272,21 @@
 
             });
       },
+      joinWithInviteLink() {
+        var model = {
+            leagueID: this.league.leagueID,
+            inviteCode: this.inviteCode
+          };
+          axios
+            .post('/api/league/JoinWithInviteLink', model)
+            .then(response => {
+              this.fetchLeague();
+              this.fetchLeagueYear();
+            })
+            .catch(response => {
+
+            });
+      },
       startDraft() {
         var model = {
           leagueID: this.league.leagueID,
@@ -330,6 +351,12 @@
 
           });
       },
+      getInviteCode() {
+        let inviteCode = this.$route.query.inviteCode;
+        if (inviteCode) {
+          this.inviteCode = inviteCode;
+        }
+      },
       async startHubConnection() {
         let token = this.$store.getters.token;
         let hubConnection = new signalR.HubConnectionBuilder()
@@ -357,6 +384,7 @@
       this.fetchLeague();
       this.fetchLeagueYear();
       await this.startHubConnection();
+      this.getInviteCode();
     },
     watch: {
       '$route'(to, from) {
