@@ -58,6 +58,27 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         public bool TestLeague { get; set; }
 
+        //Don't need this once 2019 is no longer create-able.
+        public bool ValidForOldYears()
+        {
+            if (InitialYear > 2019)
+            {
+                return true;
+            }
+
+            if (FreeDroppableGames != 0 || UnlimitedFreeDroppableGames)
+            {
+                return false;
+            }
+
+            if (WillNotReleaseDroppableGames != 0 || UnlimitedWillNotReleaseDroppableGames)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public LeagueCreationParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);

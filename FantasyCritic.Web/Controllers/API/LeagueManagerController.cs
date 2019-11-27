@@ -71,6 +71,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            if (!request.ValidForOldYears())
+            {
+                return BadRequest();
+            }
+
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.InitialYear);
             if (selectedSupportedYear is null)
@@ -226,6 +231,11 @@ namespace FantasyCritic.Web.Controllers.API
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             if (currentUser == null)
+            {
+                return BadRequest();
+            }
+
+            if (!request.ValidForOldYears())
             {
                 return BadRequest();
             }

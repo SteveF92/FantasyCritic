@@ -83,6 +83,27 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Required]
         public bool PublicLeague { get; set; }
 
+        //Don't need this once 2019 is no longer editable.
+        public bool ValidForOldYears()
+        {
+            if (Year > 2019)
+            {
+                return true;
+            }
+
+            if (FreeDroppableGames != 0 || UnlimitedFreeDroppableGames)
+            {
+                return false;
+            }
+
+            if (WillNotReleaseDroppableGames != 0 || UnlimitedWillNotReleaseDroppableGames)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
