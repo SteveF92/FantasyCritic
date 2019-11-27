@@ -20,6 +20,12 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         [Range(0,20)]
         public int CounterPicks { get; set; }
+        [Required]
+        [Range(0, 30)]
+        public int FreeDroppableGames { get; set; }
+        [Required]
+        [Range(0, 30)]
+        public int WillNotReleaseDroppableGames { get; set; }
 
         [Required]
         public int InitialYear { get; set; }
@@ -54,8 +60,8 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
-                InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions,
-                draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
+                FreeDroppableGames, WillNotReleaseDroppableGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
+                AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }
     }

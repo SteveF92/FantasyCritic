@@ -46,6 +46,10 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Required]
         public int CounterPicks { get; set; }
         [Required]
+        public int FreeDroppableGames { get; set; }
+        [Required]
+        public int WillNotReleaseDroppableGames { get; set; }
+        [Required]
         public int MaximumEligibilityLevel { get; set; }
         [Required]
         public bool AllowYearlyInstallments { get; set; }
@@ -74,8 +78,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,
-                maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions,
-                draftSystem, pickupSystem, scoringSystem, PublicLeague);
+                FreeDroppableGames, WillNotReleaseDroppableGames, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay,
+                AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague);
             return parameters;
         }
     }

@@ -5,8 +5,9 @@ namespace FantasyCritic.Lib.Domain.Requests
 {
     public class LeagueCreationParameters
     {
-        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, int initialYear, 
-            EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments,  bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally,
+        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, 
+            int freeDroppableGames, int willNotReleaseDroppableGames, int initialYear, EligibilityLevel maximumEligibilityLevel,
+            bool allowYearlyInstallments,  bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally,
             bool allowExpansions, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague, bool testLeague)
         {
             Manager = manager;
@@ -14,6 +15,8 @@ namespace FantasyCritic.Lib.Domain.Requests
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
             CounterPicks = counterPicks;
+            FreeDroppableGames = freeDroppableGames;
+            WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
             InitialYear = initialYear;
             AllowedEligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, allowYearlyInstallments, allowEarlyAccess, 
                 allowFreeToPlay, allowReleasedInternationally, allowExpansions);
@@ -29,6 +32,8 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int StandardGames { get; }
         public int GamesToDraft { get; }
         public int CounterPicks { get; }
+        public int FreeDroppableGames { get; }
+        public int WillNotReleaseDroppableGames { get; }
         public int InitialYear { get; }
         public EligibilitySettings AllowedEligibilitySettings { get; }
         public DraftSystem DraftSystem { get; }
