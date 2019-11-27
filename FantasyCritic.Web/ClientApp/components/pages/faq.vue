@@ -10,6 +10,7 @@
         <li><a href="#league-creation">League Creation</a></li>
         <li><a href="#drafting">Drafting</a></li>
         <li><a href="#bidding-system">Bidding System</a></li>
+        <li><a href="#dropping-games">Bidding System</a></li>
         <li><a href="#scoring">Scoring</a></li>
         <li><a href="#eligibility">Eligibility</a></li>
         <li><a href="#winning">Winning</a></li>
@@ -261,6 +262,15 @@
         <div slot="answer">
           If two or more players bid the same amount for the same game, the tie goes to the player with less projected points, and then if THAT's a tie, the game goes to the person who drafted later in
           the draft. My hope is that we rarely have to go to that level of tiebreaker.
+        </div>
+      </faqCollapse>
+      <br />
+
+      <h2><a name="dropping-games">Dropping Games</a></h2>
+      <faqCollapse>
+        <div slot="question">How does the "dropping games" system work?</div>
+        <div slot="answer">
+          Work in progress.
         </div>
       </faqCollapse>
       <br />

@@ -16,7 +16,7 @@
         <hr />
         <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
       </div>
-      
+
       <div class="form-group">
         <label for="standardGames" class="control-label">Total Number of Games</label>
         <p>
@@ -48,8 +48,45 @@
             click here.
           </a>
         </p>
+
         <input v-model="local.counterPicks" @input="update('counterPicks', $event.target.value)" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
         <span class="text-danger">{{ errors.first('counterPicks') }}</span>
+      </div>
+
+      <div class="form-group">
+        <label for="freeDroppableGames" class="control-label">Number of "Free Droppable Games"</label>
+        <p>
+          New for 2020, players can now choose to drop a game that they have lost confidence in before it releases. This setting allows you to choose how many such games can be dropped, if any.
+          For more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
+        </p>
+
+        <b-form-checkbox v-model="local.unlimitedFreeDroppableGames" @input="update('unlimitedFreeDroppableGames', local.unlimitedFreeDroppableGames)">
+          <span class="checkbox-label">Unlimited</span>
+        </b-form-checkbox>
+
+        <div v-if="!local.unlimitedFreeDroppableGames">
+          <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)" v-validate="'required|max_value:5'"
+                 id="freeDroppableGames" name="freeDroppableGames" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors.first('freeDroppableGames') }}</span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="willNotReleaseDroppableGames" class="control-label">Number of "Will not Release Droppable Games"</label>
+        <p>
+          This setting allows you to set a specific number of games that can be dropped, after they have been confirmed as "Will not Release". This number cannot be lower than the number of "Free Droppable Games".
+          Again, for more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
+        </p>
+
+        <b-form-checkbox v-model="local.unlimitedWillNotReleaseDroppableGames" @input="update('unlimitedWillNotReleaseDroppableGames', local.unlimitedWillNotReleaseDroppableGames)">
+          <span class="checkbox-label">Unlimited</span>
+        </b-form-checkbox>
+
+        <div v-if="!local.unlimitedWillNotReleaseDroppableGames">
+          <input v-model="local.willNotReleaseDroppableGames" @input="update('willNotReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:5'"
+                 id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors.first('willNotReleaseDroppableGames') }}</span>
+        </div>
       </div>
 
       <hr />
@@ -204,6 +241,11 @@
         if (this.value.counterPicks === 0) {
           this.value.counterPicks = 1;
         }
+
+        this.value.freeDroppableGames = 2;
+        this.value.willNotReleaseDroppableGames = 0;
+        this.value.unlimitedFreeDroppableGames = false;
+        this.value.unlimitedWillNotReleaseDroppableGames = true;
 
         this.$emit('input', this.local);
       }

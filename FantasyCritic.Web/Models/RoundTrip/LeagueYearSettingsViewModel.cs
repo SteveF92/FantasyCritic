@@ -22,6 +22,12 @@ namespace FantasyCritic.Web.Models.RoundTrip
             StandardGames = leagueYear.Options.StandardGames;
             GamesToDraft = leagueYear.Options.GamesToDraft;
             CounterPicks = leagueYear.Options.CounterPicks;
+
+            FreeDroppableGames = leagueYear.Options.FreeDroppableGames;
+            WillNotReleaseDroppableGames = leagueYear.Options.WillNotReleaseDroppableGames;
+            UnlimitedFreeDroppableGames = leagueYear.Options.FreeDroppableGames == -1;
+            UnlimitedWillNotReleaseDroppableGames = leagueYear.Options.WillNotReleaseDroppableGames == -1;
+
             MaximumEligibilityLevel = leagueYear.Options.AllowedEligibilitySettings.EligibilityLevel.Level;
             AllowYearlyInstallments = leagueYear.Options.AllowedEligibilitySettings.YearlyInstallment;
             AllowEarlyAccess = leagueYear.Options.AllowedEligibilitySettings.EarlyAccess;
@@ -45,10 +51,16 @@ namespace FantasyCritic.Web.Models.RoundTrip
         public int GamesToDraft { get; set; }
         [Required]
         public int CounterPicks { get; set; }
+
         [Required]
         public int FreeDroppableGames { get; set; }
         [Required]
         public int WillNotReleaseDroppableGames { get; set; }
+        [Required]
+        public bool UnlimitedFreeDroppableGames { get; set; }
+        [Required]
+        public bool UnlimitedWillNotReleaseDroppableGames { get; set; }
+
         [Required]
         public int MaximumEligibilityLevel { get; set; }
         [Required]

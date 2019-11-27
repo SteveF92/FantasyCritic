@@ -20,12 +20,17 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         [Range(0,20)]
         public int CounterPicks { get; set; }
+
         [Required]
         [Range(0, 30)]
         public int FreeDroppableGames { get; set; }
         [Required]
         [Range(0, 30)]
         public int WillNotReleaseDroppableGames { get; set; }
+        [Required]
+        public bool UnlimitedFreeDroppableGames { get; set; }
+        [Required]
+        public bool UnlimitedWillNotReleaseDroppableGames { get; set; }
 
         [Required]
         public int InitialYear { get; set; }
@@ -59,8 +64,19 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
+            int freeDroppableGames = FreeDroppableGames;
+            if (UnlimitedFreeDroppableGames)
+            {
+                freeDroppableGames = -1;
+            }
+            int willNotReleaseDroppableGames = WillNotReleaseDroppableGames;
+            if (UnlimitedWillNotReleaseDroppableGames)
+            {
+                willNotReleaseDroppableGames = -1;
+            }
+
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
-                FreeDroppableGames, WillNotReleaseDroppableGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
+                freeDroppableGames, willNotReleaseDroppableGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
                 AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }
