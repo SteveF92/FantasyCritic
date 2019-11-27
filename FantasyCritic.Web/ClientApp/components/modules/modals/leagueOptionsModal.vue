@@ -20,6 +20,16 @@
             <td>{{leagueYearOptions.counterPicks}}</td>
           </tr>
           <tr>
+            <th class="bg-primary">"Free" Droppable Games</th>
+            <td v-show="leagueYearOptions.freeDroppableGames !== -1">{{leagueYearOptions.freeDroppableGames}}</td>
+            <td v-show="leagueYearOptions.freeDroppableGames === -1">Unlimited</td>
+          </tr>
+          <tr>
+            <th class="bg-primary">"Will not Release" Droppable Games</th>
+            <td v-show="leagueYearOptions.willNotReleaseDroppableGames !== -1">{{leagueYearOptions.willNotReleaseDroppableGames}}</td>
+            <td v-show="leagueYearOptions.willNotReleaseDroppableGames === -1">Unlimited</td>
+          </tr>
+          <tr>
             <th class="bg-primary">Maximum Eligibility Level</th>
             <td>{{leagueYearOptions.maximumEligibilityLevel}}</td>
           </tr>
