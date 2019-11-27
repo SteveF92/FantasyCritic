@@ -110,8 +110,19 @@ namespace FantasyCritic.Web.Models.RoundTrip
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
+            int freeDroppableGames = FreeDroppableGames;
+            if (UnlimitedFreeDroppableGames)
+            {
+                freeDroppableGames = -1;
+            }
+            int willNotReleaseDroppableGames = WillNotReleaseDroppableGames;
+            if (UnlimitedWillNotReleaseDroppableGames)
+            {
+                willNotReleaseDroppableGames = -1;
+            }
+
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,
-                FreeDroppableGames, WillNotReleaseDroppableGames, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay,
+                freeDroppableGames, willNotReleaseDroppableGames, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay,
                 AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague);
             return parameters;
         }
