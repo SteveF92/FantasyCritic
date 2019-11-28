@@ -16,13 +16,14 @@
           <vue-slider v-model="gameMode" :data="gameModeOptions" :marks="gameModeMarks">
           </vue-slider>
         </div>
+        <p>These modes only change the recommended settings. You are free to customize any value you want.</p>
       </div>
     </div>
 
     <div v-if="intendedNumberOfPlayersEverValid || editMode">
       <div v-show="!editMode">
         <hr />
-        <label>Based on your number of players, we recommend the following settings. However, you are free to change this.</label>
+        <label>Based on your number of players and selected game mode, we recommend the following settings. However, you are free to change this.</label>
       </div>
 
       <div class="form-group">
@@ -68,7 +69,7 @@
           For more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
         </p>
 
-        <b-form-checkbox v-model="local.unlimitedFreeDroppableGames" @input="update('unlimitedFreeDroppableGames', local.unlimitedFreeDroppableGames)">
+        <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedFreeDroppableGames" @input="update('unlimitedFreeDroppableGames', local.unlimitedFreeDroppableGames)">
           <span class="checkbox-label">Unlimited</span>
         </b-form-checkbox>
 
@@ -86,7 +87,7 @@
           Again, for more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
         </p>
 
-        <b-form-checkbox v-model="local.unlimitedWillNotReleaseDroppableGames" @input="update('unlimitedWillNotReleaseDroppableGames', local.unlimitedWillNotReleaseDroppableGames)">
+        <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillNotReleaseDroppableGames" @input="update('unlimitedWillNotReleaseDroppableGames', local.unlimitedWillNotReleaseDroppableGames)">
           <span class="checkbox-label">Unlimited</span>
         </b-form-checkbox>
 
@@ -108,11 +109,17 @@
         <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
         <p class="eligibility-explanation">
           Eligibility levels are designed to prevent people from taking "uninteresting" games. Every game on the site is assigned a 'level' to seperate 'new games' from remakes, remasters, ports, and everything
-          in between. Setting this to a low number means being more restrictive, setting it to a higher number means being more lenient. I reccommend setting '2'. For more details,
+          in between. Setting this to a low number means being more restrictive, setting it to a higher number means being more lenient. The recommended setting is "2", which is a basic remake. For more information,
           <a href="/faq#eligibility" target="_blank">
             click here.
           </a>
         </p>
+        <div class="alert alert-warning" v-show="local.maximumEligibilityLevel === 0">
+          Are you sure you want to be this restrictive? At this level, you wouldn't allow a game such as "Resident Evil 2: Remake".
+        </div>
+        <div class="alert alert-info" v-show="local.maximumEligibilityLevel === 1">
+          Are you sure you want to be this restrictive? At this level, you wouldn't allow a game such as "The Legend of Zelda: Link's Awakening (Switch)".
+        </div>
         <div class="alert alert-warning" v-show="local.maximumEligibilityLevel === 5">
           I really don't recommend using setting '5'. Games that fall under this category often don't even get re-reviewed when they are released on their new platforms. Again, I recomend that you
           be restrictive here and allow exemptions if need be.
@@ -187,7 +194,7 @@
       return {
         intendedNumberOfPlayers: "",
         intendedNumberOfPlayersEverValid: false,
-        gameMode: 0,
+        gameMode: "Standard",
         gameModeOptions: [
           "Beginner",
           "Standard",
@@ -288,25 +295,34 @@
       update(key, value) {
         this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
       },
-    },
-    watch: {
-      intendedNumberOfPlayers: function (val) {
-        if (!val) {
-          return;
-        }
+      autoUpdateOptions() {
         if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 14) {
           this.intendedNumberOfPlayersEverValid = true;
         }
+
         let recommendedNumberOfGames = 72;
-        this.value.standardGames = Math.floor(recommendedNumberOfGames / val);
-        if (this.value.standardGames > 25) {
-          this.value.standardGames = 25;
+        let draftGameRatio = (1 / 2);
+
+        if (this.gameMode === "Beginner") {
+          recommendedNumberOfGames = 42;
+          draftGameRatio = (4 / 7);
+        } else if (this.gameMode === "Advanced") {
+          recommendedNumberOfGames = 108;
+          draftGameRatio = (4 / 9);
         }
-        if (this.value.standardGames < 10) {
-          this.value.standardGames = 10;
-        }
-        this.value.gamesToDraft = Math.floor(this.value.standardGames / 2);
-        this.value.counterPicks = Math.floor(this.value.gamesToDraft / 6);
+
+        let averageSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / 6);
+        let averageSizeLeagueGamesToDraft = Math.floor(averageSizeLeagueStandardGames * draftGameRatio);
+        let averageSizeLeagueCounterPicks = Math.floor(averageSizeLeagueGamesToDraft / 4);
+
+        let thisSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / this.intendedNumberOfPlayers);
+        let thisSizeLeagueGamesToDraft = Math.floor(averageSizeLeagueStandardGames * draftGameRatio);
+        let thisSizeLeagueCounterPicks = Math.floor(averageSizeLeagueGamesToDraft / 4);
+
+        this.value.standardGames = Math.floor((averageSizeLeagueStandardGames + thisSizeLeagueStandardGames) / 2);
+        this.value.gamesToDraft = Math.floor((averageSizeLeagueGamesToDraft + thisSizeLeagueGamesToDraft) / 2);
+        this.value.counterPicks = Math.floor((averageSizeLeagueCounterPicks + thisSizeLeagueCounterPicks) / 2);
+
         if (this.value.counterPicks === 0) {
           this.value.counterPicks = 1;
         }
@@ -317,6 +333,14 @@
         this.value.unlimitedWillNotReleaseDroppableGames = true;
 
         this.$emit('input', this.local);
+      }
+    },
+    watch: {
+      intendedNumberOfPlayers: function (val) {
+        this.autoUpdateOptions();
+      },
+      gameMode: function (val) {
+        this.autoUpdateOptions();
       }
     }
   }
@@ -350,6 +374,10 @@
   .mode-slider {
     margin-left: 25px;
     margin-right: 25px;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
+  }
+
+  .unlimited-checkbox{
+    margin-bottom: 10px;
   }
 </style>
