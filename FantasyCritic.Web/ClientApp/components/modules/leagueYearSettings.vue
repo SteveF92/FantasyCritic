@@ -316,8 +316,8 @@
         let averageSizeLeagueCounterPicks = Math.floor(averageSizeLeagueGamesToDraft / 4);
 
         let thisSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / this.intendedNumberOfPlayers);
-        let thisSizeLeagueGamesToDraft = Math.floor(averageSizeLeagueStandardGames * draftGameRatio);
-        let thisSizeLeagueCounterPicks = Math.floor(averageSizeLeagueGamesToDraft / 4);
+        let thisSizeLeagueGamesToDraft = Math.floor(thisSizeLeagueStandardGames * draftGameRatio);
+        let thisSizeLeagueCounterPicks = Math.floor(thisSizeLeagueGamesToDraft / 4);
 
         this.value.standardGames = Math.floor((averageSizeLeagueStandardGames + thisSizeLeagueStandardGames) / 2);
         this.value.gamesToDraft = Math.floor((averageSizeLeagueGamesToDraft + thisSizeLeagueGamesToDraft) / 2);
