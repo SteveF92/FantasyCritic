@@ -74,7 +74,7 @@
         </b-form-checkbox>
 
         <div v-if="!local.unlimitedFreeDroppableGames">
-          <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)" v-validate="'required|max_value:5'"
+          <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)" v-validate="maxFreeDroppableGamesRule"
                  id="freeDroppableGames" name="freeDroppableGames" type="text" class="form-control input" />
           <span class="text-danger">{{ errors.first('freeDroppableGames') }}</span>
         </div>
@@ -92,7 +92,7 @@
         </b-form-checkbox>
 
         <div v-if="!local.unlimitedWillNotReleaseDroppableGames">
-          <input v-model="local.willNotReleaseDroppableGames" @input="update('willNotReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:5'"
+          <input v-model="local.willNotReleaseDroppableGames" @input="update('willNotReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
                  id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input" />
           <span class="text-danger">{{ errors.first('willNotReleaseDroppableGames') }}</span>
         </div>
@@ -290,6 +290,16 @@
       local() {
         return this.value;
       },
+      maxFreeDroppableGamesRule() {
+        return "required|max_value:" + this.maxFreeDroppableGamesValue;
+      },
+      maxFreeDroppableGamesValue() {
+        if (this.value.unlimitedWillNotReleaseDroppableGames) {
+          return 100;
+        }
+
+        return this.value.willNotReleaseDroppableGames;
+      }
     },
     methods: {
       update(key, value) {
