@@ -12,6 +12,11 @@
 
       <div class="form-group">
         <label for="gameMode" class="control-label">Game Mode</label>
+        <p>
+        This slider changes the recommended number of games per player. If you've played Fantasy Critic before, consider using Advanced.
+        <br />
+        If you're playing with people new to video games in general, consider using Beginner.
+        </p>
         <div class="mode-slider">
           <vue-slider v-model="gameMode" :data="gameModeOptions" :marks="gameModeMarks">
           </vue-slider>
@@ -32,7 +37,7 @@
           This is the total number of games that each player will have on their roster.
         </p>
 
-        <input v-model="local.standardGames" @input="update('standardGames', $event.target.value)" v-validate="'required|min_value:1|max_value:30'" id="standardGames" name="standardGames" type="text" class="form-control input" />
+        <input v-model="local.standardGames" @input="update('standardGames', $event.target.value)" v-validate="'required|min_value:1|max_value:50'" id="standardGames" name="standardGames" type="text" class="form-control input" />
         <span class="text-danger">{{ errors.first('standardGames') }}</span>
       </div>
 
@@ -45,7 +50,7 @@
             Pickup Games.
           </a>
         </p>
-        <input v-model="local.gamesToDraft" @input="update('gamesToDraft', $event.target.value)" v-validate="'required|min_value:1|max_value:30'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
+        <input v-model="local.gamesToDraft" @input="update('gamesToDraft', $event.target.value)" v-validate="'required|min_value:1|max_value:50'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
         <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
       </div>
 

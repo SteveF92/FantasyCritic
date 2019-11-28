@@ -43,9 +43,9 @@
     computed: {
       leagueYearIsValid() {
         let valid = this.leagueYearSettings &&
-          this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 30 &&
-          this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 30 &&
-          this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 5;
+          this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 &&
+          this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 50 &&
+          this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
         return valid;
       }
     },

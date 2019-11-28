@@ -46,15 +46,20 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Required]
         public string LeagueName { get; set; }
         [Required]
+        [Range(1, 50)]
         public int StandardGames { get; set; }
         [Required]
+        [Range(1, 50)]
         public int GamesToDraft { get; set; }
         [Required]
+        [Range(1, 20)]
         public int CounterPicks { get; set; }
 
         [Required]
+        [Range(0, 100)]
         public int FreeDroppableGames { get; set; }
         [Required]
+        [Range(0, 100)]
         public int WillNotReleaseDroppableGames { get; set; }
         [Required]
         public bool UnlimitedFreeDroppableGames { get; set; }

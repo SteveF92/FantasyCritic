@@ -12,20 +12,20 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         public string LeagueName { get; set; }
 
         [Required]
-        [Range(1,30)]
+        [Range(1, 50)]
         public int StandardGames { get; set; }
         [Required]
-        [Range(1,30)]
+        [Range(1, 50)]
         public int GamesToDraft { get; set; }
         [Required]
         [Range(0,20)]
         public int CounterPicks { get; set; }
 
         [Required]
-        [Range(0, 30)]
+        [Range(0, 100)]
         public int FreeDroppableGames { get; set; }
         [Required]
-        [Range(0, 30)]
+        [Range(0, 100)]
         public int WillNotReleaseDroppableGames { get; set; }
         [Required]
         public bool UnlimitedFreeDroppableGames { get; set; }
