@@ -8,11 +8,10 @@
         <p>{{errorInfo}}</p>
       </div>
 
-      <div v-if="possibleLeagueOptions && leagueYearSettings">
+      <div v-if="possibleLeagueOptions && leagueYearSettings && leagueYear">
         <div class="text-well">
-          <leagueYearSettings :year="year" :possibleLeagueOptions="possibleLeagueOptions" :editMode="true" v-model="leagueYearSettings"></leagueYearSettings>
+          <leagueYearSettings :year="year" :possibleLeagueOptions="possibleLeagueOptions" :editMode="true" :currentNumberOfPlayers="activePlayersInLeague" v-model="leagueYearSettings"></leagueYearSettings>
         </div>
-
 
         <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">
           Some of your settings are invalid.
@@ -34,7 +33,8 @@
       return {
         errorInfo: "",
         possibleLeagueOptions: null,
-        leagueYearSettings: null
+        leagueYearSettings: null,
+        leagueYear: null
       }
     },
     components: {
@@ -47,6 +47,12 @@
           this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 50 &&
           this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
         return valid;
+      },
+      activePlayersInLeague() {
+        if (!this.leagueYear || !this.leagueYear.players) {
+          return null;
+        }
+        return this.leagueYear.players.length;
       }
     },
     props: ['leagueid', 'year'],
@@ -57,6 +63,14 @@
           .then(response => {
             this.possibleLeagueOptions = response.data;
           })
+          .catch(returnedError => (this.error = returnedError));
+      },
+      fetchLeagueYear() {
+        axios
+            .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
+            .then(response => {
+              this.leagueYear = response.data;
+            })
           .catch(returnedError => (this.error = returnedError));
       },
       fetchCurrentLeagueYearOptions() {
@@ -83,6 +97,7 @@
     mounted() {
       this.fetchLeagueOptions();
       this.fetchCurrentLeagueYearOptions();
+      this.fetchLeagueYear();
     }
   }
 </script>

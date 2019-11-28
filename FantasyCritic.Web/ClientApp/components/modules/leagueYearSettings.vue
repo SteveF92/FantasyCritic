@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!editMode">
+    <div>
       <h2>Game Settings</h2>
       <p>Settings in this section can be different from year to year for your league.</p>
       <div class="form-group">
@@ -194,7 +194,7 @@
   import { cloneDeep, tap, set } from 'lodash'
 
   export default {
-    props: ['year', 'possibleLeagueOptions', 'editMode', 'value'],
+    props: ['year', 'possibleLeagueOptions', 'editMode', 'value', 'currentNumberOfPlayers'],
     data() {
       return {
         intendedNumberOfPlayers: "",
@@ -360,6 +360,11 @@
       },
       gameMode: function (val) {
         this.autoUpdateOptions();
+      }
+    },
+    mounted() {
+      if (this.currentNumberOfPlayers) {
+        this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
       }
     }
   }
