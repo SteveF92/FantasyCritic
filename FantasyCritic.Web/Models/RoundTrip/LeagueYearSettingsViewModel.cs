@@ -104,6 +104,28 @@ namespace FantasyCritic.Web.Models.RoundTrip
             return true;
         }
 
+        public bool IsValid()
+        {
+            if (UnlimitedFreeDroppableGames && UnlimitedFreeDroppableGames)
+            {
+                return true;
+            }
+
+            int freeDroppableGamesCompare = FreeDroppableGames;
+            if (UnlimitedFreeDroppableGames)
+            {
+                freeDroppableGamesCompare = int.MaxValue;
+            }
+
+            int willNotReleaseDroppableGames = WillNotReleaseDroppableGames;
+            if (UnlimitedWillNotReleaseDroppableGames)
+            {
+                willNotReleaseDroppableGames = int.MaxValue;
+            }
+
+            return freeDroppableGamesCompare <= willNotReleaseDroppableGames;
+        }
+
         public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
