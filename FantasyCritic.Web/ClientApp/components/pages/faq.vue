@@ -10,7 +10,7 @@
         <li><a href="#league-creation">League Creation</a></li>
         <li><a href="#drafting">Drafting</a></li>
         <li><a href="#bidding-system">Bidding System</a></li>
-        <li><a href="#dropping-games">Bidding System</a></li>
+        <li><a href="#dropping-games">Dropping Games</a></li>
         <li><a href="#scoring">Scoring</a></li>
         <li><a href="#eligibility">Eligibility</a></li>
         <li><a href="#winning">Winning</a></li>
@@ -270,7 +270,16 @@
       <faqCollapse>
         <div slot="question">How does the "dropping games" system work?</div>
         <div slot="answer">
-          Work in progress.
+          There's two types of "droppable" games. Games that are confirmed to not release in the given year are counted seperately from other games. Games that have already released or already have review scores are never droppable.
+          The league manager can choose how many (or unlimited) games can be dropped of each type. The number of "will not release" droppable games must be higher than the number of "free" droppable games, which are the games that
+          still are going to come out, but haven't yet.
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">How do I drop a game?</div>
+        <div slot="answer">
+          Games are dropped in similar way to the way games are bid on. Drops are requested, and then those drops are processed on Sunday night at 8PM Eastern Time. The reason for this is to make sure that someone can't drop a game
+          that releases and gets a bad score before my database recognizes that the game has been reviewed. Doing it this way allows us to confirm that all games being dropped have up to date information.
         </div>
       </faqCollapse>
       <br />
