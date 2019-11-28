@@ -9,6 +9,14 @@
         <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
         <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
       </div>
+
+      <div class="form-group">
+        <label for="gameMode" class="control-label">Game Mode</label>
+        <div class="mode-slider">
+          <vue-slider v-model="gameMode" :data="gameModeOptions" :marks="gameModeMarks">
+          </vue-slider>
+        </div>
+      </div>
     </div>
 
     <div v-if="intendedNumberOfPlayersEverValid || editMode">
@@ -178,7 +186,68 @@
     data() {
       return {
         intendedNumberOfPlayers: "",
-        intendedNumberOfPlayersEverValid: false
+        intendedNumberOfPlayersEverValid: false,
+        gameMode: 0,
+        gameModeOptions: [
+          "Beginner",
+          "Standard",
+          "Advanced"
+        ],
+        gameModeMarks: {
+          'Beginner': {
+            label: 'Beginner',
+            style: {
+              width: '8px',
+              height: '8px',
+              display: 'block',
+              transform: 'translate(-2px, -2px)'
+            },
+            labelStyle: {
+              color: 'white',
+              fontWeight: 'bolder',
+              fontSize: '15px'
+            }
+          },
+          'Standard': {
+            label: 'Standard',
+            style: {
+              width: '8px',
+              height: '8px',
+              display: 'block',
+              transform: 'translate(-2px, -2px)'
+            },
+            labelStyle: {
+              color: 'white',
+              fontWeight: 'bolder',
+              fontSize: '15px'
+            }
+          },
+          'Advanced': {
+            label: 'Advanced',
+            style: {
+              width: '8px',
+              height: '8px',
+              display: 'block',
+              transform: 'translate(-2px, -2px)'
+            },
+            labelStyle: {
+              color: 'white',
+              fontWeight: 'bolder',
+              fontSize: '15px'
+            }
+          }
+        },
+        markStyle: {
+          width: '8px',
+          height: '8px',
+          display: 'block',
+          transform: 'translate(-2px, -2px)'
+        },
+        labelStyle: {
+          color: 'white',
+          fontWeight: 'bolder',
+          fontSize: '15px'
+        }
       }
     },
     components: {
@@ -277,9 +346,10 @@
   label {
     font-size: 18px;
   }
-</style>
-<style>
-  .vue-slider-piecewise-label {
-    color: white !important;
+
+  .mode-slider {
+    margin-left: 25px;
+    margin-right: 25px;
+    margin-bottom: 50px;
   }
 </style>
