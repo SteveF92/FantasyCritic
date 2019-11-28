@@ -342,6 +342,10 @@
           this.value.counterPicks = 1;
         }
 
+        if (this.gameMode === "Beginner") {
+          this.value.counterPicks = 0;
+        } 
+
         this.value.freeDroppableGames = 2;
         this.value.willNotReleaseDroppableGames = 0;
         this.value.unlimitedFreeDroppableGames = false;
