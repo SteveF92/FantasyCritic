@@ -60,7 +60,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Range(1, 50)]
         public int GamesToDraft { get; set; }
         [Required]
-        [Range(1, 20)]
+        [Range(0, 20)]
         public int CounterPicks { get; set; }
 
         [Required]
