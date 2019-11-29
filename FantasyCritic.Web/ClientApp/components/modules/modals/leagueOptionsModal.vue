@@ -21,13 +21,13 @@
           </tr>
           <tr>
             <th class="bg-primary">"Free" Droppable Games</th>
-            <td v-show="leagueYearOptions.freeDroppableGames !== -1">{{leagueYearOptions.freeDroppableGames}}</td>
-            <td v-show="leagueYearOptions.freeDroppableGames === -1">Unlimited</td>
+            <td v-show="!leagueYearOptions.unlimitedFreeDroppableGames">{{leagueYearOptions.freeDroppableGames}}</td>
+            <td v-show="leagueYearOptions.unlimitedFreeDroppableGames">Unlimited</td>
           </tr>
           <tr>
             <th class="bg-primary">"Will not Release" Droppable Games</th>
-            <td v-show="leagueYearOptions.willNotReleaseDroppableGames !== -1">{{leagueYearOptions.willNotReleaseDroppableGames}}</td>
-            <td v-show="leagueYearOptions.willNotReleaseDroppableGames === -1">Unlimited</td>
+            <td v-show="!leagueYearOptions.unlimitedWillNotReleaseDroppableGames">{{leagueYearOptions.willNotReleaseDroppableGames}}</td>
+            <td v-show="leagueYearOptions.unlimitedWillNotReleaseDroppableGames">Unlimited</td>
           </tr>
           <tr>
             <th class="bg-primary">Maximum Eligibility Level</th>
