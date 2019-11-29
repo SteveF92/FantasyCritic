@@ -24,9 +24,17 @@ namespace FantasyCritic.Web.Models.RoundTrip
             CounterPicks = leagueYear.Options.CounterPicks;
 
             FreeDroppableGames = leagueYear.Options.FreeDroppableGames;
+            if (leagueYear.Options.FreeDroppableGames == -1)
+            {
+                FreeDroppableGames = 0;
+                UnlimitedFreeDroppableGames = true;
+            }
             WillNotReleaseDroppableGames = leagueYear.Options.WillNotReleaseDroppableGames;
-            UnlimitedFreeDroppableGames = leagueYear.Options.FreeDroppableGames == -1;
-            UnlimitedWillNotReleaseDroppableGames = leagueYear.Options.WillNotReleaseDroppableGames == -1;
+            if (leagueYear.Options.WillNotReleaseDroppableGames == -1)
+            {
+                WillNotReleaseDroppableGames = 0;
+                UnlimitedWillNotReleaseDroppableGames = true;
+            }
 
             MaximumEligibilityLevel = leagueYear.Options.AllowedEligibilitySettings.EligibilityLevel.Level;
             AllowYearlyInstallments = leagueYear.Options.AllowedEligibilitySettings.YearlyInstallment;

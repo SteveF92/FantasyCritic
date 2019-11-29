@@ -227,7 +227,7 @@
         this.$emit('actionTaken', actionInfo);
       },
       newYearAdded(year) {
-        this.$router.push({ name: "editLeague", params: { leagueid: this.league.leagueID, year: year } });
+        this.$router.push({ name: "editLeague", params: { leagueid: this.league.leagueID, year: year }, query: { freshSettings: true }});
       },
       playerRemoved(removeInfo) {
         let actionInfo = {

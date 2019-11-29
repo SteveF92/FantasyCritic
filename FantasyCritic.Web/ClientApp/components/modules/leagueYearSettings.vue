@@ -1,32 +1,37 @@
 <template>
   <div>
     <div>
-      <h2>Game Settings</h2>
-      <p>Settings in this section can be different from year to year for your league.</p>
-      <div class="form-group">
-        <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-        <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
-        <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
-        <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
+      <div v-show="!editMode">
+        <h2>Game Settings</h2>
+        <p>Settings in this section can be different from year to year for your league.</p>
       </div>
 
-      <div class="form-group">
-        <label for="gameMode" class="control-label">Game Mode</label>
-        <p>
-        This slider changes the recommended number of games per player. If you've played Fantasy Critic before, consider using Advanced.
-        <br />
-        If you're playing with people new to video games in general, consider using Beginner.
-        </p>
-        <div class="mode-slider">
-          <vue-slider v-model="gameMode" :data="gameModeOptions" :marks="gameModeMarks">
-          </vue-slider>
+      <div v-if="freshSettings">
+        <div class="form-group">
+          <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
+          <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
+          <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
         </div>
-        <p>These modes only change the recommended settings. You are free to customize any value you want.</p>
+
+        <div class="form-group">
+          <label for="gameMode" class="control-label">Game Mode</label>
+          <p>
+            This slider changes the recommended number of games per player. If you've played Fantasy Critic before, consider using Advanced.
+            <br />
+            If you're playing with people new to video games in general, consider using Beginner.
+          </p>
+          <div class="mode-slider">
+            <vue-slider v-model="gameMode" :data="gameModeOptions" :marks="gameModeMarks">
+            </vue-slider>
+          </div>
+          <p>These modes only change the recommended settings. You are free to customize any value you want.</p>
+        </div>
       </div>
     </div>
 
     <div v-if="intendedNumberOfPlayersEverValid || editMode">
-      <div v-show="!editMode">
+      <div v-show="freshSettings">
         <hr />
         <label>Based on your number of players and selected game mode, we recommend the following settings. However, you are free to change this.</label>
       </div>
@@ -194,7 +199,7 @@
   import { cloneDeep, tap, set } from 'lodash'
 
   export default {
-    props: ['year', 'possibleLeagueOptions', 'editMode', 'value', 'currentNumberOfPlayers'],
+    props: ['year', 'possibleLeagueOptions', 'editMode', 'value', 'currentNumberOfPlayers', 'freshSettings'],
     data() {
       return {
         intendedNumberOfPlayers: "",
@@ -363,7 +368,7 @@
       }
     },
     mounted() {
-      if (this.currentNumberOfPlayers) {
+      if (this.currentNumberOfPlayers && this.freshSettings) {
         this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
       }
     }

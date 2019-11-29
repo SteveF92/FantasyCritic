@@ -10,7 +10,8 @@
 
       <div v-if="possibleLeagueOptions && leagueYearSettings && leagueYear">
         <div class="text-well">
-          <leagueYearSettings :year="year" :possibleLeagueOptions="possibleLeagueOptions" :editMode="true" :currentNumberOfPlayers="activePlayersInLeague" v-model="leagueYearSettings"></leagueYearSettings>
+          <leagueYearSettings :year="year" :possibleLeagueOptions="possibleLeagueOptions" :editMode="true" :currentNumberOfPlayers="activePlayersInLeague"
+                              :freshSettings="freshSettings" v-model="leagueYearSettings"></leagueYearSettings>
         </div>
 
         <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">
@@ -34,7 +35,8 @@
         errorInfo: "",
         possibleLeagueOptions: null,
         leagueYearSettings: null,
-        leagueYear: null
+        leagueYear: null,
+        freshSettings: false
       }
     },
     components: {
@@ -95,6 +97,7 @@
       }
     },
     mounted() {
+      this.freshSettings = this.$route.query.freshSettings;
       this.fetchLeagueOptions();
       this.fetchCurrentLeagueYearOptions();
       this.fetchLeagueYear();
