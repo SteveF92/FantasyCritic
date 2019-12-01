@@ -135,15 +135,6 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            IReadOnlyList<FantasyCriticUser> players = await GetUsersInLeague(league);
-            IReadOnlyList<LeagueInvite> outstandingInvites = await GetOutstandingInvitees(league);
-            int totalPlayers = players.Count + outstandingInvites.Count;
-
-            if (totalPlayers >= 14)
-            {
-                return Result.Fail("A league cannot have more than 14 players.");
-            }
-
             LeagueInvite invite = new LeagueInvite(Guid.NewGuid(), league, inviteEmail);
 
             await _fantasyCriticRepo.SaveInvite(invite);
@@ -163,15 +154,6 @@ namespace FantasyCritic.Lib.Services
             if (userInLeague)
             {
                 return Result.Fail("User is already in league.");
-            }
-
-            IReadOnlyList<FantasyCriticUser> players = await GetUsersInLeague(league);
-            IReadOnlyList<LeagueInvite> outstandingInvites = await GetOutstandingInvitees(league);
-            int totalPlayers = players.Count + outstandingInvites.Count;
-
-            if (totalPlayers >= 14)
-            {
-                return Result.Fail("A league cannot have more than 14 players.");
             }
 
             LeagueInvite invite = new LeagueInvite(Guid.NewGuid(), league, inviteUser);
@@ -206,15 +188,6 @@ namespace FantasyCritic.Lib.Services
             if (userInLeague)
             {
                 return Result.Fail("User is already in league.");
-            }
-
-            IReadOnlyList<FantasyCriticUser> players = await GetUsersInLeague(inviteLink.League);
-            IReadOnlyList<LeagueInvite> outstandingInvites = await GetOutstandingInvitees(inviteLink.League);
-            int totalPlayers = players.Count + outstandingInvites.Count;
-
-            if (totalPlayers >= 14)
-            {
-                return Result.Fail("A league cannot have more than 14 players.");
             }
 
             await _fantasyCriticRepo.AddPlayerToLeague(inviteLink.League, inviteUser);

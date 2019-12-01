@@ -35,7 +35,7 @@ namespace FantasyCritic.Lib.Services
             _gameAcquisitionService = gameAcquisitionService;
         }
 
-        public async Task<StartDraftResult> GetStartDraftResult(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> usersInLeague)
+        public async Task<StartDraftResult> GetStartDraftResult(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> activeUsers)
         {
             if (leagueYear.PlayStatus.PlayStarted)
             {
@@ -47,17 +47,17 @@ namespace FantasyCritic.Lib.Services
 
             List<string> errors = new List<string>();
 
-            if (usersInLeague.Count() < 2)
+            if (activeUsers.Count() < 2)
             {
                 errors.Add("You need to have at least two players in the league.");
             }
 
-            if (usersInLeague.Count() > 14)
+            if (activeUsers.Count() > 14)
             {
                 errors.Add("You cannot have more than 14 players in the league.");
             }
 
-            if (publishersInLeague.Count() != usersInLeague.Count())
+            if (publishersInLeague.Count() != activeUsers.Count())
             {
                 errors.Add("Not every player has created a publisher.");
             }
