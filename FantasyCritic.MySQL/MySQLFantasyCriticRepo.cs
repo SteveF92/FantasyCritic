@@ -1496,7 +1496,7 @@ namespace FantasyCritic.MySQL
 
         public Task SaveProcessedDropResults(DropProcessingResults dropProcessingResults)
         {
-            throw new NotImplementedException();
+            
         }
 
         public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
