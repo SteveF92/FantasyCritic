@@ -68,6 +68,14 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
         Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year);
         Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);
+        Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
+
+        Task CreateDropRequest(DropRequest currentDropRequest);
+        Task RemoveDropRequest(DropRequest dropRequest);
+        Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher);
+        Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year);
+        Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID);
+
         Task AddLeagueAction(LeagueAction action);
         Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
         Task ChangePublisherName(Publisher publisher, string publisherName);
@@ -92,7 +100,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task DeleteLeague(League league);
         Task DeleteLeagueActions(Publisher publisher);
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
-        Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
+        
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
         Task UpdateSystemWideValues(SystemWideValues systemWideValues);
     }
