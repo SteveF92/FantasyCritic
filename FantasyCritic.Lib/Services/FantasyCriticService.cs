@@ -25,10 +25,10 @@ namespace FantasyCritic.Lib.Services
         private readonly LeagueMemberService _leagueMemberService;
         private readonly PublisherService _publisherService;
         private readonly InterLeagueService _interLeagueService;
-        private readonly BidProcessingService _bidProcessingService;
+        private readonly ActionProcessingService _actionProcessingService;
 
         public FantasyCriticService(GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService, 
-            PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock, BidProcessingService bidProcessingService)
+            PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock, ActionProcessingService actionProcessingService)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
             _clock = clock;
@@ -37,7 +37,7 @@ namespace FantasyCritic.Lib.Services
             _publisherService = publisherService;
             _interLeagueService = interLeagueService;
             _gameAcquisitionService = gameAcquisitionService;
-            _bidProcessingService = bidProcessingService;
+            _actionProcessingService = actionProcessingService;
         }
 
         public Task<Maybe<League>> GetLeagueByID(Guid id)
@@ -336,7 +336,7 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            BidProcessingResults results = _bidProcessingService.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock, supportedYears);
+            BidProcessingResults results = _actionProcessingService.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock, supportedYears);
 
             return results;
         }
@@ -352,7 +352,7 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            DropProcessingResults results = _bidProcessingService.ProcessDropsIteration(systemWideValues, allDropRequests, allPublishers, _clock, supportedYears);
+            DropProcessingResults results = _actionProcessingService.ProcessDropsIteration(systemWideValues, allDropRequests, allPublishers, _clock, supportedYears);
 
             return results;
         }

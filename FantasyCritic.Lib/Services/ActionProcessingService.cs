@@ -10,12 +10,12 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Services
 {
-    public class BidProcessingService
+    public class ActionProcessingService
     {
         private readonly GameAcquisitionService _gameAcquisitionService;
         private readonly IClock _clock;
 
-        public BidProcessingService(GameAcquisitionService gameAcquisitionService, IClock clock)
+        public ActionProcessingService(GameAcquisitionService gameAcquisitionService, IClock clock)
         {
             _gameAcquisitionService = gameAcquisitionService;
             _clock = clock;
