@@ -208,6 +208,33 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
+        public async Task<ClaimResult> MakeDropRequest(Publisher publisher, MasterGame masterGame)
+        {
+            IReadOnlyList<DropRequest> dropRequests = await _fantasyCriticRepo.GetActiveDropRequests(publisher);
+            bool alreadyDropping = dropRequests.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
+            if (alreadyDropping)
+            {
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active drop requests for the same game.", false) });
+            }
+
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null);
+            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+
+            var leagueYear = publisher.LeagueYear;
+            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
+
+            var claimResult = _gameAcquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear);
+            if (!claimResult.Success)
+            {
+                return claimResult;
+            }
+
+            DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, leagueYear, masterGame, _clock.GetCurrentInstant(), null);
+            await _fantasyCriticRepo.CreateDropRequest(dropRequest);
+
+            return claimResult;
+        }
+
         public Task<IReadOnlyList<PickupBid>> GetActiveAcquistitionBids(Publisher publisher)
         {
             return _fantasyCriticRepo.GetActivePickupBids(publisher);
@@ -218,9 +245,19 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetActivePickupBids(supportedYear.Year);
         }
 
+        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(SupportedYear supportedYear)
+        {
+            return _fantasyCriticRepo.GetActiveDropRequests(supportedYear.Year);
+        }
+
         public Task<Maybe<PickupBid>> GetPickupBid(Guid bidID)
         {
             return _fantasyCriticRepo.GetPickupBid(bidID);
+        }
+
+        public Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequest)
+        {
+            return _fantasyCriticRepo.GetDropRequest(dropRequest);
         }
 
         public async Task<Result> RemovePickupBid(PickupBid bid)
@@ -231,6 +268,17 @@ namespace FantasyCritic.Lib.Services
             }
 
             await _fantasyCriticRepo.RemovePickupBid(bid);
+            return Result.Ok();
+        }
+
+        public async Task<Result> RemoveDropRequest(DropRequest dropRequest)
+        {
+            if (dropRequest.Successful != null)
+            {
+                return Result.Fail("Drop request has already been processed");
+            }
+
+            await _fantasyCriticRepo.RemoveDropRequest(dropRequest);
             return Result.Ok();
         }
 
@@ -299,6 +347,22 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.SaveProcessedBidResults(results);
         }
 
+        public async Task<DropProcessingResults> GetDropProcessingDryRun(SystemWideValues systemWideValues, int year)
+        {
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
+            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
+            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+            DropProcessingResults results = _bidProcessingService.ProcessDropsIteration(systemWideValues, allDropRequests, allPublishers, _clock, supportedYears);
+
+            return results;
+        }
+
+        public async Task ProcesDrops(SystemWideValues systemWideValues, int year)
+        {
+            var results = await GetDropProcessingDryRun(systemWideValues, year);
+            await _fantasyCriticRepo.SaveProcessedDropResults(results);
+        }
+
         public Task ChangePublisherName(Publisher publisher, string publisherName)
         {
             return _fantasyCriticRepo.ChangePublisherName(publisher, publisherName);
@@ -333,6 +397,12 @@ namespace FantasyCritic.Lib.Services
                     foreach (var bid in bids)
                     {
                         await _fantasyCriticRepo.RemovePickupBid(bid);
+                    }
+
+                    var dropRequests = await _fantasyCriticRepo.GetActiveDropRequests(publisher);
+                    foreach (var dropRequest in dropRequests)
+                    {
+                        await _fantasyCriticRepo.RemoveDropRequest(dropRequest);
                     }
 
                     await _fantasyCriticRepo.DeletePublisher(publisher);

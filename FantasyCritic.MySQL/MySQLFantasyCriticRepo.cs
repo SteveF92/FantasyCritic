@@ -1494,6 +1494,11 @@ namespace FantasyCritic.MySQL
             }   
         }
 
+        public Task SaveProcessedDropResults(DropProcessingResults dropProcessingResults)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
         {
             string deleteSQL = "delete from tbl_caching_systemwidevalues;";

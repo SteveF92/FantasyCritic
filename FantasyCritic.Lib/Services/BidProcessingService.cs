@@ -180,5 +180,11 @@ namespace FantasyCritic.Lib.Services
             BidProcessingResults bidProcessingResults = new BidProcessingResults(successBids, simpleFailedBids, leagueActions, updatedPublishers, gamesToAdd);
             return bidProcessingResults;
         }
+
+        public DropProcessingResults ProcessDropsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, IReadOnlyList<Publisher> allPublishers, 
+            IClock clock, IReadOnlyList<SupportedYear> supportedYears)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
