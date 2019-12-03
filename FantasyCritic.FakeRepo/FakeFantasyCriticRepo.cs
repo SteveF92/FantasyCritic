@@ -292,6 +292,11 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult(pickupBid);
         }
 
+        public Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task AddLeagueAction(LeagueAction action)
         {
             throw new NotImplementedException();
@@ -408,6 +413,26 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task CreateDropRequest(DropRequest currentDropRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveDropRequest(DropRequest dropRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year)
         {
             throw new NotImplementedException();
         }

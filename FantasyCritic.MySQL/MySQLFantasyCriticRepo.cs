@@ -195,9 +195,18 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("delete from tbl_league_pickupbid where BidID = @bidID", new {pickupBid.BidID});
-                await connection.ExecuteAsync("update tbl_league_pickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority", 
-                    new { publisherID = pickupBid.Publisher.PublisherID, oldPriority = pickupBid.Priority });
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    {
+                        await connection.ExecuteAsync("delete from tbl_league_pickupbid where BidID = @BidID",
+                            new {pickupBid.BidID}, transaction);
+                        await connection.ExecuteAsync(
+                            "update tbl_league_pickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority",
+                            new {publisherID = pickupBid.Publisher.PublisherID, oldPriority = pickupBid.Priority}, transaction);
+                        transaction.Commit();
+                    }
+                }
             }
         }
 
@@ -249,6 +258,11 @@ namespace FantasyCritic.MySQL
 
                 return finalDictionary;
             }
+        }
+
+        public Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task AddLeagueAction(LeagueAction action)
@@ -1531,6 +1545,77 @@ namespace FantasyCritic.MySQL
 
                     transaction.Commit();
                 }
+            }
+        }
+
+        public async Task CreateDropRequest(DropRequest currentDropRequest)
+        {
+            var entity = new DropRequestEntity(currentDropRequest);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "insert into tbl_league_droprequest(DropRequestID,PublisherID,MasterGameID,Timestamp,Successful) VALUES " +
+                    "(@DropRequestID,@PublisherID,@MasterGameID,@Timestamp,@Successful);",
+                    entity);
+            }
+        }
+
+        public async Task RemoveDropRequest(DropRequest dropRequest)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("delete from tbl_league_droprequest where DropRequestID = @DropRequestID", new { dropRequest.DropRequestID });
+            }
+        }
+
+        public async Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher)
+        {
+            var leagueYear = publisher.LeagueYear;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var dropEntities = await connection.QueryAsync<DropRequestEntity>("select * from tbl_league_droprequest where PublisherID = @publisherID and Successful is NULL",
+                    new { publisherID = publisher.PublisherID });
+
+                List<DropRequest> domainDrops = new List<DropRequest>();
+                foreach (var dropEntity in dropEntities)
+                {
+                    var masterGame = await _masterGameRepo.GetMasterGame(dropEntity.MasterGameID);
+
+                    DropRequest domain = dropEntity.ToDomain(publisher, masterGame.Value, leagueYear);
+                    domainDrops.Add(domain);
+                }
+
+                return domainDrops;
+            }
+        }
+
+        public async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year)
+        {
+            var leagueYears = await GetLeagueYears(year);
+            var leagueDictionary = leagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
+            var publishers = await GetAllPublishersForYear(year);
+            var publisherDictionary = publishers.ToDictionary(x => x.PublisherID, y => y);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var dropEntities = await connection.QueryAsync<DropRequestEntity>("select * from vw_league_droprequest where Year = @year and Successful is NULL and IsDeleted = 0", new { year });
+
+                Dictionary<LeagueYear, List<DropRequest>> dropRequestsByLeagueYear = leagueYears.ToDictionary(x => x, y => new List<DropRequest>());
+
+                foreach (var dropEntity in dropEntities)
+                {
+                    var masterGame = await _masterGameRepo.GetMasterGame(dropEntity.MasterGameID);
+                    var publisher = publisherDictionary[dropEntity.PublisherID];
+                    var leagueYear = leagueDictionary[publisher.LeagueYear.League.LeagueID].Single(x => x.Year == year);
+
+                    DropRequest domainDrop = dropEntity.ToDomain(publisher, masterGame.Value, leagueYear);
+                    dropRequestsByLeagueYear[leagueYear].Add(domainDrop);
+                }
+
+                IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> finalDictionary = dropRequestsByLeagueYear.ToDictionary(x => x.Key, y => (IReadOnlyList<DropRequest>)y.Value);
+
+                return finalDictionary;
             }
         }
 
