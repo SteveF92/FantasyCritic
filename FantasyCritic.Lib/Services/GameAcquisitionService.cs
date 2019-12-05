@@ -38,7 +38,7 @@ namespace FantasyCritic.Lib.Services
             LeagueOptions yearOptions = leagueYear.Options;
             if (request.MasterGame.HasValue && !request.CounterPick)
             {
-                var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, request.CounterPick);
+                var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, request.CounterPick, false);
                 claimErrors.AddRange(masterGameErrors);
             }
 
@@ -97,6 +97,42 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
+        public DropResult CanDropGame(DropRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear)
+        {
+            List<ClaimError> dropErrors = new List<ClaimError>();
+
+            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, request.Publisher, supportedYears);
+            dropErrors.AddRange(basicErrors);
+
+            var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, true);
+            dropErrors.AddRange(masterGameErrors);
+
+            //Drop limits
+            LeagueOptions yearOptions = leagueYear.Options;
+            bool gameWillRelease = request.MasterGame.MinimumReleaseDate.Year == leagueYear.Year;
+            if (dropErrors.Any())
+            {
+                return new DropResult(Result.Fail("Game is no longer eligible for dropping."), !gameWillRelease);
+            }
+
+            if (gameWillRelease)
+            {
+                if (yearOptions.FreeDroppableGames != -1 && request.Publisher.FreeGamesDropped < yearOptions.FreeDroppableGames)
+                {
+                    return new DropResult(Result.Fail("Publisher cannot drop any more 'Free Droppable' Games"), !gameWillRelease);
+                }
+            }
+            else
+            {
+                if (yearOptions.WillNotReleaseDroppableGames != -1 && request.Publisher.WillNotReleaseGamesDropped < yearOptions.WillNotReleaseDroppableGames)
+                {
+                    return new DropResult(Result.Fail("Publisher cannot drop any more 'Will Not Release' Games"), !gameWillRelease);
+                }
+            }
+
+            return new DropResult(Result.Ok(), !gameWillRelease);
+        }
+
         public async Task<ClaimResult> CanAssociateGame(AssociateGameDomainRequest request)
         {
             List<ClaimError> associationErrors = new List<ClaimError>();
@@ -106,7 +142,7 @@ namespace FantasyCritic.Lib.Services
             associationErrors.AddRange(basicErrors);
 
             var leagueYear = request.Publisher.LeagueYear;
-            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, request.PublisherGame.CounterPick);
+            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, request.PublisherGame.CounterPick, false);
             associationErrors.AddRange(masterGameErrors);
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.LeagueYear);
@@ -168,25 +204,28 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool counterPick)
+        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool counterPick, bool dropping)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
-            var overriddenEligibility = leagueYear.GetOverriddenEligibility(masterGame);
-            if (overriddenEligibility.HasValue)
+            if (!dropping)
             {
-                if (!overriddenEligibility.Value)
+                var overriddenEligibility = leagueYear.GetOverriddenEligibility(masterGame);
+                if (overriddenEligibility.HasValue)
                 {
-                    claimErrors.Add(new ClaimError("That game has been specifically banned by your league.", false));
+                    if (!overriddenEligibility.Value)
+                    {
+                        claimErrors.Add(new ClaimError("That game has been specifically banned by your league.", false));
+                    }
+                }
+                else
+                {
+                    //Normal eligibility (not manually set)
+                    var eligibilityErrors = leagueYear.Options.AllowedEligibilitySettings.GameIsEligible(masterGame);
+                    claimErrors.AddRange(eligibilityErrors);
                 }
             }
-            else
-            {
-                //Normal eligibility (not manually set)
-                var eligibilityErrors = leagueYear.Options.AllowedEligibilitySettings.GameIsEligible(masterGame);
-                claimErrors.AddRange(eligibilityErrors);
-            }
-            
+
             bool released = masterGame.IsReleased(_clock);
             if (released)
             {
@@ -198,9 +237,12 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
             }
 
-            if (!released && masterGame.MinimumReleaseDate.Year > year && !counterPick)
+            if (!dropping)
             {
-                claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
+                if (!released && masterGame.MinimumReleaseDate.Year > year && !counterPick)
+                {
+                    claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
+                }
             }
 
             bool hasScore = masterGame.CriticScore.HasValue;

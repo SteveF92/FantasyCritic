@@ -875,8 +875,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_league_publisher(PublisherID,PublisherName,LeagueID,Year,UserID,DraftPosition,Budget) VALUES " +
-                    "(@PublisherID,@PublisherName,@LeagueID,@Year,@UserID,@DraftPosition,@Budget);",
+                    "insert into tbl_league_publisher(PublisherID,PublisherName,LeagueID,Year,UserID,DraftPosition,Budget,FreeGamesDropped,WillNotReleaseGamesDropped) VALUES " +
+                    "(@PublisherID,@PublisherName,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped);",
                     entity);
             }
         }
@@ -1485,7 +1485,7 @@ namespace FantasyCritic.MySQL
                     tasks.Add(MarkBidStatus(bidProcessingResults.SuccessBids, true, connection, transaction));
                     tasks.Add(MarkBidStatus(bidProcessingResults.FailedBids, false, connection, transaction));
                     tasks.Add(AddLeagueActions(bidProcessingResults.LeagueActions, connection, transaction));
-                    tasks.Add(UpdatePublisherBudgets(bidProcessingResults.UpdatedPublishers, connection, transaction));
+                    tasks.Add(UpdatePublisherBudgetsAndDroppedGames(bidProcessingResults.UpdatedPublishers, connection, transaction));
                     tasks.Add(AddPublisherGames(bidProcessingResults.PublisherGames, connection, transaction));
 
                     await Task.WhenAll(tasks);
@@ -1494,9 +1494,24 @@ namespace FantasyCritic.MySQL
             }   
         }
 
-        public Task SaveProcessedDropResults(DropProcessingResults dropProcessingResults)
+        public async Task SaveProcessedDropResults(DropProcessingResults dropProcessingResults)
         {
-            
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    List<Task> tasks = new List<Task>();
+                    tasks.Add(MarkDropStatus(dropProcessingResults.SuccessDrops, true, connection, transaction));
+                    tasks.Add(MarkDropStatus(dropProcessingResults.FailedDrops, false, connection, transaction));
+                    tasks.Add(AddLeagueActions(dropProcessingResults.LeagueActions, connection, transaction));
+                    tasks.Add(UpdatePublisherBudgetsAndDroppedGames(dropProcessingResults.PublishersToUpdate, connection, transaction));
+                    tasks.Add(DeletePublisherGames(dropProcessingResults.PublisherGames, connection, transaction));
+
+                    await Task.WhenAll(tasks);
+                    transaction.Commit();
+                }
+            }
         }
 
         public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
@@ -1630,11 +1645,17 @@ namespace FantasyCritic.MySQL
             return connection.ExecuteAsync("update tbl_league_pickupbid SET Successful = @Successful where BidID = @BidID;", entities, transaction);
         }
 
-        private Task UpdatePublisherBudgets(IEnumerable<Publisher> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)
+        private Task MarkDropStatus(IEnumerable<DropRequest> drops, bool success, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            var entities = drops.Select(x => new DropRequestEntity(x, success));
+            return connection.ExecuteAsync("update tbl_league_droprequest SET Successful = @Successful where DropRequestID = @DropRequestID;", entities, transaction);
+        }
+
+        private Task UpdatePublisherBudgetsAndDroppedGames(IEnumerable<Publisher> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)
         {
             var entities = updatedPublishers.Select(x => new PublisherEntity(x));
-            return connection.ExecuteAsync("update tbl_league_publisher SET Budget = @Budget where PublisherID = @PublisherID;", entities, transaction);
-
+            string sql = "update tbl_league_publisher SET Budget = @Budget and FreeGamesDropped = @FreeGamesDropped and WillNotReleaseGamesDropped = @WillNotReleaseGamesDropped where PublisherID = @PublisherID;";
+            return connection.ExecuteAsync(sql, entities, transaction);
         }
 
         private Task AddLeagueActions(IEnumerable<LeagueAction> actions, MySqlConnection connection, MySqlTransaction transaction)
@@ -1652,6 +1673,13 @@ namespace FantasyCritic.MySQL
                 "insert into tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition) VALUES " +
                 "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition);",
                 entities, transaction);
+        }
+
+        private Task DeletePublisherGames(IEnumerable<PublisherGame> publisherGames, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            var publisherGameIDs = publisherGames.Select(x => x.PublisherGameID);
+            return connection.ExecuteAsync(
+                "delete from tbl_league_publishergame where PublisherGameID in @publisherGameIDs;", new { publisherGameIDs }, transaction);
         }
 
         public async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)

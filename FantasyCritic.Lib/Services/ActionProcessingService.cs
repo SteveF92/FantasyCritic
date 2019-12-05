@@ -181,10 +181,52 @@ namespace FantasyCritic.Lib.Services
             return bidProcessingResults;
         }
 
-        public DropProcessingResults ProcessDropsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, IReadOnlyList<Publisher> allPublishers, 
+        public DropProcessingResults ProcessDropsIteration(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, IReadOnlyList<Publisher> allPublishers, 
             IClock clock, IReadOnlyList<SupportedYear> supportedYears)
         {
-            
+            List<Publisher> updatedPublishers = allPublishers.ToList();
+            List<PublisherGame> gamesToDelete = new List<PublisherGame>();
+            List<LeagueAction> leagueActions = new List<LeagueAction>();
+            List<DropRequest> successDrops = new List<DropRequest>();
+            List<DropRequest> failedDrops = new List<DropRequest>();
+
+            foreach (var leagueYearGroup in allDropRequests)
+            {
+                foreach (var dropRequest in leagueYearGroup.Value)
+                {
+                    var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, supportedYears, leagueYearGroup.Key);
+                    if (dropResult.Result.IsSuccess)
+                    {
+                        successDrops.Add(dropRequest);
+                        var publisherGame = dropRequest.Publisher.PublisherGames
+                            .Where(x => x.MasterGame.HasValue)
+                            .Single(x => dropRequest.MasterGame.Equals(x.MasterGame.Value.MasterGame));
+                        gamesToDelete.Add(publisherGame);
+                        LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, clock.GetCurrentInstant());
+                        var affectedPublisher = updatedPublishers.Single(x => x.PublisherID == dropRequest.Publisher.PublisherID);
+
+                        if (dropResult.WillNotRelease)
+                        {
+                            affectedPublisher.DropWillNotReleaseGame();
+                        }
+                        else
+                        {
+                            affectedPublisher.DropFreeGame();
+                        }
+
+                        leagueActions.Add(leagueAction);
+                    }
+                    else
+                    {
+                        failedDrops.Add(dropRequest);
+                        LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, clock.GetCurrentInstant());
+                        leagueActions.Add(leagueAction);
+                    }
+                }
+            }
+
+            DropProcessingResults dropProcessingResults = new DropProcessingResults(successDrops, failedDrops, leagueActions, updatedPublishers, gamesToDelete);
+            return dropProcessingResults;
         }
     }
 }

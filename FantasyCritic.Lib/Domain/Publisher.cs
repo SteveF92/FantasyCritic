@@ -10,7 +10,8 @@ namespace FantasyCritic.Lib.Domain
 {
     public class Publisher : IEquatable<Publisher>
     {
-        public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, int draftPosition, IEnumerable<PublisherGame> publisherGames, uint budget)
+        public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, int draftPosition, 
+            IEnumerable<PublisherGame> publisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped)
         {
             PublisherID = publisherID;
             LeagueYear = leagueYear;
@@ -19,6 +20,8 @@ namespace FantasyCritic.Lib.Domain
             DraftPosition = draftPosition;
             PublisherGames = publisherGames.ToList();
             Budget = budget;
+            FreeGamesDropped = freeGamesDropped;
+            WillNotReleaseGamesDropped = willNotReleaseGamesDropped;
         }
 
         public Guid PublisherID { get; }
@@ -28,6 +31,8 @@ namespace FantasyCritic.Lib.Domain
         public int DraftPosition { get; }
         public IReadOnlyList<PublisherGame> PublisherGames { get; private set; }
         public uint Budget { get; private set; }
+        public int FreeGamesDropped { get; private set; }
+        public int WillNotReleaseGamesDropped { get; private set; }
 
         public decimal? AverageCriticScore
         {
@@ -116,6 +121,16 @@ namespace FantasyCritic.Lib.Domain
         {
             PublisherGames = PublisherGames.Concat(new []{ game }).ToList();
             Budget -= bidAmount;
+        }
+
+        public void DropFreeGame()
+        {
+            FreeGamesDropped++;
+        }
+
+        public void DropWillNotReleaseGame()
+        {
+            WillNotReleaseGamesDropped++;
         }
     }
 }

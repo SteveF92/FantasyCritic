@@ -352,7 +352,7 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            DropProcessingResults results = _actionProcessingService.ProcessDropsIteration(systemWideValues, allDropRequests, allPublishers, _clock, supportedYears);
+            DropProcessingResults results = _actionProcessingService.ProcessDropsIteration(allDropRequests, allPublishers, _clock, supportedYears);
 
             return results;
         }

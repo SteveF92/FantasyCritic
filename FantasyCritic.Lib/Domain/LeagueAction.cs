@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain.Requests;
+using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
@@ -88,8 +89,25 @@ namespace FantasyCritic.Lib.Domain
             Timestamp = timestamp;
             Publisher = action.PickupBid.Publisher;
             ActionType = "Pickup Failed";
-            Description =
-                $"Tried to acquire game '{action.PickupBid.MasterGame.GameName}' with a bid of ${action.PickupBid.BidAmount}. Failure reason: {action.FailureReason}";
+            Description = $"Tried to acquire game '{action.PickupBid.MasterGame.GameName}' with a bid of ${action.PickupBid.BidAmount}. Failure reason: {action.FailureReason}";
+            ManagerAction = false;
+        }
+
+        public LeagueAction(DropRequest action, DropResult result, Instant timestamp)
+        {
+            Timestamp = timestamp;
+            Publisher = action.Publisher;
+            if (result.Result.IsSuccess)
+            {
+                ActionType = "Drop Successful";
+                Description = $"Dropped game '{action.MasterGame.GameName}'";
+            }
+            else
+            {
+                ActionType = "Drop Failed";
+                Description = $"Tried to drop game '{action.MasterGame.GameName}'. Failure reason: {result.Result.Error}";
+            }
+            
             ManagerAction = false;
         }
 
