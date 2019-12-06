@@ -64,11 +64,12 @@
             if (!this.dropResult.success) {
               return;
             }
-            this.$refs.dropGameFormRef.hide();
+            
             var dropInfo = {
-              gameName: this.dropMasterGame.gameName,
+              gameName: this.gameToDrop.gameName,
             };
             this.$emit('dropRequestMade', dropInfo);
+            this.$refs.dropGameFormRef.hide();
             this.clearData();
           })
           .catch(response => {

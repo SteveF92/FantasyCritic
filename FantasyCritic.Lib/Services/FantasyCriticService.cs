@@ -208,11 +208,11 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
-        public async Task<ClaimResult> MakeDropRequest(Publisher publisher, PublisherGame publisherGame)
+        public async Task<DropResult> MakeDropRequest(Publisher publisher, PublisherGame publisherGame)
         {
             if (publisherGame.MasterGame.HasNoValue)
             {
-                return new ClaimResult("You can't drop a game that is not linked to a master game.");
+                return new DropResult(Result.Fail("You can't drop a game that is not linked to a master game."), false);
             }
 
             MasterGame masterGame = publisherGame.MasterGame.Value.MasterGame;
@@ -220,25 +220,21 @@ namespace FantasyCritic.Lib.Services
             bool alreadyDropping = dropRequests.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
             if (alreadyDropping)
             {
-                return new ClaimResult("You cannot have two active drop requests for the same game.");
+                return new DropResult(Result.Fail("You cannot have two active drop requests for the same game."), false);
             }
 
-            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null);
+            DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, publisher.LeagueYear, masterGame, _clock.GetCurrentInstant(), null);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
-            var leagueYear = publisher.LeagueYear;
-            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
-
-            var claimResult = _gameAcquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear);
-            if (!claimResult.Success)
+            var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, supportedYears, publisher.LeagueYear);
+            if (dropResult.Result.IsFailure)
             {
-                return claimResult;
+                return dropResult;
             }
 
-            DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, leagueYear, masterGame, _clock.GetCurrentInstant(), null);
             await _fantasyCriticRepo.CreateDropRequest(dropRequest);
 
-            return claimResult;
+            return dropResult;
         }
 
         public Task<IReadOnlyList<PickupBid>> GetActiveAcquistitionBids(Publisher publisher)

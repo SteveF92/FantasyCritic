@@ -9,10 +9,13 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class DropGameResultViewModel
     {
-        public DropGameResultViewModel(ClaimResult domain)
+        public DropGameResultViewModel(DropResult domain)
         {
-            Success = domain.Success;
-            Errors = domain.Errors.Select(x => x.Error).ToList();
+            Success = domain.Result.IsSuccess;
+            if (domain.Result.IsFailure)
+            {
+                Errors = new List<string>() { domain.Result.Error };
+            }
         }
 
         public bool Success { get; }

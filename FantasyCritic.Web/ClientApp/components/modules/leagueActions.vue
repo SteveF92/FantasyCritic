@@ -228,8 +228,7 @@
       bidCanceled(bidInfo) {
         let actionInfo = {
           message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
-          fetchLeagueYear: true,
-          fetchCurrentBids: true
+          fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
       },
@@ -243,8 +242,7 @@
       dropCancelled(dropInfo) {
         let actionInfo = {
           message: 'Drop Request for ' + dropInfo.gameName + ' was cancelled.',
-          fetchLeagueYear: true,
-          fetchCurrentDropRequests: true
+          fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
       },

@@ -33,7 +33,7 @@
     methods: {
       cancelDrop(dropRequest) {
         var model = {
-          dropID: dropRequest.dropID
+          dropRequestID: dropRequest.dropRequestID
         };
         axios
           .post('/api/league/DeleteDropRequest', model)

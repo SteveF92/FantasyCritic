@@ -260,9 +260,23 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID)
+        public async Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID)
         {
-            throw new NotImplementedException();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var dropRequestEntity = await connection.QuerySingleOrDefaultAsync<DropRequestEntity>("select * from tbl_league_droprequest where DropRequestID = @dropRequestID", new { dropRequestID });
+                if (dropRequestEntity == null)
+                {
+                    return Maybe<DropRequest>.None;
+                }
+
+                var publisher = await GetPublisher(dropRequestEntity.PublisherID);
+                var masterGame = await _masterGameRepo.GetMasterGame(dropRequestEntity.MasterGameID);
+                var leagueYear = publisher.Value.LeagueYear;
+
+                DropRequest domain = dropRequestEntity.ToDomain(publisher.Value, masterGame.Value, leagueYear);
+                return domain;
+            }
         }
 
         public async Task AddLeagueAction(LeagueAction action)

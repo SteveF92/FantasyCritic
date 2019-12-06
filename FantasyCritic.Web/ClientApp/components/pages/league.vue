@@ -250,6 +250,7 @@
               this.leagueYear = response.data;
               this.selectedYear = this.leagueYear.year;
               this.fetchCurrentBids();
+              this.fetchCurrentDropRequests();
               this.fetchLeagueActions();
             })
           .catch(returnedError => (this.error = returnedError));
@@ -338,12 +339,7 @@
         if (actionInfo.fetchLeague) {
           this.fetchLeague();
         }
-        if (actionInfo.fetchCurrentBids) {
-          this.fetchCurrentBids();
-        }
-        if (actionInfo.fetchCurrentDropRequests) {
-          this.fetchCurrentDropRequests();
-        }
+
         let toast = this.$toasted.show(actionInfo.message, {
           theme: "primary",
           position: "top-right",
