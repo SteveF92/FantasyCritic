@@ -251,6 +251,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetActivePickupBids(supportedYear.Year);
         }
 
+        public Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher)
+        {
+            return _fantasyCriticRepo.GetActiveDropRequests(publisher);
+        }
+
         public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(SupportedYear supportedYear)
         {
             return _fantasyCriticRepo.GetActiveDropRequests(supportedYear.Year);

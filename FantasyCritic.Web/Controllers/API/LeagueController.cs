@@ -979,5 +979,64 @@ namespace FantasyCritic.Web.Controllers.API
 
             return Ok(viewModel);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteDropRequest([FromBody] DropGameRequestDeleteRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var dropRequest = await _fantasyCriticService.GetDropRequest(request.DropRequestID);
+            if (dropRequest.HasNoValue)
+            {
+                return BadRequest("That drop request does not exist.");
+            }
+
+            var publisher = dropRequest.Value.Publisher;
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.LeagueYear.League, currentUser);
+            bool userIsPublisher = (currentUser.UserID == publisher.User.UserID);
+            if (!userIsInLeague || !userIsPublisher)
+            {
+                return Forbid();
+            }
+
+            Result result = await _fantasyCriticService.RemoveDropRequest(dropRequest.Value);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok();
+        }
+
+        [HttpGet("{publisherID}")]
+        public async Task<IActionResult> CurrentDropRequests(Guid publisherID)
+        {
+            Maybe<Publisher> publisher = await _publisherService.GetPublisher(publisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser.UserID != publisher.Value.User.UserID)
+            {
+                return Forbid();
+            }
+
+            var dropRequests = await _fantasyCriticService.GetActiveDropRequests(publisher.Value);
+
+            var viewModels = dropRequests.Select(x => new DropGameRequestViewModel(x, _clock));
+            return Ok(viewModels);
+        }
     }
 }
