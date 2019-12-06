@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="currentDropsForm" ref="currentDropsFormRef" title="My Current Drop Requests" @hidden="clearData">
+  <b-modal id="currentDropsForm" ref="currentDropsFormRef" title="My Pending Drop Requests" @hidden="clearData">
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">

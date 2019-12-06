@@ -42,7 +42,7 @@
             var dropInfo = {
               gameName: this.dropMasterGame.gameName,
             };
-            this.$emit('gameDropRequestMade', dropInfo);
+            this.$emit('dropRequestMade', dropInfo);
             this.clearData();
           })
           .catch(response => {

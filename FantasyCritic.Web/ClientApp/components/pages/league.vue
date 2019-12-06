@@ -145,7 +145,7 @@
           <div class="row">
             <div class="col-xl-3 col-lg-4 col-md-12">
               <leagueActions ref="leagueActionsRef" :league="league" :leagueYear="leagueYear"
-                             :currentBids="currentBids" :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
+                             :currentBids="currentBids" :currentDrops="currentDrops" :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
             </div>
             <div class="col-xl-9 col-lg-8 col-md-12">
               <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
@@ -180,6 +180,7 @@
         league: null,
         leagueYear: null,
         currentBids: [],
+        currentDrops: [],
         leagueActions: [],
         forbidden: false,
         advancedProjections: false,
@@ -263,32 +264,42 @@
 
           });
       },
-      acceptInvite() {
-          var model = {
-              leagueID: this.league.leagueID
-          };
-          axios
-            .post('/api/league/AcceptInvite', model)
-            .then(response => {
-              this.fetchLeague();
-              this.fetchLeagueYear();
-            })
-            .catch(response => {
+      fetchCurrentDropRequests() {
+        axios
+          .get('/api/league/CurrentDropRequests/' + this.leagueYear.userPublisher.publisherID)
+          .then(response => {
+            this.currentDrops = response.data;
+          })
+          .catch(response => {
 
-            });
+          });
+      },
+      acceptInvite() {
+        var model = {
+            leagueID: this.league.leagueID
+        };
+        axios
+          .post('/api/league/AcceptInvite', model)
+          .then(response => {
+            this.fetchLeague();
+            this.fetchLeagueYear();
+          })
+          .catch(response => {
+
+          });
       },
       declineInvite() {
-          var model = {
-            inviteID: this.league.outstandingInvite.inviteID
-          };
-          axios
-            .post('/api/league/DeclineInvite', model)
-            .then(response => {
-                this.$router.push({ name: "home" });
-            })
-            .catch(response => {
+        var model = {
+          inviteID: this.league.outstandingInvite.inviteID
+        };
+        axios
+          .post('/api/league/DeclineInvite', model)
+          .then(response => {
+              this.$router.push({ name: "home" });
+          })
+          .catch(response => {
 
-            });
+          });
       },
       joinWithInviteLink() {
         var model = {
@@ -329,6 +340,9 @@
         }
         if (actionInfo.fetchCurrentBids) {
           this.fetchCurrentBids();
+        }
+        if (actionInfo.fetchCurrentDropRequests) {
+          this.fetchCurrentDropRequests();
         }
         let toast = this.$toasted.show(actionInfo.message, {
           theme: "primary",

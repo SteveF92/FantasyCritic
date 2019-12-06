@@ -39,6 +39,12 @@
             <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
               My Current Bids
             </li>
+            <li class="fake-link action" v-b-modal="'dropGameForm'" v-show="leagueYear.playStatus.draftFinished">
+              Drop a Game
+            </li>
+            <li class="fake-link action" v-b-modal="'currentDropsForm'" v-show="leagueYear.playStatus.draftFinished">
+              My Pending Drops
+            </li>
             <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
               Change Publisher Name
             </li>
@@ -122,6 +128,9 @@
         <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
         <currentBidsForm :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
 
+        <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
+        <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
+
         <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
         <addNewLeagueYearForm :league="league" :isManager="league.isManager" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
@@ -150,6 +159,9 @@
 
   import BidGameForm from "components/modules/modals/bidGameForm";
   import CurrentBidsForm from "components/modules/modals/currentBidsForm";
+  import DropGameForm from "components/modules/modals/dropGameForm";
+  import CurrentDropsForm from "components/modules/modals/currentDropsForm";
+
   import EligibilityOverridesModal from "components/modules/modals/eligibilityOverridesModal";
   import ChangePublisherNameForm from "components/modules/modals/changePublisherNameForm";
   import PlayerDraftGameForm from "components/modules/modals/playerDraftGameForm";
@@ -178,10 +190,12 @@
         errorInfo: ""
       }
     },
-    props: ['league', 'leagueYear', 'leagueActions', 'currentBids', 'userIsNextInDraft', 'nextPublisherUp'],
+    props: ['league', 'leagueYear', 'leagueActions', 'currentBids', 'currentDrops', 'userIsNextInDraft', 'nextPublisherUp'],
     components: {
       BidGameForm,
       CurrentBidsForm,
+      DropGameForm,
+      CurrentDropsForm,
       EligibilityOverridesModal,
       ChangePublisherNameForm,
       PlayerDraftGameForm,
@@ -216,6 +230,21 @@
           message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
           fetchLeagueYear: true,
           fetchCurrentBids: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      dropRequestMade(dropInfo) {
+        let actionInfo = {
+          message: 'Drop Request for ' + dropInfo.gameName + ' was made.',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      dropCancelled(dropInfo) {
+        let actionInfo = {
+          message: 'Drop Request for ' + dropInfo.gameName + ' was cancelled.',
+          fetchLeagueYear: true,
+          fetchCurrentDropRequests: true
         };
         this.$emit('actionTaken', actionInfo);
       },
