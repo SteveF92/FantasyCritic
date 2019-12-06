@@ -208,13 +208,19 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
-        public async Task<ClaimResult> MakeDropRequest(Publisher publisher, MasterGame masterGame)
+        public async Task<ClaimResult> MakeDropRequest(Publisher publisher, PublisherGame publisherGame)
         {
+            if (publisherGame.MasterGame.HasNoValue)
+            {
+                return new ClaimResult("You can't drop a game that is not linked to a master game.");
+            }
+
+            MasterGame masterGame = publisherGame.MasterGame.Value.MasterGame;
             IReadOnlyList<DropRequest> dropRequests = await _fantasyCriticRepo.GetActiveDropRequests(publisher);
             bool alreadyDropping = dropRequests.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
             if (alreadyDropping)
             {
-                return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active drop requests for the same game.", false) });
+                return new ClaimResult("You cannot have two active drop requests for the same game.");
             }
 
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null);

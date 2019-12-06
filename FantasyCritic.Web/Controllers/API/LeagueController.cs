@@ -921,5 +921,63 @@ namespace FantasyCritic.Web.Controllers.API
 
             return viewModels;
         }
+
+        [HttpPost]
+        public async Task<IActionResult> MakeDropRequest([FromBody] DropGameRequestRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.LeagueYear.League.LeagueID, publisher.Value.LeagueYear.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+            if (!leagueYear.Value.PlayStatus.PlayStarted)
+            {
+                return BadRequest("Play has not started for that year.");
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
+            bool userIsPublisher = (currentUser.UserID == publisher.Value.User.UserID);
+            if (!userIsInLeague || !userIsPublisher)
+            {
+                return Forbid();
+            }
+
+            var masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+            if (masterGame.HasNoValue)
+            {
+                return BadRequest("That master game does not exist.");
+            }
+
+            var publisherGame = publisher.Value.PublisherGames.Where(x => x.MasterGame.HasValue)
+                .SingleOrDefault(x => masterGame.Value.Equals(x.MasterGame.Value.MasterGame));
+
+            if (publisherGame is null)
+            {
+                return BadRequest("That publisher does not have that game.");
+            }
+
+            ClaimResult dropResult = await _fantasyCriticService.MakeDropRequest(publisher.Value, publisherGame);
+            var viewModel = new DropGameResultViewModel(dropResult);
+
+            return Ok(viewModel);
+        }
     }
 }
