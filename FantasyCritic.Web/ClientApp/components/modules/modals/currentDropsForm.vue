@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="currentDropsForm" ref="currentDropsFormRef" title="My Pending Drop Requests" @hidden="clearData">
+  <b-modal id="currentDropsForm" ref="currentDropsFormRef" title="My Pending Drop Requests">
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
@@ -8,7 +8,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="drop in desiredDropPriorities" :key="drop.priority">
+        <tr v-for="drop in currentDrops">
           <td>{{drop.masterGame.gameName}}</td>
           <td class="select-cell">
             <b-button variant="danger" size="sm" v-on:click="cancelDrop(drop)">Cancel</b-button>

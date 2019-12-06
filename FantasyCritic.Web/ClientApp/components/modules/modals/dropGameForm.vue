@@ -15,9 +15,6 @@
         gameToDrop: null
       }
     },
-    components: {
-      PossibleMasterGamesTable
-    },
     computed: {
       formIsValid() {
         return (this.dropMasterGame);
