@@ -37,7 +37,7 @@
       },
       userIsActive(user) {
         let matchingPlayer = _.find(this.leagueYear.players, function(item){
-          return item.user.userID === user.userID;
+          return item.user && item.user.userID === user.userID;
         });
 
         return !!matchingPlayer;
