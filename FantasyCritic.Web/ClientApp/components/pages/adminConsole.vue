@@ -27,6 +27,7 @@
         <b-button variant="warning" v-on:click="turnOnBidProcessing">Turn on bid processing mode</b-button>
         <b-button variant="info" v-on:click="turnOffBidProcessing">Turn off bid processing mode</b-button>
         <b-button variant="danger" v-on:click="processBids">Process Bids</b-button>
+        <b-button variant="danger" v-on:click="processDrops">Process Drops</b-button>
       </div>
 
       <h2>Database</h2>
@@ -100,6 +101,19 @@
           .then(response => {
             this.isBusy = false;
             this.jobSuccess = "Process Bids";
+          })
+          .catch(returnedError => {
+            this.isBusy = false;
+            this.errorInfo = returnedError.response.data;
+          });
+      },
+      processDrops() {
+        this.isBusy = true;
+        axios
+          .post('/api/admin/ProcessDropRequests')
+          .then(response => {
+            this.isBusy = false;
+            this.jobSuccess = "Process Drops";
           })
           .catch(returnedError => {
             this.isBusy = false;
