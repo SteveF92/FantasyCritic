@@ -226,6 +226,11 @@ namespace FantasyCritic.Web
                 .AddRedirectToHttps()
             );
 
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<UpdateHub>("/updatehub");
+            });
+
             // If not requesting /api*, rewrite to / so SPA app will be returned
             app.UseSpaFallback(new SpaFallbackOptions()
             {
@@ -253,11 +258,6 @@ namespace FantasyCritic.Web
                         headers["Content-Type"] = contentType;
                     }
                 }
-            });
-
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<UpdateHub>("/updatehub");
             });
 
             app.UseMvc(routes =>
