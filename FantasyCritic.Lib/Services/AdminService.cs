@@ -266,9 +266,9 @@ namespace FantasyCritic.Lib.Services
 
                 foreach (var masterGame in cleanMasterGames)
                 {
-                    if (masterGame.MasterGame.CriticScore.HasValue)
+                    var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGame.MasterGameID, out var cachedMasterGame);
+                    if (masterGame.MasterGame.CriticScore.HasValue && gameIsCached)
                     {
-                        var cachedMasterGame = masterGameCacheLookup[masterGame.MasterGame.MasterGameID];
                         hypeScores.Add(new MasterGameHypeScores(masterGame, cachedMasterGame.HypeFactor, cachedMasterGame.DateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
                         continue;
                     }
