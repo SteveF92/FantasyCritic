@@ -550,14 +550,25 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == publisher.Value.LeagueYear.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            if (supportedYear.Finished)
+            {
+                return BadRequest("That year is already finished");
+            }
+
             Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.LeagueYear.League.LeagueID, publisher.Value.LeagueYear.Year);
             if (leagueYear.HasNoValue)
             {
                 return BadRequest();
             }
-            if (!leagueYear.Value.PlayStatus.PlayStarted)
+            if (!leagueYear.Value.PlayStatus.DraftFinished)
             {
-                return BadRequest("Play has not started for that year.");
+                return BadRequest("Draft has not finished for that year.");
             }
 
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -947,9 +958,25 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest();
             }
-            if (!leagueYear.Value.PlayStatus.PlayStarted)
+            if (!leagueYear.Value.PlayStatus.DraftFinished)
             {
-                return BadRequest("Play has not started for that year.");
+                return BadRequest("Draft has not finished for that year.");
+            }
+
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == publisher.Value.LeagueYear.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            if (supportedYear.Finished)
+            {
+                return BadRequest("That year is already finished");
+            }
+
+            if (supportedYear.Year == 2019)
+            {
+                return BadRequest("This feature is not supported for 2019");
             }
 
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
