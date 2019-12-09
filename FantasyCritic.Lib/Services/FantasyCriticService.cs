@@ -210,6 +210,11 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<DropResult> MakeDropRequest(Publisher publisher, PublisherGame publisherGame)
         {
+            if (publisherGame.CounterPick)
+            {
+                return new DropResult(Result.Fail("You can't drop a counterpick."), false);
+            }
+
             if (publisherGame.MasterGame.HasNoValue)
             {
                 return new DropResult(Result.Fail("You can't drop a game that is not linked to a master game."), false);
