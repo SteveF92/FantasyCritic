@@ -198,6 +198,29 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> ProcessDropRequests()
+        {
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (!systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest("Turn on bid processing mode first.");
+            }
+
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            foreach (var supportedYear in supportedYears)
+            {
+                if (supportedYear.Finished || !supportedYear.OpenForPlay)
+                {
+                    continue;
+                }
+
+                await _fantasyCriticService.ProcessDrops(supportedYear.Year);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DeleteLeague([FromBody] DeleteLeagueRequest request)
         {
             Maybe<League> league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);

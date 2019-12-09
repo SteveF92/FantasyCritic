@@ -359,7 +359,7 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.SaveProcessedBidResults(results);
         }
 
-        public async Task<DropProcessingResults> GetDropProcessingDryRun(SystemWideValues systemWideValues, int year)
+        public async Task<DropProcessingResults> GetDropProcessingDryRun(int year)
         {
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
@@ -369,9 +369,9 @@ namespace FantasyCritic.Lib.Services
             return results;
         }
 
-        public async Task ProcesDrops(SystemWideValues systemWideValues, int year)
+        public async Task ProcessDrops(int year)
         {
-            var results = await GetDropProcessingDryRun(systemWideValues, year);
+            var results = await GetDropProcessingDryRun(year);
             await _fantasyCriticRepo.SaveProcessedDropResults(results);
         }
 
