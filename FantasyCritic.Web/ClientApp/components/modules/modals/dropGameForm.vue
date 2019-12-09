@@ -11,7 +11,7 @@
       <div class="form-group">
         <label for="gameToDrop" class="control-label">Game</label>
         <b-form-select v-model="gameToDrop">
-          <option v-for="publisherGame in publisher.games" v-bind:value="publisherGame">
+          <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>
@@ -46,6 +46,9 @@
     computed: {
       formIsValid() {
         return (this.dropMasterGame);
+      },
+      droppableGames() {
+        return _.filter(this.publisher.games, { 'counterPick': false });
       }
     },
     props: ['publisher'],
