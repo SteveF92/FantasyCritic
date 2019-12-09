@@ -1,5 +1,8 @@
 <template>
   <b-modal id="dropGameForm" ref="dropGameFormRef" size="lg" title="Drop a Game" hide-footer @hidden="clearData">
+    <div v-if="errorInfo" class="alert alert-danger" role="alert">
+      {{errorInfo}}
+    </div>
     <p>
       You can use this form to request to drop a game.
       <br />
@@ -40,7 +43,8 @@
       return {
         dropResult: null,
         gameToDrop: null,
-        isBusy: false
+        isBusy: false,
+        errorInfo: ""
       }
     },
     computed: {
@@ -77,6 +81,7 @@
           })
           .catch(response => {
             this.isBusy = false;
+            this.errorInfo = response.response.data;
           });
       },
       clearData() {

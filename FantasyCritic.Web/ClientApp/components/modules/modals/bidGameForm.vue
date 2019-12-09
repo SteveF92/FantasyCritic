@@ -1,5 +1,8 @@
 <template>
   <b-modal id="bidGameForm" ref="bidGameFormRef" size="lg" title="Make a Bid" hide-footer @hidden="clearData">
+    <div v-if="errorInfo" class="alert alert-danger" role="alert">
+      {{errorInfo}}
+    </div>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
         <label for="bidGameName" class="control-label">Game Name</label>
@@ -45,7 +48,8 @@
                 bidMasterGame: null,
                 bidAmount: 0,
                 bidResult: null,
-                possibleMasterGames: []
+                possibleMasterGames: [],
+                errorInfo: ""
             }
         },
         components: {
@@ -97,7 +101,7 @@
                       this.possibleMasterGames = [];
                     })
                     .catch(response => {
-
+                      this.errorInfo = response.response.data;
                     });
             },
             clearData() {
