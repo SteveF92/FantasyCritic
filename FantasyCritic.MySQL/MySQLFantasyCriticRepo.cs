@@ -1667,8 +1667,8 @@ namespace FantasyCritic.MySQL
 
         private Task UpdatePublisherBudgetsAndDroppedGames(IEnumerable<Publisher> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)
         {
+            string sql = "update tbl_league_publisher SET Budget = @Budget, FreeGamesDropped = @FreeGamesDropped, WillNotReleaseGamesDropped = @WillNotReleaseGamesDropped where PublisherID = @PublisherID;";
             var entities = updatedPublishers.Select(x => new PublisherEntity(x));
-            string sql = "update tbl_league_publisher SET Budget = @Budget and FreeGamesDropped = @FreeGamesDropped and WillNotReleaseGamesDropped = @WillNotReleaseGamesDropped where PublisherID = @PublisherID;";
             return connection.ExecuteAsync(sql, entities, transaction);
         }
 
