@@ -195,12 +195,6 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError("League is not active for that year.", false));
             }
 
-            var openYears = supportedYears.Where(x => x.OpenForPlay).Select(x => x.Year);
-            if (!openYears.Contains(publisher.LeagueYear.Year))
-            {
-                claimErrors.Add(new ClaimError("That year is not open for play", false));
-            }
-
             return claimErrors;
         }
 
