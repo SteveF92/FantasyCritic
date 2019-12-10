@@ -158,16 +158,25 @@ namespace FantasyCritic.Web.Controllers.API
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
 
-            var results = await _fantasyCriticService.GetBidProcessingDryRun(systemWideValues, currentYear.Year);
-            IEnumerable<LeagueAction> failingBids = results.LeagueActions.Where(x => x.IsFailed);
-            var failingGames = failingBids.Select(x => x.MasterGameName).Distinct();
+            var bidResults = await _fantasyCriticService.GetBidProcessingDryRun(systemWideValues, currentYear.Year);
+            IEnumerable<LeagueAction> failingBids = bidResults.LeagueActions.Where(x => x.IsFailed);
+            var failingBidGames = failingBids.Select(x => x.MasterGameName).Distinct();
+
+            var dropResults = await _fantasyCriticService.GetDropProcessingDryRun(currentYear.Year);
+            IEnumerable<LeagueAction> failingDrops = dropResults.LeagueActions.Where(x => x.IsFailed);
+            var failingDropGames = failingDrops.Select(x => x.MasterGameName).Distinct();
 
             List<MasterGame> masterGames = new List<MasterGame>();
             foreach (var supportedYear in supportedYears)
             {
                 var allBids = await _fantasyCriticService.GetActiveAcquistitionBids(supportedYear);
+                var allDrops = await _fantasyCriticService.GetActiveDropRequests(supportedYear);
                 masterGames.AddRange(allBids.SelectMany(x => x.Value.Select(y => y.MasterGame)));
+                masterGames.AddRange(allDrops.SelectMany(x => x.Value.Select(y => y.MasterGame)));
             }
+
+            masterGames = masterGames.Distinct().ToList();
+            var failingGames = failingBidGames.Concat(failingDropGames);
             
             var vms = masterGames.Distinct().Select(x => new MasterGameViewModel(x, _clock, failingGames.Contains(x.GameName)));
             return Ok(vms);

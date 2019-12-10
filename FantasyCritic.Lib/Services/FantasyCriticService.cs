@@ -345,10 +345,13 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<BidProcessingResults> GetBidProcessingDryRun(SystemWideValues systemWideValues, int year)
         {
-            IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids = await _fantasyCriticRepo.GetActivePickupBids(year);
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            BidProcessingResults results = _actionProcessingService.ProcessPickupsIteration(systemWideValues, allActiveBids, allPublishers, _clock, supportedYears);
+
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> onlyLeaguesWithBids = leaguesAndBids.Where(x => x.Value.Any()).ToDictionary(x => x.Key, y => y.Value);
+            var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithBids.ContainsKey(x.LeagueYear));
+            BidProcessingResults results = _actionProcessingService.ProcessPickupsIteration(systemWideValues, onlyLeaguesWithBids, publishersInLeagues, _clock, supportedYears);
 
             return results;
         }
@@ -361,10 +364,13 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<DropProcessingResults> GetDropProcessingDryRun(int year)
         {
-            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            DropProcessingResults results = _actionProcessingService.ProcessDropsIteration(allDropRequests, allPublishers, _clock, supportedYears);
+
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> onlyLeaguesWithDrops = leaguesAndDropRequests.Where(x => x.Value.Any()).ToDictionary(x => x.Key, y => y.Value);
+            var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithDrops.ContainsKey(x.LeagueYear));
+            DropProcessingResults results = _actionProcessingService.ProcessDropsIteration(onlyLeaguesWithDrops, publishersInLeagues, _clock, supportedYears);
 
             return results;
         }

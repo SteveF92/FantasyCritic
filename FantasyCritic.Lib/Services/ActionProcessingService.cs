@@ -181,7 +181,7 @@ namespace FantasyCritic.Lib.Services
             return bidProcessingResults;
         }
 
-        public DropProcessingResults ProcessDropsIteration(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, IReadOnlyList<Publisher> allPublishers, 
+        public DropProcessingResults ProcessDropsIteration(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, IEnumerable<Publisher> allPublishers, 
             IClock clock, IReadOnlyList<SupportedYear> supportedYears)
         {
             List<Publisher> updatedPublishers = allPublishers.ToList();

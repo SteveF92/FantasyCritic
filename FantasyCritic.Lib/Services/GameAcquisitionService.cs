@@ -117,14 +117,14 @@ namespace FantasyCritic.Lib.Services
 
             if (gameWillRelease)
             {
-                if (yearOptions.FreeDroppableGames != -1 && request.Publisher.FreeGamesDropped < yearOptions.FreeDroppableGames)
+                if (yearOptions.FreeDroppableGames != -1 && request.Publisher.FreeGamesDropped >= yearOptions.FreeDroppableGames)
                 {
                     return new DropResult(Result.Fail("Publisher cannot drop any more 'Free Droppable' Games"), !gameWillRelease);
                 }
             }
             else
             {
-                if (yearOptions.WillNotReleaseDroppableGames != -1 && request.Publisher.WillNotReleaseGamesDropped < yearOptions.WillNotReleaseDroppableGames)
+                if (yearOptions.WillNotReleaseDroppableGames != -1 && request.Publisher.WillNotReleaseGamesDropped >= yearOptions.WillNotReleaseDroppableGames)
                 {
                     return new DropResult(Result.Fail("Publisher cannot drop any more 'Will Not Release' Games"), !gameWillRelease);
                 }
