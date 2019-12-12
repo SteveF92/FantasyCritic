@@ -72,60 +72,61 @@
         <span class="text-danger">{{ errors.first('counterPicks') }}</span>
       </div>
 
-      <div class="form-group">
-        <label for="freeDroppableGames" class="control-label">Number of "Droppable Games"</label>
-        <p>
-          New for 2020, players can now choose to drop a game before it releases. This setting allows you to choose how many such games can be dropped, if any.
-          This number applies to games that are scheduled to release in the league year AND games that have been delayed and marked as "Will Not Release".
-          For more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
-        </p>
-
-        <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedFreeDroppableGames" @input="update('unlimitedFreeDroppableGames', local.unlimitedFreeDroppableGames)">
-          <span class="checkbox-label">Unlimited</span>
-        </b-form-checkbox>
-
-        <div v-if="!local.unlimitedFreeDroppableGames">
-          <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                 id="freeDroppableGames" name="freeDroppableGames" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('freeDroppableGames') }}</span>
-        </div>
+      <hr />
+      <h3>Game Dropping Settings</h3>
+      <div class="alert alert-info">
+        New for 2020, players can now choose to drop a game before it releases. This setting allows you to choose how many such games can be dropped, if any.
+        You can customize how many games are droppable after the game is confirmed to be delayed, as well as how many are droppable that are still scheduled to release.
+        <br />
+        You can also use the "unrestricted" setting, which applies to all games, delayed or not.
+        <br />
+        For more details, check out the <a href="/faq#dropping-games" target="_blank" class="text-secondary">FAQ.</a>
       </div>
 
-      <div class="form-group">
-        <label for="willNotReleaseDroppableGames" class="control-label">Number of "Will not Release Droppable Games"</label>
-        <p>
-          This setting allows you to set a specific number of games that can be dropped, after they have been confirmed as "Will not Release".
-          Again, for more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
-        </p>
-
-        <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillNotReleaseDroppableGames" @input="update('unlimitedWillNotReleaseDroppableGames', local.unlimitedWillNotReleaseDroppableGames)">
-          <span class="checkbox-label">Unlimited</span>
-        </b-form-checkbox>
-
-        <div v-if="!local.unlimitedWillNotReleaseDroppableGames">
-          <input v-model="local.willNotReleaseDroppableGames" @input="update('willNotReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                  id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('willNotReleaseDroppableGames') }}</span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="willReleaseDroppableGames" class="control-label">Number of "Will  Release Droppable Games"</label>
-        <p>
-          This setting allows you to set a specific number of games that can be dropped, that are still scheduled to release in the league year.
-          Again, for more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
-        </p>
-
-        <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillReleaseDroppableGames" @input="update('unlimitedWillReleaseDroppableGames', local.unlimitedWillReleaseDroppableGames)">
-          <span class="checkbox-label">Unlimited</span>
-        </b-form-checkbox>
-
-        <div v-if="!local.unlimitedWillReleaseDroppableGames">
-          <input v-model="local.willReleaseDroppableGames" @input="update('willReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                  id="willReleaseDroppableGames" name="willReleaseDroppableGames" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('willReleaseDroppableGames') }}</span>
-        </div>
-      </div>
+      <table class="table table-small table-bordered">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Number</th>
+            <th scope="col">Unlimited?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Will Release</th>
+            <td>
+              <input v-model="local.willReleaseDroppableGames" @input="update('willReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
+                     id="willReleaseDroppableGames" name="willReleaseDroppableGames" type="text" class="form-control input" />
+            </td>
+            <td>
+              <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillReleaseDroppableGames" @input="update('unlimitedWillReleaseDroppableGames', local.unlimitedWillReleaseDroppableGames)">
+              </b-form-checkbox>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Will Not Release</th>
+            <td>
+              <input v-model="local.willNotReleaseDroppableGames" @input="update('willNotReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
+                     id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input" />
+            </td>
+            <td>
+              <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillNotReleaseDroppableGames" @input="update('unlimitedWillNotReleaseDroppableGames', local.unlimitedWillNotReleaseDroppableGames)">
+              </b-form-checkbox>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Unrestricted</th>
+            <td>
+              <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
+                     id="freeDroppableGames" name="freeDroppableGames" type="text" class="form-control input" />
+            </td>
+            <td>
+              <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedFreeDroppableGames" @input="update('unlimitedFreeDroppableGames', local.unlimitedFreeDroppableGames)">
+              </b-form-checkbox>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <hr />
       <h3>Eligibility Settings</h3>

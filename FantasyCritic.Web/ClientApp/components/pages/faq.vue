@@ -279,6 +279,9 @@
           </ul>
 
           Games that have already released or already have review scores are never droppable.
+          <br />
+          I admit that this feature is a little confusing and I'm still working on the best way to explain it. If you have questions, contact me and I'll try to help.
+          Or, if you understand what I'm trying to say and have a better way to explain it, contact me and maybe your explanation will end up in this section.
         </div>
       </faqCollapse>
       <faqCollapse>
