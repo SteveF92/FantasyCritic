@@ -270,9 +270,15 @@
       <faqCollapse>
         <div slot="question">How does the "dropping games" system work?</div>
         <div slot="answer">
-          There's two types of "droppable" games. Games that are confirmed to not release in the given year are counted seperately from other games. Games that have already released or already have review scores are never droppable.
-          The league manager can choose how many (or unlimited) games can be dropped of each type. The number of "will not release" droppable games must be higher than the number of "free" droppable games, which are the games that
-          still are going to come out, but haven't yet.
+          Leagues can choose to make players able to "drop" a game that they either drafted or picked up through bidding, freeing the spot for them to pickup a new game. There's a number of ways to customize this feature.
+          Three different options can be set to a number OR unlimited:
+          <ul>
+            <li><strong>Will Not Release Droppable Games: </strong>The number (or unlimited) of games that are confirmed to not release in the league year that can be dropped.</li>
+            <li><strong>Will Release Droppable Games: </strong>The number (or unlimited) of games that ARE planned to release in the league year that can be dropped.</li>
+            <li><strong>Free Droppable Games: </strong>The number (or unlimited) of games that can be dropped, whether they are planned to release or not.</li>
+          </ul>
+
+          Games that have already released or already have review scores are never droppable.
         </div>
       </faqCollapse>
       <faqCollapse>

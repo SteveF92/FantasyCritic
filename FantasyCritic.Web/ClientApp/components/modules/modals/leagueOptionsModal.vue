@@ -30,6 +30,11 @@
             <td v-show="leagueYearOptions.unlimitedWillNotReleaseDroppableGames">Unlimited</td>
           </tr>
           <tr>
+            <th class="bg-primary">"Will Release" Droppable Games</th>
+            <td v-show="!leagueYearOptions.unlimitedWillReleaseDroppableGames">{{leagueYearOptions.willReleaseDroppableGames}}</td>
+            <td v-show="leagueYearOptions.unlimitedWillReleaseDroppableGames">Unlimited</td>
+          </tr>
+          <tr>
             <th class="bg-primary">Maximum Eligibility Level</th>
             <td>{{leagueYearOptions.maximumEligibilityLevel}}</td>
           </tr>

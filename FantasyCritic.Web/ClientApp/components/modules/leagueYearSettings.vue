@@ -73,9 +73,10 @@
       </div>
 
       <div class="form-group">
-        <label for="freeDroppableGames" class="control-label">Number of "Free Droppable Games"</label>
+        <label for="freeDroppableGames" class="control-label">Number of "Droppable Games"</label>
         <p>
-          New for 2020, players can now choose to drop a game that they have lost confidence in before it releases. This setting allows you to choose how many such games can be dropped, if any.
+          New for 2020, players can now choose to drop a game before it releases. This setting allows you to choose how many such games can be dropped, if any.
+          This number applies to games that are scheduled to release in the league year AND games that have been delayed and marked as "Will Not Release".
           For more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
         </p>
 
@@ -84,16 +85,16 @@
         </b-form-checkbox>
 
         <div v-if="!local.unlimitedFreeDroppableGames">
-          <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)" v-validate="maxFreeDroppableGamesRule"
+          <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
                  id="freeDroppableGames" name="freeDroppableGames" type="text" class="form-control input" />
           <span class="text-danger">{{ errors.first('freeDroppableGames') }}</span>
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="willNotReleaseDroppableGames" class="control-label">Number of "Will not Release Droppable Games"</label>
         <p>
-          This setting allows you to set a specific number of games that can be dropped, after they have been confirmed as "Will not Release". This number cannot be lower than the number of "Free Droppable Games".
+          This setting allows you to set a specific number of games that can be dropped, after they have been confirmed as "Will not Release".
           Again, for more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
         </p>
 
@@ -103,8 +104,26 @@
 
         <div v-if="!local.unlimitedWillNotReleaseDroppableGames">
           <input v-model="local.willNotReleaseDroppableGames" @input="update('willNotReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                 id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input" />
+                  id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input" />
           <span class="text-danger">{{ errors.first('willNotReleaseDroppableGames') }}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="willReleaseDroppableGames" class="control-label">Number of "Will  Release Droppable Games"</label>
+        <p>
+          This setting allows you to set a specific number of games that can be dropped, that are still scheduled to release in the league year.
+          Again, for more details, check out the <a href="/faq#dropping-games" target="_blank">FAQ.</a>
+        </p>
+
+        <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillReleaseDroppableGames" @input="update('unlimitedWillReleaseDroppableGames', local.unlimitedWillReleaseDroppableGames)">
+          <span class="checkbox-label">Unlimited</span>
+        </b-form-checkbox>
+
+        <div v-if="!local.unlimitedWillReleaseDroppableGames">
+          <input v-model="local.willReleaseDroppableGames" @input="update('willReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
+                  id="willReleaseDroppableGames" name="willReleaseDroppableGames" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors.first('willReleaseDroppableGames') }}</span>
         </div>
       </div>
 
@@ -312,6 +331,9 @@
       }
     },
     methods: {
+      showDetailedDropOptions() {
+        this.shouldShowDetailedDropOptions = true;
+      },
       update(key, value) {
         this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
       },
@@ -349,12 +371,14 @@
 
         if (this.gameMode === "Beginner") {
           this.value.counterPicks = 0;
-        } 
+        }
 
-        this.value.freeDroppableGames = 2;
+        this.value.freeDroppableGames = 0;
         this.value.willNotReleaseDroppableGames = 0;
+        this.value.willReleaseDroppableGames = 1;
         this.value.unlimitedFreeDroppableGames = false;
         this.value.unlimitedWillNotReleaseDroppableGames = true;
+        this.value.unlimitedWillReleaseDroppableGames = false;
 
         this.$emit('input', this.local);
       }
