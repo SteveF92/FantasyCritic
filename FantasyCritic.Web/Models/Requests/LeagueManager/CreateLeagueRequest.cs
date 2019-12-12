@@ -28,9 +28,14 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Range(0, 100)]
         public int WillNotReleaseDroppableGames { get; set; }
         [Required]
+        [Range(0, 100)]
+        public int WillReleaseDroppableGames { get; set; }
+        [Required]
         public bool UnlimitedFreeDroppableGames { get; set; }
         [Required]
         public bool UnlimitedWillNotReleaseDroppableGames { get; set; }
+        [Required]
+        public bool UnlimitedWillReleaseDroppableGames { get; set; }
 
         [Required]
         public int InitialYear { get; set; }
@@ -76,6 +81,11 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
                 return false;
             }
 
+            if (WillReleaseDroppableGames != 0 || UnlimitedWillReleaseDroppableGames)
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -98,6 +108,12 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
                 willNotReleaseDroppableGames = int.MaxValue;
             }
 
+            int willReleaseDroppableGames = WillReleaseDroppableGames;
+            if (UnlimitedWillReleaseDroppableGames)
+            {
+                willReleaseDroppableGames = int.MaxValue;
+            }
+
             return freeDroppableGamesCompare <= willNotReleaseDroppableGames;
         }
 
@@ -117,9 +133,14 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             {
                 willNotReleaseDroppableGames = -1;
             }
+            int willReleaseDroppableGames = WillReleaseDroppableGames;
+            if (UnlimitedWillReleaseDroppableGames)
+            {
+                willReleaseDroppableGames = -1;
+            }
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
-                freeDroppableGames, willNotReleaseDroppableGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
+                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
                 AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }

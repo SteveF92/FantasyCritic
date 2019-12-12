@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
-        public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int freeDroppableGames, int willNotReleaseDroppableGames, EligibilitySettings eligibilitySettings,
+        public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, EligibilitySettings eligibilitySettings,
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
@@ -20,6 +20,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicks = counterPicks;
             FreeDroppableGames = freeDroppableGames;
             WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
+            WillReleaseDroppableGames = willReleaseDroppableGames;
             AllowedEligibilitySettings = eligibilitySettings;
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
@@ -34,6 +35,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicks = parameters.CounterPicks;
             FreeDroppableGames = parameters.FreeDroppableGames;
             WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
+            WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
             AllowedEligibilitySettings = parameters.AllowedEligibilitySettings;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
@@ -48,6 +50,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicks = parameters.CounterPicks;
             FreeDroppableGames = parameters.FreeDroppableGames;
             WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
+            WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
             AllowedEligibilitySettings = parameters.AllowedEligibilitySettings;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
@@ -60,6 +63,7 @@ namespace FantasyCritic.Lib.Domain
         public int CounterPicks { get; }
         public int FreeDroppableGames { get; }
         public int WillNotReleaseDroppableGames { get; }
+        public int WillReleaseDroppableGames { get; }
         public EligibilitySettings AllowedEligibilitySettings { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }

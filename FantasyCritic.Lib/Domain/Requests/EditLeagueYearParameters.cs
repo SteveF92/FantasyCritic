@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.Domain.Requests
     public class EditLeagueYearParameters
     {
         public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks,
-            int freeDroppableGames, int willNotReleaseDroppableGames, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
+            int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
             bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally, bool allowExpansions, DraftSystem draftSystem, 
             PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
@@ -19,6 +19,7 @@ namespace FantasyCritic.Lib.Domain.Requests
             CounterPicks = counterPicks;
             FreeDroppableGames = freeDroppableGames;
             WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
+            WillReleaseDroppableGames = willReleaseDroppableGames;
             AllowedEligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, allowYearlyInstallments, allowEarlyAccess, allowFreeToPlay,
                 allowReleasedInternationally, allowExpansions);
             DraftSystem = draftSystem;
@@ -35,6 +36,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int CounterPicks { get; }
         public int FreeDroppableGames { get; }
         public int WillNotReleaseDroppableGames { get; }
+        public int WillReleaseDroppableGames { get; }
         public EligibilitySettings AllowedEligibilitySettings { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }

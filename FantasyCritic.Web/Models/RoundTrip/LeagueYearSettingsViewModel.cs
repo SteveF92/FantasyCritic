@@ -35,6 +35,12 @@ namespace FantasyCritic.Web.Models.RoundTrip
                 WillNotReleaseDroppableGames = 0;
                 UnlimitedWillNotReleaseDroppableGames = true;
             }
+            WillReleaseDroppableGames = leagueYear.Options.WillReleaseDroppableGames;
+            if (leagueYear.Options.WillReleaseDroppableGames == -1)
+            {
+                WillReleaseDroppableGames = 0;
+                UnlimitedWillReleaseDroppableGames = true;
+            }
 
             MaximumEligibilityLevel = leagueYear.Options.AllowedEligibilitySettings.EligibilityLevel.Level;
             AllowYearlyInstallments = leagueYear.Options.AllowedEligibilitySettings.YearlyInstallment;
@@ -70,9 +76,14 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Range(0, 100)]
         public int WillNotReleaseDroppableGames { get; set; }
         [Required]
+        [Range(0, 100)]
+        public int WillReleaseDroppableGames { get; set; }
+        [Required]
         public bool UnlimitedFreeDroppableGames { get; set; }
         [Required]
         public bool UnlimitedWillNotReleaseDroppableGames { get; set; }
+        [Required]
+        public bool UnlimitedWillReleaseDroppableGames { get; set; }
 
         [Required]
         public int MaximumEligibilityLevel { get; set; }
@@ -114,6 +125,11 @@ namespace FantasyCritic.Web.Models.RoundTrip
                 return false;
             }
 
+            if (WillReleaseDroppableGames != 0 || UnlimitedWillReleaseDroppableGames)
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -136,6 +152,12 @@ namespace FantasyCritic.Web.Models.RoundTrip
                 willNotReleaseDroppableGames = int.MaxValue;
             }
 
+            int willReleaseDroppableGames = WillReleaseDroppableGames;
+            if (UnlimitedWillReleaseDroppableGames)
+            {
+                willReleaseDroppableGames = int.MaxValue;
+            }
+
             return freeDroppableGamesCompare <= willNotReleaseDroppableGames;
         }
 
@@ -155,9 +177,14 @@ namespace FantasyCritic.Web.Models.RoundTrip
             {
                 willNotReleaseDroppableGames = -1;
             }
+            int willReleaseDroppableGames = WillReleaseDroppableGames;
+            if (UnlimitedWillReleaseDroppableGames)
+            {
+                willReleaseDroppableGames = -1;
+            }
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,
-                freeDroppableGames, willNotReleaseDroppableGames, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay,
+                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay,
                 AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague);
             return parameters;
         }
