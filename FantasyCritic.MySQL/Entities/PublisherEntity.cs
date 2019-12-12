@@ -24,6 +24,7 @@ namespace FantasyCritic.MySQL.Entities
             DraftPosition = publisher.DraftPosition;
             FreeGamesDropped = publisher.FreeGamesDropped;
             WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
+            WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
             Budget = publisher.Budget;
         }
 
@@ -35,11 +36,12 @@ namespace FantasyCritic.MySQL.Entities
         public int DraftPosition { get; set; }
         public int FreeGamesDropped { get; set; }
         public int WillNotReleaseGamesDropped { get; set; }
+        public int WillReleaseGamesDropped { get; set; }
         public uint Budget { get; set; }
 
         public Publisher ToDomain(LeagueYear leagueYear, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames)
         {
-            Publisher domain = new Publisher(PublisherID, leagueYear, user, PublisherName, DraftPosition, publisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped);
+            Publisher domain = new Publisher(PublisherID, leagueYear, user, PublisherName, DraftPosition, publisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped);
             return domain;
         }
     }

@@ -198,21 +198,11 @@ namespace FantasyCritic.Lib.Services
                     if (dropResult.Result.IsSuccess)
                     {
                         successDrops.Add(dropRequest);
-                        var publisherGame = dropRequest.Publisher.PublisherGames
-                            .Where(x => x.MasterGame.HasValue)
-                            .Single(x => dropRequest.MasterGame.Equals(x.MasterGame.Value.MasterGame));
-                        gamesToDelete.Add(publisherGame);
+                        var publisherGame = dropRequest.Publisher.GetPublisherGame(dropRequest.MasterGame);
+                        gamesToDelete.Add(publisherGame.Value);
                         LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, clock.GetCurrentInstant());
                         var affectedPublisher = updatedPublishers.Single(x => x.PublisherID == dropRequest.Publisher.PublisherID);
-
-                        if (dropResult.WillNotRelease)
-                        {
-                            affectedPublisher.DropWillNotReleaseGame();
-                        }
-                        else
-                        {
-                            affectedPublisher.DropFreeGame();
-                        }
+                        affectedPublisher.DropGame(publisherGame.Value.WillRelease());
 
                         leagueActions.Add(leagueAction);
                     }

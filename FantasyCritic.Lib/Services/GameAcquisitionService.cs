@@ -108,29 +108,15 @@ namespace FantasyCritic.Lib.Services
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
-            LeagueOptions yearOptions = leagueYear.Options;
-            bool gameWillRelease = request.MasterGame.MinimumReleaseDate.Year == leagueYear.Year;
+            var publisherGame = request.Publisher.GetPublisherGame(request.MasterGame);
+            bool gameWillRelease = publisherGame.Value.WillRelease();
             if (dropErrors.Any())
             {
                 return new DropResult(Result.Fail("Game is no longer eligible for dropping."), !gameWillRelease);
             }
 
-            if (gameWillRelease)
-            {
-                if (yearOptions.FreeDroppableGames != -1 && request.Publisher.FreeGamesDropped >= yearOptions.FreeDroppableGames)
-                {
-                    return new DropResult(Result.Fail("Publisher cannot drop any more 'Free Droppable' Games"), !gameWillRelease);
-                }
-            }
-            else
-            {
-                if (yearOptions.WillNotReleaseDroppableGames != -1 && request.Publisher.WillNotReleaseGamesDropped >= yearOptions.WillNotReleaseDroppableGames)
-                {
-                    return new DropResult(Result.Fail("Publisher cannot drop any more 'Will Not Release' Games"), !gameWillRelease);
-                }
-            }
-
-            return new DropResult(Result.Ok(), !gameWillRelease);
+            var dropResult = request.Publisher.CanDropGame(gameWillRelease);
+            return new DropResult(dropResult, !gameWillRelease);
         }
 
         public async Task<ClaimResult> CanAssociateGame(AssociateGameDomainRequest request)

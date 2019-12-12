@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using NodaTime;
 
@@ -11,7 +12,7 @@ namespace FantasyCritic.Lib.Domain
     public class Publisher : IEquatable<Publisher>
     {
         public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, int draftPosition, 
-            IEnumerable<PublisherGame> publisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped)
+            IEnumerable<PublisherGame> publisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped)
         {
             PublisherID = publisherID;
             LeagueYear = leagueYear;
@@ -22,6 +23,7 @@ namespace FantasyCritic.Lib.Domain
             Budget = budget;
             FreeGamesDropped = freeGamesDropped;
             WillNotReleaseGamesDropped = willNotReleaseGamesDropped;
+            WillReleaseGamesDropped = willReleaseGamesDropped;
         }
 
         public Guid PublisherID { get; }
@@ -33,6 +35,7 @@ namespace FantasyCritic.Lib.Domain
         public uint Budget { get; private set; }
         public int FreeGamesDropped { get; private set; }
         public int WillNotReleaseGamesDropped { get; private set; }
+        public int WillReleaseGamesDropped { get; private set; }
 
         public decimal? AverageCriticScore
         {
@@ -97,6 +100,11 @@ namespace FantasyCritic.Lib.Domain
             return options.StandardGames - PublisherGames.Count(x => !x.CounterPick);
         }
 
+        public Maybe<PublisherGame> GetPublisherGame(MasterGame masterGame)
+        {
+            return PublisherGames.SingleOrDefault(x => x.MasterGame.HasValue && x.MasterGame.Value.MasterGame.MasterGameID == masterGame.MasterGameID);
+        }
+
         public bool Equals(Publisher other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -123,14 +131,62 @@ namespace FantasyCritic.Lib.Domain
             Budget -= bidAmount;
         }
 
-        public void DropFreeGame()
+        public Result CanDropGame(bool willRelease)
         {
-            FreeGamesDropped++;
+            var leagueOptions = LeagueYear.Options;
+            if (willRelease)
+            {
+                if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > WillReleaseGamesDropped)
+                {
+                    return Result.Ok();
+                }
+                if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
+                {
+                    return Result.Ok();
+                }
+                return Result.Fail("Publisher cannot drop any more 'Will Release' games");
+            }
+
+            if (leagueOptions.WillNotReleaseDroppableGames == -1 || leagueOptions.WillNotReleaseDroppableGames > WillNotReleaseGamesDropped)
+            {
+                return Result.Ok();
+            }
+            if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
+            {
+                return Result.Ok();
+            }
+            return Result.Fail("Publisher cannot drop any more 'Will Not Release' games");
         }
 
-        public void DropWillNotReleaseGame()
+        public void DropGame(bool willRelease)
         {
-            WillNotReleaseGamesDropped++;
+            var leagueOptions = LeagueYear.Options;
+            if (willRelease)
+            {
+                if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > WillReleaseGamesDropped)
+                {
+                    WillReleaseGamesDropped++;
+                    return;
+                }
+                if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
+                {
+                    FreeGamesDropped++;
+                    return;
+                }
+                throw new Exception("Publisher cannot drop any more 'Will Release' games");
+            }
+
+            if (leagueOptions.WillNotReleaseDroppableGames == -1 || leagueOptions.WillNotReleaseDroppableGames > WillNotReleaseGamesDropped)
+            {
+                WillNotReleaseGamesDropped++;
+                return;
+            }
+            if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
+            {
+                FreeGamesDropped++;
+                return;
+            }
+            throw new Exception("Publisher cannot drop any more 'Will Not Release' games");
         }
     }
 }
