@@ -53,7 +53,7 @@ namespace FantasyCritic.Web.Controllers.API
             LocalDate tomorrow = instant.ToEasternDate().PlusDays(1);
 
             var currentYear = await _interLeagueService.GetCurrentYear();
-            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, currentYear, tomorrow);
+            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, tomorrow);
             await _interLeagueService.CreateMasterGame(masterGame);
             var vm = new MasterGameViewModel(masterGame, _clock);
 
