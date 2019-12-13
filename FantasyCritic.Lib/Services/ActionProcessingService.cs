@@ -194,14 +194,14 @@ namespace FantasyCritic.Lib.Services
             {
                 foreach (var dropRequest in leagueYearGroup.Value)
                 {
-                    var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, supportedYears, leagueYearGroup.Key);
+                    var affectedPublisher = updatedPublishers.Single(x => x.PublisherID == dropRequest.Publisher.PublisherID);
+                    var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, supportedYears, leagueYearGroup.Key, affectedPublisher);
                     if (dropResult.Result.IsSuccess)
                     {
                         successDrops.Add(dropRequest);
                         var publisherGame = dropRequest.Publisher.GetPublisherGame(dropRequest.MasterGame);
                         gamesToDelete.Add(publisherGame.Value);
                         LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, clock.GetCurrentInstant());
-                        var affectedPublisher = updatedPublishers.Single(x => x.PublisherID == dropRequest.Publisher.PublisherID);
                         affectedPublisher.DropGame(publisherGame.Value.WillRelease());
 
                         leagueActions.Add(leagueAction);

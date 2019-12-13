@@ -97,25 +97,25 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
-        public DropResult CanDropGame(DropRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear)
+        public DropResult CanDropGame(DropRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear, Publisher publisher)
         {
             List<ClaimError> dropErrors = new List<ClaimError>();
 
-            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, request.Publisher, supportedYears);
+            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, publisher, supportedYears);
             dropErrors.AddRange(basicErrors);
 
             var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, true);
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
-            var publisherGame = request.Publisher.GetPublisherGame(request.MasterGame);
+            var publisherGame = publisher.GetPublisherGame(request.MasterGame);
             bool gameWillRelease = publisherGame.Value.WillRelease();
             if (dropErrors.Any())
             {
                 return new DropResult(Result.Fail("Game is no longer eligible for dropping."), !gameWillRelease);
             }
 
-            var dropResult = request.Publisher.CanDropGame(gameWillRelease);
+            var dropResult = publisher.CanDropGame(gameWillRelease);
             return new DropResult(dropResult, !gameWillRelease);
         }
 

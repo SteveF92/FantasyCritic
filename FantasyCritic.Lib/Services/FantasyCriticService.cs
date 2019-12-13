@@ -231,7 +231,7 @@ namespace FantasyCritic.Lib.Services
             DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, publisher.LeagueYear, masterGame, _clock.GetCurrentInstant(), null);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
-            var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, supportedYears, publisher.LeagueYear);
+            var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, supportedYears, publisher.LeagueYear, publisher);
             if (dropResult.Result.IsFailure)
             {
                 return dropResult;
