@@ -93,7 +93,7 @@
         this.$router.push({ name: 'league', params: { leagueid: this.leagueid, year: this.year } });
       },
       catchHandler(returnedError) {
-        this.errorInfo = returnedError;
+        this.errorInfo = returnedError.response.data;
       }
     },
     mounted() {

@@ -96,7 +96,7 @@
             <th scope="row">Will Release</th>
             <td>
               <input v-model="local.willReleaseDroppableGames" @input="update('willReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                     id="willReleaseDroppableGames" name="willReleaseDroppableGames" type="text" class="form-control input" />
+                     id="willReleaseDroppableGames" name="willReleaseDroppableGames" type="text" class="form-control input drop-number" v-show="!local.unlimitedWillReleaseDroppableGames"/>
             </td>
             <td>
               <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillReleaseDroppableGames" @input="update('unlimitedWillReleaseDroppableGames', local.unlimitedWillReleaseDroppableGames)">
@@ -107,7 +107,7 @@
             <th scope="row">Will Not Release</th>
             <td>
               <input v-model="local.willNotReleaseDroppableGames" @input="update('willNotReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                     id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input" />
+                     id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input drop-number" v-show="!local.unlimitedWillNotReleaseDroppableGames" />
             </td>
             <td>
               <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillNotReleaseDroppableGames" @input="update('unlimitedWillNotReleaseDroppableGames', local.unlimitedWillNotReleaseDroppableGames)">
@@ -118,7 +118,7 @@
             <th scope="row">Unrestricted</th>
             <td>
               <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                     id="freeDroppableGames" name="freeDroppableGames" type="text" class="form-control input" />
+                     id="freeDroppableGames" name="freeDroppableGames" type="text" class="form-control input drop-number" v-show="!local.unlimitedFreeDroppableGames" />
             </td>
             <td>
               <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedFreeDroppableGames" @input="update('unlimitedFreeDroppableGames', local.unlimitedFreeDroppableGames)">
@@ -433,5 +433,9 @@
 
   .unlimited-checkbox{
     margin-bottom: 10px;
+  }
+
+  .drop-number{
+    width: 100px;
   }
 </style>
