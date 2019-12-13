@@ -133,33 +133,6 @@ namespace FantasyCritic.Web.Models.RoundTrip
             return true;
         }
 
-        public bool IsValid()
-        {
-            if (UnlimitedFreeDroppableGames && UnlimitedFreeDroppableGames)
-            {
-                return true;
-            }
-
-            int freeDroppableGamesCompare = FreeDroppableGames;
-            if (UnlimitedFreeDroppableGames)
-            {
-                freeDroppableGamesCompare = int.MaxValue;
-            }
-
-            int willNotReleaseDroppableGames = WillNotReleaseDroppableGames;
-            if (UnlimitedWillNotReleaseDroppableGames)
-            {
-                willNotReleaseDroppableGames = int.MaxValue;
-            }
-
-            int willReleaseDroppableGames = WillReleaseDroppableGames;
-            if (UnlimitedWillReleaseDroppableGames)
-            {
-                willReleaseDroppableGames = int.MaxValue;
-            }
-
-            return freeDroppableGamesCompare <= willNotReleaseDroppableGames;
-        }
 
         public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {

@@ -245,11 +245,6 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (!request.IsValid())
-            {
-                return BadRequest();
-            }
-
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
             if (systemWideSettings.BidProcessingMode)
             {
