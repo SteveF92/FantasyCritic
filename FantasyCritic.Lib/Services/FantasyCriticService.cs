@@ -107,6 +107,23 @@ namespace FantasyCritic.Lib.Services
                 return Result.Fail($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
             }
 
+            int maxFreeGamesFreeDropped = publishers.Select(publisher => publisher.FreeGamesDropped).DefaultIfEmpty(0).Max();
+            int maxWillNotReleaseGamesDropped = publishers.Select(publisher => publisher.WillNotReleaseGamesDropped).DefaultIfEmpty(0).Max();
+            int maxWillReleaseGamesDropped = publishers.Select(publisher => publisher.WillReleaseGamesDropped).DefaultIfEmpty(0).Max();
+
+            if (maxFreeGamesFreeDropped > options.FreeDroppableGames)
+            {
+                return Result.Fail($"Cannot reduce number of unrestricted droppable games to {options.FreeDroppableGames} as a publisher has already dropped {maxFreeGamesFreeDropped} games.");
+            }
+            if (maxWillNotReleaseGamesDropped > options.WillNotReleaseDroppableGames)
+            {
+                return Result.Fail($"Cannot reduce number of 'will not release' droppable games to {options.WillNotReleaseDroppableGames} as a publisher has already dropped {maxWillNotReleaseGamesDropped} games.");
+            }
+            if (maxWillReleaseGamesDropped > options.WillReleaseDroppableGames)
+            {
+                return Result.Fail($"Cannot reduce number of 'will release' droppable games to {options.WillReleaseDroppableGames} as a publisher has already dropped {maxWillReleaseGamesDropped} games.");
+            }
+
             var eligibilityOverrides = await GetEligibilityOverrides(league, parameters.Year);
 
             LeagueYear newLeagueYear = new LeagueYear(league, parameters.Year, options, leagueYear.Value.PlayStatus, eligibilityOverrides);
