@@ -119,7 +119,7 @@ namespace FantasyCritic.Web.Controllers.API
         {
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
 
-            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, _clock)).ToList();
+            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, _clock)).OrderBy(x => x.GameName).ToList();
             return viewModels;
         }
 
@@ -127,7 +127,7 @@ namespace FantasyCritic.Web.Controllers.API
         {
             IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetAllMasterGameChangeRequests();
 
-            var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, _clock)).ToList();
+            var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, _clock)).OrderBy(x => x.MasterGame.GameName).ToList();
             return viewModels;
         }
 
