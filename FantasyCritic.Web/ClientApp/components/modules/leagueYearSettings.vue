@@ -9,7 +9,7 @@
       <div v-if="freshSettings">
         <div class="form-group">
           <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-          <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:14'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
+          <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:20'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
           <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
           <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
         </div>
@@ -339,7 +339,7 @@
         this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
       },
       autoUpdateOptions() {
-        if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 14) {
+        if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
           this.intendedNumberOfPlayersEverValid = true;
         }
 

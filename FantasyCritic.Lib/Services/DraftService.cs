@@ -52,9 +52,9 @@ namespace FantasyCritic.Lib.Services
                 errors.Add("You need to have at least two players in the league.");
             }
 
-            if (activeUsers.Count() > 14)
+            if (activeUsers.Count() > 20)
             {
-                errors.Add("You cannot have more than 14 players in the league.");
+                errors.Add("You cannot have more than 20 players in the league.");
             }
 
             if (publishersInLeague.Count() != activeUsers.Count())
@@ -77,7 +77,7 @@ namespace FantasyCritic.Lib.Services
                 return false;
             }
 
-            if (publishersInLeague.Count() < 2 || publishersInLeague.Count() > 14)
+            if (publishersInLeague.Count() < 2 || publishersInLeague.Count() > 20)
             {
                 return false;
             }

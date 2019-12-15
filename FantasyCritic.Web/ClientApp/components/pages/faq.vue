@@ -74,7 +74,7 @@
       <faqCollapse>
         <div slot="question">How many players can be in a league?</div>
         <div slot="answer">
-          Anywhere from 2 to 14. Somewhere between 4 and 8 is probably optimal, but you’ll do fine anywhere in that range.
+          Anywhere from 2 to 20. Somewhere between 4 and 10 is probably optimal, and I'd be apprehensive about going over 14, but you can do it.
         </div>
       </faqCollapse>
       <faqCollapse>
