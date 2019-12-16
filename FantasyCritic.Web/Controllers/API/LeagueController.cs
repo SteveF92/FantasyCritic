@@ -840,26 +840,34 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<ActionResult<List<MasterGameYearViewModel>>> MyUpcomingGames()
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            var currentYear = await _interLeagueService.GetCurrentYear();
-            IReadOnlyList<LeagueYear> activeLeagueYears = await _leagueMemberService.GetLeaguesYearsForUser(currentUser, currentYear.Year);
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
 
             List<MasterGameYear> myMasterGames = new List<MasterGameYear>();
-            foreach (var leagueYear in activeLeagueYears)
+
+            foreach (var year in activeYears)
             {
-                if (leagueYear.League.TestLeague)
-                {
-                    continue;
-                }
+                IReadOnlyList<LeagueYear> activeLeagueYears = await _leagueMemberService.GetLeaguesYearsForUser(currentUser, year.Year);
 
-                var userPublisher = await _publisherService.GetPublisher(leagueYear, currentUser);
-                if (userPublisher.HasNoValue)
+                foreach (var leagueYear in activeLeagueYears)
                 {
-                    continue;
-                }
+                    if (leagueYear.League.TestLeague)
+                    {
+                        continue;
+                    }
 
-                var myMasterGamesInLeague = userPublisher.Value.PublisherGames.Where(x => x.MasterGame.HasValue)
-                    .Select(x => x.MasterGame.Value);
-                myMasterGames.AddRange(myMasterGamesInLeague);
+                    var userPublisher = await _publisherService.GetPublisher(leagueYear, currentUser);
+                    if (userPublisher.HasNoValue)
+                    {
+                        continue;
+                    }
+
+                    var myMasterGamesInLeague = userPublisher.Value.PublisherGames
+                        .Where(x => x.MasterGame.HasValue)
+                        .Where(x => x.WillRelease())
+                        .Select(x => x.MasterGame.Value);
+                    myMasterGames.AddRange(myMasterGamesInLeague);
+                }
             }
 
             var easternZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
