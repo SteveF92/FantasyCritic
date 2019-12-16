@@ -10,6 +10,9 @@
           <h4>
             Year/Quarter: {{publisher.yearQuarter.year}}-Q{{publisher.yearQuarter.quarter}}
           </h4>
+          <h2>
+            Total Points: {{publisher.totalFantasyPoints}}
+          </h2>
         </div>
 
         <div class="col-md-12 col-lg-6">
