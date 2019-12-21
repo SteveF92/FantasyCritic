@@ -76,11 +76,6 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (!request.IsValid())
-            {
-                return BadRequest();
-            }
-
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.InitialYear);
             if (selectedSupportedYear is null)

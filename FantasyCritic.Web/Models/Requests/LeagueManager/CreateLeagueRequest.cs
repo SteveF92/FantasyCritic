@@ -89,34 +89,6 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             return true;
         }
 
-        public bool IsValid()
-        {
-            if (UnlimitedFreeDroppableGames && UnlimitedFreeDroppableGames)
-            {
-                return true;
-            }
-
-            int freeDroppableGamesCompare = FreeDroppableGames;
-            if (UnlimitedFreeDroppableGames)
-            {
-                freeDroppableGamesCompare = int.MaxValue;
-            }
-
-            int willNotReleaseDroppableGames = WillNotReleaseDroppableGames;
-            if (UnlimitedWillNotReleaseDroppableGames)
-            {
-                willNotReleaseDroppableGames = int.MaxValue;
-            }
-
-            int willReleaseDroppableGames = WillReleaseDroppableGames;
-            if (UnlimitedWillReleaseDroppableGames)
-            {
-                willReleaseDroppableGames = int.MaxValue;
-            }
-
-            return freeDroppableGamesCompare <= willNotReleaseDroppableGames;
-        }
-
         public LeagueCreationParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);

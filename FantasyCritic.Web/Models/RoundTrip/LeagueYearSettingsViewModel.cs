@@ -133,7 +133,6 @@ namespace FantasyCritic.Web.Models.RoundTrip
             return true;
         }
 
-
         public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
