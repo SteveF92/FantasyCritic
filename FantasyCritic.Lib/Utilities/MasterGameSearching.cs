@@ -10,8 +10,6 @@ namespace FantasyCritic.Lib.Utilities
 {
     public static class MasterGameSearching
     {
-        private static readonly int MaxCloseMatchGames = 5;
-
         public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames) 
         {
             var subsequenceMatches = masterGames
@@ -22,8 +20,7 @@ namespace FantasyCritic.Lib.Utilities
 
             var perfectMatches = substringMatches.Where(x => Math.Abs(x.Item2 - 1.0) < .01);
             var filteredSubsequenceMatches = subsequenceMatches
-                .OrderByDescending(x => x.Item2)
-                .Take(MaxCloseMatchGames);
+                .OrderByDescending(x => x.Item2);
             var combinedSequences = perfectMatches
                 .Concat(filteredSubsequenceMatches)
                 .Select(x => x.Item1);
@@ -41,8 +38,7 @@ namespace FantasyCritic.Lib.Utilities
 
             var perfectMatches = substringMatches.Where(x => Math.Abs(x.Item2 - 1.0) < .01);
             var filteredSubsequenceMatches = subsequenceMatches
-                .OrderByDescending(x => x.Item2)
-                .Take(MaxCloseMatchGames);
+                .OrderByDescending(x => x.Item2);
             var combinedSequences = perfectMatches
                 .Concat(filteredSubsequenceMatches)
                 .Select(x => x.Item1);
