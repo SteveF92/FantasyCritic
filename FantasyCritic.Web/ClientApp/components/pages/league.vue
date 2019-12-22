@@ -235,7 +235,7 @@
             document.title = this.league.leagueName + " - Fantasy Critic";
           })
           .catch(returnedError => {
-            this.error = returnedError;
+            this.errorInfo = "Something went wrong with this league. Contact us on Twitter for support.";
             this.forbidden = (returnedError.response.status === 403);
           });
       },
@@ -251,11 +251,15 @@
               this.selectedYear = this.leagueYear.year;
               this.fetchCurrentBids();
               this.fetchCurrentDropRequests();
-              this.fetchLeagueActions();
             })
-          .catch(returnedError => (this.error = returnedError));
+          .catch(returnedError => {
+            this.errorInfo = "Something went wrong with this league. Contact us on Twitter for support.";
+          });
       },
       fetchCurrentBids() {
+        if (!this.leagueYear.userPublisher) {
+          return;
+        }
         axios
           .get('/api/league/CurrentBids/' + this.leagueYear.userPublisher.publisherID)
           .then(response => {
@@ -266,6 +270,9 @@
           });
       },
       fetchCurrentDropRequests() {
+        if (!this.leagueYear.userPublisher) {
+          return;
+        }
         axios
           .get('/api/league/CurrentDropRequests/' + this.leagueYear.userPublisher.publisherID)
           .then(response => {
