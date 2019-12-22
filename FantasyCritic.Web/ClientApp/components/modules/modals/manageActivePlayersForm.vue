@@ -1,6 +1,9 @@
 <template>
-  <b-modal id="manageActivePlayers" ref="manageActivePlayersRef" title="Manage Active Players" @ok="confirmActivePlayers" @show="setData">
+  <b-modal id="manageActivePlayers" ref="manageActivePlayersRef" title="Manage Active Players" @show="setData">
     <h4 class="text-black">Active Players for {{leagueYear.year}}</h4>
+    <div class="alert alert-danger" v-show="errorInfo">
+      {{errorInfo}}
+    </div>
     <table class="table table-bordered table-striped table-sm" v-if="showTable">
       <thead>
         <tr class="bg-primary">
@@ -17,7 +20,10 @@
         </tr>
       </tbody>
     </table>
-</b-modal>
+    <div slot="modal-footer">
+      <input type="submit" class="btn btn-primary" value="Set Active Players" v-on:click="confirmActivePlayers" />
+    </div>
+  </b-modal>
 </template>
 <script>
   import Vue from "vue";
@@ -27,7 +33,8 @@
     data() {
       return {
         showTable: false,
-        internalPlayerActive: {}
+        internalPlayerActive: {},
+        errorInfo: ""
       }
     },
     props: ['league', 'leagueYear'],
@@ -74,6 +81,10 @@
           .post('/api/leagueManager/SetPlayerActiveStatus', model)
           .then(response => {
             this.$emit('activePlayersEdited');
+            this.$refs.manageActivePlayersRef.hide();
+          })
+          .catch(response => {
+            this.errorInfo = response.response.data;
           });
       },
       setData() {

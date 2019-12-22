@@ -549,6 +549,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't change a player's status for a year that is already started.");
             }
 
+            var publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+
             Dictionary<FantasyCriticUser, bool> userActiveStatus = new Dictionary<FantasyCriticUser, bool>();
             foreach (var userKeyValue in request.ActiveStatus)
             {
@@ -556,6 +558,12 @@ namespace FantasyCritic.Web.Controllers.API
                 if (domainUser == null)
                 {
                     return BadRequest();
+                }
+
+                var publisherForUser = publishers.SingleOrDefault(x => x.User.UserID == domainUser.UserID);
+                if (publisherForUser != null)
+                {
+                    return BadRequest("You must remove a player's publisher before you can set them as inactive.");
                 }
 
                 userActiveStatus.Add(domainUser, userKeyValue.Value);
