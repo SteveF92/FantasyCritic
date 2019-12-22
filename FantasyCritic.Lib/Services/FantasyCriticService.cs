@@ -225,6 +225,11 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
+        public async Task<ClaimResult> QueueGame(Publisher publisher, MasterGame masterGame)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<DropResult> MakeDropRequest(Publisher publisher, PublisherGame publisherGame)
         {
             if (publisherGame.CounterPick)

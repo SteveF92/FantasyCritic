@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
@@ -1131,6 +1132,55 @@ namespace FantasyCritic.Web.Controllers.API
 
             var viewModels = dropRequests.Select(x => new DropGameRequestViewModel(x, _clock));
             return Ok(viewModels);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddGameToQueue([FromBody] AddGameToQueueRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser.UserID != publisher.Value.User.UserID)
+            {
+                return Forbid();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.LeagueYear.League.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, publisher.Value.LeagueYear.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (!leagueYear.Value.PlayStatus.DraftFinished)
+            {
+                return BadRequest("You can't queue game if the draft is over.");
+            }
+
+            Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+            if (masterGame.HasNoValue)
+            {
+                return BadRequest("That master game does not exist.");
+            }
+
+            ClaimResult bidResult = await _fantasyCriticService.QueueGame(publisher.Value, masterGame.Value);
+            var viewModel = new QueueResultViewModel(bidResult);
+
+            return Ok(viewModel);
         }
     }
 }
