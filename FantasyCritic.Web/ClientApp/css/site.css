@@ -71,6 +71,10 @@ div.alert {
     font-weight: bold;
 }
 
+.text-black{
+    color:black !important;
+}
+
 .custom-select {
     border-radius: 0;
     border: none;

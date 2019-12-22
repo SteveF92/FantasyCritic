@@ -938,6 +938,65 @@ namespace FantasyCritic.Web.Controllers.API
                 viewModels.Add(viewModel);
             }
 
+            viewModels = viewModels.Take(50).ToList();
+
+            return viewModels;
+        }
+
+        public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> TopAvailableGames(int year, Guid leagueID)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            HashSet<MasterGame> publisherMasterGames = publishersInLeague
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .Distinct()
+                .ToHashSet();
+
+            var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
+            if (userPublisher is null)
+            {
+                return BadRequest();
+            }
+
+            HashSet<MasterGame> myPublisherMasterGames = userPublisher.PublisherGames
+                .Where(x => x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .Distinct()
+                .ToHashSet();
+
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
+            IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
+
+            List<PossibleMasterGameYearViewModel> viewModels = new List<PossibleMasterGameYearViewModel>();
+            foreach (var masterGame in matchingMasterGames)
+            {
+                var eligibilityErrors = leagueYear.Value.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
+                bool isEligible = !eligibilityErrors.Any();
+                bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
+                bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
+                bool isReleased = masterGame.MasterGame.IsReleased(_clock);
+                bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
+                bool willRelease = masterGame.WillRelease();
+                if (!isEligible || taken || alreadyOwned || isReleased || hasScore || !willRelease)
+                {
+                    continue;
+                }
+
+                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, false, false, true);
+                viewModels.Add(viewModel);
+            }
+
+            viewModels = viewModels.Take(100).ToList();
+
             return viewModels;
         }
 

@@ -9,6 +9,10 @@
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
           </span>
         </div>
+
+        <b-button v-show="!showingTopAvailable" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+
+        <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
                                   v-on:input="newGameSelected"></possibleMasterGamesTable>
 
@@ -74,7 +78,8 @@
         possibleMasterGames: [],
         searched: false,
         showingUnlistedField: false,
-        isBusy: false
+        isBusy: false,
+        showingTopAvailable: false
       }
     },
     components: {
@@ -90,10 +95,28 @@
       searchGame() {
         this.draftResult = null;
         this.possibleMasterGames = [];
+        this.showingTopAvailable = false;
         axios
           .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
           .then(response => {
             this.possibleMasterGames = response.data;
+            this.searched = true;
+            this.showingUnlistedField = false;
+            this.draftMasterGame = null;
+          })
+          .catch(response => {
+
+          });
+      },
+      getTopGames() {
+        this.possibleMasterGames = [];
+        this.draftResult = null;
+        this.showingTopAvailable = false;
+        axios
+          .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
+          .then(response => {
+            this.possibleMasterGames = response.data;
+            this.showingTopAvailable = true;
             this.searched = true;
             this.showingUnlistedField = false;
             this.draftMasterGame = null;
@@ -156,6 +179,7 @@
         this.draftOverride = false;
         this.possibleMasterGames = [];
         this.searched = false;
+        this.showingTopAvailable = false;
         this.showingUnlistedField = false;
       },
       newGameSelected() {
@@ -177,5 +201,9 @@
 .override-checkbox {
   margin-left: 10px;
   margin-top: 8px;
+}
+
+.show-top-button {
+  margin-bottom: 10px;
 }
 </style>
