@@ -45,6 +45,20 @@ namespace FantasyCritic.Lib.Royale
             return modifiedPoints;
         }
 
+        public bool IsLocked(IClock clock)
+        {
+            if (MasterGame.MasterGame.IsReleased(clock))
+            {
+                return true;
+            }
+            if (MasterGame.MasterGame.CriticScore.HasValue)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public override string ToString() => MasterGame.MasterGame.GameName;
 
         public bool Equals(RoyalePublisherGame other)

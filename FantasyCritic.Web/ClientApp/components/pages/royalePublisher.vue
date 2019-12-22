@@ -40,7 +40,7 @@
         </template>
         <template slot="advertisingMoney" slot-scope="data">
           {{ data.item.advertisingMoney | money }}
-          <b-button variant="info" size="sm" v-if="userIsPublisher" v-on:click="setGameToSetBudget(data.item)">Set Budget</b-button>
+          <b-button variant="info" size="sm" v-if="userIsPublisher && !data.item.locked" v-on:click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
         <template slot="criticScore" slot-scope="data">
           {{ data.item.masterGame.criticScore | score(2) }}
@@ -52,7 +52,7 @@
           {{ data.item.timestamp | date }}
         </template>
         <template slot="sellGame" slot-scope="data">
-          <b-button block variant="danger" v-on:click="setGameToSell(data.item)">Sell</b-button>
+          <b-button block variant="danger" v-if="!data.item.locked" v-on:click="setGameToSell(data.item)">Sell</b-button>
         </template>
       </b-table>
       <div v-else class="alert alert-info">
@@ -116,7 +116,7 @@
           { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary' }
         ],
         userPublisherFields: [
-          { key: 'sellGame', label: '', thClass: 'bg-primary' }
+          { key: 'sellGame', label: '', thClass: 'bg-primary', label: 'Sell' }
         ]
       }
     },

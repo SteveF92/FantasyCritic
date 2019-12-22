@@ -16,6 +16,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale
             PublisherID = domain.PublisherID;
             YearQuarter = new RoyaleYearQuarterViewModel(domain.YearQuarter);
             MasterGame = new MasterGameYearViewModel(domain.MasterGame, clock);
+            Locked = domain.IsLocked(clock);
             Timestamp = domain.Timestamp;
             AmountSpent = domain.AmountSpent;
             AdvertisingMoney = domain.AdvertisingMoney;
@@ -25,6 +26,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale
         public Guid PublisherID { get; }
         public RoyaleYearQuarterViewModel YearQuarter { get; }
         public MasterGameYearViewModel MasterGame { get; }
+        public bool Locked { get; }
         public Instant Timestamp { get; }
         public decimal AmountSpent { get; }
         public decimal AdvertisingMoney { get; }
