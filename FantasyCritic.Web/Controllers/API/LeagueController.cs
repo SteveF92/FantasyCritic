@@ -45,7 +45,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
             LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock,
-            IHubContext<UpdateHub> hubcontext, ILogger<LeagueController> logger)
+            IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
@@ -54,7 +54,7 @@ namespace FantasyCritic.Web.Controllers.API
             _draftService = draftService;
             _publisherService = publisherService;
             _clock = clock;
-            _hubContext = hubcontext;
+            _hubContext = hubContext;
             _logger = logger;
         }
 
