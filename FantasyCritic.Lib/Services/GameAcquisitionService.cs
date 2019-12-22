@@ -109,6 +109,10 @@ namespace FantasyCritic.Lib.Services
 
             //Drop limits
             var publisherGame = publisher.GetPublisherGame(request.MasterGame);
+            if (publisherGame.HasNoValue)
+            {
+                return new DropResult(Result.Fail("Cannot drop a game that you do not have"), false);
+            }
             bool gameWillRelease = publisherGame.Value.WillRelease();
             if (dropErrors.Any())
             {
