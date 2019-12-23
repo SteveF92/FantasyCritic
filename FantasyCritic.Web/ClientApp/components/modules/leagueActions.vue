@@ -45,6 +45,9 @@
             <li class="fake-link action" v-b-modal="'currentDropsForm'" v-show="leagueYear.playStatus.draftFinished">
               My Pending Drops
             </li>
+            <li class="fake-link action" v-b-modal="'gameQueueForm'" v-show="!leagueYear.playStatus.draftFinished">
+              Draft Watchlist
+            </li>
             <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
               Change Publisher Name
             </li>
@@ -130,6 +133,7 @@
 
         <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
         <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
+        <gameQueueForm :publisher="leagueYear.userPublisher" :queuedGames="queuedGames"></gameQueueForm>
 
         <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
@@ -161,6 +165,7 @@
   import CurrentBidsForm from "components/modules/modals/currentBidsForm";
   import DropGameForm from "components/modules/modals/dropGameForm";
   import CurrentDropsForm from "components/modules/modals/currentDropsForm";
+  import GameQueueForm from "components/modules/modals/gameQueueForm";
 
   import EligibilityOverridesModal from "components/modules/modals/eligibilityOverridesModal";
   import ChangePublisherNameForm from "components/modules/modals/changePublisherNameForm";
@@ -190,10 +195,11 @@
         errorInfo: ""
       }
     },
-    props: ['league', 'leagueYear', 'leagueActions', 'currentBids', 'currentDrops', 'userIsNextInDraft', 'nextPublisherUp'],
+    props: ['league', 'leagueYear', 'leagueActions', 'currentBids', 'currentDrops', 'queuedGames', 'userIsNextInDraft', 'nextPublisherUp'],
     components: {
       BidGameForm,
       CurrentBidsForm,
+      GameQueueForm,
       DropGameForm,
       CurrentDropsForm,
       EligibilityOverridesModal,

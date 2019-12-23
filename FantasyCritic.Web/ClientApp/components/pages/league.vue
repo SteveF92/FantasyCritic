@@ -145,7 +145,8 @@
           <div class="row">
             <div class="col-xl-3 col-lg-4 col-md-12">
               <leagueActions ref="leagueActionsRef" :league="league" :leagueYear="leagueYear"
-                             :currentBids="currentBids" :currentDrops="currentDrops" :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
+                             :currentBids="currentBids" :currentDrops="currentDrops" :queuedGames="queuedGames"
+                             :userIsNextInDraft="userIsNextInDraft" :nextPublisherUp="nextPublisherUp" v-on:actionTaken="actionTaken"></leagueActions>
             </div>
             <div class="col-xl-9 col-lg-8 col-md-12">
               <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
@@ -181,6 +182,7 @@
         leagueYear: null,
         currentBids: [],
         currentDrops: [],
+        queuedGames: [],
         forbidden: false,
         advancedProjections: false,
         inviteCode: null
@@ -250,6 +252,7 @@
               this.selectedYear = this.leagueYear.year;
               this.fetchCurrentBids();
               this.fetchCurrentDropRequests();
+              this.fetchQueuedGames();
             })
           .catch(returnedError => {
             this.errorInfo = "Something went wrong with this league. Contact us on Twitter for support.";
@@ -276,6 +279,19 @@
           .get('/api/league/CurrentDropRequests/' + this.leagueYear.userPublisher.publisherID)
           .then(response => {
             this.currentDrops = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
+      fetchQueuedGames() {
+        if (!this.leagueYear.userPublisher) {
+          return;
+        }
+        axios
+          .get('/api/league/CurrentQueuedGames/' + this.leagueYear.userPublisher.publisherID)
+          .then(response => {
+            this.queuedGames = response.data;
           })
           .catch(response => {
 
