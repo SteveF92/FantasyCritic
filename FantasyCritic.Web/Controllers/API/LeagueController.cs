@@ -1155,6 +1155,62 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModels);
         }
 
+        [HttpGet("{publisherID}")]
+        public async Task<IActionResult> CurrentQueuedGameYears(Guid publisherID)
+        {
+            Maybe<Publisher> publisher = await _publisherService.GetPublisher(publisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser.UserID != publisher.Value.User.UserID)
+            {
+                return Forbid();
+            }
+
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.LeagueYear.League.LeagueID, publisher.Value.LeagueYear.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            HashSet<MasterGame> publisherMasterGames = publishersInLeague
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .Distinct()
+                .ToHashSet();
+
+            HashSet<MasterGame> myPublisherMasterGames = publisher.Value.PublisherGames
+                .Where(x => x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .Distinct()
+                .ToHashSet();
+
+            var queuedGames = await _fantasyCriticService.GetQueuedGames(publisher.Value);
+            IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(publisher.Value.LeagueYear.Year, true);
+            var masterGamesForThisYear = masterGameYears.Where(x => x.Year == leagueYear.Value.Year);
+            var masterGameYearDictionary = masterGamesForThisYear.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
+
+            List<PossibleMasterGameYearViewModel> viewModels = new List<PossibleMasterGameYearViewModel>();
+            foreach (var queuedGame in queuedGames)
+            {
+                var masterGame = masterGameYearDictionary[queuedGame.MasterGame.MasterGameID];
+                var eligibilityErrors = leagueYear.Value.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
+                bool isEligible = !eligibilityErrors.Any();
+                bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
+                bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
+
+                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, taken, alreadyOwned, isEligible);
+                viewModels.Add(viewModel);
+            }
+
+            return Ok(viewModels);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddGameToQueue([FromBody] AddGameToQueueRequest request)
         {

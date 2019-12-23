@@ -11,8 +11,10 @@
         </div>
 
         <b-button v-show="!showingTopAvailable" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+        <b-button v-show="!showingQueuedGames" variant="secondary" v-on:click="getQueuedGames" class="show-top-button">Show My Watchlist</b-button>
 
         <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
+        <h3 class="text-black" v-show="showingQueuedGames">Watchlist</h3>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
                                   v-on:input="newGameSelected"></possibleMasterGamesTable>
 
@@ -79,7 +81,8 @@
         searched: false,
         showingUnlistedField: false,
         isBusy: false,
-        showingTopAvailable: false
+        showingTopAvailable: false,
+        showingQueuedGames: false
       }
     },
     components: {
@@ -96,6 +99,7 @@
         this.draftResult = null;
         this.possibleMasterGames = [];
         this.showingTopAvailable = false;
+        this.showingQueuedGames = false;
         axios
           .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
           .then(response => {
@@ -112,11 +116,30 @@
         this.possibleMasterGames = [];
         this.draftResult = null;
         this.showingTopAvailable = false;
+        this.showingQueuedGames = false;
         axios
           .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
           .then(response => {
             this.possibleMasterGames = response.data;
             this.showingTopAvailable = true;
+            this.searched = true;
+            this.showingUnlistedField = false;
+            this.draftMasterGame = null;
+          })
+          .catch(response => {
+
+          });
+      },
+      getQueuedGames() {
+        this.possibleMasterGames = [];
+        this.draftResult = null;
+        this.showingTopAvailable = false;
+        this.showingQueuedGames = false;
+        axios
+          .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID)
+          .then(response => {
+            this.possibleMasterGames = response.data;
+            this.showingQueuedGames = true;
             this.searched = true;
             this.showingUnlistedField = false;
             this.draftMasterGame = null;
