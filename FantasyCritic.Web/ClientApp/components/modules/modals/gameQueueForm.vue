@@ -57,9 +57,10 @@
       draggable,
       PossibleMasterGamesTable
     },
-    props: ['publisher', 'queuedGames', 'maximumEligibilityLevel', 'year'],
+    props: ['publisher', 'maximumEligibilityLevel', 'year'],
     data() {
       return {
+        queuedGames: null,
         searchGameName: null,
         possibleMasterGames: [],
         queueResult: null,
@@ -68,6 +69,17 @@
       }
     },
     methods: {
+      fetchQueuedGames() {
+        axios
+          .get('/api/league/CurrentQueuedGames/' + this.publisher.publisherID)
+          .then(response => {
+            this.queuedGames = response.data;
+            this.desiredQueueRanks = this.queuedGames;
+          })
+          .catch(response => {
+
+          });
+      },
       searchGame() {
         this.queueResult = null;
         this.possibleMasterGames = [];
@@ -90,6 +102,7 @@
           .post('/api/league/AddGameToQueue', request)
           .then(response => {
             this.isBusy = false;
+            this.fetchQueuedGames();
           })
           .catch(response => {
             this.isBusy = false;
@@ -107,7 +120,7 @@
         axios
           .post('/api/league/SetQueueRankings', model)
           .then(response => {
-
+            this.fetchQueuedGames();
           })
           .catch(response => {
 
@@ -121,7 +134,7 @@
         axios
           .post('/api/league/DeleteQueuedGame', model)
           .then(response => {
-
+            this.fetchQueuedGames();
           })
           .catch(response => {
 
@@ -135,7 +148,7 @@
       }
     },
     mounted() {
-      this.clearData();
+      this.fetchQueuedGames();
     },
     watch: {
       queuedGames(newValue, oldValue) {
