@@ -561,7 +561,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
 
                 var publisherForUser = publishers.SingleOrDefault(x => x.User.UserID == domainUser.UserID);
-                if (publisherForUser != null)
+                if (publisherForUser != null && !userKeyValue.Value)
                 {
                     return BadRequest("You must remove a player's publisher before you can set them as inactive.");
                 }
