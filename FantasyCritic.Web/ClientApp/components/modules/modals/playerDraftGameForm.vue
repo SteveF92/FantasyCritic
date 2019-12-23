@@ -203,6 +203,7 @@
         this.possibleMasterGames = [];
         this.searched = false;
         this.showingTopAvailable = false;
+        this.showingQueuedGames = false;
         this.showingUnlistedField = false;
       },
       newGameSelected() {

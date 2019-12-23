@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="gameQueueForm" ref="gameQueueFormRef" title="My Watchlist" @hidden="clearData">
+  <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="lg" title="My Watchlist" @hidden="clearData">
     <div class="form-group">
       <h3 class="text-black">Add Game to Watchlist</h3>
       <label for="searchGameName" class="control-label">Game Name</label>
