@@ -181,7 +181,6 @@
         leagueYear: null,
         currentBids: [],
         currentDrops: [],
-        leagueActions: [],
         forbidden: false,
         advancedProjections: false,
         inviteCode: null
