@@ -8,25 +8,23 @@
         <tr class="bg-primary">
           <th scope="col"></th>
           <th scope="col" class="game-column">Game</th>
-          <th scope="col">Bid Amount</th>
-          <th scope="col">Priority</th>
-          <th scope="col">Cancel</th>
+          <th scope="col">Ranking</th>
+          <th scope="col"></th>
         </tr>
       </thead>
-      <draggable v-model="desiredBidPriorities" tag="tbody">
-        <tr v-for="bid in desiredBidPriorities" :key="bid.priority">
+      <draggable v-model="desiredQueueRanks" tag="tbody">
+        <tr v-for="queuedGame in desiredQueueRanks" :key="queuedGame.rank">
           <td scope="row"><font-awesome-icon icon="bars" size="lg" /></td>
-          <td>{{bid.masterGame.gameName}}</td>
-          <td>{{bid.bidAmount | money}}</td>
-          <td>{{bid.priority}}</td>
+          <td>{{queuedGame.masterGame.gameName}}</td>
+          <td>{{queuedGame.rank}}</td>
           <td class="select-cell">
-            <b-button variant="danger" size="sm" v-on:click="cancelBid(bid)">Cancel</b-button>
+            <b-button variant="danger" size="sm" v-on:click="removeQueuedGame(queuedGame)">Remove</b-button>
           </td>
         </tr>
       </draggable>
     </table>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Priority Order" v-on:click="setBidPriorityOrder" />
+      <input type="submit" class="btn btn-primary" value="Set Priority Order" v-on:click="setQueueRankings" />
     </div>
   </b-modal>
 </template>
@@ -43,54 +41,50 @@
     props: ['publisher', 'queuedGames'],
     data() {
       return {
-        desiredBidPriorities: []
+        desiredQueueRanks: []
       }
     },
     methods: {
-      setBidPriorityOrder() {
-        let desiredBidPriorityIDs = this.desiredBidPriorities.map(function (v) {
-          return v.bidID;
+      setQueueRankings() {
+        let desiredMasterGameIDs = this.desiredQueueRanks.map(function (v) {
+          return v.masterGame.masterGameID;
         });
         var model = {
           publisherID: this.publisher.publisherID,
-          BidPriorities: desiredBidPriorityIDs
+          QueueRanks: desiredMasterGameIDs
         };
         axios
-          .post('/api/league/SetBidPriorities', model)
+          .post('/api/league/SetQueueRankings', model)
           .then(response => {
-            this.$refs.currentBidsFormRef.hide();
-            this.$emit('bidPriorityEdited');
+
           })
           .catch(response => {
 
           });
       },
-      cancelBid(bid) {
+      removeQueuedGame(game) {
         var model = {
-          bidID: bid.bidID
+          publisherID: this.publisher.publisherID,
+          masterGameID: game.masterGame.masterGameID
         };
         axios
-          .post('/api/league/DeletePickupBid', model)
+          .post('/api/league/DeleteQueuedGame', model)
           .then(response => {
-            var bidInfo = {
-              gameName: bid.masterGame.gameName,
-              bidAmount: bid.bidAmount
-            };
-            this.$emit('bidCanceled', bidInfo);
+
           })
           .catch(response => {
 
           });
       },
       clearData() {
-        this.desiredBidPriorities = this.currentBids;
+        this.desiredQueueRanks = this.queuedGames;
       }
     },
     mounted() {
       this.clearData();
     },
     watch: {
-      currentBids(newValue, oldValue) {
+      queuedGames(newValue, oldValue) {
         if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array &&
           oldValue.length !== newValue.length)) {
           this.clearData();
