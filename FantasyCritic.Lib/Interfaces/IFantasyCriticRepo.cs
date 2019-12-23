@@ -76,6 +76,11 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year);
         Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID);
 
+        Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher);
+        Task QueueGame(QueuedGame queuedGame);
+        Task RemoveQueuedGame(QueuedGame queuedGame);
+        Task SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks);
+
         Task AddLeagueAction(LeagueAction action);
         Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
         Task ChangePublisherName(Publisher publisher, string publisherName);

@@ -92,14 +92,28 @@ namespace FantasyCritic.Lib.Services
         public async Task<Result> SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
         {
             var requiredNumbers = Enumerable.Range(1, bidPriorities.Count).ToList();
-            var requestedDraftNumbers = bidPriorities.Select(x => x.Value);
-            bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedDraftNumbers);
+            var requestedBidNumbers = bidPriorities.Select(x => x.Value);
+            bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedBidNumbers);
             if (!allRequiredPresent)
             {
                 return Result.Fail("Some of the positions are not valid.");
             }
 
             await _fantasyCriticRepo.SetBidPriorityOrder(bidPriorities);
+            return Result.Ok();
+        }
+
+        public async Task<Result> SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks)
+        {
+            var requiredNumbers = Enumerable.Range(1, queueRanks.Count).ToList();
+            var requestedQueueNumbers = queueRanks.Select(x => x.Value);
+            bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedQueueNumbers);
+            if (!allRequiredPresent)
+            {
+                return Result.Fail("Some of the positions are not valid.");
+            }
+
+            await _fantasyCriticRepo.SetQueueRankings(queueRanks);
             return Result.Ok();
         }
     }

@@ -225,9 +225,42 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
+        public Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher)
+        {
+            return _fantasyCriticRepo.GetQueuedGames(publisher);
+        }
+
         public async Task<ClaimResult> QueueGame(Publisher publisher, MasterGame masterGame)
         {
-            throw new NotImplementedException();
+            IReadOnlyList<QueuedGame> queuedGames = await _fantasyCriticRepo.GetQueuedGames(publisher);
+            bool alreadyQueued = queuedGames.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
+            if (alreadyQueued)
+            {
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("You already have that game queued.", false) });
+            }
+
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null);
+            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+
+            var leagueYear = publisher.LeagueYear;
+            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
+
+            var claimResult = _gameAcquisitionService.CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear);
+            if (!claimResult.Success)
+            {
+                return claimResult;
+            }
+
+            var nextRank = queuedGames.Count + 1;
+            QueuedGame queuedGame = new QueuedGame(publisher, masterGame, nextRank);
+            await _fantasyCriticRepo.QueueGame(queuedGame);
+
+            return claimResult;
+        }
+
+        public Task RemoveQueuedGame(QueuedGame queuedGame)
+        {
+            return _fantasyCriticRepo.RemoveQueuedGame(queuedGame);
         }
 
         public async Task<DropResult> MakeDropRequest(Publisher publisher, PublisherGame publisherGame)

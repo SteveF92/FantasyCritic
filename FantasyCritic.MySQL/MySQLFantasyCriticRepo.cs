@@ -279,6 +279,90 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var queuedEntities = await connection.QueryAsync<QueuedGameEntity>("select * from tbl_league_publisherqueue where PublisherID = @publisherID",
+                    new { publisherID = publisher.PublisherID });
+
+                List<QueuedGame> domainQueue = new List<QueuedGame>();
+                foreach (var queuedEntity in queuedEntities)
+                {
+                    var masterGame = await _masterGameRepo.GetMasterGame(queuedEntity.MasterGameID);
+
+                    QueuedGame domain = queuedEntity.ToDomain(publisher, masterGame.Value);
+                    domainQueue.Add(domain);
+                }
+
+                return domainQueue;
+            }
+        }
+
+        public async Task QueueGame(QueuedGame queuedGame)
+        {
+            var entity = new QueuedGameEntity(queuedGame);
+            string sql = "insert into tbl_league_publisherqueue(PublisherID,MasterGameID,Rank) VALUES (@PublisherID,@MasterGameID,@Rank);";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, entity);
+            }
+        }
+
+        public async Task RemoveQueuedGame(QueuedGame queuedGame)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    string deleteSQL = "delete from tbl_league_publisherqueue where PublisherID = @PublisherID AND MasterGameID = @MasterGameID";
+                    string alterRankSQL = "update tbl_league_pickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority";
+                    await connection.ExecuteAsync(deleteSQL, new { queuedGame.Publisher.PublisherID, queuedGame.MasterGame.MasterGameID }, transaction);
+                    await connection.ExecuteAsync(alterRankSQL, new { publisherID = queuedGame.Publisher.PublisherID, oldPriority = queuedGame.Rank }, transaction);
+                    transaction.Commit();
+                }
+            }
+        }
+
+        public async Task SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks)
+        {
+            int tempPosition = queueRanks.Select(x => x.Value).Max() + 1;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    foreach (var queuedGame in queueRanks)
+                    {
+                        await connection.ExecuteAsync(
+                            "update tbl_league_publisherqueue set Rank = @rank where PublisherID = @PublisherID AND MasterGameID = @MasterGameID",
+                            new
+                            {
+                                queuedGame.Key.MasterGame.MasterGameID,
+                                queuedGame.Key.Publisher.PublisherID,
+                                rank = tempPosition
+                            }, transaction);
+                        tempPosition++;
+                    }
+
+                    foreach (var queuedGame in queueRanks)
+                    {
+                        await connection.ExecuteAsync(
+                            "update tbl_league_publisherqueue set Rank = @rank where PublisherID = @PublisherID AND MasterGameID = @MasterGameID",
+                            new
+                            {
+                                queuedGame.Key.MasterGame.MasterGameID,
+                                queuedGame.Key.Publisher.PublisherID,
+                                rank = queuedGame.Value
+                            }, transaction);
+                    }
+
+                    transaction.Commit();
+                }
+            }
+        }
+
         public async Task AddLeagueAction(LeagueAction action)
         {
             LeagueActionEntity entity = new LeagueActionEntity(action);

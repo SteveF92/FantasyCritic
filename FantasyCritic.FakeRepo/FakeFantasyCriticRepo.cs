@@ -297,6 +297,16 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task RemoveQueuedGame(QueuedGame queuedGame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task AddLeagueAction(LeagueAction action)
         {
             throw new NotImplementedException();
@@ -448,6 +458,16 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task UpdateSystemWideValues(SystemWideValues systemWideValues)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task QueueGame(QueuedGame queuedGame)
         {
             throw new NotImplementedException();
         }

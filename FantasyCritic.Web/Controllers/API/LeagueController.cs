@@ -1134,6 +1134,27 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModels);
         }
 
+        [HttpGet("{publisherID}")]
+        public async Task<IActionResult> CurrentQueuedGames(Guid publisherID)
+        {
+            Maybe<Publisher> publisher = await _publisherService.GetPublisher(publisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser.UserID != publisher.Value.User.UserID)
+            {
+                return Forbid();
+            }
+
+            var queuedGames = await _fantasyCriticService.GetQueuedGames(publisher.Value);
+
+            var viewModels = queuedGames.Select(x => new QueuedGameViewModel(x, _clock)).OrderBy(x => x.Rank);
+            return Ok(viewModels);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddGameToQueue([FromBody] AddGameToQueueRequest request)
         {
@@ -1181,6 +1202,89 @@ namespace FantasyCritic.Web.Controllers.API
             var viewModel = new QueueResultViewModel(bidResult);
 
             return Ok(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteQueuedGame([FromBody] QueuedGameDeleteRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.LeagueYear.League.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(league.Value, currentUser);
+            bool userIsPublisher = (currentUser.UserID == publisher.Value.User.UserID);
+            if (!userIsInLeague || !userIsPublisher)
+            {
+                return Forbid();
+            }
+
+            var queuedGames = await _fantasyCriticService.GetQueuedGames(publisher.Value);
+            var thisQueuedGame = queuedGames.SingleOrDefault(x => x.MasterGame.MasterGameID == request.MasterGameID);
+            if (thisQueuedGame is null)
+            {
+                return BadRequest();
+            }
+
+            await _fantasyCriticService.RemoveQueuedGame(thisQueuedGame);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetQueueRankings([FromBody] QueueRankingRequest request)
+        {
+            Maybe<Publisher> publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (currentUser.UserID != publisher.Value.User.UserID)
+            {
+                return Forbid();
+            }
+
+            var queuedGames = await _fantasyCriticService.GetQueuedGames(publisher.Value);
+            if (queuedGames.Count != request.QueueRanks.Count)
+            {
+                return BadRequest();
+            }
+
+            List<KeyValuePair<QueuedGame, int>> queueRanks = new List<KeyValuePair<QueuedGame, int>>();
+            for (var index = 0; index < request.QueueRanks.Count; index++)
+            {
+                var requestQueuedGame = request.QueueRanks[index];
+                var activeQueuedGame = queuedGames.SingleOrDefault(x => x.MasterGame.MasterGameID == requestQueuedGame);
+                if (activeQueuedGame is null)
+                {
+                    return BadRequest();
+                }
+
+                queueRanks.Add(new KeyValuePair<QueuedGame, int>(activeQueuedGame, index + 1));
+            }
+
+            Result result = await _publisherService.SetQueueRankings(queueRanks);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok();
         }
     }
 }
