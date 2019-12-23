@@ -2,7 +2,7 @@
   <b-modal id="playerDraftGameForm" ref="playerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData">
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="form-group">
-        <label for="draftGameName" class="control-label">Game Name</label>
+        <label for="searchGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
           <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">

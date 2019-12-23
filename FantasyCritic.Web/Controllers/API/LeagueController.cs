@@ -1187,7 +1187,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (!leagueYear.Value.PlayStatus.DraftFinished)
+            if (leagueYear.Value.PlayStatus.DraftFinished)
             {
                 return BadRequest("You can't queue game if the draft is over.");
             }

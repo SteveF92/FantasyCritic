@@ -1,5 +1,21 @@
 <template>
   <b-modal id="gameQueueForm" ref="gameQueueFormRef" title="My Watchlist" @hidden="clearData">
+    <div class="form-group">
+      <h3 class="text-black">Add Game to Watchlist</h3>
+      <label for="searchGameName" class="control-label">Game Name</label>
+      <div class="input-group game-search-input">
+        <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
+        <span class="input-group-btn">
+          <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+        </span>
+      </div>
+    </div>
+
+    <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
+                              v-on:input="addGameToQueue"></possibleMasterGamesTable>
+
+    <hr />
+    <h3 class="text-black">Current Watchlist</h3>
     <label>
       Drag and drop to change order.
     </label>
@@ -24,7 +40,7 @@
       </draggable>
     </table>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Priority Order" v-on:click="setQueueRankings" />
+      <input type="submit" class="btn btn-primary" value="Set Rankings" v-on:click="setQueueRankings" />
     </div>
   </b-modal>
 </template>
@@ -34,17 +50,52 @@
   import axios from "axios";
   import draggable from 'vuedraggable';
 
+  import PossibleMasterGamesTable from "components/modules/possibleMasterGamesTable";
+
   export default {
     components: {
       draggable,
+      PossibleMasterGamesTable
     },
-    props: ['publisher', 'queuedGames'],
+    props: ['publisher', 'queuedGames', 'maximumEligibilityLevel', 'year'],
     data() {
       return {
-        desiredQueueRanks: []
+        searchGameName: null,
+        possibleMasterGames: [],
+        queueResult: null,
+        desiredQueueRanks: [],
+        gameToQueue: null
       }
     },
     methods: {
+      searchGame() {
+        this.queueResult = null;
+        this.possibleMasterGames = [];
+        axios
+          .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publisher.leagueID)
+          .then(response => {
+            this.possibleMasterGames = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
+      addGameToQueue() {
+        var request = {
+            publisherID: this.publisher.publisherID,
+            masterGameID: this.gameToQueue.masterGameID
+        };
+        this.isBusy = true;
+        axios
+          .post('/api/league/AddGameToQueue', request)
+          .then(response => {
+            this.isBusy = false;
+          })
+          .catch(response => {
+            this.isBusy = false;
+            this.errorInfo = response.response.data;
+          });
+      },
       setQueueRankings() {
         let desiredMasterGameIDs = this.desiredQueueRanks.map(function (v) {
           return v.masterGame.masterGameID;
@@ -78,6 +129,9 @@
       },
       clearData() {
         this.desiredQueueRanks = this.queuedGames;
+        this.searchGameName = null;
+        this.possibleMasterGames = [];
+        this.queueResult = null;
       }
     },
     mounted() {

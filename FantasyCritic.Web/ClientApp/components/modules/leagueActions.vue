@@ -133,7 +133,7 @@
 
         <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
         <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
-        <gameQueueForm :publisher="leagueYear.userPublisher" :queuedGames="queuedGames"></gameQueueForm>
+        <gameQueueForm :publisher="leagueYear.userPublisher" :queuedGames="queuedGames" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year"></gameQueueForm>
 
         <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
