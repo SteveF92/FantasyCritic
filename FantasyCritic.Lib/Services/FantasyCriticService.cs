@@ -228,7 +228,7 @@ namespace FantasyCritic.Lib.Services
         public async Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher)
         {
             var queuedGames = await _fantasyCriticRepo.GetQueuedGames(publisher);
-            return queuedGames.OrderByDescending(x => x.Rank).ToList();
+            return queuedGames.OrderBy(x => x.Rank).ToList();
         }
 
         public async Task<ClaimResult> QueueGame(Publisher publisher, MasterGame masterGame)
