@@ -926,6 +926,7 @@ namespace FantasyCritic.MySQL
         public async Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
         {
             string deleteSQL = "delete from tbl_league_publisher where PublisherID = @publisherID;";
+            string deleteQueueSQL = "delete from tbl_league_publisherqueue where PublisherID = @publisherID;";
             string deleteHistorySQL = "delete from tbl_league_action where PublisherID = @publisherID;";
             string fixDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
 
@@ -937,6 +938,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
+                    await connection.ExecuteAsync(deleteQueueSQL, new { publisherID = deletePublisher.PublisherID }, transaction);
                     await connection.ExecuteAsync(deleteHistorySQL, new { publisherID = deletePublisher.PublisherID }, transaction);
                     await connection.ExecuteAsync(deleteSQL, new { publisherID = deletePublisher.PublisherID }, transaction);
                     await connection.ExecuteAsync(fixDraftOrderSQL, setDraftOrderEntities);
