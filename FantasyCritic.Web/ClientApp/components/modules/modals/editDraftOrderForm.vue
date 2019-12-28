@@ -78,19 +78,27 @@
         this.desiredDraftOrder = this.leagueYear.publishers;
       },
       /**
-        *
-      **/
+       * On randomize toggle, either shuffle the list, or rollback it back to the orignal publishers
+       * @param {*} checked, randomize config checked
+       */
       toggle(checked) {
-        if (checked) return this.shuffle()
-        return this.clearData()
+        if (checked){
+          this.shuffle()
+        } else {
+          this.clearData()
+        }
       },
+      /**
+       * Shuffle current `desiredDraftOrder` array
+       * Uses Fisher–Yates_shuffle algorithm to randomize the publishers
+       */
       shuffle() {
         const array = this.desiredDraftOrder
         this.desiredDraftOrder = [] // detach the watchers
 
         for (let i = array.length - 1; i > 0; i--) {
-          let j = Math.floor(Math.random() * (i + 1))
-          ;[array[i], array[j]] = [array[j], array[i]]
+          let j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]]
         }
         this.desiredDraftOrder = array
       }
