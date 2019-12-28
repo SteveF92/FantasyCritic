@@ -14,6 +14,7 @@
         </transition-group>
       </draggable>
     </div>
+    <button type="button" name="button" @click="toggle">Toggle</button>
     <div slot="modal-footer">
       <input type="submit" class="btn btn-primary" value="Set Draft Order" v-on:click="setDraftOrder" />
     </div>
@@ -69,8 +70,13 @@
       clearData() {
         this.desiredDraftOrder = this.leagueYear.publishers;
       },
+      toggle() {
+        this.shuffle()
+      },
       shuffle() {
         const array = this.desiredDraftOrder
+        this.desiredDraftOrder = [] // detach the watchers
+
         for (let i = array.length - 1; i > 0; i--) {
           let j = Math.floor(Math.random() * (i + 1))
           ;[array[i], array[j]] = [array[j], array[i]]
