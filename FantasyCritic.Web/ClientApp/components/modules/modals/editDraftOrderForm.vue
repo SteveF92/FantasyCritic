@@ -14,7 +14,14 @@
         </transition-group>
       </draggable>
     </div>
-    <button type="button" name="button" @click="toggle">Toggle</button>
+
+    <b-form-checkbox
+      class="unlimited-checkbox"
+      v-on:input="toggle"
+    >
+      Randomize draft order
+    </b-form-checkbox>
+
     <div slot="modal-footer">
       <input type="submit" class="btn btn-primary" value="Set Draft Order" v-on:click="setDraftOrder" />
     </div>
@@ -70,8 +77,12 @@
       clearData() {
         this.desiredDraftOrder = this.leagueYear.publishers;
       },
-      toggle() {
-        this.shuffle()
+      /**
+        *
+      **/
+      toggle(checked) {
+        if (checked) return this.shuffle()
+        return this.clearData()
       },
       shuffle() {
         const array = this.desiredDraftOrder
