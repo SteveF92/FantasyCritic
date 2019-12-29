@@ -15,12 +15,7 @@
       </draggable>
     </div>
 
-    <b-form-checkbox
-      class="unlimited-checkbox"
-      v-on:input="toggle"
-    >
-      Randomize draft order
-    </b-form-checkbox>
+    <b-button variant="info" size="sm" v-on:click="shuffleOrder">Randomize draft order</b-button>
 
     <div slot="modal-footer">
       <input type="submit" class="btn btn-primary" value="Set Draft Order" v-on:click="setDraftOrder" />
@@ -56,9 +51,7 @@
     },
     methods: {
       setDraftOrder() {
-        let desiredDraftOrderIDs = this.desiredDraftOrder.map(function (v) {
-          return v.publisherID;
-        });
+        let desiredDraftOrderIDs = this.desiredDraftOrder.map(v=> v.publisherID);
         var model = {
           leagueID: this.leagueYear.leagueID,
           year: this.leagueYear.year,
@@ -78,29 +71,18 @@
         this.desiredDraftOrder = this.leagueYear.publishers;
       },
       /**
-       * On randomize toggle, either shuffle the list, or rollback it back to the orignal publishers
-       * @param {*} checked, randomize config checked
-       */
-      toggle(checked) {
-        if (checked){
-          this.shuffle()
-        } else {
-          this.clearData()
-        }
-      },
-      /**
-       * Shuffle current `desiredDraftOrder` array
+       * On randomize, shuffle current `desiredDraftOrder` array
        * Uses Fisher–Yates_shuffle algorithm to randomize the publishers
        */
-      shuffle() {
-        const array = this.desiredDraftOrder
-        this.desiredDraftOrder = [] // detach the watchers
+      shuffleOrder() {
+        const array = this.desiredDraftOrder;
+        this.desiredDraftOrder = []; // detach the watchers
 
         for (let i = array.length - 1; i > 0; i--) {
           let j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]]
+          [array[i], array[j]] = [array[j], array[i]];
         }
-        this.desiredDraftOrder = array
+        this.desiredDraftOrder = array;
       }
     },
     mounted() {
