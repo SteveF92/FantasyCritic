@@ -48,6 +48,12 @@
             </a>
           </div>
           <div>
+            <a href="https://discord.gg/dNa7DD3" target="_blank">
+              <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
+              <span class="full-contact">Discord</span>
+            </a>
+          </div>
+          <div>
             <a href="https://www.facebook.com/fantasycritic" target="_blank">
               <font-awesome-icon :icon="['fab', 'facebook-square']" size="lg" class="fb-icon" />
               <span class="full-contact">Facebook</span>

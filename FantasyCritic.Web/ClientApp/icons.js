@@ -52,7 +52,8 @@ import {
   faTwitterSquare,
   faRedditSquare,
   faGithubSquare,
-  faFacebookSquare
+  faFacebookSquare,
+  faDiscord
 } from '@fortawesome/free-brands-svg-icons'
 
 library.add(
@@ -101,7 +102,8 @@ library.add(
   faUserCheck,
   faCog,
   faAtom,
-  faCircleNotch
+  faCircleNotch,
+  faDiscord
 );
 
 export {

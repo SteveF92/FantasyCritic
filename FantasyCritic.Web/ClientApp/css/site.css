@@ -112,6 +112,10 @@ div.alert {
     color: #ff4500;
 }
 
+.discord-icon {
+    color: #738adb;
+}
+
 .text-well {
  padding: 20px;
  background: rgba(50, 50, 50, 0.7);
