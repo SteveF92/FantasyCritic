@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="lg" title="My Watchlist" @hidden="clearData">
+  <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="lg" title="My Watchlist" @hidden="clearAllData">
     <div class="form-group">
       <h3 class="text-black">Add Game to Watchlist</h3>
       <label for="searchGameName" class="control-label">Game Name</label>
@@ -10,6 +10,9 @@
         </span>
       </div>
     </div>
+
+    <b-button v-show="!showingTopAvailable" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+    <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
 
     <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
                               v-on:input="addGameToQueue"></possibleMasterGamesTable>
@@ -65,7 +68,8 @@
         possibleMasterGames: [],
         queueResult: null,
         desiredQueueRanks: [],
-        gameToQueue: null
+        gameToQueue: null,
+        showingTopAvailable: false
       }
     },
     methods: {
@@ -82,11 +86,27 @@
       },
       searchGame() {
         this.queueResult = null;
+        this.showingTopAvailable = false;
         this.possibleMasterGames = [];
         axios
           .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publisher.leagueID)
           .then(response => {
             this.possibleMasterGames = response.data;
+            this.showingTopAvailable = false;
+          })
+          .catch(response => {
+
+          });
+      },
+      getTopGames() {
+        this.queueResult = null;
+        this.showingTopAvailable = false;
+        this.possibleMasterGames = [];
+        axios
+          .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.publisher.leagueID)
+          .then(response => {
+            this.possibleMasterGames = response.data;
+            this.showingTopAvailable = true;
           })
           .catch(response => {
 
@@ -140,10 +160,14 @@
 
           });
       },
-      clearData() {
-        this.desiredQueueRanks = this.queuedGames;
+      clearAllData() {
+        this.clearQueueData();
         this.searchGameName = null;
         this.possibleMasterGames = [];
+        this.showingTopAvailable = false;
+      },
+      clearQueueData() {
+        this.desiredQueueRanks = this.queuedGames;
         this.queueResult = null;
       }
     },
@@ -154,7 +178,7 @@
       queuedGames(newValue, oldValue) {
         if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array &&
           oldValue.length !== newValue.length)) {
-          this.clearData();
+          this.clearQueueData();
         }
       }
     }
