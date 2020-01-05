@@ -13,7 +13,7 @@
         </div>
       </template>
       <template slot="eligibilityLevel" slot-scope="data">
-        <statusBadge :alreadyOwned="data.item.alreadyOwned" :taken="false" :isEligible="data.item.isEligible"></statusBadge>
+        <statusBadge :possibleMasterGame="data.item"></statusBadge>
       </template>
       <template slot="cost" slot-scope="data">
         {{data.item.cost | money}}

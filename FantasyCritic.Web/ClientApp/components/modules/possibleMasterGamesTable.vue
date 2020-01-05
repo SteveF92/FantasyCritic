@@ -16,7 +16,7 @@
         {{data.item.masterGame.dateAdjustedHypeFactor | score(1)}}
       </template>
       <template slot="eligibilityLevel" slot-scope="data">
-        <statusBadge :alreadyOwned="data.item.alreadyOwned" :taken="data.item.taken" :isEligible="data.item.isEligible"></statusBadge>
+        <statusBadge :possibleMasterGame="data.item"></statusBadge>
       </template>
       <template slot="select" slot-scope="data">
         <b-button size="sm" variant="info" v-on:click="selectGame(data.item.masterGame)">Select</b-button>

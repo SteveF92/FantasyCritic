@@ -19,7 +19,8 @@ namespace FantasyCritic.Web.Models.Responses
             IsEligible = masterGame.IsEligible;
             IsReleased = masterGame.IsReleased;
             WillRelease = masterGame.WillRelease;
-            HasScore = masterGame.IsEligible;
+            HasScore = masterGame.HasScore;
+            IsAvailable = masterGame.IsAvailable;
         }
 
 
@@ -30,5 +31,39 @@ namespace FantasyCritic.Web.Models.Responses
         public bool IsReleased { get; }
         public bool WillRelease { get; }
         public bool HasScore { get; }
+        public bool IsAvailable { get; }
+
+        public string Status
+        {
+            get
+            {
+                if (Taken)
+                {
+                    return "Taken";
+                }
+                if (AlreadyOwned)
+                {
+                    return "Already Owned";
+                }
+                if (IsReleased)
+                {
+                    return "Released";
+                }
+                if (HasScore)
+                {
+                    return "Has Score";
+                }
+                if (!IsEligible)
+                {
+                    return "Ineligible";
+                }
+                if (!WillRelease)
+                {
+                    return "Will Not Release";
+                }
+
+                return "Available";
+            }
+        }
     }
 }
