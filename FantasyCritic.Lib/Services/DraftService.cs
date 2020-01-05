@@ -204,33 +204,33 @@ namespace FantasyCritic.Lib.Services
             return Maybe<Publisher>.None;
         }
 
-        public async Task AutoDraftForLeague(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear)
-        {
-            var nextPublisher = GetNextDraftPublisher(leagueYear, publishersInLeagueForYear);
-            if (nextPublisher.HasNoValue)
-            {
-                return;
-            }
-            if (!nextPublisher.Value.AutoDraft)
-            {
-                return;
-            }
+        //public async Task AutoDraftForLeague(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear)
+        //{
+        //    var nextPublisher = GetNextDraftPublisher(leagueYear, publishersInLeagueForYear);
+        //    if (nextPublisher.HasNoValue)
+        //    {
+        //        return;
+        //    }
+        //    if (!nextPublisher.Value.AutoDraft)
+        //    {
+        //        return;
+        //    }
 
-            var draftPhase = await GetDraftPhase(leagueYear);
-            if (draftPhase.Equals(DraftPhase.Complete))
-            {
-                return;
-            }
-            if (draftPhase.Equals(DraftPhase.StandardGames))
-            {
-                var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
-                var availableGames = await _gameSearchingService.GetTopAvailableGames(nextPublisher.Value, publishersInLeagueForYear, leagueYear.Year);
-            }
-            if (draftPhase.Equals(DraftPhase.CounterPicks))
-            {
+        //    var draftPhase = await GetDraftPhase(leagueYear);
+        //    if (draftPhase.Equals(DraftPhase.Complete))
+        //    {
+        //        return;
+        //    }
+        //    if (draftPhase.Equals(DraftPhase.StandardGames))
+        //    {
+        //        var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
+        //        var availableGames = await _gameSearchingService.GetTopAvailableGames(nextPublisher.Value, publishersInLeagueForYear, leagueYear.Year);
+        //    }
+        //    if (draftPhase.Equals(DraftPhase.CounterPicks))
+        //    {
 
-            }
-        }
+        //    }
+        //}
 
         public async Task<DraftPhase> GetDraftPhase(LeagueYear leagueYear)
         {
