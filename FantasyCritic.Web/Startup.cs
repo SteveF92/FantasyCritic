@@ -100,6 +100,7 @@ namespace FantasyCritic.Web
             services.AddScoped<PublisherService>();
             services.AddScoped<InterLeagueService>();
             services.AddScoped<DraftService>();
+            services.AddScoped<GameSearchingService>();
             services.AddScoped<ActionProcessingService>();
             services.AddScoped<FantasyCriticService>();
             services.AddScoped<RoyaleService>();
