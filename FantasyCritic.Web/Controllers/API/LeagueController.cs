@@ -39,13 +39,14 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly InterLeagueService _interLeagueService;
         private readonly LeagueMemberService _leagueMemberService;
         private readonly DraftService _draftService;
+        private readonly GameSearchingService _gameSearchingService;
         private readonly PublisherService _publisherService;
         private readonly IClock _clock;
         private readonly IHubContext<UpdateHub> _hubContext;
         private readonly ILogger<LeagueController> _logger;
 
         public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
-            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock,
+            LeagueMemberService leagueMemberService, DraftService draftService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock,
             IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger)
         {
             _userManager = userManager;
@@ -53,6 +54,7 @@ namespace FantasyCritic.Web.Controllers.API
             _interLeagueService = interLeagueService;
             _leagueMemberService = leagueMemberService;
             _draftService = draftService;
+            _gameSearchingService = gameSearchingService;
             _publisherService = publisherService;
             _clock = clock;
             _hubContext = hubContext;
@@ -780,7 +782,7 @@ namespace FantasyCritic.Web.Controllers.API
             var viewModel = new PlayerClaimResultViewModel(result);
             await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
-            //TODO AutoDraft
+            await _draftService.AutoDraftForLeague(leagueYear.Value, publishersInLeague);
             
             if (draftCompleted)
             {
@@ -907,41 +909,14 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-            HashSet<MasterGame> publisherMasterGames = publishersInLeague
-                .SelectMany(x => x.PublisherGames)
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
-                .ToHashSet();
-
             var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
             if (userPublisher is null)
             {
                 return BadRequest();
             }
 
-            HashSet<MasterGame> myPublisherMasterGames = userPublisher.PublisherGames
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
-                .ToHashSet();
-
-            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
-            IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
-
-            List<PossibleMasterGameYearViewModel> viewModels = new List<PossibleMasterGameYearViewModel>();
-            foreach (var masterGame in matchingMasterGames)
-            {
-                var eligibilityErrors = leagueYear.Value.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
-                bool isEligible = !eligibilityErrors.Any();
-                bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
-                bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
-
-                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, taken, alreadyOwned, isEligible);
-                viewModels.Add(viewModel);
-            }
-
-            viewModels = viewModels.Take(50).ToList();
+            var matchingGames = await _gameSearchingService.SearchGames(gameName, userPublisher, publishersInLeague, year);
+            var viewModels = matchingGames.Select(x => new PossibleMasterGameYearViewModel(x, _clock)).Take(50).ToList();
 
             return viewModels;
         }
@@ -957,48 +932,14 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-            HashSet<MasterGame> publisherMasterGames = publishersInLeague
-                .SelectMany(x => x.PublisherGames)
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
-                .ToHashSet();
-
             var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
             if (userPublisher is null)
             {
                 return BadRequest();
             }
 
-            HashSet<MasterGame> myPublisherMasterGames = userPublisher.PublisherGames
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
-                .ToHashSet();
-
-            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
-            IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
-
-            List<PossibleMasterGameYearViewModel> viewModels = new List<PossibleMasterGameYearViewModel>();
-            foreach (var masterGame in matchingMasterGames)
-            {
-                var eligibilityErrors = leagueYear.Value.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
-                bool isEligible = !eligibilityErrors.Any();
-                bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
-                bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
-                bool isReleased = masterGame.MasterGame.IsReleased(_clock);
-                bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
-                bool willRelease = masterGame.WillRelease();
-                if (!isEligible || taken || alreadyOwned || isReleased || hasScore || !willRelease)
-                {
-                    continue;
-                }
-
-                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, false, false, true);
-                viewModels.Add(viewModel);
-            }
-
-            viewModels = viewModels.Take(100).ToList();
+            var topAvailableGames = await _gameSearchingService.GetTopAvailableGames(userPublisher, publishersInLeague, year);
+            var viewModels = topAvailableGames.Select(x => new PossibleMasterGameYearViewModel(x, _clock)).Take(100).ToList();
 
             return viewModels;
         }
@@ -1151,7 +1092,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var queuedGames = await _fantasyCriticService.GetQueuedGames(publisher.Value);
+            var queuedGames = await _publisherService.GetQueuedGames(publisher.Value);
 
             var viewModels = queuedGames.Select(x => new QueuedGameViewModel(x, _clock)).OrderBy(x => x.Rank);
             return Ok(viewModels);
@@ -1179,36 +1120,10 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-            HashSet<MasterGame> publisherMasterGames = publishersInLeague
-                .SelectMany(x => x.PublisherGames)
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
-                .ToHashSet();
+            var queuedGames = await _publisherService.GetQueuedGames(publisher.Value);
 
-            HashSet<MasterGame> myPublisherMasterGames = publisher.Value.PublisherGames
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
-                .ToHashSet();
-
-            var queuedGames = await _fantasyCriticService.GetQueuedGames(publisher.Value);
-            IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(publisher.Value.LeagueYear.Year, true);
-            var masterGamesForThisYear = masterGameYears.Where(x => x.Year == leagueYear.Value.Year);
-            var masterGameYearDictionary = masterGamesForThisYear.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
-
-            List<PossibleMasterGameYearViewModel> viewModels = new List<PossibleMasterGameYearViewModel>();
-            foreach (var queuedGame in queuedGames)
-            {
-                var masterGame = masterGameYearDictionary[queuedGame.MasterGame.MasterGameID];
-                var eligibilityErrors = leagueYear.Value.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
-                bool isEligible = !eligibilityErrors.Any();
-                bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
-                bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
-
-                PossibleMasterGameYearViewModel viewModel = new PossibleMasterGameYearViewModel(masterGame, _clock, taken, alreadyOwned, isEligible);
-                viewModels.Add(viewModel);
-            }
+            var queuedPossibleGames = await _gameSearchingService.GetQueuedPossibleGames(publisher.Value, publishersInLeague, queuedGames);
+            var viewModels = queuedPossibleGames.Select(x => new PossibleMasterGameYearViewModel(x, _clock)).Take(100).ToList();
 
             return Ok(viewModels);
         }
@@ -1290,7 +1205,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var queuedGames = await _fantasyCriticService.GetQueuedGames(publisher.Value);
+            var queuedGames = await _publisherService.GetQueuedGames(publisher.Value);
             var thisQueuedGame = queuedGames.SingleOrDefault(x => x.MasterGame.MasterGameID == request.MasterGameID);
             if (thisQueuedGame is null)
             {
@@ -1317,7 +1232,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var queuedGames = await _fantasyCriticService.GetQueuedGames(publisher.Value);
+            var queuedGames = await _publisherService.GetQueuedGames(publisher.Value);
             if (queuedGames.Count != request.QueueRanks.Count)
             {
                 return BadRequest();

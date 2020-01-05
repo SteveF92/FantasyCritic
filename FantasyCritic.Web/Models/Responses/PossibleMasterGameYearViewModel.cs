@@ -11,26 +11,18 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PossibleMasterGameYearViewModel
     {
-        public PossibleMasterGameYearViewModel(MasterGameYear masterGame, IClock clock, bool taken, bool alreadyOwned, bool isEligible)
+        public PossibleMasterGameYearViewModel(PossibleMasterGameYear masterGame, IClock clock)
         {
-            MasterGame = new MasterGameYearViewModel(masterGame, clock);
-            Taken = taken;
-            AlreadyOwned = alreadyOwned;
-            IsEligible = isEligible;
+            MasterGame = new MasterGameYearViewModel(masterGame.MasterGame, clock);
+            Taken = masterGame.Taken;
+            AlreadyOwned = masterGame.AlreadyOwned;
+            IsEligible = masterGame.IsEligible;
         }
 
-        public PossibleMasterGameYearViewModel(MasterSubGame masterSubGame, MasterGameYear masterGame, IClock clock, bool taken, bool alreadyOwned, bool isEligible)
-        {
-            MasterGame = new MasterGameYearViewModel(masterSubGame, masterGame, clock);
-            Taken = taken;
-            AlreadyOwned = alreadyOwned;
-            IsEligible = isEligible;
-        }
 
         public MasterGameYearViewModel MasterGame { get; }
         public bool Taken { get; }
         public bool AlreadyOwned { get; }
         public bool IsEligible { get; }
-
     }
 }
