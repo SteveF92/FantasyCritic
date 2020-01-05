@@ -49,12 +49,9 @@ namespace FantasyCritic.Lib.Services
                 bool isReleased = masterGame.MasterGame.IsReleased(_clock);
                 bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
                 bool willRelease = masterGame.WillRelease();
-                if (!isEligible || taken || alreadyOwned || isReleased || hasScore || !willRelease)
-                {
-                    continue;
-                }
 
-                PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible);
+
+                PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isReleased, willRelease, hasScore);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
@@ -94,7 +91,7 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible);
+                PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isReleased, willRelease, hasScore);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
@@ -129,8 +126,11 @@ namespace FantasyCritic.Lib.Services
                 bool isEligible = !eligibilityErrors.Any();
                 bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
                 bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
+                bool isReleased = masterGame.MasterGame.IsReleased(_clock);
+                bool willRelease = masterGame.WillRelease();
+                bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
 
-                PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible);
+                PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isReleased, willRelease, hasScore);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
