@@ -1092,6 +1092,8 @@ namespace FantasyCritic.Web.Controllers.API
             var viewModel = new ManagerClaimResultViewModel(result);
             await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
+            //TODO AutoDraft
+
             if (draftCompleted)
             {
                 await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);

@@ -12,7 +12,8 @@ namespace FantasyCritic.Lib.Domain
     public class Publisher : IEquatable<Publisher>
     {
         public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, int draftPosition, 
-            IEnumerable<PublisherGame> publisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped)
+            IEnumerable<PublisherGame> publisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped,
+            bool autoDraft)
         {
             PublisherID = publisherID;
             LeagueYear = leagueYear;
@@ -24,6 +25,7 @@ namespace FantasyCritic.Lib.Domain
             FreeGamesDropped = freeGamesDropped;
             WillNotReleaseGamesDropped = willNotReleaseGamesDropped;
             WillReleaseGamesDropped = willReleaseGamesDropped;
+            AutoDraft = autoDraft;
         }
 
         public Guid PublisherID { get; }
@@ -36,6 +38,7 @@ namespace FantasyCritic.Lib.Domain
         public int FreeGamesDropped { get; private set; }
         public int WillNotReleaseGamesDropped { get; private set; }
         public int WillReleaseGamesDropped { get; private set; }
+        public bool AutoDraft { get; }
 
         public decimal? AverageCriticScore
         {
