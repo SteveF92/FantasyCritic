@@ -108,6 +108,12 @@ namespace FantasyCritic.Lib.Domain
             return PublisherGames.SingleOrDefault(x => x.MasterGame.HasValue && x.MasterGame.Value.MasterGame.MasterGameID == masterGame.MasterGameID);
         }
 
+        public HashSet<MasterGame> MyMasterGames => PublisherGames
+            .Where(x => x.MasterGame.HasValue)
+            .Select(x => x.MasterGame.Value.MasterGame)
+            .Distinct()
+            .ToHashSet();
+
         public bool Equals(Publisher other)
         {
             if (ReferenceEquals(null, other)) return false;

@@ -24,17 +24,10 @@ namespace FantasyCritic.Lib.Services
         public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
         {
             HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
-                .SelectMany(x => x.PublisherGames)
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
+                .SelectMany(x => x.MyMasterGames)
                 .ToHashSet();
 
-            HashSet<MasterGame> myPublisherMasterGames = currentPublisher.PublisherGames
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
-                .ToHashSet();
+            HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
             IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
             IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames);
@@ -42,16 +35,8 @@ namespace FantasyCritic.Lib.Services
 
             foreach (var masterGame in matchingMasterGames)
             {
-                var eligibilityErrors = currentPublisher.LeagueYear.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
-                bool isEligible = !eligibilityErrors.Any();
-                bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
-                bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
-                bool isReleased = masterGame.MasterGame.IsReleased(_clock);
-                bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
-                bool willRelease = masterGame.WillRelease();
-
-
-                PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isReleased, willRelease, hasScore);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
+                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.AllowedEligibilitySettings);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
@@ -61,17 +46,10 @@ namespace FantasyCritic.Lib.Services
         public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGames(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
         {
             HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
-                .SelectMany(x => x.PublisherGames)
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
+                .SelectMany(x => x.MyMasterGames)
                 .ToHashSet();
 
-            HashSet<MasterGame> myPublisherMasterGames = currentPublisher.PublisherGames
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
-                .ToHashSet();
+            HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
             IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
             IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
@@ -79,19 +57,14 @@ namespace FantasyCritic.Lib.Services
             List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
             foreach (var masterGame in matchingMasterGames)
             {
-                var eligibilityErrors = currentPublisher.LeagueYear.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
-                bool isEligible = !eligibilityErrors.Any();
-                bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
-                bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
-                bool isReleased = masterGame.MasterGame.IsReleased(_clock);
-                bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
-                bool willRelease = masterGame.WillRelease();
-                if (!isEligible || taken || alreadyOwned || isReleased || hasScore || !willRelease)
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
+                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.AllowedEligibilitySettings);
+
+                if (!possibleMasterGame.IsAvailable)
                 {
                     continue;
                 }
 
-                PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isReleased, willRelease, hasScore);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
@@ -102,17 +75,10 @@ namespace FantasyCritic.Lib.Services
             IEnumerable<QueuedGame> queuedGames)
         {
             HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
-                .SelectMany(x => x.PublisherGames)
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
+                .SelectMany(x => x.MyMasterGames)
                 .ToHashSet();
 
-            HashSet<MasterGame> myPublisherMasterGames = currentPublisher.PublisherGames
-                .Where(x => x.MasterGame.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame)
-                .Distinct()
-                .ToHashSet();
+            HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
             IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(currentPublisher.LeagueYear.Year, true);
             var masterGamesForThisYear = masterGameYears.Where(x => x.Year == currentPublisher.LeagueYear.Year);
@@ -122,19 +88,28 @@ namespace FantasyCritic.Lib.Services
             foreach (var queuedGame in queuedGames)
             {
                 var masterGame = masterGameYearDictionary[queuedGame.MasterGame.MasterGameID];
-                var eligibilityErrors = currentPublisher.LeagueYear.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.MasterGame);
-                bool isEligible = !eligibilityErrors.Any();
-                bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
-                bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
-                bool isReleased = masterGame.MasterGame.IsReleased(_clock);
-                bool willRelease = masterGame.WillRelease();
-                bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
 
-                PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isReleased, willRelease, hasScore);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
+                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.AllowedEligibilitySettings);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
             return possibleMasterGames;
+        }
+
+        public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherMasterGames, HashSet<MasterGame> myPublisherMasterGames,
+            EligibilitySettings eligibilitySettings)
+        {
+            var eligibilityErrors = eligibilitySettings.GameIsEligible(masterGame.MasterGame);
+            bool isEligible = !eligibilityErrors.Any();
+            bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
+            bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
+            bool isReleased = masterGame.MasterGame.IsReleased(_clock);
+            bool willRelease = masterGame.WillRelease();
+            bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
+
+            PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isReleased, willRelease, hasScore);
+            return possibleMasterGame;
         }
     }
 }

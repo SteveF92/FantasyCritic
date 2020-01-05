@@ -26,5 +26,7 @@ namespace FantasyCritic.Lib.Domain
         public bool IsReleased { get; }
         public bool WillRelease { get; }
         public bool HasScore { get; }
+
+        public bool IsAvailable => !Taken && !AlreadyOwned && IsEligible && !IsReleased && WillRelease && !HasScore;
     }
 }
