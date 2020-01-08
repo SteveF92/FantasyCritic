@@ -114,7 +114,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
-            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock);
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock, null);
             return Ok(viewModel);
         }
 
@@ -128,7 +128,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
-            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock);
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock, null);
             return Ok(viewModel);
         }
 
@@ -137,9 +137,23 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> RoyaleStandings(int year, int quarter)
         {
             IReadOnlyList<RoyalePublisher> publishers = await _royaleService.GetAllPublishers(year, quarter);
-            var viewModels = publishers.Where(x => x.PublisherGames.Any()).Select(x => new RoyalePublisherViewModel(x, _clock));
-            var sorted = viewModels.OrderByDescending(x => x.TotalFantasyPoints);
-            return Ok(sorted);
+            var publishersToShow = publishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
+            int ranking = 1;
+            List<RoyalePublisherViewModel> viewModels = new List<RoyalePublisherViewModel>();
+            foreach (var publisher in publishersToShow)
+            {
+                int? thisRanking = null;
+                if (publisher.GetTotalFantasyPoints() > 0)
+                {
+                    thisRanking = ranking;
+                    ranking++;
+                }
+
+                var vm = new RoyalePublisherViewModel(publisher, _clock, thisRanking);
+                viewModels.Add(vm);
+            }
+
+            return Ok(viewModels);
         }
 
         [HttpPost]

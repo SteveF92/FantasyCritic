@@ -13,7 +13,12 @@
         </div>
         <div class="row main-buttons" v-if="activeRoyaleYearQuarter">
           <b-button variant="primary" :to="{ name: 'createLeague' }" class="main-button">Create a League</b-button>
-          <b-button variant="primary" :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter }}" class="main-button">Play Critics Royale</b-button>
+          <b-button variant="primary" v-if="!userRoyalePublisher" :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter }}" class="main-button">
+            Play Critics Royale
+          </b-button>
+          <b-button variant="primary" v-if="userRoyalePublisher" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID }}"" class="main-button">
+            Critics Royale
+          </b-button>
           <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
         </div>
       </div>
@@ -126,6 +131,7 @@
         supportedYears: [],
         activeRoyaleYearQuarter: null,
         publicLeagues: [],
+        userRoyalePublisher: null,
         publicLeagueFields: [
           { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
           { key: 'numberOfFollowers', label: 'Followers', sortable: true, thClass: 'bg-primary' },
@@ -227,6 +233,7 @@
           .get('/api/royale/ActiveRoyaleQuarter')
           .then(response => {
             this.activeRoyaleYearQuarter = response.data;
+            this.fetchUserRoyalePublisher();
           })
           .catch(response => {
 
@@ -250,6 +257,16 @@
           })
           .catch(response => {
 
+          });
+      },
+      async fetchUserRoyalePublisher() {
+        this.userRoyalePublisher = null;
+        axios
+          .get('/api/royale/GetUserRoyalePublisher/' + this.activeRoyaleYearQuarter.year + '/' + this.activeRoyaleYearQuarter.quarter)
+          .then(response => {
+            this.userRoyalePublisher = response.data;
+          })
+          .catch(response => {
           });
       },
       getReleaseDate(game) {

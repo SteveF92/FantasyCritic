@@ -43,11 +43,19 @@
 
         <div v-if="royaleStandings">
           <b-table striped bordered small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
-            <template slot="publisherName" slot-scope="data">
-              <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
-                {{ data.item.publisherName }}
-              </router-link>
+            <template slot="ranking" slot-scope="data">
+              <template v-if="data.item.ranking">
+                {{data.item.ranking}}
+              </template>
+              <template v-else>
+                --
+              </template>
             </template>
+              <template slot="publisherName" slot-scope="data">
+                <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
+                  {{ data.item.publisherName }}
+                </router-link>
+              </template>
           </b-table>
           <b-pagination class="pagination-dark" v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
         </div>
@@ -128,6 +136,7 @@
         royaleStandings: null,
         userPublisherBusy: true,
         standingsFields: [
+          { key: 'ranking', label: 'Rank', thClass: ['bg-primary','ranking-column'], tdClass: 'ranking-column' },
           { key: 'publisherName', label: 'Publisher', thClass:'bg-primary' },
           { key: 'playerName', label: 'Player Name', thClass: 'bg-primary' },
           { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' }
@@ -244,5 +253,11 @@
 
   .quarter-select {
     float: right;
+  }
+</style>
+<style>
+  .ranking-column {
+    width: 50px;
+    text-align: right;
   }
 </style>

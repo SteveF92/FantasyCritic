@@ -8,7 +8,10 @@
         <div class="col-md-12 col-lg-6">
           <h4>Player Name: {{publisher.playerName}}</h4>
           <h4>
-            Year/Quarter: {{publisher.yearQuarter.year}}-Q{{publisher.yearQuarter.quarter}}
+            Year/Quarter:
+            <router-link :to="{ name: 'criticsRoyale', params: {year: publisher.yearQuarter.year, quarter: publisher.yearQuarter.quarter }}">
+              {{publisher.yearQuarter.year}}-Q{{publisher.yearQuarter.quarter}}
+            </router-link>
           </h4>
           <h2>
             Total Points: {{publisher.totalFantasyPoints}}
