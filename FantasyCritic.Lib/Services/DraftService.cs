@@ -232,13 +232,7 @@ namespace FantasyCritic.Lib.Services
         //    }
         //}
 
-        public async Task<DraftPhase> GetDraftPhase(LeagueYear leagueYear)
-        {
-            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
-            return GetDraftPhase(leagueYear, publishers);
-        }
-
-        private DraftPhase GetDraftPhase(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+        public DraftPhase GetDraftPhase(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
         {
             int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
             int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
@@ -280,12 +274,14 @@ namespace FantasyCritic.Lib.Services
             return availableCounterPicks;
         }
 
-        public async Task<bool> CompleteDraft(LeagueYear leagueYear)
+        public async Task<bool> CompleteDraft(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers, bool newStandardGameAdded, bool newCounterPickAdded)
         {
-            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
-
             int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
             int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
+            if (newStandardGameAdded)
+            {
+                standardGamesDrafted++;
+            }
             if (standardGamesDrafted < numberOfStandardGamesToDraft)
             {
                 return false;
@@ -293,6 +289,10 @@ namespace FantasyCritic.Lib.Services
 
             int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
             int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
+            if (newCounterPickAdded)
+            {
+                counterPicksDrafted++;
+            }
             if (counterPicksDrafted < numberOfCounterPicksToDraft)
             {
                 return false;

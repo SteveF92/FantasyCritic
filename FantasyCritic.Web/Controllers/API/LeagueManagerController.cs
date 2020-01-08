@@ -635,8 +635,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, null, null);
-
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, false);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, false, publishersInLeague);
             var viewModel = new ManagerClaimResultViewModel(result);
 
             await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
@@ -1065,7 +1065,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             int? publisherPosition = null;
             int? overallPosition = null;
-            var draftPhase = await _draftService.GetDraftPhase(leagueYear.Value);
+            var draftPhase = _draftService.GetDraftPhase(leagueYear.Value, publishersInLeague);
             if (draftPhase.Equals(DraftPhase.StandardGames))
             {
                 publisherPosition = publisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
@@ -1087,8 +1087,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition);
 
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, true);
-            bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value);
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, true, publishersInLeague);
+            bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value, publishersInLeague, result.Success && !request.CounterPick, result.Success && request.CounterPick);
             var viewModel = new ManagerClaimResultViewModel(result);
             await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 

@@ -243,7 +243,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear.Value, publishersInLeague, activeUsers);
             Maybe<Publisher> nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
-            DraftPhase draftPhase = await _draftService.GetDraftPhase(leagueYear.Value);
+            DraftPhase draftPhase = _draftService.GetDraftPhase(leagueYear.Value, publishersInLeague);
 
             Maybe<Publisher> userPublisher = Maybe<Publisher>.None;
             if (userIsInLeague)
@@ -755,7 +755,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             int? publisherPosition = null;
             int? overallPosition = null;
-            var draftPhase = await _draftService.GetDraftPhase(leagueYear.Value);
+            var draftPhase = _draftService.GetDraftPhase(leagueYear.Value, publishersInLeague);
             if (draftPhase.Equals(DraftPhase.StandardGames))
             {
                 publisherPosition = publisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
@@ -777,8 +777,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, masterGame, publisherPosition, overallPosition);
 
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, false, true);
-            bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value);
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, false, true, publishersInLeague);
+            bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value, publishersInLeague, result.Success && !request.CounterPick, result.Success && request.CounterPick);
             var viewModel = new PlayerClaimResultViewModel(result);
             await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 

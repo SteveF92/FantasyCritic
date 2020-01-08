@@ -144,7 +144,7 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.SetPlayersActive(league, year, mostRecentActivePlayers);
         }
 
-        public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft)
+        public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft, IReadOnlyList<Publisher> publishersForYear)
         {
             Maybe<MasterGameYear> masterGameYear = Maybe<MasterGameYear>.None;
             if (request.MasterGame.HasValue)
@@ -158,7 +158,6 @@ namespace FantasyCritic.Lib.Services
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
             LeagueYear leagueYear = request.Publisher.LeagueYear;
 
-            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.LeagueYear);
             ClaimResult claimResult = _gameAcquisitionService.CanClaimGame(request, supportedYears, leagueYear, publishersForYear);
 
             if (!claimResult.Success)
