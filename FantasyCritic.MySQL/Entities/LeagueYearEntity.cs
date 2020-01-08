@@ -27,6 +27,7 @@ namespace FantasyCritic.MySQL.Entities
             FreeDroppableGames = options.FreeDroppableGames;
             WillNotReleaseDroppableGames = options.WillNotReleaseDroppableGames;
             WillReleaseDroppableGames = options.WillReleaseDroppableGames;
+            DropOnlyDraftGames = options.DropOnlyDraftGames;
 
             MaximumEligibilityLevel = options.AllowedEligibilitySettings.EligibilityLevel.Level;
             AllowYearlyInstallments = options.AllowedEligibilitySettings.YearlyInstallment;
@@ -50,6 +51,7 @@ namespace FantasyCritic.MySQL.Entities
         public int WillNotReleaseDroppableGames { get; set; }
         public int WillReleaseDroppableGames { get; set; }
         public int MaximumEligibilityLevel { get; set; }
+        public bool DropOnlyDraftGames { get; set; }
         public bool AllowYearlyInstallments { get; set; }
         public bool AllowEarlyAccess { get; set; }
         public bool AllowFreeToPlay { get; set; }
@@ -69,7 +71,7 @@ namespace FantasyCritic.MySQL.Entities
                 AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions);
 
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-                eligibilitySettings, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
+                DropOnlyDraftGames, eligibilitySettings, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
 
             return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides);
         }

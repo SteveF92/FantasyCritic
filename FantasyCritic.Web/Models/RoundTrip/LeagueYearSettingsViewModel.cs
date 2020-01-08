@@ -84,7 +84,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
         public bool UnlimitedWillNotReleaseDroppableGames { get; set; }
         [Required]
         public bool UnlimitedWillReleaseDroppableGames { get; set; }
-
+        [Required]
+        public bool DropOnlyDraftGames { get; set; }
         [Required]
         public int MaximumEligibilityLevel { get; set; }
         [Required]
@@ -156,8 +157,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
             }
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,
-                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, AllowFreeToPlay,
-                AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague);
+                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, maximumEligibilityLevel, AllowYearlyInstallments,
+                AllowEarlyAccess, AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague);
             return parameters;
         }
     }
