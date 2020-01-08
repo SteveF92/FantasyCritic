@@ -41,6 +41,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
                 WillReleaseDroppableGames = 0;
                 UnlimitedWillReleaseDroppableGames = true;
             }
+            DropOnlyDraftGames = leagueYear.Options.DropOnlyDraftGames;
 
             MaximumEligibilityLevel = leagueYear.Options.AllowedEligibilitySettings.EligibilityLevel.Level;
             AllowYearlyInstallments = leagueYear.Options.AllowedEligibilitySettings.YearlyInstallment;
