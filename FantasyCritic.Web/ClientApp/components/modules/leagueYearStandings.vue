@@ -25,8 +25,8 @@
       <template slot="publisher" slot-scope="data">
         <span v-if="data.item.publisher">
           <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: data.item.publisher.publisherID }}">{{ data.item.publisher.publisherName }}</router-link>
-          <span v-if="showRemove(data.item.user)">
-            <b-button variant="danger" size="sm" v-on:click="removeUser(data.item.user)">Remove</b-button>
+          <span v-if="showRemovePublisher(data.item.publisher)">
+            <b-button variant="danger" size="sm" v-on:click="removePublisher(data.item.publisher)">Remove Publisher</b-button>
           </span>
         </span>
         <span v-if="data.item.user && !data.item.publisher">
@@ -131,6 +131,13 @@
 
         return matchingLeagueLevelPlayer.removable;
       },
+      showRemovePublisher() {
+        if (this.leagueYear.playStatus.playStarted) {
+          return false;
+        }
+
+        return true;
+      },
       removeUser(user) {
         var model = {
           leagueID: this.leagueYear.leagueID,
@@ -141,6 +148,25 @@
           .then(response => {
             let actionInfo = {
               message: 'User ' + user.displayName + ' has been removed from the league.',
+              fetchLeague: true,
+              fetchLeagueYear: true
+            };
+            this.$emit('actionTaken', actionInfo);
+          })
+          .catch(response => {
+
+          });
+      },
+      removePublisher(publisher) {
+        var model = {
+          leagueID: this.leagueYear.leagueID,
+          publisherID: publisher.publisherID
+        };
+        axios
+          .post('/api/leagueManager/RemovePublisher', model)
+          .then(response => {
+            let actionInfo = {
+              message: 'Publisher ' + publisher.publisherName + ' has been removed from the league.',
               fetchLeague: true,
               fetchLeagueYear: true
             };

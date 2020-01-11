@@ -89,6 +89,12 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
+        public async Task RemovePublisher(Publisher publisher)
+        {
+            var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
+            await _fantasyCriticRepo.RemovePublisher(publisher, allPublishers);
+        }
+
         public async Task<Result> SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
         {
             var requiredNumbers = Enumerable.Range(1, bidPriorities.Count).ToList();
