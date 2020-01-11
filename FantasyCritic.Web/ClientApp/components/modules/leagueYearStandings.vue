@@ -132,6 +132,10 @@
         return matchingLeagueLevelPlayer.removable;
       },
       showRemovePublisher() {
+        if (!this.league.isManager) {
+          return false;
+        }
+
         if (this.leagueYear.playStatus.playStarted) {
           return false;
         }
