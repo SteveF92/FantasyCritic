@@ -29,7 +29,8 @@
       </div>
 
       <div v-if="bidMasterGame">
-        <h3 for="bidMasterGame" class="selected-game text-black">Selected Game: {{bidMasterGame.gameName}}</h3>
+        <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
+        <masterGameSummary :masterGame="bidMasterGame"></masterGameSummary>
         <hr />
         <div class="form-group">
           <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{leagueYear.userPublisher.budget | money}})</label>
@@ -51,6 +52,8 @@
     import Vue from "vue";
     import axios from "axios";
     import PossibleMasterGamesTable from "components/modules/possibleMasterGamesTable";
+    import MasterGameSummary from "components/modules/masterGameSummary";
+
     export default {
         data() {
           return {
@@ -66,7 +69,8 @@
             }
         },
         components: {
-            PossibleMasterGamesTable
+          PossibleMasterGamesTable,
+          MasterGameSummary
         },
         computed: {
           formIsValid() {
