@@ -23,7 +23,6 @@
       </template>
     </b-table>
   </div>
-
 </template>
 <script>
   import StatusBadge from "components/modules/statusBadge";
