@@ -4,7 +4,7 @@
 
     <b-table small bordered striped responsive :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
       <template slot="gameName" slot-scope="data">
-        <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
+        <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
       <template slot="sortableEstimatedReleaseDate" slot-scope="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
@@ -59,13 +59,6 @@
       selectGame(possibleRoyaleGame) {
         this.selectedPossibleRoyaleGame = possibleRoyaleGame;
         this.$emit('input', this.selectedPossibleRoyaleGame);
-      },
-      newPopoverShown(masterGame) {
-        this.$refs.gamePopoverWrapperRef.forEach(function (popover) {
-          if (popover.masterGame.masterGameID !== masterGame.masterGameID) {
-            popover.closePopover();
-          }
-        });
       }
     }
   }

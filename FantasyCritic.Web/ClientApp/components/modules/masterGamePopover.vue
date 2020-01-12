@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="masterGame">
-      <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,0px' } }}" v-on:show="newPopoverShown">
+      <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,0px' } }}">
         <div class="popper">
           <masterGameSummary :masterGame="masterGame"></masterGameSummary>
 
@@ -40,9 +40,6 @@
     methods: {
       closePopover() {
         this.$refs.gamePopoverRef.doClose();
-      },
-      newPopoverShown() {
-        this.$emit('newPopoverShown', this.masterGame);
       }
     }
   }

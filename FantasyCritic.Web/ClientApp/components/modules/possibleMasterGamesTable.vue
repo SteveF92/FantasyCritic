@@ -10,7 +10,7 @@
              :current-page="currentPage"
              bordered small responsive striped>
       <template slot="masterGame.gameName" slot-scope="data">
-        <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
+        <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
       <template slot="masterGame.sortableEstimatedReleaseDate" slot-scope="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
@@ -73,13 +73,6 @@
       selectGame(masterGame) {
         this.selectedMasterGame = masterGame;
         this.$emit('input', this.selectedMasterGame);
-      },
-      newPopoverShown(masterGame) {
-        this.$refs.gamePopoverWrapperRef.forEach(function (popover) {
-          if (popover.masterGame.masterGameID !== masterGame.masterGameID) {
-            popover.closePopover();
-          }
-        });
       }
     }
   }
