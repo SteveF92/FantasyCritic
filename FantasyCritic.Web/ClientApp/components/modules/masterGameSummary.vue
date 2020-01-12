@@ -49,9 +49,6 @@
           <router-link class="text-primary" :to="{ name: 'masterGameChangeRequest', query: { mastergameid: masterGame.masterGameID }}"><strong>Suggest a correction</strong></router-link>
         </div>
       </div>
-      <div class="close-button fake-link" v-on:click="closePopover">
-        <font-awesome-icon icon="times" size="lg" :style="{ color: 'd6993a' }" />
-      </div>
     </div>
   </div>
 </template>
@@ -110,12 +107,6 @@
   .game-description {
     margin-left: 5px;
     margin-right: 20px;
-  }
-
-  .close-button {
-    position: absolute;
-    right: 5px;
-    top: 0px;
   }
 
   .game-name {

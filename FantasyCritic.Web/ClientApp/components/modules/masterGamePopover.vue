@@ -4,6 +4,10 @@
       <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,0px' } }}" v-on:show="newPopoverShown">
         <div class="popper">
           <masterGameSummary :masterGame="masterGame"></masterGameSummary>
+
+          <div class="close-button fake-link" v-on:click="closePopover">
+            <font-awesome-icon icon="times" size="lg" :style="{ color: 'd6993a' }" />
+          </div>
         </div>
 
         <span slot="reference" class="text-primary fake-link">
@@ -43,3 +47,10 @@
     }
   }
 </script>
+<style scoped>
+  .close-button {
+    position: absolute;
+    right: 5px;
+    top: 0px;
+  }
+</style>

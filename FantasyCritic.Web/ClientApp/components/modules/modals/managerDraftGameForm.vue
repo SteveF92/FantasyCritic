@@ -43,7 +43,8 @@
       </form>
 
       <div v-if="draftMasterGame">
-        <h3 for="draftMasterGame" class="selected-game text-black">Selected Game: {{draftMasterGame.gameName}}</h3>
+        <h3 for="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
+        <masterGameSummary :masterGame="draftMasterGame"></masterGameSummary>
         <hr />
         <b-button variant="primary" v-on:click="addGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy">Add Game to Publisher</b-button>
         <div v-if="draftResult && !draftResult.success" class="alert draft-error" v-bind:class="{ 'alert-danger': !draftResult.overridable, 'alert-warning': draftResult.overridable }">
@@ -71,6 +72,8 @@
   import Vue from "vue";
   import axios from "axios";
   import PossibleMasterGamesTable from "components/modules/possibleMasterGamesTable";
+  import MasterGameSummary from "components/modules/masterGameSummary";
+
   export default {
     data() {
     return {
@@ -87,7 +90,8 @@
     }
   },
   components: {
-    PossibleMasterGamesTable
+    PossibleMasterGamesTable,
+    MasterGameSummary
   },
   computed: {
     formIsValid() {
