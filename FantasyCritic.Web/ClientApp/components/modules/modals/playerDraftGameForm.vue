@@ -9,14 +9,16 @@
         </span>
       </div>
 
-      <b-button v-show="!showingTopAvailable" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
-      <b-button v-show="!showingQueuedGames" variant="secondary" v-on:click="getQueuedGames" class="show-top-button">Show My Watchlist</b-button>
+      <b-button v-show="!showingTopAvailable || draftMasterGame" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+      <b-button v-show="!showingQueuedGames || draftMasterGame" variant="secondary" v-on:click="getQueuedGames" class="show-top-button">Show My Watchlist</b-button>
 
-      <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
-      <h3 class="text-black" v-show="showingQueuedGames">Watchlist</h3>
-      <h3 class="text-black" v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
-      <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
-                                v-on:input="newGameSelected"></possibleMasterGamesTable>
+      <div v-if="!draftMasterGame">
+        <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
+        <h3 class="text-black" v-show="showingQueuedGames">Watchlist</h3>
+        <h3 class="text-black" v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
+                                  v-on:input="newGameSelected"></possibleMasterGamesTable>
+      </div>
 
       <div v-show="searched && !draftMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
         <div class="row">
