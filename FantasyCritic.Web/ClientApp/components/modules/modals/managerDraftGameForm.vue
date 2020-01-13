@@ -42,9 +42,9 @@
         </div>
       </form>
 
-      <div v-if="draftMasterGame">
-        <h3 for="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
-        <masterGameSummary :masterGame="draftMasterGame"></masterGameSummary>
+      <div v-if="draftMasterGame || draftUnlistedGame">
+        <h3 for="draftMasterGame" v-show="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
+        <masterGameSummary v-if="draftMasterGame" :masterGame="draftMasterGame"></masterGameSummary>
         <hr />
         <b-button variant="primary" v-on:click="addGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy">Add Game to Publisher</b-button>
         <div v-if="draftResult && !draftResult.success" class="alert draft-error" v-bind:class="{ 'alert-danger': !draftResult.overridable, 'alert-warning': draftResult.overridable }">
