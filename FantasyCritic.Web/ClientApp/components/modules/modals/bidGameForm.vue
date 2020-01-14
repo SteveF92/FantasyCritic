@@ -36,7 +36,7 @@
           <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{leagueYear.userPublisher.budget | money}})</label>
           <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="text" class="form-control input" />
         </div>
-        <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy">Draft Game</b-button>
+        <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy">Place Bid</b-button>
         <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
           <h3 class="alert-heading">Error!</h3>
           <ul>
