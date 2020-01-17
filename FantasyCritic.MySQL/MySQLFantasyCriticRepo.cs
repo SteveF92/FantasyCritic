@@ -1793,11 +1793,13 @@ namespace FantasyCritic.MySQL
 
         public async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
         {
+            var mostRecentYear = await GetLeagueYear(league, league.Years.Max());
+            bool mostRecentYearNotStarted = mostRecentYear.HasValue && !mostRecentYear.Value.PlayStatus.PlayStarted;
+
             var userAddObject = new
             {
                 leagueID = league.LeagueID,
                 userID = inviteUser.UserID,
-                maxYear = league.Years.Max(),
             };
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -1806,7 +1808,16 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject, transaction);
-                    await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@maxYear,@userID);", userAddObject, transaction);
+                    if (mostRecentYearNotStarted)
+                    {
+                        var userActiveObject = new
+                        {
+                            leagueID = league.LeagueID,
+                            userID = inviteUser.UserID,
+                            activeYear = mostRecentYear.Value.Year
+                        };
+                        await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);
+                    }
                     transaction.Commit();
                 }
             }

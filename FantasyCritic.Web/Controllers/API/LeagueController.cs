@@ -472,6 +472,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            if (leagueYear.Value.PlayStatus.PlayStarted)
+            {
+                return BadRequest();
+            }
+
             var currentPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var publisherForUser = currentPublishers.SingleOrDefault(x => x.User.UserID == currentUser.UserID);
             if (publisherForUser != null)
