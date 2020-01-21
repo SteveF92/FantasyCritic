@@ -62,7 +62,7 @@ namespace FantasyCritic.Lib.Services
         {
             List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
             List<PickupBid> insufficientFundsBids = new List<PickupBid>();
-            List<PickupBid> invalidGameBids = new List<PickupBid>();
+            List<KeyValuePair<PickupBid, string>> invalidGameBids = new List<KeyValuePair<PickupBid, string>>();
 
             foreach (var activeBid in activeBidsForLeague)
             {
@@ -80,7 +80,7 @@ namespace FantasyCritic.Lib.Services
 
                 if (!claimResult.Success)
                 {
-                    invalidGameBids.Add(activeBid);
+                    invalidGameBids.Add(new KeyValuePair<PickupBid, string>(activeBid, string.Join(" AND ", claimResult.Errors.Select(x => x.Error))));
                     continue;
                 }
                 
@@ -90,7 +90,7 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            var validBids = activeBidsForLeague.Except(noSpaceLeftBids).Except(insufficientFundsBids).Except(invalidGameBids);
+            var validBids = activeBidsForLeague.Except(noSpaceLeftBids).Except(insufficientFundsBids).Except(invalidGameBids.Select(x => x.Key));
             var winnableBids = GetWinnableBids(validBids, leagueYear.Options, systemWideValues);
             var winningBids = GetWinningBids(winnableBids);
 
@@ -99,11 +99,11 @@ namespace FantasyCritic.Lib.Services
                 .Except(winningBids)
                 .Except(noSpaceLeftBids)
                 .Except(insufficientFundsBids)
-                .Except(invalidGameBids)
+                .Except(invalidGameBids.Select(x => x.Key))
                 .Where(x => takenGames.Contains(x.MasterGame))
                 .Select(x => new FailedPickupBid(x, "Publisher was outbid."));
 
-            var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x, "Game is no longer eligible (it probably has been released or at least has reviews)."));
+            var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value));
             var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget."));
             var noSpaceLeftBidFailures = noSpaceLeftBids.Select(x => new FailedPickupBid(x, "No roster spots available."));
             var failedBids = losingBids.Concat(insufficientFundsBidFailures).Concat(noSpaceLeftBidFailures).Concat(invalidGameBidFailures);
