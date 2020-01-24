@@ -6,7 +6,7 @@ namespace FantasyCritic.Lib.Domain.Requests
     public class LeagueCreationParameters
     {
         public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, 
-            int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, int initialYear, EligibilityLevel maximumEligibilityLevel,
+            int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, int initialYear, EligibilityLevel maximumEligibilityLevel,
             bool allowYearlyInstallments,  bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally,
             bool allowExpansions, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague, bool testLeague)
         {
@@ -18,6 +18,7 @@ namespace FantasyCritic.Lib.Domain.Requests
             FreeDroppableGames = freeDroppableGames;
             WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
             WillReleaseDroppableGames = willReleaseDroppableGames;
+            DropOnlyDraftGames = dropOnlyDraftGames;
             InitialYear = initialYear;
             AllowedEligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, allowYearlyInstallments, allowEarlyAccess, 
                 allowFreeToPlay, allowReleasedInternationally, allowExpansions);
@@ -36,6 +37,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int FreeDroppableGames { get; }
         public int WillNotReleaseDroppableGames { get; }
         public int WillReleaseDroppableGames { get; }
+        public bool DropOnlyDraftGames { get; }
         public int InitialYear { get; }
         public EligibilitySettings AllowedEligibilitySettings { get; }
         public DraftSystem DraftSystem { get; }

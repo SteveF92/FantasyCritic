@@ -96,7 +96,7 @@
             <th scope="row">Will Release</th>
             <td>
               <input v-model="local.willReleaseDroppableGames" @input="update('willReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                     id="willReleaseDroppableGames" name="willReleaseDroppableGames" type="text" class="form-control input drop-number" v-show="!local.unlimitedWillReleaseDroppableGames"/>
+                     id="willReleaseDroppableGames" name="willReleaseDroppableGames" type="text" class="form-control input drop-number" v-show="!local.unlimitedWillReleaseDroppableGames" />
             </td>
             <td>
               <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillReleaseDroppableGames" @input="update('unlimitedWillReleaseDroppableGames', local.unlimitedWillReleaseDroppableGames)">
@@ -127,6 +127,13 @@
           </tr>
         </tbody>
       </table>
+
+      <div>
+        <b-form-checkbox v-model="local.dropOnlyDraftGames" @input="update('dropOnlyDraftGames', local.dropOnlyDraftGames)">
+          <span class="checkbox-label">Only allow drafted to be dropped</span>
+          <p>If this is checked, pickup games will not be droppable, no matter what the above settings are. Counter picks are never droppable.</p>
+        </b-form-checkbox>
+      </div>
 
       <hr />
       <h3>Eligibility Settings</h3>

@@ -36,6 +36,8 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         public bool UnlimitedWillNotReleaseDroppableGames { get; set; }
         [Required]
         public bool UnlimitedWillReleaseDroppableGames { get; set; }
+        [Required]
+        public bool DropOnlyDraftGames { get; set; }
 
         [Required]
         public int InitialYear { get; set; }
@@ -112,7 +114,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             }
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
-                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
+                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
                 AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }

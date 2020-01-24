@@ -9,8 +9,9 @@ using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using MoreLinq;
 using NodaTime;
+using static MoreLinq.Extensions.MaxByExtension;
+using static MoreLinq.Extensions.MinByExtension;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -22,9 +23,11 @@ namespace FantasyCritic.Lib.Services
         private readonly LeagueMemberService _leagueMemberService;
         private readonly PublisherService _publisherService;
         private readonly InterLeagueService _interLeagueService;
+        private readonly GameSearchingService _gameSearchingService;
 
         public DraftService(GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
-            PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+            PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, 
+            GameSearchingService gameSearchingService, IClock clock)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
             _clock = clock;
@@ -33,6 +36,7 @@ namespace FantasyCritic.Lib.Services
             _publisherService = publisherService;
             _interLeagueService = interLeagueService;
             _gameAcquisitionService = gameAcquisitionService;
+            _gameSearchingService = gameSearchingService;
         }
 
         public async Task<StartDraftResult> GetStartDraftResult(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> activeUsers)
@@ -200,13 +204,35 @@ namespace FantasyCritic.Lib.Services
             return Maybe<Publisher>.None;
         }
 
-        public async Task<DraftPhase> GetDraftPhase(LeagueYear leagueYear)
-        {
-            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
-            return GetDraftPhase(leagueYear, publishers);
-        }
+        //public async Task AutoDraftForLeague(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear)
+        //{
+        //    var nextPublisher = GetNextDraftPublisher(leagueYear, publishersInLeagueForYear);
+        //    if (nextPublisher.HasNoValue)
+        //    {
+        //        return;
+        //    }
+        //    if (!nextPublisher.Value.AutoDraft)
+        //    {
+        //        return;
+        //    }
 
-        private DraftPhase GetDraftPhase(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+        //    var draftPhase = await GetDraftPhase(leagueYear);
+        //    if (draftPhase.Equals(DraftPhase.Complete))
+        //    {
+        //        return;
+        //    }
+        //    if (draftPhase.Equals(DraftPhase.StandardGames))
+        //    {
+        //        var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
+        //        var availableGames = await _gameSearchingService.GetTopAvailableGames(nextPublisher.Value, publishersInLeagueForYear, leagueYear.Year);
+        //    }
+        //    if (draftPhase.Equals(DraftPhase.CounterPicks))
+        //    {
+
+        //    }
+        //}
+
+        public DraftPhase GetDraftPhase(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
         {
             int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
             int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
@@ -248,12 +274,14 @@ namespace FantasyCritic.Lib.Services
             return availableCounterPicks;
         }
 
-        public async Task<bool> CompleteDraft(LeagueYear leagueYear)
+        public async Task<bool> CompleteDraft(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers, bool newStandardGameAdded, bool newCounterPickAdded)
         {
-            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
-
             int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
             int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
+            if (newStandardGameAdded)
+            {
+                standardGamesDrafted++;
+            }
             if (standardGamesDrafted < numberOfStandardGamesToDraft)
             {
                 return false;
@@ -261,6 +289,10 @@ namespace FantasyCritic.Lib.Services
 
             int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
             int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
+            if (newCounterPickAdded)
+            {
+                counterPicksDrafted++;
+            }
             if (counterPicksDrafted < numberOfCounterPicksToDraft)
             {
                 return false;

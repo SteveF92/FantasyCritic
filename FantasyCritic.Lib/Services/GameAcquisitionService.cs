@@ -118,6 +118,11 @@ namespace FantasyCritic.Lib.Services
             {
                 return new DropResult(Result.Fail("Game is no longer eligible for dropping."), !gameWillRelease);
             }
+            bool gameWasDrafted = publisherGame.Value.OverallDraftPosition.HasValue;
+            if (!gameWasDrafted && leagueYear.Options.DropOnlyDraftGames)
+            {
+                return new DropResult(Result.Fail("You can only drop games that you drafted due to your league settings."), false);
+            }
 
             var dropResult = publisher.CanDropGame(gameWillRelease);
             return new DropResult(dropResult, !gameWillRelease);

@@ -10,7 +10,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale
 {
     public class RoyalePublisherViewModel
     {
-        public RoyalePublisherViewModel(RoyalePublisher domain, IClock clock)
+        public RoyalePublisherViewModel(RoyalePublisher domain, IClock clock, int? ranking)
         {
             PublisherID = domain.PublisherID;
             YearQuarter = new RoyaleYearQuarterViewModel(domain.YearQuarter);
@@ -20,6 +20,10 @@ namespace FantasyCritic.Web.Models.Responses.Royale
             PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, clock)).ToList();
             Budget = domain.Budget;
             TotalFantasyPoints = domain.GetTotalFantasyPoints();
+            if (TotalFantasyPoints > 0)
+            {
+                Ranking = ranking;
+            }
         }
 
         public Guid PublisherID { get; }
@@ -30,5 +34,6 @@ namespace FantasyCritic.Web.Models.Responses.Royale
         public IReadOnlyList<RoyalePublisherGameViewModel> PublisherGames { get; }
         public decimal Budget { get; }
         public decimal TotalFantasyPoints { get; }
+        public int? Ranking { get; }
     }
 }

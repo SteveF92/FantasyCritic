@@ -35,6 +35,10 @@
             <td v-show="leagueYearOptions.unlimitedWillReleaseDroppableGames">Unlimited</td>
           </tr>
           <tr>
+            <th class="bg-primary">Drop Only Drafted Games</th>
+            <td>{{leagueYearOptions.dropOnlyDraftGames | yesNo }}</td>
+          </tr>
+          <tr>
             <th class="bg-primary">Maximum Eligibility Level</th>
             <td>{{leagueYearOptions.maximumEligibilityLevel}}</td>
           </tr>

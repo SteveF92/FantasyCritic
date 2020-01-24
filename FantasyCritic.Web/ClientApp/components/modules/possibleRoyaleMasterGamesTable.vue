@@ -4,7 +4,7 @@
 
     <b-table small bordered striped responsive :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
       <template slot="gameName" slot-scope="data">
-        <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame" v-on:newPopoverShown="newPopoverShown"></masterGamePopover>
+        <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
       <template slot="sortableEstimatedReleaseDate" slot-scope="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
@@ -13,7 +13,7 @@
         </div>
       </template>
       <template slot="eligibilityLevel" slot-scope="data">
-        <statusBadge :alreadyOwned="data.item.alreadyOwned" :taken="false" :isEligible="data.item.isEligible"></statusBadge>
+        <statusBadge :possibleMasterGame="data.item"></statusBadge>
       </template>
       <template slot="cost" slot-scope="data">
         {{data.item.cost | money}}
@@ -23,7 +23,6 @@
       </template>
     </b-table>
   </div>
-
 </template>
 <script>
   import StatusBadge from "components/modules/statusBadge";
@@ -59,13 +58,6 @@
       selectGame(possibleRoyaleGame) {
         this.selectedPossibleRoyaleGame = possibleRoyaleGame;
         this.$emit('input', this.selectedPossibleRoyaleGame);
-      },
-      newPopoverShown(masterGame) {
-        this.$refs.gamePopoverWrapperRef.forEach(function (popover) {
-          if (popover.masterGame.masterGameID !== masterGame.masterGameID) {
-            popover.closePopover();
-          }
-        });
       }
     }
   }

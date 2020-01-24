@@ -8,45 +8,45 @@
         </label>
       </div>
       <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
-        <div class="form-group">
-          <label for="draftGameName" class="control-label">Game Name</label>
-          <div class="input-group game-search-input">
-            <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
-            <span class="input-group-btn">
-              <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
-            </span>
-          </div>
-          <b-button v-show="!showingTopAvailable" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+        <label for="draftGameName" class="control-label">Game Name</label>
+        <div class="input-group game-search-input">
+          <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
+          <span class="input-group-btn">
+            <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+          </span>
+        </div>
+        <b-button v-show="!showingTopAvailable || draftMasterGame" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
 
+        <div v-if="!draftMasterGame">
           <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
+          <h3 class="text-black" v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
           <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
                                     v-on:input="newGameSelected"></possibleMasterGamesTable>
+        </div>
 
-          <div v-show="searched && !draftMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
-            <div class="row">
-              <span class="col-12 col-md-7" v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
-              <span class="col-12 col-md-7" v-show="possibleMasterGames.length === 0">No games were found.</span>
-              <b-button variant="primary" v-on:click="showUnlistedField" size="sm" class="col-12 col-md-5">Select unlisted game</b-button>
-            </div>
-
-            <div v-if="showingUnlistedField">
-              <label for="draftUnlistedGame" class="control-label">Custom Game Name</label>
-              <div class="input-group game-search-input">
-                <input v-model="draftUnlistedGame" id="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
-              </div>
-              <div>Enter the full name of the game you want.</div>
-              <div>You as league manager can link this custom game with a "master game" later.</div>
-            </div>
-
+        <div v-show="searched && !draftMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+          <div class="row">
+            <span class="col-12 col-md-7" v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
+            <span class="col-12 col-md-7" v-show="possibleMasterGames.length === 0">No games were found.</span>
+            <b-button variant="primary" v-on:click="showUnlistedField" size="sm" class="col-12 col-md-5">Select unlisted game</b-button>
           </div>
 
-          <label v-if="draftMasterGame" for="draftMasterGame" class="control-label">Selected Game: {{draftMasterGame.gameName}}</label>
+          <div v-if="showingUnlistedField">
+            <label for="draftUnlistedGame" class="control-label">Custom Game Name</label>
+            <div class="input-group game-search-input">
+              <input v-model="draftUnlistedGame" id="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
+            </div>
+            <div>Enter the full name of the game you want.</div>
+            <div>You as league manager can link this custom game with a "master game" later.</div>
+          </div>
         </div>
       </form>
-      <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
-        <div>
-          <input type="submit" class="btn btn-primary add-game-button" value="Add game to publisher" v-if="formIsValid" />
-        </div>
+
+      <div v-if="draftMasterGame || draftUnlistedGame">
+        <h3 for="draftMasterGame" v-show="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
+        <masterGameSummary v-if="draftMasterGame" :masterGame="draftMasterGame"></masterGameSummary>
+        <hr />
+        <b-button variant="primary" v-on:click="addGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy">Add Game to Publisher</b-button>
         <div v-if="draftResult && !draftResult.success" class="alert draft-error" v-bind:class="{ 'alert-danger': !draftResult.overridable, 'alert-warning': draftResult.overridable }">
           <h3 class="alert-heading" v-if="draftResult.overridable">Warning!</h3>
           <h3 class="alert-heading" v-if="!draftResult.overridable">Error!</h3>
@@ -63,7 +63,7 @@
             </span>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   </b-modal>
 </template>
@@ -72,6 +72,8 @@
   import Vue from "vue";
   import axios from "axios";
   import PossibleMasterGamesTable from "components/modules/possibleMasterGamesTable";
+  import MasterGameSummary from "components/modules/masterGameSummary";
+
   export default {
     data() {
     return {
@@ -83,11 +85,13 @@
       possibleMasterGames: [],
       searched: false,
       showingUnlistedField: false,
-      showingTopAvailable: false
+      showingTopAvailable: false,
+      isBusy: false
     }
   },
   components: {
-    PossibleMasterGamesTable
+    PossibleMasterGamesTable,
+    MasterGameSummary
   },
   computed: {
     formIsValid() {
@@ -98,6 +102,7 @@
   methods: {
     searchGame() {
       this.possibleMasterGames = [];
+      this.draftMasterGame = null;
       this.draftResult = null;
       this.showingTopAvailable = false;
       axios
@@ -114,6 +119,7 @@
     },
     getTopGames() {
       this.possibleMasterGames = [];
+      this.draftMasterGame = null;
       this.draftResult = null;
       this.showingTopAvailable = false;
       axios
@@ -134,6 +140,7 @@
       this.draftUnlistedGame = this.searchGameName;
     },
     addGame() {
+      this.isBusy = true;
       var gameName = "";
       if (this.draftMasterGame !== null) {
         gameName = this.draftMasterGame.gameName;
@@ -175,6 +182,7 @@
         });
     },
     clearData() {
+      this.isBusy = false;
       this.searchGameName = null;
       this.draftUnlistedGame = null;
       this.draftMasterGame = null;
@@ -210,5 +218,4 @@
 .show-top-button {
   margin-bottom: 10px;
 }
-
 </style>

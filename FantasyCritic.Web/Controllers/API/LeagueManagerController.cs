@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Extensions;
@@ -40,11 +41,11 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly DraftService _draftService;
         private readonly PublisherService _publisherService;
         private readonly IClock _clock;
-        private readonly IHubContext<UpdateHub> _hubcontext;
+        private readonly IHubContext<UpdateHub> _hubContext;
         private readonly IEmailSender _emailSender;
 
         public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
-            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubcontext, IEmailSender emailSender)
+            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext, IEmailSender emailSender)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
@@ -53,7 +54,7 @@ namespace FantasyCritic.Web.Controllers.API
             _draftService = draftService;
             _publisherService = publisherService;
             _clock = clock;
-            _hubcontext = hubcontext;
+            _hubContext = hubContext;
             _emailSender = emailSender;
         }
 
@@ -518,6 +519,48 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> RemovePublisher([FromBody] PublisherRemoveRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (publisher.Value.LeagueYear.League.LeagueID != league.Value.LeagueID)
+            {
+                return Forbid();
+            }
+
+            if (publisher.Value.LeagueYear.PlayStatus.PlayStarted)
+            {
+                return BadRequest();
+            }
+
+            await _publisherService.RemovePublisher(publisher.Value);
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> SetPlayerActiveStatus([FromBody] LeaguePlayerActiveRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -635,8 +678,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, null, null);
-
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, false);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, false, publishersInLeague);
             var viewModel = new ManagerClaimResultViewModel(result);
 
             await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
@@ -897,7 +940,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _draftService.StartDraft(leagueYear.Value);
-            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }
@@ -1065,7 +1108,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             int? publisherPosition = null;
             int? overallPosition = null;
-            var draftPhase = await _draftService.GetDraftPhase(leagueYear.Value);
+            var draftPhase = _draftService.GetDraftPhase(leagueYear.Value, publishersInLeague);
             if (draftPhase.Equals(DraftPhase.StandardGames))
             {
                 publisherPosition = publisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
@@ -1087,14 +1130,16 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition);
 
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, true);
-            bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value);
+            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, true, publishersInLeague);
+            bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value, publishersInLeague, result.Success && !request.CounterPick, result.Success && request.CounterPick);
             var viewModel = new ManagerClaimResultViewModel(result);
-            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+
+            //await _draftService.AutoDraftForLeague(leagueYear.Value, publishersInLeague);
 
             if (draftCompleted)
             {
-                await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
+                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
             }
 
             return Ok(viewModel);
@@ -1143,7 +1188,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _draftService.SetDraftPause(leagueYear.Value, request.Pause);
-            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }
@@ -1188,7 +1233,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _draftService.UndoLastDraftAction(leagueYear.Value, publishers);
-            await _hubcontext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }

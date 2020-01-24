@@ -1,10 +1,17 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
+      <div v-show="royaleYearQuarterOptions">
+        <b-dropdown text="Quarters" class="quarter-select">
+          <b-dropdown-item v-for="royaleYearQuarterOption in royaleYearQuarterOptions"
+                           :active="royaleYearQuarterOption.year === year && royaleYearQuarterOption.quarter === quarter"
+                           :to="{ name: 'criticsRoyale', params: {year: royaleYearQuarterOption.year, quarter: royaleYearQuarterOption.quarter }}">
+          {{royaleYearQuarterOption.year}}-Q{{royaleYearQuarterOption.quarter}}
+          </b-dropdown-item>
+        </b-dropdown>
+      </div>
       <div class="critic-royale-header-area">
-        <div>
-          <img class="critic-royale-header" src="/images/critic-royale-logo.svg" />
-        </div>
+        <img class="critic-royale-header" src="/images/critic-royale-logo.svg" />
       </div>
 
       <div class="critic-royale-header-area-simple">
@@ -19,14 +26,14 @@
         </div>
         <div v-if="!userRoyalePublisher && !isAuth" class="alert alert-success">
           Sign up or log in to start playing now!
-            <b-button class="login-button" variant="info" :to="{ name: 'login' }">
-              <span>Log In</span>
-              <font-awesome-icon class="full-nav" icon="sign-in-alt" />
-            </b-button>
-            <b-button variant="primary" :to="{ name: 'register' }">
-              <span>Sign Up</span>
-              <font-awesome-icon class="full-nav" icon="user-plus" />
-            </b-button>
+          <b-button class="login-button" variant="info" :to="{ name: 'login' }">
+            <span>Log In</span>
+            <font-awesome-icon class="full-nav" icon="sign-in-alt" />
+          </b-button>
+          <b-button variant="primary" :to="{ name: 'register' }">
+            <span>Sign Up</span>
+            <font-awesome-icon class="full-nav" icon="user-plus" />
+          </b-button>
         </div>
 
         <div class="leaderboard-header">
@@ -36,11 +43,19 @@
 
         <div v-if="royaleStandings">
           <b-table striped bordered small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
-            <template slot="publisherName" slot-scope="data">
-              <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
-                {{ data.item.publisherName }}
-              </router-link>
+            <template slot="ranking" slot-scope="data">
+              <template v-if="data.item.ranking">
+                {{data.item.ranking}}
+              </template>
+              <template v-else>
+                --
+              </template>
             </template>
+              <template slot="publisherName" slot-scope="data">
+                <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
+                  {{ data.item.publisherName }}
+                </router-link>
+              </template>
           </b-table>
           <b-pagination class="pagination-dark" v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
         </div>
@@ -117,9 +132,11 @@
         currentPage: 1,
         userRoyalePublisher: null,
         royaleYearQuarter: null,
+        royaleYearQuarterOptions: null,
         royaleStandings: null,
         userPublisherBusy: true,
         standingsFields: [
+          { key: 'ranking', label: 'Rank', thClass: ['bg-primary','ranking-column'], tdClass: 'ranking-column' },
           { key: 'publisherName', label: 'Publisher', thClass:'bg-primary' },
           { key: 'playerName', label: 'Player Name', thClass: 'bg-primary' },
           { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' }
@@ -135,7 +152,18 @@
       },
     },
     methods: {
+      async fetchRoyaleQuarters() {
+        axios
+          .get('/api/royale/RoyaleQuarters')
+          .then(response => {
+            this.royaleYearQuarterOptions = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
       async fetchRoyaleYearQuarter() {
+        this.royaleYearQuarter = null;
         axios
           .get('/api/royale/RoyaleQuarter/' + this.year + '/' + this.quarter)
           .then(response => {
@@ -146,6 +174,7 @@
           });
       },
       async fetchRoyaleStandings() {
+        this.royaleStandings = null;
         axios
           .get('/api/royale/RoyaleStandings/' + this.year + '/' + this.quarter)
           .then(response => {
@@ -155,6 +184,8 @@
           });
       },
       async fetchUserRoyalePublisher() {
+        this.userPublisherBusy = true;
+        this.userRoyalePublisher = null;
         axios
           .get('/api/royale/GetUserRoyalePublisher/' + this.year + '/' + this.quarter)
           .then(response => {
@@ -167,8 +198,13 @@
       },
     },
     async mounted() {
-      await Promise.all([this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
+      await Promise.all([this.fetchRoyaleQuarters(), this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
     },
+    watch: {
+      async '$route'(to, from) {
+          await Promise.all([this.fetchRoyaleQuarters(), this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
+      },
+    }
   }
 </script>
 <style scoped>
@@ -213,5 +249,15 @@
 
   .login-button {
     margin-left: 15px;
+  }
+
+  .quarter-select {
+    float: right;
+  }
+</style>
+<style>
+  .ranking-column {
+    width: 50px;
+    text-align: right;
   }
 </style>

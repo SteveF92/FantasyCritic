@@ -129,6 +129,7 @@
           unlimitedFreeDroppableGames: this.leagueYearSettings.unlimitedFreeDroppableGames,
           unlimitedWillNotReleaseDroppableGames: this.leagueYearSettings.unlimitedWillNotReleaseDroppableGames,
           unlimitedWillReleaseDroppableGames: this.leagueYearSettings.unlimitedWillReleaseDroppableGames,
+          dropOnlyDraftGames: this.leagueYearSettings.dropOnlyDraftGames,
           maximumEligibilityLevel: this.leagueYearSettings.maximumEligibilityLevel,
           allowYearlyInstallments: this.leagueYearSettings.allowYearlyInstallments,
           allowEarlyAccess: this.leagueYearSettings.allowEarlyAccess,

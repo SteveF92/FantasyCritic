@@ -517,17 +517,23 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(
-                    "insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague) VALUES " +
-                    "(@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague);",
-                    entity);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(
+                        "insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague) VALUES " +
+                        "(@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague);",
+                        entity, transaction);
 
-                await connection.ExecuteAsync(
-                    "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,MaximumEligibilityLevel," +
-                    "AllowYearlyInstallments,AllowEarlyAccess,AllowFreeToPlay,AllowReleasedInternationally,AllowExpansions,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
-                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@MaximumEligibilityLevel," +
-                    "@AllowYearlyInstallments,@AllowEarlyAccess,@AllowFreeToPlay,@AllowReleasedInternationally,@AllowExpansions,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);",
-                    leagueYearEntity);
+                    await connection.ExecuteAsync(
+                        "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
+                        "MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,AllowFreeToPlay,AllowReleasedInternationally,AllowExpansions,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
+                        "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames,@MaximumEligibilityLevel," +
+                        "@AllowYearlyInstallments,@AllowEarlyAccess,@AllowFreeToPlay,@AllowReleasedInternationally,@AllowExpansions,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);",
+                        leagueYearEntity, transaction);
+
+                    transaction.Commit();
+                }
             }
 
             await AddPlayerToLeague(league, league.LeagueManager);
@@ -542,7 +548,7 @@ namespace FantasyCritic.MySQL
                 await connection.ExecuteAsync(
                     "update tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, " +
                     "FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames, " +
-                    "MaximumEligibilityLevel = @MaximumEligibilityLevel, AllowYearlyInstallments = @AllowYearlyInstallments, AllowEarlyAccess = @AllowEarlyAccess, " +
+                    "DropOnlyDraftGames = @DropOnlyDraftGames, MaximumEligibilityLevel = @MaximumEligibilityLevel, AllowYearlyInstallments = @AllowYearlyInstallments, AllowEarlyAccess = @AllowEarlyAccess, " +
                     "AllowFreeToPlay = @AllowFreeToPlay, AllowReleasedInternationally = @AllowReleasedInternationally, AllowExpansions = @AllowExpansions, DraftSystem = @DraftSystem, " +
                     "PickupSystem = @PickupSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year",
                     leagueYearEntity);
@@ -555,9 +561,9 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,MaximumEligibilityLevel," +
-                    "AllowYearlyInstallments,AllowEarlyAccess,AllowFreeToPlay,AllowReleasedInternationally,AllowExpansions,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
-                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@MaximumEligibilityLevel," +
+                    "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
+                    "MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,AllowFreeToPlay,AllowReleasedInternationally,AllowExpansions,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
+                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames,@MaximumEligibilityLevel," +
                     "@AllowYearlyInstallments,@AllowEarlyAccess,@AllowFreeToPlay,@AllowReleasedInternationally,@AllowExpansions,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);",
                     leagueYearEntity);
             }
@@ -1787,11 +1793,13 @@ namespace FantasyCritic.MySQL
 
         public async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
         {
+            var mostRecentYear = await GetLeagueYear(league, league.Years.Max());
+            bool mostRecentYearNotStarted = mostRecentYear.HasValue && !mostRecentYear.Value.PlayStatus.PlayStarted;
+
             var userAddObject = new
             {
                 leagueID = league.LeagueID,
                 userID = inviteUser.UserID,
-                maxYear = league.Years.Max(),
             };
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -1800,7 +1808,16 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject, transaction);
-                    await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@maxYear,@userID);", userAddObject, transaction);
+                    if (mostRecentYearNotStarted)
+                    {
+                        var userActiveObject = new
+                        {
+                            leagueID = league.LeagueID,
+                            userID = inviteUser.UserID,
+                            activeYear = mostRecentYear.Value.Year
+                        };
+                        await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);
+                    }
                     transaction.Commit();
                 }
             }

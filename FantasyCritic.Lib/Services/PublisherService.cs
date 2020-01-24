@@ -34,7 +34,7 @@ namespace FantasyCritic.Lib.Services
                 draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
             }
 
-            Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear, user, publisherName, draftPosition, new List<PublisherGame>(), 100, 0, 0, 0);
+            Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear, user, publisherName, draftPosition, new List<PublisherGame>(), 100, 0, 0, 0, false);
             await _fantasyCriticRepo.CreatePublisher(publisher);
             return publisher;
         }
@@ -89,6 +89,12 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
+        public async Task RemovePublisher(Publisher publisher)
+        {
+            var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
+            await _fantasyCriticRepo.RemovePublisher(publisher, allPublishers);
+        }
+
         public async Task<Result> SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
         {
             var requiredNumbers = Enumerable.Range(1, bidPriorities.Count).ToList();
@@ -115,6 +121,12 @@ namespace FantasyCritic.Lib.Services
 
             await _fantasyCriticRepo.SetQueueRankings(queueRanks);
             return Result.Ok();
+        }
+
+        public async Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher)
+        {
+            var queuedGames = await _fantasyCriticRepo.GetQueuedGames(publisher);
+            return queuedGames.OrderBy(x => x.Rank).ToList();
         }
     }
 }

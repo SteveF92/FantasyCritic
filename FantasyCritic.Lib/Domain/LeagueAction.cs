@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain.Requests;
@@ -126,6 +127,11 @@ namespace FantasyCritic.Lib.Domain
                 var name = SubstringSearching.GetBetween(Description, "'", "'");
                 return name.IsFailure ? "" : name.Value;
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{ActionType}|{Publisher.PublisherName}|{Description}";
         }
     }
 }

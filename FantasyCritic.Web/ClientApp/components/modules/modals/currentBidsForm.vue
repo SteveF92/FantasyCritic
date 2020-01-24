@@ -1,21 +1,33 @@
 <template>
   <b-modal id="currentBidsForm" ref="currentBidsFormRef" title="My Current Bids" @hidden="clearData">
-    <label>
+    <label v-show="settingPriority">
       Drag and drop to change order.
     </label>
+
+    <b-form-checkbox v-model="settingPriority" class="priority-checkbox">
+      <span class="checkbox-label">Change Priorities</span>
+    </b-form-checkbox>
+
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
-          <th scope="col"></th>
+          <th scope="col" v-show="settingPriority"></th>
           <th scope="col" class="game-column">Game</th>
           <th scope="col">Bid Amount</th>
           <th scope="col">Priority</th>
-          <th scope="col">Cancel</th>
+          <th scope="col" v-show="!settingPriority">Cancel</th>
         </tr>
       </thead>
-      <draggable v-model="desiredBidPriorities" tag="tbody">
-        <tr v-for="bid in desiredBidPriorities" :key="bid.priority">
-          <td scope="row"><font-awesome-icon icon="bars" size="lg" /></td>
+        <draggable v-model="desiredBidPriorities" tag="tbody" v-if="settingPriority">
+          <tr v-for="bid in desiredBidPriorities" :key="bid.priority">
+            <td scope="row"><font-awesome-icon icon="bars" size="lg" /></td>
+            <td>{{bid.masterGame.gameName}}</td>
+            <td>{{bid.bidAmount | money}}</td>
+            <td>{{bid.priority}}</td>
+          </tr>
+        </draggable>
+      <tbody v-if="!settingPriority">
+        <tr v-for="bid in desiredBidPriorities">
           <td>{{bid.masterGame.gameName}}</td>
           <td>{{bid.bidAmount | money}}</td>
           <td>{{bid.priority}}</td>
@@ -23,10 +35,10 @@
             <b-button variant="danger" size="sm" v-on:click="cancelBid(bid)">Cancel</b-button>
           </td>
         </tr>
-      </draggable>
+      </tbody>
     </table>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Priority Order" v-on:click="setBidPriorityOrder" />
+      <b-button variant="primary" v-if="settingPriority" v-on:click="setBidPriorityOrder()">Set Priority Order</b-button>
     </div>
   </b-modal>
 </template>
@@ -43,7 +55,8 @@
     props: ['publisher','currentBids'],
     data() {
       return {
-        desiredBidPriorities: []
+        desiredBidPriorities: [],
+        settingPriority: false
       }
     },
     methods: {
@@ -102,5 +115,8 @@
 <style scoped>
   .select-cell {
     text-align: center;
+  }
+  .priority-checkbox{
+    float: right;
   }
 </style>

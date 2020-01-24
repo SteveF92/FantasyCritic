@@ -83,7 +83,13 @@
               This year is finished! The winner is <strong>{{topPublisher.publisherName}}</strong>!
             </div>
           </div>
-          <div v-if="!leagueYear.userIsActive && league.userIsInLeague">
+          <div v-if="userShouldBeActive && !leagueYear.userIsActive">
+            <div class="alert alert-warning" role="alert">
+              An (minor) error has occurred.
+              <b-button variant="primary" v-on:click="reloadPage">Reload</b-button>
+            </div>
+          </div>
+          <div v-if="!leagueYear.userIsActive && league.userIsInLeague && !userShouldBeActive">
             <div class="alert alert-warning" role="alert">
               You are set to inactive for this year.
             </div>
@@ -184,7 +190,8 @@
         currentDrops: [],
         forbidden: false,
         advancedProjections: false,
-        inviteCode: null
+        inviteCode: null,
+        userShouldBeActive: false
       }
     },
     props: ['leagueid', 'year'],
@@ -251,6 +258,9 @@
               this.selectedYear = this.leagueYear.year;
               this.fetchCurrentBids();
               this.fetchCurrentDropRequests();
+              if (this.leagueYear.userIsActive) {
+                this.userShouldBeActive = true;
+              }
             })
           .catch(returnedError => {
             this.errorInfo = "Something went wrong with this league. Contact us on Twitter for support.";
@@ -412,6 +422,9 @@
         hubConnection.onclose(async () => {
           await this.startHubConnection();
         });
+      },
+      reloadPage() {
+        window.location.reload(false);
       }
     },
     async mounted() {

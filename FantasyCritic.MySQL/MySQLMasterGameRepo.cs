@@ -218,7 +218,7 @@ namespace FantasyCritic.MySQL
             var sql = "select distinct MasterGameID from tbl_league_publishergame " +
                       "join tbl_league_publisher on(tbl_league_publisher.PublisherID = tbl_league_publishergame.PublisherID) " +
                       "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
-                      "where Year = @year and tbl_league.TestLeague = 0 and tbl_league.IsDeleted = 0";
+                      "where Year = @year and tbl_league.TestLeague = 0 and tbl_league.IsDeleted = 0 and MasterGameID IS NOT NULL;";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
