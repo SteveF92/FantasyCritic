@@ -95,7 +95,7 @@
             </div>
           </div>
 
-          <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
+          <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft && leagueYear.userPublisher" class="alert alert-warning">
             <h2>
               This year is not active yet!
             </h2>
@@ -105,7 +105,8 @@
           </div>
 
           <div v-if="leagueYear.userIsActive && !leagueYear.userPublisher" class="alert alert-info">
-            You need to create your publisher for this year.
+            <span>You need to create your publisher for this year.</span>
+            <span v-show="league.isManager"> You can't invite players until you create your publisher.</span>
             <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
             <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
           </div>
