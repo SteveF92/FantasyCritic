@@ -19,7 +19,11 @@
             <b-button variant="info" v-b-modal="'changeDisplayNameForm'">Change Display Name</b-button>
           </dd>
 
-          <dt class="col-sm-3">Email Address</dt>
+          <dt class="col-sm-3">
+            Email Address
+            <span v-if="userInfo.emailConfirmed">(Confirmed)</span>
+            <span v-if="!userInfo.emailConfirmed">(Unconfirmed)</span>
+          </dt>
           <dd class="col-sm-9">
             {{userInfo.emailAddress}}
             <b-button variant="info" v-if="!userInfo.emailConfirmed" v-on:click="sendConfirmationEmail">Resend Confirmation Email</b-button>
