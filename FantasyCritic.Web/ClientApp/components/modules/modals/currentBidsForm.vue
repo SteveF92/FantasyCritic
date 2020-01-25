@@ -8,7 +8,7 @@
       <span class="checkbox-label">Change Priorities</span>
     </b-form-checkbox>
 
-    <table class="table table-sm table-responsive-sm table-bordered table-striped">
+    <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
           <th scope="col" v-show="settingPriority"></th>

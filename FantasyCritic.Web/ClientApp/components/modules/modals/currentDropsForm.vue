@@ -1,6 +1,6 @@
 <template>
   <b-modal id="currentDropsForm" ref="currentDropsFormRef" title="My Pending Drop Requests">
-    <table class="table table-sm table-responsive-sm table-bordered table-striped">
+    <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
           <th scope="col" class="game-column">Game</th>
