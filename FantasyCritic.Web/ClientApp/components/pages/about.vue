@@ -110,7 +110,7 @@
           <li><a href="https://github.com/TrilonIO/aspnetcore-Vue-starter" target="_blank">Mark Piesak</a>, for his excellent ASP.NET Core + Vue.JS template, which forms the foundation of this website.</li>
           <li><a href="https://github.com/AndrewKralovec" target="_blank">Andrew Kralovec</a>, for additional front end development.</li>
           <li><a href="https://github.com/uioreanu" target="_blank">Calin Uioreanu</a>, for helping develop the "Advanced Projections" statistic.</li>
-          <li><a href="https://notificationsounds.com" target="_blank">Notification Sounds</a>, for the draft notification sound. (Creative Commons)</li>
+          <li><a href="https://twitter.com/WhatsGoode1" target="_blank">Matt Goode</a>, for the draft notification sound.</li>
         </ul>
 
       </div>

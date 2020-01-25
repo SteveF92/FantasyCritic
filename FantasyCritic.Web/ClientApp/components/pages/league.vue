@@ -164,7 +164,7 @@
         </div>
       </div>
     </div>
-    <audio src="/sounds/quite-impressed.mp3" id="draft-notification-sound"></audio>
+    <audio src="/sounds/draft-notification.mp3" id="draft-notification-sound"></audio>
   </div>
 </template>
 
