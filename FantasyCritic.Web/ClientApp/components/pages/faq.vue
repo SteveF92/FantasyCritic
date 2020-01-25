@@ -107,8 +107,8 @@
       <faqCollapse>
         <div slot="question">How many games should I allow per team?</div>
         <div slot="answer">
-          The league creation page will guide you through this, but you should shoot for about 50 games in your whole league. This means that bigger leagues should probably
-          have smaller roster sizes, but that’s up to you.
+          The league creation page will guide you through this. The answer will vary depending on how many people will be in your league and your players' familiarity with
+          the site and games as a whole.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -289,6 +289,12 @@
         <div slot="answer">
           Games are dropped in similar way to the way games are bid on. Drops are requested, and then those drops are processed on Sunday night at 8PM Eastern Time. The reason for this is to make sure that someone can't drop a game
           that releases and gets a bad score before my database recognizes that the game has been reviewed. Doing it this way allows us to confirm that all games being dropped have up to date information.
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">What happens if I drop a game that someone counter picked?</div>
+        <div slot="answer">
+          Your game is dropped, but the counterpick the other player has stays and is not affected.
         </div>
       </faqCollapse>
       <br />
