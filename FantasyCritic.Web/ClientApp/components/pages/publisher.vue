@@ -14,7 +14,12 @@
       <h4>
         <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>
       </h4>
-      <p>Budget: {{publisher.budget | money}}</p>
+      <ul>
+        <li>Budget: {{publisher.budget | money}}</li>
+        <li>Will Release Games Dropped: {{getDropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames)}}</li>
+        <li>Will Not Release Games Dropped: {{getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames)}}</li>
+        <li>Unrestricted Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
+      </ul>
       <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options"></playerGameTable>
     </div>
   </div>
@@ -64,6 +69,15 @@
                   this.leagueYear = response.data;
                 })
                 .catch(returnedError => (this.error = returnedError));
+            },
+            getDropStatus(dropped, droppable) {
+              if (!droppable) {
+                return 'N/A';
+              }
+              if (droppable === -1) {
+                return dropped + '/' + '\u221E';
+              }
+              return dropped + '/' + droppable;
             }
         },
         mounted() {

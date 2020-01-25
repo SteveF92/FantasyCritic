@@ -45,6 +45,13 @@ namespace FantasyCritic.Web.Models.Responses
             UserIsInLeague = userIsInLeague;
             PublicLeague = publisher.LeagueYear.Options.PublicLeague;
             OutstandingInvite = outstandingInvite;
+
+            FreeGamesDropped = publisher.FreeGamesDropped;
+            WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
+            WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
+            FreeDroppableGames = publisher.LeagueYear.Options.FreeDroppableGames;
+            WillNotReleaseDroppableGames = publisher.LeagueYear.Options.WillNotReleaseDroppableGames;
+            WillReleaseDroppableGames = publisher.LeagueYear.Options.WillReleaseDroppableGames;
         }
 
         public Guid PublisherID { get; }
@@ -63,5 +70,12 @@ namespace FantasyCritic.Web.Models.Responses
         public bool UserIsInLeague { get; }
         public bool PublicLeague { get; }
         public bool OutstandingInvite { get; }
+
+        public int FreeGamesDropped { get; }
+        public int WillNotReleaseGamesDropped { get; }
+        public int WillReleaseGamesDropped { get; }
+        public int FreeDroppableGames { get; }
+        public int WillNotReleaseDroppableGames { get; }
+        public int WillReleaseDroppableGames { get; }
     }
 }
