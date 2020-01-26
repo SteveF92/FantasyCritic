@@ -24,10 +24,13 @@
       </template>
       <template slot="publisher" slot-scope="data">
         <span v-if="data.item.publisher">
-          <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: data.item.publisher.publisherID }}">{{ data.item.publisher.publisherName }}</router-link>
-          <span v-if="showRemovePublisher(data.item.publisher)">
-            <b-button variant="danger" size="sm" v-on:click="removePublisher(data.item.publisher)">Remove Publisher</b-button>
+            <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: data.item.publisher.publisherID }}">
+              {{ data.item.publisher.publisherName }}
+            </router-link>
+            <span class="publisher-badge badge badge-pill badge-primary badge-info" v-show="data.item.publisher.autoDraft">Auto Draft</span>
           </span>
+        <span v-if="showRemovePublisher(data.item.publisher)">
+          <b-button variant="danger" size="sm" v-on:click="removePublisher(data.item.publisher)">Remove Publisher</b-button>
         </span>
         <span v-if="data.item.user && !data.item.publisher">
           &lt;Publisher Not Created&gt;
@@ -217,10 +220,11 @@
   }
 
   .publisher-name {
-      display: block;
-      word-wrap: break-word;
-      max-width: 300px;
-    }
+    display: inline-block;
+    word-wrap: break-word;
+    max-width: 300px;
+  }
+
   @media only screen and (min-width: 1550px) {
     .publisher-name {
       max-width: 650px;
