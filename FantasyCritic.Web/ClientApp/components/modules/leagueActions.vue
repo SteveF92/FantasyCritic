@@ -144,7 +144,7 @@
         <invitePlayerForm :league="league" v-on:playerInvited="playerInvited" v-on:linkCopied="linkCopied"></invitePlayerForm>
         <manageActivePlayersForm :league="league" :leagueYear="leagueYear" v-on:activePlayersEdited="activePlayersEdited"></manageActivePlayersForm>
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
-        <editAutoDraftForm :publisher="leagueYear.userPublisher"></editAutoDraftForm>
+        <editAutoDraftForm :publisher="leagueYear.userPublisher" v-on:autoDraftSet="autoDraftSet"></editAutoDraftForm>
         <managerDraftGameForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
         <managerDraftCounterPickForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :availableCounterPicks="leagueYear.availableCounterPicks"
                                      :nextPublisherUp="nextPublisherUp" v-on:counterPickDrafted="managerCounterPickDrafted"></managerDraftCounterPickForm>
@@ -463,6 +463,17 @@
       gameEligiblityReset(gameInfo) {
         let actionInfo = {
           message: gameInfo.gameName + "'s eligibility was reset to normal.",
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      autoDraftSet(autoDraftInfo) {
+        let autoDraftStatus = "off.";
+        if (autoDraftInfo.autoDraft) {
+          autoDraftStatus = "on."
+        }
+        let actionInfo = {
+          message: "Auto draft set to " + autoDraftStatus,
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
