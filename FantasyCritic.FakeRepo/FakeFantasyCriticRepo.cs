@@ -120,6 +120,11 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult<IReadOnlyList<LeagueInvite>>(new List<LeagueInvite>());
         }
 
+        public Task SetAutoDraft(Publisher publisher, bool autoDraft)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league)
         {
             return Task.FromResult<IReadOnlyList<LeagueInvite>>(new List<LeagueInvite>());

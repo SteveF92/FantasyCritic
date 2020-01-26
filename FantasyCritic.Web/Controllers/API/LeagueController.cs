@@ -509,7 +509,32 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            await _fantasyCriticService.ChangePublisherName(publisher.Value, request.PublisherName);
+            await _publisherService.ChangePublisherName(publisher.Value, request.PublisherName);
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetAutoDraft([FromBody] SetAutoDraftRequest request)
+        {
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
+            if (!userIsInLeague)
+            {
+                return Forbid();
+            }
+
+            if (publisher.Value.User.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            await _publisherService.SetAutoDraft(publisher.Value, request.AutoDraft);
             return Ok();
         }
 

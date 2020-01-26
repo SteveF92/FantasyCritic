@@ -406,6 +406,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task SetAutoDraft(Publisher publisher, bool autoDraft)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tbl_league_publisher SET AutoDraft = @autoDraft where PublisherID = @publisherID;",
+                    new { publisherID = publisher.PublisherID, autoDraft });
+            }
+        }
+
         public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
         {
             using (var connection = new MySqlConnection(_connectionString))

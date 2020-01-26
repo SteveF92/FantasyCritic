@@ -430,11 +430,6 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.SaveProcessedDropResults(results);
         }
 
-        public Task ChangePublisherName(Publisher publisher, string publisherName)
-        {
-            return _fantasyCriticRepo.ChangePublisherName(publisher, publisherName);
-        }
-
         public Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
         {
             return _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague);

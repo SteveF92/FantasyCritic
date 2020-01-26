@@ -39,6 +39,16 @@ namespace FantasyCritic.Lib.Services
             return publisher;
         }
 
+        public Task ChangePublisherName(Publisher publisher, string publisherName)
+        {
+            return _fantasyCriticRepo.ChangePublisherName(publisher, publisherName);
+        }
+
+        public Task SetAutoDraft(Publisher publisher, bool autoDraft)
+        {
+            return _fantasyCriticRepo.SetAutoDraft(publisher, autoDraft);
+        }
+
         public async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear)
         {
             var users = await _leagueMemberService.GetUsersInLeague(leagueYear.League);
