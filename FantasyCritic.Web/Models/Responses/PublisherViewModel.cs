@@ -27,6 +27,7 @@ namespace FantasyCritic.Web.Models.Responses
             PlayerName = publisher.User.DisplayName;
             Year = publisher.LeagueYear.Year;
             DraftPosition = publisher.DraftPosition;
+            AutoDraft = publisher.AutoDraft;
             Games = publisher.PublisherGames
                 .OrderBy(x => x.Timestamp)
                 .Select(x => new PublisherGameViewModel(x, clock, publisher.LeagueYear.Options.ScoringSystem, systemWideValues))
@@ -61,6 +62,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string PlayerName { get; }
         public int Year { get; }
         public int DraftPosition { get; }
+        public bool AutoDraft { get; }
         public IReadOnlyList<PublisherGameViewModel> Games { get; }
         public decimal? AverageCriticScore { get; }
         public decimal TotalFantasyPoints { get; }

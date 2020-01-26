@@ -48,11 +48,11 @@
             <li class="fake-link action" v-b-modal="'gameQueueForm'" v-show="!leagueYear.playStatus.draftFinished">
               Draft Watchlist
             </li>
-            <li class="fake-link action" v-b-modal="'editAudoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
-              Set Auto Draft
-            </li>
             <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
               Change Publisher Name
+            </li>
+            <li class="fake-link action" v-b-modal="'editAutoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
+              Set Auto Draft
             </li>
           </ul>
         </div>
@@ -144,7 +144,7 @@
         <invitePlayerForm :league="league" v-on:playerInvited="playerInvited" v-on:linkCopied="linkCopied"></invitePlayerForm>
         <manageActivePlayersForm :league="league" :leagueYear="leagueYear" v-on:activePlayersEdited="activePlayersEdited"></manageActivePlayersForm>
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
-        <editAudoDraftForm :publisher="leagueYear.userPublisher"></editAudoDraftForm>
+        <editAutoDraftForm :publisher="leagueYear.userPublisher"></editAutoDraftForm>
         <managerDraftGameForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
         <managerDraftCounterPickForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :availableCounterPicks="leagueYear.availableCounterPicks"
                                      :nextPublisherUp="nextPublisherUp" v-on:counterPickDrafted="managerCounterPickDrafted"></managerDraftCounterPickForm>
@@ -175,7 +175,7 @@
   import ChangePublisherNameForm from "components/modules/modals/changePublisherNameForm";
   import PlayerDraftGameForm from "components/modules/modals/playerDraftGameForm";
   import PlayerDraftCounterPickForm from "components/modules/modals/playerDraftCounterPickForm";
-  import EditAudoDraftForm from "components/modules/modals/editAudoDraftForm";
+  import EditAutoDraftForm from "components/modules/modals/editAutoDraftForm";
 
   import ManagerClaimGameForm from "components/modules/modals/managerClaimGameForm";
   import ManagerDraftGameForm from "components/modules/modals/managerDraftGameForm";
@@ -211,7 +211,7 @@
       ChangePublisherNameForm,
       PlayerDraftGameForm,
       PlayerDraftCounterPickForm,
-      EditAudoDraftForm,
+      EditAutoDraftForm,
       ManagerClaimGameForm,
       ManagerDraftGameForm,
       ManagerAssociateGameForm,
