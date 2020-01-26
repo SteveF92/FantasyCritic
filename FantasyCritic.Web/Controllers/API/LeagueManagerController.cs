@@ -17,6 +17,7 @@ using FantasyCritic.Web.Extensions;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
+using FantasyCritic.Web.Models.Requests.League;
 using FantasyCritic.Web.Models.Requests.LeagueManager;
 using FantasyCritic.Web.Models.Requests.Shared;
 using FantasyCritic.Web.Models.Responses;
@@ -618,6 +619,31 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest(result.Error);
             }
 
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetAutoDraft([FromBody] SetAutoDraftRequest request)
+        {
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (publisher.Value.LeagueYear.League.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
+            if (!userIsInLeague)
+            {
+                return Forbid();
+            }
+
+            await _publisherService.SetAutoDraft(publisher.Value, request.AutoDraft);
             return Ok();
         }
 
