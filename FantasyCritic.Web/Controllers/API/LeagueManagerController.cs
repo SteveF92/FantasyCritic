@@ -44,9 +44,11 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly IClock _clock;
         private readonly IHubContext<UpdateHub> _hubContext;
         private readonly IEmailSender _emailSender;
+        private readonly GameAcquisitionService _gameAcquisitionService;
 
         public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
-            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext, IEmailSender emailSender)
+            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext, IEmailSender emailSender,
+            GameAcquisitionService gameAcquisitionService)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
@@ -57,6 +59,7 @@ namespace FantasyCritic.Web.Controllers.API
             _clock = clock;
             _hubContext = hubContext;
             _emailSender = emailSender;
+            _gameAcquisitionService = gameAcquisitionService;
         }
 
         [HttpPost]
@@ -731,7 +734,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, null, null);
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, false, publishersInLeague);
+            ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, false, publishersInLeague);
             var viewModel = new ManagerClaimResultViewModel(result);
 
             await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
@@ -802,7 +805,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             AssociateGameDomainRequest domainRequest = new AssociateGameDomainRequest(publisher.Value, publisherGame, masterGame.Value, request.ManagerOverride);
 
-            ClaimResult result = await _fantasyCriticService.AssociateGame(domainRequest);
+            ClaimResult result = await _gameAcquisitionService.AssociateGame(domainRequest);
             var viewModel = new ManagerClaimResultViewModel(result);
 
             await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
@@ -1182,7 +1185,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition);
 
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, true, true, publishersInLeague);
+            ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, true, publishersInLeague);
             bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value, publishersInLeague, result.Success && !request.CounterPick, result.Success && request.CounterPick);
             var viewModel = new ManagerClaimResultViewModel(result);
             await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);

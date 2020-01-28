@@ -44,10 +44,11 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly IClock _clock;
         private readonly IHubContext<UpdateHub> _hubContext;
         private readonly ILogger<LeagueController> _logger;
+        private readonly GameAcquisitionService _gameAcquisitionService;
 
         public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
             LeagueMemberService leagueMemberService, DraftService draftService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock,
-            IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger)
+            IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
@@ -59,6 +60,7 @@ namespace FantasyCritic.Web.Controllers.API
             _clock = clock;
             _hubContext = hubContext;
             _logger = logger;
+            _gameAcquisitionService = gameAcquisitionService;
         }
 
         public async Task<IActionResult> LeagueOptions()
@@ -618,7 +620,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That master game does not exist.");
             }
             
-            ClaimResult bidResult = await _fantasyCriticService.MakePickupBid(publisher.Value, masterGame.Value, request.BidAmount);
+            ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, request.BidAmount);
             var viewModel = new PickupBidResultViewModel(bidResult);
 
             return Ok(viewModel);
@@ -638,7 +640,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var maybeBid = await _fantasyCriticService.GetPickupBid(request.BidID);
+            var maybeBid = await _gameAcquisitionService.GetPickupBid(request.BidID);
             if (maybeBid.HasNoValue)
             {
                 return BadRequest("That bid does not exist.");
@@ -654,7 +656,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             PickupBid bid = maybeBid.Value;
-            Result result = await _fantasyCriticService.RemovePickupBid(bid);
+            Result result = await _gameAcquisitionService.RemovePickupBid(bid);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);
@@ -678,7 +680,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var bids = await _fantasyCriticService.GetActiveAcquistitionBids(publisher.Value);
+            var bids = await _gameAcquisitionService.GetActiveAcquistitionBids(publisher.Value);
 
             var viewModels = bids.Select(x => new PickupBidViewModel(x, _clock)).OrderBy(x => x.Priority);
             return Ok(viewModels);
@@ -699,7 +701,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var activeBids = await _fantasyCriticService.GetActiveAcquistitionBids(publisher.Value);
+            var activeBids = await _gameAcquisitionService.GetActiveAcquistitionBids(publisher.Value);
 
             if (activeBids.Count != request.BidPriorities.Count)
             {
@@ -807,7 +809,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, masterGame, publisherPosition, overallPosition);
 
-            ClaimResult result = await _fantasyCriticService.ClaimGame(domainRequest, false, true, publishersInLeague);
+            ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, false, true, publishersInLeague);
             bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value, publishersInLeague, result.Success && !request.CounterPick, result.Success && request.CounterPick);
             var viewModel = new PlayerClaimResultViewModel(result);
             await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
@@ -1042,7 +1044,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That publisher does not have that game.");
             }
 
-            DropResult dropResult = await _fantasyCriticService.MakeDropRequest(publisher.Value, publisherGame);
+            DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(publisher.Value, publisherGame);
             var viewModel = new DropGameResultViewModel(dropResult);
 
             return Ok(viewModel);
@@ -1062,7 +1064,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var dropRequest = await _fantasyCriticService.GetDropRequest(request.DropRequestID);
+            var dropRequest = await _gameAcquisitionService.GetDropRequest(request.DropRequestID);
             if (dropRequest.HasNoValue)
             {
                 return BadRequest("That drop request does not exist.");
@@ -1077,7 +1079,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            Result result = await _fantasyCriticService.RemoveDropRequest(dropRequest.Value);
+            Result result = await _gameAcquisitionService.RemoveDropRequest(dropRequest.Value);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);
@@ -1101,7 +1103,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var dropRequests = await _fantasyCriticService.GetActiveDropRequests(publisher.Value);
+            var dropRequests = await _gameAcquisitionService.GetActiveDropRequests(publisher.Value);
 
             var viewModels = dropRequests.Select(x => new DropGameRequestViewModel(x, _clock));
             return Ok(viewModels);
@@ -1201,7 +1203,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That master game does not exist.");
             }
 
-            ClaimResult bidResult = await _fantasyCriticService.QueueGame(publisher.Value, masterGame.Value);
+            ClaimResult bidResult = await _gameAcquisitionService.QueueGame(publisher.Value, masterGame.Value);
             var viewModel = new QueueResultViewModel(bidResult);
 
             return Ok(viewModel);
@@ -1242,7 +1244,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            await _fantasyCriticService.RemoveQueuedGame(thisQueuedGame);
+            await _gameAcquisitionService.RemoveQueuedGame(thisQueuedGame);
 
             return Ok();
         }

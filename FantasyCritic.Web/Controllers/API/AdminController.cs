@@ -34,8 +34,10 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly IOpenCriticService _openCriticService;
         private readonly IClock _clock;
         private readonly ILogger _logger;
+        private readonly GameAcquisitionService _gameAcquisitionService;
 
-        public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService, IClock clock, InterLeagueService interLeagueService, ILogger<AdminController> logger)
+        public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService,
+            IClock clock, InterLeagueService interLeagueService, ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService)
         {
             _adminService = adminService;
             _fantasyCriticService = fantasyCriticService;
@@ -43,6 +45,7 @@ namespace FantasyCritic.Web.Controllers.API
             _clock = clock;
             _interLeagueService = interLeagueService;
             _logger = logger;
+            _gameAcquisitionService = gameAcquisitionService;
         }
 
         [HttpPost]
@@ -169,8 +172,8 @@ namespace FantasyCritic.Web.Controllers.API
             List<MasterGame> masterGames = new List<MasterGame>();
             foreach (var supportedYear in supportedYears)
             {
-                var allBids = await _fantasyCriticService.GetActiveAcquistitionBids(supportedYear);
-                var allDrops = await _fantasyCriticService.GetActiveDropRequests(supportedYear);
+                var allBids = await _gameAcquisitionService.GetActiveAcquistitionBids(supportedYear);
+                var allDrops = await _gameAcquisitionService.GetActiveDropRequests(supportedYear);
                 masterGames.AddRange(allBids.SelectMany(x => x.Value.Select(y => y.MasterGame)));
                 masterGames.AddRange(allDrops.SelectMany(x => x.Value.Select(y => y.MasterGame)));
             }
