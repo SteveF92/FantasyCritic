@@ -994,7 +994,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            await _draftService.StartDraft(leagueYear.Value);
+            await _draftService.StartDraft(leagueYear.Value, publishersInLeague);
             await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
@@ -1185,12 +1185,11 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, publisherPosition, overallPosition);
 
-            ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, true, publishersInLeague);
-            bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value, publishersInLeague, result.Success && !request.CounterPick, result.Success && request.CounterPick);
-            var viewModel = new ManagerClaimResultViewModel(result);
+            var result = await _draftService.DraftGame(domainRequest, true, leagueYear.Value, publishersInLeague);
+            var viewModel = new ManagerClaimResultViewModel(result.Result);
             await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
-            if (draftCompleted)
+            if (result.DraftComplete)
             {
                 await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
             }

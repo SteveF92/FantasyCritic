@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
@@ -104,9 +105,10 @@ namespace FantasyCritic.Lib.Services
             return true;
         }
 
-        public Task StartDraft(LeagueYear leagueYear)
+        public async Task StartDraft(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
         {
-            return _fantasyCriticRepo.StartDraft(leagueYear);
+            await _fantasyCriticRepo.StartDraft(leagueYear);
+            await AutoDraftForLeague(leagueYear, publishers, 0, 0);
         }
 
         public Task SetDraftPause(LeagueYear leagueYear, bool pause)
@@ -204,33 +206,56 @@ namespace FantasyCritic.Lib.Services
             return Maybe<Publisher>.None;
         }
 
-        //public async Task AutoDraftForLeague(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear)
-        //{
-        //    var nextPublisher = GetNextDraftPublisher(leagueYear, publishersInLeagueForYear);
-        //    if (nextPublisher.HasNoValue)
-        //    {
-        //        return;
-        //    }
-        //    if (!nextPublisher.Value.AutoDraft)
-        //    {
-        //        return;
-        //    }
+        public async Task<(ClaimResult Result, bool DraftComplete)> DraftGame(ClaimGameDomainRequest request, bool managerAction, LeagueYear leagueYear, IReadOnlyList<Publisher> publishersForYear)
+        {
+            var result = await _gameAcquisitionService.ClaimGame(request, managerAction, true, publishersForYear);
+            int standardGamesAdded = 0;
+            if (result.Success && !request.CounterPick)
+            {
+                standardGamesAdded = 1;
+            }
+            int counterPicksAdded = 0;
+            if (result.Success && request.CounterPick)
+            {
+                counterPicksAdded = 1;
+            }
 
-        //    var draftPhase = await GetDraftPhase(leagueYear);
-        //    if (draftPhase.Equals(DraftPhase.Complete))
-        //    {
-        //        return;
-        //    }
-        //    if (draftPhase.Equals(DraftPhase.StandardGames))
-        //    {
-        //        var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
-        //        var availableGames = await _gameSearchingService.GetTopAvailableGames(nextPublisher.Value, publishersInLeagueForYear, leagueYear.Year);
-        //    }
-        //    if (draftPhase.Equals(DraftPhase.CounterPicks))
-        //    {
+            await AutoDraftForLeague(leagueYear, publishersForYear, standardGamesAdded, counterPicksAdded);
+            var draftComplete = await CompleteDraft(leagueYear, publishersForYear, standardGamesAdded, counterPicksAdded);
+            return (result, draftComplete);
+        }
 
-        //    }
-        //}
+        public async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear,
+            int standardGamesAdded, int counterPicksAdded)
+        {
+            var nextPublisher = GetNextDraftPublisher(leagueYear, publishersInLeagueForYear);
+            if (nextPublisher.HasNoValue)
+            {
+                return (standardGamesAdded, counterPicksAdded);
+            }
+            if (!nextPublisher.Value.AutoDraft)
+            {
+                return (standardGamesAdded, counterPicksAdded);
+            }
+
+            var updatedPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
+            var draftPhase = GetDraftPhase(leagueYear, updatedPublishers);
+            if (draftPhase.Equals(DraftPhase.Complete))
+            {
+                return (standardGamesAdded, counterPicksAdded);
+            }
+            if (draftPhase.Equals(DraftPhase.StandardGames))
+            {
+                var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
+                var availableGames = await _gameSearchingService.GetTopAvailableGames(nextPublisher.Value, updatedPublishers, leagueYear.Year);
+            }
+            if (draftPhase.Equals(DraftPhase.CounterPicks))
+            {
+
+            }
+
+            return await AutoDraftForLeague(leagueYear, publishersInLeagueForYear, standardGamesAdded, counterPicksAdded);
+        }
 
         public DraftPhase GetDraftPhase(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
         {
@@ -274,14 +299,12 @@ namespace FantasyCritic.Lib.Services
             return availableCounterPicks;
         }
 
-        public async Task<bool> CompleteDraft(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers, bool newStandardGameAdded, bool newCounterPickAdded)
+        private async Task<bool> CompleteDraft(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers, int standardGamesAdded, int counterpicksAdded)
         {
             int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
             int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
-            if (newStandardGameAdded)
-            {
-                standardGamesDrafted++;
-            }
+            standardGamesDrafted += standardGamesAdded;
+
             if (standardGamesDrafted < numberOfStandardGamesToDraft)
             {
                 return false;
@@ -289,10 +312,8 @@ namespace FantasyCritic.Lib.Services
 
             int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
             int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
-            if (newCounterPickAdded)
-            {
-                counterPicksDrafted++;
-            }
+            counterPicksDrafted += counterpicksAdded;
+
             if (counterPicksDrafted < numberOfCounterPicksToDraft)
             {
                 return false;

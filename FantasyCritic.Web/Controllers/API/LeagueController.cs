@@ -809,12 +809,11 @@ namespace FantasyCritic.Web.Controllers.API
 
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, masterGame, publisherPosition, overallPosition);
 
-            ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, false, true, publishersInLeague);
-            bool draftCompleted = await _draftService.CompleteDraft(leagueYear.Value, publishersInLeague, result.Success && !request.CounterPick, result.Success && request.CounterPick);
-            var viewModel = new PlayerClaimResultViewModel(result);
+            var draftResult = await _draftService.DraftGame(domainRequest, false, leagueYear.Value, publishersInLeague);
+            var viewModel = new PlayerClaimResultViewModel(draftResult.Result);
             await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
-            if (draftCompleted)
+            if (draftResult.DraftComplete)
             {
                 await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
             }
