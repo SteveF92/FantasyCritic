@@ -245,7 +245,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear.Value, publishersInLeague, activeUsers);
             Maybe<Publisher> nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
-            DraftPhase draftPhase = _draftService.GetDraftPhase(leagueYear.Value, publishersInLeague);
+            var draftStatus = _draftService.GetDraftStatus(leagueYear.Value, publishersInLeague);
+            DraftPhase draftPhase = draftStatus.DraftPhase;
 
             Maybe<Publisher> userPublisher = Maybe<Publisher>.None;
             if (userIsInLeague)
@@ -785,14 +786,10 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
             }
 
-            int? publisherPosition = null;
-            int? overallPosition = null;
-            var draftPhase = _draftService.GetDraftPhase(leagueYear.Value, publishersInLeague);
+            var draftStatus = _draftService.GetDraftStatus(leagueYear.Value, publishersInLeague);
+            DraftPhase draftPhase = draftStatus.DraftPhase;
             if (draftPhase.Equals(DraftPhase.StandardGames))
             {
-                publisherPosition = publisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
-                overallPosition = publishersInLeague.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
-
                 if (request.CounterPick)
                 {
                     return BadRequest("Not drafting counterPicks now.");
@@ -807,7 +804,8 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, masterGame, publisherPosition, overallPosition);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, masterGame,
+                draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 
             var draftResult = await _draftService.DraftGame(domainRequest, false, leagueYear.Value, publishersInLeague);
             var viewModel = new PlayerClaimResultViewModel(draftResult.Result);

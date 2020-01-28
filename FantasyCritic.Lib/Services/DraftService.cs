@@ -154,7 +154,8 @@ namespace FantasyCritic.Lib.Services
                 return Maybe<Publisher>.None;
             }
 
-            DraftPhase phase = GetDraftPhase(leagueYear, publishersInLeagueForYear);
+            var draftStatus = GetDraftStatus(leagueYear, publishersInLeagueForYear);
+            var phase = draftStatus.DraftPhase;
             if (phase.Equals(DraftPhase.StandardGames))
             {
                 var publishersWithLowestNumberOfGames = publishersInLeagueForYear.MinBy(x => x.PublisherGames.Count(y => !y.CounterPick));
@@ -220,7 +221,7 @@ namespace FantasyCritic.Lib.Services
                 counterPicksAdded = 1;
             }
 
-            await AutoDraftForLeague(leagueYear, publishersForYear, standardGamesAdded, counterPicksAdded);
+            //var autoDraftResult = await AutoDraftForLeague(leagueYear, publishersForYear, standardGamesAdded, counterPicksAdded);
             var draftComplete = await CompleteDraft(leagueYear, publishersForYear, standardGamesAdded, counterPicksAdded);
             return (result, draftComplete);
         }
@@ -239,41 +240,74 @@ namespace FantasyCritic.Lib.Services
             }
 
             var updatedPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
-            var draftPhase = GetDraftPhase(leagueYear, updatedPublishers);
-            if (draftPhase.Equals(DraftPhase.Complete))
+            var draftStatus = GetDraftStatus(leagueYear, updatedPublishers);
+            if (draftStatus.DraftPhase.Equals(DraftPhase.Complete))
             {
                 return (standardGamesAdded, counterPicksAdded);
             }
-            if (draftPhase.Equals(DraftPhase.StandardGames))
+            if (draftStatus.DraftPhase.Equals(DraftPhase.StandardGames))
             {
                 var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
                 var availableGames = await _gameSearchingService.GetTopAvailableGames(nextPublisher.Value, updatedPublishers, leagueYear.Year);
-            }
-            if (draftPhase.Equals(DraftPhase.CounterPicks))
-            {
 
+                var gamesToTake = publisherWatchList.OrderByDescending(x => x.Rank).Select(x => x.MasterGame)
+                    .Concat(availableGames.Select(x => x.MasterGame.MasterGame));
+
+                foreach (var possibleGame in gamesToTake)
+                {
+                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.GameName, false, false, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers);
+                    if (autoDraftResult.Success)
+                    {
+                        standardGamesAdded++;
+                        break;
+                    }
+                }
+            }
+            else if (draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks))
+            {
+                IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year, true);
+                var orderedByCounterPick = masterGames.OrderByDescending(x => x.PercentCounterPick);
+                foreach (var possibleGame in orderedByCounterPick)
+                {
+                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.MasterGame.GameName, true, false, possibleGame.MasterGame, 
+                        draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers);
+                    if (autoDraftResult.Success)
+                    {
+                        standardGamesAdded++;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                return (standardGamesAdded, counterPicksAdded);
             }
 
             return await AutoDraftForLeague(leagueYear, publishersInLeagueForYear, standardGamesAdded, counterPicksAdded);
         }
 
-        public DraftPhase GetDraftPhase(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+        public (DraftPhase DraftPhase, int? DraftPosition, int? OverallDraftPosition) GetDraftStatus(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
         {
             int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
             int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
             if (standardGamesDrafted < numberOfStandardGamesToDraft)
             {
-                return DraftPhase.StandardGames;
+                var nextPublisher = GetNextDraftPublisher(leagueYear, publishers);
+                var publisherPosition = nextPublisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
+                var overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
+                return (DraftPhase.StandardGames, publisherPosition, overallPosition);
             }
 
             int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
             int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
             if (counterPicksDrafted < numberOfCounterPicksToDraft)
             {
-                return DraftPhase.CounterPicks;
+                return (DraftPhase.CounterPicks, null, null);
             }
 
-            return DraftPhase.Complete;
+            return (DraftPhase.Complete, null, null);
         }
 
         public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear)
