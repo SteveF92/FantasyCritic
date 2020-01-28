@@ -623,27 +623,53 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> SetAutoDraft([FromBody] SetAutoDraftRequest request)
+        public async Task<IActionResult> SetAutoDraft([FromBody] ManagerSetAutoDraftRequest request)
         {
-            var publisher = await _publisherService.GetPublisher(request.PublisherID);
-            if (publisher.HasNoValue)
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (publisher.Value.LeagueYear.League.LeagueManager.UserID != currentUser.UserID)
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
                 return Forbid();
             }
 
-            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
-            if (!userIsInLeague)
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(request.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
             {
-                return Forbid();
+                return BadRequest();
             }
 
-            await _publisherService.SetAutoDraft(publisher.Value, request.AutoDraft);
+            var publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+
+            var publisherGuids = publishers.Select(x => x.PublisherID).ToHashSet();
+            foreach (var requestPublisher in request.PublisherAutoDraft)
+            {
+                if (!publisherGuids.Contains(requestPublisher.Key))
+                {
+                    return Forbid();
+                }
+            }
+
+            if (publishers.Any(publisher => !request.PublisherAutoDraft.ContainsKey(publisher.PublisherID)))
+            {
+                return BadRequest();
+            }
+
+            foreach (var publisher in publishers)
+            {
+                await _publisherService.SetAutoDraft(publisher, request.PublisherAutoDraft[publisher.PublisherID]);
+            }
+
             return Ok();
         }
 
