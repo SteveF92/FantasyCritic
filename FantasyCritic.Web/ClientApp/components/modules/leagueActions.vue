@@ -48,11 +48,11 @@
             <li class="fake-link action" v-b-modal="'gameQueueForm'">
               Watchlist
             </li>
+            <li class="fake-link action" v-b-modal="'editAudoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
+              Set Auto Draft
+            </li>
             <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
               Change Publisher Name
-            </li>
-            <li class="fake-link action" v-b-modal="'editAutoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
-              Set Auto Draft
             </li>
           </ul>
         </div>
@@ -94,6 +94,9 @@
             </li>
             <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">
               Edit Draft Order
+            </li>
+            <li class="fake-link action" v-b-modal="'managerSetAutoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
+              Edit Player Auto Draft
             </li>
             <li class="fake-link action" v-b-modal="'claimGameForm'" v-show="leagueYear.playStatus.draftFinished">
               Add Publisher Game
@@ -153,6 +156,7 @@
         <resetDraftModal v-on:resetDraft="resetDraft"></resetDraftModal>
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
+        <managerSetAutoDraftForm :leagueYear="leagueYear"></managerSetAutoDraftForm>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
@@ -176,6 +180,7 @@
   import PlayerDraftGameForm from "components/modules/modals/playerDraftGameForm";
   import PlayerDraftCounterPickForm from "components/modules/modals/playerDraftCounterPickForm";
   import EditAutoDraftForm from "components/modules/modals/editAutoDraftForm";
+  import ManagerSetAutoDraftForm from "components/modules/modals/managerSetAutoDraftForm";
 
   import ManagerClaimGameForm from "components/modules/modals/managerClaimGameForm";
   import ManagerDraftGameForm from "components/modules/modals/managerDraftGameForm";
@@ -212,11 +217,13 @@
       PlayerDraftGameForm,
       PlayerDraftCounterPickForm,
       EditAutoDraftForm,
-      ManagerClaimGameForm,
-      ManagerDraftGameForm,
-      ManagerAssociateGameForm,
-      InvitePlayerForm,
       ManageActivePlayersForm,
+      ManagerAssociateGameForm,
+      ManagerClaimGameForm,
+      ManagerDraftCounterPickForm,
+      ManagerDraftGameForm,
+      ManagerSetAutoDraftForm,
+      InvitePlayerForm,
       RemoveGameForm,
       ManuallyScoreGameForm,
       ChangeLeagueOptionsForm,
@@ -224,7 +231,6 @@
       SetPauseModal,
       ResetDraftModal,
       UndoLastDraftActionModal,
-      ManagerDraftCounterPickForm,
       AddNewLeagueYearForm,
       LeagueOptionsModal,
       ManageEligibilityOverridesModal
