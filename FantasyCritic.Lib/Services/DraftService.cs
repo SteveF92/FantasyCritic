@@ -154,8 +154,7 @@ namespace FantasyCritic.Lib.Services
                 return Maybe<Publisher>.None;
             }
 
-            var draftStatus = GetDraftStatus(leagueYear, publishersInLeagueForYear);
-            var phase = draftStatus.DraftPhase;
+            var phase = GetDraftPhase(leagueYear, publishersInLeagueForYear);
             if (phase.Equals(DraftPhase.StandardGames))
             {
                 var publishersWithLowestNumberOfGames = publishersInLeagueForYear.MinBy(x => x.PublisherGames.Count(y => !y.CounterPick));
@@ -240,12 +239,13 @@ namespace FantasyCritic.Lib.Services
             }
 
             var updatedPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
+            var draftPhase = GetDraftPhase(leagueYear, updatedPublishers);
             var draftStatus = GetDraftStatus(leagueYear, updatedPublishers);
-            if (draftStatus.DraftPhase.Equals(DraftPhase.Complete))
+            if (draftPhase.Equals(DraftPhase.Complete))
             {
                 return (standardGamesAdded, counterPicksAdded);
             }
-            if (draftStatus.DraftPhase.Equals(DraftPhase.StandardGames))
+            if (draftPhase.Equals(DraftPhase.StandardGames))
             {
                 var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
                 var availableGames = await _gameSearchingService.GetTopAvailableGames(nextPublisher.Value, updatedPublishers, leagueYear.Year);
@@ -264,7 +264,7 @@ namespace FantasyCritic.Lib.Services
                     }
                 }
             }
-            else if (draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks))
+            else if (draftPhase.Equals(DraftPhase.CounterPicks))
             {
                 IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year, true);
                 var orderedByCounterPick = masterGames.OrderByDescending(x => x.PercentCounterPick);
@@ -288,26 +288,35 @@ namespace FantasyCritic.Lib.Services
             return await AutoDraftForLeague(leagueYear, publishersInLeagueForYear, standardGamesAdded, counterPicksAdded);
         }
 
-        public (DraftPhase DraftPhase, int? DraftPosition, int? OverallDraftPosition) GetDraftStatus(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+        public DraftPhase GetDraftPhase(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
         {
             int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
             int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
             if (standardGamesDrafted < numberOfStandardGamesToDraft)
             {
-                var nextPublisher = GetNextDraftPublisher(leagueYear, publishers);
-                var publisherPosition = nextPublisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
-                var overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
-                return (DraftPhase.StandardGames, publisherPosition, overallPosition);
+                return DraftPhase.StandardGames;
             }
 
             int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
             int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
             if (counterPicksDrafted < numberOfCounterPicksToDraft)
             {
-                return (DraftPhase.CounterPicks, null, null);
+                return DraftPhase.CounterPicks;
             }
 
-            return (DraftPhase.Complete, null, null);
+            return DraftPhase.Complete;
+        }
+
+        public (int? DraftPosition, int? OverallDraftPosition) GetDraftStatus(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+        {
+            var nextPublisher = GetNextDraftPublisher(leagueYear, publishers);
+            if (nextPublisher.HasNoValue)
+            {
+                return (null, null);
+            }
+            var publisherPosition = nextPublisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
+            var overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
+            return (publisherPosition, overallPosition);
         }
 
         public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear)

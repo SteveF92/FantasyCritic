@@ -1160,8 +1160,8 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
             }
 
-            var draftStatus = _draftService.GetDraftStatus(leagueYear.Value, publishersInLeague);
-            if (draftStatus.DraftPhase.Equals(DraftPhase.StandardGames))
+            var draftPhase = _draftService.GetDraftPhase(leagueYear.Value, publishersInLeague);
+            if (draftPhase.Equals(DraftPhase.StandardGames))
             {
                 if (request.CounterPick)
                 {
@@ -1169,7 +1169,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            if (draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks))
+            if (draftPhase.Equals(DraftPhase.CounterPicks))
             {
                 if (!request.CounterPick)
                 {
@@ -1177,6 +1177,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
+            var draftStatus = _draftService.GetDraftStatus(leagueYear.Value, publishersInLeague);
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride,
                 masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 
