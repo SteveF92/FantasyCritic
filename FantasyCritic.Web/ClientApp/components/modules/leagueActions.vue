@@ -156,7 +156,7 @@
         <resetDraftModal v-on:resetDraft="resetDraft"></resetDraftModal>
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
-        <managerSetAutoDraftForm :leagueYear="leagueYear"></managerSetAutoDraftForm>
+        <managerSetAutoDraftForm v-on:publishersAutoDraftSet="publishersAutoDraftSet" :leagueYear="leagueYear"></managerSetAutoDraftForm>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
@@ -480,6 +480,13 @@
         }
         let actionInfo = {
           message: "Auto draft set to " + autoDraftStatus,
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      publishersAutoDraftSet() {
+        let actionInfo = {
+          message: 'Auto draft changed',
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
