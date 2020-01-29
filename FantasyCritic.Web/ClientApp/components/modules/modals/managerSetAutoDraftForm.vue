@@ -45,12 +45,9 @@ export default {
   },
   methods: {
     setAutoDraft() {
-      if (!(this.selected.length > 0)) return
-
-      const publisherAudoDraft = this.selected.map(publisherID => ({
-        publisherID,
-        autoDraft: true
-      }));
+      const publisherAudoDraft = this.leagueYear.publishers.reduce((target, prev) => ({
+        ...target, [prev.publisherID]: this.selected.includes(prev.publisherID)
+      }),{})
       const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
