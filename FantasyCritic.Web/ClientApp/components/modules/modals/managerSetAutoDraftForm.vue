@@ -45,6 +45,8 @@ export default {
   },
   methods: {
     setAutoDraft() {
+      if (!(this.selected.length > 0)) return
+
       const publisherAudoDraft = this.selected.map(publisherID => ({
         publisherID,
         autoDraft: true
@@ -57,7 +59,12 @@ export default {
       axios
         .post('/api/leagueManager/SetAutoDraft', model)
         .then(response => {
-          this.$refs.managerSetAutoDraftForm.hide()
+          this.$refs.managerSetAutoDraftForm.hide();
+          let actionInfo = {
+            autoDraft: this.isAutoDraft,
+            fetchLeagueYear: true
+          };
+          this.$emit('publishersAutoDraftSet');
         })
         .catch(e => {});
     }
