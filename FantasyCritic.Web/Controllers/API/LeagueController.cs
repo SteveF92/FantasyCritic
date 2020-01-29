@@ -537,6 +537,13 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _publisherService.SetAutoDraft(publisher.Value, request.AutoDraft);
+
+            var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(publisher.Value.LeagueYear);
+            if (draftComplete)
+            {
+                await _hubContext.Clients.Group(publisher.Value.LeagueYear.GetGroupName).SendAsync("DraftFinished", publisher.Value.LeagueYear);
+            }
+
             return Ok();
         }
 

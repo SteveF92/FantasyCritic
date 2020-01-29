@@ -672,6 +672,12 @@ namespace FantasyCritic.Web.Controllers.API
                 await _publisherService.SetAutoDraft(publisher, request.PublisherAutoDraft[publisher.PublisherID]);
             }
 
+            var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(leagueYear.Value);
+            if (draftComplete)
+            {
+                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
+            }
+
             return Ok();
         }
 
@@ -1043,6 +1049,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _draftService.ResetDraft(leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
 
             return Ok();
         }
