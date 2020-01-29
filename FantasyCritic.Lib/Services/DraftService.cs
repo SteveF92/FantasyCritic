@@ -105,10 +105,14 @@ namespace FantasyCritic.Lib.Services
             return true;
         }
 
-        public async Task StartDraft(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+        public async Task<bool> StartDraft(LeagueYear leagueYear)
         {
             await _fantasyCriticRepo.StartDraft(leagueYear);
-            await AutoDraftForLeague(leagueYear, publishers, 0, 0);
+            var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
+            var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear.Value, 0, 0);
+            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(updatedLeagueYear.Value);
+            var draftComplete = await CompleteDraft(leagueYear, publishersForYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
+            return draftComplete;
         }
 
         public Task SetDraftPause(LeagueYear leagueYear, bool pause)
@@ -220,15 +224,15 @@ namespace FantasyCritic.Lib.Services
                 counterPicksAdded = 1;
             }
 
-            //var autoDraftResult = await AutoDraftForLeague(leagueYear, publishersForYear, standardGamesAdded, counterPicksAdded);
-            var draftComplete = await CompleteDraft(leagueYear, publishersForYear, standardGamesAdded, counterPicksAdded);
+            var autoDraftResult = await AutoDraftForLeague(leagueYear, standardGamesAdded, counterPicksAdded);
+            var draftComplete = await CompleteDraft(leagueYear, publishersForYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
             return (result, draftComplete);
         }
 
-        public async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear,
-            int standardGamesAdded, int counterPicksAdded)
+        public async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
         {
-            var nextPublisher = GetNextDraftPublisher(leagueYear, publishersInLeagueForYear);
+            var updatedPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
+            var nextPublisher = GetNextDraftPublisher(leagueYear, updatedPublishers);
             if (nextPublisher.HasNoValue)
             {
                 return (standardGamesAdded, counterPicksAdded);
@@ -238,7 +242,6 @@ namespace FantasyCritic.Lib.Services
                 return (standardGamesAdded, counterPicksAdded);
             }
 
-            var updatedPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
             var draftPhase = GetDraftPhase(leagueYear, updatedPublishers);
             var draftStatus = GetDraftStatus(leagueYear, updatedPublishers);
             if (draftPhase.Equals(DraftPhase.Complete))
@@ -285,7 +288,8 @@ namespace FantasyCritic.Lib.Services
                 return (standardGamesAdded, counterPicksAdded);
             }
 
-            return await AutoDraftForLeague(leagueYear, publishersInLeagueForYear, standardGamesAdded, counterPicksAdded);
+            await Task.Delay(10);
+            return await AutoDraftForLeague(leagueYear, standardGamesAdded, counterPicksAdded);
         }
 
         public DraftPhase GetDraftPhase(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)

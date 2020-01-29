@@ -993,8 +993,13 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            await _draftService.StartDraft(leagueYear.Value, publishersInLeague);
+            var draftComplete = await _draftService.StartDraft(leagueYear.Value);
             await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+
+            if (draftComplete)
+            {
+                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
+            }
 
             return Ok();
         }
