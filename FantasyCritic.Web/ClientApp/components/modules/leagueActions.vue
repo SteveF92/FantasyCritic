@@ -48,7 +48,7 @@
             <li class="fake-link action" v-b-modal="'gameQueueForm'">
               Watchlist
             </li>
-            <li class="fake-link action" v-b-modal="'editAudoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
+            <li class="fake-link action" v-b-modal="'editAutoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
               Set Auto Draft
             </li>
             <li class="fake-link action" v-b-modal="'changePublisherNameForm'">

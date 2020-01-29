@@ -13,7 +13,7 @@
       <b-form-checkbox-group
         v-model="selected"
         :options="options"
-        name="audoDraft"
+        name="autoDraft"
         stacked
       ></b-form-checkbox-group>
     </b-form-group>
@@ -45,13 +45,14 @@ export default {
   },
   methods: {
     setAutoDraft() {
-      const publisherAudoDraft = this.leagueYear.publishers.reduce((target, prev) => ({
+      // Convert publishers to Dictionary. Auto draft prop equal to if its toggled on or off
+      const publisherAutoDraft = this.leagueYear.publishers.reduce((target, prev) => ({
         ...target, [prev.publisherID]: this.selected.includes(prev.publisherID)
       }),{})
       const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
-        publisherAudoDraft
+        publisherAutoDraft
       };
       axios
         .post('/api/leagueManager/SetAutoDraft', model)
