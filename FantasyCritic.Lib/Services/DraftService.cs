@@ -253,7 +253,7 @@ namespace FantasyCritic.Lib.Services
                 var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
                 var availableGames = await _gameSearchingService.GetTopAvailableGames(nextPublisher.Value, updatedPublishers, leagueYear.Year);
 
-                var gamesToTake = publisherWatchList.OrderByDescending(x => x.Rank).Select(x => x.MasterGame)
+                var gamesToTake = publisherWatchList.OrderBy(x => x.Rank).Select(x => x.MasterGame)
                     .Concat(availableGames.Select(x => x.MasterGame.MasterGame));
 
                 foreach (var possibleGame in gamesToTake)
