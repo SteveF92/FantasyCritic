@@ -32,6 +32,8 @@
         <div slot="answer">
           I've heard this from a few people now, and I haven't been able to identify the cause. It seems to be inconsistent as most people have no problems. I do have a list of potential solutions, though.
           <ol>
+            <li>First, make sure that your email isn't already confirmed. Sometimes it works without showing the right message. Check your account page by clicking on your user name in the top
+            right corner of the page.</li>
             <li>Try pressing CTRL+F5 when you are on the site and then clicking the link in the email again.</li>
             <li>Try an incognito window.</li>
             <li>Login first then try clicking the link.</li>
