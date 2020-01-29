@@ -32,8 +32,10 @@
         <div slot="answer">
           I've heard this from a few people now, and I haven't been able to identify the cause. It seems to be inconsistent as most people have no problems. I do have a list of potential solutions, though.
           <ol>
-            <li>First, make sure that your email isn't already confirmed. Sometimes it works without showing the right message. Check your account page by clicking on your user name in the top
-            right corner of the page.</li>
+            <li>
+              First, make sure that your email isn't already confirmed. Sometimes it works without showing the right message. Check your account page by clicking on your user name in the top
+              right corner of the page.
+            </li>
             <li>Try pressing CTRL+F5 when you are on the site and then clicking the link in the email again.</li>
             <li>Try an incognito window.</li>
             <li>Login first then try clicking the link.</li>
@@ -200,6 +202,14 @@
         <div slot="answer">
           "Hype Factor" is a measure of how highly anticipated a game is. It's a 0-100 value, with 100 being the best, derived from the percentage of leagues that draft a game, and what its average draft position is in those leagues.
           Only leagues that could have drafted a game, based on it's settings and the date when the league draft are counted in the percentage.
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">How does the Auto Draft feature work?</div>
+        <div slot="answer">
+          If a player is not available at the scheduled draft time, they can set themselves on "Auto Draft". When this setting is on, the site will choose their games for them. Players can use the
+          "Watch List" feature to rank the games they want to draft, and if their list is empty or if every game on it is taken, the site will choose the game with the highest hype factor that is still available.
+          Counterpicks are chosen in order of highest counterpick % accross the entire site. Both of these stats are viewable on the Master Games List.
         </div>
       </faqCollapse>
       <br />
