@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -229,7 +230,15 @@ namespace FantasyCritic.Lib.Services
             return (result, draftComplete);
         }
 
-        public async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
+        public async Task<bool> RunAutoDraftAndCheckIfComplete(LeagueYear leagueYear)
+        {
+            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
+            var autoDraftResult = await AutoDraftForLeague(leagueYear, 0, 0);
+            var draftComplete = await CompleteDraft(leagueYear, publishersForYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
+            return draftComplete;
+        }
+
+        private async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
         {
             var updatedPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
             var nextPublisher = GetNextDraftPublisher(leagueYear, updatedPublishers);
