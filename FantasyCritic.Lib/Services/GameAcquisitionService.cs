@@ -264,7 +264,7 @@ namespace FantasyCritic.Lib.Services
                 return claimResult;
             }
 
-            LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft);
+            LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
             await _fantasyCriticRepo.AddLeagueAction(leagueAction);
 
             await _fantasyCriticRepo.AddPublisherGame(playerGame);
@@ -303,7 +303,7 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) });
             }
 
-            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null);
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, masterGame, null, null);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
             var leagueYear = publisher.LeagueYear;
@@ -332,7 +332,7 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult(new List<ClaimError>() { new ClaimError("You already have that game queued.", false) });
             }
 
-            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, masterGame, null, null);
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, masterGame, null, null);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
             var leagueYear = publisher.LeagueYear;

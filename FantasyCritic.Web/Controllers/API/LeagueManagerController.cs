@@ -731,7 +731,7 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
             }
 
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, masterGame, null, null);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, false, masterGame, null, null);
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, false, publishersInLeague);
             var viewModel = new ManagerClaimResultViewModel(result);
@@ -1183,7 +1183,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var draftStatus = _draftService.GetDraftStatus(leagueYear.Value, publishersInLeague);
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride,
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, request.ManagerOverride,
                 masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 
             var result = await _draftService.DraftGame(domainRequest, true, leagueYear.Value, publishersInLeague);
