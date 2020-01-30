@@ -58,14 +58,17 @@ export default {
         .post('/api/leagueManager/SetAutoDraft', model)
         .then(response => {
           this.$refs.managerSetAutoDraftForm.hide();
-          let actionInfo = {
-            autoDraft: this.isAutoDraft,
-            fetchLeagueYear: true
-          };
           this.$emit('publishersAutoDraftSet');
         })
         .catch(e => {});
     }
+  },
+  mounted() {
+    // Toggle check all the current audoDraft players
+    this.selected = this.leagueYear
+      .publishers
+      .filter(pub => pub.autoDraft)
+      .map(pub => pub.publisherID)
   }
 }
 </script>
