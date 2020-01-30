@@ -45,8 +45,8 @@
             <li class="fake-link action" v-b-modal="'currentDropsForm'" v-show="leagueYear.playStatus.draftFinished">
               My Pending Drops
             </li>
-            <li class="fake-link action" v-b-modal="'gameQueueForm'" v-show="!leagueYear.playStatus.draftFinished">
-              Draft Watchlist
+            <li class="fake-link action" v-b-modal="'gameQueueForm'">
+              Watchlist
             </li>
             <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
               Change Publisher Name
