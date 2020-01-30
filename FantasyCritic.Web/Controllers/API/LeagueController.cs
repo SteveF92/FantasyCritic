@@ -541,7 +541,7 @@ namespace FantasyCritic.Web.Controllers.API
             var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(publisher.Value.LeagueYear);
             if (draftComplete)
             {
-                await _hubContext.Clients.Group(publisher.Value.LeagueYear.GetGroupName).SendAsync("DraftFinished", publisher.Value.LeagueYear);
+                await _hubContext.Clients.Group(publisher.Value.LeagueYear.GetGroupName).SendAsync("DraftFinished");
             }
 
             return Ok();
@@ -815,11 +815,11 @@ namespace FantasyCritic.Web.Controllers.API
 
             var draftResult = await _draftService.DraftGame(domainRequest, false, leagueYear.Value, publishersInLeague);
             var viewModel = new PlayerClaimResultViewModel(draftResult.Result);
-            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear");
 
             if (draftResult.DraftComplete)
             {
-                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
+                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished");
             }
 
             return Ok(viewModel);

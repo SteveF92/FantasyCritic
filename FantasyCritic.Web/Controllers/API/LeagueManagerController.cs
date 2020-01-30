@@ -675,7 +675,7 @@ namespace FantasyCritic.Web.Controllers.API
             var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(leagueYear.Value);
             if (draftComplete)
             {
-                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
+                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished");
             }
 
             return Ok();
@@ -1000,11 +1000,11 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var draftComplete = await _draftService.StartDraft(leagueYear.Value);
-            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear");
 
             if (draftComplete)
             {
-                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
+                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished");
             }
 
             return Ok();
@@ -1049,7 +1049,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _draftService.ResetDraft(leagueYear.Value);
-            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear");
 
             return Ok();
         }
@@ -1195,11 +1195,11 @@ namespace FantasyCritic.Web.Controllers.API
 
             var result = await _draftService.DraftGame(domainRequest, true, leagueYear.Value, publishersInLeague);
             var viewModel = new ManagerClaimResultViewModel(result.Result);
-            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear");
 
             if (result.DraftComplete)
             {
-                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished", leagueYear.Value);
+                await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("DraftFinished");
             }
 
             return Ok(viewModel);
@@ -1248,7 +1248,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _draftService.SetDraftPause(leagueYear.Value, request.Pause);
-            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear");
 
             return Ok();
         }
@@ -1293,7 +1293,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _draftService.UndoLastDraftAction(leagueYear.Value, publishers);
-            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear", leagueYear.Value);
+            await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear");
 
             return Ok();
         }
