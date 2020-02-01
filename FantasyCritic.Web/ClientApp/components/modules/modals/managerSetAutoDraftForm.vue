@@ -10,12 +10,13 @@
     </div>
 
     <b-form-group label="Form-checkbox-group stacked checkboxes">
-      <b-form-checkbox-group
-        v-model="selected"
-        :options="options"
-        name="autoDraft"
-        stacked
-      ></b-form-checkbox-group>
+      <b-form-checkbox
+        v-for="publisher in publishers"
+        v-model="publisher.autoDraft"
+        @change="onChange(publisher)"
+      >
+        {{ publisher.publisherName }}
+      </b-form-checkbox>
     </b-form-group>
 
     <div slot="modal-footer">
@@ -34,25 +35,19 @@ import axios from 'axios'
 export default {
   name: 'managerSetAutoDraftForm',
   props: ['leagueYear'],
-  data: () => ({ selected: [] }),
-  computed: {
-    options() {
-      return this.leagueYear.publishers.map(pub => ({
-        text: pub.publisherName,
-        value: pub.publisherID
-      }))
-    }
-  },
+  data: () => ({ publishers: [], publisherAutoDraft: {} }),
   methods: {
+    // Keep track of publishers that need the updates.
+    onChange(pub) {
+      this.publisherAutoDraft[pub.publisherID] = !pub.autoDraft
+    },
     setAutoDraft() {
-      // Convert publishers to Dictionary. Auto draft prop equal to if its toggled on or off
-      const publisherAutoDraft = this.leagueYear.publishers.reduce((target, prev) => ({
-        ...target, [prev.publisherID]: this.selected.includes(prev.publisherID)
-      }),{})
+      if (Object.keys(this.publisherAutoDraft).length === 0) return
+
       const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
-        publisherAutoDraft
+        publisherAutoDraft: this.publisherAutoDraft
       };
       axios
         .post('/api/leagueManager/SetAutoDraft', model)
@@ -64,11 +59,7 @@ export default {
     }
   },
   mounted() {
-    // Toggle check all the current audoDraft players
-    this.selected = this.leagueYear
-      .publishers
-      .filter(pub => pub.autoDraft)
-      .map(pub => pub.publisherID)
+    this.publishers = this.leagueYear.publishers
   }
 }
 </script>
