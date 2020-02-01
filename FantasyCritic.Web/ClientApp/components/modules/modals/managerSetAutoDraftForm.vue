@@ -1,36 +1,22 @@
 <template>
-  <b-modal
-    id="managerSetAutoDraftForm"
-    size="lg"
-    ref="managerSetAutoDraftFormRef"
-    title="Edit Auto Draft"
-  >
+  <b-modal id="managerSetAutoDraftForm" ref="managerSetAutoDraftFormRef" title="Edit Auto Draft">
     <div class="alert alert-info">
-      Description
+      You can use this form to turn on or turn off autodraft for one of your players.
     </div>
 
-    <b-form-group label="Form-checkbox-group stacked checkboxes">
-      <b-form-checkbox
-        v-for="publisher in publishers"
-        v-model="publisher.autoDraft"
-        @change="onChange(publisher)"
-      >
+    <b-form-group class="form-checkbox-group stacked checkboxes">
+      <b-form-checkbox v-for="publisher in publishers" v-model="publisher.autoDraft" @change="onChange(publisher)">
         {{ publisher.publisherName }}
       </b-form-checkbox>
     </b-form-group>
 
     <div slot="modal-footer">
-      <input
-        type="submit"
-        class="btn btn-primary"
-        value="Set Auto Draft"
-        v-on:click="setAutoDraft"
-      />
+      <input type="submit" class="btn btn-primary" value="Set Auto Draft" v-on:click="setAutoDraft"/>
     </div>
   </b-modal>
 </template>
 <script>
-import axios from 'axios'
+  import axios from 'axios';
 
 export default {
   name: 'managerSetAutoDraftForm',
@@ -42,7 +28,9 @@ export default {
       this.publisherAutoDraft[pub.publisherID] = !pub.autoDraft
     },
     setAutoDraft() {
-      if (Object.keys(this.publisherAutoDraft).length === 0) return
+      if (Object.keys(this.publisherAutoDraft).length === 0) {
+        return;
+      }
 
       const model = {
         leagueID: this.leagueYear.leagueID,
