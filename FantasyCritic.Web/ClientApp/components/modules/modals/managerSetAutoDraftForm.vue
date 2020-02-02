@@ -40,7 +40,7 @@ export default {
       axios
         .post('/api/leagueManager/SetAutoDraft', model)
         .then(response => {
-          this.$refs.managerSetAutoDraftForm.hide();
+          this.$refs.managerSetAutoDraftFormRef.hide();
           this.$emit('publishersAutoDraftSet');
         })
         .catch(e => {});

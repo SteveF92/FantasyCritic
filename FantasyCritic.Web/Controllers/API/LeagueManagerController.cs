@@ -662,11 +662,6 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            if (publishers.Any(publisher => !request.PublisherAutoDraft.ContainsKey(publisher.PublisherID)))
-            {
-                return BadRequest();
-            }
-
             foreach (var publisher in publishers)
             {
                 await _publisherService.SetAutoDraft(publisher, request.PublisherAutoDraft[publisher.PublisherID]);
