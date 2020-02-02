@@ -3,6 +3,11 @@
     <div v-if="errorInfo" class="alert alert-danger" role="alert">
       {{errorInfo}}
     </div>
+    <p>
+      You can use this form to place a bid on a game.
+      <br />
+      Bids are processed on Monday Nights. See the FAQ for more info.
+    </p>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <label for="bidGameName" class="control-label">Game Name</label>
       <div class="input-group game-search-input">
