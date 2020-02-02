@@ -653,18 +653,15 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-            var publisherGuids = publishers.Select(x => x.PublisherID).ToHashSet();
+            var publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
             foreach (var requestPublisher in request.PublisherAutoDraft)
             {
-                if (!publisherGuids.Contains(requestPublisher.Key))
+                if (!publisherDictionary.ContainsKey(requestPublisher.Key))
                 {
                     return Forbid();
                 }
-            }
 
-            foreach (var publisher in publishers)
-            {
-                await _publisherService.SetAutoDraft(publisher, request.PublisherAutoDraft[publisher.PublisherID]);
+                await _publisherService.SetAutoDraft(publisherDictionary[requestPublisher.Key], requestPublisher.Value);
             }
 
             var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(leagueYear.Value);
