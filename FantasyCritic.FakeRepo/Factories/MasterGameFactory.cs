@@ -34,7 +34,7 @@ namespace FantasyCritic.FakeRepo.Factories
         {
             EligibilityLevel eligibilityLevel = EligibilityLevelFactory.GetEligibilityLevels().Single(x => x.Level == eligibilityLevelID);
 
-            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, false, false, false, false, false);
+            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, false, false, false, false, false, false);
 
             var game = new MasterGame(Guid.Parse(guid), name, estimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, openCriticID,
                 criticScore, minimumReleaseDate, eligibilitySettings, boxartFileName, 
