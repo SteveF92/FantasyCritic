@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain.Requests
     {
         public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks,
             int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, EligibilityLevel maximumEligibilityLevel, bool allowYearlyInstallments, 
-            bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally, bool allowExpansions, bool allowUnannoucedGames, DraftSystem draftSystem, 
+            bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally, bool allowExpansions, bool allowUnannouncedGames, DraftSystem draftSystem, 
             PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             Manager = manager;
@@ -22,7 +22,7 @@ namespace FantasyCritic.Lib.Domain.Requests
             WillReleaseDroppableGames = willReleaseDroppableGames;
             DropOnlyDraftGames = dropOnlyDraftGames;
             AllowedEligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, allowYearlyInstallments, allowEarlyAccess, allowFreeToPlay,
-                allowReleasedInternationally, allowExpansions, allowUnannoucedGames);
+                allowReleasedInternationally, allowExpansions, allowUnannouncedGames);
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;

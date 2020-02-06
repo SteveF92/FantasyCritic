@@ -19,7 +19,7 @@ namespace FantasyCritic.Lib.Domain
             FreeToPlay = freeToPlay;
             ReleasedInternationally = releasedInternationally;
             ExpansionPack = expansionPack;
-            UnannoucedGame = unannouncedGame;
+            UnannouncedGame = unannouncedGame;
         }
 
         public EligibilityLevel EligibilityLevel { get; }
@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Domain
         public bool FreeToPlay { get; }
         public bool ReleasedInternationally { get; }
         public bool ExpansionPack { get; }
-        public bool UnannoucedGame { get; }
+        public bool UnannouncedGame { get; }
 
         public static EligibilitySettings GetRoyaleEligibilitySettings()
         {
@@ -76,7 +76,7 @@ namespace FantasyCritic.Lib.Domain
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's expansion pack settings.", true));
             }
 
-            bool unannouncedEligible = (!masterGame.EligibilitySettings.UnannoucedGame || UnannoucedGame);
+            bool unannouncedEligible = (!masterGame.EligibilitySettings.UnannouncedGame || UnannouncedGame);
             if (!unannouncedEligible)
             {
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's unannounced game settings.", true));

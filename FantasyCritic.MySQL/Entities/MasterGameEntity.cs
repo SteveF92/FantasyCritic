@@ -31,7 +31,7 @@ namespace FantasyCritic.MySQL.Entities
             FreeToPlay = masterGame.EligibilitySettings.FreeToPlay;
             ReleasedInternationally = masterGame.EligibilitySettings.ReleasedInternationally;
             ExpansionPack = masterGame.EligibilitySettings.ExpansionPack;
-            UnannoucedGame = masterGame.EligibilitySettings.UnannoucedGame;
+            UnannouncedGame = masterGame.EligibilitySettings.UnannouncedGame;
             BoxartFileName = masterGame.BoxartFileName;
         }
 
@@ -49,7 +49,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool FreeToPlay { get; set; }
         public bool ReleasedInternationally { get; set; }
         public bool ExpansionPack { get; set; }
-        public bool UnannoucedGame { get; set; }
+        public bool UnannouncedGame { get; set; }
         public string BoxartFileName { get; set; }
         public DateTime? FirstCriticScoreTimestamp { get; set; }
         public bool DoNotRefreshDate { get; set; }
@@ -78,7 +78,7 @@ namespace FantasyCritic.MySQL.Entities
             }
 
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannoucedGame);
+            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
 
             return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, LocalDate.FromDateTime(MinimumReleaseDate), 
                 eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, addedTimestamp);

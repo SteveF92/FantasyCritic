@@ -35,7 +35,7 @@ namespace FantasyCritic.MySQL.Entities
             AllowFreeToPlay = options.AllowedEligibilitySettings.FreeToPlay;
             AllowReleasedInternationally = options.AllowedEligibilitySettings.ReleasedInternationally;
             AllowExpansions = options.AllowedEligibilitySettings.ExpansionPack;
-            AllowUnannoucedGames = options.AllowedEligibilitySettings.UnannoucedGame;
+            AllowUnannouncedGames = options.AllowedEligibilitySettings.UnannouncedGame;
 
             DraftSystem = options.DraftSystem.Value;
             PickupSystem = options.PickupSystem.Value;
@@ -58,7 +58,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool AllowFreeToPlay { get; set; }
         public bool AllowReleasedInternationally { get; set; }
         public bool AllowExpansions { get; set; }
-        public bool AllowUnannoucedGames { get; set; }
+        public bool AllowUnannouncedGames { get; set; }
         public string DraftSystem { get; set; }
         public string PickupSystem { get; set; }
         public string ScoringSystem { get; set; }
@@ -70,7 +70,7 @@ namespace FantasyCritic.MySQL.Entities
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
             var eligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess, 
-                AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, AllowUnannoucedGames);
+                AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, AllowUnannouncedGames);
 
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
                 DropOnlyDraftGames, eligibilitySettings, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
