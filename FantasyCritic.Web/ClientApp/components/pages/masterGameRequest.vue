@@ -121,6 +121,12 @@
                   <p>Expansion packs are only selectable in some leagues.</p>
                 </b-form-checkbox>
               </div>
+              <div class="form-group">
+                <b-form-checkbox v-model="unannouncedGame">
+                  <span class="checkbox-label">Is this unannounced?</span>
+                  <p>If the game is only a rumor right now, check this box.</p>
+                </b-form-checkbox>
+              </div>
 
               <div class="form-group">
                 <label for="requestNote" class="control-label">Any other notes?</label>
@@ -163,6 +169,7 @@
         freeToPlay: false,
         releasedInternationally: false,
         expansionPack: false,
+        unannouncedGame: false,
         eligibilityLevel: 0,
         possibleEligibilityLevels: null
       }
@@ -233,7 +240,8 @@
           earlyAccess: this.earlyAccess,
           freeToPlay: this.freeToPlay,
           releasedInternationally: this.releasedInternationally,
-          expansionPack: this.expansionPack
+          expansionPack: this.expansionPack,
+          unannouncedGame: this.unannouncedGame
         };
         axios
           .post('/api/game/CreateMasterGameRequest', request)
@@ -262,6 +270,7 @@
         this.eligibilitySettings.freeToPlay = false;
         this.eligibilitySettings.releasedInternationally = false;
         this.eligibilitySettings.expansionPack = false;
+        this.eligibilitySettings.unannouncedGame = false;
         this.eligibilitySettings.eligibilityLevel = 0;
         this.$validator.reset();
       },

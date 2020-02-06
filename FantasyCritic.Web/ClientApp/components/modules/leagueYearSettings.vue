@@ -214,6 +214,14 @@
               </p>
             </b-form-checkbox>
           </div>
+          <div>
+            <b-form-checkbox v-model="local.allowUnannouncedGames" @input="update('allowUnannouncedGames', local.allowUnannouncedGames)">
+              <span class="checkbox-label">Allow unannounced games</span>
+              <p>
+                If this is left unchecked, games that are merely rumored will not be selectable.
+              </p>
+            </b-form-checkbox>
+          </div>
         </div>
       </div>
     </div>

@@ -108,7 +108,7 @@
         <p>
           The eligibility rules are the same as the default rules in the standard leagues. That means anything with an eligibility level of "New Game", "Complete Remake", and "Remake".
           Anything higher than that ("Partial Remake" and up) is not eligible in Critics Royale. On top of that, yearly installments, games currently in early access, free to play games,
-          games already released in other regions (other than the US), and expansion packs/DLC are not allowed.
+          games already released in other regions (other than the US), expansion packs/DLC are not allowed.
         </p>
       </div>
     </div>

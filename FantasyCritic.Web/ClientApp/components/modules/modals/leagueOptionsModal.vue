@@ -62,6 +62,10 @@
             <th class="bg-primary">Allow Expansion Packs</th>
             <td>{{leagueYearOptions.allowExpansions | yesNo}}</td>
           </tr>
+          <tr>
+            <th class="bg-primary">Allow Unannounced Games</th>
+            <td>{{leagueYearOptions.allowUnannouncedGames | yesNo}}</td>
+          </tr>
 
           <tr>
             <th class="bg-primary">Public League</th>

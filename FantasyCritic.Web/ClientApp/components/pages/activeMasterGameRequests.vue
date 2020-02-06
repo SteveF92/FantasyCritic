@@ -93,6 +93,7 @@
           freeToPlay: request.freeToPlay,
           releasedInternationally: request.releasedInternationally,
           expansionPack: request.expansionPack,
+          unannouncedGame: request.unannouncedGame,
           requestNote: request.requestNote
         };
         this.$router.push({ name: 'masterGameCreator', query: query });

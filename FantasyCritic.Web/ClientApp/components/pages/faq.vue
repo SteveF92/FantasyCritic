@@ -105,6 +105,7 @@
             <li>The league’s “eligibility level” (more on this below).</li>
             <li>Whether or not to allow yearly installments, early access games, free to play games, and games already released in other regions.</li>
             <li>Whether or not to allow expansion packs/DLC.</li>
+            <li>Whether or not to allow unannounced(rumored) games</li>
           </ul>
         </div>
       </faqCollapse>

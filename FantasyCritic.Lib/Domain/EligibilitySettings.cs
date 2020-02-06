@@ -33,7 +33,7 @@ namespace FantasyCritic.Lib.Domain
         public static EligibilitySettings GetRoyaleEligibilitySettings()
         {
             var level = new EligibilityLevel(2, "Remake", "A remake that modernizes gameplay without fundamentally changing it.", new List<string>());
-            return new EligibilitySettings(level, false, false, false, false, false, false);
+            return new EligibilitySettings(level, false, false, false, false, false, true);
         }
 
         public IReadOnlyList<ClaimError> GameIsEligible(MasterGame masterGame)

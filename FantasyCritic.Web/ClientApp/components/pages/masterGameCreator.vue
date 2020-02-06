@@ -96,6 +96,11 @@
                 <span class="checkbox-label">Expansion Pack?</span>
               </b-form-checkbox>
             </div>
+            <div class="form-group">
+              <b-form-checkbox v-model="unannouncedGame">
+                <span class="checkbox-label">Unannounced?</span>
+              </b-form-checkbox>
+            </div>
 
             <div class="form-group">
               <div class="col-md-offset-2 col-md-4">
@@ -132,6 +137,7 @@
         freeToPlay: false,
         releasedInternationally: false,
         expansionPack: false,
+        unannouncedGame: false,
         possibleEligibilityLevels: null
       }
     },
@@ -194,7 +200,8 @@
           earlyAccess: this.earlyAccess,
           freeToPlay: this.freeToPlay,
           releasedInternationally: this.releasedInternationally,
-          expansionPack: this.expansionPack
+          expansionPack: this.expansionPack,
+          unannouncedGame: this.unannouncedGame
         };
         axios
           .post('/api/admin/CreateMasterGame', request)
@@ -223,6 +230,7 @@
         this.freeToPlay = this.$route.query.freeToPlay;
         this.releasedInternationally = this.$route.query.releasedInternationally;
         this.expansionPack = this.$route.query.expansionPack;
+        this.unannouncedGame = this.$route.query.unannouncedGame;
         this.requestNote = this.$route.query.requestNote;
       }
     },

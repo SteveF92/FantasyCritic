@@ -24,6 +24,7 @@
       <li>Free to Play: {{ masterGame.eligibilitySettings.freeToPlay | yesNo }}</li>
       <li>Released Internationally: {{ masterGame.eligibilitySettings.releasedInternationally | yesNo }}</li>
       <li>Expansion Pack: {{ masterGame.eligibilitySettings.expansionPack | yesNo }}</li>
+      <li>Unannounced: {{ masterGame.eligibilitySettings.unannouncedGame | yesNo }}</li>
     </ul>
   </div>
 </template>

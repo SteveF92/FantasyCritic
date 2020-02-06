@@ -136,6 +136,7 @@
           allowFreeToPlay: this.leagueYearSettings.allowFreeToPlay,
           allowReleasedInternationally: this.leagueYearSettings.allowReleasedInternationally,
           allowExpansions: this.leagueYearSettings.allowExpansions,
+          allowUnannouncedGames: this.leagueYearSettings.allowUnannouncedGames,
           publicLeague: this.publicLeague,
           testLeague: this.testLeague,
           draftSystem: "Flexible",
@@ -166,7 +167,8 @@
         allowEarlyAccess: false,
         allowFreeToPlay: false,
         allowReleasedInternationally: false,
-        allowExpansions: false
+        allowExpansions: false,
+        allowUnannouncedGames: false
       }
     }
   }
