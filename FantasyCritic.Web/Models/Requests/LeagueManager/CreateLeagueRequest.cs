@@ -53,7 +53,8 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         public bool AllowReleasedInternationally { get; set; }
         [Required]
         public bool AllowExpansions { get; set; }
-
+        [Required]
+        public bool AllowUnannouncedGames { get; set; }
         [Required]
         public string DraftSystem { get; set; }
         [Required]
@@ -115,7 +116,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
-                AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
+                AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, AllowUnannouncedGames, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }
     }

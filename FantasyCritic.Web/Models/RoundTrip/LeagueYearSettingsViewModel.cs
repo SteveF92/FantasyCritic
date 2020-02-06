@@ -49,6 +49,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
             AllowFreeToPlay = leagueYear.Options.AllowedEligibilitySettings.FreeToPlay;
             AllowReleasedInternationally = leagueYear.Options.AllowedEligibilitySettings.ReleasedInternationally;
             AllowExpansions = leagueYear.Options.AllowedEligibilitySettings.ExpansionPack;
+            AllowUnannouncedGames = leagueYear.Options.AllowedEligibilitySettings.UnannouncedGame;
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
@@ -99,6 +100,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
         public bool AllowReleasedInternationally { get; set; }
         [Required]
         public bool AllowExpansions { get; set; }
+        [Required]
+        public bool AllowUnannouncedGames { get; set; }
 
         [Required]
         public string DraftSystem { get; set; }
@@ -159,7 +162,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, maximumEligibilityLevel, AllowYearlyInstallments,
-                AllowEarlyAccess, AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, draftSystem, pickupSystem, scoringSystem, PublicLeague);
+                AllowEarlyAccess, AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, AllowUnannouncedGames, draftSystem, pickupSystem, scoringSystem, PublicLeague);
             return parameters;
         }
     }

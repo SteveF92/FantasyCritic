@@ -23,6 +23,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
             FreeToPlay = eligibilitySettings.FreeToPlay;
             ReleasedInternationally = eligibilitySettings.ReleasedInternationally;
             ExpansionPack = eligibilitySettings.ExpansionPack;
+            UnannouncedGame = eligibilitySettings.UnannouncedGame;
         }
 
         public EligibilityLevelViewModel EligibilityLevel { get; set; }
@@ -31,10 +32,11 @@ namespace FantasyCritic.Web.Models.RoundTrip
         public bool FreeToPlay { get; set; }
         public bool ReleasedInternationally { get; set; }
         public bool ExpansionPack { get; set; }
+        public bool UnannouncedGame { get; set; }
 
         public EligibilitySettings ToDomain(EligibilityLevel eligibilityLevel)
         {
-            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack);
+            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
             return eligibilitySettings;
         }
     }
