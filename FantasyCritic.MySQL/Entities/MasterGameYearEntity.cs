@@ -32,6 +32,7 @@ namespace FantasyCritic.MySQL.Entities
             FreeToPlay = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.FreeToPlay;
             ReleasedInternationally = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.ReleasedInternationally;
             ExpansionPack = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.ExpansionPack;
+            UnannoucedGame = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.UnannoucedGame;
             BoxartFileName = masterGameHypeScores.MasterGameYear.MasterGame.BoxartFileName;
             FirstCriticScoreTimestamp = masterGameHypeScores.MasterGameYear.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
             PercentStandardGame = masterGameHypeScores.MasterGameYear.PercentStandardGame;
@@ -64,6 +65,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool FreeToPlay { get; set; }
         public bool ReleasedInternationally { get; set; }
         public bool ExpansionPack { get; set; }
+        public bool UnannoucedGame { get; set; }
         public string BoxartFileName { get; set; }
         public DateTime? FirstCriticScoreTimestamp { get; set; }
         public double PercentStandardGame { get; set; }
@@ -101,7 +103,7 @@ namespace FantasyCritic.MySQL.Entities
             }
 
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack);
+            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannoucedGame);
 
             var masterGame =  new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, 
                 OpenCriticID, CriticScore, LocalDate.FromDateTime(MinimumReleaseDate), eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, 
