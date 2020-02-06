@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain
     public class EligibilitySettings
     {
         public EligibilitySettings(EligibilityLevel eligibilityLevel, bool yearlyInstallment, bool earlyAccess, 
-            bool freeToPlay, bool releasedInternationally, bool expansionPack)
+            bool freeToPlay, bool releasedInternationally, bool expansionPack, bool unannouncedGame)
         {
             EligibilityLevel = eligibilityLevel;
             YearlyInstallment = yearlyInstallment;
@@ -19,6 +19,7 @@ namespace FantasyCritic.Lib.Domain
             FreeToPlay = freeToPlay;
             ReleasedInternationally = releasedInternationally;
             ExpansionPack = expansionPack;
+            UnannoucedGame = unannouncedGame;
         }
 
         public EligibilityLevel EligibilityLevel { get; }
@@ -27,11 +28,12 @@ namespace FantasyCritic.Lib.Domain
         public bool FreeToPlay { get; }
         public bool ReleasedInternationally { get; }
         public bool ExpansionPack { get; }
+        public bool UnannoucedGame { get; }
 
         public static EligibilitySettings GetRoyaleEligibilitySettings()
         {
             var level = new EligibilityLevel(2, "Remake", "A remake that modernizes gameplay without fundamentally changing it.", new List<string>());
-            return new EligibilitySettings(level, false, false, false, false, false);
+            return new EligibilitySettings(level, false, false, false, false, false, false);
         }
 
         public IReadOnlyList<ClaimError> GameIsEligible(MasterGame masterGame)
@@ -72,6 +74,12 @@ namespace FantasyCritic.Lib.Domain
             if (!expansionEligible)
             {
                 claimErrors.Add(new ClaimError("That game is not eligible under this league's expansion pack settings.", true));
+            }
+
+            bool unannouncedEligible = (!masterGame.EligibilitySettings.UnannoucedGame || UnannoucedGame);
+            if (!unannouncedEligible)
+            {
+                claimErrors.Add(new ClaimError("That game is not eligible under this league's unannounced game settings.", true));
             }
 
             return claimErrors;
