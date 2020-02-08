@@ -927,6 +927,69 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
+        public async Task<ActionResult<List<MasterGameYearViewModel>>> LeagueUpcomingGames(Guid leagueID, int year)
+        {
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Something went really wrong, no options are set up for this league.");
+            }
+
+            FantasyCriticUser currentUser = null;
+            if (!string.IsNullOrWhiteSpace(User.Identity.Name))
+            {
+                currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            }
+
+            var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
+            var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
+
+            bool userIsInLeague = false;
+            bool userIsInvitedToLeague = false;
+            if (currentUser != null)
+            {
+                userIsInLeague = activeUsers.Any(x => x.UserID == currentUser.UserID);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
+            }
+
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
+            {
+                return Forbid();
+            }
+
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value, activeUsers);
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            IReadOnlyList<MasterGameYear> allMasterGames = publishersInLeague
+                .SelectMany(x => x.PublisherGames
+                    .Where(y => y.MasterGame.HasValue)
+                    .Where(y => y.WillRelease())
+                    .Select(y => y.MasterGame.Value))
+                .ToList();
+
+            var easternZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
+            if (easternZone is null)
+            {
+                throw new Exception("Time has broken.");
+            }
+
+            var currentDate = _clock.GetCurrentInstant().InZone(easternZone).Date;
+            var yesterday = currentDate.PlusDays(-1);
+
+            var orderedByReleaseDate = allMasterGames
+                .Distinct()
+                .Where(x => x.MasterGame.SortableEstimatedReleaseDate > yesterday)
+                .OrderBy(x => x.MasterGame.SortableEstimatedReleaseDate)
+                .Take(10);
+
+            List<MasterGameYearViewModel> viewModels = orderedByReleaseDate.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
+            return viewModels;
+        }
+
         public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> PossibleMasterGames(string gameName, int year, Guid leagueID)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
