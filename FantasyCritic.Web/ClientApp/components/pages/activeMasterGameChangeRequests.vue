@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <h1>Active Master Game Change Requests</h1>
+      <div>
+        <h1>Active Master Game Change Requests</h1>
+        <b-button variant="info" :to="{ name: 'adminConsole' }">Admin Console</b-button>
+      </div>
+      <hr />
       <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
       <div v-if="showLinked" class="alert alert-success">Game has been linked to OpenCritic</div>
 

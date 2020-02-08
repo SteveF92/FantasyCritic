@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <h1>Create Master Game</h1>
+      <div>
+        <h1>Create Master Game</h1>
+        <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">View master game requests</b-button>
+        <b-button variant="info" :to="{ name: 'adminConsole' }">Admin Console</b-button>
+      </div>
       <hr />
       <div v-if="createdGame" class="alert alert-success">Master Game created: {{createdGame.masterGameID}}</div>
       <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
