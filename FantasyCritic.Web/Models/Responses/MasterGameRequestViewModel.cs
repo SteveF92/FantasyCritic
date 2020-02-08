@@ -21,6 +21,7 @@ namespace FantasyCritic.Web.Models.Responses
             FreeToPlay = domain.FreeToPlay;
             ReleasedInternationally = domain.ReleasedInternationally;
             ExpansionPack = domain.ExpansionPack;
+            UnannouncedGame = domain.UnannouncedGame;
 
             Answered = domain.Answered;
             ResponseNote = domain.ResponseNote;
@@ -45,6 +46,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool FreeToPlay { get; }
         public bool ReleasedInternationally { get; }
         public bool ExpansionPack { get; }
+        public bool UnannouncedGame { get; }
         public string RequestNote { get; }
 
         //Response
