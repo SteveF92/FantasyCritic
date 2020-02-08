@@ -62,24 +62,7 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card title="My Upcoming Games" class="homepage-section">
-            <div class="row" v-if="upcomingGames && upcomingGames.length > 0">
-              <b-table :sort-by.sync="sortBy"
-                       :sort-desc.sync="sortDesc"
-                       :items="upcomingGames"
-                       :fields="upcomingGamesFields"
-                       bordered
-                       striped
-                       small>
-                <template slot="gameName" slot-scope="data">
-                  <masterGamePopover :masterGame="data.item"></masterGamePopover>
-                </template>
-                <template slot="sortableEstimatedReleaseDate" slot-scope="data">
-                  {{getReleaseDate(data.item)}}
-                </template>
-              </b-table>
-            </div>
-          </b-card>
+          <upcomingGames :upcomingGames="upcomingGames" heading="My Upcoming Games"/>
         </div>
 
         <div class="col-lg-4 col-md-12">
@@ -116,9 +99,8 @@
   import axios from "axios";
   import _ from "lodash";
   import Tweets from "components/modules/tweets";
-  import MasterGamePopover from "components/modules/masterGamePopover";
   import LeagueTable from "components/modules/leagueTable";
-  import moment from "moment";
+  import UpcomingGames from "components/modules/upcomingGames";
 
   export default {
     data() {
@@ -139,16 +121,12 @@
         sortBy: 'numberOfFollowers',
         sortDesc: true,
         upcomingGames: [],
-        upcomingGamesFields: [
-          { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-          { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        ],
       }
     },
     components: {
       Tweets,
-      MasterGamePopover,
-      LeagueTable
+      LeagueTable,
+      UpcomingGames
     },
     computed: {
       anyManagedLeagues() {
@@ -269,12 +247,6 @@
           .catch(response => {
           });
       },
-      getReleaseDate(game) {
-        if (game.releaseDate) {
-          return moment(game.releaseDate).format('YYYY-MM-DD');
-        }
-        return game.estimatedReleaseDate + ' (Estimated)'
-      }
     },
     async mounted() {
       await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchUpcomingGames(), this.fetchActiveRoyaleYearQuarter()]);
