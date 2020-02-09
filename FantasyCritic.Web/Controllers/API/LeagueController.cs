@@ -875,14 +875,13 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        public async Task<ActionResult<List<MasterGameYearViewModel>>> MyUpcomingGames()
+        public async Task<ActionResult<List<UpcomingGameViewModel>>> MyUpcomingGames()
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
 
-            List<MasterGameYear> myMasterGames = new List<MasterGameYear>();
-
+            List<Publisher> myPublishers = new List<Publisher>();
             foreach (var year in activeYears)
             {
                 IReadOnlyList<LeagueYear> activeLeagueYears = await _leagueMemberService.GetLeaguesYearsForUser(currentUser, year.Year);
@@ -900,34 +899,15 @@ namespace FantasyCritic.Web.Controllers.API
                         continue;
                     }
 
-                    var myMasterGamesInLeague = userPublisher.Value.PublisherGames
-                        .Where(x => x.MasterGame.HasValue)
-                        .Where(x => x.WillRelease())
-                        .Select(x => x.MasterGame.Value);
-                    myMasterGames.AddRange(myMasterGamesInLeague);
+                    myPublishers.Add(userPublisher.Value);
                 }
             }
 
-            var easternZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
-            if (easternZone is null)
-            {
-                throw new Exception("Time has broken.");
-            }
-
-            var currentDate = _clock.GetCurrentInstant().InZone(easternZone).Date;
-            var yesterday = currentDate.PlusDays(-1);
-
-            var orderedByReleaseDate = myMasterGames
-                .Distinct()
-                .Where(x => x.MasterGame.SortableEstimatedReleaseDate > yesterday)
-                .OrderBy(x => x.MasterGame.SortableEstimatedReleaseDate)
-                .Take(10);
-
-            List<MasterGameYearViewModel> viewModels = orderedByReleaseDate.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
+            var viewModels = GetUpcomingGameViewModels(myPublishers).ToList();
             return viewModels;
         }
 
-        public async Task<ActionResult<List<MasterGameYearViewModel>>> LeagueUpcomingGames(Guid leagueID, int year)
+        public async Task<ActionResult<List<UpcomingGameViewModel>>> LeagueUpcomingGames(Guid leagueID, int year)
         {
             Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
             if (leagueYear.HasNoValue)
@@ -964,29 +944,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            IReadOnlyList<MasterGameYear> allMasterGames = publishersInLeague
-                .SelectMany(x => x.PublisherGames
-                    .Where(y => y.MasterGame.HasValue)
-                    .Where(y => y.WillRelease())
-                    .Select(y => y.MasterGame.Value))
-                .ToList();
-
-            var easternZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
-            if (easternZone is null)
-            {
-                throw new Exception("Time has broken.");
-            }
-
-            var currentDate = _clock.GetCurrentInstant().InZone(easternZone).Date;
-            var yesterday = currentDate.PlusDays(-1);
-
-            var orderedByReleaseDate = allMasterGames
-                .Distinct()
-                .Where(x => x.MasterGame.SortableEstimatedReleaseDate > yesterday)
-                .OrderBy(x => x.MasterGame.SortableEstimatedReleaseDate)
-                .Take(10);
-
-            List<MasterGameYearViewModel> viewModels = orderedByReleaseDate.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
+            var viewModels = GetUpcomingGameViewModels(publishersInLeague).ToList();
             return viewModels;
         }
 
@@ -1349,6 +1307,34 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             return Ok();
+        }
+
+        private IReadOnlyList<UpcomingGameViewModel> GetUpcomingGameViewModels(IEnumerable<Publisher> publishers)
+        {
+            var publisherGames = publishers.SelectMany(x => x.PublisherGames);
+            var easternZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
+            if (easternZone is null)
+            {
+                throw new Exception("Time has broken.");
+            }
+
+            var currentDate = _clock.GetCurrentInstant().InZone(easternZone).Date;
+            var yesterday = currentDate.PlusDays(-1);
+
+            var orderedByReleaseDate = publisherGames
+                .Distinct()
+                .Where(x => x.MasterGame.Value.MasterGame.SortableEstimatedReleaseDate > yesterday)
+                .OrderBy(x => x.MasterGame.Value.MasterGame.SortableEstimatedReleaseDate)
+                .Take(10);
+
+            List<UpcomingGameViewModel> viewModels = new List<UpcomingGameViewModel>();
+            foreach (var publisherGame in orderedByReleaseDate)
+            {
+                var publisher = publishers.Single(x => x.PublisherID == publisherGame.PublisherID);
+                viewModels.Add(new UpcomingGameViewModel(publisherGame.MasterGame.Value, publisher, _clock));
+            }
+
+            return viewModels;
         }
     }
 }
