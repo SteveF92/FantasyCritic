@@ -55,7 +55,9 @@ namespace FantasyCritic.Web.Models.Responses
                     Year = publisher.LeagueYear.Year;
                     LeagueName = publisher.LeagueYear.League.LeagueName;
                     PublisherID = publisher.PublisherID;
-                    PublisherName = publisher.PublisherName + $" - Counter Picked by {counterPickPublisher.PublisherName}";
+                    PublisherName = publisher.PublisherName;
+                    CounterPickPublisherID = counterPickPublisher.PublisherID;
+                    CounterPickPublisherName = counterPickPublisher.PublisherName;
                 }
                 else
                 {
@@ -74,5 +76,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string LeagueName { get; }
         public Guid? PublisherID { get; }
         public string PublisherName { get; }
+        public Guid? CounterPickPublisherID { get; }
+        public string CounterPickPublisherName { get; }
     }
 }
