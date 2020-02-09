@@ -9,7 +9,7 @@
                striped
                small>
         <template slot="gameName" slot-scope="data">
-          <masterGamePopover :masterGame="data.item"></masterGamePopover>
+          <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
         </template>
         <template slot="sortableEstimatedReleaseDate" slot-scope="data">
           {{getReleaseDate(data.item)}}
