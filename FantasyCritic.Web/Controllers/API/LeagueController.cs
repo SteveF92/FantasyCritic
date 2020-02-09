@@ -903,7 +903,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            var viewModels = GetUpcomingGameViewModels(myPublishers).ToList();
+            var viewModels = GetUpcomingGameViewModels(myPublishers, true).ToList();
             return viewModels;
         }
 
@@ -944,7 +944,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var viewModels = GetUpcomingGameViewModels(publishersInLeague).ToList();
+            var viewModels = GetUpcomingGameViewModels(publishersInLeague, false).ToList();
             return viewModels;
         }
 
@@ -1309,7 +1309,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        private IReadOnlyList<UpcomingGameViewModel> GetUpcomingGameViewModels(IEnumerable<Publisher> publishers)
+        private IReadOnlyList<UpcomingGameViewModel> GetUpcomingGameViewModels(IEnumerable<Publisher> publishers, bool userMode)
         {
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
             var easternZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
@@ -1325,13 +1325,15 @@ namespace FantasyCritic.Web.Controllers.API
                 .Distinct()
                 .Where(x => x.MasterGame.Value.MasterGame.SortableEstimatedReleaseDate > yesterday)
                 .OrderBy(x => x.MasterGame.Value.MasterGame.SortableEstimatedReleaseDate)
+                .GroupBy(x => x.MasterGame.Value)
                 .Take(10);
 
             List<UpcomingGameViewModel> viewModels = new List<UpcomingGameViewModel>();
-            foreach (var publisherGame in orderedByReleaseDate)
+            foreach (var publisherGameGroup in orderedByReleaseDate)
             {
-                var publisher = publishers.Single(x => x.PublisherID == publisherGame.PublisherID);
-                viewModels.Add(new UpcomingGameViewModel(publisherGame.MasterGame.Value, publisher));
+                IEnumerable<Publisher> publishersThatHaveGame = publishers.Where(x => publisherGameGroup.Select(y => y.PublisherID).Contains(x.PublisherID));
+                IEnumerable<Publisher> publishersThatHaveStandardGame = publishersThatHaveGame.Where(x => x.PublisherGames.Where(y => !y.CounterPick).Select(y => y.MasterGame.Value).Contains(publisherGameGroup.Key));
+                viewModels.Add(new UpcomingGameViewModel(publisherGameGroup.Key, publishersThatHaveGame, publishersThatHaveStandardGame, userMode));
             }
 
             return viewModels;
