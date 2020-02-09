@@ -113,7 +113,7 @@
             <li class="fake-link action">
               <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit Game Settings</router-link>
             </li>
-            <li class="fake-link action" v-b-modal="'manageEligibilityOverridesModal'" v-show="leagueYear.playStatus.draftFinished">
+            <li class="fake-link action" v-b-modal="'manageEligibilityOverridesModal'">
               Manually Set Game Eligibility
             </li>
             <li class="fake-link action" v-b-modal="'changeLeagueOptionsForm'">
