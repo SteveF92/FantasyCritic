@@ -157,6 +157,7 @@
             </div>
             <div class="col-xl-9 col-lg-8 col-md-12">
               <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
+              <upcomingGames v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished" :upcomingGames="upcomingGames" heading="Upcoming Games" mode="league" />
               <h2>Summary</h2>
               <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
             </div>
@@ -180,6 +181,7 @@
   import LeagueActions from "components/modules/leagueActions";
   import CreatePublisherForm from "components/modules/modals/createPublisherForm";
   import StartDraftModal from "components/modules/modals/startDraftModal";
+  import UpcomingGames from "components/modules/upcomingGames";
 
   export default {
     data() {
@@ -189,6 +191,7 @@
         leagueYear: null,
         currentBids: [],
         currentDrops: [],
+        upcomingGames: [],
         forbidden: false,
         advancedProjections: false,
         inviteCode: null,
@@ -201,7 +204,8 @@
       LeagueYearStandings,
       CreatePublisherForm,
       StartDraftModal,
-      LeagueActions
+      LeagueActions,
+      UpcomingGames
     },
     computed: {
       nextPublisherUp() {
@@ -288,6 +292,17 @@
           .get('/api/league/CurrentDropRequests/' + this.leagueYear.userPublisher.publisherID)
           .then(response => {
             this.currentDrops = response.data;
+          })
+          .catch(response => {
+
+          });
+      },
+      async fetchUpcomingGames() {
+        let queryURL = '/api/League/LeagueUpcomingGames?leagueID=' + this.leagueid + '&year=' + this.year;
+        axios
+          .get(queryURL)
+          .then(response => {
+            this.upcomingGames = response.data;
           })
           .catch(response => {
 
@@ -433,6 +448,7 @@
       this.getInviteCode();
       this.fetchLeague();
       this.fetchLeagueYear();
+      await this.fetchUpcomingGames();
       await this.startHubConnection();
     },
     watch: {

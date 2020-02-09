@@ -62,7 +62,7 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <upcomingGames :upcomingGames="upcomingGames" heading="My Upcoming Games"/>
+          <upcomingGames :upcomingGames="upcomingGames" heading="My Upcoming Games" mode="user"/>
         </div>
 
         <div class="col-lg-4 col-md-12">
