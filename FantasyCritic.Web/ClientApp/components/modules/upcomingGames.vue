@@ -47,10 +47,10 @@
           { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         ],
         userUpcomingGamesFields: [
-          { key: 'league', label: 'League', sortable: true, thClass: 'bg-primary' },
+          { key: 'league', label: 'League', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         ],
         leagueUpcomingGamesFields: [
-          { key: 'publisher', label: 'Publisher', sortable: true, thClass: 'bg-primary' },
+          { key: 'publisher', label: 'Publisher', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         ],
       }
     },
