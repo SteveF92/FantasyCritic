@@ -11,9 +11,13 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class UpcomingGameViewModel
     {
-        public UpcomingGameViewModel(MasterGameYear masterGame, Publisher publisher, IClock clock)
+        public UpcomingGameViewModel(MasterGameYear masterGame, Publisher publisher)
         {
-            MasterGame = new MasterGameYearViewModel(masterGame, clock);
+            MasterGameID = masterGame.MasterGame.MasterGameID;
+            GameName = masterGame.MasterGame.GameName;
+            EstimatedReleaseDate = masterGame.MasterGame.EstimatedReleaseDate;
+            SortableEstimatedReleaseDate = masterGame.MasterGame.SortableEstimatedReleaseDate ?? LocalDate.MaxIsoValue;
+            ReleaseDate = masterGame.MasterGame.ReleaseDate;
             LeagueID = publisher.LeagueYear.League.LeagueID;
             Year = publisher.LeagueYear.Year;
             LeagueName = publisher.LeagueYear.League.LeagueName;
@@ -21,7 +25,11 @@ namespace FantasyCritic.Web.Models.Responses
             PublisherName = publisher.PublisherName;
         }
 
-        public MasterGameYearViewModel MasterGame { get; }
+        public Guid MasterGameID { get; }
+        public string GameName { get; }
+        public string EstimatedReleaseDate { get; }
+        public LocalDate SortableEstimatedReleaseDate { get; }
+        public LocalDate? ReleaseDate { get; }
         public Guid LeagueID { get; }
         public int Year { get; }
         public string LeagueName { get; }

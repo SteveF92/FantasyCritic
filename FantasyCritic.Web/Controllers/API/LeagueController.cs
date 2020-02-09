@@ -1331,7 +1331,7 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var publisherGame in orderedByReleaseDate)
             {
                 var publisher = publishers.Single(x => x.PublisherID == publisherGame.PublisherID);
-                viewModels.Add(new UpcomingGameViewModel(publisherGame.MasterGame.Value, publisher, _clock));
+                viewModels.Add(new UpcomingGameViewModel(publisherGame.MasterGame.Value, publisher));
             }
 
             return viewModels;
