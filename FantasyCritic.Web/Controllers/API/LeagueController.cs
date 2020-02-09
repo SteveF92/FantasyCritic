@@ -1311,7 +1311,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         private IReadOnlyList<UpcomingGameViewModel> GetUpcomingGameViewModels(IEnumerable<Publisher> publishers, bool userMode)
         {
-            var publisherGames = publishers.SelectMany(x => x.PublisherGames);
+            var publisherGames = publishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue);
             var easternZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
             if (easternZone is null)
             {
@@ -1323,8 +1323,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             var orderedByReleaseDate = publisherGames
                 .Distinct()
-                .Where(x => x.MasterGame.Value.MasterGame.SortableEstimatedReleaseDate > yesterday)
-                .OrderBy(x => x.MasterGame.Value.MasterGame.SortableEstimatedReleaseDate)
+                .Where(x => x.MasterGame.Value.MasterGame.GetDefiniteSortableEstimatedReleaseDate() > yesterday)
+                .OrderBy(x => x.MasterGame.Value.MasterGame.GetDefiniteSortableEstimatedReleaseDate())
                 .GroupBy(x => x.MasterGame.Value)
                 .Take(10);
 

@@ -66,6 +66,8 @@ namespace FantasyCritic.Lib.Domain
         public bool DoNotRefreshAnything { get; }
         public Instant AddedTimestamp { get; }
 
+        public LocalDate GetDefiniteSortableEstimatedReleaseDate() => SortableEstimatedReleaseDate ?? LocalDate.MaxIsoValue;
+
         public decimal? CriticScore
         {
             get
