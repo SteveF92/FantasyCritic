@@ -62,7 +62,9 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <upcomingGames :upcomingGames="upcomingGames" heading="My Upcoming Games" mode="user"/>
+          <b-card title="My Upcoming Games" class="homepage-section">
+            <upcomingGames :upcomingGames="upcomingGames" mode="user" />
+          </b-card>
         </div>
 
         <div class="col-lg-4 col-md-12">

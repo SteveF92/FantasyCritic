@@ -157,8 +157,10 @@
             </div>
             <div class="col-xl-9 col-lg-8 col-md-12">
               <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
-              <upcomingGames v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished" :upcomingGames="upcomingGames" heading="Upcoming Games" mode="league" />
-              <h2>Summary</h2>
+              <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
+                <h2>Upcoming Games</h2>
+                <upcomingGames :upcomingGames="upcomingGames" mode="league" />
+              </div>
               <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
             </div>
           </div>

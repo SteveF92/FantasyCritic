@@ -1,43 +1,41 @@
 <template>
-  <b-card :title="heading" class="homepage-section">
-    <div class="row" v-if="upcomingGames && upcomingGames.length > 0">
-      <b-table :sort-by.sync="sortBy"
-               :sort-desc.sync="sortDesc"
-               :items="upcomingGames"
-               :fields="upcomingGamesFields"
-               bordered
-               striped
-               small>
-        <template slot="gameName" slot-scope="data">
-          <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
-        </template>
-        <template slot="sortableEstimatedReleaseDate" slot-scope="data">
-          {{getReleaseDate(data.item)}}
-        </template>
-        <template slot="league" slot-scope="data">
-          <router-link v-if="data.item.leagueID" :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year }}">{{data.item.leagueName}}</router-link>
-          <span v-else>{{data.item.leagueName}}</span>
-        </template>
-        <template slot="publisher" slot-scope="data">
-          <span v-if="!data.item.counterPickPublisherID">
-            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
-          </span>
-          <span v-else>
-            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
-            - Counter Picked by:
-            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.counterPickPublisherID }}">{{ data.item.counterPickPublisherName }}</router-link>
-          </span>
-        </template>
-      </b-table>
-    </div>
-  </b-card>
+  <div v-if="upcomingGames && upcomingGames.length > 0">
+    <b-table :sort-by.sync="sortBy"
+              :sort-desc.sync="sortDesc"
+              :items="upcomingGames"
+              :fields="upcomingGamesFields"
+              bordered
+              striped
+              small>
+      <template slot="gameName" slot-scope="data">
+        <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+      </template>
+      <template slot="sortableEstimatedReleaseDate" slot-scope="data">
+        {{getReleaseDate(data.item)}}
+      </template>
+      <template slot="league" slot-scope="data">
+        <router-link v-if="data.item.leagueID" :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year }}">{{data.item.leagueName}}</router-link>
+        <span v-else>{{data.item.leagueName}}</span>
+      </template>
+      <template slot="publisher" slot-scope="data">
+        <span v-if="!data.item.counterPickPublisherID">
+          <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
+        </span>
+        <span v-else>
+          <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
+          - Counter Picked by:
+          <router-link :to="{ name: 'publisher', params: { publisherid: data.item.counterPickPublisherID }}">{{ data.item.counterPickPublisherName }}</router-link>
+        </span>
+      </template>
+    </b-table>
+  </div>
 </template>
 <script>
   import moment from "moment";
   import MasterGamePopover from "components/modules/masterGamePopover";
 
   export default {
-    props: ['upcomingGames', 'heading', 'mode'],
+    props: ['upcomingGames', 'mode'],
     data() {
       return {
         sortBy: 'sortableEstimatedReleaseDate',
