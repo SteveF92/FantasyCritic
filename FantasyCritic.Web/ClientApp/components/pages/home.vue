@@ -16,10 +16,11 @@
           <b-button variant="primary" v-if="!userRoyalePublisher" :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter }}" class="main-button">
             Play Critics Royale
           </b-button>
-          <b-button variant="primary" v-if="userRoyalePublisher" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID }}"" class="main-button">
+          <b-button variant="primary" v-if="userRoyalePublisher" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID }}" class="main-button">
             Critics Royale
           </b-button>
           <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
+          <b-button v-show="isAdmin" variant="warning" :to="{ name: 'adminConsole' }" class="main-button">Admin Console</b-button>
         </div>
       </div>
 
@@ -89,9 +90,6 @@
           </b-card>
         </div>
       </div>
-
-      <h5 v-if="isAdmin"><router-link :to="{ name: 'adminConsole' }">Admin Console</router-link></h5>
-
     </div>
   </div>
 </template>
