@@ -58,6 +58,7 @@ namespace FantasyCritic.MySQL.Entities
         public string GameName { get; set; }
         public int? SteamID { get; set; }
         public int? OpenCriticID { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public string EstimatedReleaseDate { get; set; }
         public int EligibilityLevel { get; set; }
         public bool YearlyInstallment { get; set; }
@@ -84,7 +85,13 @@ namespace FantasyCritic.MySQL.Entities
                 responseTimestamp = LocalDateTime.FromDateTime(ResponseTimestamp.Value).InZoneStrictly(DateTimeZone.Utc).ToInstant();
             }
 
-            return new MasterGameRequest(RequestID, user, requestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, EstimatedReleaseDate, eligibilityLevel,
+            LocalDate? releaseDate = null;
+            if (ReleaseDate.HasValue)
+            {
+                releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
+            }
+
+            return new MasterGameRequest(RequestID, user, requestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, releaseDate, EstimatedReleaseDate, eligibilityLevel,
                 YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame, Answered, responseTimestamp, ResponseNote, masterGame, Hidden);
         }
     }

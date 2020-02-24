@@ -36,7 +36,6 @@
                     <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
                   </td>
                   <td class="select-cell">
-
                     <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
                     <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
                   </td>
@@ -61,8 +60,17 @@
               </div>
 
               <div class="form-group">
-                <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
-                <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
+                <b-form-checkbox v-model="hasReleaseDate">
+                  <span class="checkbox-label">Does this game have a confirmed release date?</span>
+                </b-form-checkbox>
+                <div v-if="hasReleaseDate === true">
+                  <label for="releaseDate" class="control-label">Release Date</label>
+                  <input v-model="releaseDate" id="releaseDate" name="releaseDate" class="form-control input" />
+                </div>
+                <div v-if="hasReleaseDate === false">
+                  <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
+                  <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
+                </div>
               </div>
               <div class="form-group">
                 <label for="steamLink" class="control-label">Link to Steam Page (Optional)</label>
@@ -163,6 +171,7 @@
         requestNote: "",
         steamLink: "",
         openCriticLink: "",
+        releaseDate: "",
         estimatedReleaseDate: "",
         yearlyInstallment: false,
         earlyAccess: false,
@@ -171,7 +180,8 @@
         expansionPack: false,
         unannouncedGame: false,
         eligibilityLevel: 0,
-        possibleEligibilityLevels: null
+        possibleEligibilityLevels: null,
+        hasReleaseDate: null
       }
     },
     components: {
@@ -181,7 +191,9 @@
     },
     computed: {
       formIsValid() {
-        return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
+        let errorsValid = !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
+        let releaseDateValid = this.hasReleaseDate !== null;
+        return errorsValid && releaseDateValid;
       },
       minimumPossibleEligibilityLevel() {
         return 0;
@@ -234,6 +246,7 @@
           requestNote: this.requestNote,
           steamLink: this.steamLink,
           openCriticLink: this.openCriticLink,
+          releaseDate: this.releaseDate,
           estimatedReleaseDate: this.estimatedReleaseDate,
           eligibilityLevel: this.eligibilityLevel,
           yearlyInstallment: this.yearlyInstallment,
@@ -264,6 +277,7 @@
         this.requestNote = "";
         this.steamLink = "";
         this.openCriticLink = "";
+        this.releaseDate = "";
         this.estimatedReleaseDate = "";
         this.eligibilitySettings.yearlyInstallment = false;
         this.eligibilitySettings.earlyAccess = false;

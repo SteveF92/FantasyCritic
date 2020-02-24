@@ -15,6 +15,7 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
 
         public string SteamLink { get; set; }
         public string OpenCriticLink { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public string EstimatedReleaseDate { get; set; }
         public int EligibilityLevel { get; set; }
         public bool YearlyInstallment { get; set; }
@@ -39,9 +40,15 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
                 }
             }
 
+            LocalDate? releaseDate = null;
+            if (ReleaseDate.HasValue)
+            {
+                releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
+            }
+
             int? openCriticID = URLParsingExtensions.GetOpenCriticIDFromURL(OpenCriticLink);
 
-            return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, EstimatedReleaseDate, eligibilityLevel,
+            return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, releaseDate, EstimatedReleaseDate, eligibilityLevel,
                 YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame, false, null, null, Maybe<Lib.Domain.MasterGame>.None, false);
         }
     }
