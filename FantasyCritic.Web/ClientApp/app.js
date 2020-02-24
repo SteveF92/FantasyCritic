@@ -11,6 +11,7 @@ import Toasted from 'vue-toasted';
 import VeeValidate from 'vee-validate';
 import VueAnalytics from 'vue-analytics';
 import VueClipboard from 'vue-clipboard2';
+import VueDatePicker from '@mathieustan/vue-datepicker';
 
 import "./filters";
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -23,6 +24,10 @@ Vue.use(Toasted);
 Vue.use(VeeValidate, {
   inject: true,
   fieldsBagName: 'veeFields'
+});
+// Options: You can set lang by default
+Vue.use(VueDatePicker, {
+  lang: 'en'
 });
 
 Vue.use(VueAnalytics, {

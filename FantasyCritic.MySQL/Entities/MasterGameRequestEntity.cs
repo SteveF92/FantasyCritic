@@ -26,6 +26,7 @@ namespace FantasyCritic.MySQL.Entities
             GameName = domain.GameName;
             SteamID = domain.SteamID;
             OpenCriticID = domain.OpenCriticID;
+            ReleaseDate = domain.ReleaseDate?.ToDateTimeUnspecified();
             EstimatedReleaseDate = domain.EstimatedReleaseDate;
 
             EligibilityLevel = domain.EligibilityLevel.Level;

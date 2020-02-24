@@ -100,6 +100,9 @@
           unannouncedGame: request.unannouncedGame,
           requestNote: request.requestNote
         };
+        if (request.releaseDate) {
+          query.releaseDate = request.releaseDate;
+        }
         this.$router.push({ name: 'masterGameCreator', query: query });
       },
       assignGame(request) {

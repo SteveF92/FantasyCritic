@@ -11,7 +11,7 @@ namespace FantasyCritic.Web.Models.Responses
             RequestID = domain.RequestID;
             RequesterDisplayName = domain.User.DisplayName;
             GameName = domain.GameName;
-            ReleaseDate = domain.ReleaseDate?.ToDateTimeUnspecified();
+            ReleaseDate = domain.ReleaseDate;
             EstimatedReleaseDate = domain.EstimatedReleaseDate;
             SteamID = domain.SteamID;
             OpenCriticID = domain.OpenCriticID;
@@ -38,7 +38,7 @@ namespace FantasyCritic.Web.Models.Responses
         public Guid RequestID { get; }
         public string RequesterDisplayName { get; }
         public string GameName { get; }
-        public DateTime? ReleaseDate { get; }
+        public LocalDate? ReleaseDate { get; }
         public string EstimatedReleaseDate { get; }
         public int? SteamID { get; }
         public int? OpenCriticID { get; }

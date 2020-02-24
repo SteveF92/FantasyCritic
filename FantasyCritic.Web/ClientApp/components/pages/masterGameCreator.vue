@@ -43,16 +43,19 @@
             </div>
 
             <div class="form-group">
+              <label for="releaseDate" class="control-label">Release Date</label>
+              <VueDatePicker v-model="releaseDate" />
+            </div>
+
+            <b-button variant="info" size="sm" v-on:click="propagateDate">Propagate Date</b-button>
+
+            <div class="form-group">
               <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
               <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
             </div>
             <div class="form-group">
               <label for="sortableEstimatedReleaseDate" class="control-label">Sortable Estimated Release Date</label>
-              <input v-model="sortableEstimatedReleaseDate" id="sortableEstimatedReleaseDate" name="sortableEstimatedReleaseDate" class="form-control input" />
-            </div>
-            <div class="form-group">
-              <label for="releaseDate" class="control-label">Release Date</label>
-              <input v-model="releaseDate" id="releaseDate" name="releaseDate" class="form-control input" />
+              <VueDatePicker v-model="sortableEstimatedReleaseDate" />
             </div>
 
             <div class="form-group">
@@ -136,8 +139,8 @@
         openCriticID: null,
         gameName: "",
         estimatedReleaseDate: "",
-        sortableEstimatedReleaseDate: "",
-        releaseDate: "",
+        sortableEstimatedReleaseDate: new Date(),
+        releaseDate: new Date(),
         eligibilityLevel: 0,
         yearlyInstallment: false,
         earlyAccess: false,
@@ -228,7 +231,10 @@
       populateFieldsFromURL() {
         this.gameName = this.$route.query.gameName;
         this.estimatedReleaseDate = this.$route.query.estimatedReleaseDate;
-        this.releaseDate = this.$route.query.releaseDate;
+        if (this.$route.query.releaseDate !== undefined) {
+          this.releaseDate = this.$route.query.releaseDate;
+          this.sortableEstimatedReleaseDate = this.$route.query.releaseDate;
+        }
         this.steamID = this.$route.query.steamID;
         this.openCriticID = this.$route.query.openCriticID;
         this.eligibilityLevel = this.$route.query.eligibilityLevel;
@@ -239,6 +245,10 @@
         this.expansionPack = this.$route.query.expansionPack;
         this.unannouncedGame = this.$route.query.unannouncedGame;
         this.requestNote = this.$route.query.requestNote;
+      },
+      propagateDate() {
+        this.sortableEstimatedReleaseDate = this.releaseDate;
+        this.estimatedReleaseDate = this.releaseDate;
       }
     },
     mounted() {

@@ -65,7 +65,7 @@
                 </b-form-checkbox>
                 <div v-if="hasReleaseDate === true">
                   <label for="releaseDate" class="control-label">Release Date</label>
-                  <input v-model="releaseDate" id="releaseDate" name="releaseDate" class="form-control input" />
+                  <VueDatePicker v-model="releaseDate" />
                 </div>
                 <div v-if="hasReleaseDate === false">
                   <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
@@ -171,7 +171,7 @@
         requestNote: "",
         steamLink: "",
         openCriticLink: "",
-        releaseDate: "",
+        releaseDate: new Date(),
         estimatedReleaseDate: "",
         yearlyInstallment: false,
         earlyAccess: false,
