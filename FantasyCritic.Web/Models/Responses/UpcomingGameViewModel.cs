@@ -33,7 +33,7 @@ namespace FantasyCritic.Web.Models.Responses
                 }
                 else
                 {
-                    LeagueName = "Multiple";
+                    LeagueName = $"{publishers.Count()} Leagues";
                     PublisherName = "Multiple";
                 }
             }
