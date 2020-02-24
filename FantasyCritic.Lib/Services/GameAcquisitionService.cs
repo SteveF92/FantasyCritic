@@ -72,6 +72,11 @@ namespace FantasyCritic.Lib.Services
                 {
                     claimErrors.Add(new ClaimError("Cannot counter-pick a game that someone else has already counter-picked.", false));
                 }
+                bool thisPlayerHasCounterPick = thisPlayersGames.Where(x => x.CounterPick).ContainsGame(request);
+                if (thisPlayerHasCounterPick)
+                {
+                    claimErrors.Add(new ClaimError("You already have that counter-pick.", false));
+                }
 
                 bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick).ContainsGame(request);
 

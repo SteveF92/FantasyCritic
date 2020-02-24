@@ -116,9 +116,14 @@ namespace FantasyCritic.Lib.Services
             return draftComplete;
         }
 
-        public Task SetDraftPause(LeagueYear leagueYear, bool pause)
+        public async Task SetDraftPause(LeagueYear leagueYear, bool pause)
         {
-            return _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
+            await _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
+            var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
+            if (!pause)
+            {
+                await AutoDraftForLeague(updatedLeagueYear.Value, 0, 0);
+            }
         }
 
         public async Task UndoLastDraftAction(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
@@ -135,7 +140,7 @@ namespace FantasyCritic.Lib.Services
         {
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
             int publishersCount = publishersInLeague.Count;
-            if (publishersCount != draftPositions.Count())
+            if (publishersCount != draftPositions.Count)
             {
                 return Result.Fail("Not setting all publishers.");
             }
@@ -240,6 +245,7 @@ namespace FantasyCritic.Lib.Services
 
         private async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
         {
+            await Task.Delay(1000);
             var updatedPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
             var nextPublisher = GetNextDraftPublisher(leagueYear, updatedPublishers);
             if (nextPublisher.HasNoValue)
@@ -278,11 +284,16 @@ namespace FantasyCritic.Lib.Services
             }
             else if (draftPhase.Equals(DraftPhase.CounterPicks))
             {
-                IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year, true);
-                var orderedByCounterPick = masterGames.OrderByDescending(x => x.PercentCounterPick);
-                foreach (var possibleGame in orderedByCounterPick)
+                var otherPublisherGames = updatedPublishers.Where(x => x.PublisherID != nextPublisher.Value.PublisherID)
+                    .SelectMany(x => x.PublisherGames)
+                    .Where(x => !x.CounterPick)
+                    .Where(x => x.MasterGame.HasValue);
+                var possibleGames = otherPublisherGames
+                    .Select(x => x.MasterGame.Value)
+                    .OrderByDescending(x => x.PercentCounterPick);
+                foreach (var possibleGame in possibleGames)
                 {
-                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.MasterGame.GameName, true, false, false, possibleGame.MasterGame, 
+                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.MasterGame.GameName, true, false, true, possibleGame.MasterGame, 
                         draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
                     var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers);
                     if (autoDraftResult.Success)
@@ -297,7 +308,6 @@ namespace FantasyCritic.Lib.Services
                 return (standardGamesAdded, counterPicksAdded);
             }
 
-            await Task.Delay(10);
             return await AutoDraftForLeague(leagueYear, standardGamesAdded, counterPicksAdded);
         }
 
