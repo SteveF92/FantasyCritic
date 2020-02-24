@@ -63,11 +63,11 @@
                 <b-form-checkbox v-model="hasReleaseDate">
                   <span class="checkbox-label">Does this game have a confirmed release date?</span>
                 </b-form-checkbox>
-                <div v-if="hasReleaseDate === true">
+                <div v-if="hasReleaseDate">
                   <label for="releaseDate" class="control-label">Release Date</label>
                   <VueDatePicker v-model="releaseDate" />
                 </div>
-                <div v-if="hasReleaseDate === false">
+                <div v-if="!hasReleaseDate">
                   <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
                   <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
                 </div>
@@ -181,7 +181,7 @@
         unannouncedGame: false,
         eligibilityLevel: 0,
         possibleEligibilityLevels: null,
-        hasReleaseDate: null
+        hasReleaseDate: false
       }
     },
     components: {
@@ -192,8 +192,7 @@
     computed: {
       formIsValid() {
         let errorsValid = !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
-        let releaseDateValid = this.hasReleaseDate !== null;
-        return errorsValid && releaseDateValid;
+        return errorsValid;
       },
       minimumPossibleEligibilityLevel() {
         return 0;
