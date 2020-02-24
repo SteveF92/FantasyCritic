@@ -29,7 +29,7 @@
             </router-link>
             <span class="publisher-badge badge badge-pill badge-primary badge-info" v-show="data.item.publisher.autoDraft">Auto Draft</span>
           </span>
-        <span v-if="showRemovePublisher(data.item.publisher)">
+        <span v-if="data.item.publisher && showRemovePublisher">
           <b-button variant="danger" size="sm" v-on:click="removePublisher(data.item.publisher)">Remove Publisher</b-button>
         </span>
         <span v-if="data.item.user && !data.item.publisher">
@@ -120,6 +120,17 @@
         if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
           return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
         }
+      },
+      showRemovePublisher() {
+        if (!this.league.isManager) {
+          return false;
+        }
+
+        if (this.leagueYear.playStatus.playStarted) {
+          return false;
+        }
+
+        return true;
       }
     },
     methods: {
@@ -134,17 +145,7 @@
 
         return matchingLeagueLevelPlayer.removable;
       },
-      showRemovePublisher() {
-        if (!this.league.isManager) {
-          return false;
-        }
-
-        if (this.leagueYear.playStatus.playStarted) {
-          return false;
-        }
-
-        return true;
-      },
+      
       removeUser(user) {
         var model = {
           leagueID: this.leagueYear.leagueID,
