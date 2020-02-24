@@ -7,7 +7,10 @@
         <b-button variant="info" :to="{ name: 'adminConsole' }">Admin Console</b-button>
       </div>
       <hr />
-      <div v-if="createdGame" class="alert alert-success">Master Game created: {{createdGame.masterGameID}}</div>
+      <div v-if="createdGame" class="alert alert-success">
+        Master Game created: {{createdGame.masterGameID}}
+        <b-button variant="info" size="sm" v-clipboard:copy="createdGame.masterGameID">Copy</b-button>
+      </div>
       <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
       <div v-if="openCriticID || steamID">
         <h2>Links</h2>
