@@ -52,7 +52,7 @@
           </p>
         </b-modal>
 
-        <div v-if="inviteCode && !league.userIsInLeague" class="alert alert-info">
+        <div v-if="inviteCode && !league.userIsInLeague && !leagueYear.playStatus.playStarted" class="alert alert-info">
           You have been invited to join this league.
           <b-button variant="primary" v-if="isAuth" v-on:click="joinWithInviteLink()" class="mx-2">Join League</b-button>
           <template v-else>

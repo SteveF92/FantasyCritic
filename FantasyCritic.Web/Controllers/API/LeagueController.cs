@@ -437,7 +437,21 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (inviteLink.Value.League.LeagueID != request.LeagueID)
+            var league = inviteLink.Value.League;
+
+            if (league.LeagueID != request.LeagueID)
+            {
+                return BadRequest();
+            }
+            
+            var mostRecentYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, league.Years.Max());
+            if (mostRecentYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            bool mostRecentYearIsStarted = mostRecentYear.Value.PlayStatus.PlayStarted;
+            if (mostRecentYearIsStarted)
             {
                 return BadRequest();
             }
