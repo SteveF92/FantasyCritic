@@ -5,7 +5,10 @@
 
       <div v-if="actionedGames && actionedGames.length === 0" class="alert alert-info">No actioned games.</div>
       <div class="row" v-if="actionedGames && actionedGames.length !== 0">
-        <masterGamesTable :masterGames="actionedGames"></masterGamesTable>
+        <h2>Drops</h2>
+        <masterGamesTable :masterGames="actionedGames.dropActions"></masterGamesTable>
+        <h2>Pickups</h2>
+        <masterGamesTable :masterGames="actionedGames.pickupActions"></masterGamesTable>
       </div>
       <div v-else class="spinner">
         <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />

@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MoreLinq;
 using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
@@ -155,7 +156,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        public async Task<ActionResult<List<LeagueActionViewModel>>> GetCurrentActionedGames()
+        public async Task<ActionResult<ActionedGameSet>> GetCurrentActionedGames()
         {
             var supportedYears = await _interLeagueService.GetSupportedYears();
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
@@ -169,20 +170,25 @@ namespace FantasyCritic.Web.Controllers.API
             IEnumerable<LeagueAction> failingDrops = dropResults.LeagueActions.Where(x => x.IsFailed);
             var failingDropGames = failingDrops.Select(x => x.MasterGameName).Distinct();
 
-            List<MasterGame> masterGames = new List<MasterGame>();
+            List<MasterGameViewModel> pickupGames = new List<MasterGameViewModel>();
+            List<MasterGameViewModel> bidGames = new List<MasterGameViewModel>();
             foreach (var supportedYear in supportedYears)
             {
                 var allBids = await _gameAcquisitionService.GetActiveAcquistitionBids(supportedYear);
+                var distinctBids = allBids.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
+                var bidVMs = distinctBids.Select(x => new MasterGameViewModel(x.MasterGame, _clock, failingBidGames.Contains(x.MasterGame.GameName)));
+                pickupGames.AddRange(bidVMs);
+
                 var allDrops = await _gameAcquisitionService.GetActiveDropRequests(supportedYear);
-                masterGames.AddRange(allBids.SelectMany(x => x.Value.Select(y => y.MasterGame)));
-                masterGames.AddRange(allDrops.SelectMany(x => x.Value.Select(y => y.MasterGame)));
+                var distinctDrops = allDrops.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
+                var dropVMs = distinctDrops.Select(x => new MasterGameViewModel(x.MasterGame, _clock, failingDropGames.Contains(x.MasterGame.GameName)));
+                bidGames.AddRange(dropVMs);
             }
 
-            masterGames = masterGames.Distinct().ToList();
-            var failingGames = failingBidGames.Concat(failingDropGames);
-            
-            var vms = masterGames.Distinct().Select(x => new MasterGameViewModel(x, _clock, failingGames.Contains(x.GameName)));
-            return Ok(vms);
+            pickupGames = pickupGames.OrderByDescending(x => x.Error).ThenBy(x => x.SortableEstimatedReleaseDate).ToList();
+            bidGames = bidGames.OrderByDescending(x => x.Error).ThenBy(x => x.SortableEstimatedReleaseDate).ToList();
+            ActionedGameSet fullSet = new ActionedGameSet(pickupGames, bidGames);
+            return Ok(fullSet);
         }
 
         [HttpPost]
