@@ -85,37 +85,31 @@
         props: ['leagueYear', 'maximumEligibilityLevel'],
         methods: {
           searchGame() {
-            this.bidResult = null;
-            this.possibleMasterGames = [];
-            this.searched = false;
-            this.showingTopAvailable = false;
+            this.clearDataExceptSearch();
             this.isBusy = true;
             axios
                 .get('/api/league/PossibleMasterGames?gameName=' + this.bidGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
                 .then(response => {
                   this.possibleMasterGames = response.data;
                   this.isBusy = false;
+                  this.searched = true;
                 })
                 .catch(response => {
                   this.isBusy = false;
                 });
             },
             getTopGames() {
-              this.possibleMasterGames = [];
-              this.bidMasterGame = null;
-              this.bidResult = null;
-              this.showingTopAvailable = false;
+              this.clearDataExceptSearch();
+              this.isBusy = true;
               axios
                 .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
                 .then(response => {
                   this.possibleMasterGames = response.data;
+                  this.isBusy = false;
                   this.showingTopAvailable = true;
-                  this.searched = true;
-                  this.showingUnlistedField = false;
-                  this.draftMasterGame = null;
                 })
                 .catch(response => {
-
+                  this.isBusy = false;
                 });
             },
             bidGame() {
@@ -148,15 +142,18 @@
                       this.errorInfo = response.response.data;
                     });
             },
-            clearData() {
+            clearDataExceptSearch() {
               this.bidResult = null;
-              this.bidGameName = "";
               this.bidMasterGame = null;
               this.bidAmount = 0;
               this.possibleMasterGames = [];
               this.searched = false;
               this.showingTopAvailable = false;
               this.isBusy = false;
+            },
+            clearData() {
+              this.clearDataExceptSearch();
+              this.bidGameName = "";
             },
             newGameSelected() {
               this.bidResult = null;

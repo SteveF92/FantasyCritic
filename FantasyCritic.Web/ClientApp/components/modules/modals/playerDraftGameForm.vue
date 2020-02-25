@@ -100,59 +100,45 @@
     props: ['userPublisher', 'maximumEligibilityLevel', 'isManager', 'year'],
     methods: {
       searchGame() {
-        this.draftResult = null;
-        this.draftMasterGame = null;
-        this.possibleMasterGames = [];
-        this.showingTopAvailable = false;
-        this.showingQueuedGames = false;
+        this.clearDataExceptSearch();
+        this.isBusy = true;
         axios
           .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
           .then(response => {
             this.possibleMasterGames = response.data;
+            this.isBusy = false;
             this.searched = true;
-            this.showingUnlistedField = false;
-            this.draftMasterGame = null;
           })
           .catch(response => {
-
+            this.isBusy = false;
           });
       },
       getTopGames() {
-        this.possibleMasterGames = [];
-        this.draftMasterGame = null;
-        this.draftResult = null;
-        this.showingTopAvailable = false;
-        this.showingQueuedGames = false;
+        this.clearDataExceptSearch();
+        this.isBusy = true;
         axios
           .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
           .then(response => {
             this.possibleMasterGames = response.data;
+            this.isBusy = false;
             this.showingTopAvailable = true;
-            this.searched = true;
-            this.showingUnlistedField = false;
-            this.draftMasterGame = null;
           })
           .catch(response => {
-
+            this.isBusy = false;
           });
       },
       getQueuedGames() {
-        this.possibleMasterGames = [];
-        this.draftMasterGame = null;
-        this.draftResult = null;
-        this.showingTopAvailable = false;
-        this.showingQueuedGames = false;
+        this.clearDataExceptSearch();
+        this.isBusy = true;
         axios
           .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID)
           .then(response => {
             this.possibleMasterGames = response.data;
+            this.isBusy = false;
             this.showingQueuedGames = true;
-            this.searched = true;
-            this.showingUnlistedField = false;
-            this.draftMasterGame = null;
           })
           .catch(response => {
-
+            this.isBusy = false;
           });
       },
       showUnlistedField() {
@@ -200,9 +186,8 @@
                       
         });
       },
-      clearData() {
+      clearDataExceptSearch() {
         this.isBusy = false;
-        this.searchGameName = null;
         this.draftUnlistedGame = null;
         this.draftMasterGame = null;
         this.draftResult = null;
@@ -212,6 +197,10 @@
         this.showingTopAvailable = false;
         this.showingQueuedGames = false;
         this.showingUnlistedField = false;
+      },
+      clearData() {
+        this.clearDataExceptSearch();
+        this.searchGameName = null;
       },
       newGameSelected() {
         this.draftResult = null;

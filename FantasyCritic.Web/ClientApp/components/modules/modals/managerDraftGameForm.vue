@@ -101,38 +101,31 @@
   props: ['nextPublisherUp', 'maximumEligibilityLevel', 'year'],
   methods: {
     searchGame() {
-      this.possibleMasterGames = [];
-      this.draftMasterGame = null;
-      this.draftResult = null;
-      this.showingTopAvailable = false;
+      this.clearDataExceptSearch();
+      this.isBusy = true;
       axios
         .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
         .then(response => {
           this.possibleMasterGames = response.data;
+          this.isBusy = false;
           this.searched = true;
-          this.showingUnlistedField = false;
-          this.draftMasterGame = null;
         })
         .catch(response => {
-
+            this.isBusy = false;
         });
     },
     getTopGames() {
-      this.possibleMasterGames = [];
-      this.draftMasterGame = null;
-      this.draftResult = null;
-      this.showingTopAvailable = false;
+      this.clearDataExceptSearch();
+      this.isBusy = true;
       axios
         .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
         .then(response => {
           this.possibleMasterGames = response.data;
+          this.isBusy = false;
           this.showingTopAvailable = true;
-          this.searched = true;
-          this.showingUnlistedField = false;
-          this.draftMasterGame = null;
         })
         .catch(response => {
-
+            this.isBusy = false;
         });
     },
     showUnlistedField() {
@@ -181,9 +174,8 @@
                       
         });
     },
-    clearData() {
+    clearDataExceptSearch() {
       this.isBusy = false;
-      this.searchGameName = null;
       this.draftUnlistedGame = null;
       this.draftMasterGame = null;
       this.draftResult = null;
@@ -194,6 +186,10 @@
       this.claimCounterPick = false;
       this.claimPublisher = null;
       this.showingTopAvailable = false;
+    },
+    clearData() {
+      this.clearDataExceptSearch();
+      this.searchGameName = null;
     },
     newGameSelected() {
       this.draftResult = null;

@@ -102,18 +102,17 @@
         props: ['publishers', 'maximumEligibilityLevel', 'year'],
         methods: {
           searchGame() {
-            this.possibleMasterGames = [];
-            this.claimResult = null;
+            this.clearDataExceptSearch();
+            this.isBusy = true;
             axios
                 .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publishers[0].leagueID)
                 .then(response => {
                   this.possibleMasterGames = response.data;
+                  this.isBusy = false;
                   this.searched = true;
-                  this.showingUnlistedField = false;
-                  this.claimMasterGame = null;
                 })
                 .catch(response => {
-
+                  this.isBusy = false;
                 });
             },
             addGame() {
@@ -160,8 +159,7 @@
             this.showingUnlistedField = true;
             this.draftUnlistedGame = this.searchGameName;
           },
-          clearData() {
-            this.searchGameName = null;
+          clearDataExceptSearch() {
             this.claimUnlistedGame = null;
             this.claimMasterGame = null;
             this.claimResult = null;
@@ -171,6 +169,10 @@
             this.showingUnlistedField = false;
             this.claimCounterPick = false;
             this.claimPublisher = null;
+          },
+          clearData() {
+            this.clearDataExceptSearch();
+            this.searchGameName = null;
           },
           newGameSelected() {
             this.claimResult = null;

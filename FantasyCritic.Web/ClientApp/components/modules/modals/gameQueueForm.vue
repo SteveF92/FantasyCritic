@@ -69,7 +69,8 @@
         queueResult: null,
         desiredQueueRanks: [],
         gameToQueue: null,
-        showingTopAvailable: false
+        showingTopAvailable: false,
+        isBusy: false
       }
     },
     methods: {
@@ -85,31 +86,32 @@
           });
       },
       searchGame() {
-        this.queueResult = null;
-        this.showingTopAvailable = false;
-        this.possibleMasterGames = [];
+        this.clearDataExceptSearch();
+        this.isBusy = true;
+
         axios
           .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publisher.leagueID)
           .then(response => {
             this.possibleMasterGames = response.data;
-            this.showingTopAvailable = false;
+            this.isBusy = false;
           })
           .catch(response => {
-
+            this.isBusy = false;
           });
       },
       getTopGames() {
-        this.queueResult = null;
-        this.showingTopAvailable = false;
-        this.possibleMasterGames = [];
+        this.clearDataExceptSearch();
+        this.isBusy = true;
+
         axios
           .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.publisher.leagueID)
           .then(response => {
             this.possibleMasterGames = response.data;
             this.showingTopAvailable = true;
+            this.isBusy = false;
           })
           .catch(response => {
-
+            this.isBusy = false;
           });
       },
       addGameToQueue() {
@@ -169,6 +171,12 @@
       clearQueueData() {
         this.desiredQueueRanks = this.queuedGames;
         this.queueResult = null;
+      },
+      clearDataExceptSearch() {
+        this.queueResult = null;
+        this.possibleMasterGames = [];
+        this.showingTopAvailable = false;
+        this.isBusy = false;
       }
     },
     mounted() {
