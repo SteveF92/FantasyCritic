@@ -24,7 +24,9 @@ namespace FantasyCritic.Lib.Services
         public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
         {
             HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
-                .SelectMany(x => x.MyMasterGames)
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => !x.CounterPick && x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
                 .ToHashSet();
 
             HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
@@ -46,7 +48,9 @@ namespace FantasyCritic.Lib.Services
         public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGames(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
         {
             HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
-                .SelectMany(x => x.MyMasterGames)
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => !x.CounterPick && x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
                 .ToHashSet();
 
             HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
@@ -75,7 +79,9 @@ namespace FantasyCritic.Lib.Services
             IEnumerable<QueuedGame> queuedGames)
         {
             HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
-                .SelectMany(x => x.MyMasterGames)
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => !x.CounterPick && x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
                 .ToHashSet();
 
             HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
@@ -89,7 +95,7 @@ namespace FantasyCritic.Lib.Services
             {
                 var masterGame = masterGameYearDictionary[queuedGame.MasterGame.MasterGameID];
 
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, 
                     myPublisherMasterGames, currentPublisher.LeagueYear.Options.AllowedEligibilitySettings);
                 possibleMasterGames.Add(possibleMasterGame);
             }
@@ -97,12 +103,12 @@ namespace FantasyCritic.Lib.Services
             return possibleMasterGames;
         }
 
-        public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherMasterGames, HashSet<MasterGame> myPublisherMasterGames,
+        public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherStandardMasterGames, HashSet<MasterGame> myPublisherMasterGames,
             EligibilitySettings eligibilitySettings)
         {
             var eligibilityErrors = eligibilitySettings.GameIsEligible(masterGame.MasterGame);
             bool isEligible = !eligibilityErrors.Any();
-            bool taken = publisherMasterGames.Contains(masterGame.MasterGame);
+            bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
             bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
             bool isReleased = masterGame.MasterGame.IsReleased(_clock);
             bool willRelease = masterGame.WillRelease();

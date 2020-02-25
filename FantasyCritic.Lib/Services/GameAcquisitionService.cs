@@ -50,12 +50,18 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
 
             bool gameAlreadyClaimed = standardGamesForYear.ContainsGame(request);
+            bool thisPlayerAlreadyHas = thisPlayersGames.ContainsGame(request);
 
             if (!request.CounterPick)
             {
                 if (gameAlreadyClaimed)
                 {
                     claimErrors.Add(new ClaimError("Cannot claim a game that someone already has.", false));
+                }
+
+                if (thisPlayerAlreadyHas)
+                {
+                    claimErrors.Add(new ClaimError("Cannot claim a game that you already have.", false));
                 }
 
                 int leagueDraftGames = yearOptions.StandardGames;
