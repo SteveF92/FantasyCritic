@@ -45,10 +45,11 @@ namespace FantasyCritic.Lib.Services
             IReadOnlyList<Publisher> otherPublishers = publishersInLeague.Where(x => x.User.UserID != request.Publisher.User.UserID).ToList();
 
             IReadOnlyList<PublisherGame> gamesForYear = publishersInLeague.SelectMany(x => x.PublisherGames).ToList();
+            IReadOnlyList<PublisherGame> standardGamesForYear = gamesForYear.Where(x => !x.CounterPick).ToList();
             IReadOnlyList<PublisherGame> thisPlayersGames = request.Publisher.PublisherGames;
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
 
-            bool gameAlreadyClaimed = gamesForYear.ContainsGame(request);
+            bool gameAlreadyClaimed = standardGamesForYear.ContainsGame(request);
 
             if (!request.CounterPick)
             {
