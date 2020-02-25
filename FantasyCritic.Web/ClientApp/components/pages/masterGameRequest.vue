@@ -65,7 +65,7 @@
                 </b-form-checkbox>
                 <div v-if="hasReleaseDate">
                   <label for="releaseDate" class="control-label">Release Date</label>
-                  <VueDatePicker v-model="releaseDate" />
+                  <VueDatePicker v-model="releaseDate" name="Release Date" color="#D6993A" fullscreen-mobile no-input />
                 </div>
                 <div v-if="!hasReleaseDate">
                   <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
@@ -245,7 +245,6 @@
           requestNote: this.requestNote,
           steamLink: this.steamLink,
           openCriticLink: this.openCriticLink,
-          releaseDate: this.releaseDate,
           estimatedReleaseDate: this.estimatedReleaseDate,
           eligibilityLevel: this.eligibilityLevel,
           yearlyInstallment: this.yearlyInstallment,
@@ -255,6 +254,11 @@
           expansionPack: this.expansionPack,
           unannouncedGame: this.unannouncedGame
         };
+
+        if (this.hasReleaseDate) {
+          request.releaseDate = this.releaseDate;
+        }
+
         axios
           .post('/api/game/CreateMasterGameRequest', request)
           .then(response => {

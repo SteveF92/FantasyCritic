@@ -162,3 +162,8 @@ div.alert {
     background-color: #D6993A !important;
     font-weight: bold;
 }
+
+.datepicker__title {
+    background-color: #D6993A;
+    font-weight: bolder;
+}

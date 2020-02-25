@@ -44,10 +44,11 @@
 
             <div class="form-group">
               <label for="releaseDate" class="control-label">Release Date</label>
-              <VueDatePicker v-model="releaseDate" />
+              <VueDatePicker v-model="releaseDate" name="Release Date" color="#D6993A" fullscreen-mobile no-input />
             </div>
 
             <b-button variant="info" size="sm" v-on:click="propagateDate">Propagate Date</b-button>
+            <b-button variant="warning" size="sm" v-on:click="clearDates">Clear Dates</b-button>
 
             <div class="form-group">
               <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
@@ -55,7 +56,7 @@
             </div>
             <div class="form-group">
               <label for="sortableEstimatedReleaseDate" class="control-label">Sortable Estimated Release Date</label>
-              <VueDatePicker v-model="sortableEstimatedReleaseDate" />
+              <VueDatePicker v-model="sortableEstimatedReleaseDate" name="Sortable Estimated Release Date" color="#D6993A" fullscreen-mobile no-input />
             </div>
 
             <div class="form-group">
@@ -139,8 +140,8 @@
         openCriticID: null,
         gameName: "",
         estimatedReleaseDate: "",
-        sortableEstimatedReleaseDate: new Date(),
-        releaseDate: new Date(),
+        sortableEstimatedReleaseDate: "2020-12-31",
+        releaseDate: null,
         eligibilityLevel: 0,
         yearlyInstallment: false,
         earlyAccess: false,
@@ -249,6 +250,11 @@
       propagateDate() {
         this.sortableEstimatedReleaseDate = this.releaseDate;
         this.estimatedReleaseDate = this.releaseDate;
+      },
+      clearDates() {
+        this.releaseDate = null;
+        this.sortableEstimatedReleaseDate = null;
+        this.estimatedReleaseDate = null;
       }
     },
     mounted() {
