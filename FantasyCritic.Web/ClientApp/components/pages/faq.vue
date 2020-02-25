@@ -406,7 +406,7 @@
         <div slot="question">My game has a critic score but no points. What gives?</div>
         <div slot="answer">
           The game needs to release before you get the points. So if reviews come out 3 days before the game, you will see a critic score but no points for a few days. The only time this will actually
-          make a difference if a game comes out in early January but has reviews come out in late December. In that case, you won't get the points for the year, because the game didn't come out.
+          make a difference is if a game comes out in early January but has reviews come out in late December. In that case, you won't get the points for the year, because the game didn't come out.
         </div>
       </faqCollapse>
       <faqCollapse>
