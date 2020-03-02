@@ -61,7 +61,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return StatusCode(401);
             }
 
-            var newJwtToken = _tokenService.GenerateAccessToken(principal.Claims);
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = user.GetUserClaims(roles);
+            var newJwtToken = _tokenService.GenerateAccessToken(claims);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
             await _userManager.RemoveRefreshToken(user, request.RefreshToken);

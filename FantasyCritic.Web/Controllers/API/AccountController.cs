@@ -294,18 +294,8 @@ namespace FantasyCritic.Web.Controllers.API
         private async Task<ObjectResult> GetToken(FantasyCriticUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            var usersClaims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, user.NormalizedEmailAddress),
-                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-            };
-
-            foreach (var role in roles)
-            {
-                usersClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var jwtToken = _tokenService.GenerateAccessToken(usersClaims);
+            var claims = user.GetUserClaims(roles);
+            var jwtToken = _tokenService.GenerateAccessToken(claims);
             var refreshToken = _tokenService.GenerateRefreshToken();
             await _userManager.AddRefreshToken(user, refreshToken);
             await _userManager.ClearOldRefreshTokens(user);
@@ -314,7 +304,7 @@ namespace FantasyCritic.Web.Controllers.API
             return new ObjectResult(new
             {
                 token = jwtString,
-                refreshToken = refreshToken,
+                refreshToken,
                 expiration = jwtToken.ValidTo
             });
         }

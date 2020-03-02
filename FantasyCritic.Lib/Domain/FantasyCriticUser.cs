@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using NodaTime;
@@ -36,6 +37,22 @@ namespace FantasyCritic.Lib.Domain
         public void UpdateLastUsedCredentials(Instant currentInstant)
         {
             LastChangedCredentials = currentInstant;
+        }
+
+        public IReadOnlyList<Claim> GetUserClaims(IEnumerable<string> roles)
+        {
+            var usersClaims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, NormalizedEmailAddress),
+                new Claim(ClaimTypes.NameIdentifier, UserID.ToString()),
+            };
+
+            foreach (var role in roles)
+            {
+                usersClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            return usersClaims;
         }
 
         public bool Equals(FantasyCriticUser other)
