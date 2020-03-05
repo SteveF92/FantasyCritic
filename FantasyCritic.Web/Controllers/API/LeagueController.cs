@@ -921,6 +921,7 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
+        [AllowAnonymous]
         public async Task<ActionResult<List<UpcomingGameViewModel>>> LeagueUpcomingGames(Guid leagueID, int year)
         {
             Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
