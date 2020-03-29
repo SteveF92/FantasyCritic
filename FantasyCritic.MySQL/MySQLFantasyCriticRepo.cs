@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
@@ -1512,6 +1513,11 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync("update tbl_meta_systemwidesettings set BidProcessingMode = @modeOn;", new { modeOn });
             }
+        }
+
+        public Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction)
+        {
+            throw new NotImplementedException();
         }
 
         public Task DeletePublisher(Publisher publisher)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.FakeRepo.Factories;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Interfaces;
 using NodaTime;
 
@@ -389,6 +390,11 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task SetBidProcessingMode(bool modeOn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction)
         {
             throw new NotImplementedException();
         }
