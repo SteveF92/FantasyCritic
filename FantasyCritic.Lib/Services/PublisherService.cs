@@ -99,6 +99,11 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
+        public async Task EditPublisher(EditPublisherRequest editValues)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task RemovePublisher(Publisher publisher)
         {
             var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);

@@ -523,6 +523,49 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> EditPublisher([FromBody] PublisherEditRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (publisher.Value.LeagueYear.League.LeagueID != league.Value.LeagueID)
+            {
+                return Forbid();
+            }
+
+            if (publisher.Value.LeagueYear.PlayStatus.PlayStarted)
+            {
+                return BadRequest();
+            }
+
+            var editValues = request.ToDomain(publisher.Value);
+            await _publisherService.EditPublisher(editValues);
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RemovePublisher([FromBody] PublisherRemoveRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
