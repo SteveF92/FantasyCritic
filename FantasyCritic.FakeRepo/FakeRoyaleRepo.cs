@@ -25,6 +25,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task ChangePublisherName(RoyalePublisher publisher, string publisherName)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
         {
             throw new NotImplementedException();

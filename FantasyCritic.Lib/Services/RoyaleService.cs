@@ -57,6 +57,11 @@ namespace FantasyCritic.Lib.Services
             return publisher;
         }
 
+        public Task ChangePublisherName(RoyalePublisher publisher, string publisherName)
+        {
+            return _royaleRepo.ChangePublisherName(publisher, publisherName);
+        }
+
         public Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
         {
             return _royaleRepo.GetPublisher(yearQuarter, user);

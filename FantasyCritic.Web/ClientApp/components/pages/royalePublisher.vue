@@ -20,9 +20,11 @@
 
         <div class="col-md-12 col-lg-6">
           <h4>Remaining Budget: {{publisher.budget | money}}</h4>
-          <div v-if="userIsPublisher">
-            <b-button variant="primary" v-b-modal="'royalePurchaseGameForm'">Purchase a Game</b-button>
+          <div v-if="userIsPublisher" class="user-actions">
+            <b-button variant="primary" v-b-modal="'royalePurchaseGameForm'" class="action-button">Purchase a Game</b-button>
+            <b-button variant="secondary" v-b-modal="'royaleChangePublisherNameForm'" class="action-button">Change Publisher Name</b-button>
             <royalePurchaseGameForm :yearQuarter="publisher.yearQuarter" :userRoyalePublisher="publisher" v-on:gamePurchased="gamePurchased"></royalePurchaseGameForm>
+            <royaleChangePublisherNameForm :userRoyalePublisher="publisher" v-on:publisherNameChanged="publisherNameChanged"></royaleChangePublisherNameForm>
           </div>
         </div>
       </div>
@@ -100,6 +102,7 @@
 
   import MasterGamePopover from "components/modules/masterGamePopover";
   import RoyalePurchaseGameForm from "components/modules/modals/royalePurchaseGameForm";
+  import RoyaleChangePublisherNameForm from "components/modules/modals/royaleChangePublisherNameForm";
 
   export default {
     props: ['publisherid'],
@@ -124,6 +127,7 @@
       }
     },
     components: {
+      RoyaleChangePublisherNameForm,
       RoyalePurchaseGameForm,
       MasterGamePopover
     },
@@ -154,6 +158,15 @@
       gamePurchased(purchaseInfo) {
         this.fetchPublisher();
         let message = purchaseInfo.gameName + " was purchased for " + this.$options.filters.money(purchaseInfo.purchaseCost);
+        let toast = this.$toasted.show(message, {
+          theme: "primary",
+          position: "top-right",
+          duration: 5000
+        });
+      },
+      publisherNameChanged() {
+        this.fetchPublisher();
+        let message = "Publisher name changed."
         let toast = this.$toasted.show(message, {
           theme: "primary",
           position: "top-right",
@@ -248,5 +261,13 @@
   .main-button{
     margin-top: 5px;
     min-width: 200px;
+  }
+
+  .user-actions {
+    display: flex;
+  }
+
+  .user-actions .action-button {
+    margin: 5px;
   }
 </style>

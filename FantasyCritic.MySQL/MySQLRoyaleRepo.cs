@@ -42,6 +42,19 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task ChangePublisherName(RoyalePublisher publisher, string publisherName)
+        {
+            string sql = "UPDATE tbl_royale_publisher SET PublisherName = @publisherName WHERE PublisherID = @publisherID;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, new
+                {
+                    publisherID = publisher.PublisherID,
+                    publisherName
+                });
+            }
+        }
+
         public async Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
         {
             string sql = "select * from tbl_royale_publisher where UserID = @userID and Year = @year and Quarter = @quarter;";
