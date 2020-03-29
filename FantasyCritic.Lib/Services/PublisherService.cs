@@ -99,9 +99,10 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
-        public async Task EditPublisher(EditPublisherRequest editValues)
+        public Task EditPublisher(EditPublisherRequest editValues)
         {
-            throw new NotImplementedException();
+            LeagueAction leagueAction = new LeagueAction(editValues, _clock.GetCurrentInstant());
+            return _fantasyCriticRepo.EditPublisher(editValues, leagueAction);
         }
 
         public async Task RemovePublisher(Publisher publisher)

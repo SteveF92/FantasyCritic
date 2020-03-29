@@ -560,6 +560,11 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var editValues = request.ToDomain(publisher.Value);
+            if (!editValues.ValidChange())
+            {
+                return BadRequest("You need to specify something to change.");
+            }
+            
             await _publisherService.EditPublisher(editValues);
 
             return Ok();

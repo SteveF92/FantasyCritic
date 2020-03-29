@@ -92,6 +92,15 @@ namespace FantasyCritic.Lib.Domain
             ManagerAction = true;
         }
 
+        public LeagueAction(EditPublisherRequest editValues, Instant timestamp)
+        {
+            Timestamp = timestamp;
+            Publisher = editValues.Publisher;
+            ActionType = "Publisher Edited";
+            Description = editValues.GetActionString();
+            ManagerAction = true;
+        }
+
         public LeagueAction(PickupBid action, Instant timestamp)
         {
             Timestamp = timestamp;

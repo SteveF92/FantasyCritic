@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.OpenCritic;
 using NodaTime;
@@ -101,6 +102,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<SiteCounts> GetSiteCounts();
         Task SetBidProcessingMode(bool modeOn);
 
+        Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction);
         Task DeletePublisher(Publisher publisher);
         Task DeleteLeagueYear(LeagueYear leagueYear);
         Task DeleteLeague(League league);
