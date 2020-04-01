@@ -42,7 +42,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int? WillNotReleaseGamesDropped { get; }
         public int? WillReleaseGamesDropped { get; }
 
-        public bool ValidChange()
+        public bool SomethingChanged()
         {
             return NewPublisherName.HasValue ||
                    Budget.HasValue ||

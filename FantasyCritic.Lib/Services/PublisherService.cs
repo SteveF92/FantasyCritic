@@ -99,10 +99,39 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
-        public Task EditPublisher(EditPublisherRequest editValues)
+        public async Task<Result> EditPublisher(EditPublisherRequest editValues)
         {
+            if (!editValues.SomethingChanged())
+            {
+                return Result.Fail("You need to specify something to change.");
+            }
+
+            if (editValues.Budget.HasValue && editValues.Budget.Value > 100)
+            {
+                return Result.Fail("Budget cannot be set to over 100.");
+            }
+
+            if (editValues.WillReleaseGamesDropped.HasValue && editValues.WillReleaseGamesDropped.Value > 
+                editValues.Publisher.LeagueYear.Options.WillReleaseDroppableGames)
+            {
+                return Result.Fail("Will release games dropped cannot be set to more than is allowed in the league.");
+            }
+
+            if (editValues.WillNotReleaseGamesDropped.HasValue && editValues.WillNotReleaseGamesDropped.Value >
+                editValues.Publisher.LeagueYear.Options.WillNotReleaseDroppableGames)
+            {
+                return Result.Fail("Will not release games dropped cannot be set to more than is allowed in the league.");
+            }
+
+            if (editValues.FreeGamesDropped.HasValue && editValues.FreeGamesDropped.Value >
+                editValues.Publisher.LeagueYear.Options.FreeDroppableGames)
+            {
+                return Result.Fail("Unrestricted games dropped cannot be set to more than is allowed in the league.");
+            }
+
             LeagueAction leagueAction = new LeagueAction(editValues, _clock.GetCurrentInstant());
-            return _fantasyCriticRepo.EditPublisher(editValues, leagueAction);
+            await _fantasyCriticRepo.EditPublisher(editValues, leagueAction);
+            return Result.Ok();
         }
 
         public async Task RemovePublisher(Publisher publisher)
