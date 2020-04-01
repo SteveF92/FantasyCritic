@@ -95,6 +95,9 @@
             <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">
               Edit Draft Order
             </li>
+            <li class="fake-link action" v-b-modal="'managerEditPublishersForm'">
+              Edit Publishers
+            </li>
             <li class="fake-link action" v-b-modal="'managerSetAutoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
               Edit Player Auto Draft
             </li>
@@ -156,6 +159,7 @@
         <resetDraftModal v-on:resetDraft="resetDraft"></resetDraftModal>
         <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
         <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
+        <managerEditPublishersForm v-on:publishersEdited="publishersEdited" :leagueYear="leagueYear"></managerEditPublishersForm>
         <managerSetAutoDraftForm v-on:publishersAutoDraftSet="publishersAutoDraftSet" :leagueYear="leagueYear"></managerSetAutoDraftForm>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
@@ -181,6 +185,7 @@
   import PlayerDraftCounterPickForm from "components/modules/modals/playerDraftCounterPickForm";
   import EditAutoDraftForm from "components/modules/modals/editAutoDraftForm";
   import ManagerSetAutoDraftForm from "components/modules/modals/managerSetAutoDraftForm";
+  import ManagerEditPublishersForm from "components/modules/modals/managerEditPublishersForm";
 
   import ManagerClaimGameForm from "components/modules/modals/managerClaimGameForm";
   import ManagerDraftGameForm from "components/modules/modals/managerDraftGameForm";
@@ -223,6 +228,7 @@
       ManagerDraftCounterPickForm,
       ManagerDraftGameForm,
       ManagerSetAutoDraftForm,
+      ManagerEditPublishersForm,
       InvitePlayerForm,
       RemoveGameForm,
       ManuallyScoreGameForm,
@@ -487,6 +493,13 @@
       publishersAutoDraftSet() {
         let actionInfo = {
           message: 'Auto draft changed',
+          fetchLeagueYear: true
+        };
+        this.$emit('actionTaken', actionInfo);
+      },
+      publishersEdited() {
+        let actionInfo = {
+          message: 'Publisher has been edited',
           fetchLeagueYear: true
         };
         this.$emit('actionTaken', actionInfo);
