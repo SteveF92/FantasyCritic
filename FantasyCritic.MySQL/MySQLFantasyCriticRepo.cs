@@ -1515,9 +1515,47 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction)
+        public async Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction)
         {
-            throw new NotImplementedException();
+            string sql = "update tbl_league_publisher SET ";
+            DynamicParameters parameters = new DynamicParameters();
+            if (editValues.NewPublisherName.HasValue)
+            {
+                sql += "PublisherName = @publisherName ";
+                parameters.Add("publisherName", editValues.NewPublisherName.Value);
+            }
+            if (editValues.Budget.HasValue)
+            {
+                sql += "Budget = @budget ";
+                parameters.Add("budget", editValues.Budget.Value);
+            }
+            if (editValues.WillNotReleaseGamesDropped.HasValue)
+            {
+                sql += "WillNotReleaseGamesDropped = @willNotReleaseGamesDropped ";
+                parameters.Add("willNotReleaseGamesDropped", editValues.WillNotReleaseGamesDropped.Value);
+            }
+            if (editValues.WillReleaseGamesDropped.HasValue)
+            {
+                sql += "WillReleaseGamesDropped = @willReleaseGamesDropped ";
+                parameters.Add("willReleaseGamesDropped", editValues.WillReleaseGamesDropped.Value);
+            }
+            if (editValues.FreeGamesDropped.HasValue)
+            {
+                sql += "FreeGamesDropped = @freeGamesDropped ";
+                parameters.Add("freeGamesDropped", editValues.FreeGamesDropped.Value);
+            }
+            sql += "WHERE PublisherID = @publisherID";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(sql, parameters);
+                    await AddLeagueActions(new[] {leagueAction}, connection, transaction);
+                    transaction.Commit();
+                }
+            }
         }
 
         public Task DeletePublisher(Publisher publisher)
@@ -1560,9 +1598,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync(
-                    "delete from tbl_league where LeagueID = @leagueID;",
-                    deleteObject);
+                return connection.ExecuteAsync("delete from tbl_league where LeagueID = @leagueID;", deleteObject);
             }
         }
 
@@ -1575,9 +1611,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync(
-                    "delete from tbl_league_action where PublisherID = @publisherID;",
-                    deleteObject);
+                return connection.ExecuteAsync("delete from tbl_league_action where PublisherID = @publisherID;", deleteObject);
             }
         }
 
