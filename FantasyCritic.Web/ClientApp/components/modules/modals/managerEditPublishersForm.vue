@@ -1,22 +1,72 @@
 <template>
   <b-modal id="managerEditPublishersForm" ref="managerEditPublishersFormRef" size="lg" title="Edit Publishers" hide-footer @hidden="clearData">
     <div class="alert alert-warning">Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be editing Publisher details.</div>
-  </b-modal>
+    <div class="form-horizontal">
+      <div class="form-group">
+        <label for="editPublisher" class="control-label">Publisher to Edit</label>
+        <b-form-select v-model="editPublisher" v-on:change="selectPublisher(editPublisher)">
+          <option v-for="publisher in publishers" v-bind:value="publisher">
+            {{ publisher.publisherName }}
+          </option>
+        </b-form-select>
+      </div>
+      <div v-if="editPublisher">
+        <div class="form-group">
+          <label for="newPublisherName" class="control-label">Publisher Name</label>
+          <input v-model="newPublisherName" id="newPublisherName" name="newPublisherName" type="text" class="form-control input" />
+        </div>
+        <div class="form-group">
+          <label for="newBudget" class="control-label">Budget</label>
+          <input v-model="newBudget" id="newBudget" name="newBudget" type="text" class="form-control input" />
+        </div>
+        <div class="form-group">
+          <label for="newFreeGamesDropped" class="control-label">Unrestricted Games Dropped</label>
+          <input v-model="newFreeGamesDropped" id="newFreeGamesDropped" name="newFreeGamesDropped" type="text" class="form-control input" />
+        </div>
+        <div class="form-group">
+          <label for="newWillNotReleaseGamesDropped" class="control-label">Will not Release Games Dropped</label>
+          <input v-model="newWillNotReleaseGamesDropped" id="newWillNotReleaseGamesDropped" name="newWillNotReleaseGamesDropped" type="text" class="form-control input" />
+        </div>
+        <div class="form-group">
+          <label for="newWillReleaseGamesDropped" class="control-label">Will Release Games Dropped</label>
+          <input v-model="newWillReleaseGamesDropped" id="newWillReleaseGamesDropped" name="newWillReleaseGamesDropped" type="text" class="form-control input" />
+        </div>
+      </div>
+    </div>
+</b-modal>
 </template>
 
 <script>
   import Vue from "vue";
   import axios from "axios";
   export default {
-      data() {
-          return {
-          }
-      },
-      props: ['leagueYear'],
-      methods: {
-        clearData() {
-
-        }
+    data() {
+      return {
+        editPublisher: null,
+        newPublisherName: null,
+        newBudget: null,
+        newFreeGamesDropped: null,
+        newWillNotReleaseGamesDropped: null,
+        newWillReleaseGamesDropped: null
       }
+    },
+    props: ['leagueYear'],
+    computed: {
+      publishers() {
+        return this.leagueYear.publishers;
+      }
+    },
+    methods: {
+      selectPublisher(selectedPublisher) {
+        this.newPublisherName = selectedPublisher.publisherName;
+        this.newBudget = selectedPublisher.budget;
+        this.newFreeGamesDropped = selectedPublisher.freeGamesDropped;
+        this.newWillNotReleaseGamesDropped = selectedPublisher.willNotReleaseGamesDropped;
+        this.newWillReleaseGamesDropped = selectedPublisher.willReleaseGamesDropped;
+      },
+      clearData() {
+        this.editPublisher = null;
+      }
+    }
   }
 </script>
