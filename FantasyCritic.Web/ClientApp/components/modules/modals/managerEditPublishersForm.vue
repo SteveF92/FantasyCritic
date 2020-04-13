@@ -31,9 +31,18 @@
           <label for="newWillReleaseGamesDropped" class="control-label">Will Release Games Dropped</label>
           <input v-model="newWillReleaseGamesDropped" id="newWillReleaseGamesDropped" name="newWillReleaseGamesDropped" type="text" class="form-control input" />
         </div>
+
+        <div>
+          <input type="submit" class="btn btn-primary submit-button" value="Edit Publisher" v-on:click="makeEditRequest"/>
+        </div>
+      </div>
+      <br />
+      <div v-if="errorInfo" class="alert alert-danger">
+        <h3 class="alert-heading">Error!</h3>
+        <p class="text-white">{{errorInfo}}</p>
       </div>
     </div>
-</b-modal>
+  </b-modal>
 </template>
 
 <script>
@@ -47,7 +56,8 @@
         newBudget: null,
         newFreeGamesDropped: null,
         newWillNotReleaseGamesDropped: null,
-        newWillReleaseGamesDropped: null
+        newWillReleaseGamesDropped: null,
+        errorInfo: null
       }
     },
     props: ['leagueYear'],
@@ -64,9 +74,34 @@
         this.newWillNotReleaseGamesDropped = selectedPublisher.willNotReleaseGamesDropped;
         this.newWillReleaseGamesDropped = selectedPublisher.willReleaseGamesDropped;
       },
+      makeEditRequest() {
+        var model = {
+          publisherID: this.editPublisher.publisherID,
+          leagueID: this.leagueYear.leagueID,
+          publisherName: this.newPublisherName,
+          budget: this.newBudget,
+          freeGamesDropped: this.newFreeGamesDropped,
+          willNotReleaseGamesDropped: this.newWillNotReleaseGamesDropped,
+          willReleaseGamesDropped: this.newWillReleaseGamesDropped
+        };
+        axios
+          .post('/api/leagueManager/EditPublisher', model)
+          .then(response => {
+            this.$refs.managerEditPublishersFormRef.hide();
+            this.$emit('publishersEdited');
+          })
+          .catch(response => {
+            this.errorInfo = response.response.data;
+          });
+      },
       clearData() {
         this.editPublisher = null;
       }
     }
   }
 </script>
+<style scoped>
+  .submit-button {
+    width: 100%;
+  }
+</style>

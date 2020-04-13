@@ -14,7 +14,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         public string PublisherName { get; set; }
         [Required]
-        public uint Budget { get; set; }
+        public int Budget { get; set; }
         [Required]
         public int FreeGamesDropped { get; set; }
         [Required]

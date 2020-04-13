@@ -1519,6 +1519,8 @@ namespace FantasyCritic.MySQL
         {
             string sql = "update tbl_league_publisher SET ";
             DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("publisherID", editValues.Publisher.PublisherID);
+
             if (editValues.NewPublisherName.HasValue)
             {
                 sql += "PublisherName = @publisherName ";

@@ -108,7 +108,12 @@ namespace FantasyCritic.Lib.Services
 
             if (editValues.Budget.HasValue && editValues.Budget.Value > 100)
             {
-                return Result.Fail("Budget cannot be set to over 100.");
+                return Result.Fail("Budget cannot be set to over $100.");
+            }
+
+            if (editValues.Budget.HasValue && editValues.Budget.Value < 0)
+            {
+                return Result.Fail("Budget cannot be set to under $0.");
             }
 
             if (editValues.WillReleaseGamesDropped.HasValue && editValues.WillReleaseGamesDropped.Value > 

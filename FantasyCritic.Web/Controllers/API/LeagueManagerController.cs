@@ -554,11 +554,6 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            if (publisher.Value.LeagueYear.PlayStatus.PlayStarted)
-            {
-                return BadRequest();
-            }
-
             var editValues = request.ToDomain(publisher.Value);
             
             Result result = await _publisherService.EditPublisher(editValues);
