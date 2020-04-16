@@ -113,7 +113,7 @@
         gameToModify: null,
         advertisingBudgetToSet: 0,
         gameFields: [
-          { key: 'masterGame', label: 'Game', thClass:'bg-primary', stickyColumn: true },
+          { key: 'masterGame', label: 'Game', thClass:'bg-primary' },
           { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary' },
           { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary' },

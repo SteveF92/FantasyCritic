@@ -55,7 +55,7 @@
     data() {
       return {
         gameFields: [
-          { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary', stickyColumn: true },
+          { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
           { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
           { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
