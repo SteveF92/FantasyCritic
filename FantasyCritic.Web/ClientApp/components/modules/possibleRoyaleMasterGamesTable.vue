@@ -3,22 +3,22 @@
     <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
 
     <b-table small bordered striped responsive :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
-      <template slot="gameName" slot-scope="data">
+      <template v-slot:cell(gameName)="data">
         <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
-      <template slot="sortableEstimatedReleaseDate" slot-scope="data">
+      <template v-slot:cell(sortableEstimatedReleaseDate)="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
           <span>{{data.item.masterGame.estimatedReleaseDate}}</span>
           <span v-show="data.item.masterGame.isReleased">(Released)</span>
         </div>
       </template>
-      <template slot="eligibilityLevel" slot-scope="data">
+      <template v-slot:cell(eligibilityLevel)="data">
         <statusBadge :possibleMasterGame="data.item"></statusBadge>
       </template>
-      <template slot="cost" slot-scope="data">
+      <template v-slot:cell(cost)="data">
         {{data.item.cost | money}}
       </template>
-      <template slot="select" slot-scope="data">
+      <template v-slot:cell(select)="data">
         <b-button size="sm" variant="info" v-on:click="selectGame(data.item)">Select</b-button>
       </template>
     </b-table>

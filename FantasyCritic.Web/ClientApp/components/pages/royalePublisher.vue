@@ -34,29 +34,29 @@
 
       <h1>Games</h1>
       <b-table striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" v-if="publisher.publisherGames.length !== 0">
-        <template slot="masterGame" slot-scope="data">
+        <template v-slot:cell(masterGame)="data">
           <masterGamePopover :masterGame="data.item.masterGame"> </masterGamePopover>
         </template>
-        <template slot="releaseDate" slot-scope="data">
+        <template v-slot:cell(releaseDate)="data">
           {{getReleaseDate(data.item.masterGame)}}
         </template>
-        <template slot="amountSpent" slot-scope="data">
+        <template v-slot:cell(amountSpent)="data">
           {{ data.item.amountSpent | money }}
         </template>
-        <template slot="advertisingMoney" slot-scope="data">
+        <template v-slot:cell(advertisingMoney)="data">
           {{ data.item.advertisingMoney | money }}
           <b-button variant="info" size="sm" v-if="userIsPublisher && !data.item.locked" v-on:click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
-        <template slot="criticScore" slot-scope="data">
+        <template v-slot:cell(criticScore)="data">
           {{ data.item.masterGame.criticScore | score(2) }}
         </template>
-        <template slot="fantasyPoints" slot-scope="data">
+        <template v-slot:cell(fantasyPoints)="data">
           {{ data.item.fantasyPoints | score(2) }}
         </template>
-        <template slot="timestamp" slot-scope="data">
+        <template v-slot:cell(timestamp)="data">
           {{ data.item.timestamp | date }}
         </template>
-        <template slot="sellGame" slot-scope="data">
+        <template v-slot:cell(sellGame)="data">
           <b-button block variant="danger" v-if="!data.item.locked" v-on:click="setGameToSell(data.item)">Sell</b-button>
         </template>
       </b-table>

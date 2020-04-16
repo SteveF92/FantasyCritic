@@ -9,22 +9,22 @@
              :per-page="perPage"
              :current-page="currentPage"
              bordered small responsive striped>
-      <template slot="masterGame.gameName" slot-scope="data">
+      <template v-slot:cell(masterGame.gameName)="data">
         <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
-      <template slot="masterGame.sortableEstimatedReleaseDate" slot-scope="data">
+      <template v-slot:cell(masterGame.sortableEstimatedReleaseDate)="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
           <span>{{data.item.masterGame.estimatedReleaseDate}}</span>
           <span v-show="data.item.masterGame.isReleased">(Released)</span>
         </div>
       </template>
-      <template slot="masterGame.dateAdjustedHypeFactor" slot-scope="data">
+      <template v-slot:cell(masterGame.dateAdjustedHypeFactor)="data">
         {{data.item.masterGame.dateAdjustedHypeFactor | score(1)}}
       </template>
-      <template slot="masterGame.eligibilityLevel" slot-scope="data">
+      <template v-slot:cell(masterGame.eligibilityLevel)="data">
         <statusBadge :possibleMasterGame="data.item"></statusBadge>
       </template>
-      <template slot="select" slot-scope="data">
+      <template v-slot:cell(select)="data">
         <b-button size="sm" variant="info" v-on:click="selectGame(data.item.masterGame)">Select</b-button>
       </template>
     </b-table>

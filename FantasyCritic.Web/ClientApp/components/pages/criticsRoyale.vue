@@ -43,7 +43,7 @@
 
         <div v-if="royaleStandings">
           <b-table striped bordered small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
-            <template slot="ranking" slot-scope="data">
+            <template v-slot:cell(ranking)="data">
               <template v-if="data.item.ranking">
                 {{data.item.ranking}}
               </template>
@@ -51,7 +51,7 @@
                 --
               </template>
             </template>
-              <template slot="publisherName" slot-scope="data">
+              <template v-slot:cell(publisherName)="data">
                 <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
                   {{ data.item.publisherName }}
                 </router-link>

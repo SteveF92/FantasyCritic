@@ -7,20 +7,20 @@
            :small="tableIsSmall"
            responsive
            striped>
-    <template slot="gameName" slot-scope="data">
+    <template v-slot:cell(gameName)="data">
       <masterGamePopover :masterGame="data.item"></masterGamePopover>
     </template>
-    <template slot="sortableEstimatedReleaseDate" slot-scope="data">
+    <template v-slot:cell(sortableEstimatedReleaseDate)="data">
       {{getReleaseDate(data.item)}}
     </template>
-    <template slot="criticScore" slot-scope="data">
+    <template v-slot:cell(criticScore)="data">
       <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank"><strong>OpenCritic <font-awesome-icon icon="external-link-alt" /></strong></a>
       <span v-else>--</span>
     </template>
-    <template slot="dateAdjustedHypeFactor" slot-scope="data">
+    <template v-slot:cell(dateAdjustedHypeFactor)="data">
       {{data.item.dateAdjustedHypeFactor | score(1)}}
     </template>
-    <template slot="projectedOrRealFantasyPoints" slot-scope="data">
+    <template v-slot:cell(projectedOrRealFantasyPoints)="data">
       <template v-if="data.item.isReleased || !data.item.willRelease">
         {{data.item.projectedOrRealFantasyPoints | score(1)}}
       </template>
@@ -28,16 +28,16 @@
         <em>~{{data.item.projectedOrRealFantasyPoints | score(1)}}</em>
       </template>
     </template>
-    <template slot="eligiblePercentStandardGame" slot-scope="data">
+    <template v-slot:cell(eligiblePercentStandardGame)="data">
       {{data.item.eligiblePercentStandardGame | percent(1)}}
     </template>
-    <template slot="eligiblePercentCounterPick" slot-scope="data">
+    <template v-slot:cell(eligiblePercentCounterPick)="data">
       {{data.item.eligiblePercentCounterPick | percent(1)}}
     </template>
-    <template slot="addedTimestamp" slot-scope="data">
+    <template v-slot:cell(addedTimestamp)="data">
       {{data.item.addedTimestamp | date}}
     </template>
-    <template slot="eligibilityLevel" slot-scope="data">
+    <template v-slot:cell(eligibilityLevel)="data">
       <eligibilityBadge :eligibilityLevel="data.item.eligibilitySettings.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
     </template>
   </b-table>

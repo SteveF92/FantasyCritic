@@ -15,7 +15,7 @@
                  bordered
                  striped
                  responsive>
-          <template slot="leagueName" slot-scope="data">
+          <template v-slot:cell(leagueName)="data">
             <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear }}">{{data.item.leagueName}}</router-link>
           </template>
         </b-table>

@@ -18,11 +18,11 @@
              small
              responsive
              striped>
-      <template slot="userName" slot-scope="data">
+      <template v-slot:cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
         <span v-if="!data.item.user">{{ data.item.inviteName }}</span>
       </template>
-      <template slot="publisher" slot-scope="data">
+      <template v-slot:cell(publisher)="data">
         <span v-if="data.item.publisher">
             <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: data.item.publisher.publisherID }}">
               {{ data.item.publisher.publisherName }}
@@ -45,10 +45,10 @@
           </span>
         </span>
       </template>
-      <template slot="simpleProjectedFantasyPoints" slot-scope="data">{{data.item.simpleProjectedFantasyPoints | score(2)}}</template>
-      <template slot="advancedProjectedFantasyPoints" slot-scope="data">{{data.item.advancedProjectedFantasyPoints | score(2)}}</template>
-      <template slot="totalFantasyPoints" slot-scope="data">{{data.item.totalFantasyPoints | score(2)}}</template>
-      <template slot="budget" slot-scope="data">
+      <template v-slot:cell(simpleProjectedFantasyPoints)="data">{{data.item.simpleProjectedFantasyPoints | score(2)}}</template>
+      <template v-slot:cell(advancedProjectedFantasyPoints)="data">{{data.item.advancedProjectedFantasyPoints | score(2)}}</template>
+      <template v-slot:cell(totalFantasyPoints)="data">{{data.item.totalFantasyPoints | score(2)}}</template>
+      <template v-slot:cell(budget)="data">
         <span v-if="data.item.publisher">{{data.item.publisher.budget | money}}</span>
       </template>
     </b-table>
