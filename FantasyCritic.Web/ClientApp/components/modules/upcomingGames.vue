@@ -7,17 +7,17 @@
               bordered
               striped
               small>
-      <template slot="gameName" slot-scope="data">
+      <template v-slot:cell(gameName)="data">
         <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
-      <template slot="sortableEstimatedReleaseDate" slot-scope="data">
+      <template v-slot:cell(sortableEstimatedReleaseDate)="data">
         {{getReleaseDate(data.item)}}
       </template>
-      <template slot="league" slot-scope="data">
+      <template v-slot:cell(league)="data">
         <router-link v-if="data.item.leagueID" :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year }}">{{data.item.leagueName}}</router-link>
         <span v-else>{{data.item.leagueName}}</span>
       </template>
-      <template slot="publisher" slot-scope="data">
+      <template v-slot:cell(publisher)="data">
         <span v-if="!data.item.counterPickPublisherID">
           <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
         </span>
