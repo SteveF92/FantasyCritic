@@ -30,7 +30,7 @@
     "core-js": "^3.6.5",
     "lodash": "^4.17.15",
     "moment": "2.24.0",
-    "vee-validate": "^2.2.13",
+    "vee-validate": "^3.2.5",
     "vue": "^2.6.11",
     "vue-analytics": "5.22.1",
     "vue-clipboard2": "^0.3.1",

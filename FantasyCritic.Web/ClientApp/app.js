@@ -8,7 +8,7 @@ import App from 'components/app-root';
 
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import Toasted from 'vue-toasted';
-import VeeValidate from 'vee-validate';
+import { ValidationProvider } from 'vee-validate';
 import VueAnalytics from 'vue-analytics';
 import VueClipboard from 'vue-clipboard2';
 import VueDatePicker from '@mathieustan/vue-datepicker';
@@ -21,10 +21,7 @@ VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
-Vue.use(VeeValidate, {
-  inject: true,
-  fieldsBagName: 'veeFields'
-});
+Vue.component('ValidationProvider', ValidationProvider);
 // Options: You can set lang by default
 Vue.use(VueDatePicker, {
   lang: 'en'
