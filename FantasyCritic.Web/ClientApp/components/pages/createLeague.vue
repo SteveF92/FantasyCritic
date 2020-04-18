@@ -11,8 +11,10 @@
         <h2>Basic Settings</h2>
         <div class="form-group">
           <label for="leagueName" class="control-label">League Name</label>
-          <input v-model="leagueName" v-validate="'required'" id="leagueName" name="leagueName" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('leagueName') }}</span>
+          <ValidationProvider rules="required" v-slot="{ errors }" name="League Name">
+            <input v-model="leagueName" id="leagueName" name="leagueName" type="text" class="form-control input" />
+            <span class="text-danger">{{ errors[0] }}</span>
+          </ValidationProvider>
         </div>
         <hr />
         <div class="form-group">
@@ -23,7 +25,6 @@
           <select class="form-control" v-model="initialYear" id="initialYear">
             <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
           </select>
-          <span class="text-danger">{{ errors.first('initialYear') }}</span>
         </div>
       </div>
 
