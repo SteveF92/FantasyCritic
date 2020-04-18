@@ -5,18 +5,22 @@
       <hr />
 
       <div v-if="showSent" class="alert alert-success">Forgot password email has been sent. Please check your email.</div>
-      <form v-on:submit.prevent="sendForgotPasswordRequest" class="col-lg-8 offset-lg-2 col-md-12 offset-md-0">
-        <div class="form-group">
-          <label for="emailAddress" class="control-label">Email Address</label>
-          <input v-model="emailAddress" v-validate="'required|email'" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('emailAddress') }}</span>
-        </div>
-        <div class="form-group">
-          <div class="right-button">
-            <input type="submit" class="btn btn-primary" value="Submit" :disabled="!formIsValid" />
+      <ValidationObserver v-slot="{ invalid }">
+        <form v-on:submit.prevent="sendForgotPasswordRequest" class="col-lg-8 offset-lg-2 col-md-12 offset-md-0">
+          <div class="form-group">
+            <label for="emailAddress" class="control-label">Email Address</label>
+            <ValidationProvider rules="required|email" v-slot="{ errors }" name="Email Address">
+              <input v-model="emailAddress" id="emailAddress" name="emailAddress" type="text" class="form-control input" />
+              <span class="text-danger">{{ errors[0] }}</span>
+            </ValidationProvider>
           </div>
-        </div>
-      </form>
+          <div class="form-group">
+            <div class="right-button">
+              <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
+            </div>
+          </div>
+        </form>
+      </ValidationObserver>
     </div>
   </div>
 </template>
@@ -29,11 +33,6 @@
         emailAddress: "",
         showSent: false
       }
-  },
-  computed: {
-    formIsValid() {
-      return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
-    }
   },
   methods: {
     sendForgotPasswordRequest() {

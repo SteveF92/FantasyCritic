@@ -68,23 +68,28 @@
             <h2 v-if="masterGame">{{masterGame.gameName}}</h2>
             <masterGameDetails :masterGame="masterGame"></masterGameDetails>
 
-            <form v-on:submit.prevent="sendMasterGameChangeRequestRequest">
-              <div class="form-group">
-                <label for="requestNote" class="control-label">What seems to be the issue?</label>
-                <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
-              </div>
-
-              <div class="form-group">
-                <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
-                <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
-              </div>
-
-              <div class="form-group">
-                <div class="right-button">
-                  <input type="submit" class="btn btn-primary" value="Submit" :disabled="!formIsValid" />
+            <ValidationObserver v-slot="{ invalid }">
+              <form v-on:submit.prevent="sendMasterGameChangeRequestRequest">
+                <div class="form-group">
+                  <label for="requestNote" class="control-label">What seems to be the issue?</label>
+                  <ValidationProvider rules="required" v-slot="{ errors }" name="Request Note">
+                    <input v-model="requestNote" id="requestNote" name="requestNote" type="text" class="form-control input" />
+                    <span class="text-danger">{{ errors[0] }}</span>
+                  </ValidationProvider>
                 </div>
-              </div>
-            </form>
+
+                <div class="form-group">
+                  <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
+                  <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
+                </div>
+
+                <div class="form-group">
+                  <div class="right-button">
+                    <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
+                  </div>
+                </div>
+              </form>
+            </ValidationObserver>
           </div>
         </div>
       </div>
@@ -121,11 +126,6 @@
       MasterGameDetails,
       vueSlider,
       'popper': Popper,
-    },
-    computed: {
-      formIsValid() {
-        return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
-      }
     },
     methods: {
       fetchMyRequests() {

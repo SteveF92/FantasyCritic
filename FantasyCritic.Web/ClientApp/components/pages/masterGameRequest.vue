@@ -52,101 +52,105 @@
                 You can check back on this page to see the status of previous requests, as well.
               </strong>
             </p>
-            <form v-on:submit.prevent="sendMasterGameRequestRequest">
-              <div class="form-group">
-                <label for="gameName" class="control-label">Game Name</label>
-                <input v-model="gameName" v-validate="'required'" id="gameName" name="gameName" class="form-control input" />
-                <span class="text-danger">{{ errors.first('gameName') }}</span>
-              </div>
-
-              <div class="form-group">
-                <b-form-checkbox v-model="hasReleaseDate">
-                  <span class="checkbox-label">Does this game have a confirmed release date?</span>
-                </b-form-checkbox>
-                <div v-if="hasReleaseDate">
-                  <label for="releaseDate" class="control-label">Release Date</label>
-                  <VueDatePicker v-model="releaseDate" name="Release Date" color="#D6993A" fullscreen-mobile no-input />
+            <ValidationObserver v-slot="{ invalid }">
+              <form v-on:submit.prevent="sendMasterGameRequestRequest">
+                <div class="form-group">
+                  <label for="gameName" class="control-label">Game Name</label>
+                  <ValidationProvider rules="required" v-slot="{ errors }" name="Game Name">
+                    <input v-model="gameName" id="gameName" name="gameName" type="text" class="form-control input" />
+                    <span class="text-danger">{{ errors[0] }}</span>
+                  </ValidationProvider>
                 </div>
-                <div v-if="!hasReleaseDate">
-                  <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
-                  <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
+
+                <div class="form-group">
+                  <b-form-checkbox v-model="hasReleaseDate">
+                    <span class="checkbox-label">Does this game have a confirmed release date?</span>
+                  </b-form-checkbox>
+                  <div v-if="hasReleaseDate">
+                    <label for="releaseDate" class="control-label">Release Date</label>
+                    <VueDatePicker v-model="releaseDate" name="Release Date" color="#D6993A" fullscreen-mobile no-input />
+                  </div>
+                  <div v-if="!hasReleaseDate">
+                    <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
+                    <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
+                  </div>
                 </div>
-              </div>
-              <div class="form-group">
-                <label for="steamLink" class="control-label">Link to Steam Page (Optional)</label>
-                <input v-model="steamLink" id="steamLink" name="steamLink" class="form-control input" />
-              </div>
-              <div class="form-group">
-                <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
-                <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
-              </div>
-
-              <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
-                <label class="control-label eligibility-slider-label">Eligibility Level</label>
-                <p class="eligibility-explanation">
-                  Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
-                </p>
-                <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                            :marks="marks" :tooltip="'always'">
-                </vue-slider>
-                <div class="eligibility-description">
-                  <h3>{{ selectedEligibilityLevel.name }}</h3>
-                  <p>{{ selectedEligibilityLevel.description }}</p>
-                  <p>Examples: </p>
-                  <ul>
-                    <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-                  </ul>
+                <div class="form-group">
+                  <label for="steamLink" class="control-label">Link to Steam Page (Optional)</label>
+                  <input v-model="steamLink" id="steamLink" name="steamLink" class="form-control input" />
                 </div>
-              </div>
-
-              <div class="form-group">
-                <b-form-checkbox v-model="yearlyInstallment">
-                  <span class="checkbox-label">Is this game a yearly installment?</span>
-                  <p>Check this for games like yearly sports titles.</p>
-                </b-form-checkbox>
-              </div>
-              <div class="form-group">
-                <b-form-checkbox v-model="earlyAccess">
-                  <span class="checkbox-label">Is this game currently in early access?</span>
-                  <p>Games that are already playable in early access are only selectable in some leagues.</p>
-                </b-form-checkbox>
-              </div>
-              <div class="form-group">
-                <b-form-checkbox v-model="freeToPlay">
-                  <span class="checkbox-label">Is this game free to play?</span>
-                  <p>Check this for free to play games.</p>
-                </b-form-checkbox>
-              </div>
-              <div class="form-group">
-                <b-form-checkbox v-model="releasedInternationally">
-                  <span class="checkbox-label">Has this game already been released in a non-English speaking region?</span>
-                  <p>Games that are already playable in other regions are only selectable in some leagues.</p>
-                </b-form-checkbox>
-              </div>
-              <div class="form-group">
-                <b-form-checkbox v-model="expansionPack">
-                  <span class="checkbox-label">Is this an expansion pack or DLC?</span>
-                  <p>Expansion packs are only selectable in some leagues.</p>
-                </b-form-checkbox>
-              </div>
-              <div class="form-group">
-                <b-form-checkbox v-model="unannouncedGame">
-                  <span class="checkbox-label">Is this unannounced?</span>
-                  <p>If the game is only a rumor right now, check this box.</p>
-                </b-form-checkbox>
-              </div>
-
-              <div class="form-group">
-                <label for="requestNote" class="control-label">Any other notes?</label>
-                <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
-              </div>
-
-              <div class="form-group">
-                <div class="right-button">
-                  <input type="submit" class="btn btn-primary" value="Submit" :disabled="!formIsValid" />
+                <div class="form-group">
+                  <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
+                  <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
                 </div>
-              </div>
-            </form>
+
+                <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
+                  <label class="control-label eligibility-slider-label">Eligibility Level</label>
+                  <p class="eligibility-explanation">
+                    Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
+                  </p>
+                  <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
+                              :marks="marks" :tooltip="'always'">
+                  </vue-slider>
+                  <div class="eligibility-description">
+                    <h3>{{ selectedEligibilityLevel.name }}</h3>
+                    <p>{{ selectedEligibilityLevel.description }}</p>
+                    <p>Examples: </p>
+                    <ul>
+                      <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <b-form-checkbox v-model="yearlyInstallment">
+                    <span class="checkbox-label">Is this game a yearly installment?</span>
+                    <p>Check this for games like yearly sports titles.</p>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
+                  <b-form-checkbox v-model="earlyAccess">
+                    <span class="checkbox-label">Is this game currently in early access?</span>
+                    <p>Games that are already playable in early access are only selectable in some leagues.</p>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
+                  <b-form-checkbox v-model="freeToPlay">
+                    <span class="checkbox-label">Is this game free to play?</span>
+                    <p>Check this for free to play games.</p>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
+                  <b-form-checkbox v-model="releasedInternationally">
+                    <span class="checkbox-label">Has this game already been released in a non-English speaking region?</span>
+                    <p>Games that are already playable in other regions are only selectable in some leagues.</p>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
+                  <b-form-checkbox v-model="expansionPack">
+                    <span class="checkbox-label">Is this an expansion pack or DLC?</span>
+                    <p>Expansion packs are only selectable in some leagues.</p>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
+                  <b-form-checkbox v-model="unannouncedGame">
+                    <span class="checkbox-label">Is this unannounced?</span>
+                    <p>If the game is only a rumor right now, check this box.</p>
+                  </b-form-checkbox>
+                </div>
+
+                <div class="form-group">
+                  <label for="requestNote" class="control-label">Any other notes?</label>
+                  <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
+                </div>
+
+                <div class="form-group">
+                  <div class="right-button">
+                    <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
+                  </div>
+                </div>
+              </form>
+            </ValidationObserver>
           </div>
         </div>
       </div>
@@ -190,10 +194,6 @@
       'popper': Popper,
     },
     computed: {
-      formIsValid() {
-        let errorsValid = !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
-        return errorsValid;
-      },
       minimumPossibleEligibilityLevel() {
         return 0;
       },
