@@ -8,7 +8,9 @@ import App from 'components/app-root';
 
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import Toasted from 'vue-toasted';
-import { ValidationProvider, ValidationObserver } from 'vee-validate';
+import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
+import { required, email, min_value, max_value } from 'vee-validate/dist/rules';
+import { messages } from 'vee-validate/dist/locale/en.json';
 import VueAnalytics from 'vue-analytics';
 import VueClipboard from 'vue-clipboard2';
 import VueDatePicker from '@mathieustan/vue-datepicker';
@@ -21,8 +23,28 @@ VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
+
+//Vee-validate registration
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
+
+extend('required', {
+  ...required,
+  message: messages['required']
+});
+extend('email', {
+  ...email,
+  message: messages['email']
+});
+extend('min_value', {
+  ...min_value,
+  message: messages['min_value']
+});
+extend('max_value', {
+  ...max_value,
+  message: messages['max_value']
+});
+
 // Options: You can set lang by default
 Vue.use(VueDatePicker, {
   lang: 'en'

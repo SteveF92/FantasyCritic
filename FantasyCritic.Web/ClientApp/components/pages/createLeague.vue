@@ -91,8 +91,7 @@
     },
     computed: {
       readyToSetupLeagueYear() {
-        let leagueNameValid = this.veeFields['leagueName'] && this.veeFields['leagueName'].valid;
-        return leagueNameValid && this.initialYear;
+        return this.leagueName && this.initialYear;
       },
       leagueYearIsValid() {
         let valid = this.leagueYearSettings &&

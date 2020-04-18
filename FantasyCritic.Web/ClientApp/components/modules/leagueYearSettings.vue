@@ -9,8 +9,10 @@
       <div v-if="freshSettings">
         <div class="form-group">
           <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-          <input v-model="intendedNumberOfPlayers" v-validate="'required|min_value:2|max_value:20'" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('intendedNumberOfPlayers') }}</span>
+          <ValidationProvider rules="required|min_value:2|max_value:20" v-slot="{ errors }" name="Intended Number of Players">
+            <input v-model="intendedNumberOfPlayers" id="intendedNumberOfPlayers" name="intendedNumberOfPlayers" type="text" class="form-control input" />
+            <span class="text-danger">{{ errors[0] }}</span>
+          </ValidationProvider>
           <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
         </div>
 
@@ -42,8 +44,10 @@
           This is the total number of games that each player will have on their roster.
         </p>
 
-        <input v-model="local.standardGames" @input="update('standardGames', $event.target.value)" v-validate="'required|min_value:1|max_value:50'" id="standardGames" name="standardGames" type="text" class="form-control input" />
-        <span class="text-danger">{{ errors.first('standardGames') }}</span>
+        <ValidationProvider rules="required|min_value:1|max_value:50" v-slot="{ errors }" name="Total Number of Games">
+          <input v-model="local.standardGames" @input="update('standardGames', $event.target.value)" id="standardGames" name="standardGames" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors[0] }}</span>
+        </ValidationProvider>
       </div>
 
       <div class="form-group">
@@ -55,8 +59,11 @@
             Pickup Games.
           </a>
         </p>
-        <input v-model="local.gamesToDraft" @input="update('gamesToDraft', $event.target.value)" v-validate="'required|min_value:1|max_value:50'" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
-        <span class="text-danger">{{ errors.first('gamesToDraft') }}</span>
+
+        <ValidationProvider rules="required|min_value:1|max_value:50" v-slot="{ errors }" name="Games to Draft">
+          <input v-model="local.gamesToDraft" @input="update('gamesToDraft', $event.target.value)" id="gamesToDraft" name="gamesToDraft" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors[0] }}</span>
+        </ValidationProvider>
       </div>
 
       <div class="form-group">
@@ -68,8 +75,10 @@
           </a>
         </p>
 
-        <input v-model="local.counterPicks" @input="update('counterPicks', $event.target.value)" v-validate="'required|max_value:5'" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
-        <span class="text-danger">{{ errors.first('counterPicks') }}</span>
+        <ValidationProvider rules="required|max_value:5" v-slot="{ errors }" name="Number of Counterpicks">
+          <input v-model="local.counterPicks" @input="update('counterPicks', $event.target.value)" id="counterPicks" name="counterPicks" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors[0] }}</span>
+        </ValidationProvider>
       </div>
 
       <hr />
@@ -95,8 +104,11 @@
           <tr>
             <th scope="row">Will Release</th>
             <td>
-              <input v-model="local.willReleaseDroppableGames" @input="update('willReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                     id="willReleaseDroppableGames" name="willReleaseDroppableGames" type="text" class="form-control input drop-number" v-show="!local.unlimitedWillReleaseDroppableGames" />
+              <ValidationProvider rules="required|max_value:100" v-slot="{ errors }" name="Will Release Droppable Games" v-if="!local.unlimitedWillReleaseDroppableGames">
+                <input v-model="local.willReleaseDroppableGames" @input="update('willReleaseDroppableGames', $event.target.value)" 
+                       id="willReleaseDroppableGames" name="willReleaseDroppableGames" type="text" class="form-control input drop-number" />
+                <span class="text-danger">{{ errors[0] }}</span>
+              </ValidationProvider>
             </td>
             <td>
               <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillReleaseDroppableGames" @input="update('unlimitedWillReleaseDroppableGames', local.unlimitedWillReleaseDroppableGames)">
@@ -106,8 +118,11 @@
           <tr>
             <th scope="row">Will Not Release</th>
             <td>
-              <input v-model="local.willNotReleaseDroppableGames" @input="update('willNotReleaseDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                     id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input drop-number" v-show="!local.unlimitedWillNotReleaseDroppableGames" />
+              <ValidationProvider rules="required|max_value:100" v-slot="{ errors }" name="Will Not Release Droppable Games" v-if="!local.unlimitedWillNotReleaseDroppableGames">
+                <input v-model="local.willNotReleaseDroppableGames" @input="update('willNotReleaseDroppableGames', $event.target.value)"
+                       id="willNotReleaseDroppableGames" name="willNotReleaseDroppableGames" type="text" class="form-control input drop-number" />
+                <span class="text-danger">{{ errors[0] }}</span>
+              </ValidationProvider>
             </td>
             <td>
               <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedWillNotReleaseDroppableGames" @input="update('unlimitedWillNotReleaseDroppableGames', local.unlimitedWillNotReleaseDroppableGames)">
@@ -117,8 +132,11 @@
           <tr>
             <th scope="row">Unrestricted</th>
             <td>
-              <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)" v-validate="'required|max_value:100'"
-                     id="freeDroppableGames" name="freeDroppableGames" type="text" class="form-control input drop-number" v-show="!local.unlimitedFreeDroppableGames" />
+              <ValidationProvider rules="required|max_value:100" v-slot="{ errors }" name="Unrestricted Droppable Games" v-if="!local.unlimitedFreeDroppableGames">
+                <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)"
+                       id="freeDroppableGames" name="freeDroppableGames" type="text" class="form-control input drop-number" />
+                <span class="text-danger">{{ errors[0] }}</span>
+              </ValidationProvider>
             </td>
             <td>
               <b-form-checkbox class="unlimited-checkbox" v-model="local.unlimitedFreeDroppableGames" @input="update('unlimitedFreeDroppableGames', local.unlimitedFreeDroppableGames)">
