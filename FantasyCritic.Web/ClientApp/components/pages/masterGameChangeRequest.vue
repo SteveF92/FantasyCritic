@@ -72,8 +72,8 @@
               <form v-on:submit.prevent="sendMasterGameChangeRequestRequest">
                 <div class="form-group">
                   <label for="requestNote" class="control-label">What seems to be the issue?</label>
-                  <ValidationProvider rules="required" v-slot="{ errors }" name="Request Note">
-                    <input v-model="requestNote" id="requestNote" name="requestNote" type="text" class="form-control input" />
+                  <ValidationProvider rules="required" v-slot="{ errors }">
+                    <input v-model="requestNote" id="requestNote" name="Request Note" type="text" class="form-control input" />
                     <span class="text-danger">{{ errors[0] }}</span>
                   </ValidationProvider>
                 </div>

@@ -56,8 +56,8 @@
               <form v-on:submit.prevent="sendMasterGameRequestRequest">
                 <div class="form-group">
                   <label for="gameName" class="control-label">Game Name</label>
-                  <ValidationProvider rules="required" v-slot="{ errors }" name="Game Name">
-                    <input v-model="gameName" id="gameName" name="gameName" type="text" class="form-control input" />
+                  <ValidationProvider rules="required" v-slot="{ errors }">
+                    <input v-model="gameName" id="gameName" name="Game Name" type="text" class="form-control input" />
                     <span class="text-danger">{{ errors[0] }}</span>
                   </ValidationProvider>
                 </div>
