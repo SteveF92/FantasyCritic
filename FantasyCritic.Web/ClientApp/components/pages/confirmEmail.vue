@@ -24,25 +24,31 @@
         <h2>Manual Confirmation</h2>
         <h5>If you are having issues with confirming your email, try using this form.</h5>
         <h6>Check the email you received for how to fill out this form.</h6>
-        <form method="post" class="form-horizontal col-md-6" role="form" v-on:submit.prevent="manualConfirm">
-          <div class="form-group">
-            <label for="manaulUserID" class="control-label">User ID</label>
-            <input v-model="manaulUserID" v-validate="'required'" id="manaulUserID" name="manaulUserID" type="text" class="form-control input" />
-            <span class="text-danger">{{ errors.first('manaulUserID') }}</span>
-          </div>
+        <ValidationObserver v-slot="{ invalid }">
+          <form method="post" class="form-horizontal col-md-6" role="form" v-on:submit.prevent="manualConfirm">
+            <div class="form-group">
+              <label for="manaulUserID" class="control-label">User ID</label>
+              <ValidationProvider rules="required" v-slot="{ errors }" name="User ID">
+                <input v-model="manaulUserID" id="manaulUserID" name="manaulUserID" type="text" class="form-control input" />
+                <span class="text-danger">{{ errors[0] }}</span>
+              </ValidationProvider>
+            </div>
 
-          <div class="form-group">
-            <label for="manualConfirmCode" class="control-label">Confirmation Code</label>
-            <input v-model="manualConfirmCode" v-validate="'required'" id="manualConfirmCode" name="manualConfirmCode" type="text" class="form-control input" />
-            <span class="text-danger">{{ errors.first('manualConfirmCode') }}</span>
-          </div>
+            <div class="form-group">
+              <label for="manualConfirmCode" class="control-label">Confirmation Code</label>
+              <ValidationProvider rules="required" v-slot="{ errors }" name="Confirmation Code">
+                <input v-model="manualConfirmCode" id="manualConfirmCode" name="manualConfirmCode" type="text" class="form-control input" />
+                <span class="text-danger">{{ errors[0] }}</span>
+              </ValidationProvider>
+            </div>
 
-          <div class="register-button-area">
-            <button type="submit" class="btn btn-primary register-button" :disabled="!formIsValid || isBusy">
-              Confirm Email Manually
-            </button>
-          </div>
-        </form>
+            <div class="register-button-area">
+              <button type="submit" class="btn btn-primary register-button" :disabled="invalid || isBusy">
+                Confirm Email Manually
+              </button>
+            </div>
+          </form>
+        </ValidationObserver>
       </div>
     </div>
   </div>
@@ -69,9 +75,6 @@
       },
       isAuth() {
         return this.$store.getters.tokenIsCurrent();
-      },
-      formIsValid() {
-        return !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid);
       }
     },
     methods: {

@@ -9,7 +9,7 @@ import App from 'components/app-root';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import Toasted from 'vue-toasted';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
-import { required, email, min_value, max_value } from 'vee-validate/dist/rules';
+import { required, email, min_value, max_value, min, max } from 'vee-validate/dist/rules';
 import { messages } from 'vee-validate/dist/locale/en.json';
 import VueAnalytics from 'vue-analytics';
 import VueClipboard from 'vue-clipboard2';
@@ -36,6 +36,14 @@ extend('email', {
   ...email,
   message: messages['email']
 });
+extend('min', {
+  ...min,
+  message: messages['min']
+});
+extend('max', {
+  ...max,
+  message: messages['max']
+});
 extend('min_value', {
   ...min_value,
   message: messages['min_value']
@@ -43,6 +51,13 @@ extend('min_value', {
 extend('max_value', {
   ...max_value,
   message: messages['max_value']
+});
+extend('password', {
+  params: ['target'],
+  validate(value, { target }) {
+    return value === target;
+  },
+  message: 'Entered passwords do not match'
 });
 
 // Options: You can set lang by default

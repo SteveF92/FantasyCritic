@@ -17,29 +17,35 @@
     <hr />
     <div>
       <h3 class="text-black">Invite Single Player</h3>
-      <div class="form-horizontal">
-        <div class="form-group email-form">
-          <label for="inviteEmail" class="control-label">Email Address</label>
-          <input v-model="inviteEmail" v-validate="'email'" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors.first('inviteEmail') }}</span>
+      <ValidationObserver v-slot="{ invalid }">
+        <div class="form-horizontal">
+          <div class="form-group email-form">
+            <label for="inviteEmail" class="control-label">Email Address</label>
+            <ValidationProvider rules="email" v-slot="{ errors }" name="Email Address">
+              <input v-model="inviteEmail" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
+              <span class="text-danger">{{ errors[0] }}</span>
+            </ValidationProvider>
+          </div>
         </div>
-      </div>
-      <h3 class="text-black">OR</h3>
-      <div class="form-horizontal">
-        <div class="form-group">
-          <label for="inviteDisplayName" class="control-label">Display Name</label>
-          <input v-model="inviteDisplayName" id="inviteDisplayName" name="inviteDisplayName" type="text" class="form-control input" />
+        
+        <h3 class="text-black">OR</h3>
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="inviteDisplayName" class="control-label">Display Name</label>
+            <input v-model="inviteDisplayName" id="inviteDisplayName" name="inviteDisplayName" type="text" class="form-control input" />
+          </div>
+          <div class="form-group">
+          <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
+            <ValidationProvider rules="min_value:1000|max_value:9999" v-slot="{ errors }" name="Display Number">
+              <input v-model="inviteDisplayNumber" id="inviteDisplayNumber" name="inviteDisplayNumber" type="text" class="form-control input" />
+              <span class="text-danger">{{ errors[0] }}</span>
+            </ValidationProvider>
+          </div>
         </div>
-        <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
-        <div class="form-group form-inline">
-          <label for="inviteDisplayNumber" class="display-number-label">#</label>
-          <input v-model="inviteDisplayNumber" v-validate="'min_value:1000|max_value:9999'" id="inviteDisplayNumber" name="inviteDisplayNumber" type="text" class="form-control" />
-          <span class="text-danger">{{ errors.first('inviteDisplayNumber') }}</span>
+        <div slot="modal-footer">
+          <input type="submit" class="btn btn-primary" value="Send Invite" v-on:click="invitePlayer" :disabled="invalid || !valuesEntered" />
         </div>
-      </div>
-      <div slot="modal-footer">
-        <input type="submit" class="btn btn-primary" value="Send Invite" v-on:click="invitePlayer" :disabled="!formIsValid" />
-      </div>
+      </ValidationObserver>
     </div>
   </b-modal>
 </template>
@@ -58,18 +64,11 @@
       }
     },
     computed: {
-      formIsValid() {
-        return (this.emailIsValid || this.displayNameIsValid &&
-          !Object.keys(this.veeFields).some(key => this.veeFields[key].invalid));
+      valuesEntered() {
+        return this.inviteEmail || (this.inviteDisplayName && this.inviteDisplayNumber);
       },
-      emailIsValid() {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(this.inviteEmail).toLowerCase());
-      },
-      displayNameIsValid() {
-        return (this.inviteDisplayName && this.inviteDisplayNumber);
-      }
     },
+
     props: ['league'],
     methods: {
       invitePlayer() {
