@@ -37,7 +37,7 @@
           <div class="form-group">
           <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
             <ValidationProvider rules="min_value:1000|max_value:9999" v-slot="{ errors }" name="Display Number">
-              <input v-model="inviteDisplayNumber" id="inviteDisplayNumber" name="inviteDisplayNumber" type="text" class="form-control input" />
+              <input v-model="inviteDisplayNumber" id="inviteDisplayNumber" name="inviteDisplayNumber" type="number" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
