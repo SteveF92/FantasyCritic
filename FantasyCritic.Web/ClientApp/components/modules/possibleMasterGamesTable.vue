@@ -45,7 +45,7 @@
           { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
           { key: 'masterGame.sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
           { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-          { key: 'masterGame.eligibilityLevel', label: 'Eligibility Level', thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+          { key: 'masterGame.eligibilityLevel', label: 'Status', thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
           { key: 'select', label: '', thClass: 'bg-primary' }
         ],
         sortBy: 'dateAdjustedHypeFactor',
