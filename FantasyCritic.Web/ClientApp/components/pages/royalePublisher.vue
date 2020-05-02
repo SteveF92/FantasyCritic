@@ -37,7 +37,7 @@
         <template v-slot:cell(masterGame)="data">
           <masterGamePopover :masterGame="data.item.masterGame"> </masterGamePopover>
         </template>
-        <template v-slot:cell(releaseDate)="data">
+        <template v-slot:cell(masterGame.sortableEstimatedReleaseDate)="data">
           {{getReleaseDate(data.item.masterGame)}}
         </template>
         <template v-slot:cell(amountSpent)="data">
@@ -113,13 +113,13 @@
         gameToModify: null,
         advertisingBudgetToSet: 0,
         gameFields: [
-          { key: 'masterGame', label: 'Game', thClass:'bg-primary' },
-          { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-          { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary' },
-          { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary' },
-          { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary' },
-          { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary' },
-          { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary' }
+          { key: 'masterGame', label: 'Game', thClass: 'bg-primary', sortable: true },
+          { key: 'masterGame.sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+          { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary', sortable: true },
+          { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true },
+          { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true },
+          { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
+          { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
         ],
         userPublisherFields: [
           { key: 'sellGame', label: '', thClass: 'bg-primary', label: 'Sell' }
