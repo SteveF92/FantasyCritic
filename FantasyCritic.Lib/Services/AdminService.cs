@@ -74,7 +74,7 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                if (masterGame.IsReleased(_clock) && masterGame.ReleaseDate.HasValue)
+                if (masterGame.IsReleased(_clock.GetCurrentInstant()) && masterGame.ReleaseDate.HasValue)
                 {
                     var year = masterGame.ReleaseDate.Value.Year;
                     var supportedYear = supportedYears.SingleOrDefault(x => x.Year == year);

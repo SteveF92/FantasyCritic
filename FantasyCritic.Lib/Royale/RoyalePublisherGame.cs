@@ -29,7 +29,7 @@ namespace FantasyCritic.Lib.Royale
         
         public decimal? CalculateFantasyPoints(IClock clock)
         {
-            if (!MasterGame.MasterGame.IsReleased(clock))
+            if (!MasterGame.MasterGame.IsReleased(clock.GetCurrentInstant()))
             {
                 return 0m;
             }
@@ -47,7 +47,7 @@ namespace FantasyCritic.Lib.Royale
 
         public bool IsLocked(IClock clock)
         {
-            if (MasterGame.MasterGame.IsReleased(clock))
+            if (MasterGame.MasterGame.IsReleased(clock.GetCurrentInstant()))
             {
                 return true;
             }

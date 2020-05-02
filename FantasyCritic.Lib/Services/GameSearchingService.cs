@@ -110,7 +110,7 @@ namespace FantasyCritic.Lib.Services
             bool isEligible = !eligibilityErrors.Any();
             bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
             bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
-            bool isReleased = masterGame.MasterGame.IsReleased(_clock);
+            bool isReleased = masterGame.MasterGame.IsReleased(_clock.GetCurrentInstant());
             bool willRelease = masterGame.WillRelease();
             bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
 

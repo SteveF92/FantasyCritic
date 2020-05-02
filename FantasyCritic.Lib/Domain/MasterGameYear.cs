@@ -140,7 +140,7 @@ namespace FantasyCritic.Lib.Domain
                 return 0m;
             }
 
-            if (mustBeReleased && !MasterGame.IsReleased(clock))
+            if (mustBeReleased && !MasterGame.IsReleased(clock.GetCurrentInstant()))
             {
                 return null;
             }

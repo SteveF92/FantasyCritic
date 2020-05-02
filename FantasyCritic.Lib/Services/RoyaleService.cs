@@ -101,7 +101,7 @@ namespace FantasyCritic.Lib.Services
             {
                 return new ClaimResult("Game will not release this quarter.");
             }
-            if (masterGame.MasterGame.IsReleased(_clock))
+            if (masterGame.MasterGame.IsReleased(_clock.GetCurrentInstant()))
             {
                 return new ClaimResult("Game has been released.");
             }
@@ -130,7 +130,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> SellGame(RoyalePublisher publisher, RoyalePublisherGame publisherGame)
         {
-            if (publisherGame.MasterGame.MasterGame.IsReleased(_clock))
+            if (publisherGame.MasterGame.MasterGame.IsReleased(_clock.GetCurrentInstant()))
             {
                 return Result.Fail("That game has already been released.");
             }
@@ -150,7 +150,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> SetAdvertisingMoney(RoyalePublisher publisher, RoyalePublisherGame publisherGame, decimal advertisingMoney)
         {
-            if (publisherGame.MasterGame.MasterGame.IsReleased(_clock))
+            if (publisherGame.MasterGame.MasterGame.IsReleased(_clock.GetCurrentInstant()))
             {
                 return Result.Fail("That game has already been released.");
             }

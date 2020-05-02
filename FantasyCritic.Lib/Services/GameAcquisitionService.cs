@@ -227,7 +227,7 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            bool released = masterGame.IsReleased(_clock);
+            bool released = masterGame.IsReleased(_clock.GetCurrentInstant());
             if (released)
             {
                 claimErrors.Add(new ClaimError("That game has already been released.", true));

@@ -304,7 +304,7 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 masterGames = masterGames
                     .Where(x => x.WillReleaseInQuarter(yearQuarter.Value.YearQuarter))
-                    .Where(x => !x.MasterGame.IsReleased(_clock))
+                    .Where(x => !x.MasterGame.IsReleased(_clock.GetCurrentInstant()))
                     .Where(x => !EligibilitySettings.GetRoyaleEligibilitySettings().GameIsEligible(x.MasterGame).Any())
                     .Take(100)
                     .ToList();

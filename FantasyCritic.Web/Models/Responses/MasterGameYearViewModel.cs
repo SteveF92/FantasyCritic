@@ -20,7 +20,7 @@ namespace FantasyCritic.Web.Models.Responses
             EstimatedReleaseDate = masterGame.MasterGame.EstimatedReleaseDate;
             SortableEstimatedReleaseDate = masterGame.MasterGame.GetDefiniteSortableEstimatedReleaseDate();
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
-            IsReleased = masterGame.MasterGame.IsReleased(clock);
+            IsReleased = masterGame.MasterGame.IsReleased(clock.GetCurrentInstant());
             WillRelease = masterGame.WillRelease();
             CriticScore = masterGame.MasterGame.CriticScore;
             AveragedScore = masterGame.MasterGame.AveragedScore;
@@ -48,7 +48,7 @@ namespace FantasyCritic.Web.Models.Responses
             EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
             SortableEstimatedReleaseDate = masterSubGame.SortableEstimatedReleaseDate;
             ReleaseDate = masterSubGame.ReleaseDate;
-            IsReleased = masterSubGame.IsReleased(clock);
+            IsReleased = masterSubGame.IsReleased(clock.GetCurrentInstant());
             WillRelease = masterGame.WillRelease();
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;

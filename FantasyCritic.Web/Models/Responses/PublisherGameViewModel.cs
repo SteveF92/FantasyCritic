@@ -33,7 +33,7 @@ namespace FantasyCritic.Web.Models.Responses
                 }
 
                 CriticScore = publisherGame.MasterGame.Value.MasterGame.CriticScore;
-                Released = publisherGame.MasterGame.Value.MasterGame.IsReleased(clock);
+                Released = publisherGame.MasterGame.Value.MasterGame.IsReleased(clock.GetCurrentInstant());
                 if (publisherGame.MasterGame.HasValue)
                 {
                     MasterGame = new MasterGameYearViewModel(publisherGame.MasterGame.Value, clock);

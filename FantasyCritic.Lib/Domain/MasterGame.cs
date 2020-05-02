@@ -109,9 +109,9 @@ namespace FantasyCritic.Lib.Domain
         public EligibilitySettings EligibilitySettings { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
 
-        public bool IsReleased(IClock clock)
+        public bool IsReleased(Instant timeToCheck)
         {
-            if (SubGames.Any(x => x.IsReleased(clock)))
+            if (SubGames.Any(x => x.IsReleased(timeToCheck)))
             {
                 return true;
             }
@@ -121,8 +121,7 @@ namespace FantasyCritic.Lib.Domain
                 return false;
             }
 
-            Instant now = clock.GetCurrentInstant();
-            LocalDate currentDate = now.InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).LocalDateTime.Date;
+            LocalDate currentDate = timeToCheck.InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).LocalDateTime.Date;
             if (currentDate >= ReleaseDate.Value)
             {
                 return true;
