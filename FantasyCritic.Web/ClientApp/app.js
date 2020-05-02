@@ -9,7 +9,7 @@ import App from 'components/app-root';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import Toasted from 'vue-toasted';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
-import { required, email, min_value, max_value, min, max } from 'vee-validate/dist/rules';
+import { required, email, min_value, max_value, min, max, integer } from 'vee-validate/dist/rules';
 import { messages } from 'vee-validate/dist/locale/en.json';
 import VueAnalytics from 'vue-analytics';
 import VueClipboard from 'vue-clipboard2';
@@ -51,6 +51,10 @@ extend('min_value', {
 extend('max_value', {
   ...max_value,
   message: messages['max_value']
+});
+extend('integer', {
+  ...integer,
+  message: messages['integer']
 });
 extend('password', {
   params: ['target'],

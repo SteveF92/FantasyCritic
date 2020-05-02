@@ -34,20 +34,26 @@
       </div>
 
       <div v-if="bidMasterGame">
-        <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
-        <masterGameSummary :masterGame="bidMasterGame"></masterGameSummary>
-        <hr />
-        <div class="form-group">
-          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{leagueYear.userPublisher.budget | money}})</label>
-          <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="text" class="form-control input" />
-        </div>
-        <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy">Place Bid</b-button>
-        <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
-          <h3 class="alert-heading">Error!</h3>
-          <ul>
-            <li v-for="error in bidResult.errors">{{error}}</li>
-          </ul>
-        </div>
+        <ValidationObserver v-slot="{ invalid }">
+          <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
+          <masterGameSummary :masterGame="bidMasterGame"></masterGameSummary>
+          <hr />
+          <div class="form-group">
+            <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{leagueYear.userPublisher.budget | money}})</label>
+
+            <ValidationProvider rules="required|integer" v-slot="{ errors }">
+              <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />
+              <span class="text-danger">{{ errors[0] }}</span>
+            </ValidationProvider>
+          </div>
+          <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || invalid">Place Bid</b-button>
+          <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
+            <h3 class="alert-heading">Error!</h3>
+            <ul>
+              <li v-for="error in bidResult.errors">{{error}}</li>
+            </ul>
+          </div>
+        </ValidationObserver>
       </div>
     </form>
   </b-modal>
