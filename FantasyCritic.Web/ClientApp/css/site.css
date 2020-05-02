@@ -153,12 +153,12 @@ div.alert {
     background-color: #D6993A !important;
 }
 
-.pagination-dark li a, .pagination-dark li span {
+.pagination-dark li a, .pagination-dark li span, .pagination-dark li button {
     background-color: #444444 !important;
     font-weight: bold;
 }
 
-.pagination-dark li.active a, .pagination-dark li.active span {
+.pagination-dark li.active button {
     background-color: #D6993A !important;
     font-weight: bold;
 }
