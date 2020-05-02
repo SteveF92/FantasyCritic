@@ -154,6 +154,7 @@ namespace FantasyCritic.Lib.Services
             {
                 return Result.Fail("That game has already been released.");
             }
+
             if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
             {
                 return Result.Fail("That game already has a score.");
