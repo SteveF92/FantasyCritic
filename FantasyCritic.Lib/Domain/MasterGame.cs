@@ -12,7 +12,8 @@ namespace FantasyCritic.Lib.Domain
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate, 
             LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings, 
-            string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, Instant addedTimestamp)
+            string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, bool eligibilityChanged,
+            Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -28,13 +29,14 @@ namespace FantasyCritic.Lib.Domain
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
             DoNotRefreshDate = doNotRefreshDate;
             DoNotRefreshAnything = doNotRefreshAnything;
+            EligibilityChanged = eligibilityChanged;
             AddedTimestamp = addedTimestamp;
         }
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate,
             LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings, 
             IReadOnlyList<MasterSubGame> subGames, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
-            bool doNotRefreshAnything, Instant addedTimestamp)
+            bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -50,6 +52,7 @@ namespace FantasyCritic.Lib.Domain
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
             DoNotRefreshDate = doNotRefreshDate;
             DoNotRefreshAnything = doNotRefreshAnything;
+            EligibilityChanged = eligibilityChanged;
             AddedTimestamp = addedTimestamp;
         }
 
@@ -64,6 +67,7 @@ namespace FantasyCritic.Lib.Domain
         public Instant? FirstCriticScoreTimestamp { get; }
         public bool DoNotRefreshDate { get; }
         public bool DoNotRefreshAnything { get; }
+        public bool EligibilityChanged { get; }
         public Instant AddedTimestamp { get; }
 
         public LocalDate GetDefiniteSortableEstimatedReleaseDate() => SortableEstimatedReleaseDate ?? LocalDate.MaxIsoValue;

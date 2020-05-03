@@ -30,8 +30,18 @@ namespace FantasyCritic.Web.Models.Responses
             BoxartFileName = masterGame.MasterGame.BoxartFileName;
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
-            EligiblePercentStandardGame = masterGame.EligiblePercentStandardGame;
-            EligiblePercentCounterPick = masterGame.EligiblePercentCounterPick;
+
+            if (masterGame.MasterGame.EligibilityChanged)
+            {
+                EligiblePercentStandardGame = masterGame.PercentStandardGame;
+                EligiblePercentCounterPick = masterGame.PercentCounterPick;
+            }
+            else
+            {
+                EligiblePercentStandardGame = masterGame.EligiblePercentStandardGame;
+                EligiblePercentCounterPick = masterGame.EligiblePercentCounterPick;
+            }
+
             AverageDraftPosition = masterGame.AverageDraftPosition;
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
@@ -58,8 +68,18 @@ namespace FantasyCritic.Web.Models.Responses
 
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
-            EligiblePercentStandardGame = masterGame.EligiblePercentStandardGame;
-            EligiblePercentCounterPick = masterGame.EligiblePercentCounterPick;
+
+            if (masterGame.MasterGame.EligibilityChanged)
+            {
+                EligiblePercentStandardGame = masterGame.PercentStandardGame;
+                EligiblePercentCounterPick = masterGame.PercentCounterPick;
+            }
+            else
+            {
+                EligiblePercentStandardGame = masterGame.EligiblePercentStandardGame;
+                EligiblePercentCounterPick = masterGame.EligiblePercentCounterPick;
+            }
+
             AverageDraftPosition = masterGame.AverageDraftPosition;
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;

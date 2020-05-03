@@ -67,6 +67,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool ExpansionPack { get; set; }
         public bool UnannouncedGame { get; set; }
         public string BoxartFileName { get; set; }
+        public bool EligibilityChanged { get; set; }
         public DateTime? FirstCriticScoreTimestamp { get; set; }
         public double PercentStandardGame { get; set; }
         public double PercentCounterPick { get; set; }
@@ -107,7 +108,7 @@ namespace FantasyCritic.MySQL.Entities
 
             var masterGame =  new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, 
                 OpenCriticID, CriticScore, LocalDate.FromDateTime(MinimumReleaseDate), eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, 
-                false, false, addedTimestamp);
+                false, false, EligibilityChanged, addedTimestamp);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 
                 NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);

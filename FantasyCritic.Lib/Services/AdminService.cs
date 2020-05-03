@@ -14,6 +14,7 @@ using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Statistics;
 using FantasyCritic.Lib.Utilities;
 using Microsoft.Extensions.Logging;
+using NLog.Targets;
 using NodaTime;
 using RDotNet;
 
@@ -275,11 +276,19 @@ namespace FantasyCritic.Lib.Services
 
                     double notNullAverageDraftPosition = masterGame.AverageDraftPosition ?? 0;
 
-                    double hypeFactor = (101 - notNullAverageDraftPosition) * masterGame.PercentStandardGame;
-                    double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * masterGame.EligiblePercentStandardGame;
+                    double percentStandardGameToUse = masterGame.EligiblePercentStandardGame;
+                    double percentCounterpickToUse = masterGame.EligiblePercentCounterPick;
+                    if (masterGame.MasterGame.EligibilityChanged)
+                    {
+                        percentStandardGameToUse = masterGame.PercentStandardGame;
+                        percentCounterpickToUse = masterGame.PercentStandardGame;
+                    }
 
-                    double standardGameCalculation = masterGame.EligiblePercentStandardGame * hypeConstants.StandardGameConstant;
-                    double counterPickCalculation = masterGame.EligiblePercentCounterPick * hypeConstants.CounterPickConstant;
+                    double hypeFactor = (101 - notNullAverageDraftPosition) * masterGame.PercentStandardGame;
+                    double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGameToUse;
+
+                    double standardGameCalculation = percentStandardGameToUse * hypeConstants.StandardGameConstant;
+                    double counterPickCalculation = percentCounterpickToUse * hypeConstants.CounterPickConstant;
                     double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
                     double averageDraftPositionCalculation = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
                     double totalBidCalculation = masterGame.TotalBidAmount * hypeConstants.TotalBidAmountConstant;

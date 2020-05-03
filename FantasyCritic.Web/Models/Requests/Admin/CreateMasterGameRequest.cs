@@ -35,7 +35,7 @@ namespace FantasyCritic.Web.Models.Requests.Admin
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
             Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, SortableEstimatedReleaseDate,
                 ReleaseDate, OpenCriticID, null, tomorrow,
-                eligibilitySettings, BoxartFileName, null, false, false, timestamp);
+                eligibilitySettings, BoxartFileName, null, false, false, false, timestamp);
             return masterGame;
         }
     }
