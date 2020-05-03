@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form class="form-horizontal" v-on:submit.prevent="removePublisherGame" hide-footer>
+    <form class="form-horizontal" hide-footer>
       <b-modal id="removePublisherGame" size="lg" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer @hidden="clearData">
         <div class="alert alert-warning">Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be removing games from player's rosters.</div>
         <div class="form-group">
@@ -21,7 +21,7 @@
         </div>
 
         <div v-if="removeGame">
-          <input type="submit" class="btn btn-primary add-game-button" value="Remove Game" />
+          <b-button variant="primary" class="add-game-button" v-on:click="removePublisherGame">Remove Game</b-button>
           <div v-if="errorInfo" class="alert alert-danger remove-error">
             <h3 class="alert-heading">Error!</h3>
             <p>{{errorInfo}}</p>
