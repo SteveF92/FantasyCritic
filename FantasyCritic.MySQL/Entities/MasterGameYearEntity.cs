@@ -34,6 +34,7 @@ namespace FantasyCritic.MySQL.Entities
             ExpansionPack = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.ExpansionPack;
             UnannouncedGame = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.UnannouncedGame;
             BoxartFileName = masterGameHypeScores.MasterGameYear.MasterGame.BoxartFileName;
+            EligibilityChanged = masterGameHypeScores.MasterGameYear.MasterGame.EligibilityChanged;
             FirstCriticScoreTimestamp = masterGameHypeScores.MasterGameYear.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
             PercentStandardGame = masterGameHypeScores.MasterGameYear.PercentStandardGame;
             PercentCounterPick = masterGameHypeScores.MasterGameYear.PercentCounterPick;
