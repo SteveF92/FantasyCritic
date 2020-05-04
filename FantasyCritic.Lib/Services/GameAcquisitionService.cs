@@ -352,7 +352,16 @@ namespace FantasyCritic.Lib.Services
             var currentTime = _clock.GetCurrentInstant();
             var nyc = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
             LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
-            var nextBidDate = currentDate.Next(IsoDayOfWeek.Monday);
+            LocalDate nextBidDate;
+            if (currentDate.DayOfWeek == IsoDayOfWeek.Monday)
+            {
+                nextBidDate = currentDate;
+            }
+            else
+            {
+                nextBidDate = currentDate.Next(IsoDayOfWeek.Monday);
+            }
+
             LocalDateTime dateTime = nextBidDate + new LocalTime(20, 0);
             return dateTime.InZoneStrictly(nyc).ToInstant();
         }
