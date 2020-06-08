@@ -259,16 +259,17 @@
           queryURL += '&inviteCode=' + this.inviteCode;
         }
         axios
-            .get(queryURL)
-            .then(response => {
-              this.leagueYear = response.data;
-              this.selectedYear = this.leagueYear.year;
-              this.fetchCurrentBids();
-              this.fetchCurrentDropRequests();
-              if (this.leagueYear.userIsActive) {
-                this.userShouldBeActive = true;
-              }
-            })
+          .get(queryURL)
+          .then(response => {
+            this.leagueYear = response.data;
+            this.selectedYear = this.leagueYear.year;
+            this.fetchCurrentBids();
+            this.fetchCurrentDropRequests();
+            this.fetchUpcomingGames();
+            if (this.leagueYear.userIsActive) {
+              this.userShouldBeActive = true;
+            }
+          })
           .catch(returnedError => {
             this.errorInfo = "Something went wrong with this league. Contact us on Twitter for support.";
           });
@@ -299,7 +300,8 @@
 
           });
       },
-      async fetchUpcomingGames() {
+      fetchUpcomingGames() {
+        this.upcomingGames = null;
         let queryURL = '/api/League/LeagueUpcomingGames?leagueID=' + this.leagueid + '&year=' + this.year;
         axios
           .get(queryURL)
@@ -312,7 +314,7 @@
       },
       acceptInvite() {
         var model = {
-            leagueID: this.league.leagueID
+          leagueID: this.league.leagueID
         };
         axios
           .post('/api/league/AcceptInvite', model)
@@ -331,7 +333,7 @@
         axios
           .post('/api/league/DeclineInvite', model)
           .then(response => {
-              this.$router.push({ name: "home" });
+            this.$router.push({ name: "home" });
           })
           .catch(response => {
 
@@ -339,18 +341,18 @@
       },
       joinWithInviteLink() {
         var model = {
-            leagueID: this.league.leagueID,
-            inviteCode: this.inviteCode
-          };
-          axios
-            .post('/api/league/JoinWithInviteLink', model)
-            .then(response => {
-              this.fetchLeague();
-              this.fetchLeagueYear();
-            })
-            .catch(response => {
-              this.errorInfo = "Something went wrong joining the league";
-            });
+          leagueID: this.league.leagueID,
+          inviteCode: this.inviteCode
+        };
+        axios
+          .post('/api/league/JoinWithInviteLink', model)
+          .then(response => {
+            this.fetchLeague();
+            this.fetchLeagueYear();
+          })
+          .catch(response => {
+            this.errorInfo = "Something went wrong joining the league";
+          });
       },
       startDraft() {
         var model = {
@@ -450,12 +452,11 @@
       this.getInviteCode();
       this.fetchLeague();
       this.fetchLeagueYear();
-      await this.fetchUpcomingGames();
       await this.startHubConnection();
     },
     watch: {
       '$route'(to, from) {
-          this.fetchLeagueYear();
+        this.fetchLeagueYear();
       },
       userIsNextInDraft: function (val, oldVal) {
         if (val && val !== oldVal) {
