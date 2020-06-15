@@ -249,6 +249,8 @@ namespace FantasyCritic.Web
 
                 // Add MapRazorPages if the app uses Razor Pages. Since Endpoint Routing includes support for many frameworks, adding Razor Pages is now opt -in.
                 endpoints.MapRazorPages();
+
+                endpoints.MapHub<UpdateHub>("/updatehub");
             });
 
             app.UseSpa(spa =>
