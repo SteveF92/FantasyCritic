@@ -223,6 +223,10 @@ namespace FantasyCritic.Web
                 app.UseHttpsRedirection();
             }
 
+            app.UseRewriter(new RewriteOptions()
+                .AddRedirectToWww()
+            );
+
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
