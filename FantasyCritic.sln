@@ -1,9 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Web", "FantasyCritic.Web\FantasyCritic.Web.csproj", "{D1A4B196-FA92-4822-8C25-07D53A2903EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Lib", "FantasyCritic.Lib\FantasyCritic.Lib.csproj", "{25C24492-5096-4B3F-9E3C-531A7DD51602}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.FakeRepo", "FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj", "{7444D90A-040B-41F3-BFE3-CDA0E6F93047}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.MySQL", "FantasyCritic.MySQL\FantasyCritic.MySQL.csproj", "{2C9E61A1-F785-4245-82DA-CE695442F359}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.RDS", "FantasyCritic.RDS\FantasyCritic.RDS.csproj", "{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.SendGrid", "FantasyCritic.SendGrid\FantasyCritic.SendGrid.csproj", "{8B6F4E06-11B6-4822-913F-EB2E43DED4A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Test", "FantasyCritic.Test\FantasyCritic.Test.csproj", "{FD9CE006-F47D-4620-8DCF-A25032189044}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +27,30 @@ Global
 		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25C24492-5096-4B3F-9E3C-531A7DD51602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25C24492-5096-4B3F-9E3C-531A7DD51602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25C24492-5096-4B3F-9E3C-531A7DD51602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25C24492-5096-4B3F-9E3C-531A7DD51602}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7444D90A-040B-41F3-BFE3-CDA0E6F93047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7444D90A-040B-41F3-BFE3-CDA0E6F93047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7444D90A-040B-41F3-BFE3-CDA0E6F93047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7444D90A-040B-41F3-BFE3-CDA0E6F93047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C9E61A1-F785-4245-82DA-CE695442F359}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C9E61A1-F785-4245-82DA-CE695442F359}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C9E61A1-F785-4245-82DA-CE695442F359}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C9E61A1-F785-4245-82DA-CE695442F359}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B6F4E06-11B6-4822-913F-EB2E43DED4A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B6F4E06-11B6-4822-913F-EB2E43DED4A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B6F4E06-11B6-4822-913F-EB2E43DED4A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B6F4E06-11B6-4822-913F-EB2E43DED4A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD9CE006-F47D-4620-8DCF-A25032189044}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD9CE006-F47D-4620-8DCF-A25032189044}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD9CE006-F47D-4620-8DCF-A25032189044}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD9CE006-F47D-4620-8DCF-A25032189044}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
