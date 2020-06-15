@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
@@ -38,7 +40,7 @@ namespace FantasyCritic.Lib.Domain
                 return false;
             }
 
-            LocalDate currentDate = timeToCheck.InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).LocalDateTime.Date;
+            LocalDate currentDate = timeToCheck.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
             if (currentDate >= ReleaseDate.Value)
             {
                 return true;

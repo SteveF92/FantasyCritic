@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Services
@@ -350,7 +351,7 @@ namespace FantasyCritic.Lib.Services
         private Instant GetNextBidTime()
         {
             var currentTime = _clock.GetCurrentInstant();
-            var nyc = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
+            var nyc = TimeExtensions.EasternTimeZone;
             LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
             LocalDate nextBidDate;
             if (currentDate.DayOfWeek == IsoDayOfWeek.Monday)

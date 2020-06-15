@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Extensions
@@ -18,8 +19,10 @@ namespace FantasyCritic.Lib.Extensions
         public static LocalDate ToEasternDate(this Instant instant)
         {
             return instant
-                .InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York"))
+                .InZone(EasternTimeZone)
                 .LocalDateTime.Date;
         }
+
+        public static readonly DateTimeZone EasternTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
     }
 }

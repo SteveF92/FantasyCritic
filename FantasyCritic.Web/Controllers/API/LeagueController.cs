@@ -1327,7 +1327,7 @@ namespace FantasyCritic.Web.Controllers.API
         private IReadOnlyList<UpcomingGameViewModel> GetUpcomingGameViewModels(IEnumerable<Publisher> publishers, bool userMode)
         {
             var publisherGames = publishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue);
-            var easternZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
+            var easternZone = TimeExtensions.EasternTimeZone;
             if (easternZone is null)
             {
                 throw new Exception("Time has broken.");

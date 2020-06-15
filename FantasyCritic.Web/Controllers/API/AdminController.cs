@@ -200,6 +200,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Turn on bid processing mode first.");
             }
 
+            var today = _clock.GetCurrentInstant().ToEasternDate();
+            if (today.DayOfWeek != IsoDayOfWeek.Monday)
+            {
+                return BadRequest($"You probably didn't mean to process pickups on a {today.DayOfWeek}");
+            }
+
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
@@ -222,6 +228,12 @@ namespace FantasyCritic.Web.Controllers.API
             if (!systemWideSettings.BidProcessingMode)
             {
                 return BadRequest("Turn on bid processing mode first.");
+            }
+
+            var today = _clock.GetCurrentInstant().ToEasternDate();
+            if (today.DayOfWeek != IsoDayOfWeek.Sunday)
+            {
+                return BadRequest($"You probably didn't mean to process pickups on a {today.DayOfWeek}");
             }
 
             var supportedYears = await _interLeagueService.GetSupportedYears();

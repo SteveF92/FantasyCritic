@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Interfaces;
 using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.RDS
@@ -27,7 +28,7 @@ namespace FantasyCritic.RDS
         {
             using (AmazonRDSClient rdsClient = new AmazonRDSClient())
             {
-                var date = snapshotTime.InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).LocalDateTime.Date;
+                var date = snapshotTime.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
                 var dateString = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
                 var random = Guid.NewGuid().ToString().Substring(0, 1);
                 string snapName = "AdminSnap-" + dateString + "-" + random;

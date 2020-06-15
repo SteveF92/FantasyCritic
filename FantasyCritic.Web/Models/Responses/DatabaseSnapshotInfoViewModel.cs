@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
@@ -13,7 +14,7 @@ namespace FantasyCritic.Web.Models.Responses
         public DatabaseSnapshotInfoViewModel(DatabaseSnapshotInfo domain)
         {
             SnapshotName = domain.SnapshotName;
-            CreationTime = domain.CreationTime.InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).LocalDateTime;
+            CreationTime = domain.CreationTime.InZone(TimeExtensions.EasternTimeZone).LocalDateTime;
             Percent = domain.Percent;
             Status = domain.Status;
         }

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Royale;
+using FantasyCritic.Lib.Utilities;
 using NodaTime;
 using Org.BouncyCastle.Asn1.X509;
 
@@ -39,7 +41,7 @@ namespace FantasyCritic.MySQL.Entities
             if (Timestamp.Kind != DateTimeKind.Utc)
             {
                 LocalDateTime localDateTime = LocalDateTime.FromDateTime(Timestamp);
-                Instant instant = localDateTime.InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")).ToInstant();
+                Instant instant = localDateTime.InZoneStrictly(TimeExtensions.EasternTimeZone).ToInstant();
                 return new RoyalePublisherGame(PublisherID, yearQuarter, masterGameYear, instant, AmountSpent, AdvertisingMoney, FantasyPoints);
             }
             return new RoyalePublisherGame(PublisherID, yearQuarter, masterGameYear, Instant.FromDateTimeUtc(Timestamp), AmountSpent, AdvertisingMoney, FantasyPoints);
