@@ -32,7 +32,7 @@ Vue.filter('money', function (value) {
 
 Vue.filter('dateTime', function(value) {
   if (value) {
-    return moment(String(value)).format('YYYY-MM-DD hh:mm');
+    return moment(String(value)).format('YYYY-MM-DD HH:mm');
   }
   return "";
 });
