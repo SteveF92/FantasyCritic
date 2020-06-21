@@ -7,47 +7,6 @@
       <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
       <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
       <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
-        <div v-if="myRequests.length !== 0">
-          <div class="row">
-            <h3>My Current Requests</h3>
-          </div>
-          <div class="row">
-            <table class="table table-sm table-responsive-sm table-bordered table-striped">
-              <thead>
-                <tr class="bg-primary">
-                  <th scope="col" class="game-column">Game Name</th>
-                  <th scope="col" class="game-column">Note</th>
-                  <th scope="col">Response</th>
-                  <th scope="col">Response Time</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="request in myRequests">
-                  <td>
-                    <span><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
-                  </td>
-                  <td>
-                    <span> {{request.requestNote}} </span>
-                  </td>
-                  <td>
-                    <span v-show="request.responseNote"> {{request.responseNote}} </span>
-                    <span v-show="!request.responseNote">&lt;Pending&gt;</span>
-                  </td>
-                  <td>
-                    <span v-show="request.responseTimestamp"> {{request.responseTimestamp | dateTime}} </span>
-                    <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
-                  </td>
-                  <td class="select-cell">
-
-                    <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
-                    <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
         <p>
           <strong>
             If you see an issue with a game on the site, for example an incorrect release date, you can send me a note and I'll get it fixed.
@@ -90,6 +49,47 @@
                 </div>
               </form>
             </ValidationObserver>
+          </div>
+        </div>
+        <div v-if="myRequests.length !== 0">
+          <div class="row">
+            <h3>My Current Requests</h3>
+          </div>
+          <div class="row">
+            <table class="table table-sm table-responsive-sm table-bordered table-striped">
+              <thead>
+                <tr class="bg-primary">
+                  <th scope="col" class="game-column">Game Name</th>
+                  <th scope="col" class="game-column">Note</th>
+                  <th scope="col">Response</th>
+                  <th scope="col">Response Time</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="request in myRequests">
+                  <td>
+                    <span><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
+                  </td>
+                  <td>
+                    <span> {{request.requestNote}} </span>
+                  </td>
+                  <td>
+                    <span v-show="request.responseNote"> {{request.responseNote}} </span>
+                    <span v-show="!request.responseNote">&lt;Pending&gt;</span>
+                  </td>
+                  <td>
+                    <span v-show="request.responseTimestamp"> {{request.responseTimestamp | dateTime}} </span>
+                    <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
+                  </td>
+                  <td class="select-cell">
+
+                    <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
+                    <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
