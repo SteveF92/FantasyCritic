@@ -409,7 +409,7 @@ namespace FantasyCritic.Lib.Services
 
             if (publisherGame.MasterGame.HasNoValue)
             {
-                return new DropResult(Result.Fail("You can't drop a game that is not linked to a master game."), false);
+                return new DropResult(Result.Fail("You can't drop a game that is not linked to a master game. Please see the FAQ section on dropping games."), false);
             }
 
             MasterGame masterGame = publisherGame.MasterGame.Value.MasterGame;

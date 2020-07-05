@@ -310,6 +310,13 @@
           Your game is dropped, but the counterpick the other player has stays and is not affected.
         </div>
       </faqCollapse>
+      <faqCollapse>
+        <div slot="question">How do I drop a game that is not linked to a master game?</div>
+        <div slot="answer">
+          The dropping system won't let you. This is because it's impossible for me to decide how to handle a game that is not linked to a master game. Each league has to decide how to handle these cases themselves.
+          League managers can use "Remove Publisher Game" to remove the game and "Edit Publishers" to manually adjust the amount of games the publisher has dropped.
+        </div>
+      </faqCollapse>
       <br />
 
       <h2><a name="scoring">Scoring</a></h2>
