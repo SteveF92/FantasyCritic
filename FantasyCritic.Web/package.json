@@ -87,7 +87,7 @@
     "html-webpack-plugin": "^4.3.0",
     "jquery": "^3.5.1",
     "mini-css-extract-plugin": "^0.9.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^4.14.1",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "popper.js": "^1.16.1",
     "sass-loader": "^8.0.2",
@@ -96,7 +96,7 @@
     "vue-loader": "^15.9.3",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3",
+    "webpack-dev-server": "^3.11.0",
     "webpack-hot-middleware": "^2.25.0"
   }
 }
