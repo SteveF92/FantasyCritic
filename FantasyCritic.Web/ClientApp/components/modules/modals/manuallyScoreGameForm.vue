@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form class="form-horizontal" v-on:submit.prevent="manuallyScorePublisherGame" hide-footer>
+    <form class="form-horizontal" hide-footer>
       <b-modal id="manuallyScorePublisherGame" ref="manuallyScorePublisherGameRef" title="Manually Score Publisher Game" hide-footer @hidden="clearData">
         <div class="alert alert-warning">Warning! This feature is intended to deal with exceptional circumstances.
         See the <a href="/faq#scoring" class="text-secondary" target="_blank">FAQ</a> page for more info.</div>
@@ -36,7 +36,7 @@
         </div>
 
         <div v-if="manuallyScoreGame && (manualScore || removeManualScore)">
-          <input type="submit" class="btn btn-primary add-game-button" :value="buttonText" />
+          <b-button variant="primary" class="add-game-button" v-on:click="manuallyScorePublisherGame">{{buttonText}}</b-button>
           <div v-if="errorInfo" class="alert alert-danger manuallyScore-error">
             <h3 class="alert-heading">Error!</h3>
             <p>{{errorInfo}}</p>
