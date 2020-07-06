@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12 offset-sm-0">
-      <h1>Master Game Change Request</h1>
+      <h1>Master Game Correction Request</h1>
       <hr />
       <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
       <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
