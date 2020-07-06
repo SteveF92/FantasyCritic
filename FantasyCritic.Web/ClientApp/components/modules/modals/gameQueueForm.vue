@@ -27,6 +27,7 @@
         <tr class="bg-primary">
           <th scope="col"></th>
           <th scope="col" class="game-column">Game</th>
+          <th scope="col" class="game-column">Release Date</th>
           <th scope="col">Ranking</th>
           <th scope="col"></th>
         </tr>
@@ -35,6 +36,10 @@
         <tr v-for="queuedGame in desiredQueueRanks" :key="queuedGame.rank">
           <td scope="row"><font-awesome-icon icon="bars" size="lg" /></td>
           <td>{{queuedGame.masterGame.gameName}}</td>
+          <td>
+            <span>{{queuedGame.masterGame.estimatedReleaseDate}}</span>
+            <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
+          </td>
           <td>{{queuedGame.rank}}</td>
           <td class="select-cell">
             <b-button variant="danger" size="sm" v-on:click="removeQueuedGame(queuedGame)">Remove</b-button>
