@@ -47,7 +47,7 @@
 
               <div class="form-group">
                 <label for="releaseDate" class="control-label">Release Date</label>
-                <flat-pickr v-model="releaseDate" class="form-control"></flat-pickr>
+                <VueDatePicker v-model="releaseDate" name="Release Date" color="#D6993A" fullscreen-mobile no-input />
               </div>
 
               <b-button variant="info" size="sm" v-on:click="propagateDate">Propagate Date</b-button>
@@ -59,7 +59,7 @@
               </div>
               <div class="form-group">
                 <label for="sortableEstimatedReleaseDate" class="control-label">Sortable Estimated Release Date</label>
-                <flat-pickr v-model="sortableEstimatedReleaseDate" class="form-control"></flat-pickr>
+                <VueDatePicker v-model="sortableEstimatedReleaseDate" name="Sortable Estimated Release Date" color="#D6993A" fullscreen-mobile no-input />
               </div>
 
               <div class="form-group">

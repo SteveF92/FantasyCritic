@@ -59,8 +59,8 @@
     methods: {
       dropGame() {
         var request = {
-          publisherID: this.publisher.publisherID,
-          publisherGameID: this.gameToDrop.publisherGameID
+            publisherID: this.publisher.publisherID,
+            masterGameID: this.gameToDrop.masterGame.masterGameID
         };
         this.isBusy = true;
         axios
