@@ -68,7 +68,7 @@
                   </b-form-checkbox>
                   <div v-if="hasReleaseDate">
                     <label for="releaseDate" class="control-label">Release Date</label>
-                    <VueDatePicker v-model="releaseDate" name="Release Date" color="#D6993A" fullscreen-mobile no-input />
+                    <flat-pickr v-model="releaseDate" class="form-control"></flat-pickr>
                   </div>
                   <div v-if="!hasReleaseDate">
                     <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>

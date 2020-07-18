@@ -13,16 +13,19 @@ import { required, email, min_value, max_value, min, max, integer } from 'vee-va
 import { messages } from 'vee-validate/dist/locale/en.json';
 import VueAnalytics from 'vue-analytics';
 import VueClipboard from 'vue-clipboard2';
-import VueDatePicker from '@mathieustan/vue-datepicker';
 
 import "./filters";
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 
+import VueFlatPickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
+
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
+Vue.use(VueFlatPickr);
 
 //Vee-validate registration
 Vue.component('ValidationProvider', ValidationProvider);
@@ -62,11 +65,6 @@ extend('password', {
     return value === target;
   },
   message: 'Entered passwords do not match'
-});
-
-// Options: You can set lang by default
-Vue.use(VueDatePicker, {
-  lang: 'en'
 });
 
 Vue.use(VueAnalytics, {

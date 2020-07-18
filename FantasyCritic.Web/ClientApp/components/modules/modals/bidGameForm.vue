@@ -8,6 +8,10 @@
       <br />
       Bids are processed on Monday Nights. See the FAQ for more info.
     </p>
+
+    <div class="alert alert-warning" v-show="publisherSlotsAreFilled">Warning! You have already filled all of your game slots.
+    You can still make bids, but you must drop a game before bids are processed, or the bid will not succeed.</div>
+
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <label for="bidGameName" class="control-label">Game Name</label>
       <div class="input-group game-search-input">
@@ -86,6 +90,12 @@
         computed: {
           formIsValid() {
             return (this.bidMasterGame);
+          },
+          publisherSlotsAreFilled() {
+            let userGames = this.leagueYear.userPublisher.games;
+            let standardGameSlots = this.leagueYear.standardGames;
+            let userStandardGames = _.filter(userGames, { 'counterPick': false });
+            return userStandardGames.length >= standardGameSlots;
           }
         },
         props: ['leagueYear', 'maximumEligibilityLevel'],

@@ -150,7 +150,7 @@ export const routes = [
     component: MasterGameRequest,
     name: "masterGameRequest",
     meta: {
-      title: "Request a Master Game"
+      title: "Master Game Request"
     }
   },
   {
@@ -158,7 +158,7 @@ export const routes = [
     component: MasterGameChangeRequest,
     name: "masterGameChangeRequest",
     meta: {
-      title: "Request a Master Game Change"
+      title: "Master Game Correction"
     }
   },
   {
