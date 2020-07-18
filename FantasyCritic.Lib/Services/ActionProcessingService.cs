@@ -70,7 +70,7 @@ namespace FantasyCritic.Lib.Services
 
                 var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, false, false, false, activeBid.MasterGame, null, null);
                 var publishersForLeagueAndYear = currentPublisherStates.Where(x => x.LeagueYear.League.LeagueID == leagueYear.League.LeagueID && x.LeagueYear.Year == leagueYear.Year);
-                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, supportedYears, leagueYear, publishersForLeagueAndYear, null);
+                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, supportedYears, leagueYear, publishersForLeagueAndYear, null, false);
 
                 if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames))
                 {
