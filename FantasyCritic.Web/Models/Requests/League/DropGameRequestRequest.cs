@@ -8,6 +8,6 @@ namespace FantasyCritic.Web.Models.Requests.League
         [Required]
         public Guid PublisherID { get; set; }
         [Required]
-        public Guid PublisherGameID { get; set; }
+        public Guid MasterGameID { get; set; }
     }
 }

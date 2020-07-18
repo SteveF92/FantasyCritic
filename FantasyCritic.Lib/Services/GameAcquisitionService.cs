@@ -30,7 +30,7 @@ namespace FantasyCritic.Lib.Services
         }
 
         public ClaimResult CanClaimGame(ClaimGameDomainRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear, 
-            IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime, bool allowIfFull)
+            IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
@@ -68,7 +68,7 @@ namespace FantasyCritic.Lib.Services
 
                 int leagueDraftGames = yearOptions.StandardGames;
                 int userDraftGames = thisPlayersGames.Count(x => !x.CounterPick);
-                if (userDraftGames == leagueDraftGames && !allowIfFull)
+                if (userDraftGames == leagueDraftGames)
                 {
                     claimErrors.Add(new ClaimError("User's game spaces are filled.", false));
                 }
@@ -280,7 +280,7 @@ namespace FantasyCritic.Lib.Services
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
             LeagueYear leagueYear = request.Publisher.LeagueYear;
 
-            ClaimResult claimResult = CanClaimGame(request, supportedYears, leagueYear, publishersForYear, null, false);
+            ClaimResult claimResult = CanClaimGame(request, supportedYears, leagueYear, publishersForYear, null);
 
             if (!claimResult.Success)
             {
@@ -334,7 +334,7 @@ namespace FantasyCritic.Lib.Services
 
             Instant nextBidTime = GetNextBidTime();
 
-            var claimResult = CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear, nextBidTime, true);
+            var claimResult = CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear, nextBidTime);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -382,7 +382,7 @@ namespace FantasyCritic.Lib.Services
             var leagueYear = publisher.LeagueYear;
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
 
-            var claimResult = CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear, null, true);
+            var claimResult = CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear, null);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -409,7 +409,7 @@ namespace FantasyCritic.Lib.Services
 
             if (publisherGame.MasterGame.HasNoValue)
             {
-                return new DropResult(Result.Fail("You can't drop a game that is not linked to a master game. Please see the FAQ section on dropping games."), false);
+                return new DropResult(Result.Fail("You can't drop a game that is not linked to a master game."), false);
             }
 
             MasterGame masterGame = publisherGame.MasterGame.Value.MasterGame;

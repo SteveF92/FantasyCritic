@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Amazon.RDS.Model.Internal.MarshallTransformations;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
@@ -1068,10 +1067,18 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.PublisherGameID == request.PublisherGameID);
+            var masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+            if (masterGame.HasNoValue)
+            {
+                return BadRequest("That master game does not exist.");
+            }
+
+            var publisherGame = publisher.Value.PublisherGames.Where(x => x.MasterGame.HasValue)
+                .SingleOrDefault(x => masterGame.Value.Equals(x.MasterGame.Value.MasterGame));
+
             if (publisherGame is null)
             {
-                return BadRequest("That game does not exist for that publisher.");
+                return BadRequest("That publisher does not have that game.");
             }
 
             DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(publisher.Value, publisherGame);
