@@ -1,0 +1,169 @@
+[v-cloak] {
+    display: none;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: black;
+    color: white;
+    background-image: url("/images/bg-geo-texture.png");
+    background-repeat: repeat;
+    min-width: 250px;
+    width: auto !important;
+    width: 250px;
+}
+
+.table {
+    color: white;
+}
+
+h1, h2, h3, h4, h5 {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+h2 {
+    color: #D6993A;
+}
+
+.alert h2 {
+    color: white;
+}
+
+label {
+    font-weight: bold;
+}
+
+hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-color: white;
+}
+
+.shadowed {
+    background: rgba(0, 0, 0, 0.39);
+    padding: 10px;
+}
+
+a.btn, input.btn, button.btn {
+    border-radius: 0;
+    height: 40px;
+    color: white;
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+div.alert {
+    border-radius: 0;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+.text-danger {
+    font-weight: bold;
+}
+
+.text-black{
+    color:black !important;
+}
+
+.custom-select {
+    border-radius: 0;
+    border: none;
+    height: 40px;
+}
+
+.fake-link {
+    cursor: pointer !important;
+}
+
+.fake-link:hover {
+    text-decoration: underline !important;
+}
+
+.toasted.primary.default {
+    background: #3AACD6;
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+}
+
+.fb-icon {
+    color: #3b5998;
+}
+
+.twitter-icon {
+    color: #00acee;
+}
+
+.github-icon {
+    color: #ffffff;
+}
+
+.reddit-icon {
+    color: #ff4500;
+}
+
+.discord-icon {
+    color: #738adb;
+}
+
+.text-well {
+ padding: 20px;
+ background: rgba(50, 50, 50, 0.7);
+ border-radius: 5px;
+}
+
+@media only screen and (max-width: 992px) {
+    .lg-screen-minimum {
+        display: none;
+    }
+}
+@media only screen and (max-width: 768px) {
+    .md-screen-minimum{
+        display: none;
+    }
+}
+@media only screen and (max-width: 576px) {
+    .sm-screen-minimum {
+        display: none;
+    }
+}
+
+.right-button {
+    text-align: right;
+    margin-right: 10px;
+}
+
+.toggle .v-switch-core {
+    background-color: #414141 !important;
+}
+.toggle .v-switch-core .v-switch-button {
+    background-color: white !important;
+}
+.toggle-on .v-switch-core {
+    background-color: #D6993A !important;
+}
+
+.pagination-dark li a, .pagination-dark li span, .pagination-dark li button {
+    background-color: #444444 !important;
+    font-weight: bold;
+}
+
+.pagination-dark li.active button {
+    background-color: #D6993A !important;
+    font-weight: bold;
+}
+
+.datepicker__title {
+    background-color: #D6993A;
+    font-weight: bolder;
+}

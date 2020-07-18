@@ -42,10 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="ClientApp\tsconfig.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />

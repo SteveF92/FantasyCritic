@@ -1,0 +1,26 @@
+.modal-dialog, .modal-header, .modal-footer, .modal-content {
+    border-radius: 0;
+    border: none;
+}
+
+.modal-header {
+    background-color: #0D0D0D;
+    color: white;
+}
+
+.modal-header button {
+    color: white;
+    opacity: 1;
+}
+
+.modal-body p {
+    color: black;
+}
+
+.modal-body label {
+    color: black;
+}
+
+.modal-backdrop {
+    opacity: 0.6;
+}
