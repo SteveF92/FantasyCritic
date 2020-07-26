@@ -58,7 +58,7 @@
   import axios from "axios";
   import draggable from 'vuedraggable';
 
-  import PossibleMasterGamesTable from "components/modules/possibleMasterGamesTable";
+  import PossibleMasterGamesTable from "@/components/modules/possibleMasterGamesTable";
 
   export default {
     components: {

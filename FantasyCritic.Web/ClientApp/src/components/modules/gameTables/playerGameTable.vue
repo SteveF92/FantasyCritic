@@ -30,8 +30,8 @@
 </template>
 <script>
   import Vue from "vue";
-  import PlayerGameRow from "components/modules/gameTables/playerGameRow";
-  import BlankPlayerGameRow from "components/modules/gameTables/blankPlayerGameRow";
+  import PlayerGameRow from "@/components/modules/gameTables/playerGameRow";
+  import BlankPlayerGameRow from "@/components/modules/gameTables/blankPlayerGameRow";
 
   export default {
     components: {

@@ -38,7 +38,7 @@
   import Vue from "vue";
   import axios from "axios";
   import moment from "moment";
-  import MasterGameDetails  from "components/modules/masterGameDetails";
+  import MasterGameDetails  from "@/components/modules/masterGameDetails";
 
   export default {
     data() {

@@ -173,36 +173,36 @@
   import Vue from "vue";
   import axios from "axios";
 
-  import BidGameForm from "components/modules/modals/bidGameForm";
-  import CurrentBidsForm from "components/modules/modals/currentBidsForm";
-  import DropGameForm from "components/modules/modals/dropGameForm";
-  import CurrentDropsForm from "components/modules/modals/currentDropsForm";
-  import GameQueueForm from "components/modules/modals/gameQueueForm";
+  import BidGameForm from "@/components/modules/modals/bidGameForm";
+  import CurrentBidsForm from "@/components/modules/modals/currentBidsForm";
+  import DropGameForm from "@/components/modules/modals/dropGameForm";
+  import CurrentDropsForm from "@/components/modules/modals/currentDropsForm";
+  import GameQueueForm from "@/components/modules/modals/gameQueueForm";
 
-  import EligibilityOverridesModal from "components/modules/modals/eligibilityOverridesModal";
-  import ChangePublisherNameForm from "components/modules/modals/changePublisherNameForm";
-  import PlayerDraftGameForm from "components/modules/modals/playerDraftGameForm";
-  import PlayerDraftCounterPickForm from "components/modules/modals/playerDraftCounterPickForm";
-  import EditAutoDraftForm from "components/modules/modals/editAutoDraftForm";
-  import ManagerSetAutoDraftForm from "components/modules/modals/managerSetAutoDraftForm";
-  import ManagerEditPublishersForm from "components/modules/modals/managerEditPublishersForm";
+  import EligibilityOverridesModal from "@/components/modules/modals/eligibilityOverridesModal";
+  import ChangePublisherNameForm from "@/components/modules/modals/changePublisherNameForm";
+  import PlayerDraftGameForm from "@/components/modules/modals/playerDraftGameForm";
+  import PlayerDraftCounterPickForm from "@/components/modules/modals/playerDraftCounterPickForm";
+  import EditAutoDraftForm from "@/components/modules/modals/editAutoDraftForm";
+  import ManagerSetAutoDraftForm from "@/components/modules/modals/managerSetAutoDraftForm";
+  import ManagerEditPublishersForm from "@/components/modules/modals/managerEditPublishersForm";
 
-  import ManagerClaimGameForm from "components/modules/modals/managerClaimGameForm";
-  import ManagerDraftGameForm from "components/modules/modals/managerDraftGameForm";
-  import ManagerAssociateGameForm from "components/modules/modals/managerAssociateGameForm";
-  import InvitePlayerForm from "components/modules/modals/invitePlayerForm";
-  import ManageActivePlayersForm from "components/modules/modals/manageActivePlayersForm";
-  import RemoveGameForm from "components/modules/modals/removeGameForm";
-  import ManuallyScoreGameForm from "components/modules/modals/manuallyScoreGameForm";
-  import ChangeLeagueOptionsForm from "components/modules/modals/changeLeagueOptionsForm";
-  import EditDraftOrderForm from "components/modules/modals/editDraftOrderForm";
-  import SetPauseModal from "components/modules/modals/setPauseModal";
-  import ResetDraftModal from "components/modules/modals/resetDraftModal";
-  import UndoLastDraftActionModal from "components/modules/modals/undoLastDraftActionModal";
-  import ManagerDraftCounterPickForm from "components/modules/modals/managerDraftCounterPickForm";
-  import AddNewLeagueYearForm from "components/modules/modals/addNewLeagueYearForm";
-  import LeagueOptionsModal from "components/modules/modals/leagueOptionsModal";
-  import ManageEligibilityOverridesModal from "components/modules/modals/manageEligibilityOverridesModal";
+  import ManagerClaimGameForm from "@/components/modules/modals/managerClaimGameForm";
+  import ManagerDraftGameForm from "@/components/modules/modals/managerDraftGameForm";
+  import ManagerAssociateGameForm from "@/components/modules/modals/managerAssociateGameForm";
+  import InvitePlayerForm from "@/components/modules/modals/invitePlayerForm";
+  import ManageActivePlayersForm from "@/components/modules/modals/manageActivePlayersForm";
+  import RemoveGameForm from "@/components/modules/modals/removeGameForm";
+  import ManuallyScoreGameForm from "@/components/modules/modals/manuallyScoreGameForm";
+  import ChangeLeagueOptionsForm from "@/components/modules/modals/changeLeagueOptionsForm";
+  import EditDraftOrderForm from "@/components/modules/modals/editDraftOrderForm";
+  import SetPauseModal from "@/components/modules/modals/setPauseModal";
+  import ResetDraftModal from "@/components/modules/modals/resetDraftModal";
+  import UndoLastDraftActionModal from "@/components/modules/modals/undoLastDraftActionModal";
+  import ManagerDraftCounterPickForm from "@/components/modules/modals/managerDraftCounterPickForm";
+  import AddNewLeagueYearForm from "@/components/modules/modals/addNewLeagueYearForm";
+  import LeagueOptionsModal from "@/components/modules/modals/leagueOptionsModal";
+  import ManageEligibilityOverridesModal from "@/components/modules/modals/manageEligibilityOverridesModal";
 
   export default {
     data() {

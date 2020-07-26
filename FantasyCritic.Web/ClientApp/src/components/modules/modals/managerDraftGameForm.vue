@@ -71,8 +71,8 @@
 <script>
   import Vue from "vue";
   import axios from "axios";
-  import PossibleMasterGamesTable from "components/modules/possibleMasterGamesTable";
-  import MasterGameSummary from "components/modules/masterGameSummary";
+  import PossibleMasterGamesTable from "@/components/modules/possibleMasterGamesTable";
+  import MasterGameSummary from "@/components/modules/masterGameSummary";
 
   export default {
     data() {

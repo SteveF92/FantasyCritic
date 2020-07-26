@@ -100,9 +100,9 @@
   import axios from "axios";
   import moment from "moment";
 
-  import MasterGamePopover from "components/modules/masterGamePopover";
-  import RoyalePurchaseGameForm from "components/modules/modals/royalePurchaseGameForm";
-  import RoyaleChangePublisherNameForm from "components/modules/modals/royaleChangePublisherNameForm";
+  import MasterGamePopover from "@/components/modules/masterGamePopover";
+  import RoyalePurchaseGameForm from "@/components/modules/modals/royalePurchaseGameForm";
+  import RoyaleChangePublisherNameForm from "@/components/modules/modals/royaleChangePublisherNameForm";
 
   export default {
     props: ['publisherid'],

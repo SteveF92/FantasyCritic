@@ -82,7 +82,7 @@
 </template>
 <script>
   import axios from 'axios';
-  import MasterGamePopover from "components/modules/masterGamePopover";
+  import MasterGamePopover from "@/components/modules/masterGamePopover";
 
   export default {
     data() {

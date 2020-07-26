@@ -9,7 +9,7 @@
 </template>
 <script>
     import Vue from "vue";
-    import MinimalPlayerGameTable from "components/modules/gameTables/minimalPlayerGameTable";
+    import MinimalPlayerGameTable from "@/components/modules/gameTables/minimalPlayerGameTable";
 
     export default {
         components: {

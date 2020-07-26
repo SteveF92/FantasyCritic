@@ -44,9 +44,9 @@
 </template>
 <script>
   import axios from 'axios';
-  import ChangePasswordForm from "components/modules/modals/changePasswordForm";
-  import ChangeDisplayNameForm from "components/modules/modals/changeDisplayNameForm";
-  import ChangeEmailForm from "components/modules/modals/changeEmailForm";
+  import ChangePasswordForm from "@/components/modules/modals/changePasswordForm";
+  import ChangeDisplayNameForm from "@/components/modules/modals/changeDisplayNameForm";
+  import ChangeEmailForm from "@/components/modules/modals/changeEmailForm";
 
   export default {
     data() {

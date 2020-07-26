@@ -31,8 +31,8 @@
   </div>
 </template>
 <script>
-  import StatusBadge from "components/modules/statusBadge";
-  import MasterGamePopover from "components/modules/masterGamePopover";
+  import StatusBadge from "@/components/modules/statusBadge";
+  import MasterGamePopover from "@/components/modules/masterGamePopover";
 
   export default {
     data() {

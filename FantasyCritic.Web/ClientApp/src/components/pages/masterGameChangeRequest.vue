@@ -100,8 +100,8 @@
   import axios from 'axios';
   import vueSlider from 'vue-slider-component';
   import Popper from 'vue-popperjs';
-  import MasterGamePopover from "components/modules/masterGamePopover";
-  import MasterGameDetails  from "components/modules/masterGameDetails";
+  import MasterGamePopover from "@/components/modules/masterGamePopover";
+  import MasterGameDetails  from "@/components/modules/masterGameDetails";
 
   export default {
     data() {

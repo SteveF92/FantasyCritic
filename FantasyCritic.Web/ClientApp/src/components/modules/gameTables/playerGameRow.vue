@@ -28,7 +28,7 @@
 <script>
   import Vue from "vue";
   import moment from "moment";
-  import MasterGamePopover from "components/modules/masterGamePopover";
+  import MasterGamePopover from "@/components/modules/masterGamePopover";
 
   export default {
     components: {

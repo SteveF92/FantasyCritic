@@ -119,7 +119,7 @@
   import Vue from 'vue';
   import axios from "axios";
 
-  import CreateRoyalePublisherForm from "components/modules/modals/createRoyalePublisherForm";
+  import CreateRoyalePublisherForm from "@/components/modules/modals/createRoyalePublisherForm";
 
   export default {
     props: ['year', 'quarter'],

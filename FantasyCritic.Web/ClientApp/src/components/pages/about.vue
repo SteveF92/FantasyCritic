@@ -125,7 +125,7 @@
   </div>
 </template>
 <script>
-  import SiteCounts from "components/modules/siteCounts";
+  import SiteCounts from "@/components/modules/siteCounts";
 
   export default {
     components: {

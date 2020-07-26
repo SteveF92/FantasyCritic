@@ -587,7 +587,7 @@
   </div>
 </template>
 <script>
-  import FaqCollapse from "components/modules/faqCollapse";
+  import FaqCollapse from "@/components/modules/faqCollapse";
 
   export default {
     components: {

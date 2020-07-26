@@ -98,9 +98,9 @@
   import Vue from "vue";
   import axios from "axios";
   import _ from "lodash";
-  import Tweets from "components/modules/tweets";
-  import LeagueTable from "components/modules/leagueTable";
-  import UpcomingGames from "components/modules/upcomingGames";
+  import Tweets from "@/components/modules/tweets";
+  import LeagueTable from "@/components/modules/leagueTable";
+  import UpcomingGames from "@/components/modules/upcomingGames";
 
   export default {
     data() {

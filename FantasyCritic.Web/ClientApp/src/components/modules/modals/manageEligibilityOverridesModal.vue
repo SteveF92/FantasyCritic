@@ -51,7 +51,7 @@
 
 <script>
   import axios from "axios";
-  import PossibleMasterGamesTable from "components/modules/possibleMasterGamesTable";
+  import PossibleMasterGamesTable from "@/components/modules/possibleMasterGamesTable";
   export default {
     data() {
       return {

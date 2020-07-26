@@ -24,7 +24,7 @@
   import moment from "moment";
   import Popper from 'vue-popperjs';
   import 'vue-popperjs/dist/vue-popper.css';
-  import MasterGameSummary from "components/modules/masterGameSummary";
+  import MasterGameSummary from "@/components/modules/masterGameSummary";
 
   export default {
     data() {

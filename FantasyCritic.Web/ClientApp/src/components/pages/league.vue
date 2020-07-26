@@ -178,12 +178,12 @@
   import { HubConnection } from '@aspnet/signalr';
   import * as signalR from '@aspnet/signalr';
 
-  import LeagueGameSummary from "components/modules/leagueGameSummary";
-  import LeagueYearStandings from "components/modules/leagueYearStandings";
-  import LeagueActions from "components/modules/leagueActions";
-  import CreatePublisherForm from "components/modules/modals/createPublisherForm";
-  import StartDraftModal from "components/modules/modals/startDraftModal";
-  import UpcomingGames from "components/modules/upcomingGames";
+  import LeagueGameSummary from "@/components/modules/leagueGameSummary";
+  import LeagueYearStandings from "@/components/modules/leagueYearStandings";
+  import LeagueActions from "@/components/modules/leagueActions";
+  import CreatePublisherForm from "@/components/modules/modals/createPublisherForm";
+  import StartDraftModal from "@/components/modules/modals/startDraftModal";
+  import UpcomingGames from "@/components/modules/upcomingGames";
 
   export default {
     data() {

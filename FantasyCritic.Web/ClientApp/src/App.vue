@@ -18,8 +18,8 @@
 </template>
 
 <script>
-  import TopNavbar from "components/modules/topNavBar";
-  import FooterModule from "components/modules/footerModule";
+  import TopNavbar from "@/components/modules/topNavBar";
+  import FooterModule from "@/components/modules/footerModule";
 
   export default {
     components: {

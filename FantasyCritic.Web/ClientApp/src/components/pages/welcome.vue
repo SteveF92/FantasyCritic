@@ -181,10 +181,10 @@
 <script>
   import Vue from 'vue';
   import axios from 'axios';
-  import SiteCounts from "components/modules/siteCounts";
-  import RegisterForm from "components/modules/registerForm";
-  import HomeFaq from "components/modules/homeFAQ";
-  import Tweets from "components/modules/tweets";
+  import SiteCounts from "@/components/modules/siteCounts";
+  import RegisterForm from "@/components/modules/registerForm";
+  import HomeFaq from "@/components/modules/homeFAQ";
+  import Tweets from "@/components/modules/tweets";
 
   export default {
     components: {

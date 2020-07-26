@@ -18,7 +18,7 @@
 </template>
 <script>
   import axios from 'axios';
-  import MasterGamesTable from "components/modules/gameTables/masterGamesTable";
+  import MasterGamesTable from "@/components/modules/gameTables/masterGamesTable";
 
   export default {
     data() {

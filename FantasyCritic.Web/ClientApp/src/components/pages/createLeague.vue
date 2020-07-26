@@ -71,7 +71,7 @@
 </template>
 <script>
   import axios from "axios";
-  import LeagueYearSettings from "components/modules/leagueYearSettings";
+  import LeagueYearSettings from "@/components/modules/leagueYearSettings";
 
   export default {
     data() {

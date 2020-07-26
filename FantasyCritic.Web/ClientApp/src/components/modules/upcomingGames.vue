@@ -32,7 +32,7 @@
 </template>
 <script>
   import moment from "moment";
-  import MasterGamePopover from "components/modules/masterGamePopover";
+  import MasterGamePopover from "@/components/modules/masterGamePopover";
 
   export default {
     props: ['upcomingGames', 'mode'],

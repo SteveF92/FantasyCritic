@@ -13,7 +13,7 @@
 <script>
     import Vue from 'vue';
     import axios from 'axios';
-    import RegisterForm from "components/modules/registerForm";
+    import RegisterForm from "@/components/modules/registerForm";
 
     export default {
       components: {

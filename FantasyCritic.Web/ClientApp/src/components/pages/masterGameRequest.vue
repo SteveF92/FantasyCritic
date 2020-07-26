@@ -161,7 +161,7 @@
   import axios from 'axios';
   import vueSlider from 'vue-slider-component';
   import Popper from 'vue-popperjs';
-  import MasterGamePopover from "components/modules/masterGamePopover";
+  import MasterGamePopover from "@/components/modules/masterGamePopover";
   import 'vue-slider-component/theme/antd.css'
 
   export default {
