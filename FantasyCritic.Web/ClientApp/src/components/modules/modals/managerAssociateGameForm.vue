@@ -118,7 +118,7 @@
                       this.possibleMasterGames = [];
                     })
                     .catch(response => {
-                      
+
                     });
             },
           clearData() {

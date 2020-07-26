@@ -5,7 +5,7 @@
         <masterGamePopover v-if="game.linked" :masterGame="game.masterGame"></masterGamePopover>
         <span v-if="!game.linked">{{game.gameName}}</span>
       </span>
-      
+
 
       <span v-if="game.counterPick" class="counter-pick-text">
         (Counter-Pick)

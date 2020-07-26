@@ -94,6 +94,6 @@
   .publisher-name {
     display: block;
     max-width: 100%;
-    word-wrap: break-word; 
+    word-wrap: break-word;
   }
 </style>

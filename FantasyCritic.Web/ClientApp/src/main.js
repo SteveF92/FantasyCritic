@@ -1,12 +1,6 @@
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
 import axios from 'axios';
-import router from './router/index';
-import store from './store';
-import { sync } from 'vuex-router-sync';
-import App from 'components/app-root';
-
-import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
+import Vue from 'vue'
+import BootstrapVue from 'bootstrap-vue';
 import Toasted from 'vue-toasted';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, email, min_value, max_value, min, max, integer } from 'vee-validate/dist/rules';
@@ -14,10 +8,16 @@ import { messages } from 'vee-validate/dist/locale/en.json';
 import VueAnalytics from 'vue-analytics';
 import VueClipboard from 'vue-clipboard2';
 
+import App from './App.vue'
+import router from './router/index';
+import store from './store';
+import { sync } from 'vuex-router-sync';
+import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
+
+
 import "./filters";
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
-
 import VueFlatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 
@@ -119,14 +119,11 @@ axios.interceptors.response.use(function (response) {
   return Promise.reject(error);
 });
 
-const app = new Vue({
-  store,
-  router,
-  ...App
-});
+import './registerServiceWorker'
+Vue.config.productionTip = false
 
-export {
-  app,
+new Vue({
   router,
-  store
-};
+  store,
+  render: h => h(App)
+}).$mount('#app')

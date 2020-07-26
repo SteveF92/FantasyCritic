@@ -281,7 +281,7 @@
   div >>> .tab-header a{
     border-radius: 0px;
     font-weight: bolder;
-    color: white;   
+    color: white;
   }
 
   div >>> .tab-header .active{

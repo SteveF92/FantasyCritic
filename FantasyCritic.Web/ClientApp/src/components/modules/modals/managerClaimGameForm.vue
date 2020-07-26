@@ -152,7 +152,7 @@
                     this.clearData();
                   })
                   .catch(response => {
-                      
+
                   });
           },
           showUnlistedField() {

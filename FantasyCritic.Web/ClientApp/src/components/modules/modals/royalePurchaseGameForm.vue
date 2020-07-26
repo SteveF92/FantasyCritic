@@ -137,7 +137,7 @@
                 this.$refs.royalePurchaseGameFormRef.hide();
               })
               .catch(response => {
-                      
+
               });
         },
         clearData() {

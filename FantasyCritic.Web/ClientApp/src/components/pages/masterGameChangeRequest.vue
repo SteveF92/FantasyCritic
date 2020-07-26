@@ -208,7 +208,7 @@
       if (masterGameID) {
         this.fetchMasterGame(masterGameID);
       }
-      
+
       this.fetchMyRequests();
     }
   }

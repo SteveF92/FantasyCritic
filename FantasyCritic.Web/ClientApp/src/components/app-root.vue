@@ -18,7 +18,7 @@
 </template>
 
 <script>
-  import TopNavbar from "components/modules/topNavbar";
+  import TopNavbar from "components/modules/topNavBar";
   import FooterModule from "components/modules/footerModule";
 
   export default {

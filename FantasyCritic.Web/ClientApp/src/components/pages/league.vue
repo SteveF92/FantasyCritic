@@ -467,7 +467,7 @@
   }
 </script>
 <style scoped>
-  
+
   .league-manager-info {
     display: flex;
     flex-direction: row;
@@ -499,6 +499,6 @@
   .league-name {
     display: block;
     max-width: 100%;
-    word-wrap: break-word; 
+    word-wrap: break-word;
   }
 </style>

@@ -53,9 +53,9 @@
         </tr>
       </tbody>
     </table>
-    
+
   </div>
-    
+
 </template>
 <script>
     import Vue from "vue";
@@ -164,7 +164,7 @@
     height: 35px;
     padding: 5px;
   }
-  
+
   .type-column {
     width: 30px;
     text-align: center;

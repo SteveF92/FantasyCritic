@@ -171,7 +171,7 @@
           this.clearData();
         })
         .catch(response => {
-                      
+
         });
     },
     clearDataExceptSearch() {

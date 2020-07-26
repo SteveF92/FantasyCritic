@@ -3,7 +3,7 @@ import Home from "components/pages/home";
 import Login from "components/pages/login";
 import Register from "components/pages/register";
 import About from "components/pages/about";
-import HowToPlay from "components/pages/howtoplay";
+import HowToPlay from "components/pages/howToPlay";
 import Faq from "components/pages/faq";
 import Contact from "components/pages/contact";
 import ManageUser from "components/pages/manageUser";
@@ -32,7 +32,7 @@ import NotFound from "components/pages/notFound";
 
 export const routes = [
   { path: '/404', component: NotFound },
-  { path: '*', redirect: '/404' },  
+  { path: '*', redirect: '/404' },
   {
     path: "/",
     component: Welcome,
