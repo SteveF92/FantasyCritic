@@ -226,11 +226,12 @@ namespace FantasyCritic.Web
             app.UseRewriter(new RewriteOptions()
                 .AddRedirectToWww()
             );
-
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
