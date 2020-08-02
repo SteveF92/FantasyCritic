@@ -42,11 +42,43 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="ClientApp\public\browserconfig.xml" />
+    <Content Include="ClientApp\public\img\bg-geo-texture.png" />
+    <Content Include="ClientApp\public\img\big-logo.png" />
+    <Content Include="ClientApp\public\img\critic-royale-logo.svg" />
+    <Content Include="ClientApp\public\img\critics-royale-text-white.svg" />
+    <Content Include="ClientApp\public\img\critics-royale-text.svg" />
+    <Content Include="ClientApp\public\img\critics-royale-top-nav.svg" />
+    <Content Include="ClientApp\public\img\horizontal-logo.png" />
+    <Content Include="ClientApp\public\img\horizontal-logo.svg" />
+    <Content Include="ClientApp\public\img\icons\android-chrome-192x192.png" />
+    <Content Include="ClientApp\public\img\icons\android-chrome-512x512.png" />
+    <Content Include="ClientApp\public\img\icons\apple-touch-icon.png" />
+    <Content Include="ClientApp\public\img\icons\favicon-16x16.png" />
+    <Content Include="ClientApp\public\img\icons\favicon-32x32.png" />
+    <Content Include="ClientApp\public\img\icons\favicon.ico" />
+    <Content Include="ClientApp\public\img\icons\mstile-150x150.png" />
+    <Content Include="ClientApp\public\img\icons\safari-pinned-tab.svg" />
+    <Content Include="ClientApp\public\img\logo-white.png" />
+    <Content Include="ClientApp\public\img\minimal-logo.png" />
+    <Content Include="ClientApp\public\img\minimal-logo.svg" />
+    <Content Include="ClientApp\public\img\monitor-mock.png" />
+    <Content Include="ClientApp\public\img\share-logo.png" />
+    <Content Include="ClientApp\public\img\small-logo-white.png" />
+    <Content Include="ClientApp\public\sounds\draft-notification.mp3" />
+    <Content Include="ClientApp\public\sounds\quite-impressed.mp3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
     <ProjectReference Include="..\FantasyCritic.RDS\FantasyCritic.RDS.csproj" />
     <ProjectReference Include="..\FantasyCritic.SendGrid\FantasyCritic.SendGrid.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

@@ -11,7 +11,7 @@
         </b-dropdown>
       </div>
       <div class="critic-royale-header-area">
-        <img class="critic-royale-header" src="/images/critic-royale-logo.svg" />
+        <img class="critic-royale-header" src="/img/critic-royale-logo.svg" />
       </div>
 
       <div class="critic-royale-header-area-simple">

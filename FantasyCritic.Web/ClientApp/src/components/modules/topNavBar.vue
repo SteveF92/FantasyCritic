@@ -2,15 +2,15 @@
     <div>
       <nav class="navbar navbar-expand bg-white main-nav">
         <router-link :to="{ name: 'welcome' }" class="navbar-brand">
-          <img class="full-logo" src="/images/horizontal-logo.svg" />
-          <img class="minimal-logo" src="/images/minimal-logo.svg" />
+          <img class="full-logo" src="/img/horizontal-logo.svg" />
+          <img class="minimal-logo" src="/img/minimal-logo.svg" />
         </router-link>
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
             <li class="nav-item">
               <router-link :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYear, quarter: activeRoyaleQuarter}}"
                            class="nav-link top-nav-link optional-nav critic-royale-nav-link" title="Critics Royale">
-                <img class="critic-royale-nav minimal-nav topnav-icon" src="/images/critics-royale-top-nav.svg" />
+                <img class="critic-royale-nav minimal-nav topnav-icon" src="/img/critics-royale-top-nav.svg" />
                 <span class="full-nav">Royale</span>
               </router-link>
             </li>

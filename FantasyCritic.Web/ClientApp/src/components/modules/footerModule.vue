@@ -3,8 +3,8 @@
     <div class="container">
       <div class="row justify-content-between">
         <div col-md-4>
-          <img class="full-logo" src="/images/logo-white.png" />
-          <img class="small-logo" src="/images/small-logo-white.png" />
+          <img class="full-logo" src="/img/logo-white.png" />
+          <img class="small-logo" src="/img/small-logo-white.png" />
         </div>
         <div col-md-4>
           <label>Navigation</label>
