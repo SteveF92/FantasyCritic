@@ -42,6 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="ClientApp\node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="ClientApp\public\browserconfig.xml" />
     <Content Include="ClientApp\public\img\bg-geo-texture.png" />
     <Content Include="ClientApp\public\img\big-logo.png" />
