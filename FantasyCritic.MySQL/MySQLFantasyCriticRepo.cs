@@ -164,9 +164,9 @@ namespace FantasyCritic.MySQL
                 var removed = await connection.ExecuteAsync("delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;", new { publisherGameID });
                 if (removed == 1)
                 {
-                    return Result.Ok();
+                    return Result.Success();
                 }
-                return Result.Fail("Removing game failed.");
+                return Result.Failure("Removing game failed.");
             }
         }
 

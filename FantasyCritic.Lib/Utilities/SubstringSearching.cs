@@ -15,10 +15,10 @@ namespace FantasyCritic.Lib.Utilities
             {
                 var start = strSource.IndexOf(strStart, 0) + strStart.Length;
                 var end = strSource.IndexOf(strEnd, start);
-                return Result.Ok(strSource.Substring(start, end - start));
+                return Result.Success(strSource.Substring(start, end - start));
             }
 
-            return Result.Fail<string>("Can't parse string");
+            return Result.Failure<string>("Can't parse string");
         }
     }
 }

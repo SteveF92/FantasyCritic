@@ -69,13 +69,13 @@ namespace FantasyCritic.Lib.Services
             var validateOptions = options.Validate();
             if (validateOptions.IsFailure)
             {
-                return Result.Fail<League>(validateOptions.Error);
+                return Result.Failure<League>(validateOptions.Error);
             }
 
             IEnumerable<int> years = new List<int>() { parameters.InitialYear };
             League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, years, parameters.PublicLeague, parameters.TestLeague, 0);
             await _fantasyCriticRepo.CreateLeague(newLeague, parameters.InitialYear, options);
-            return Result.Ok(newLeague);
+            return Result.Success(newLeague);
         }
 
         public async Task<Result> EditLeague(League league, EditLeagueYearParameters parameters)
@@ -84,7 +84,7 @@ namespace FantasyCritic.Lib.Services
             var validateOptions = options.Validate();
             if (validateOptions.IsFailure)
             {
-                return Result.Fail(validateOptions.Error);
+                return Result.Failure(validateOptions.Error);
             }
 
             var leagueYear = await GetLeagueYear(league.LeagueID, parameters.Year);
@@ -100,11 +100,11 @@ namespace FantasyCritic.Lib.Services
 
             if (maxStandardGames > options.StandardGames)
             {
-                return Result.Fail($"Cannot reduce number of standard games to {options.StandardGames} as a publisher has {maxStandardGames} draft games currently.");
+                return Result.Failure($"Cannot reduce number of standard games to {options.StandardGames} as a publisher has {maxStandardGames} draft games currently.");
             }
             if (maxCounterPicks > options.CounterPicks)
             {
-                return Result.Fail($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
+                return Result.Failure($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
             }
 
             int maxFreeGamesFreeDropped = publishers.Select(publisher => publisher.FreeGamesDropped).DefaultIfEmpty(0).Max();
@@ -113,15 +113,15 @@ namespace FantasyCritic.Lib.Services
 
             if (maxFreeGamesFreeDropped > options.FreeDroppableGames && options.FreeDroppableGames != -1)
             {
-                return Result.Fail($"Cannot reduce number of unrestricted droppable games to {options.FreeDroppableGames} as a publisher has already dropped {maxFreeGamesFreeDropped} games.");
+                return Result.Failure($"Cannot reduce number of unrestricted droppable games to {options.FreeDroppableGames} as a publisher has already dropped {maxFreeGamesFreeDropped} games.");
             }
             if (maxWillNotReleaseGamesDropped > options.WillNotReleaseDroppableGames && options.WillNotReleaseDroppableGames != -1)
             {
-                return Result.Fail($"Cannot reduce number of 'will not release' droppable games to {options.WillNotReleaseDroppableGames} as a publisher has already dropped {maxWillNotReleaseGamesDropped} games.");
+                return Result.Failure($"Cannot reduce number of 'will not release' droppable games to {options.WillNotReleaseDroppableGames} as a publisher has already dropped {maxWillNotReleaseGamesDropped} games.");
             }
             if (maxWillReleaseGamesDropped > options.WillReleaseDroppableGames && options.WillReleaseDroppableGames != -1)
             {
-                return Result.Fail($"Cannot reduce number of 'will release' droppable games to {options.WillReleaseDroppableGames} as a publisher has already dropped {maxWillReleaseGamesDropped} games.");
+                return Result.Failure($"Cannot reduce number of 'will release' droppable games to {options.WillReleaseDroppableGames} as a publisher has already dropped {maxWillReleaseGamesDropped} games.");
             }
 
             var eligibilityOverrides = await GetEligibilityOverrides(league, parameters.Year);
@@ -129,7 +129,7 @@ namespace FantasyCritic.Lib.Services
             LeagueYear newLeagueYear = new LeagueYear(league, parameters.Year, options, leagueYear.Value.PlayStatus, eligibilityOverrides);
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear);
 
-            return Result.Ok();
+            return Result.Success();
         }
 
         public Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year)
@@ -302,24 +302,24 @@ namespace FantasyCritic.Lib.Services
         {
             if (!league.PublicLeague)
             {
-                return Result.Fail("League is not public");
+                return Result.Failure("League is not public");
             }
 
             bool userIsInLeague = await _leagueMemberService.UserIsInLeague(league, user);
             if (userIsInLeague)
             {
-                return Result.Fail("Can't follow a league you are in.");
+                return Result.Failure("Can't follow a league you are in.");
             }
 
             var followedLeagues = await GetFollowedLeagues(user);
             bool userIsFollowingLeague = followedLeagues.Any(x => x.LeagueID == league.LeagueID);
             if (userIsFollowingLeague)
             {
-                return Result.Fail("User is already following that league.");
+                return Result.Failure("User is already following that league.");
             }
 
             await _fantasyCriticRepo.FollowLeague(league, user);
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task<Result> UnfollowLeague(League league, FantasyCriticUser user)
@@ -328,11 +328,11 @@ namespace FantasyCritic.Lib.Services
             bool userIsFollowingLeague = followedLeagues.Any(x => x.LeagueID == league.LeagueID);
             if (!userIsFollowingLeague)
             {
-                return Result.Fail("User is not following that league.");
+                return Result.Failure("User is not following that league.");
             }
 
             await _fantasyCriticRepo.UnfollowLeague(league, user);
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task<IReadOnlyList<LeagueYear>> GetPublicLeagueYears(int year)

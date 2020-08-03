@@ -147,24 +147,24 @@ namespace FantasyCritic.Lib.Domain
             {
                 if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > WillReleaseGamesDropped)
                 {
-                    return Result.Ok();
+                    return Result.Success();
                 }
                 if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
                 {
-                    return Result.Ok();
+                    return Result.Success();
                 }
-                return Result.Fail("Publisher cannot drop any more 'Will Release' games");
+                return Result.Failure("Publisher cannot drop any more 'Will Release' games");
             }
 
             if (leagueOptions.WillNotReleaseDroppableGames == -1 || leagueOptions.WillNotReleaseDroppableGames > WillNotReleaseGamesDropped)
             {
-                return Result.Ok();
+                return Result.Success();
             }
             if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
             {
-                return Result.Ok();
+                return Result.Success();
             }
-            return Result.Fail("Publisher cannot drop any more 'Will Not Release' games");
+            return Result.Failure("Publisher cannot drop any more 'Will Not Release' games");
         }
 
         public void DropGame(bool willRelease)

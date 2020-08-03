@@ -54,13 +54,13 @@ namespace FantasyCritic.Lib.Services
 
                 if (leagueYear.League.LeagueManager.UserID == userToChange.Key.UserID)
                 {
-                    return Result.Fail("Can't change the league manager's active status.");
+                    return Result.Failure("Can't change the league manager's active status.");
                 }
 
                 bool userIsInLeague = playersInLeague.Any(x => x.UserID == userToChange.Key.UserID);
                 if (!userIsInLeague)
                 {
-                    return Result.Fail("That user is not in that league.");
+                    return Result.Failure("That user is not in that league.");
                 }
 
                 usersToChange.Add(userToChange.Key, userToChange.Value);
@@ -71,7 +71,7 @@ namespace FantasyCritic.Lib.Services
                 await _fantasyCriticRepo.SetPlayerActiveStatus(leagueYear, usersToChange);
             }
 
-            return Result.Ok();
+            return Result.Success();
         }
 
         public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league)
@@ -122,7 +122,7 @@ namespace FantasyCritic.Lib.Services
             var existingInvite = await GetMatchingInvite(league, inviteEmail);
             if (existingInvite.HasValue)
             {
-                return Result.Fail("User is already invited to this league.");
+                return Result.Failure("User is already invited to this league.");
             }
 
             FantasyCriticUser inviteUser = await _userManager.FindByEmailAsync(inviteEmail);
@@ -131,7 +131,7 @@ namespace FantasyCritic.Lib.Services
                 bool userInLeague = await UserIsInLeague(league, inviteUser);
                 if (userInLeague)
                 {
-                    return Result.Fail("User is already in league.");
+                    return Result.Failure("User is already in league.");
                 }
             }
 
@@ -139,7 +139,7 @@ namespace FantasyCritic.Lib.Services
 
             await _fantasyCriticRepo.SaveInvite(invite);
 
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task<Result> InviteUserByUserID(League league, FantasyCriticUser inviteUser)
@@ -147,20 +147,20 @@ namespace FantasyCritic.Lib.Services
             var existingInvite = await GetMatchingInvite(league, inviteUser);
             if (existingInvite.HasValue)
             {
-                return Result.Fail("User is already invited to this league.");
+                return Result.Failure("User is already invited to this league.");
             }
 
             bool userInLeague = await UserIsInLeague(league, inviteUser);
             if (userInLeague)
             {
-                return Result.Fail("User is already in league.");
+                return Result.Failure("User is already in league.");
             }
 
             LeagueInvite invite = new LeagueInvite(Guid.NewGuid(), league, inviteUser);
 
             await _fantasyCriticRepo.SaveInvite(invite);
 
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task<Result> AcceptInvite(League league, FantasyCriticUser inviteUser)
@@ -168,18 +168,18 @@ namespace FantasyCritic.Lib.Services
             bool userInLeague = await UserIsInLeague(league, inviteUser);
             if (userInLeague)
             {
-                return Result.Fail("User is already in league.");
+                return Result.Failure("User is already in league.");
             }
 
             var invite = await GetMatchingInvite(league, inviteUser.EmailAddress);
             if (invite.HasNoValue)
             {
-                return Result.Fail("User is not invited to this league.");
+                return Result.Failure("User is not invited to this league.");
             }
 
             await _fantasyCriticRepo.AcceptInvite(invite.Value, inviteUser);
 
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task<Result> AcceptInviteLink(LeagueInviteLink inviteLink, FantasyCriticUser inviteUser)
@@ -187,12 +187,12 @@ namespace FantasyCritic.Lib.Services
             bool userInLeague = await UserIsInLeague(inviteLink.League, inviteUser);
             if (userInLeague)
             {
-                return Result.Fail("User is already in league.");
+                return Result.Failure("User is already in league.");
             }
 
             await _fantasyCriticRepo.AddPlayerToLeague(inviteLink.League, inviteUser);
 
-            return Result.Ok();
+            return Result.Success();
         }
 
         public Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league)

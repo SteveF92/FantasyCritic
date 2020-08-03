@@ -142,7 +142,7 @@ namespace FantasyCritic.Lib.Services
             int publishersCount = publishersInLeague.Count;
             if (publishersCount != draftPositions.Count)
             {
-                return Result.Fail("Not setting all publishers.");
+                return Result.Failure("Not setting all publishers.");
             }
 
             var requiredNumbers = Enumerable.Range(1, publishersCount).ToList();
@@ -150,11 +150,11 @@ namespace FantasyCritic.Lib.Services
             bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedDraftNumbers);
             if (!allRequiredPresent)
             {
-                return Result.Fail("Some of the positions are not valid.");
+                return Result.Failure("Some of the positions are not valid.");
             }
 
             await _fantasyCriticRepo.SetDraftOrder(draftPositions);
-            return Result.Ok();
+            return Result.Success();
         }
 
         public Maybe<Publisher> GetNextDraftPublisher(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeagueForYear)

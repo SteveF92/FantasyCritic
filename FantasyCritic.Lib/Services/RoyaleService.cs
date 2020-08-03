@@ -132,57 +132,57 @@ namespace FantasyCritic.Lib.Services
         {
             if (publisherGame.MasterGame.MasterGame.IsReleased(_clock.GetCurrentInstant()))
             {
-                return Result.Fail("That game has already been released.");
+                return Result.Failure("That game has already been released.");
             }
             if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
             {
-                return Result.Fail("That game already has a score.");
+                return Result.Failure("That game already has a score.");
             }
 
             if (!publisher.PublisherGames.Contains(publisherGame))
             {
-                return Result.Fail("You don't have that game.");
+                return Result.Failure("You don't have that game.");
             }
 
             await _royaleRepo.SellGame(publisherGame);
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task<Result> SetAdvertisingMoney(RoyalePublisher publisher, RoyalePublisherGame publisherGame, decimal advertisingMoney)
         {
             if (publisherGame.MasterGame.MasterGame.IsReleased(_clock.GetCurrentInstant()))
             {
-                return Result.Fail("That game has already been released.");
+                return Result.Failure("That game has already been released.");
             }
 
             if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
             {
-                return Result.Fail("That game already has a score.");
+                return Result.Failure("That game already has a score.");
             }
 
             if (!publisher.PublisherGames.Contains(publisherGame))
             {
-                return Result.Fail("You don't have that game.");
+                return Result.Failure("You don't have that game.");
             }
 
             decimal newDollarsToSpend = advertisingMoney - publisherGame.AdvertisingMoney;
             if (publisher.Budget < newDollarsToSpend)
             {
-                return Result.Fail("You don't have enough money.");
+                return Result.Failure("You don't have enough money.");
             }
 
             if (advertisingMoney < 0m)
             {
-                return Result.Fail("You can't allocate negative dollars in advertising money.");
+                return Result.Failure("You can't allocate negative dollars in advertising money.");
             }
 
             if (advertisingMoney > 10m)
             {
-                return Result.Fail("You can't allocate more than 10 dollars in advertising money.");
+                return Result.Failure("You can't allocate more than 10 dollars in advertising money.");
             }
 
             await _royaleRepo.SetAdvertisingMoney(publisherGame, advertisingMoney);
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task UpdateFantasyPoints(YearQuarter yearQuarter)

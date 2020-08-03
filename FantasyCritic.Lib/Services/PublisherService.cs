@@ -85,7 +85,7 @@ namespace FantasyCritic.Lib.Services
             bool otherPlayerHasCounterPick = otherPlayersGames.Where(x => x.CounterPick).ContainsGame(publisherGame);
             if (otherPlayerHasCounterPick)
             {
-                return Result.Fail("Can't remove a publisher game that another player has as a counterPick.");
+                return Result.Failure("Can't remove a publisher game that another player has as a counterPick.");
             }
 
             var result = await _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
@@ -103,40 +103,40 @@ namespace FantasyCritic.Lib.Services
         {
             if (!editValues.SomethingChanged())
             {
-                return Result.Fail("You need to specify something to change.");
+                return Result.Failure("You need to specify something to change.");
             }
 
             if (editValues.Budget.HasValue && editValues.Budget.Value > 100)
             {
-                return Result.Fail("Budget cannot be set to over $100.");
+                return Result.Failure("Budget cannot be set to over $100.");
             }
 
             if (editValues.Budget.HasValue && editValues.Budget.Value < 0)
             {
-                return Result.Fail("Budget cannot be set to under $0.");
+                return Result.Failure("Budget cannot be set to under $0.");
             }
 
             if (editValues.WillReleaseGamesDropped.HasValue && editValues.WillReleaseGamesDropped.Value > 
                 editValues.Publisher.LeagueYear.Options.WillReleaseDroppableGames)
             {
-                return Result.Fail("Will release games dropped cannot be set to more than is allowed in the league.");
+                return Result.Failure("Will release games dropped cannot be set to more than is allowed in the league.");
             }
 
             if (editValues.WillNotReleaseGamesDropped.HasValue && editValues.WillNotReleaseGamesDropped.Value >
                 editValues.Publisher.LeagueYear.Options.WillNotReleaseDroppableGames)
             {
-                return Result.Fail("Will not release games dropped cannot be set to more than is allowed in the league.");
+                return Result.Failure("Will not release games dropped cannot be set to more than is allowed in the league.");
             }
 
             if (editValues.FreeGamesDropped.HasValue && editValues.FreeGamesDropped.Value >
                 editValues.Publisher.LeagueYear.Options.FreeDroppableGames)
             {
-                return Result.Fail("Unrestricted games dropped cannot be set to more than is allowed in the league.");
+                return Result.Failure("Unrestricted games dropped cannot be set to more than is allowed in the league.");
             }
 
             LeagueAction leagueAction = new LeagueAction(editValues, _clock.GetCurrentInstant());
             await _fantasyCriticRepo.EditPublisher(editValues, leagueAction);
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task RemovePublisher(Publisher publisher)
@@ -152,11 +152,11 @@ namespace FantasyCritic.Lib.Services
             bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedBidNumbers);
             if (!allRequiredPresent)
             {
-                return Result.Fail("Some of the positions are not valid.");
+                return Result.Failure("Some of the positions are not valid.");
             }
 
             await _fantasyCriticRepo.SetBidPriorityOrder(bidPriorities);
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task<Result> SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks)
@@ -166,11 +166,11 @@ namespace FantasyCritic.Lib.Services
             bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedQueueNumbers);
             if (!allRequiredPresent)
             {
-                return Result.Fail("Some of the positions are not valid.");
+                return Result.Failure("Some of the positions are not valid.");
             }
 
             await _fantasyCriticRepo.SetQueueRankings(queueRanks);
-            return Result.Ok();
+            return Result.Success();
         }
 
         public async Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher)
