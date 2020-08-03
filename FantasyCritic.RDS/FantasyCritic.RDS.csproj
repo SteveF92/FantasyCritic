@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.RDS" Version="3.3.107.17" />
-    <PackageReference Include="NodaTime" Version="2.4.7" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.3.127.3" />
+    <PackageReference Include="NodaTime" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
