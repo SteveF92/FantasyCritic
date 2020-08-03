@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -219,7 +220,7 @@ namespace FantasyCritic.Lib.Services
 
             string fileName = Guid.NewGuid() + ".csv";
             using (var writer = new StreamWriter(fileName))
-            using (var csv = new CsvWriter(writer))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
                 csv.WriteRecords(outputModels);
             }
