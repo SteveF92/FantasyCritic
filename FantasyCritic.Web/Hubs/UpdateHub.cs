@@ -19,9 +19,11 @@ namespace FantasyCritic.Web.Hubs
             _fantasyCriticService = fantasyCriticService;
         }
 
-        public async Task Subscribe(Guid leagueID, int year)
+        public async Task Subscribe(string leagueID, string year)
         {
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            Guid leagueGUID = Guid.Parse(leagueID);
+            int yearInt = int.Parse(year);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueGUID, yearInt);
             if (leagueYear.HasNoValue)
             {
                 return;
