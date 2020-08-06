@@ -15,6 +15,7 @@ namespace FantasyCritic.Web
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseNLog()
+                .UseIISIntegration()
                 .UseStartup<Startup>();
     }
 }
