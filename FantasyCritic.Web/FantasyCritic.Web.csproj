@@ -128,4 +128,9 @@
     </ItemGroup>
   </Target>
 
+    <PropertyGroup>
+        <PreserveCompilationReferences>true</PreserveCompilationReferences>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+
 </Project>
