@@ -155,7 +155,8 @@ namespace FantasyCritic.Lib.Services
             await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
             await UpdateSystemWideValues();
-            var hypeConstants = await GetHypeConstants();
+            //var hypeConstants = await GetHypeConstants();
+            var hypeConstants = new HypeConstants(66.689706, 24.833691, -44.761202, -0.146247, 0.019522, 0.000633, 0.052322);
             await UpdateHypeFactor(hypeConstants);
             _logger.LogInformation("Done refreshing caches");
         }
