@@ -96,6 +96,10 @@ div.alert {
     padding: 5px;
 }
 
+svg, img.critic-royale-nav {
+    margin-right: 4px;
+}
+
 .fb-icon {
     color: #3b5998;
 }
