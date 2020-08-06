@@ -96,10 +96,6 @@ div.alert {
     padding: 5px;
 }
 
-svg, img.critic-royale-nav {
-    margin-right: 4px;
-}
-
 .fb-icon {
     color: #3b5998;
 }
@@ -170,4 +166,12 @@ svg, img.critic-royale-nav {
 .datepicker__title {
     background-color: #D6993A;
     font-weight: bolder;
+}
+
+svg, img.critic-royale-nav {
+    margin-right: 4px;
+}
+
+.btn {
+    margin-right: 5px;
 }
