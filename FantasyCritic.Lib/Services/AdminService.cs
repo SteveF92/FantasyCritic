@@ -155,8 +155,7 @@ namespace FantasyCritic.Lib.Services
             await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
             await UpdateSystemWideValues();
-            //var hypeConstants = await GetHypeConstants();
-            var hypeConstants = new HypeConstants(66.689706, 24.833691, -44.761202, -0.146247, 0.019522, 0.000633, 0.052322);
+            var hypeConstants = await GetHypeConstants();
             await UpdateHypeFactor(hypeConstants);
             _logger.LogInformation("Done refreshing caches");
         }
@@ -194,10 +193,10 @@ namespace FantasyCritic.Lib.Services
         private async Task<HypeConstants> GetHypeConstants()
         {
             _logger.LogInformation("Getting Hype Constants");
-            REngine.SetEnvironmentVariables();
-            var engine = REngine.GetInstance();
+            //REngine.SetEnvironmentVariables();
+            //var engine = REngine.GetInstance();
 
-            string rscript = Resource.MasterGameStatisticsScript;
+            //string rscript = Resource.MasterGameStatisticsScript;
             var supportedYears = await _interLeagueService.GetSupportedYears();
             List<MasterGameYear> allMasterGameYears = new List<MasterGameYear>();
 
@@ -208,12 +207,8 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                var masterGamesForYear = await _masterGameRepo.GetMasterGameYears(2019, true);
+                var masterGamesForYear = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, true);
                 var relevantGames = masterGamesForYear.Where(x => x.IsRelevantInYear(supportedYear));
-                if (!supportedYear.Finished)
-                {
-                    relevantGames = relevantGames.Where(x => !x.WillRelease() || x.MasterGame.CriticScore.HasValue);
-                }
                 allMasterGameYears.AddRange(relevantGames);
             }
 
@@ -226,29 +221,32 @@ namespace FantasyCritic.Lib.Services
                 csv.WriteRecords(outputModels);
             }
 
-            var args_r = new string[1] { fileName };
-            engine.SetCommandLineArguments(args_r);
-
-            CharacterVector vector = engine.Evaluate(rscript).AsCharacter();
-            string result = vector[0];
-            var splitString = result.Split(' ');
-
-            File.Delete(fileName);
-
-            double baseScore = double.Parse(splitString[2]);
-            double standardGameConstant = double.Parse(splitString[4]);
-            double counterPickConstant = double.Parse(splitString[8]);
-            double hypeFactorConstant = double.Parse(splitString[12]);
-            double averageDraftPositionConstant = double.Parse(splitString[16]);
-            double totalBidAmountConstant = double.Parse(splitString[20]);
-            double bidPercentileConstant = double.Parse(splitString[24]);
-
-            HypeConstants hypeConstants = new HypeConstants(baseScore, standardGameConstant, counterPickConstant,
-                hypeFactorConstant, averageDraftPositionConstant, totalBidAmountConstant, bidPercentileConstant);
-
-            _logger.LogInformation($"Hype Constants: {hypeConstants}");
-
+            var hypeConstants = new HypeConstants(66.689706, 24.833691, -44.761202, -0.146247, 0.019522, 0.000633, 0.052322);
             return hypeConstants;
+
+            //var args_r = new string[1] { fileName };
+            //engine.SetCommandLineArguments(args_r);
+
+            //CharacterVector vector = engine.Evaluate(rscript).AsCharacter();
+            //string result = vector[0];
+            //var splitString = result.Split(' ');
+
+            //File.Delete(fileName);
+
+            //double baseScore = double.Parse(splitString[2]);
+            //double standardGameConstant = double.Parse(splitString[4]);
+            //double counterPickConstant = double.Parse(splitString[8]);
+            //double hypeFactorConstant = double.Parse(splitString[12]);
+            //double averageDraftPositionConstant = double.Parse(splitString[16]);
+            //double totalBidAmountConstant = double.Parse(splitString[20]);
+            //double bidPercentileConstant = double.Parse(splitString[24]);
+
+            //HypeConstants hypeConstants = new HypeConstants(baseScore, standardGameConstant, counterPickConstant,
+            //    hypeFactorConstant, averageDraftPositionConstant, totalBidAmountConstant, bidPercentileConstant);
+
+            //_logger.LogInformation($"Hype Constants: {hypeConstants}");
+
+            //return hypeConstants;
         }
 
         private async Task UpdateHypeFactor(HypeConstants hypeConstants)

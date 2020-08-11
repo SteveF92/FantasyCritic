@@ -22,7 +22,7 @@ namespace FantasyCritic.Lib.Statistics
             {
                 CriticScore = masterGameYear.MasterGame.CriticScore.Value;
             }
-            else
+            else if (!masterGameYear.WillRelease())
             {
                 CriticScore = 70m;
             }
@@ -37,6 +37,6 @@ namespace FantasyCritic.Lib.Statistics
         public double? AverageDraftPosition { get; }
         public int TotalBidAmount { get; }
         public double BidPercentile { get; }
-        public decimal CriticScore { get; }
+        public decimal? CriticScore { get; }
     }
 }
