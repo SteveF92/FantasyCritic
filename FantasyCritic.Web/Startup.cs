@@ -16,6 +16,7 @@ using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Statistics;
 using FantasyCritic.MySQL;
 using FantasyCritic.RDS;
 using FantasyCritic.SendGrid;
@@ -58,6 +59,7 @@ namespace FantasyCritic.Web
             var issuer = Configuration["Tokens:Issuer"];
             var audience = Configuration["Tokens:Audience"];
             IClock clock = NodaTime.SystemClock.Instance;
+            string pythonPath = Configuration["Python:PythonPath"];
 
             var rdsInstanceName = Configuration["AWS:rdsInstanceName"];
 
@@ -93,6 +95,7 @@ namespace FantasyCritic.Web
             //services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             //services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
+            services.AddScoped<PythonRunner>(factory => new PythonRunner(pythonPath));
             services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticRoleManager>();

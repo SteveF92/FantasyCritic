@@ -3,9 +3,9 @@ using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Lib.Statistics
 {
-    public class MasterGameYearRInput
+    public class MasterGameYearScriptInput
     {
-        public MasterGameYearRInput(MasterGameYear masterGameYear)
+        public MasterGameYearScriptInput(MasterGameYear masterGameYear)
         {
             Year = masterGameYear.Year;
             MasterGameID = masterGameYear.MasterGame.MasterGameID;

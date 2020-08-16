@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using CsvHelper;
@@ -17,7 +19,6 @@ using FantasyCritic.Lib.Utilities;
 using Microsoft.Extensions.Logging;
 using NLog.Targets;
 using NodaTime;
-using RDotNet;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -25,6 +26,7 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly IRDSManager _rdsManager;
         private readonly RoyaleService _royaleService;
+        private readonly PythonRunner _pythonRunner;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
         private readonly IMasterGameRepo _masterGameRepo;
@@ -35,7 +37,7 @@ namespace FantasyCritic.Lib.Services
 
         public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
             InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<OpenCriticService> logger, IRDSManager rdsManager,
-            RoyaleService royaleService)
+            RoyaleService royaleService, PythonRunner pythonRunner)
         {
             _fantasyCriticService = fantasyCriticService;
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -46,6 +48,7 @@ namespace FantasyCritic.Lib.Services
             _logger = logger;
             _rdsManager = rdsManager;
             _royaleService = royaleService;
+            _pythonRunner = pythonRunner;
         }
 
         public async Task FullDataRefresh()
@@ -193,10 +196,6 @@ namespace FantasyCritic.Lib.Services
         private async Task<HypeConstants> GetHypeConstants()
         {
             _logger.LogInformation("Getting Hype Constants");
-            //REngine.SetEnvironmentVariables();
-            //var engine = REngine.GetInstance();
-
-            //string rscript = Resource.MasterGameStatisticsScript;
             var supportedYears = await _interLeagueService.GetSupportedYears();
             List<MasterGameYear> allMasterGameYears = new List<MasterGameYear>();
 
@@ -212,41 +211,39 @@ namespace FantasyCritic.Lib.Services
                 allMasterGameYears.AddRange(relevantGames);
             }
 
-            var outputModels = allMasterGameYears.Select(x => new MasterGameYearRInput(x));
+            var outputModels = allMasterGameYears.Select(x => new MasterGameYearScriptInput(x));
+            
+            string scriptsFolder = "C:\\FantasyCritic\\Scripts\\";
+            string scriptFileName = "regression_model.py";
+            string scriptPath = Path.Combine(scriptsFolder, scriptFileName);
 
-            string fileName = Guid.NewGuid() + ".csv";
-            using (var writer = new StreamWriter(fileName))
+            string dataFileName = Guid.NewGuid() + ".csv";
+            string dataPath = Path.Combine(scriptsFolder, dataFileName);
+            using (var writer = new StreamWriter(dataPath))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
                 csv.WriteRecords(outputModels);
             }
 
-            var hypeConstants = new HypeConstants(66.689706, 24.833691, -44.761202, -0.146247, 0.019522, 0.000633, 0.052322);
+            var result = _pythonRunner.RunPython(scriptPath, dataPath);
+            var splitString = result.Split(' ');
+
+            File.Delete(dataPath);
+
+            double baseScore = double.Parse(splitString[2]);
+            double standardGameConstant = double.Parse(splitString[4]);
+            double counterPickConstant = double.Parse(splitString[8]);
+            double hypeFactorConstant = double.Parse(splitString[12]);
+            double averageDraftPositionConstant = double.Parse(splitString[16]);
+            double totalBidAmountConstant = double.Parse(splitString[20]);
+            double bidPercentileConstant = double.Parse(splitString[24]);
+
+            HypeConstants hypeConstants = new HypeConstants(baseScore, standardGameConstant, counterPickConstant,
+                hypeFactorConstant, averageDraftPositionConstant, totalBidAmountConstant, bidPercentileConstant);
+
+            _logger.LogInformation($"Hype Constants: {hypeConstants}");
+
             return hypeConstants;
-
-            //var args_r = new string[1] { fileName };
-            //engine.SetCommandLineArguments(args_r);
-
-            //CharacterVector vector = engine.Evaluate(rscript).AsCharacter();
-            //string result = vector[0];
-            //var splitString = result.Split(' ');
-
-            //File.Delete(fileName);
-
-            //double baseScore = double.Parse(splitString[2]);
-            //double standardGameConstant = double.Parse(splitString[4]);
-            //double counterPickConstant = double.Parse(splitString[8]);
-            //double hypeFactorConstant = double.Parse(splitString[12]);
-            //double averageDraftPositionConstant = double.Parse(splitString[16]);
-            //double totalBidAmountConstant = double.Parse(splitString[20]);
-            //double bidPercentileConstant = double.Parse(splitString[24]);
-
-            //HypeConstants hypeConstants = new HypeConstants(baseScore, standardGameConstant, counterPickConstant,
-            //    hypeFactorConstant, averageDraftPositionConstant, totalBidAmountConstant, bidPercentileConstant);
-
-            //_logger.LogInformation($"Hype Constants: {hypeConstants}");
-
-            //return hypeConstants;
         }
 
         private async Task UpdateHypeFactor(HypeConstants hypeConstants)
