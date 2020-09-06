@@ -32,6 +32,7 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 
@@ -226,7 +227,20 @@ namespace FantasyCritic.Web
             app.UseRewriter(new RewriteOptions()
                 .AddRedirectToWww()
             );
-            app.UseStaticFiles();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = (context) =>
+                {
+                    var headers = context.Context.Response.GetTypedHeaders();
+
+                    headers.CacheControl = new CacheControlHeaderValue
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromDays(365)
+                    };
+                }
+            });
             app.UseSpaStaticFiles();
 
             app.UseRouting();
