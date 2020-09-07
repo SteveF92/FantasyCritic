@@ -26,6 +26,10 @@
       <li>Expansion Pack: {{ masterGame.eligibilitySettings.expansionPack | yesNo }}</li>
       <li>Unannounced: {{ masterGame.eligibilitySettings.unannouncedGame | yesNo }}</li>
     </ul>
+    <div v-show="masterGame.notes">
+      <h3>Special Notes</h3>
+      {{masterGame.notes}}
+    </div>
   </div>
 </template>
 

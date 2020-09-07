@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Domain
         private readonly decimal? _criticScore;
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate, 
-            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings, 
+            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings, string notes,
             string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, bool eligibilityChanged,
             Instant addedTimestamp)
         {
@@ -26,6 +26,7 @@ namespace FantasyCritic.Lib.Domain
             _criticScore = criticScore;
             MinimumReleaseDate = minimumReleaseDate;
             EligibilitySettings = eligibilitySettings;
+            Notes = notes;
             SubGames = new List<MasterSubGame>();
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
@@ -36,8 +37,8 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate,
-            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings, 
-            IReadOnlyList<MasterSubGame> subGames, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
+            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings,
+            string notes, IReadOnlyList<MasterSubGame> subGames, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
             bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
@@ -49,6 +50,7 @@ namespace FantasyCritic.Lib.Domain
             _criticScore = criticScore;
             MinimumReleaseDate = minimumReleaseDate;
             EligibilitySettings = eligibilitySettings;
+            Notes = notes;
             SubGames = subGames;
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
@@ -113,6 +115,7 @@ namespace FantasyCritic.Lib.Domain
 
         public LocalDate MinimumReleaseDate { get; }
         public EligibilitySettings EligibilitySettings { get; }
+        public string Notes { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
 
         public bool IsReleased(Instant timeToCheck)

@@ -22,6 +22,7 @@ namespace FantasyCritic.Web.Models.Responses
             CriticScore = masterGame.CriticScore;
             AveragedScore = masterGame.AveragedScore;
             EligibilitySettings = new EligibilitySettingsViewModel(masterGame.EligibilitySettings, false);
+            Notes = masterGame.Notes;
             OpenCriticID = masterGame.OpenCriticID;
             SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, masterGame.EligibilitySettings, clock)).ToList();
             BoxartFileName = masterGame.BoxartFileName;
@@ -60,6 +61,7 @@ namespace FantasyCritic.Web.Models.Responses
         public EligibilitySettingsViewModel EligibilitySettings { get; }
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameViewModel> SubGames { get; }
+        public string Notes { get; }
         public string BoxartFileName { get; }
         public Instant AddedTimestamp { get; }
         public bool Error { get; }

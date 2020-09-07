@@ -67,6 +67,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool ReleasedInternationally { get; set; }
         public bool ExpansionPack { get; set; }
         public bool UnannouncedGame { get; set; }
+        public string Notes { get; set; }
         public string BoxartFileName { get; set; }
         public bool EligibilityChanged { get; set; }
         public DateTime? FirstCriticScoreTimestamp { get; set; }
@@ -108,7 +109,7 @@ namespace FantasyCritic.MySQL.Entities
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
 
             var masterGame =  new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, 
-                OpenCriticID, CriticScore, LocalDate.FromDateTime(MinimumReleaseDate), eligibilitySettings, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, 
+                OpenCriticID, CriticScore, LocalDate.FromDateTime(MinimumReleaseDate), eligibilitySettings, Notes, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, 
                 false, false, EligibilityChanged, addedTimestamp);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 
