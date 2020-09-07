@@ -1230,6 +1230,36 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame)
+        {
+            string mergeSQL =
+                "UPDATE tbl_league_droprequest SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+                "UPDATE tbl_league_eligibilityoverride SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+                "UPDATE tbl_league_pickupbid SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+                "UPDATE tbl_league_publishergame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+                "UPDATE tbl_league_publisherqueue SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+                "UPDATE tbl_mastergame_changerequest SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+                "UPDATE tbl_mastergame_request SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+                "UPDATE tbl_mastergame_subgame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+                "UPDATE tbl_royale_publishergame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;";
+
+            string removeSQL = "DELETE FROM tbl_mastergame WHERE MasterGameID = @removeMasterGameID;";
+
+            var requestObject = new
+            {
+                removeMasterGameID = removeMasterGame.MasterGameID,
+                mergeIntoMasterGameID = mergeIntoMasterGame.MasterGameID,
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            using (var transaction = await connection.BeginTransactionAsync())
+            { 
+                await connection.ExecuteAsync(mergeSQL, requestObject, transaction);
+                await connection.ExecuteAsync(removeSQL, requestObject, transaction);
+                await transaction.CommitAsync();
+            }
+        }
+
         public async Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
             using (var connection = new MySqlConnection(_connectionString))
