@@ -57,6 +57,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year);
         Task AddPublisherGame(PublisherGame publisherGame);
         Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
+        Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame);
 
         Task<IReadOnlyList<SupportedYear>> GetSupportedYears();
 

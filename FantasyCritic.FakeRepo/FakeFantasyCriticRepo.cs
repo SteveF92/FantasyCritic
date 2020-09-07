@@ -240,6 +240,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
             return Task.FromResult<IReadOnlyList<SupportedYear>> (new List<SupportedYear>()

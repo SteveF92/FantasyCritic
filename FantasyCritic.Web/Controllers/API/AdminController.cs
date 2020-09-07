@@ -119,6 +119,21 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> MergeMasterGame([FromBody] MergeGameRequest request)
+        {
+            Maybe<MasterGame> removeMasterGame = await _interLeagueService.GetMasterGame(request.RemoveMasterGameID);
+            Maybe<MasterGame> mergeIntoMasterGame = await _interLeagueService.GetMasterGame(request.MergeIntoMasterGameID);
+            if (removeMasterGame.HasNoValue || mergeIntoMasterGame.HasNoValue)
+            {
+                return BadRequest("Bad master game");
+            }
+
+            await _interLeagueService.MergeMasterGame(removeMasterGame.Value, mergeIntoMasterGame.Value);
+
+            return Ok();
+        }
+
         public async Task<ActionResult<List<MasterGameRequestViewModel>>> ActiveMasterGameRequests()
         {
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();

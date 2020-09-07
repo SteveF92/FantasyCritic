@@ -183,5 +183,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
         }
+
+        public Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame)
+        {
+            return _fantasyCriticRepo.MergeMasterGame(removeMasterGame, mergeIntoMasterGame);
+        }
     }
 }
