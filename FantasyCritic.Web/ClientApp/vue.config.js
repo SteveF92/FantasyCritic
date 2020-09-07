@@ -5,10 +5,13 @@ let config = {
 if (process.env.NODE_ENV === "client") {
   config = {
     ...config,
+    configureWebpack: {
+      mode: "development",
+    },
     devServer: {
       proxy: {
         // Route the api calls to the acutal site
-        "/api/**": {
+        "/api/*": {
           target: "https://www.fantasycritic.games",
           secure: false,
           changeOrigin: true,
