@@ -20,7 +20,7 @@
           <input v-model="newBudget" id="newBudget" name="newBudget" type="text" class="form-control input" />
         </div>
         <div class="form-group">
-          <label for="newFreeGamesDropped" class="control-label">Unrestricted Games Dropped</label>
+          <label for="newFreeGamesDropped" class="control-label">"Any Unreleased" Games Dropped</label>
           <input v-model="newFreeGamesDropped" id="newFreeGamesDropped" name="newFreeGamesDropped" type="text" class="form-control input" />
         </div>
         <div class="form-group">

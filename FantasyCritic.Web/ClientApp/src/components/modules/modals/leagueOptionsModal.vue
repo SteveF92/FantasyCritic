@@ -20,7 +20,7 @@
             <td>{{leagueYearOptions.counterPicks}}</td>
           </tr>
           <tr>
-            <th class="bg-primary">"Free" Droppable Games</th>
+            <th class="bg-primary">"Any Unreleased" Droppable Games</th>
             <td v-show="!leagueYearOptions.unlimitedFreeDroppableGames">{{leagueYearOptions.freeDroppableGames}}</td>
             <td v-show="leagueYearOptions.unlimitedFreeDroppableGames">Unlimited</td>
           </tr>

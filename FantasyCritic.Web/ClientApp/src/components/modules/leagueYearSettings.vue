@@ -87,7 +87,7 @@
         New for 2020, players can now choose to drop a game before it releases. This setting allows you to choose how many such games can be dropped, if any.
         You can customize how many games are droppable after the game is confirmed to be delayed, as well as how many are droppable that are still scheduled to release.
         <br />
-        You can also use the "unrestricted" setting, which applies to all games, delayed or not.
+        You can also use the "Any Unreleased" setting, which applies to all unreleased games, delayed or not.
         <br />
         For more details, check out the <a href="/faq#dropping-games" target="_blank" class="text-secondary">FAQ.</a>
       </div>
@@ -130,7 +130,7 @@
             </td>
           </tr>
           <tr>
-            <th scope="row">Unrestricted</th>
+            <th scope="row">Any Unreleased</th>
             <td>
               <ValidationProvider rules="required|max_value:100" v-slot="{ errors }"  v-if="!local.unlimitedFreeDroppableGames">
                 <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)"

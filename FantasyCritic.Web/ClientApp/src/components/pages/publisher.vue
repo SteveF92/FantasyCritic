@@ -18,7 +18,7 @@
         <li>Budget: {{publisher.budget | money}}</li>
         <li>Will Release Games Dropped: {{getDropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames)}}</li>
         <li>Will Not Release Games Dropped: {{getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames)}}</li>
-        <li>Unrestricted Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
+        <li>"Any Unreleased" Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
       </ul>
       <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options"></playerGameTable>
     </div>
