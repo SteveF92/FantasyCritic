@@ -249,7 +249,7 @@
           });
       },
       parseEstimatedReleaseDate() {
-        if (this.estimatedReleaseDate === "") {
+        if (this.estimatedReleaseDate === "" || this.estimatedReleaseDate === "TBA") {
           this.minimumReleaseDate = moment().add(1, 'days').format("YYYY-MM-DD");
           this.sortableEstimatedReleaseDate = null;
         }
