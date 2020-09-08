@@ -11,6 +11,8 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
         public LocalDate? SortableEstimatedReleaseDate { get; set; }
+        [Required]
+        public LocalDate MinimumReleaseDate { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         [Required]
@@ -32,11 +34,11 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         [Required]
         public string Notes { get; set; }
 
-        public Lib.Domain.MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp, LocalDate tomorrow)
+        public Lib.Domain.MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp)
         {
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
             Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, SortableEstimatedReleaseDate,
-                ReleaseDate, OpenCriticID, null, tomorrow, eligibilitySettings, Notes, BoxartFileName, null, false, false, false, timestamp);
+                ReleaseDate, OpenCriticID, null, MinimumReleaseDate, eligibilitySettings, Notes, BoxartFileName, null, false, false, false, timestamp);
             return masterGame;
         }
     }

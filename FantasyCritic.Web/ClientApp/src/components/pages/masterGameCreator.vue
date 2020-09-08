@@ -58,6 +58,10 @@
                 <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
               </div>
               <div class="form-group">
+                <label for="minimumReleaseDate" class="control-label">Minimum Release Date</label>
+                <flat-pickr v-model="minimumReleaseDate" class="form-control"></flat-pickr>
+              </div>
+              <div class="form-group">
                 <label for="sortableEstimatedReleaseDate" class="control-label">Sortable Estimated Release Date</label>
                 <flat-pickr v-model="sortableEstimatedReleaseDate" class="form-control"></flat-pickr>
               </div>
@@ -117,6 +121,11 @@
               </div>
 
               <div class="form-group">
+                <label for="notes" class="control-label">Other Notes</label>
+                <input v-model="notes" id="notes" name="notes" class="form-control input" />
+              </div>
+
+              <div class="form-group">
                 <div class="col-md-offset-2 col-md-4">
                   <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
                 </div>
@@ -144,6 +153,7 @@
         openCriticID: null,
         gameName: "",
         estimatedReleaseDate: "",
+        minimumReleaseDate: "2020-09-08",
         sortableEstimatedReleaseDate: "2020-12-31",
         releaseDate: null,
         eligibilityLevel: 0,
@@ -153,6 +163,7 @@
         releasedInternationally: false,
         expansionPack: false,
         unannouncedGame: false,
+        notes: "",
         possibleEligibilityLevels: null
       }
     },
@@ -204,9 +215,12 @@
           .catch(returnedError => (this.error = returnedError));
       },
       createMasterGame() {
+        this.fixFields();
+
         let request = {
           gameName: this.gameName,
           estimatedReleaseDate: this.estimatedReleaseDate,
+          minimumReleaseDate: this.minimumReleaseDate,
           sortableEstimatedReleaseDate: this.sortableEstimatedReleaseDate,
           releaseDate: this.releaseDate,
           openCriticID: this.openCriticID,
@@ -216,7 +230,8 @@
           freeToPlay: this.freeToPlay,
           releasedInternationally: this.releasedInternationally,
           expansionPack: this.expansionPack,
-          unannouncedGame: this.unannouncedGame
+          unannouncedGame: this.unannouncedGame,
+          notes: this.notes
         };
         axios
           .post('/api/admin/CreateMasterGame', request)
@@ -232,6 +247,32 @@
           .catch(error => {
             this.errorInfo = error.response;
           });
+      },
+      fixFields() {
+        if (this.openCriticID === undefined) {
+          this.openCriticID = null;
+        }
+        if (this.eligibilityLevel === undefined) {
+          this.eligibilityLevel = 0;
+        }
+        if (this.yearlyInstallment === null) {
+          this.yearlyInstallment = false;
+        }
+        if (this.earlyAccess === null) {
+          this.earlyAccess = false;
+        }
+        if (this.freeToPlay === null) {
+          this.freeToPlay = false;
+        }
+        if (this.releasedInternationally === null) {
+          this.releasedInternationally = false;
+        }
+        if (this.expansionPack === null) {
+          this.expansionPack = false;
+        }
+        if (this.unannouncedGame === null) {
+          this.unannouncedGame = false;
+        }
       },
       populateFieldsFromURL() {
         this.gameName = this.$route.query.gameName;
@@ -253,10 +294,12 @@
       },
       propagateDate() {
         this.sortableEstimatedReleaseDate = this.releaseDate;
+        this.minimumReleaseDate = this.releaseDate;
         this.estimatedReleaseDate = this.releaseDate;
       },
       clearDates() {
         this.releaseDate = null;
+        this.minimumReleaseDate = null;
         this.sortableEstimatedReleaseDate = null;
         this.estimatedReleaseDate = null;
       }
