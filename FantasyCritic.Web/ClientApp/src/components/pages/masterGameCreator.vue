@@ -51,6 +51,7 @@
               </div>
 
               <b-button variant="info" size="sm" v-on:click="propagateDate">Propagate Date</b-button>
+              <b-button variant="info" size="sm" v-on:click="parseEstimatedReleaseDate">Parse Estimated</b-button>
               <b-button variant="warning" size="sm" v-on:click="clearDates">Clear Dates</b-button>
 
               <div class="form-group">
@@ -153,8 +154,8 @@
         openCriticID: null,
         gameName: "",
         estimatedReleaseDate: "",
-        minimumReleaseDate: "2020-09-08",
-        sortableEstimatedReleaseDate: "2020-12-31",
+        minimumReleaseDate: null,
+        sortableEstimatedReleaseDate: null,
         releaseDate: null,
         eligibilityLevel: 0,
         yearlyInstallment: false,
@@ -197,7 +198,7 @@
           return [];
         }
 
-        let levels =  this.possibleEligibilityLevels.map(function (v) {
+        let levels = this.possibleEligibilityLevels.map(function (v) {
           return v.level;
         });
 
@@ -215,8 +216,6 @@
           .catch(returnedError => (this.error = returnedError));
       },
       createMasterGame() {
-        this.fixFields();
-
         let request = {
           gameName: this.gameName,
           estimatedReleaseDate: this.estimatedReleaseDate,
@@ -248,33 +247,16 @@
             this.errorInfo = error.response;
           });
       },
-      fixFields() {
-        if (this.openCriticID === undefined) {
-          this.openCriticID = null;
-        }
-        if (this.eligibilityLevel === undefined) {
-          this.eligibilityLevel = 0;
-        }
-        if (this.yearlyInstallment === null) {
-          this.yearlyInstallment = false;
-        }
-        if (this.earlyAccess === null) {
-          this.earlyAccess = false;
-        }
-        if (this.freeToPlay === null) {
-          this.freeToPlay = false;
-        }
-        if (this.releasedInternationally === null) {
-          this.releasedInternationally = false;
-        }
-        if (this.expansionPack === null) {
-          this.expansionPack = false;
-        }
-        if (this.unannouncedGame === null) {
-          this.unannouncedGame = false;
+      parseEstimatedReleaseDate() {
+        if (this.estimatedReleaseDate === "") {
+          this.sortableEstimatedReleaseDate = "2020-10-10";
+          this.minimumReleaseDate = "2020-10-11";
         }
       },
       populateFieldsFromURL() {
+        if (!this.$route.query.gameName) {
+          return;
+        }
         this.gameName = this.$route.query.gameName;
         this.estimatedReleaseDate = this.$route.query.estimatedReleaseDate;
         if (this.$route.query.releaseDate !== undefined) {
@@ -306,6 +288,7 @@
     },
     mounted() {
       this.fetchEligibilityLevels();
+      this.parseEstimatedReleaseDate();
       this.populateFieldsFromURL();
     }
   }
