@@ -1252,12 +1252,16 @@ namespace FantasyCritic.MySQL
             };
 
             using (var connection = new MySqlConnection(_connectionString))
-            using (var transaction = await connection.BeginTransactionAsync())
-            { 
-                await connection.ExecuteAsync(mergeSQL, requestObject, transaction);
-                await connection.ExecuteAsync(removeSQL, requestObject, transaction);
-                await transaction.CommitAsync();
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(mergeSQL, requestObject, transaction);
+                    await connection.ExecuteAsync(removeSQL, requestObject, transaction);
+                    await transaction.CommitAsync();
+                }
             }
+            
         }
 
         public async Task<IReadOnlyList<SupportedYear>> GetSupportedYears()

@@ -33,6 +33,7 @@ namespace FantasyCritic.MySQL.Entities
             ReleasedInternationally = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.ReleasedInternationally;
             ExpansionPack = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.ExpansionPack;
             UnannouncedGame = masterGameHypeScores.MasterGameYear.MasterGame.EligibilitySettings.UnannouncedGame;
+            Notes = masterGameHypeScores.MasterGameYear.MasterGame.Notes;
             BoxartFileName = masterGameHypeScores.MasterGameYear.MasterGame.BoxartFileName;
             EligibilityChanged = masterGameHypeScores.MasterGameYear.MasterGame.EligibilityChanged;
             FirstCriticScoreTimestamp = masterGameHypeScores.MasterGameYear.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();

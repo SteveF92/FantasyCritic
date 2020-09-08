@@ -186,9 +186,9 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync(
                     "insert into tbl_mastergame(MasterGameID,GameName,EstimatedReleaseDate,SortableEstimatedReleaseDate,ReleaseDate,OpenCriticID,CriticScore,MinimumReleaseDate," +
-                    "EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,UnannouncedGame,BoxartFileName) VALUES " +
+                    "EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,UnannouncedGame,Notes,BoxartFileName) VALUES " +
                     "(@MasterGameID,@GameName,@EstimatedReleaseDate,@SortableEstimatedReleaseDate,@ReleaseDate,@OpenCriticID,@CriticScore,@MinimumReleaseDate," +
-                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@UnannouncedGame,@BoxartFileName);",
+                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@UnannouncedGame,@Notes,@BoxartFileName);",
                     entity);
             }
         }

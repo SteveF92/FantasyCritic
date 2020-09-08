@@ -32,6 +32,7 @@ namespace FantasyCritic.MySQL.Entities
             ReleasedInternationally = masterGame.EligibilitySettings.ReleasedInternationally;
             ExpansionPack = masterGame.EligibilitySettings.ExpansionPack;
             UnannouncedGame = masterGame.EligibilitySettings.UnannouncedGame;
+            Notes = masterGame.Notes;
             BoxartFileName = masterGame.BoxartFileName;
         }
 
