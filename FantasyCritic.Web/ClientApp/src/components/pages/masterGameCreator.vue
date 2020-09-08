@@ -142,6 +142,7 @@
   import axios from 'axios';
   import vueSlider from 'vue-slider-component';
   import Popper from 'vue-popperjs';
+  import moment from "moment";
   import 'vue-slider-component/theme/antd.css'
 
   export default {
@@ -249,8 +250,36 @@
       },
       parseEstimatedReleaseDate() {
         if (this.estimatedReleaseDate === "") {
-          this.sortableEstimatedReleaseDate = "2020-10-10";
-          this.minimumReleaseDate = "2020-10-11";
+          this.minimumReleaseDate = moment().add(1, 'days').format("YYYY-MM-DD");
+          this.sortableEstimatedReleaseDate = null;
+        }
+        if (this.estimatedReleaseDate === "2020") {
+          this.minimumReleaseDate = moment().add(1, 'days').format("YYYY-MM-DD");
+          this.sortableEstimatedReleaseDate = "2020-12-31";
+        }
+        if (this.estimatedReleaseDate === "Q3 2020") {
+          this.minimumReleaseDate = moment().add(1, 'days').format("YYYY-MM-DD");
+          this.sortableEstimatedReleaseDate = "2020-09-30";
+        }
+        if (this.estimatedReleaseDate === "Q4 2020") {
+          this.minimumReleaseDate = "2020-10-01";
+          this.sortableEstimatedReleaseDate = "2020-12-31";
+        }
+        if (this.estimatedReleaseDate === "2021") {
+          this.minimumReleaseDate = "2021-01-01";
+          this.sortableEstimatedReleaseDate = "2021-12-31";
+        }
+        if (this.estimatedReleaseDate === "Q1 2021") {
+          this.minimumReleaseDate = "2021-01-01";
+          this.sortableEstimatedReleaseDate = "2021-03-31";
+        }
+        if (this.estimatedReleaseDate === "Q2 2021") {
+          this.minimumReleaseDate = "2021-04-01";
+          this.sortableEstimatedReleaseDate = "2021-06-30";
+        }
+        if (this.estimatedReleaseDate === "Early 2021") {
+          this.minimumReleaseDate = "2021-01-01";
+          this.sortableEstimatedReleaseDate = "2021-06-30";
         }
       },
       populateFieldsFromURL() {
