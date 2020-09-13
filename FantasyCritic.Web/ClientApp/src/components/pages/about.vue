@@ -55,7 +55,7 @@
         <p>
           <h4>Data we gather</h4>
           Making an account on the site requires an email address. We don't ask for your real name or any other personally identifiable information. All passwords are stored using industry standard
-          hashing + salting. The site is open source, so if you are intersted, you can check that part out for yourself.
+          hashing + salting. The site is open source, so if you are interested, you can check that part out for yourself.
           <br />
           Additionally, the site uses Google Analytics to track engagement with the site (which pages are used, what devices users are accessing the site from).
           However, we do not use Google's "Demographics and Interest Reports" feature, so we are not collecting any data about users advertising interests, age groups, etc.
