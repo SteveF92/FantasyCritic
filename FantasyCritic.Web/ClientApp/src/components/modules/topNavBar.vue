@@ -15,7 +15,7 @@
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link :to="{ name: 'howtoplay' }" class="nav-link top-nav-link optional-nav" title="How to Play">
+              <router-link :to="{ name: 'howtoplay' }" class="nav-link top-nav-link super-optional-nav" title="How to Play">
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="book-open" size="lg" />
                 <span class="full-nav">How to Play</span>
               </router-link>
@@ -33,7 +33,7 @@
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link optional-nav" title="About">
+              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link super-optional-nav" title="About">
                 <font-awesome-icon class="minimal-nav topnav-icon" icon="info-circle" size="lg" />
                 <span class="full-nav">About</span>
               </router-link>
@@ -192,13 +192,19 @@
     }
   }
 
-  @media only screen and (max-width: 365px) {
+  @media only screen and (max-width: 400px) {
     .optional-nav {
       display: none;
     }
   }
 
   @media only screen and (max-width: 450px) {
+    .super-optional-nav {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 350px) {
     .optional-link {
       display: none;
     }
