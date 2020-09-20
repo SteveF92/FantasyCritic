@@ -51,6 +51,9 @@
       <template v-slot:cell(budget)="data">
         <span v-if="data.item.publisher">{{data.item.publisher.budget | money}}</span>
       </template>
+      <template v-slot:cell(totalFantasyPoints)="data">{{data.item.totalFantasyPoints | score(2)}}</template>
+      <template v-slot:cell(gamesReleased)="data">{{data.item.publisher.gamesReleased}}</template>
+      <template v-slot:cell(gamesWillRelease)="data">{{data.item.publisher.gamesWillRelease}}</template>
     </b-table>
   </div>
 </template>
@@ -67,14 +70,16 @@
     data() {
       return {
         basicStandingFields: [
-          { key: 'userName', label: 'User', thClass:'bg-primary' },
-          { key: 'publisher', label: 'Publisher', thClass:'bg-primary' },
-          { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass:'bg-primary', sortable: true },
-          { key: 'budget', label: 'Budget', thClass:'bg-primary' },
+          { key: 'userName', label: 'User', thClass: 'bg-primary' },
+          { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+          { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
+          { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
+          { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' },
+          { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
         ],
         projectionFields: [
-          { key: 'simpleProjectedFantasyPoints', label: 'Points (Projected)', thClass:'bg-primary', sortable: true },
-          { key: 'advancedProjectedFantasyPoints', label: 'Points (Projected)', thClass:'bg-primary', sortable: true },
+          { key: 'simpleProjectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
+          { key: 'advancedProjectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
         ],
         sortBy: 'totalFantasyPoints',
         sortDesc: true
@@ -107,7 +112,7 @@
       standings() {
         let standings = this.leagueYear.players;
         if (!standings) {
-            return [];
+          return [];
         }
         for (var i = 0; i < standings.length; ++i) {
           if (this.leagueYear.supportedYear.finished && this.topPublisher.publisherID === standings[i].publisher.publisherID) {
@@ -139,13 +144,13 @@
           return false;
         }
 
-        let matchingLeagueLevelPlayer = _.find(this.league.players, function(item){
+        let matchingLeagueLevelPlayer = _.find(this.league.players, function (item) {
           return item.userID === user.userID;
         });
 
         return matchingLeagueLevelPlayer.removable;
       },
-      
+
       removeUser(user) {
         var model = {
           leagueID: this.leagueYear.leagueID,

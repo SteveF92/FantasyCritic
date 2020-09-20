@@ -47,6 +47,9 @@ namespace FantasyCritic.Web.Models.Responses
             PublicLeague = publisher.LeagueYear.Options.PublicLeague;
             OutstandingInvite = outstandingInvite;
 
+            GamesReleased = publisher.PublisherGames.Where(x => x.MasterGame.HasValue).Count(x => x.MasterGame.Value.MasterGame.IsReleased(clock.GetCurrentInstant()));
+            var allWillRelease = publisher.PublisherGames.Where(x => x.MasterGame.HasValue).Count(x => x.MasterGame.Value.WillRelease());
+            GamesWillRelease = allWillRelease - GamesReleased;
             FreeGamesDropped = publisher.FreeGamesDropped;
             WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
             WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
@@ -73,6 +76,8 @@ namespace FantasyCritic.Web.Models.Responses
         public bool PublicLeague { get; }
         public bool OutstandingInvite { get; }
 
+        public int GamesReleased { get; }
+        public int GamesWillRelease { get; }
         public int FreeGamesDropped { get; }
         public int WillNotReleaseGamesDropped { get; }
         public int WillReleaseGamesDropped { get; }
