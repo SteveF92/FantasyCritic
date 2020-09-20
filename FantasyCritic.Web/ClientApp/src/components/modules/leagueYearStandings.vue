@@ -10,7 +10,7 @@
     </div>
 
 
-    <b-table :sort-by.sync="sortBy"
+    <b-table-lite :sort-by.sync="sortBy"
              :sort-desc.sync="sortDesc"
              :items="standings"
              :fields="standingFields"
@@ -54,7 +54,7 @@
       <template v-slot:cell(totalFantasyPoints)="data">{{data.item.totalFantasyPoints | score(2)}}</template>
       <template v-slot:cell(gamesReleased)="data">{{data.item.publisher.gamesReleased}}</template>
       <template v-slot:cell(gamesWillRelease)="data">{{data.item.publisher.gamesWillRelease}}</template>
-    </b-table>
+    </b-table-lite>
   </div>
 </template>
 <script>
