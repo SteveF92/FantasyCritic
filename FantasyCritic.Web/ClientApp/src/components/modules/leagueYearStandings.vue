@@ -9,7 +9,6 @@
       </span>
     </div>
 
-
     <b-table-lite :sort-by.sync="sortBy"
              :sort-desc.sync="sortDesc"
              :items="standings"

@@ -38,11 +38,16 @@
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="wwwroot\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
     <TypeScriptCompile Remove="ClientApp\node_modules\**" />
+    <TypeScriptCompile Remove="wwwroot\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -79,10 +84,6 @@
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
     <ProjectReference Include="..\FantasyCritic.RDS\FantasyCritic.RDS.csproj" />
     <ProjectReference Include="..\FantasyCritic.SendGrid\FantasyCritic.SendGrid.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
