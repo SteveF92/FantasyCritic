@@ -42,7 +42,7 @@
         </div>
 
         <div v-if="royaleStandings">
-          <b-table striped bordered small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
+          <b-table striped bordered responsive small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
             <template v-slot:cell(ranking)="data">
               <template v-if="data.item.ranking">
                 {{data.item.ranking}}

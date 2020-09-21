@@ -6,6 +6,7 @@
               :fields="upcomingGamesFields"
               bordered
               striped
+              responsive
               small>
       <template v-slot:cell(gameName)="data">
         <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>

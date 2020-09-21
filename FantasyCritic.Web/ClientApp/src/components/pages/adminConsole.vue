@@ -35,7 +35,7 @@
         <b-button variant="info" v-on:click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
         <b-button variant="warning" v-on:click="snapshotDatabase">Snapshot Database</b-button>
       </div>
-      <b-table v-if="recentSnapshots" :items="recentSnapshots" striped bordered></b-table>
+      <b-table v-if="recentSnapshots" :items="recentSnapshots" striped bordered responsive></b-table>
     </div>
   </div>
 </template>

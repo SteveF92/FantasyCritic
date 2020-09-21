@@ -175,3 +175,8 @@ svg, img.critic-royale-nav {
 .btn {
     margin-right: 5px;
 }
+
+/*This fixes an issue with VueBootstrap responsive sortable tables*/
+.table-responsive table thead th span.sr-only {
+    display: none;
+}
