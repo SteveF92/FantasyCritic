@@ -15,13 +15,19 @@
           <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear }}" class="league-link">{{data.item.leagueName}}</router-link>
           <div class="manager" v-if="data.item.leagueManager">Manager: {{data.item.leagueManager.displayName}}</div>
         </div>
+        <div v-show="showArchive" class="archive-button-section">
+          <font-awesome-icon class="archive-button fake-link" icon="archive" v-on-click="setArchive" v-b-popover.hover.rightbottom="'Archive this league (only affects you)'" />
+        </div>
+        <div v-show="showUnArchive" class="archive-button-section">
+          <font-awesome-icon class="archive-button fake-link" icon="thumbtack" v-on-click="setNotArchive" v-b-popover.hover.rightbottom="'Un-Archive this league (only affects you)'" />
+        </div>
       </div>
     </template>
   </b-table>
 </template>
 <script>
 export default {
-  props: ['leagues', 'leagueIcon', 'userID'],
+    props: ['leagues', 'leagueIcon', 'userID', 'showArchive', 'showUnArchive'],
   data() {
     return {
       leagueFields: [
@@ -38,6 +44,7 @@ table >>> .hidden_header {
 
 .row-flex {
   display: flex;
+
 }
 
 .league-icon{
@@ -56,5 +63,20 @@ table >>> .hidden_header {
   margin-top: 0;
   padding-top: 0;
   font-size: 14px;
+}
+
+.archive-button-section {
+  margin-left: auto;
+  align-self: flex-end;
+}
+
+.archive-button {
+  width: 35px;
+  height: 35px;
+  margin-bottom: 5px;
+}
+
+.archive-button:hover {
+  color: grey;
 }
 </style>

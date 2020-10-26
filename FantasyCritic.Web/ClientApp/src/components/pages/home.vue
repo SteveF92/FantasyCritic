@@ -30,7 +30,7 @@
             <b-tabs pills>
               <b-tab title="My Leagues" title-item-class="tab-header">
                 <div v-if="myStandardLeagues && myStandardLeagues.length > 0">
-                  <leagueTable :leagues="myStandardLeagues" :leagueIcon="'user'" :userID="userInfo.userID"></leagueTable>
+                  <leagueTable :leagues="myStandardLeagues" :leagueIcon="'user'" :userID="userInfo.userID" :showArchive="true"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not in any leagues! Why not create one?</label>
@@ -52,7 +52,7 @@
                 </div>
               </b-tab>
               <b-tab title="Archived Leagues" v-if="myArchivedLeagues && myArchivedLeagues.length > 0" title-item-class="tab-header">
-                <leagueTable :leagues="myArchivedLeagues" :leagueIcon="'archive'" :userID="userInfo.userID"></leagueTable>
+                <leagueTable :leagues="myArchivedLeagues" :leagueIcon="'archive'" :userID="userInfo.userID"  :showUnArchive="true"></leagueTable>
               </b-tab>
               <b-tab title="Test Leagues" v-if="myTestLeagues && myTestLeagues.length > 0" title-item-class="tab-header">
                 <leagueTable :leagues="myTestLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>
