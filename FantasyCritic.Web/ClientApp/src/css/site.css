@@ -176,6 +176,10 @@ svg, img.critic-royale-nav {
     margin-right: 5px;
 }
 
+.modal-submit-button {
+    width: 100%;
+}
+
 /*This fixes an issue with VueBootstrap responsive sortable tables*/
 .table-responsive table thead th span.sr-only {
     display: none;

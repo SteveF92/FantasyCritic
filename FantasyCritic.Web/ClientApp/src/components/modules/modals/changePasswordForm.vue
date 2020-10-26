@@ -1,22 +1,35 @@
 <template>
-  <b-modal id="changePasswordForm" ref="changePasswordRef" title="Change Password" @hidden="clearData">
+  <b-modal id="changePasswordForm" ref="changePasswordRef" title="Change Password" @hidden="clearData" hide-footer>
     <div class="form-horizontal">
-      <div class="form-group">
-        <label for="currentPassword" class="control-label">Current Password</label>
-        <input v-model="currentPassword" id="currentPassword" name="currentPassword" type="password" class="form-control input" />
-      </div>
-      <div class="form-group">
-        <label for="newPassword" class="control-label">New Password</label>
-        <input v-model="newPassword" id="newPassword" name="newPassword" type="password" class="form-control input" />
-      </div>
-      <div class="form-group">
-        <label for="confirmNewPassword" class="control-label">Confirm New Password</label>
-        <input v-model="confirmNewPassword" id="confirmNewPassword" name="confirmNewPassword" type="password" class="form-control input" />
-      </div>
+      <ValidationObserver v-slot="{ handleSubmit, invalid }">
+        <form @submit.prevent="handleSubmit(changePassword)">
+          <ValidationProvider rules="required" v-slot="{ errors }" name="Current Password">
+            <div class="form-group">
+              <label for="currentPassword" class="control-label">Current Password</label>
+              <input v-model="currentPassword" id="currentPassword" name="currentPassword" type="password" class="form-control input" />
+              <span class="text-danger">{{ errors[0] }}</span>
+            </div>
+          </ValidationProvider>
+          <ValidationProvider rules="required|min:12||max:80|password:@Confirm" v-slot="{ errors }" name="New Password">
+            <div class="form-group">
+              <label for="newPassword" class="control-label">New Password</label>
+              <input v-model="newPassword" id="newPassword" name="newPassword" type="password" class="form-control input" />
+              <span class="text-danger">{{ errors[0] }}</span>
+            </div>
+          </ValidationProvider>
+          <ValidationProvider name="Confirm" rules="required" v-slot="{ errors }">
+            <div class="form-group">
+              <label for="confirmNewPassword" class="control-label">Confirm New Password</label>
+              <input v-model="confirmNewPassword" id="confirmNewPassword" name="confirmNewPassword" type="password" class="form-control input" />
+              <span class="text-danger">{{ errors[0] }}</span>
+            </div>
+          </ValidationProvider>
+
+          <input type="submit" class="btn btn-primary modal-submit-button" value="Change Password" :disabled="invalid" />
+        </form>
+      </ValidationObserver>
     </div>
-    <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Change Password" v-on:click="changePassword" :disabled="!formValid" />
-    </div>
+
   </b-modal>
 </template>
 <script>

@@ -33,7 +33,7 @@
         </div>
 
         <div>
-          <input type="submit" class="btn btn-primary submit-button" value="Edit Publisher" v-on:click="makeEditRequest"/>
+          <input type="submit" class="btn btn-primary modal-submit-button" value="Edit Publisher" v-on:click="makeEditRequest"/>
         </div>
       </div>
       <br />
@@ -100,8 +100,3 @@
     }
   }
 </script>
-<style scoped>
-  .submit-button {
-    width: 100%;
-  }
-</style>
