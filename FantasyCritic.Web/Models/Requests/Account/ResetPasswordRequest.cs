@@ -8,7 +8,7 @@ namespace FantasyCritic.Web.Models.Requests.Account
         [EmailAddress]
         public string EmailAddress { get; set; }
 
-        [Required]
+        [Required, MinLength(8), MaxLength(80)]
         public string Password { get; set; }
 
         [Required]

@@ -12,7 +12,7 @@
               <span class="text-danger">{{ errors[0] }}</span>
             </div>
           </ValidationProvider>
-          <ValidationProvider rules="required|min:12||max:80|password:@Confirm" v-slot="{ errors }" name="New Password">
+          <ValidationProvider rules="required|min:8||max:200|password:@Confirm" v-slot="{ errors }" name="New Password">
             <div class="form-group">
               <label for="newPassword" class="control-label">New Password</label>
               <input v-model="newPassword" id="newPassword" name="newPassword" type="password" class="form-control input" />

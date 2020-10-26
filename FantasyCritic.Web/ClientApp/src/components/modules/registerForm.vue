@@ -21,7 +21,7 @@
 
         <div class="form-group">
           <label for="password" class="control-label">Password</label>
-          <ValidationProvider rules="required|min:8|max:200|password:@confirmPassword" v-slot="{ errors }">
+          <ValidationProvider rules="required|min:8|max:80|password:@confirmPassword" v-slot="{ errors }">
             <input v-model="password" name="password" type="password" class="form-control input">
             <span class="text-danger">{{ errors[0] }}</span>
           </ValidationProvider>
