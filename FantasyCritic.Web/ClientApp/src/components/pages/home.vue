@@ -52,7 +52,7 @@
                 </div>
               </b-tab>
               <b-tab title="Archived Leagues" v-if="myArchivedLeagues && myArchivedLeagues.length > 0" title-item-class="tab-header">
-                <leagueTable :leagues="myArchivedLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>
+                <leagueTable :leagues="myArchivedLeagues" :leagueIcon="'archive'" :userID="userInfo.userID"></leagueTable>
               </b-tab>
               <b-tab title="Test Leagues" v-if="myTestLeagues && myTestLeagues.length > 0" title-item-class="tab-header">
                 <leagueTable :leagues="myTestLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>

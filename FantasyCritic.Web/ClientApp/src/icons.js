@@ -37,7 +37,8 @@ import {
   faCog,
   faExclamationTriangle,
   faAtom,
-  faCircleNotch
+  faCircleNotch,
+  faArchive
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -103,7 +104,8 @@ library.add(
   faCog,
   faAtom,
   faCircleNotch,
-  faDiscord
+  faDiscord,
+  faArchive
 );
 
 export {
