@@ -1315,6 +1315,27 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SetArchiveStatus([FromBody] SetArchiveStatusRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            await _leagueMemberService.SetArchiveStatusForUser(league.Value, request.Archive, currentUser);
+
+            return Ok();
+        }
+
         private IReadOnlyList<UpcomingGameViewModel> GetUpcomingGameViewModels(IEnumerable<Publisher> publishers, bool userMode)
         {
             var publisherGames = publishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue);

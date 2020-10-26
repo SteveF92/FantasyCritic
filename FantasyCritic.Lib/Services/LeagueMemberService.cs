@@ -282,5 +282,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.GetInviteLinkByInviteCode(inviteCode);
         }
+
+        public Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
+        {
+            return _fantasyCriticRepo.SetArchiveStatusForUser(league, archive, user);
+        }
     }
 }
