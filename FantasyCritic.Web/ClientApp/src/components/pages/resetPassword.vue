@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="errorInfo" class="alert alert-danger" role="alert">
+      {{errorInfo}}
+    </div>
     <div class="col-md-10 offset-md-1 col-sm-12">
       <h1>Reset Password</h1>
       <hr />
@@ -62,9 +65,9 @@
                     .then(response => {
                         this.$router.push({ name: "login" });
                     })
-                    .catch(response => {
-
-                    });
+                  .catch(returnedError => {
+                    this.errorInfo = "There was an error with your request.";
+                  });
             }
         }
     }

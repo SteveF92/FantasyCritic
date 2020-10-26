@@ -1,5 +1,8 @@
 <template>
   <b-modal id="changePasswordForm" ref="changePasswordRef" title="Change Password" @hidden="clearData" hide-footer>
+    <div v-if="errorInfo" class="alert alert-danger" role="alert">
+      {{errorInfo}}
+    </div>
     <div class="form-horizontal">
       <ValidationObserver v-slot="{ handleSubmit, invalid }">
         <form @submit.prevent="handleSubmit(changePassword)">
@@ -68,7 +71,8 @@
             this.$emit('passwordChanged');
             this.clearData();
           })
-          .catch(response => {
+          .catch(returnedError => {
+            this.errorInfo = "There was an error with your request.";
           });
       },
       clearData() {

@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="errorInfo" class="alert alert-danger" role="alert">
+      {{errorInfo}}
+    </div>
     <ValidationObserver v-slot="{ invalid }">
       <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="register">
         <div class="alert alert-danger" v-if="errorInfo">An error has occurred: {{errorInfo}}</div>
@@ -83,7 +86,7 @@
                     }
                   })
                   .catch(returnedError => {
-                    this.errorInfo = returnedError.response.data[0].description.replace("User name", "Email Address");
+                    this.errorInfo = "There was an error with your request.";
                   });
             }
         }
