@@ -32,48 +32,48 @@
   </div>
 </template>
 <script>
-  import moment from "moment";
-  import MasterGamePopover from "@/components/modules/masterGamePopover";
+import moment from 'moment';
+import MasterGamePopover from '@/components/modules/masterGamePopover';
 
-  export default {
+export default {
     props: ['upcomingGames', 'mode'],
     data() {
-      return {
-        sortBy: 'sortableEstimatedReleaseDate',
-        sortDesc: false,
-        baseUpcomingGamesFields: [
-          { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-          { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        ],
-        userUpcomingGamesFields: [
-          { key: 'league', label: 'League', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        ],
-        leagueUpcomingGamesFields: [
-          { key: 'publisher', label: 'Publisher', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        ],
-      }
+        return {
+            sortBy: 'sortableEstimatedReleaseDate',
+            sortDesc: false,
+            baseUpcomingGamesFields: [
+                { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+                { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+            ],
+            userUpcomingGamesFields: [
+                { key: 'league', label: 'League', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+            ],
+            leagueUpcomingGamesFields: [
+                { key: 'publisher', label: 'Publisher', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+            ],
+        };
     },
     computed: {
-      upcomingGamesFields() {
-        if (this.mode === "user") {
-          return this.baseUpcomingGamesFields.concat(this.userUpcomingGamesFields);
-        } else if (this.mode === "league") {
-          return this.baseUpcomingGamesFields.concat(this.leagueUpcomingGamesFields);
-        }
+        upcomingGamesFields() {
+            if (this.mode === 'user') {
+                return this.baseUpcomingGamesFields.concat(this.userUpcomingGamesFields);
+            } else if (this.mode === 'league') {
+                return this.baseUpcomingGamesFields.concat(this.leagueUpcomingGamesFields);
+            }
 
-        return this.baseUpcomingGamesFields;
-      }
+            return this.baseUpcomingGamesFields;
+        }
     },
     components: {
-      MasterGamePopover,
+        MasterGamePopover,
     },
     methods: {
-      getReleaseDate(game) {
-        if (game.releaseDate) {
-          return moment(game.releaseDate).format('YYYY-MM-DD');
+        getReleaseDate(game) {
+            if (game.releaseDate) {
+                return moment(game.releaseDate).format('YYYY-MM-DD');
+            }
+            return game.estimatedReleaseDate + ' (Estimated)';
         }
-        return game.estimatedReleaseDate + ' (Estimated)'
-      }
     }
-  }
+};
 </script>

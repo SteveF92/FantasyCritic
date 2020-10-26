@@ -43,22 +43,22 @@
   </div>
 </template>
 <script>
-  import axios from 'axios';
-  import ChangePasswordForm from "@/components/modules/modals/changePasswordForm";
-  import ChangeDisplayNameForm from "@/components/modules/modals/changeDisplayNameForm";
-  import ChangeEmailForm from "@/components/modules/modals/changeEmailForm";
+import axios from 'axios';
+import ChangePasswordForm from '@/components/modules/modals/changePasswordForm';
+import ChangeDisplayNameForm from '@/components/modules/modals/changeDisplayNameForm';
+import ChangeEmailForm from '@/components/modules/modals/changeEmailForm';
 
-  export default {
+export default {
     data() {
-      return {
-        changeEmailSent: false,
-        emailError: ""
-      }
+        return {
+            changeEmailSent: false,
+            emailError: ''
+        };
     },
     components: {
-      ChangePasswordForm,
-      ChangeDisplayNameForm,
-      ChangeEmailForm
+        ChangePasswordForm,
+        ChangeDisplayNameForm,
+        ChangeEmailForm
     },
     computed: {
         userInfo() {
@@ -66,37 +66,37 @@
         }
     },
     methods: {
-      sendConfirmationEmail() {
-          axios
-              .post('/api/account/ResendConfirmationEmail')
-              .then(response => {
-                  let toast = this.$toasted.show('Confirmation Email Sent!', {
-                      theme: "primary",
-                      position: "top-right",
-                      duration: 5000
-                  });
-              })
-              .catch(response => {
-                this.emailError = response.response.data;
-              });
-      },
-      passwordChanged() {
-        let toast = this.$toasted.show("Your password has been changed.", {
-          theme: "primary",
-          position: "top-right",
-          duration: 5000
-        });
-      },
-      diplayNameChanged(newDisplayNameInfo) {
-        let toast = this.$toasted.show("Your display name has been changed to " + newDisplayNameInfo.newDisplayName, {
-          theme: "primary",
-          position: "top-right",
-          duration: 5000
-        });
-      },
-      sentEmailChanged() {
-        this.changeEmailSent = true;
-      }
+        sendConfirmationEmail() {
+            axios
+                .post('/api/account/ResendConfirmationEmail')
+                .then(response => {
+                    let toast = this.$toasted.show('Confirmation Email Sent!', {
+                        theme: 'primary',
+                        position: 'top-right',
+                        duration: 5000
+                    });
+                })
+                .catch(response => {
+                    this.emailError = response.response.data;
+                });
+        },
+        passwordChanged() {
+            let toast = this.$toasted.show('Your password has been changed.', {
+                theme: 'primary',
+                position: 'top-right',
+                duration: 5000
+            });
+        },
+        diplayNameChanged(newDisplayNameInfo) {
+            let toast = this.$toasted.show('Your display name has been changed to ' + newDisplayNameInfo.newDisplayName, {
+                theme: 'primary',
+                position: 'top-right',
+                duration: 5000
+            });
+        },
+        sentEmailChanged() {
+            this.changeEmailSent = true;
+        }
     }
-  }
+};
 </script>

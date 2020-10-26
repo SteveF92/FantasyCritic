@@ -16,33 +16,33 @@
 </template>
 
 <script>
-    import Vue from 'vue';
-    import axios from 'axios';
+import Vue from 'vue';
+import axios from 'axios';
 
-    export default {
-        data() {
-            return {
-              newEmailAddress: "",
-              code: ""
-            }
-        },
-        methods: {
-            changeEmail() {
-              var model = {
+export default {
+    data() {
+        return {
+            newEmailAddress: '',
+            code: ''
+        };
+    },
+    methods: {
+        changeEmail() {
+            var model = {
                 newEmailAddress: this.newEmailAddress,
                 code: this.code
-              };
-              this.$store.dispatch("changeEmailAddress", model)
+            };
+            this.$store.dispatch('changeEmailAddress', model)
                 .then(() => {
-                  this.$router.push({ name: "login" });
+                    this.$router.push({ name: 'login' });
                 })
                 .catch(returnedError => {
                 });
-            }
-        },
-        mounted() {
-          this.newEmailAddress = this.$route.query.NewEmailAddress;
-          this.code = this.$route.query.Code;
         }
+    },
+    mounted() {
+        this.newEmailAddress = this.$route.query.NewEmailAddress;
+        this.code = this.$route.query.Code;
     }
+};
 </script>

@@ -19,8 +19,8 @@
 
 <script>
 
-    export default {
-        props: ['eligibilityOverrides']
-    }
+export default {
+    props: ['eligibilityOverrides']
+};
 </script>
 

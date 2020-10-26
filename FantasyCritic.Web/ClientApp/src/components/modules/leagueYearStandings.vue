@@ -57,157 +57,157 @@
   </div>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
-  import { ToggleButton } from 'vue-js-toggle-button'
+import Vue from 'vue';
+import axios from 'axios';
+import { ToggleButton } from 'vue-js-toggle-button';
 
-  export default {
+export default {
     components: {
-      ToggleButton
+        ToggleButton
     },
     props: ['league', 'leagueYear'],
     data() {
-      return {
-        basicStandingFields: [
-          { key: 'userName', label: 'User', thClass: 'bg-primary' },
-          { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
-          { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
-          { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
-          { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' },
-          { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
-        ],
-        projectionFields: [
-          { key: 'simpleProjectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
-          { key: 'advancedProjectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
-        ],
-        sortBy: 'totalFantasyPoints',
-        sortDesc: true
-      }
+        return {
+            basicStandingFields: [
+                { key: 'userName', label: 'User', thClass: 'bg-primary' },
+                { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+                { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
+                { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
+                { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' },
+                { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
+            ],
+            projectionFields: [
+                { key: 'simpleProjectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
+                { key: 'advancedProjectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
+            ],
+            sortBy: 'totalFantasyPoints',
+            sortDesc: true
+        };
     },
     computed: {
-      standingFields() {
-        let copiedArray = this.basicStandingFields.slice(0);
-        if (this.advancedProjections) {
-          copiedArray.splice(2, 0, this.projectionFields[1]);
-        } else {
-          copiedArray.splice(2, 0, this.projectionFields[0]);
-        }
+        standingFields() {
+            let copiedArray = this.basicStandingFields.slice(0);
+            if (this.advancedProjections) {
+                copiedArray.splice(2, 0, this.projectionFields[1]);
+            } else {
+                copiedArray.splice(2, 0, this.projectionFields[0]);
+            }
 
-        return copiedArray;
-      },
-      advancedProjections: {
-        get() {
-          return this.$store.getters.advancedProjections;
+            return copiedArray;
         },
-        set(value) {
-          if (value && this.sortBy === 'simpleProjectedFantasyPoints') {
-            this.sortBy = 'advancedProjectedFantasyPoints';
-          } else if (!value && this.sortBy === 'advancedProjectedFantasyPoints') {
-            this.sortBy = 'simpleProjectedFantasyPoints';
-          }
-          this.$store.commit('setAdvancedProjections', value)
-        }
-      },
-      standings() {
-        let standings = this.leagueYear.players;
-        if (!standings) {
-          return [];
-        }
-        for (var i = 0; i < standings.length; ++i) {
-          if (this.leagueYear.supportedYear.finished && this.topPublisher.publisherID === standings[i].publisher.publisherID) {
-            standings[i]._rowVariant = 'success';
-          }
-        }
-        return standings;
-      },
-      topPublisher() {
-        if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-          return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
-        }
-      },
-      showRemovePublisher() {
-        if (!this.league.isManager) {
-          return false;
-        }
+        advancedProjections: {
+            get() {
+                return this.$store.getters.advancedProjections;
+            },
+            set(value) {
+                if (value && this.sortBy === 'simpleProjectedFantasyPoints') {
+                    this.sortBy = 'advancedProjectedFantasyPoints';
+                } else if (!value && this.sortBy === 'advancedProjectedFantasyPoints') {
+                    this.sortBy = 'simpleProjectedFantasyPoints';
+                }
+                this.$store.commit('setAdvancedProjections', value);
+            }
+        },
+        standings() {
+            let standings = this.leagueYear.players;
+            if (!standings) {
+                return [];
+            }
+            for (var i = 0; i < standings.length; ++i) {
+                if (this.leagueYear.supportedYear.finished && this.topPublisher.publisherID === standings[i].publisher.publisherID) {
+                    standings[i]._rowVariant = 'success';
+                }
+            }
+            return standings;
+        },
+        topPublisher() {
+            if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
+                return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
+            }
+        },
+        showRemovePublisher() {
+            if (!this.league.isManager) {
+                return false;
+            }
 
-        if (this.leagueYear.playStatus.playStarted) {
-          return false;
-        }
+            if (this.leagueYear.playStatus.playStarted) {
+                return false;
+            }
 
-        return true;
-      }
+            return true;
+        }
     },
     methods: {
-      showRemove(user) {
-        if (!this.league.isManager) {
-          return false;
+        showRemove(user) {
+            if (!this.league.isManager) {
+                return false;
+            }
+
+            let matchingLeagueLevelPlayer = _.find(this.league.players, function (item) {
+                return item.userID === user.userID;
+            });
+
+            return matchingLeagueLevelPlayer.removable;
+        },
+
+        removeUser(user) {
+            var model = {
+                leagueID: this.leagueYear.leagueID,
+                userID: user.userID
+            };
+            axios
+                .post('/api/leagueManager/RemovePlayer', model)
+                .then(response => {
+                    let actionInfo = {
+                        message: 'User ' + user.displayName + ' has been removed from the league.',
+                        fetchLeague: true,
+                        fetchLeagueYear: true
+                    };
+                    this.$emit('actionTaken', actionInfo);
+                })
+                .catch(response => {
+
+                });
+        },
+        removePublisher(publisher) {
+            var model = {
+                leagueID: this.leagueYear.leagueID,
+                publisherID: publisher.publisherID
+            };
+            axios
+                .post('/api/leagueManager/RemovePublisher', model)
+                .then(response => {
+                    let actionInfo = {
+                        message: 'Publisher ' + publisher.publisherName + ' has been removed from the league.',
+                        fetchLeague: true,
+                        fetchLeagueYear: true
+                    };
+                    this.$emit('actionTaken', actionInfo);
+                })
+                .catch(response => {
+
+                });
+        },
+        rescindInvite(inviteID, inviteName) {
+            var model = {
+                inviteID: inviteID
+            };
+            axios
+                .post('/api/leagueManager/RescindInvite', model)
+                .then(response => {
+                    let actionInfo = {
+                        message: 'The invite to ' + inviteName + ' has been rescinded.',
+                        fetchLeague: true,
+                        fetchLeagueYear: true
+                    };
+                    this.$emit('actionTaken', actionInfo);
+                })
+                .catch(response => {
+
+                });
         }
-
-        let matchingLeagueLevelPlayer = _.find(this.league.players, function (item) {
-          return item.userID === user.userID;
-        });
-
-        return matchingLeagueLevelPlayer.removable;
-      },
-
-      removeUser(user) {
-        var model = {
-          leagueID: this.leagueYear.leagueID,
-          userID: user.userID
-        };
-        axios
-          .post('/api/leagueManager/RemovePlayer', model)
-          .then(response => {
-            let actionInfo = {
-              message: 'User ' + user.displayName + ' has been removed from the league.',
-              fetchLeague: true,
-              fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-          })
-          .catch(response => {
-
-          });
-      },
-      removePublisher(publisher) {
-        var model = {
-          leagueID: this.leagueYear.leagueID,
-          publisherID: publisher.publisherID
-        };
-        axios
-          .post('/api/leagueManager/RemovePublisher', model)
-          .then(response => {
-            let actionInfo = {
-              message: 'Publisher ' + publisher.publisherName + ' has been removed from the league.',
-              fetchLeague: true,
-              fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-          })
-          .catch(response => {
-
-          });
-      },
-      rescindInvite(inviteID, inviteName) {
-        var model = {
-          inviteID: inviteID
-        };
-        axios
-          .post('/api/leagueManager/RescindInvite', model)
-          .then(response => {
-            let actionInfo = {
-              message: 'The invite to ' + inviteName + ' has been rescinded.',
-              fetchLeague: true,
-              fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-          })
-          .catch(response => {
-
-          });
-      }
     }
-  }
+};
 </script>
 <style scoped>
   .header{

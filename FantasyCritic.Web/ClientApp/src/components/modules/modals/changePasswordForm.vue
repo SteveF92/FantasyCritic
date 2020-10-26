@@ -36,50 +36,50 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        currentPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
-        errorInfo: ""
-      }
+        return {
+            currentPassword: '',
+            newPassword: '',
+            confirmNewPassword: '',
+            errorInfo: ''
+        };
     },
     computed: {
-      formValid() {
-        if (this.newPassword !== this.confirmNewPassword) {
-          return false;
-        }
+        formValid() {
+            if (this.newPassword !== this.confirmNewPassword) {
+                return false;
+            }
 
-        return this.currentPassword && this.newPassword && this.confirmNewPassword;
-      }
+            return this.currentPassword && this.newPassword && this.confirmNewPassword;
+        }
     },
     methods: {
-      changePassword() {
-        var model = {
-          currentPassword: this.currentPassword,
-          newPassword: this.newPassword,
-          confirmNewPassword: this.confirmNewPassword
-        };
-        axios
-          .post('/api/account/changePassword', model)
-          .then(response => {
-            this.$refs.changePasswordRef.hide();
-            this.$emit('passwordChanged');
-            this.clearData();
-          })
-          .catch(returnedError => {
-            this.errorInfo = "There was an error with your request.";
-          });
-      },
-      clearData() {
-        this.currentPassword = "";
-        this.newPassword = "";
-        this.confirmNewPassword = "";
-      }
+        changePassword() {
+            var model = {
+                currentPassword: this.currentPassword,
+                newPassword: this.newPassword,
+                confirmNewPassword: this.confirmNewPassword
+            };
+            axios
+                .post('/api/account/changePassword', model)
+                .then(response => {
+                    this.$refs.changePasswordRef.hide();
+                    this.$emit('passwordChanged');
+                    this.clearData();
+                })
+                .catch(returnedError => {
+                    this.errorInfo = 'There was an error with your request.';
+                });
+        },
+        clearData() {
+            this.currentPassword = '';
+            this.newPassword = '';
+            this.confirmNewPassword = '';
+        }
     }
-  }
+};
 </script>

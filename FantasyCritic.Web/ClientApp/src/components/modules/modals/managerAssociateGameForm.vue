@@ -60,83 +60,83 @@
 </template>
 
 <script>
-    import Vue from "vue";
-    import axios from "axios";
-    import PossibleMasterGamesTable from "@/components/modules/possibleMasterGamesTable";
-    export default {
-        data() {
-          return {
-                associateGameName: "",
-                associatePublisher: null,
-                associateMasterGame: null,
-                associatePublisherGame: null,
-                associateOverride: false,
-                associateResult: null,
-                possibleMasterGames: []
-            }
-        },
-        components: {
-            PossibleMasterGamesTable
-        },
-        props: ['publishers', 'maximumEligibilityLevel', 'year'],
-        methods: {
-          searchGame() {
+import Vue from 'vue';
+import axios from 'axios';
+import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
+export default {
+    data() {
+        return {
+            associateGameName: '',
+            associatePublisher: null,
+            associateMasterGame: null,
+            associatePublisherGame: null,
+            associateOverride: false,
+            associateResult: null,
+            possibleMasterGames: []
+        };
+    },
+    components: {
+        PossibleMasterGamesTable
+    },
+    props: ['publishers', 'maximumEligibilityLevel', 'year'],
+    methods: {
+        searchGame() {
             this.possibleMasterGames = [];
             this.associateResult = null;
             axios
-              .get('/api/league/PossibleMasterGames?gameName=' + this.associateGameName + '&year=' + this.year + '&leagueid=' + this.publishers[0].leagueID)
-              .then(response => {
-                  this.possibleMasterGames = response.data;
-              })
-              .catch(response => {
+                .get('/api/league/PossibleMasterGames?gameName=' + this.associateGameName + '&year=' + this.year + '&leagueid=' + this.publishers[0].leagueID)
+                .then(response => {
+                    this.possibleMasterGames = response.data;
+                })
+                .catch(response => {
 
-              });
-            },
-            associateGame() {
-                var request = {
-                    publisherID: this.associatePublisher.publisherID,
-                    publisherGameID: this.associatePublisherGame.publisherGameID,
-                    masterGameID: this.associateMasterGame.masterGameID,
-                    managerOverride: this.associateOverride
-                };
+                });
+        },
+        associateGame() {
+            var request = {
+                publisherID: this.associatePublisher.publisherID,
+                publisherGameID: this.associatePublisherGame.publisherGameID,
+                masterGameID: this.associateMasterGame.masterGameID,
+                managerOverride: this.associateOverride
+            };
 
-                axios
-                  .post('/api/leagueManager/ManagerAssociateGame', request)
-                  .then(response => {
-                      this.associateResult = response.data;
-                      if (!this.associateResult.success) {
-                          return;
-                        }
+            axios
+                .post('/api/leagueManager/ManagerAssociateGame', request)
+                .then(response => {
+                    this.associateResult = response.data;
+                    if (!this.associateResult.success) {
+                        return;
+                    }
 
-                      this.$refs.associateGameFormRef.hide();
-                      this.$emit('gameAssociated', this.associateMasterGame);
-                      this.associateGameName = "";
-                      this.associatePublisher = null;
-                      this.associateMasterGame = null;
-                      this.associatePublisherGame = null;
-                      this.associateOverride = false;
-                      this.possibleMasterGames = [];
-                    })
-                    .catch(response => {
+                    this.$refs.associateGameFormRef.hide();
+                    this.$emit('gameAssociated', this.associateMasterGame);
+                    this.associateGameName = '';
+                    this.associatePublisher = null;
+                    this.associateMasterGame = null;
+                    this.associatePublisherGame = null;
+                    this.associateOverride = false;
+                    this.possibleMasterGames = [];
+                })
+                .catch(response => {
 
-                    });
-            },
-          clearData() {
-              this.associateResult = null;
-              this.associateGameName = "";
-              this.associatePublisher = null;
-              this.associateMasterGame = null;
-              this.associatePublisherGame = null;
-              this.associateOverride = false;
-              this.possibleMasterGames = [];
-              this.claimCounterPick = false;
-              this.claimPublisher = null;
-          },
-          newGameSelected() {
+                });
+        },
+        clearData() {
             this.associateResult = null;
-          }
+            this.associateGameName = '';
+            this.associatePublisher = null;
+            this.associateMasterGame = null;
+            this.associatePublisherGame = null;
+            this.associateOverride = false;
+            this.possibleMasterGames = [];
+            this.claimCounterPick = false;
+            this.claimPublisher = null;
+        },
+        newGameSelected() {
+            this.associateResult = null;
         }
     }
+};
 </script>
 <style scoped>
 .add-game-button{

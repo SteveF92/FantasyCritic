@@ -5,15 +5,15 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     methods: {
-      startDraft() {
-        this.$refs.startDraftRef.hide();
-        this.$emit('draftStarted');
-      }
+        startDraft() {
+            this.$refs.startDraftRef.hide();
+            this.$emit('draftStarted');
+        }
     }
-  }
+};
 </script>

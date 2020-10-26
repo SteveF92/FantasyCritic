@@ -7,13 +7,13 @@
 </template>
 
 <script>
-  import { Timeline } from 'vue-tweet-embed'
+import { Timeline } from 'vue-tweet-embed';
 
-  export default {
+export default {
     components: {
-      Timeline
+        Timeline
     }
-  }
+};
 </script>
 
 <style scoped>

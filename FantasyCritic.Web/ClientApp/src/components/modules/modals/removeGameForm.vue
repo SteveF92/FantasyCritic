@@ -32,46 +32,46 @@
   </div>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        removeGamePublisher: null,
-        removeGame: null,
-        errorInfo: ""
-      }
+        return {
+            removeGamePublisher: null,
+            removeGame: null,
+            errorInfo: ''
+        };
     },
     props: ['leagueYear'],
     methods: {
-      removePublisherGame() {
-        var model = {
-          publisherGameID: this.removeGame.publisherGameID,
-          publisherID: this.removeGamePublisher.publisherID
-        };
-        var removeInfo = {
-          gameName: this.removeGame.gameName,
-          publisherName: this.removeGamePublisher.publisherName
-        };
-        axios
-          .post('/api/leagueManager/RemovePublisherGame', model)
-          .then(response => {
-            this.$refs.removePublisherGameRef.hide();
-            this.$emit('gameRemoved', removeInfo);
+        removePublisherGame() {
+            var model = {
+                publisherGameID: this.removeGame.publisherGameID,
+                publisherID: this.removeGamePublisher.publisherID
+            };
+            var removeInfo = {
+                gameName: this.removeGame.gameName,
+                publisherName: this.removeGamePublisher.publisherName
+            };
+            axios
+                .post('/api/leagueManager/RemovePublisherGame', model)
+                .then(response => {
+                    this.$refs.removePublisherGameRef.hide();
+                    this.$emit('gameRemoved', removeInfo);
+                    this.removeGamePublisher = null;
+                    this.removeGame = null;
+                })
+                .catch(response => {
+                    this.errorInfo = response.response.data;
+                });
+        },
+        clearData() {
             this.removeGamePublisher = null;
             this.removeGame = null;
-          })
-          .catch(response => {
-            this.errorInfo = response.response.data;
-          });
-      },
-      clearData() {
-        this.removeGamePublisher = null;
-        this.removeGame = null;
-      }
+        }
     }
-  }
+};
 </script>
 <style scoped>
 

@@ -12,37 +12,37 @@
   </b-modal>
 </template>
 <script>
-  import axios from "axios";
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        newPublisherName: "",
-        errorInfo: ""
-      }
+        return {
+            newPublisherName: '',
+            errorInfo: ''
+        };
     },
     props: ['userRoyalePublisher'],
     methods: {
-      changePublisherName() {
-        var model = {
-          publisherID: this.userRoyalePublisher.publisherID,
-          publisherName: this.newPublisherName
-        };
-        axios
-          .post('/api/royale/changePublisherName', model)
-          .then(response => {
-            this.$refs.changeRoyalePublisherNameRef.hide();
-            this.$emit('publisherNameChanged');
-          })
-          .catch(response => {
-          });
-      },
-      clearData() {
-        this.newPublisherName = this.userRoyalePublisher.publisherName;
-      }
+        changePublisherName() {
+            var model = {
+                publisherID: this.userRoyalePublisher.publisherID,
+                publisherName: this.newPublisherName
+            };
+            axios
+                .post('/api/royale/changePublisherName', model)
+                .then(response => {
+                    this.$refs.changeRoyalePublisherNameRef.hide();
+                    this.$emit('publisherNameChanged');
+                })
+                .catch(response => {
+                });
+        },
+        clearData() {
+            this.newPublisherName = this.userRoyalePublisher.publisherName;
+        }
     },
     mounted() {
-      this.clearData();
+        this.clearData();
     }
-  }
+};
 </script>

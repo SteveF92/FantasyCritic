@@ -16,37 +16,37 @@
   </b-modal>
 </template>
 <script>
-  import axios from "axios";
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
         return {
-          isAutoDraft: null
-        }
-      },
+            isAutoDraft: null
+        };
+    },
     props: ['publisher'],
     methods: {
-      setAutoDraft() {
-        var model = {
-            publisherID: this.publisher.publisherID,
-            autoDraft: this.isAutoDraft
-          };
-          axios
-            .post('/api/league/setAutoDraft', model)
-            .then(response => {
-              this.$refs.editAutoDraftFormRef.hide();
-              let actionInfo = {
-                autoDraft: this.isAutoDraft,
-                fetchLeagueYear: true
-              };
-              this.$emit('autoDraftSet', actionInfo);
-            })
-            .catch(response => {
-            });
-      }
+        setAutoDraft() {
+            var model = {
+                publisherID: this.publisher.publisherID,
+                autoDraft: this.isAutoDraft
+            };
+            axios
+                .post('/api/league/setAutoDraft', model)
+                .then(response => {
+                    this.$refs.editAutoDraftFormRef.hide();
+                    let actionInfo = {
+                        autoDraft: this.isAutoDraft,
+                        fetchLeagueYear: true
+                    };
+                    this.$emit('autoDraftSet', actionInfo);
+                })
+                .catch(response => {
+                });
+        }
     },
     mounted() {
-      this.isAutoDraft = this.publisher.autoDraft;
+        this.isAutoDraft = this.publisher.autoDraft;
     }
-  }
+};
 </script>

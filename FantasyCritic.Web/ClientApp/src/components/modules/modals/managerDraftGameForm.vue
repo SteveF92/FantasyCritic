@@ -69,133 +69,133 @@
 </template>
 
 <script>
-  import Vue from "vue";
-  import axios from "axios";
-  import PossibleMasterGamesTable from "@/components/modules/possibleMasterGamesTable";
-  import MasterGameSummary from "@/components/modules/masterGameSummary";
+import Vue from 'vue';
+import axios from 'axios';
+import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
+import MasterGameSummary from '@/components/modules/masterGameSummary';
 
-  export default {
+export default {
     data() {
-    return {
-      searchGameName: null,
-      draftUnlistedGame: null,
-      draftMasterGame: null,
-      draftResult: null,
-      draftOverride: false,
-      possibleMasterGames: [],
-      searched: false,
-      showingUnlistedField: false,
-      showingTopAvailable: false,
-      isBusy: false
+        return {
+            searchGameName: null,
+            draftUnlistedGame: null,
+            draftMasterGame: null,
+            draftResult: null,
+            draftOverride: false,
+            possibleMasterGames: [],
+            searched: false,
+            showingUnlistedField: false,
+            showingTopAvailable: false,
+            isBusy: false
+        };
+    },
+    components: {
+        PossibleMasterGamesTable,
+        MasterGameSummary
+    },
+    computed: {
+        formIsValid() {
+            return (this.draftUnlistedGame || this.draftMasterGame);
+        },
+    },
+    props: ['nextPublisherUp', 'maximumEligibilityLevel', 'year'],
+    methods: {
+        searchGame() {
+            this.clearDataExceptSearch();
+            this.isBusy = true;
+            axios
+                .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
+                .then(response => {
+                    this.possibleMasterGames = response.data;
+                    this.isBusy = false;
+                    this.searched = true;
+                })
+                .catch(response => {
+                    this.isBusy = false;
+                });
+        },
+        getTopGames() {
+            this.clearDataExceptSearch();
+            this.isBusy = true;
+            axios
+                .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
+                .then(response => {
+                    this.possibleMasterGames = response.data;
+                    this.isBusy = false;
+                    this.showingTopAvailable = true;
+                })
+                .catch(response => {
+                    this.isBusy = false;
+                });
+        },
+        showUnlistedField() {
+            this.showingUnlistedField = true;
+            this.draftUnlistedGame = this.searchGameName;
+        },
+        addGame() {
+            this.isBusy = true;
+            var gameName = '';
+            if (this.draftMasterGame !== null) {
+                gameName = this.draftMasterGame.gameName;
+            } else if (this.draftUnlistedGame !== null) {
+                gameName = this.draftUnlistedGame;
+            }
+
+            var masterGameID = null;
+            if (this.draftMasterGame !== null) {
+                masterGameID = this.draftMasterGame.masterGameID;
+            }
+
+            var request = {
+                publisherID: this.nextPublisherUp.publisherID,
+                gameName: gameName,
+                counterPick: false,
+                masterGameID: masterGameID,
+                managerOverride: this.draftOverride
+            };
+
+            axios
+                .post('/api/leagueManager/ManagerDraftGame', request)
+                .then(response => {
+                    this.draftResult = response.data;
+                    if (!this.draftResult.success) {
+                        this.isBusy = false;
+                        return;
+                    }
+                    this.$refs.managerDraftGameFormRef.hide();
+                    var draftInfo = {
+                        gameName,
+                        publisherName: this.nextPublisherUp.publisherName
+                    };
+                    this.$emit('gameDrafted', draftInfo);
+                    this.clearData();
+                })
+                .catch(response => {
+
+                });
+        },
+        clearDataExceptSearch() {
+            this.isBusy = false;
+            this.draftUnlistedGame = null;
+            this.draftMasterGame = null;
+            this.draftResult = null;
+            this.draftOverride = false;
+            this.possibleMasterGames = [];
+            this.searched = false;
+            this.showingUnlistedField = false;
+            this.claimCounterPick = false;
+            this.claimPublisher = null;
+            this.showingTopAvailable = false;
+        },
+        clearData() {
+            this.clearDataExceptSearch();
+            this.searchGameName = null;
+        },
+        newGameSelected() {
+            this.draftResult = null;
+        }
     }
-  },
-  components: {
-    PossibleMasterGamesTable,
-    MasterGameSummary
-  },
-  computed: {
-    formIsValid() {
-      return (this.draftUnlistedGame || this.draftMasterGame);
-    },
-  },
-  props: ['nextPublisherUp', 'maximumEligibilityLevel', 'year'],
-  methods: {
-    searchGame() {
-      this.clearDataExceptSearch();
-      this.isBusy = true;
-      axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
-        .then(response => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.searched = true;
-        })
-        .catch(response => {
-            this.isBusy = false;
-        });
-    },
-    getTopGames() {
-      this.clearDataExceptSearch();
-      this.isBusy = true;
-      axios
-        .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
-        .then(response => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.showingTopAvailable = true;
-        })
-        .catch(response => {
-            this.isBusy = false;
-        });
-    },
-    showUnlistedField() {
-      this.showingUnlistedField = true;
-      this.draftUnlistedGame = this.searchGameName;
-    },
-    addGame() {
-      this.isBusy = true;
-      var gameName = "";
-      if (this.draftMasterGame !== null) {
-        gameName = this.draftMasterGame.gameName;
-      } else if (this.draftUnlistedGame !== null) {
-        gameName = this.draftUnlistedGame;
-      }
-
-      var masterGameID = null;
-      if (this.draftMasterGame !== null) {
-        masterGameID = this.draftMasterGame.masterGameID;
-      }
-
-      var request = {
-        publisherID: this.nextPublisherUp.publisherID,
-        gameName: gameName,
-        counterPick: false,
-        masterGameID: masterGameID,
-        managerOverride: this.draftOverride
-      };
-
-      axios
-        .post('/api/leagueManager/ManagerDraftGame', request)
-        .then(response => {
-          this.draftResult = response.data;
-          if (!this.draftResult.success) {
-            this.isBusy = false;
-            return;
-          }
-          this.$refs.managerDraftGameFormRef.hide();
-          var draftInfo = {
-            gameName,
-            publisherName: this.nextPublisherUp.publisherName
-          };
-          this.$emit('gameDrafted', draftInfo);
-          this.clearData();
-        })
-        .catch(response => {
-
-        });
-    },
-    clearDataExceptSearch() {
-      this.isBusy = false;
-      this.draftUnlistedGame = null;
-      this.draftMasterGame = null;
-      this.draftResult = null;
-      this.draftOverride = false;
-      this.possibleMasterGames = [];
-      this.searched = false;
-      this.showingUnlistedField = false;
-      this.claimCounterPick = false;
-      this.claimPublisher = null;
-      this.showingTopAvailable = false;
-    },
-    clearData() {
-      this.clearDataExceptSearch();
-      this.searchGameName = null;
-    },
-    newGameSelected() {
-      this.draftResult = null;
-    }
-  }
-}
+};
 </script>
 <style scoped>
 .add-game-button{

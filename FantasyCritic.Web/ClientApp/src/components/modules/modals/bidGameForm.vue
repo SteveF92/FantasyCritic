@@ -64,118 +64,118 @@
 </template>
 
 <script>
-    import Vue from "vue";
-    import axios from "axios";
-    import PossibleMasterGamesTable from "@/components/modules/possibleMasterGamesTable";
-    import MasterGameSummary from "@/components/modules/masterGameSummary";
+import Vue from 'vue';
+import axios from 'axios';
+import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
+import MasterGameSummary from '@/components/modules/masterGameSummary';
 
-    export default {
-        data() {
-          return {
-                bidGameName: "",
-                bidMasterGame: null,
-                bidAmount: 0,
-                bidResult: null,
-                possibleMasterGames: [],
-                errorInfo: "",
-                showingTopAvailable: false,
-                searched: false,
-                isBusy: false
-            }
-        },
-        components: {
-          PossibleMasterGamesTable,
-          MasterGameSummary
-        },
-        computed: {
-          formIsValid() {
+export default {
+    data() {
+        return {
+            bidGameName: '',
+            bidMasterGame: null,
+            bidAmount: 0,
+            bidResult: null,
+            possibleMasterGames: [],
+            errorInfo: '',
+            showingTopAvailable: false,
+            searched: false,
+            isBusy: false
+        };
+    },
+    components: {
+        PossibleMasterGamesTable,
+        MasterGameSummary
+    },
+    computed: {
+        formIsValid() {
             return (this.bidMasterGame);
-          },
-          publisherSlotsAreFilled() {
+        },
+        publisherSlotsAreFilled() {
             let userGames = this.leagueYear.userPublisher.games;
             let standardGameSlots = this.leagueYear.standardGames;
             let userStandardGames = _.filter(userGames, { 'counterPick': false });
             return userStandardGames.length >= standardGameSlots;
-          }
-        },
-        props: ['leagueYear', 'maximumEligibilityLevel'],
-        methods: {
-          searchGame() {
+        }
+    },
+    props: ['leagueYear', 'maximumEligibilityLevel'],
+    methods: {
+        searchGame() {
             this.clearDataExceptSearch();
             this.isBusy = true;
             axios
                 .get('/api/league/PossibleMasterGames?gameName=' + this.bidGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
                 .then(response => {
-                  this.possibleMasterGames = response.data;
-                  this.isBusy = false;
-                  this.searched = true;
+                    this.possibleMasterGames = response.data;
+                    this.isBusy = false;
+                    this.searched = true;
                 })
                 .catch(response => {
-                  this.isBusy = false;
+                    this.isBusy = false;
                 });
-            },
-            getTopGames() {
-              this.clearDataExceptSearch();
-              this.isBusy = true;
-              axios
+        },
+        getTopGames() {
+            this.clearDataExceptSearch();
+            this.isBusy = true;
+            axios
                 .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
                 .then(response => {
-                  this.possibleMasterGames = response.data;
-                  this.isBusy = false;
-                  this.showingTopAvailable = true;
+                    this.possibleMasterGames = response.data;
+                    this.isBusy = false;
+                    this.showingTopAvailable = true;
                 })
                 .catch(response => {
-                  this.isBusy = false;
+                    this.isBusy = false;
                 });
-            },
-            bidGame() {
-                var request = {
-                    publisherID: this.leagueYear.userPublisher.publisherID,
-                    masterGameID: this.bidMasterGame.masterGameID,
-                    bidAmount: this.bidAmount
-                };
+        },
+        bidGame() {
+            var request = {
+                publisherID: this.leagueYear.userPublisher.publisherID,
+                masterGameID: this.bidMasterGame.masterGameID,
+                bidAmount: this.bidAmount
+            };
 
-                axios
-                  .post('/api/league/MakePickupBid', request)
-                  .then(response => {
-                      this.bidResult = response.data;
-                      if (!this.bidResult.success) {
+            axios
+                .post('/api/league/MakePickupBid', request)
+                .then(response => {
+                    this.bidResult = response.data;
+                    if (!this.bidResult.success) {
                         return;
-                      }
-                      this.$refs.bidGameFormRef.hide();
-                      var bidInfo = {
+                    }
+                    this.$refs.bidGameFormRef.hide();
+                    var bidInfo = {
                         gameName: this.bidMasterGame.gameName,
                         bidAmount: this.bidAmount
-                      };
-                      this.$emit('gameBid', bidInfo);
-                      this.bidResult = null;
-                      this.bidGameName = "";
-                      this.bidMasterGame = null;
-                      this.bidAmount = 0;
-                      this.possibleMasterGames = [];
-                    })
-                    .catch(response => {
-                      this.errorInfo = response.response.data;
-                    });
-            },
-            clearDataExceptSearch() {
-              this.bidResult = null;
-              this.bidMasterGame = null;
-              this.bidAmount = 0;
-              this.possibleMasterGames = [];
-              this.searched = false;
-              this.showingTopAvailable = false;
-              this.isBusy = false;
-            },
-            clearData() {
-              this.clearDataExceptSearch();
-              this.bidGameName = "";
-            },
-            newGameSelected() {
-              this.bidResult = null;
-            }
+                    };
+                    this.$emit('gameBid', bidInfo);
+                    this.bidResult = null;
+                    this.bidGameName = '';
+                    this.bidMasterGame = null;
+                    this.bidAmount = 0;
+                    this.possibleMasterGames = [];
+                })
+                .catch(response => {
+                    this.errorInfo = response.response.data;
+                });
+        },
+        clearDataExceptSearch() {
+            this.bidResult = null;
+            this.bidMasterGame = null;
+            this.bidAmount = 0;
+            this.possibleMasterGames = [];
+            this.searched = false;
+            this.showingTopAvailable = false;
+            this.isBusy = false;
+        },
+        clearData() {
+            this.clearDataExceptSearch();
+            this.bidGameName = '';
+        },
+        newGameSelected() {
+            this.bidResult = null;
         }
     }
+};
 </script>
 <style scoped>
   .add-game-button {

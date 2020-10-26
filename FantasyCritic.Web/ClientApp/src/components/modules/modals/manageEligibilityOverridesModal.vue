@@ -50,90 +50,90 @@
 </template>
 
 <script>
-  import axios from "axios";
-  import PossibleMasterGamesTable from "@/components/modules/possibleMasterGamesTable";
-  export default {
+import axios from 'axios';
+import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
+export default {
     data() {
-      return {
-        overrideGameName: "",
-        overrideMasterGame: null,
-        possibleMasterGames: [],
-        errorInfo: ""
-      }
+        return {
+            overrideGameName: '',
+            overrideMasterGame: null,
+            possibleMasterGames: [],
+            errorInfo: ''
+        };
     },
     components: {
-      PossibleMasterGamesTable
+        PossibleMasterGamesTable
     },
     computed: {
-      formIsValid() {
-        return (this.overrideMasterGame);
-      }
+        formIsValid() {
+            return (this.overrideMasterGame);
+        }
     },
     props: ['leagueYear'],
     methods: {
-      resetEligibility(eligibilityOverride) {
-        var model = {
-          leagueID: this.leagueYear.leagueID,
-          year: this.leagueYear.year,
-          masterGameID: eligibilityOverride.masterGame.masterGameID,
-          eligible: null
-        };
-        axios
-          .post('/api/leagueManager/SetGameEligibilityOverride', model)
-          .then(response => {
-            var gameInfo = {
-              gameName: eligibilityOverride.masterGame.gameName
+        resetEligibility(eligibilityOverride) {
+            var model = {
+                leagueID: this.leagueYear.leagueID,
+                year: this.leagueYear.year,
+                masterGameID: eligibilityOverride.masterGame.masterGameID,
+                eligible: null
             };
-            this.$emit('gameEligiblityReset', gameInfo);
-          })
-          .catch(response => {
-            this.errorInfo = response.response.data;
-          });
-      },
-      searchGame() {
-        this.overrideMasterGame = null;
-        this.possibleMasterGames = [];
-        axios
-          .get('/api/league/PossibleMasterGames?gameName=' + this.overrideGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
-          .then(response => {
-            this.possibleMasterGames = response.data;
-          })
-          .catch(response => {
+            axios
+                .post('/api/leagueManager/SetGameEligibilityOverride', model)
+                .then(response => {
+                    var gameInfo = {
+                        gameName: eligibilityOverride.masterGame.gameName
+                    };
+                    this.$emit('gameEligiblityReset', gameInfo);
+                })
+                .catch(response => {
+                    this.errorInfo = response.response.data;
+                });
+        },
+        searchGame() {
+            this.overrideMasterGame = null;
+            this.possibleMasterGames = [];
+            axios
+                .get('/api/league/PossibleMasterGames?gameName=' + this.overrideGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
+                .then(response => {
+                    this.possibleMasterGames = response.data;
+                })
+                .catch(response => {
 
-          });
-      },
-      setEligibility(masterGame, eligible) {
-        var model = {
-          leagueID: this.leagueYear.leagueID,
-          year: this.leagueYear.year,
-          masterGameID: masterGame.masterGameID,
-          eligible: eligible
-        };
-        axios
-          .post('/api/leagueManager/SetGameEligibilityOverride', model)
-          .then(response => {
-            var gameInfo = {
-              gameName: masterGame.gameName,
-              eligible
+                });
+        },
+        setEligibility(masterGame, eligible) {
+            var model = {
+                leagueID: this.leagueYear.leagueID,
+                year: this.leagueYear.year,
+                masterGameID: masterGame.masterGameID,
+                eligible: eligible
             };
-            this.$emit('gameEligibilitySet', gameInfo);
-            this.clearData();
-          })
-          .catch(response => {
-            this.errorInfo = response.response.data;
-          });
-      },
-      clearData() {
-        this.overrideGameName = "";
-        this.overrideMasterGame = null;
-        this.possibleMasterGames = [];
-        this.errorInfo = "";
-      },
-      newGameSelected() {
-        this.errorInfo = "";
-      }
+            axios
+                .post('/api/leagueManager/SetGameEligibilityOverride', model)
+                .then(response => {
+                    var gameInfo = {
+                        gameName: masterGame.gameName,
+                        eligible
+                    };
+                    this.$emit('gameEligibilitySet', gameInfo);
+                    this.clearData();
+                })
+                .catch(response => {
+                    this.errorInfo = response.response.data;
+                });
+        },
+        clearData() {
+            this.overrideGameName = '';
+            this.overrideMasterGame = null;
+            this.possibleMasterGames = [];
+            this.errorInfo = '';
+        },
+        newGameSelected() {
+            this.errorInfo = '';
+        }
     }
-  }
+};
 </script>
 <style scoped>
   .select-cell {

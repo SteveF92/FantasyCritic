@@ -99,62 +99,62 @@
 </template>
 
 <script>
-  import axios from "axios";
+import axios from 'axios';
 
-  export default {
+export default {
     computed: {
-      isAuth() {
-          return this.$store.getters.tokenIsCurrent();
-      },
-      hasUserInfo() {
-        return this.$store.getters.userInfo;
-      },
-      displayName() {
-        return this.$store.getters.userInfo.displayName;
-      },
-      storeIsBusy() {
-        return this.$store.getters.storeIsBusy;
-      },
-      activeRoyaleYear() {
-        if (!this.activeRoyaleYearQuarter) {
-          return;
+        isAuth() {
+            return this.$store.getters.tokenIsCurrent();
+        },
+        hasUserInfo() {
+            return this.$store.getters.userInfo;
+        },
+        displayName() {
+            return this.$store.getters.userInfo.displayName;
+        },
+        storeIsBusy() {
+            return this.$store.getters.storeIsBusy;
+        },
+        activeRoyaleYear() {
+            if (!this.activeRoyaleYearQuarter) {
+                return;
+            }
+            return this.activeRoyaleYearQuarter.year;
+        },
+        activeRoyaleQuarter() {
+            if (!this.activeRoyaleYearQuarter) {
+                return;
+            }
+            return this.activeRoyaleYearQuarter.quarter;
         }
-        return this.activeRoyaleYearQuarter.year;
-      },
-      activeRoyaleQuarter() {
-        if (!this.activeRoyaleYearQuarter) {
-          return;
-        }
-        return this.activeRoyaleYearQuarter.quarter;
-      }
     },
     data() {
-      return {
-        activeRoyaleYearQuarter: null
-      }
+        return {
+            activeRoyaleYearQuarter: null
+        };
     },
     methods: {
-      async fetchActiveRoyaleYearQuarter() {
-        axios
-          .get('/api/royale/ActiveRoyaleQuarter')
-          .then(response => {
-            this.activeRoyaleYearQuarter = response.data;
-          })
-          .catch(response => {
+        async fetchActiveRoyaleYearQuarter() {
+            axios
+                .get('/api/royale/ActiveRoyaleQuarter')
+                .then(response => {
+                    this.activeRoyaleYearQuarter = response.data;
+                })
+                .catch(response => {
 
-          });
-      },
-      logout() {
-        this.$store.dispatch("logout")
-          .then(() => {
-              this.$router.push({ name: "login" });
-          });
-      }
+                });
+        },
+        logout() {
+            this.$store.dispatch('logout')
+                .then(() => {
+                    this.$router.push({ name: 'login' });
+                });
+        }
     },
     async mounted() {
-      await this.fetchActiveRoyaleYearQuarter();
+        await this.fetchActiveRoyaleYearQuarter();
     }
-  }
+};
 </script>
 
 <style scoped>

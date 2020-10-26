@@ -26,21 +26,21 @@
   </tr>
 </template>
 <script>
-  import Vue from "vue";
-  import moment from "moment";
-  import MasterGamePopover from "@/components/modules/masterGamePopover";
+import Vue from 'vue';
+import moment from 'moment';
+import MasterGamePopover from '@/components/modules/masterGamePopover';
 
-  export default {
+export default {
     components: {
-      MasterGamePopover
+        MasterGamePopover
     },
     props: ['game'],
     computed: {
-      releaseDate() {
-        return moment(this.game.releaseDate).format('MMMM Do, YYYY');
-      }
+        releaseDate() {
+            return moment(this.game.releaseDate).format('MMMM Do, YYYY');
+        }
     }
-  }
+};
 </script>
 <style scoped>
   tr {

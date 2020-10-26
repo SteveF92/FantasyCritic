@@ -97,121 +97,121 @@
   </div>
 </template>
 <script>
-  import axios from 'axios';
-  import vueSlider from 'vue-slider-component';
-  import Popper from 'vue-popperjs';
-  import MasterGamePopover from "@/components/modules/masterGamePopover";
-  import MasterGameDetails  from "@/components/modules/masterGameDetails";
+import axios from 'axios';
+import vueSlider from 'vue-slider-component';
+import Popper from 'vue-popperjs';
+import MasterGamePopover from '@/components/modules/masterGamePopover';
+import MasterGameDetails  from '@/components/modules/masterGameDetails';
 
-  export default {
+export default {
     data() {
-      return {
-        myRequests: [],
-        showSent: false,
-        showDeleted: false,
-        errorInfo: "",
-        masterGame: null,
-        requestNote: "",
-        openCriticLink: "",
-        piecewiseStyle: {
-          "backgroundColor": "#ccc",
-          "visibility": "visible",
-          "width": "12px",
-          "height": "20px"
-        }
-      }
+        return {
+            myRequests: [],
+            showSent: false,
+            showDeleted: false,
+            errorInfo: '',
+            masterGame: null,
+            requestNote: '',
+            openCriticLink: '',
+            piecewiseStyle: {
+                'backgroundColor': '#ccc',
+                'visibility': 'visible',
+                'width': '12px',
+                'height': '20px'
+            }
+        };
     },
     components: {
-      MasterGamePopover,
-      MasterGameDetails,
-      vueSlider,
-      'popper': Popper,
+        MasterGamePopover,
+        MasterGameDetails,
+        vueSlider,
+        'popper': Popper,
     },
     methods: {
-      fetchMyRequests() {
-        axios
-          .get('/api/game/MyMasterGameChangeRequests')
-          .then(response => {
-            this.myRequests = response.data;
-          })
-          .catch(response => {
+        fetchMyRequests() {
+            axios
+                .get('/api/game/MyMasterGameChangeRequests')
+                .then(response => {
+                    this.myRequests = response.data;
+                })
+                .catch(response => {
 
-          });
-      },
-      sendMasterGameChangeRequestRequest() {
-        if (!this.requestNote && this.openCriticLink) {
-          this.requestNote = "Link to OpenCritic";
+                });
+        },
+        sendMasterGameChangeRequestRequest() {
+            if (!this.requestNote && this.openCriticLink) {
+                this.requestNote = 'Link to OpenCritic';
+            }
+            let request = {
+                masterGameID: this.masterGame.masterGameID,
+                requestNote: this.requestNote,
+                openCriticLink: this.openCriticLink
+            };
+            axios
+                .post('/api/game/CreateMasterGameChangeRequest', request)
+                .then(response => {
+                    this.showSent = true;
+                    window.scroll({
+                        top: 0,
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                    this.clearData();
+                    this.fetchMyRequests();
+                })
+                .catch(error => {
+                    this.errorInfo = error.response;
+                });
+        },
+        clearData() {
+            this.requestNote = '';
+            this.openCriticLink = '';
+        },
+        cancelRequest(request) {
+            let model = {
+                requestID: request.requestID
+            };
+            axios
+                .post('/api/game/DeleteMasterGameChangeRequest', model)
+                .then(response => {
+                    this.showDeleted = true;
+                    this.fetchMyRequests();
+                })
+                .catch(response => {
+
+                });
+        },
+        dismissRequest(request) {
+            let model = {
+                requestID: request.requestID
+            };
+            axios
+                .post('/api/game/DismissMasterGameChangeRequest', model)
+                .then(response => {
+                    this.fetchMyRequests();
+                })
+                .catch(response => {
+
+                });
+        },
+        fetchMasterGame(masterGameID) {
+            axios
+                .get('/api/game/MasterGame/' + masterGameID)
+                .then(response => {
+                    this.masterGame = response.data;
+                })
+                .catch(returnedError => (this.error = returnedError));
         }
-        let request = {
-          masterGameID: this.masterGame.masterGameID,
-          requestNote: this.requestNote,
-          openCriticLink: this.openCriticLink
-        };
-        axios
-          .post('/api/game/CreateMasterGameChangeRequest', request)
-          .then(response => {
-            this.showSent = true;
-            window.scroll({
-              top: 0,
-              left: 0,
-              behavior: 'smooth'
-            });
-            this.clearData();
-            this.fetchMyRequests();
-          })
-          .catch(error => {
-            this.errorInfo = error.response;
-          });
-      },
-      clearData() {
-        this.requestNote = "";
-        this.openCriticLink = "";
-      },
-      cancelRequest(request) {
-        let model = {
-          requestID: request.requestID
-        };
-        axios
-          .post('/api/game/DeleteMasterGameChangeRequest', model)
-          .then(response => {
-            this.showDeleted = true;
-            this.fetchMyRequests();
-          })
-          .catch(response => {
-
-          });
-      },
-      dismissRequest(request) {
-        let model = {
-          requestID: request.requestID
-        };
-        axios
-          .post('/api/game/DismissMasterGameChangeRequest', model)
-          .then(response => {
-            this.fetchMyRequests();
-          })
-          .catch(response => {
-
-          });
-      },
-      fetchMasterGame(masterGameID) {
-          axios
-            .get('/api/game/MasterGame/' + masterGameID)
-              .then(response => {
-                this.masterGame = response.data;
-              })
-              .catch(returnedError => (this.error = returnedError));
-      }
     },
     mounted() {
-      let masterGameID = this.$route.query.mastergameid;
-      if (masterGameID) {
-        this.fetchMasterGame(masterGameID);
-      }
+        let masterGameID = this.$route.query.mastergameid;
+        if (masterGameID) {
+            this.fetchMasterGame(masterGameID);
+        }
 
-      this.fetchMyRequests();
+        this.fetchMyRequests();
     }
-  }
+};
 </script>
 <style scoped>
   .select-cell {

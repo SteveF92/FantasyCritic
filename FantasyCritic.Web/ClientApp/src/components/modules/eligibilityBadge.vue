@@ -3,14 +3,14 @@
         v-bind:class="{ 'badge-success': isEligible, 'badge-danger': !isEligible }">{{eligibilityLevel.name}}</span>
 </template>
 <script>
-  import Vue from "vue"
+import Vue from 'vue';
 
-  export default {
+export default {
     props: ['eligibilityLevel', 'maximumEligibilityLevel'],
     computed: {
-      isEligible() {
-        return (this.eligibilityLevel.level <= this.maximumEligibilityLevel.level);
-      }
+        isEligible() {
+            return (this.eligibilityLevel.level <= this.maximumEligibilityLevel.level);
+        }
     }
-  }
+};
 </script>

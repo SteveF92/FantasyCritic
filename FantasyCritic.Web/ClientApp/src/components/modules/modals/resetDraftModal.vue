@@ -10,27 +10,27 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        resetConfirmation: ""
-      }
+        return {
+            resetConfirmation: ''
+        };
     },
     computed: {
-      resetConfirmed() {
-        let lowerCase = this.resetConfirmation.toUpperCase();
-        return lowerCase === "RESET DRAFT";
-      }
+        resetConfirmed() {
+            let lowerCase = this.resetConfirmation.toUpperCase();
+            return lowerCase === 'RESET DRAFT';
+        }
     },
     methods: {
-      resetDraft() {
-        this.resetConfirmation = "";
-        this.$refs.resetDraftModalRef.hide();
-        this.$emit('resetDraft');
-      }
+        resetDraft() {
+            this.resetConfirmation = '';
+            this.$refs.resetDraftModalRef.hide();
+            this.$emit('resetDraft');
+        }
     }
-  }
+};
 </script>

@@ -10,15 +10,15 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     methods: {
-      undoLastDraftAction() {
-        this.$refs.undoLastDraftActionModalRef.hide();
-        this.$emit('undoLastDraftAction');
-      }
+        undoLastDraftAction() {
+            this.$refs.undoLastDraftActionModalRef.hide();
+            this.$emit('undoLastDraftAction');
+        }
     }
-  }
+};
 </script>

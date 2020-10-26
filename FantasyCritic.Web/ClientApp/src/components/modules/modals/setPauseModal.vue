@@ -9,19 +9,19 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     props: ['paused'],
     methods: {
-      setPause() {
-        this.$refs.setPauseModalRef.hide();
-        let pauseInfo = {
-          pause: !this.paused
+        setPause() {
+            this.$refs.setPauseModalRef.hide();
+            let pauseInfo = {
+                pause: !this.paused
+            };
+            this.$emit('setPause', pauseInfo);
         }
-        this.$emit('setPause', pauseInfo);
-      }
     }
-  }
+};
 </script>

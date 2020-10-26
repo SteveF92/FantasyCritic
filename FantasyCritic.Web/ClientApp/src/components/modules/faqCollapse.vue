@@ -18,9 +18,9 @@
 </template>
 
 <script>
-  export default {
+export default {
     props: ['defaultVisible']
-  }
+};
 </script>
 
 <style scoped>

@@ -6,16 +6,16 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     props: ['publisherGame'],
     methods: {
-      sellGame() {
-        this.$refs.sellRoyaleGameModalRef.hide();
-        this.$emit('sellGame', this.publisherGame);
-      }
+        sellGame() {
+            this.$refs.sellRoyaleGameModalRef.hide();
+            this.$emit('sellGame', this.publisherGame);
+        }
     }
-  }
+};
 </script>

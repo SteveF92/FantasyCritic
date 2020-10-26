@@ -23,12 +23,12 @@
 </template>
 
 <script>
-    import Vue from 'vue';
+import Vue from 'vue';
 
-    export default {
-        data() {
-            return {
-            }
-        }
+export default {
+    data() {
+        return {
+        };
     }
+};
 </script>

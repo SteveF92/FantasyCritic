@@ -20,33 +20,33 @@
 </template>
 
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     props: ['publisher','currentDrops'],
     data() {
-      return {
+        return {
         
-      }
+        };
     },
     methods: {
-      cancelDrop(dropRequest) {
-        var model = {
-          dropRequestID: dropRequest.dropRequestID
-        };
-        axios
-          .post('/api/league/DeleteDropRequest', model)
-          .then(response => {
-            var dropInfo = {
-              gameName: dropRequest.masterGame.gameName
+        cancelDrop(dropRequest) {
+            var model = {
+                dropRequestID: dropRequest.dropRequestID
             };
-            this.$emit('dropCancelled', dropInfo);
-          })
-          .catch(response => {
+            axios
+                .post('/api/league/DeleteDropRequest', model)
+                .then(response => {
+                    var dropInfo = {
+                        gameName: dropRequest.masterGame.gameName
+                    };
+                    this.$emit('dropCancelled', dropInfo);
+                })
+                .catch(response => {
 
-          });
-      }
+                });
+        }
     }
-  }
+};
 </script>

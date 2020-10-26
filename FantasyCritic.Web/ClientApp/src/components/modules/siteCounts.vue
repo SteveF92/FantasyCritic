@@ -26,29 +26,29 @@
 </template>
 
 <script>
-  import axios from 'axios';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        siteCounts: null,
-        error: ""
-      }
+        return {
+            siteCounts: null,
+            error: ''
+        };
     },
     methods: {
-      fetchSiteCounts() {
-        axios
-          .get('/api/general/sitecounts')
-          .then(response => {
-            this.siteCounts = response.data;
-          })
-          .catch(returnedError => (this.error = returnedError));
-      }
+        fetchSiteCounts() {
+            axios
+                .get('/api/general/sitecounts')
+                .then(response => {
+                    this.siteCounts = response.data;
+                })
+                .catch(returnedError => (this.error = returnedError));
+        }
     },
     mounted() {
-      this.fetchSiteCounts();
+        this.fetchSiteCounts();
     }
-  }
+};
 </script>
 
 <style scoped>

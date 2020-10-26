@@ -34,26 +34,26 @@
   </tr>
 </template>
 <script>
-  import Vue from "vue";
-  import moment from "moment";
-  import MasterGamePopover from "@/components/modules/masterGamePopover";
+import Vue from 'vue';
+import moment from 'moment';
+import MasterGamePopover from '@/components/modules/masterGamePopover';
 
-  export default {
+export default {
     components: {
-      MasterGamePopover
+        MasterGamePopover
     },
     props: ['game', 'yearFinished'],
     computed: {
-      releaseDate() {
+        releaseDate() {
             return moment(this.game.releaseDate).format('MMMM Do, YYYY');
-      },
-      advancedProjections: {
-        get() {
-          return this.$store.getters.advancedProjections;
+        },
+        advancedProjections: {
+            get() {
+                return this.$store.getters.advancedProjections;
+            }
         }
-      }
     }
-  }
+};
 </script>
 <style scoped>
   .minimal-game-row td {

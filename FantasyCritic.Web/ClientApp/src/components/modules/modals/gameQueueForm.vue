@@ -54,148 +54,148 @@
 </template>
 
 <script>
-  import Vue from "vue";
-  import axios from "axios";
-  import draggable from 'vuedraggable';
+import Vue from 'vue';
+import axios from 'axios';
+import draggable from 'vuedraggable';
 
-  import PossibleMasterGamesTable from "@/components/modules/possibleMasterGamesTable";
+import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
 
-  export default {
+export default {
     components: {
-      draggable,
-      PossibleMasterGamesTable
+        draggable,
+        PossibleMasterGamesTable
     },
     props: ['publisher', 'maximumEligibilityLevel', 'year'],
     data() {
-      return {
-        queuedGames: null,
-        searchGameName: null,
-        possibleMasterGames: [],
-        queueResult: null,
-        desiredQueueRanks: [],
-        gameToQueue: null,
-        showingTopAvailable: false,
-        isBusy: false
-      }
+        return {
+            queuedGames: null,
+            searchGameName: null,
+            possibleMasterGames: [],
+            queueResult: null,
+            desiredQueueRanks: [],
+            gameToQueue: null,
+            showingTopAvailable: false,
+            isBusy: false
+        };
     },
     methods: {
-      fetchQueuedGames() {
-        axios
-          .get('/api/league/CurrentQueuedGames/' + this.publisher.publisherID)
-          .then(response => {
-            this.queuedGames = response.data;
+        fetchQueuedGames() {
+            axios
+                .get('/api/league/CurrentQueuedGames/' + this.publisher.publisherID)
+                .then(response => {
+                    this.queuedGames = response.data;
+                    this.desiredQueueRanks = this.queuedGames;
+                })
+                .catch(response => {
+
+                });
+        },
+        searchGame() {
+            this.clearDataExceptSearch();
+            this.isBusy = true;
+
+            axios
+                .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publisher.leagueID)
+                .then(response => {
+                    this.possibleMasterGames = response.data;
+                    this.isBusy = false;
+                })
+                .catch(response => {
+                    this.isBusy = false;
+                });
+        },
+        getTopGames() {
+            this.clearDataExceptSearch();
+            this.isBusy = true;
+
+            axios
+                .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.publisher.leagueID)
+                .then(response => {
+                    this.possibleMasterGames = response.data;
+                    this.showingTopAvailable = true;
+                    this.isBusy = false;
+                })
+                .catch(response => {
+                    this.isBusy = false;
+                });
+        },
+        addGameToQueue() {
+            var request = {
+                publisherID: this.publisher.publisherID,
+                masterGameID: this.gameToQueue.masterGameID
+            };
+            this.isBusy = true;
+            axios
+                .post('/api/league/AddGameToQueue', request)
+                .then(response => {
+                    this.isBusy = false;
+                    this.fetchQueuedGames();
+                })
+                .catch(response => {
+                    this.isBusy = false;
+                    this.errorInfo = response.response.data;
+                });
+        },
+        setQueueRankings() {
+            let desiredMasterGameIDs = this.desiredQueueRanks.map(function (v) {
+                return v.masterGame.masterGameID;
+            });
+            var model = {
+                publisherID: this.publisher.publisherID,
+                QueueRanks: desiredMasterGameIDs
+            };
+            axios
+                .post('/api/league/SetQueueRankings', model)
+                .then(response => {
+                    this.fetchQueuedGames();
+                })
+                .catch(response => {
+
+                });
+        },
+        removeQueuedGame(game) {
+            var model = {
+                publisherID: this.publisher.publisherID,
+                masterGameID: game.masterGame.masterGameID
+            };
+            axios
+                .post('/api/league/DeleteQueuedGame', model)
+                .then(response => {
+                    this.fetchQueuedGames();
+                })
+                .catch(response => {
+
+                });
+        },
+        clearAllData() {
+            this.clearQueueData();
+            this.searchGameName = null;
+            this.possibleMasterGames = [];
+            this.showingTopAvailable = false;
+        },
+        clearQueueData() {
             this.desiredQueueRanks = this.queuedGames;
-          })
-          .catch(response => {
-
-          });
-      },
-      searchGame() {
-        this.clearDataExceptSearch();
-        this.isBusy = true;
-
-        axios
-          .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publisher.leagueID)
-          .then(response => {
-            this.possibleMasterGames = response.data;
+            this.queueResult = null;
+        },
+        clearDataExceptSearch() {
+            this.queueResult = null;
+            this.possibleMasterGames = [];
+            this.showingTopAvailable = false;
             this.isBusy = false;
-          })
-          .catch(response => {
-            this.isBusy = false;
-          });
-      },
-      getTopGames() {
-        this.clearDataExceptSearch();
-        this.isBusy = true;
-
-        axios
-          .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.publisher.leagueID)
-          .then(response => {
-            this.possibleMasterGames = response.data;
-            this.showingTopAvailable = true;
-            this.isBusy = false;
-          })
-          .catch(response => {
-            this.isBusy = false;
-          });
-      },
-      addGameToQueue() {
-        var request = {
-            publisherID: this.publisher.publisherID,
-            masterGameID: this.gameToQueue.masterGameID
-        };
-        this.isBusy = true;
-        axios
-          .post('/api/league/AddGameToQueue', request)
-          .then(response => {
-            this.isBusy = false;
-            this.fetchQueuedGames();
-          })
-          .catch(response => {
-            this.isBusy = false;
-            this.errorInfo = response.response.data;
-          });
-      },
-      setQueueRankings() {
-        let desiredMasterGameIDs = this.desiredQueueRanks.map(function (v) {
-          return v.masterGame.masterGameID;
-        });
-        var model = {
-          publisherID: this.publisher.publisherID,
-          QueueRanks: desiredMasterGameIDs
-        };
-        axios
-          .post('/api/league/SetQueueRankings', model)
-          .then(response => {
-            this.fetchQueuedGames();
-          })
-          .catch(response => {
-
-          });
-      },
-      removeQueuedGame(game) {
-        var model = {
-          publisherID: this.publisher.publisherID,
-          masterGameID: game.masterGame.masterGameID
-        };
-        axios
-          .post('/api/league/DeleteQueuedGame', model)
-          .then(response => {
-            this.fetchQueuedGames();
-          })
-          .catch(response => {
-
-          });
-      },
-      clearAllData() {
-        this.clearQueueData();
-        this.searchGameName = null;
-        this.possibleMasterGames = [];
-        this.showingTopAvailable = false;
-      },
-      clearQueueData() {
-        this.desiredQueueRanks = this.queuedGames;
-        this.queueResult = null;
-      },
-      clearDataExceptSearch() {
-        this.queueResult = null;
-        this.possibleMasterGames = [];
-        this.showingTopAvailable = false;
-        this.isBusy = false;
-      }
+        }
     },
     mounted() {
-      this.fetchQueuedGames();
+        this.fetchQueuedGames();
     },
     watch: {
-      queuedGames(newValue, oldValue) {
-        if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array &&
+        queuedGames(newValue, oldValue) {
+            if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array &&
           oldValue.length !== newValue.length)) {
-          this.clearQueueData();
+                this.clearQueueData();
+            }
         }
-      }
     }
-  }
+};
 </script>
 <style scoped>
   .select-cell {

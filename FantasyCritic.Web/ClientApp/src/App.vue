@@ -18,20 +18,20 @@
 </template>
 
 <script>
-  import TopNavbar from "@/components/modules/topNavBar";
-  import FooterModule from "@/components/modules/footerModule";
+import TopNavbar from '@/components/modules/topNavBar';
+import FooterModule from '@/components/modules/footerModule';
 
-  export default {
+export default {
     components: {
-      TopNavbar,
-      FooterModule
+        TopNavbar,
+        FooterModule
     },
     mounted() {
-      if (this.$store.getters.tokenIsCurrent()) {
-        this.$store.dispatch("getUserInfo");
-      }
+        if (this.$store.getters.tokenIsCurrent()) {
+            this.$store.dispatch('getUserInfo');
+        }
     }
-  };
+};
 </script>
 
 <style lang="scss">

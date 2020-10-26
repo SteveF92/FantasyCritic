@@ -47,88 +47,88 @@
   </div>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        manuallyScoreGamePublisher: null,
-        manuallyScoreGame: null,
-        manualScore: null,
-        removeManualScore: false,
-        errorInfo: ""
-      }
+        return {
+            manuallyScoreGamePublisher: null,
+            manuallyScoreGame: null,
+            manualScore: null,
+            removeManualScore: false,
+            errorInfo: ''
+        };
     },
     props: ['leagueYear'],
     computed: {
-      buttonText() {
-        if (this.removeManualScore) {
-          return "Remove Manual Score";
-        }
+        buttonText() {
+            if (this.removeManualScore) {
+                return 'Remove Manual Score';
+            }
 
-        return "Set Manual Score";
-      }
+            return 'Set Manual Score';
+        }
     },
     methods: {
-      manuallyScorePublisherGame() {
-        if (this.removeManualScore) {
-          this.removeManualPublisherGameScore();
-          return;
+        manuallyScorePublisherGame() {
+            if (this.removeManualScore) {
+                this.removeManualPublisherGameScore();
+                return;
+            }
+            var model = {
+                publisherGameID: this.manuallyScoreGame.publisherGameID,
+                publisherID: this.manuallyScoreGamePublisher.publisherID,
+                manualCriticScore: this.manualScore
+            };
+            var manualScoreInfo = {
+                gameName: this.manuallyScoreGame.gameName,
+                score: this.manualScore
+            };
+            axios
+                .post('/api/leagueManager/ManuallyScorePublisherGame', model)
+                .then(response => {
+                    this.$refs.manuallyScorePublisherGameRef.hide();
+                    this.$emit('gameManuallyScored', manualScoreInfo);
+                    this.manuallyScoreGamePublisher = null;
+                    this.manuallyScoreGame = null;
+                })
+                .catch(response => {
+                    this.errorInfo = response.response.data;
+                });
+        },
+        removeManualPublisherGameScore() {
+            var model = {
+                publisherGameID: this.manuallyScoreGame.publisherGameID,
+                publisherID: this.manuallyScoreGamePublisher.publisherID
+            };
+            axios
+                .post('/api/leagueManager/RemoveManualPublisherGameScore', model)
+                .then(response => {
+                    this.$refs.manuallyScorePublisherGameRef.hide();
+                    this.$emit('manualScoreRemoved', this.manuallyScoreGame.gameName);
+                    this.manuallyScoreGamePublisher = null;
+                    this.manuallyScoreGame = null;
+                })
+                .catch(response => {
+                    this.errorInfo = response.response.data;
+                });
+        },
+        clearData() {
+            this.manuallyScoreGamePublisher = null;
+            this.manuallyScoreGame = null;
+            this.manualScore = null;
+            this.removeManualScore = false;
         }
-        var model = {
-          publisherGameID: this.manuallyScoreGame.publisherGameID,
-          publisherID: this.manuallyScoreGamePublisher.publisherID,
-          manualCriticScore: this.manualScore
-        };
-        var manualScoreInfo = {
-          gameName: this.manuallyScoreGame.gameName,
-          score: this.manualScore
-        };
-        axios
-          .post('/api/leagueManager/ManuallyScorePublisherGame', model)
-          .then(response => {
-            this.$refs.manuallyScorePublisherGameRef.hide();
-            this.$emit('gameManuallyScored', manualScoreInfo);
-            this.manuallyScoreGamePublisher = null;
-            this.manuallyScoreGame = null;
-          })
-          .catch(response => {
-            this.errorInfo = response.response.data;
-          });
-      },
-      removeManualPublisherGameScore() {
-        var model = {
-          publisherGameID: this.manuallyScoreGame.publisherGameID,
-          publisherID: this.manuallyScoreGamePublisher.publisherID
-        };
-        axios
-          .post('/api/leagueManager/RemoveManualPublisherGameScore', model)
-          .then(response => {
-            this.$refs.manuallyScorePublisherGameRef.hide();
-            this.$emit('manualScoreRemoved', this.manuallyScoreGame.gameName);
-            this.manuallyScoreGamePublisher = null;
-            this.manuallyScoreGame = null;
-          })
-          .catch(response => {
-            this.errorInfo = response.response.data;
-          });
-      },
-      clearData() {
-        this.manuallyScoreGamePublisher = null;
-        this.manuallyScoreGame = null;
-        this.manualScore = null;
-        this.removeManualScore = false;
-      }
     },
     watch: {
-      manuallyScoreGame: function (val, oldVal) {
-        if (val) {
-          this.manualScore = val.criticScore;
+        manuallyScoreGame: function (val, oldVal) {
+            if (val) {
+                this.manualScore = val.criticScore;
+            }
         }
-      }
     }
-  }
+};
 </script>
 <style scoped>
 

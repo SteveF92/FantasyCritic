@@ -19,30 +19,30 @@
 </template>
 
 <script>
-  import Vue from "vue";
-  import axios from "axios";
-  import moment from "moment";
-  import Popper from 'vue-popperjs';
-  import 'vue-popperjs/dist/vue-popper.css';
-  import MasterGameSummary from "@/components/modules/masterGameSummary";
+import Vue from 'vue';
+import axios from 'axios';
+import moment from 'moment';
+import Popper from 'vue-popperjs';
+import 'vue-popperjs/dist/vue-popper.css';
+import MasterGameSummary from '@/components/modules/masterGameSummary';
 
-  export default {
+export default {
     data() {
-      return {
-        error: ""
-      }
+        return {
+            error: ''
+        };
     },
     components: {
-      'popper': Popper,
-      MasterGameSummary
+        'popper': Popper,
+        MasterGameSummary
     },
     props: ['masterGame'],
     methods: {
-      closePopover() {
-        this.$refs.gamePopoverRef.doClose();
-      }
+        closePopover() {
+            this.$refs.gamePopoverRef.doClose();
+        }
     }
-  }
+};
 </script>
 <style scoped>
   .close-button {

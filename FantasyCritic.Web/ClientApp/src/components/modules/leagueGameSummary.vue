@@ -8,26 +8,26 @@
   </div>
 </template>
 <script>
-    import Vue from "vue";
-    import MinimalPlayerGameTable from "@/components/modules/gameTables/minimalPlayerGameTable";
+import Vue from 'vue';
+import MinimalPlayerGameTable from '@/components/modules/gameTables/minimalPlayerGameTable';
 
-    export default {
-        components: {
-            MinimalPlayerGameTable
+export default {
+    components: {
+        MinimalPlayerGameTable
+    },
+    props: ['leagueYear'],
+    computed: {
+        publishers() {
+            return this.leagueYear.publishers;
         },
-        props: ['leagueYear'],
-        computed: {
-            publishers() {
-                return this.leagueYear.publishers;
-            },
-            options() {
-                var options = {
-                    standardGameSlots: this.leagueYear.standardGames,
-                    counterPickSlots: this.leagueYear.counterPicks
-                };
+        options() {
+            var options = {
+                standardGameSlots: this.leagueYear.standardGames,
+                counterPickSlots: this.leagueYear.counterPicks
+            };
 
-                return options;
-            }
+            return options;
         }
     }
+};
 </script>

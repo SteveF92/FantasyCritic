@@ -52,45 +52,45 @@
 </template>
 
 <script>
-    import Vue from 'vue';
-    import axios from 'axios';
+import Vue from 'vue';
+import axios from 'axios';
 
-    export default {
-        data() {
-            return {
-              emailAddress: "",
-              displayName: "",
-              password: "",
-              confirmPassword: "",
-              errorInfo: ""
-            }
-        },
-        methods: {
-            register() {
-                var model = {
-                  emailAddress: this.emailAddress,
-                  displayName: this.displayName,
-                  password: this.password,
-                  confirmPassword: this.confirmPassword
-                };
-                this.$store.dispatch("registerAccount", model)
-                  .then(() => {
+export default {
+    data() {
+        return {
+            emailAddress: '',
+            displayName: '',
+            password: '',
+            confirmPassword: '',
+            errorInfo: ''
+        };
+    },
+    methods: {
+        register() {
+            var model = {
+                emailAddress: this.emailAddress,
+                displayName: this.displayName,
+                password: this.password,
+                confirmPassword: this.confirmPassword
+            };
+            this.$store.dispatch('registerAccount', model)
+                .then(() => {
                     let leagueid = this.$route.query.leagueid;
                     let inviteCode = this.$route.query.inviteCode;
                     let year = this.$route.query.year;
                     if (leagueid && inviteCode && year) {
-                    let routeObject = { name: 'login', query: { leagueid: leagueid, year: year, inviteCode: inviteCode } };
-                      this.$router.push(routeObject);
+                        let routeObject = { name: 'login', query: { leagueid: leagueid, year: year, inviteCode: inviteCode } };
+                        this.$router.push(routeObject);
                     } else {
-                      this.$router.push({ name: "login" });
+                        this.$router.push({ name: 'login' });
                     }
-                  })
-                  .catch(returnedError => {
-                    this.errorInfo = "There was an error with your request.";
-                  });
-            }
+                })
+                .catch(returnedError => {
+                    this.errorInfo = 'There was an error with your request.';
+                });
         }
     }
+};
 </script>
 <style scoped>
   .register-button-area {

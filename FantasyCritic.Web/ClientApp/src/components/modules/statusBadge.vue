@@ -6,20 +6,20 @@
   </span>
 </template>
 <script>
-  import Vue from "vue"
+import Vue from 'vue';
 
-  export default {
+export default {
     props: ['possibleMasterGame'],
     computed: {
-      status() {
-        return this.possibleMasterGame.status;
-      },
-      isAvailable() {
-        return this.possibleMasterGame.isAvailable;
-      },
-      alreadyOwned() {
-        return this.possibleMasterGame.alreadyOwned;
-      }
+        status() {
+            return this.possibleMasterGame.status;
+        },
+        isAvailable() {
+            return this.possibleMasterGame.isAvailable;
+        },
+        alreadyOwned() {
+            return this.possibleMasterGame.alreadyOwned;
+        }
     }
-  }
+};
 </script>

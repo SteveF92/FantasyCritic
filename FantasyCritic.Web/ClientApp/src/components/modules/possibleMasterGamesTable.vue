@@ -31,51 +31,51 @@
   </div>
 </template>
 <script>
-  import StatusBadge from "@/components/modules/statusBadge";
-  import MasterGamePopover from "@/components/modules/masterGamePopover";
+import StatusBadge from '@/components/modules/statusBadge';
+import MasterGamePopover from '@/components/modules/masterGamePopover';
 
-  export default {
+export default {
     data() {
-      return {
-        selectedMasterGame: null,
-        lastPopoverShown: null,
-        perPage: 10,
-        currentPage: 1,
-        gameFields: [
-          { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
-          { key: 'masterGame.sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-          { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-          { key: 'masterGame.eligibilityLevel', label: 'Status', thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-          { key: 'select', label: '', thClass: 'bg-primary' }
-        ],
-        sortBy: 'dateAdjustedHypeFactor',
-        sortDesc: true
-      }
+        return {
+            selectedMasterGame: null,
+            lastPopoverShown: null,
+            perPage: 10,
+            currentPage: 1,
+            gameFields: [
+                { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
+                { key: 'masterGame.sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+                { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+                { key: 'masterGame.eligibilityLevel', label: 'Status', thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+                { key: 'select', label: '', thClass: 'bg-primary' }
+            ],
+            sortBy: 'dateAdjustedHypeFactor',
+            sortDesc: true
+        };
     },
     components: {
-      StatusBadge,
-      MasterGamePopover
+        StatusBadge,
+        MasterGamePopover
     },
     props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
     computed: {
-      rows() {
-        return this.possibleGames.length;
-      },
-      gameRows() {
-        let gameRows = this.possibleGames;
-        if (!gameRows) {
-            return [];
+        rows() {
+            return this.possibleGames.length;
+        },
+        gameRows() {
+            let gameRows = this.possibleGames;
+            if (!gameRows) {
+                return [];
+            }
+            return gameRows;
         }
-        return gameRows;
-      }
     },
     methods: {
-      selectGame(masterGame) {
-        this.selectedMasterGame = masterGame;
-        this.$emit('input', this.selectedMasterGame);
-      }
+        selectGame(masterGame) {
+            this.selectedMasterGame = masterGame;
+            this.$emit('input', this.selectedMasterGame);
+        }
     }
-  }
+};
 </script>
 <style scoped>
   .fake-link {

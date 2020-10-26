@@ -25,29 +25,29 @@
   </div>
 </template>
 <script>
-  import axios from 'axios';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        emailAddress: "",
-        showSent: false
-      }
-  },
-  methods: {
-    sendForgotPasswordRequest() {
-      let request = {
-          emailAddress: this.emailAddress
-      };
-      axios
-        .post('/api/account/ForgotPassword', request)
-        .then(response => {
-            this.showSent = true;
-        })
-        .catch(response => {
+        return {
+            emailAddress: '',
+            showSent: false
+        };
+    },
+    methods: {
+        sendForgotPasswordRequest() {
+            let request = {
+                emailAddress: this.emailAddress
+            };
+            axios
+                .post('/api/account/ForgotPassword', request)
+                .then(response => {
+                    this.showSent = true;
+                })
+                .catch(response => {
 
-        });
+                });
+        }
     }
-  }
-}
+};
 </script>

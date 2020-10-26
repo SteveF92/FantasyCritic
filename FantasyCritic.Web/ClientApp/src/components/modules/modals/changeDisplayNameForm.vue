@@ -12,38 +12,38 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        newDisplayName: "",
-        errorInfo: ""
-      }
+        return {
+            newDisplayName: '',
+            errorInfo: ''
+        };
     },
     computed: {
-      formValid() {
-        return this.newDisplayName;
-      }
+        formValid() {
+            return this.newDisplayName;
+        }
     },
     methods: {
-      changeDisplayName() {
-        let changeInfo = {
-          newDisplayName: this.newDisplayName,
-        };
-        this.$store.dispatch("changeDisplayName", changeInfo)
-          .then(() => {
-            this.$refs.changeDisplayNameFormRef.hide();
-            this.$emit('displayNameChanged', changeInfo);
-            this.clearData();
-          })
-          .catch(returnedError => {
-          });
-      },
-      clearData() {
-        this.newDisplayName = "";
-      }
+        changeDisplayName() {
+            let changeInfo = {
+                newDisplayName: this.newDisplayName,
+            };
+            this.$store.dispatch('changeDisplayName', changeInfo)
+                .then(() => {
+                    this.$refs.changeDisplayNameFormRef.hide();
+                    this.$emit('displayNameChanged', changeInfo);
+                    this.clearData();
+                })
+                .catch(returnedError => {
+                });
+        },
+        clearData() {
+            this.newDisplayName = '';
+        }
     }
-  }
+};
 </script>

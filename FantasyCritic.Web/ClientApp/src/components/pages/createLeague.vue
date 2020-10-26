@@ -70,108 +70,108 @@
   </div>
 </template>
 <script>
-  import axios from "axios";
-  import LeagueYearSettings from "@/components/modules/leagueYearSettings";
+import axios from 'axios';
+import LeagueYearSettings from '@/components/modules/leagueYearSettings';
 
-  export default {
+export default {
     data() {
-      return {
-        errorInfo: "",
-        possibleLeagueOptions: null,
-        leagueName: "",
-        initialYear: "",
-        leagueYearSettings: null,
-        publicLeague: true,
-        testLeague: false,
-        leagueYearEverValid: false
-      }
+        return {
+            errorInfo: '',
+            possibleLeagueOptions: null,
+            leagueName: '',
+            initialYear: '',
+            leagueYearSettings: null,
+            publicLeague: true,
+            testLeague: false,
+            leagueYearEverValid: false
+        };
     },
     components: {
-      LeagueYearSettings
+        LeagueYearSettings
     },
     computed: {
-      readyToSetupLeagueYear() {
-        return this.leagueName && this.initialYear;
-      },
-      leagueYearIsValid() {
-        let valid = this.leagueYearSettings &&
+        readyToSetupLeagueYear() {
+            return this.leagueName && this.initialYear;
+        },
+        leagueYearIsValid() {
+            let valid = this.leagueYearSettings &&
           this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 &&
           this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 50 &&
           this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
 
-        let allValid = this.readyToSetupLeagueYear && valid;
-        if (allValid) {
-          this.leagueYearEverValid = true;
+            let allValid = this.readyToSetupLeagueYear && valid;
+            if (allValid) {
+                this.leagueYearEverValid = true;
+            }
+            return allValid;
         }
-        return allValid;
-      }
     },
     methods: {
-      fetchLeagueOptions() {
-        axios
-          .get('/api/League/LeagueOptions')
-          .then(response => {
-            this.possibleLeagueOptions = response.data;
-            this.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
-          })
-          .catch(returnedError => (this.error = returnedError));
-      },
-      postRequest() {
-        let selectedLeagueOptions = {
-          leagueName: this.leagueName,
-          initialYear: this.initialYear,
-          standardGames: this.leagueYearSettings.standardGames,
-          gamesToDraft: this.leagueYearSettings.gamesToDraft,
-          counterPicks: this.leagueYearSettings.counterPicks,
-          freeDroppableGames: this.leagueYearSettings.freeDroppableGames,
-          willNotReleaseDroppableGames: this.leagueYearSettings.willNotReleaseDroppableGames,
-          willReleaseDroppableGames: this.leagueYearSettings.willReleaseDroppableGames,
-          unlimitedFreeDroppableGames: this.leagueYearSettings.unlimitedFreeDroppableGames,
-          unlimitedWillNotReleaseDroppableGames: this.leagueYearSettings.unlimitedWillNotReleaseDroppableGames,
-          unlimitedWillReleaseDroppableGames: this.leagueYearSettings.unlimitedWillReleaseDroppableGames,
-          dropOnlyDraftGames: this.leagueYearSettings.dropOnlyDraftGames,
-          maximumEligibilityLevel: this.leagueYearSettings.maximumEligibilityLevel,
-          allowYearlyInstallments: this.leagueYearSettings.allowYearlyInstallments,
-          allowEarlyAccess: this.leagueYearSettings.allowEarlyAccess,
-          allowFreeToPlay: this.leagueYearSettings.allowFreeToPlay,
-          allowReleasedInternationally: this.leagueYearSettings.allowReleasedInternationally,
-          allowExpansions: this.leagueYearSettings.allowExpansions,
-          allowUnannouncedGames: this.leagueYearSettings.allowUnannouncedGames,
-          publicLeague: this.publicLeague,
-          testLeague: this.testLeague,
-          draftSystem: "Flexible",
-          pickupSystem: "Budget",
-          scoringSystem: "Standard"
-        };
+        fetchLeagueOptions() {
+            axios
+                .get('/api/League/LeagueOptions')
+                .then(response => {
+                    this.possibleLeagueOptions = response.data;
+                    this.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
+                })
+                .catch(returnedError => (this.error = returnedError));
+        },
+        postRequest() {
+            let selectedLeagueOptions = {
+                leagueName: this.leagueName,
+                initialYear: this.initialYear,
+                standardGames: this.leagueYearSettings.standardGames,
+                gamesToDraft: this.leagueYearSettings.gamesToDraft,
+                counterPicks: this.leagueYearSettings.counterPicks,
+                freeDroppableGames: this.leagueYearSettings.freeDroppableGames,
+                willNotReleaseDroppableGames: this.leagueYearSettings.willNotReleaseDroppableGames,
+                willReleaseDroppableGames: this.leagueYearSettings.willReleaseDroppableGames,
+                unlimitedFreeDroppableGames: this.leagueYearSettings.unlimitedFreeDroppableGames,
+                unlimitedWillNotReleaseDroppableGames: this.leagueYearSettings.unlimitedWillNotReleaseDroppableGames,
+                unlimitedWillReleaseDroppableGames: this.leagueYearSettings.unlimitedWillReleaseDroppableGames,
+                dropOnlyDraftGames: this.leagueYearSettings.dropOnlyDraftGames,
+                maximumEligibilityLevel: this.leagueYearSettings.maximumEligibilityLevel,
+                allowYearlyInstallments: this.leagueYearSettings.allowYearlyInstallments,
+                allowEarlyAccess: this.leagueYearSettings.allowEarlyAccess,
+                allowFreeToPlay: this.leagueYearSettings.allowFreeToPlay,
+                allowReleasedInternationally: this.leagueYearSettings.allowReleasedInternationally,
+                allowExpansions: this.leagueYearSettings.allowExpansions,
+                allowUnannouncedGames: this.leagueYearSettings.allowUnannouncedGames,
+                publicLeague: this.publicLeague,
+                testLeague: this.testLeague,
+                draftSystem: 'Flexible',
+                pickupSystem: 'Budget',
+                scoringSystem: 'Standard'
+            };
 
-        axios
-          .post('/api/leagueManager/createLeague', selectedLeagueOptions)
-          .then(response => {
-            this.$router.push({ name: "home" });
-          })
-          .catch(error => {
-            this.errorInfo = error.response.data;
-            window.scrollTo(0, 0);
-          });
-      }
+            axios
+                .post('/api/leagueManager/createLeague', selectedLeagueOptions)
+                .then(response => {
+                    this.$router.push({ name: 'home' });
+                })
+                .catch(error => {
+                    this.errorInfo = error.response.data;
+                    window.scrollTo(0, 0);
+                });
+        }
     },
     mounted() {
-      this.fetchLeagueOptions();
-      this.leagueYearSettings = {
-        standardGames: "",
-        gamesToDraft: "",
-        counterPicks: "",
-        initialYear: "",
-        maximumEligibilityLevel: 2,
-        allowYearlyInstallments: false,
-        allowEarlyAccess: false,
-        allowFreeToPlay: false,
-        allowReleasedInternationally: false,
-        allowExpansions: false,
-        allowUnannouncedGames: false
-      }
+        this.fetchLeagueOptions();
+        this.leagueYearSettings = {
+            standardGames: '',
+            gamesToDraft: '',
+            counterPicks: '',
+            initialYear: '',
+            maximumEligibilityLevel: 2,
+            allowYearlyInstallments: false,
+            allowEarlyAccess: false,
+            allowFreeToPlay: false,
+            allowReleasedInternationally: false,
+            allowExpansions: false,
+            allowUnannouncedGames: false
+        };
     }
-  }
+};
 </script>
 <style scoped>
 label {

@@ -20,16 +20,16 @@
   </b-table>
 </template>
 <script>
-  export default {
+export default {
     props: ['leagues', 'leagueIcon', 'userID'],
     data() {
-      return {
-        leagueFields: [
-          { key: 'leagueName' },
-        ]
-      }
+        return {
+            leagueFields: [
+                { key: 'leagueName' },
+            ]
+        };
     }
-  }
+};
 </script>
 <style scoped>
 table >>> .hidden_header {

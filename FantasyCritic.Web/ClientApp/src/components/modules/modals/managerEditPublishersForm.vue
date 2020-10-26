@@ -46,57 +46,57 @@
 </template>
 
 <script>
-  import Vue from "vue";
-  import axios from "axios";
-  export default {
+import Vue from 'vue';
+import axios from 'axios';
+export default {
     data() {
-      return {
-        editPublisher: null,
-        newPublisherName: null,
-        newBudget: null,
-        newFreeGamesDropped: null,
-        newWillNotReleaseGamesDropped: null,
-        newWillReleaseGamesDropped: null,
-        errorInfo: null
-      }
+        return {
+            editPublisher: null,
+            newPublisherName: null,
+            newBudget: null,
+            newFreeGamesDropped: null,
+            newWillNotReleaseGamesDropped: null,
+            newWillReleaseGamesDropped: null,
+            errorInfo: null
+        };
     },
     props: ['leagueYear'],
     computed: {
-      publishers() {
-        return this.leagueYear.publishers;
-      }
+        publishers() {
+            return this.leagueYear.publishers;
+        }
     },
     methods: {
-      selectPublisher(selectedPublisher) {
-        this.newPublisherName = selectedPublisher.publisherName;
-        this.newBudget = selectedPublisher.budget;
-        this.newFreeGamesDropped = selectedPublisher.freeGamesDropped;
-        this.newWillNotReleaseGamesDropped = selectedPublisher.willNotReleaseGamesDropped;
-        this.newWillReleaseGamesDropped = selectedPublisher.willReleaseGamesDropped;
-      },
-      makeEditRequest() {
-        var model = {
-          publisherID: this.editPublisher.publisherID,
-          leagueID: this.leagueYear.leagueID,
-          publisherName: this.newPublisherName,
-          budget: this.newBudget,
-          freeGamesDropped: this.newFreeGamesDropped,
-          willNotReleaseGamesDropped: this.newWillNotReleaseGamesDropped,
-          willReleaseGamesDropped: this.newWillReleaseGamesDropped
-        };
-        axios
-          .post('/api/leagueManager/EditPublisher', model)
-          .then(response => {
-            this.$refs.managerEditPublishersFormRef.hide();
-            this.$emit('publishersEdited');
-          })
-          .catch(response => {
-            this.errorInfo = response.response.data;
-          });
-      },
-      clearData() {
-        this.editPublisher = null;
-      }
+        selectPublisher(selectedPublisher) {
+            this.newPublisherName = selectedPublisher.publisherName;
+            this.newBudget = selectedPublisher.budget;
+            this.newFreeGamesDropped = selectedPublisher.freeGamesDropped;
+            this.newWillNotReleaseGamesDropped = selectedPublisher.willNotReleaseGamesDropped;
+            this.newWillReleaseGamesDropped = selectedPublisher.willReleaseGamesDropped;
+        },
+        makeEditRequest() {
+            var model = {
+                publisherID: this.editPublisher.publisherID,
+                leagueID: this.leagueYear.leagueID,
+                publisherName: this.newPublisherName,
+                budget: this.newBudget,
+                freeGamesDropped: this.newFreeGamesDropped,
+                willNotReleaseGamesDropped: this.newWillNotReleaseGamesDropped,
+                willReleaseGamesDropped: this.newWillReleaseGamesDropped
+            };
+            axios
+                .post('/api/leagueManager/EditPublisher', model)
+                .then(response => {
+                    this.$refs.managerEditPublishersFormRef.hide();
+                    this.$emit('publishersEdited');
+                })
+                .catch(response => {
+                    this.errorInfo = response.response.data;
+                });
+        },
+        clearData() {
+            this.editPublisher = null;
+        }
     }
-  }
+};
 </script>

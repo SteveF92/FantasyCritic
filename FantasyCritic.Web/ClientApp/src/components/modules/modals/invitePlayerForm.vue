@@ -50,100 +50,100 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        inviteEmail: "",
-        inviteDisplayName: "",
-        inviteDisplayNumber: "",
-        inviteLinks: null,
-        errorInfo: ""
-      }
+        return {
+            inviteEmail: '',
+            inviteDisplayName: '',
+            inviteDisplayNumber: '',
+            inviteLinks: null,
+            errorInfo: ''
+        };
     },
     computed: {
-      valuesEntered() {
-        return this.inviteEmail || (this.inviteDisplayName && this.inviteDisplayNumber);
-      },
+        valuesEntered() {
+            return this.inviteEmail || (this.inviteDisplayName && this.inviteDisplayNumber);
+        },
     },
 
     props: ['league'],
     methods: {
-      invitePlayer() {
-        var model = {
-          leagueID: this.league.leagueID,
-          inviteEmail: this.inviteEmail,
-          inviteDisplayName: this.inviteDisplayName,
-          inviteDisplayNumber: this.inviteDisplayNumber
-        };
-        axios
-          .post('/api/leagueManager/InvitePlayer', model)
-          .then(response => {
-            this.$refs.invitePlayerRef.hide();
-            let inviteName = this.inviteEmail;
-            if (this.inviteDisplayName) {
-              inviteName = this.inviteDisplayName;
-            }
-            this.$emit('playerInvited', inviteName);
-            this.inviteEmail = "";
-          })
-          .catch(error => {
-            this.errorInfo = error.response.data;
-          });
-      },
-      createInviteLink() {
-        var model = {
-          leagueID: this.league.leagueID
-        };
-        axios
-          .post('/api/leagueManager/CreateInviteLink', model)
-          .then(response => {
-            this.fetchInviteLinks();
-          })
-          .catch(error => {
-            this.errorInfo = error.response.data;
-          });
-      },
-      inviteLinkCopied() {
-        this.$emit('linkCopied');
-      },
-      deleteInviteLink(inviteLink) {
-        var model = {
-          leagueID: this.league.leagueID,
-          inviteID: inviteLink.inviteID
-        };
-        axios
-          .post('/api/leagueManager/DeleteInviteLink', model)
-          .then(response => {
-            this.fetchInviteLinks();
-          })
-          .catch(error => {
-            this.errorInfo = error.response.data;
-          });
-      },
-      fetchInviteLinks() {
-        axios
-          .get('/api/leagueManager/InviteLinks/' + this.league.leagueID)
-          .then(response => {
-            this.inviteLinks = response.data;
-          })
-          .catch(response => {
+        invitePlayer() {
+            var model = {
+                leagueID: this.league.leagueID,
+                inviteEmail: this.inviteEmail,
+                inviteDisplayName: this.inviteDisplayName,
+                inviteDisplayNumber: this.inviteDisplayNumber
+            };
+            axios
+                .post('/api/leagueManager/InvitePlayer', model)
+                .then(response => {
+                    this.$refs.invitePlayerRef.hide();
+                    let inviteName = this.inviteEmail;
+                    if (this.inviteDisplayName) {
+                        inviteName = this.inviteDisplayName;
+                    }
+                    this.$emit('playerInvited', inviteName);
+                    this.inviteEmail = '';
+                })
+                .catch(error => {
+                    this.errorInfo = error.response.data;
+                });
+        },
+        createInviteLink() {
+            var model = {
+                leagueID: this.league.leagueID
+            };
+            axios
+                .post('/api/leagueManager/CreateInviteLink', model)
+                .then(response => {
+                    this.fetchInviteLinks();
+                })
+                .catch(error => {
+                    this.errorInfo = error.response.data;
+                });
+        },
+        inviteLinkCopied() {
+            this.$emit('linkCopied');
+        },
+        deleteInviteLink(inviteLink) {
+            var model = {
+                leagueID: this.league.leagueID,
+                inviteID: inviteLink.inviteID
+            };
+            axios
+                .post('/api/leagueManager/DeleteInviteLink', model)
+                .then(response => {
+                    this.fetchInviteLinks();
+                })
+                .catch(error => {
+                    this.errorInfo = error.response.data;
+                });
+        },
+        fetchInviteLinks() {
+            axios
+                .get('/api/leagueManager/InviteLinks/' + this.league.leagueID)
+                .then(response => {
+                    this.inviteLinks = response.data;
+                })
+                .catch(response => {
 
-          });
-      },
-      clearData() {
-        this.inviteEmail = "";
-        this.inviteDisplayName = "";
-        this.inviteDisplayNumber = "";
-        this.errorInfo = "";
-      }
+                });
+        },
+        clearData() {
+            this.inviteEmail = '';
+            this.inviteDisplayName = '';
+            this.inviteDisplayNumber = '';
+            this.errorInfo = '';
+        }
     },
     mounted() {
-      this.fetchInviteLinks();
+        this.fetchInviteLinks();
     }
-  }
+};
 </script>
 <style scoped>
   .email-form {

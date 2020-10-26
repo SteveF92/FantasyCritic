@@ -12,39 +12,39 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        newEmail: "",
-        errorInfo: ""
-      }
+        return {
+            newEmail: '',
+            errorInfo: ''
+        };
     },
     computed: {
-      formValid() {
-        return this.newEmail;
-      }
+        formValid() {
+            return this.newEmail;
+        }
     },
     methods: {
-      sendChangeEmail() {
-        var model = {
-          newEmailAddress: this.newEmail
-        };
-        axios
-          .post('/api/account/SendChangeEmail', model)
-          .then(response => {
-            this.$refs.changeEmailRef.hide();
-            this.$emit('sentEmailChanged');
-            this.clearData();
-          })
-          .catch(response => {
-          });
-      },
-      clearData() {
-        this.newEmail = "";
-      }
+        sendChangeEmail() {
+            var model = {
+                newEmailAddress: this.newEmail
+            };
+            axios
+                .post('/api/account/SendChangeEmail', model)
+                .then(response => {
+                    this.$refs.changeEmailRef.hide();
+                    this.$emit('sentEmailChanged');
+                    this.clearData();
+                })
+                .catch(response => {
+                });
+        },
+        clearData() {
+            this.newEmail = '';
+        }
     }
-  }
+};
 </script>

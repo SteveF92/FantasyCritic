@@ -25,42 +25,42 @@
   </div>
 </template>
 <script>
-  import StatusBadge from "@/components/modules/statusBadge";
-  import MasterGamePopover from "@/components/modules/masterGamePopover";
+import StatusBadge from '@/components/modules/statusBadge';
+import MasterGamePopover from '@/components/modules/masterGamePopover';
 
-  export default {
+export default {
     data() {
-      return {
-        perPage: 10,
-        currentPage: 1,
-        selectedPossibleRoyaleGame: null,
-        lastPopoverShown: null,
-        gameFields: [
-          { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
-          { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-          { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-          { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary' },
-          { key: 'select', label: '', thClass: 'bg-primary' }
-        ],
-      }
+        return {
+            perPage: 10,
+            currentPage: 1,
+            selectedPossibleRoyaleGame: null,
+            lastPopoverShown: null,
+            gameFields: [
+                { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
+                { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+                { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+                { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary' },
+                { key: 'select', label: '', thClass: 'bg-primary' }
+            ],
+        };
     },
     components: {
-      StatusBadge,
-      MasterGamePopover
+        StatusBadge,
+        MasterGamePopover
     },
     props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
     computed: {
-      rows() {
-        return this.possibleGames.length;
-      }
+        rows() {
+            return this.possibleGames.length;
+        }
     },
     methods: {
-      selectGame(possibleRoyaleGame) {
-        this.selectedPossibleRoyaleGame = possibleRoyaleGame;
-        this.$emit('input', this.selectedPossibleRoyaleGame);
-      }
+        selectGame(possibleRoyaleGame) {
+            this.selectedPossibleRoyaleGame = possibleRoyaleGame;
+            this.$emit('input', this.selectedPossibleRoyaleGame);
+        }
     }
-  }
+};
 </script>
 <style scoped>
   .fake-link {

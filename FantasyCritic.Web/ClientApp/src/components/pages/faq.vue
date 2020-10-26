@@ -587,23 +587,23 @@
   </div>
 </template>
 <script>
-  import FaqCollapse from "@/components/modules/faqCollapse";
+import FaqCollapse from '@/components/modules/faqCollapse';
 
-  export default {
+export default {
     components: {
-      FaqCollapse
+        FaqCollapse
     },
     data() {
-      return {
-        lastID: 1
-      }
+        return {
+            lastID: 1
+        };
     },
     methods: {
-      getCollapseID() {
-        let thisID = this.lastID;
-        this.lastID = this.lastID + 1;
-        return thisID;
-      }
+        getCollapseID() {
+            let thisID = this.lastID;
+            this.lastID = this.lastID + 1;
+            return thisID;
+        }
     }
-  }
+};
 </script>

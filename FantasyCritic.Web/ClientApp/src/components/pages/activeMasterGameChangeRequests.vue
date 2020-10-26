@@ -81,81 +81,81 @@
   </div>
 </template>
 <script>
-  import axios from 'axios';
-  import MasterGamePopover from "@/components/modules/masterGamePopover";
+import axios from 'axios';
+import MasterGamePopover from '@/components/modules/masterGamePopover';
 
-  export default {
+export default {
     data() {
-      return {
-        activeRequests: null,
-        showResponded: false,
-        showLinked: false,
-        requestSelected: null,
-        responseNote: "",
-        generatedSQL: ""
-      }
+        return {
+            activeRequests: null,
+            showResponded: false,
+            showLinked: false,
+            requestSelected: null,
+            responseNote: '',
+            generatedSQL: ''
+        };
     },
     computed: {
 
     },
     components: {
-      MasterGamePopover
+        MasterGamePopover
     },
     methods: {
-      fetchMyRequests() {
-        axios
-          .get('/api/admin/ActiveMasterGameChangeRequests')
-          .then(response => {
-            this.activeRequests = response.data;
-          })
-          .catch(response => {
+        fetchMyRequests() {
+            axios
+                .get('/api/admin/ActiveMasterGameChangeRequests')
+                .then(response => {
+                    this.activeRequests = response.data;
+                })
+                .catch(response => {
 
-          });
-      },
-      createResponse(request) {
-        this.requestSelected = request;
-        this.responseNote = "Got that fixed, thanks!";
-      },
-      respondToRequest() {
-        let request = {
-          requestID: this.requestSelected.requestID,
-          responseNote: this.responseNote
-        };
-        axios
-          .post('/api/admin/CompleteMasterGameChangeRequest', request)
-          .then(response => {
-            this.showResponded = true;
-          })
-          .catch(error => {
-            this.errorInfo = error.response;
-          });
-      },
-      openCriticLink(openCriticID) {
-        return "https://opencritic.com/game/" + openCriticID + "/a";
-      },
-      linkToOpenCritic(request) {
-        let linkRequest = {
-          masterGameID: request.masterGame.masterGameID,
-          openCriticID: request.openCriticID
-        };
+                });
+        },
+        createResponse(request) {
+            this.requestSelected = request;
+            this.responseNote = 'Got that fixed, thanks!';
+        },
+        respondToRequest() {
+            let request = {
+                requestID: this.requestSelected.requestID,
+                responseNote: this.responseNote
+            };
+            axios
+                .post('/api/admin/CompleteMasterGameChangeRequest', request)
+                .then(response => {
+                    this.showResponded = true;
+                })
+                .catch(error => {
+                    this.errorInfo = error.response;
+                });
+        },
+        openCriticLink(openCriticID) {
+            return 'https://opencritic.com/game/' + openCriticID + '/a';
+        },
+        linkToOpenCritic(request) {
+            let linkRequest = {
+                masterGameID: request.masterGame.masterGameID,
+                openCriticID: request.openCriticID
+            };
 
-        axios
-          .post('/api/admin/LinkGameToOpenCritic', linkRequest)
-          .then(response => {
-            this.showLinked = true;
-          })
-          .catch(error => {
-            this.errorInfo = error.response;
-          });
-      },
-      generateSQL(request) {
-        this.generatedSQL = "select * from tbl_mastergame where MasterGameID = '" + request.masterGame.masterGameID + "';"
-      }
+            axios
+                .post('/api/admin/LinkGameToOpenCritic', linkRequest)
+                .then(response => {
+                    this.showLinked = true;
+                })
+                .catch(error => {
+                    this.errorInfo = error.response;
+                });
+        },
+        generateSQL(request) {
+            this.generatedSQL = 'select * from tbl_mastergame where MasterGameID = \'' + request.masterGame.masterGameID + '\';';
+        }
     },
     mounted() {
-      this.fetchMyRequests();
+        this.fetchMyRequests();
     }
-  }
+};
 </script>
 <style scoped>
   .select-cell {

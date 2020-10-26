@@ -11,13 +11,13 @@
 </template>
 
 <script>
-    import Vue from 'vue';
-    import axios from 'axios';
-    import RegisterForm from "@/components/modules/registerForm";
+import Vue from 'vue';
+import axios from 'axios';
+import RegisterForm from '@/components/modules/registerForm';
 
-    export default {
-      components: {
+export default {
+    components: {
         RegisterForm
-      }
     }
+};
 </script>

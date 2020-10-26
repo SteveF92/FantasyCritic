@@ -61,76 +61,76 @@
   </div>
 </template>
 <script>
-  import axios from 'axios';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        activeRequests: null,
-        showResponded: false,
-        requestSelected: null,
-        masterGameID: null,
-        responseNote: ""
-      }
+        return {
+            activeRequests: null,
+            showResponded: false,
+            requestSelected: null,
+            masterGameID: null,
+            responseNote: ''
+        };
     },
     computed: {
 
     },
     methods: {
-      fetchMyRequests() {
-        axios
-          .get('/api/admin/ActiveMasterGameRequests')
-          .then(response => {
-            this.activeRequests = response.data;
-          })
-          .catch(response => {
+        fetchMyRequests() {
+            axios
+                .get('/api/admin/ActiveMasterGameRequests')
+                .then(response => {
+                    this.activeRequests = response.data;
+                })
+                .catch(response => {
 
-          });
-      },
-      createGame(request) {
-        let query = {
-          gameName: request.gameName,
-          estimatedReleaseDate: request.estimatedReleaseDate,
-          steamID: request.steamID,
-          openCriticID: request.openCriticID,
-          eligibilityLevel: request.eligibilityLevel,
-          yearlyInstallment: request.yearlyInstallment,
-          earlyAccess: request.earlyAccess,
-          freeToPlay: request.freeToPlay,
-          releasedInternationally: request.releasedInternationally,
-          expansionPack: request.expansionPack,
-          unannouncedGame: request.unannouncedGame,
-          requestNote: request.requestNote
-        };
-        if (request.releaseDate) {
-          query.releaseDate = request.releaseDate;
+                });
+        },
+        createGame(request) {
+            let query = {
+                gameName: request.gameName,
+                estimatedReleaseDate: request.estimatedReleaseDate,
+                steamID: request.steamID,
+                openCriticID: request.openCriticID,
+                eligibilityLevel: request.eligibilityLevel,
+                yearlyInstallment: request.yearlyInstallment,
+                earlyAccess: request.earlyAccess,
+                freeToPlay: request.freeToPlay,
+                releasedInternationally: request.releasedInternationally,
+                expansionPack: request.expansionPack,
+                unannouncedGame: request.unannouncedGame,
+                requestNote: request.requestNote
+            };
+            if (request.releaseDate) {
+                query.releaseDate = request.releaseDate;
+            }
+            this.$router.push({ name: 'masterGameCreator', query: query });
+        },
+        assignGame(request) {
+            this.requestSelected = request;
+            this.responseNote = 'Got that added, thanks!';
+        },
+        respondToRequest() {
+            let request = {
+                requestID: this.requestSelected.requestID,
+                responseNote: this.responseNote,
+                masterGameID: this.masterGameID
+            };
+            axios
+                .post('/api/admin/CompleteMasterGameRequest', request)
+                .then(response => {
+                    this.showResponded = true;
+                })
+                .catch(error => {
+                    this.errorInfo = error.response;
+                });
         }
-        this.$router.push({ name: 'masterGameCreator', query: query });
-      },
-      assignGame(request) {
-        this.requestSelected = request;
-        this.responseNote = "Got that added, thanks!";
-      },
-      respondToRequest() {
-        let request = {
-          requestID: this.requestSelected.requestID,
-          responseNote: this.responseNote,
-          masterGameID: this.masterGameID
-        };
-        axios
-          .post('/api/admin/CompleteMasterGameRequest', request)
-          .then(response => {
-            this.showResponded = true;
-          })
-          .catch(error => {
-            this.errorInfo = error.response;
-          });
-      }
     },
     mounted() {
-      this.fetchMyRequests();
+        this.fetchMyRequests();
     }
-  }
+};
 </script>
 <style scoped>
   .select-cell {

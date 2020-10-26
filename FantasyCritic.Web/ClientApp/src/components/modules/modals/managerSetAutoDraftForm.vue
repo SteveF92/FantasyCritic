@@ -16,38 +16,38 @@
   </b-modal>
 </template>
 <script>
-  import axios from 'axios';
+import axios from 'axios';
 
 export default {
-  name: 'managerSetAutoDraftForm',
-  props: ['leagueYear'],
-  data: () => ({ publishers: [], publisherAutoDraft: {} }),
-  methods: {
+    name: 'managerSetAutoDraftForm',
+    props: ['leagueYear'],
+    data: () => ({ publishers: [], publisherAutoDraft: {} }),
+    methods: {
     // Keep track of publishers that need the updates.
-    onChange(pub) {
-      this.publisherAutoDraft[pub.publisherID] = !pub.autoDraft
-    },
-    setAutoDraft() {
-      if (Object.keys(this.publisherAutoDraft).length === 0) {
-        return;
-      }
+        onChange(pub) {
+            this.publisherAutoDraft[pub.publisherID] = !pub.autoDraft;
+        },
+        setAutoDraft() {
+            if (Object.keys(this.publisherAutoDraft).length === 0) {
+                return;
+            }
 
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
-        publisherAutoDraft: this.publisherAutoDraft
-      };
-      axios
-        .post('/api/leagueManager/SetAutoDraft', model)
-        .then(response => {
-          this.$refs.managerSetAutoDraftFormRef.hide();
-          this.$emit('publishersAutoDraftSet');
-        })
-        .catch(e => {});
+            const model = {
+                leagueID: this.leagueYear.leagueID,
+                year: this.leagueYear.year,
+                publisherAutoDraft: this.publisherAutoDraft
+            };
+            axios
+                .post('/api/leagueManager/SetAutoDraft', model)
+                .then(response => {
+                    this.$refs.managerSetAutoDraftFormRef.hide();
+                    this.$emit('publishersAutoDraftSet');
+                })
+                .catch(e => {});
+        }
+    },
+    mounted() {
+        this.publishers = this.leagueYear.publishers;
     }
-  },
-  mounted() {
-    this.publishers = this.leagueYear.publishers
-  }
-}
+};
 </script>

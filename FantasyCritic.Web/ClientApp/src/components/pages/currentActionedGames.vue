@@ -17,34 +17,34 @@
   </div>
 </template>
 <script>
-  import axios from 'axios';
-  import MasterGamesTable from "@/components/modules/gameTables/masterGamesTable";
+import axios from 'axios';
+import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
 
-  export default {
+export default {
     data() {
-      return {
-        actionedGames: null
-      }
+        return {
+            actionedGames: null
+        };
     },
     components: {
-      MasterGamesTable
+        MasterGamesTable
     },
     methods: {
-      fetchActionedGames() {
-        axios
-          .get('/api/admin/GetCurrentActionedGames')
-          .then(response => {
-            this.actionedGames = response.data;
-          })
-          .catch(response => {
+        fetchActionedGames() {
+            axios
+                .get('/api/admin/GetCurrentActionedGames')
+                .then(response => {
+                    this.actionedGames = response.data;
+                })
+                .catch(response => {
 
-          });
-      }
+                });
+        }
     },
     mounted() {
-      this.fetchActionedGames();
+        this.fetchActionedGames();
     }
-  }
+};
 </script>
 <style scoped>
   .spinner {

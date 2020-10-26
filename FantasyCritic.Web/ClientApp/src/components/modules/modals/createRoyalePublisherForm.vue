@@ -12,37 +12,37 @@
   </b-modal>
 </template>
 <script>
-  import Vue from "vue";
-  import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
-  export default {
+export default {
     data() {
-      return {
-        publisherName: "",
-        errorInfo: ""
-      }
+        return {
+            publisherName: '',
+            errorInfo: ''
+        };
     },
     props: ['royaleYearQuarter'],
     methods: {
-      createRoyalePublisher() {
-        var model = {
-          year: this.royaleYearQuarter.year,
-          quarter: this.royaleYearQuarter.quarter,
-          publisherName: this.publisherName
-        };
-        axios
-          .post('/api/royale/createRoyalePublisher', model)
-          .then(response => {
-            let publisherid = response.data;
-            this.$router.push({ name: "royalePublisher", params: { publisherid: publisherid } });
-          })
-          .catch(response => {
+        createRoyalePublisher() {
+            var model = {
+                year: this.royaleYearQuarter.year,
+                quarter: this.royaleYearQuarter.quarter,
+                publisherName: this.publisherName
+            };
+            axios
+                .post('/api/royale/createRoyalePublisher', model)
+                .then(response => {
+                    let publisherid = response.data;
+                    this.$router.push({ name: 'royalePublisher', params: { publisherid: publisherid } });
+                })
+                .catch(response => {
 
-          });
-      },
-      clearData() {
-        this.publisherName = "";
-      }
+                });
+        },
+        clearData() {
+            this.publisherName = '';
+        }
     }
-  }
+};
 </script>
