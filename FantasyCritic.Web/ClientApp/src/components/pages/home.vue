@@ -29,9 +29,14 @@
           <b-card title="Leagues" class="homepage-section" v-if="userInfo">
             <b-tabs pills>
               <b-tab title="My Leagues" title-item-class="tab-header">
-                <leagueTable :leagues="nonTestLeagues" :leagueIcon="'user'" :userID="userInfo.userID"></leagueTable>
+                <div v-if="myStandardLeagues && myStandardLeagues.length > 0">
+                  <leagueTable :leagues="myStandardLeagues" :leagueIcon="'user'" :userID="userInfo.userID"></leagueTable>
+                </div>
+                <div v-else>
+                  <label>You are not in any leagues! Why not create one?</label>
+                </div>
               </b-tab>
-              <b-tab v-if="anyInvitedLeagues" title-item-class="tab-header">
+              <b-tab v-if="invitedLeagues && invitedLeagues.length > 0" title-item-class="tab-header">
                 <template slot="title">
                   League Invites
                   <font-awesome-icon icon="exclamation-circle" size="lg" />
@@ -39,15 +44,18 @@
                 <leagueTable :leagues="invitedLeagues" :leagueIcon="'envelope'" :userID="userInfo.userID"></leagueTable>
               </b-tab>
               <b-tab title="Followed Leagues" title-item-class="tab-header">
-                <div v-if="anyFollowedLeagues">
+                <div v-if="myFollowedLeagues && myFollowedLeagues.length > 0">
                   <leagueTable :leagues="myFollowedLeagues" :leagueIcon="'users'" :userID="userInfo.userID"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not following any public leagues!</label>
                 </div>
               </b-tab>
-              <b-tab title="Test Leagues" v-if="anyTestLeagues" title-item-class="tab-header">
-                <leagueTable :leagues="testLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>
+              <b-tab title="Archived Leagues" v-if="myArchivedLeagues && myArchivedLeagues.length > 0" title-item-class="tab-header">
+                <leagueTable :leagues="myArchivedLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>
+              </b-tab>
+              <b-tab title="Test Leagues" v-if="myTestLeagues && myTestLeagues.length > 0" title-item-class="tab-header">
+                <leagueTable :leagues="myTestLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>
               </b-tab>
             </b-tabs>
           </b-card>
@@ -129,29 +137,16 @@ export default {
     UpcomingGames
   },
   computed: {
-    anyManagedLeagues() {
-      return _(this.myLeagues).some('isManager');
+    myStandardLeagues() {
+      let nonTest = _.filter(this.myLeagues, ['testLeague', false]);
+      return _.filter(nonTest, ['archived', false]);
     },
-    anyTestLeagues() {
-      return _(this.myLeagues).some('testLeague');
+    myArchivedLeagues() {
+      let nonTest = _.filter(this.myLeagues, ['testLeague', false]);
+      return _.filter(nonTest, ['archived', true]);
     },
-    anyPlayerLeagues() {
-      return _.some(this.myLeagues, ['isManager', false]);
-    },
-    anyInvitedLeagues() {
-      return this.invitedLeagues.length > 0;
-    },
-    anyFollowedLeagues() {
-      return this.myFollowedLeagues.length > 0;
-    },
-    nonTestLeagues() {
-      return _.filter(this.myLeagues, ['testLeague', false]);
-    },
-    testLeagues() {
+    myTestLeagues() {
       return _.filter(this.myLeagues, ['testLeague', true]);
-    },
-    noLeagues() {
-      return (!(this.anyPlayerLeagues || this.anyManagedLeagues));
     },
     userInfo() {
       return this.$store.getters.userInfo;

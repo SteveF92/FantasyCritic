@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NLog;
 
 namespace FantasyCritic.Lib.Domain
 {
     public class League : IEquatable<League>
     {
-        public League(Guid leagueID, string leagueName, FantasyCriticUser leagueManager, IEnumerable<int> years, bool publicLeague, bool testLeague, int numberOfFollowers)
+        public League(Guid leagueID, string leagueName, FantasyCriticUser leagueManager, IEnumerable<int> years, bool publicLeague, bool testLeague, bool archived, int numberOfFollowers)
         {
             LeagueID = leagueID;
             LeagueName = leagueName;
@@ -15,6 +16,7 @@ namespace FantasyCritic.Lib.Domain
             Years = years.ToList();
             PublicLeague = publicLeague;
             TestLeague = testLeague;
+            Archived = archived;
             NumberOfFollowers = numberOfFollowers;
         }
 
@@ -22,8 +24,9 @@ namespace FantasyCritic.Lib.Domain
         public string LeagueName { get; }
         public FantasyCriticUser LeagueManager { get; }
         public IReadOnlyList<int> Years { get; }
-        public bool PublicLeague { get; set; }
-        public bool TestLeague { get; set; }
+        public bool PublicLeague { get; }
+        public bool TestLeague { get; }
+        public bool Archived { get; }
         public int NumberOfFollowers { get; }
 
         public bool Equals(League other)

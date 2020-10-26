@@ -31,10 +31,11 @@ namespace FantasyCritic.MySQL.Entities
         public bool PublicLeague { get; set; }
         public bool TestLeague { get; set; }
         public int NumberOfFollowers { get; set; }
+        public bool Archived { get; set; }
 
         public League ToDomain(FantasyCriticUser manager, IEnumerable<int> years)
         {
-            League parameters = new League(LeagueID, LeagueName, manager, years, PublicLeague, TestLeague, NumberOfFollowers);
+            League parameters = new League(LeagueID, LeagueName, manager, years, PublicLeague, TestLeague, Archived, NumberOfFollowers);
             return parameters;
         }
     }

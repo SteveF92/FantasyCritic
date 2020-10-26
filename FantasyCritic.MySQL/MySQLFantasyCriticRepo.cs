@@ -697,7 +697,7 @@ namespace FantasyCritic.MySQL
                     userID = user.UserID,
                 };
 
-                var sql = "select vw_league.* from vw_league join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;";
+                var sql = "select vw_league.*, tbl_league_hasuser.Archived from vw_league join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;";
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(sql, queryObject);
             }
 

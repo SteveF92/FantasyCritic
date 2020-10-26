@@ -15,7 +15,7 @@ namespace FantasyCritic.FakeRepo.Factories
         {
             var users = UserFactory.GetUsers();
             League league = new League(Guid.Parse("68227dc3-f5e1-4403-870a-e4d03cfc25d5"), "The Original Memers", users.Single(x => x.UserID == Guid.Parse("9142b786-f614-483f-92ca-1ef489508641")), 
-                new List<int>(){2019}, true, false, 0);
+                new List<int>(){2019}, true, false, false, 0);
 
             return new List<League>(){league};
         }

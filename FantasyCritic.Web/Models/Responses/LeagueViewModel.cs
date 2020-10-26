@@ -15,6 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueName = league.LeagueName;
             LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
             IsManager = isManager;
+            Archived = league.Archived;
             Years = league.Years;
             ActiveYear = Years.Max();
             PublicLeague = league.PublicLeague;
@@ -31,6 +32,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueName = league.LeagueName;
             LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
             IsManager = isManager;
+            Archived = league.Archived;
             Years = league.Years;
             ActiveYear = Years.Max();
 
@@ -59,6 +61,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool NeverStarted { get; }
         public bool PublicLeague { get; }
         public bool TestLeague { get; }
+        public bool Archived { get; }
         public bool UserIsInLeague { get; }
         public bool UserIsFollowingLeague { get; }
         public int NumberOfFollowers{ get; }
