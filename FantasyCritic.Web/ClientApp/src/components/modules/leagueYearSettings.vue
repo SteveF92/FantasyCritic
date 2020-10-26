@@ -252,184 +252,184 @@ import 'vue-slider-component/theme/antd.css';
 import { cloneDeep, tap, set } from 'lodash';
 
 export default {
-    props: ['year', 'possibleLeagueOptions', 'editMode', 'value', 'currentNumberOfPlayers', 'freshSettings'],
-    data() {
-        return {
-            intendedNumberOfPlayers: '',
-            intendedNumberOfPlayersEverValid: false,
-            gameMode: 'Standard',
-            gameModeOptions: [
-                'Beginner',
-                'Standard',
-                'Advanced'
-            ],
-            gameModeMarks: {
-                'Beginner': {
-                    label: 'Beginner',
-                    style: {
-                        width: '8px',
-                        height: '8px',
-                        display: 'block',
-                        transform: 'translate(-2px, -2px)'
-                    },
-                    labelStyle: {
-                        color: 'white',
-                        fontWeight: 'bolder',
-                        fontSize: '15px'
-                    }
-                },
-                'Standard': {
-                    label: 'Standard',
-                    style: {
-                        width: '8px',
-                        height: '8px',
-                        display: 'block',
-                        transform: 'translate(-2px, -2px)'
-                    },
-                    labelStyle: {
-                        color: 'white',
-                        fontWeight: 'bolder',
-                        fontSize: '15px'
-                    }
-                },
-                'Advanced': {
-                    label: 'Advanced',
-                    style: {
-                        width: '8px',
-                        height: '8px',
-                        display: 'block',
-                        transform: 'translate(-2px, -2px)'
-                    },
-                    labelStyle: {
-                        color: 'white',
-                        fontWeight: 'bolder',
-                        fontSize: '15px'
-                    }
-                }
-            },
-            markStyle: {
-                width: '8px',
-                height: '8px',
-                display: 'block',
-                transform: 'translate(-2px, -2px)'
-            },
-            labelStyle: {
-                color: 'white',
-                fontWeight: 'bolder',
-                fontSize: '15px'
-            }
-        };
+  props: ['year', 'possibleLeagueOptions', 'editMode', 'value', 'currentNumberOfPlayers', 'freshSettings'],
+  data() {
+    return {
+      intendedNumberOfPlayers: '',
+      intendedNumberOfPlayersEverValid: false,
+      gameMode: 'Standard',
+      gameModeOptions: [
+        'Beginner',
+        'Standard',
+        'Advanced'
+      ],
+      gameModeMarks: {
+        'Beginner': {
+          label: 'Beginner',
+          style: {
+            width: '8px',
+            height: '8px',
+            display: 'block',
+            transform: 'translate(-2px, -2px)'
+          },
+          labelStyle: {
+            color: 'white',
+            fontWeight: 'bolder',
+            fontSize: '15px'
+          }
+        },
+        'Standard': {
+          label: 'Standard',
+          style: {
+            width: '8px',
+            height: '8px',
+            display: 'block',
+            transform: 'translate(-2px, -2px)'
+          },
+          labelStyle: {
+            color: 'white',
+            fontWeight: 'bolder',
+            fontSize: '15px'
+          }
+        },
+        'Advanced': {
+          label: 'Advanced',
+          style: {
+            width: '8px',
+            height: '8px',
+            display: 'block',
+            transform: 'translate(-2px, -2px)'
+          },
+          labelStyle: {
+            color: 'white',
+            fontWeight: 'bolder',
+            fontSize: '15px'
+          }
+        }
+      },
+      markStyle: {
+        width: '8px',
+        height: '8px',
+        display: 'block',
+        transform: 'translate(-2px, -2px)'
+      },
+      labelStyle: {
+        color: 'white',
+        fontWeight: 'bolder',
+        fontSize: '15px'
+      }
+    };
+  },
+  components: {
+    vueSlider,
+    'popper': Popper,
+  },
+  computed: {
+    minimumPossibleEligibilityLevel() {
+      return 0;
     },
-    components: {
-        vueSlider,
-        'popper': Popper,
+    maximumPossibleEligibilityLevel() {
+      if (!this.possibleLeagueOptions.eligibilityLevels) {
+        return 0;
+      }
+      let maxEligibilityLevel = _.maxBy(this.possibleLeagueOptions.eligibilityLevels, 'level');
+      return maxEligibilityLevel.level;
     },
-    computed: {
-        minimumPossibleEligibilityLevel() {
-            return 0;
-        },
-        maximumPossibleEligibilityLevel() {
-            if (!this.possibleLeagueOptions.eligibilityLevels) {
-                return 0;
-            }
-            let maxEligibilityLevel = _.maxBy(this.possibleLeagueOptions.eligibilityLevels, 'level');
-            return maxEligibilityLevel.level;
-        },
-        selectedEligibilityLevel() {
-            let matchingLevel = _.filter(this.possibleLeagueOptions.eligibilityLevels, { 'level': this.value.maximumEligibilityLevel });
-            return matchingLevel[0];
-        },
-        marks() {
-            if (!this.possibleLeagueOptions.eligibilityLevels) {
-                return [];
-            }
+    selectedEligibilityLevel() {
+      let matchingLevel = _.filter(this.possibleLeagueOptions.eligibilityLevels, { 'level': this.value.maximumEligibilityLevel });
+      return matchingLevel[0];
+    },
+    marks() {
+      if (!this.possibleLeagueOptions.eligibilityLevels) {
+        return [];
+      }
   
-            let levels =  this.possibleLeagueOptions.eligibilityLevels.map(function (v) {
-                return v.level;
-            });
+      let levels =  this.possibleLeagueOptions.eligibilityLevels.map(function (v) {
+        return v.level;
+      });
   
-            return levels;
-        },
-        local() {
-            return this.value;
-        },
-        maxFreeDroppableGamesRule() {
-            return 'required|max_value:' + this.maxFreeDroppableGamesValue;
-        },
-        maxFreeDroppableGamesValue() {
-            if (this.value.unlimitedWillNotReleaseDroppableGames) {
-                return 100;
-            }
-
-            return this.value.willNotReleaseDroppableGames;
-        }
+      return levels;
     },
-    methods: {
-        showDetailedDropOptions() {
-            this.shouldShowDetailedDropOptions = true;
-        },
-        update(key, value) {
-            this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
-        },
-        autoUpdateOptions() {
-            if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
-                this.intendedNumberOfPlayersEverValid = true;
-            }
-
-            let recommendedNumberOfGames = 72;
-            let draftGameRatio = (1 / 2);
-
-            if (this.gameMode === 'Beginner') {
-                recommendedNumberOfGames = 42;
-                draftGameRatio = (4 / 7);
-            } else if (this.gameMode === 'Advanced') {
-                recommendedNumberOfGames = 108;
-                draftGameRatio = (4 / 9);
-            }
-
-            let averageSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / 6);
-            let averageSizeLeagueGamesToDraft = Math.floor(averageSizeLeagueStandardGames * draftGameRatio);
-            let averageSizeLeagueCounterPicks = Math.floor(averageSizeLeagueGamesToDraft / 4);
-
-            let thisSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / this.intendedNumberOfPlayers);
-            let thisSizeLeagueGamesToDraft = Math.floor(thisSizeLeagueStandardGames * draftGameRatio);
-            let thisSizeLeagueCounterPicks = Math.floor(thisSizeLeagueGamesToDraft / 4);
-
-            this.value.standardGames = Math.floor((averageSizeLeagueStandardGames + thisSizeLeagueStandardGames) / 2);
-            this.value.gamesToDraft = Math.floor((averageSizeLeagueGamesToDraft + thisSizeLeagueGamesToDraft) / 2);
-            this.value.counterPicks = Math.floor((averageSizeLeagueCounterPicks + thisSizeLeagueCounterPicks) / 2);
-
-            if (this.value.counterPicks === 0) {
-                this.value.counterPicks = 1;
-            }
-
-            if (this.gameMode === 'Beginner') {
-                this.value.counterPicks = 0;
-            }
-
-            this.value.freeDroppableGames = 0;
-            this.value.willNotReleaseDroppableGames = 0;
-            this.value.willReleaseDroppableGames = 1;
-            this.value.unlimitedFreeDroppableGames = false;
-            this.value.unlimitedWillNotReleaseDroppableGames = true;
-            this.value.unlimitedWillReleaseDroppableGames = false;
-
-            this.$emit('input', this.local);
-        }
+    local() {
+      return this.value;
     },
-    watch: {
-        intendedNumberOfPlayers: function (val) {
-            this.autoUpdateOptions();
-        },
-        gameMode: function (val) {
-            this.autoUpdateOptions();
-        }
+    maxFreeDroppableGamesRule() {
+      return 'required|max_value:' + this.maxFreeDroppableGamesValue;
     },
-    mounted() {
-        if (this.currentNumberOfPlayers && this.freshSettings) {
-            this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
-        }
+    maxFreeDroppableGamesValue() {
+      if (this.value.unlimitedWillNotReleaseDroppableGames) {
+        return 100;
+      }
+
+      return this.value.willNotReleaseDroppableGames;
     }
+  },
+  methods: {
+    showDetailedDropOptions() {
+      this.shouldShowDetailedDropOptions = true;
+    },
+    update(key, value) {
+      this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
+    },
+    autoUpdateOptions() {
+      if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
+        this.intendedNumberOfPlayersEverValid = true;
+      }
+
+      let recommendedNumberOfGames = 72;
+      let draftGameRatio = (1 / 2);
+
+      if (this.gameMode === 'Beginner') {
+        recommendedNumberOfGames = 42;
+        draftGameRatio = (4 / 7);
+      } else if (this.gameMode === 'Advanced') {
+        recommendedNumberOfGames = 108;
+        draftGameRatio = (4 / 9);
+      }
+
+      let averageSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / 6);
+      let averageSizeLeagueGamesToDraft = Math.floor(averageSizeLeagueStandardGames * draftGameRatio);
+      let averageSizeLeagueCounterPicks = Math.floor(averageSizeLeagueGamesToDraft / 4);
+
+      let thisSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / this.intendedNumberOfPlayers);
+      let thisSizeLeagueGamesToDraft = Math.floor(thisSizeLeagueStandardGames * draftGameRatio);
+      let thisSizeLeagueCounterPicks = Math.floor(thisSizeLeagueGamesToDraft / 4);
+
+      this.value.standardGames = Math.floor((averageSizeLeagueStandardGames + thisSizeLeagueStandardGames) / 2);
+      this.value.gamesToDraft = Math.floor((averageSizeLeagueGamesToDraft + thisSizeLeagueGamesToDraft) / 2);
+      this.value.counterPicks = Math.floor((averageSizeLeagueCounterPicks + thisSizeLeagueCounterPicks) / 2);
+
+      if (this.value.counterPicks === 0) {
+        this.value.counterPicks = 1;
+      }
+
+      if (this.gameMode === 'Beginner') {
+        this.value.counterPicks = 0;
+      }
+
+      this.value.freeDroppableGames = 0;
+      this.value.willNotReleaseDroppableGames = 0;
+      this.value.willReleaseDroppableGames = 1;
+      this.value.unlimitedFreeDroppableGames = false;
+      this.value.unlimitedWillNotReleaseDroppableGames = true;
+      this.value.unlimitedWillReleaseDroppableGames = false;
+
+      this.$emit('input', this.local);
+    }
+  },
+  watch: {
+    intendedNumberOfPlayers: function (val) {
+      this.autoUpdateOptions();
+    },
+    gameMode: function (val) {
+      this.autoUpdateOptions();
+    }
+  },
+  mounted() {
+    if (this.currentNumberOfPlayers && this.freshSettings) {
+      this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
+    }
+  }
 };
 </script>
 <style scoped>

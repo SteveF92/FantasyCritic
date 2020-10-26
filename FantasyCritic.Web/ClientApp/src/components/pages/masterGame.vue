@@ -41,41 +41,41 @@ import moment from 'moment';
 import MasterGameDetails  from '@/components/modules/masterGameDetails';
 
 export default {
-    data() {
-        return {
-            masterGame: null,
-            error: ''
-        };
-    },
-    props: ['mastergameid'],
-    components: {
-        MasterGameDetails
-    },
-    computed: {
-        boxartLink() {
-            if (this.masterGame.boxartFileName) {
-                return 'https://s3.amazonaws.com/fantasy-critic-box-art/' + this.masterGame.boxartFileName;
-            }
-            return null;
-        }
-    },
-    methods: {
-        fetchMasterGame() {
-            axios
-                .get('/api/game/MasterGame/' + this.mastergameid)
-                .then(response => {
-                    this.masterGame = response.data;
-                })
-                .catch(returnedError => (this.error = returnedError));
-        }
-    },
-    mounted() {
-        this.fetchMasterGame();
-    },
-    watch: {
-        '$route'(to, from) {
-            this.fetchMasterGame();
-        }
+  data() {
+    return {
+      masterGame: null,
+      error: ''
+    };
+  },
+  props: ['mastergameid'],
+  components: {
+    MasterGameDetails
+  },
+  computed: {
+    boxartLink() {
+      if (this.masterGame.boxartFileName) {
+        return 'https://s3.amazonaws.com/fantasy-critic-box-art/' + this.masterGame.boxartFileName;
+      }
+      return null;
     }
+  },
+  methods: {
+    fetchMasterGame() {
+      axios
+        .get('/api/game/MasterGame/' + this.mastergameid)
+        .then(response => {
+          this.masterGame = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
+    }
+  },
+  mounted() {
+    this.fetchMasterGame();
+  },
+  watch: {
+    '$route'(to, from) {
+      this.fetchMasterGame();
+    }
+  }
 };
 </script>

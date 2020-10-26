@@ -22,15 +22,15 @@ import TopNavbar from '@/components/modules/topNavBar';
 import FooterModule from '@/components/modules/footerModule';
 
 export default {
-    components: {
-        TopNavbar,
-        FooterModule
-    },
-    mounted() {
-        if (this.$store.getters.tokenIsCurrent()) {
-            this.$store.dispatch('getUserInfo');
-        }
+  components: {
+    TopNavbar,
+    FooterModule
+  },
+  mounted() {
+    if (this.$store.getters.tokenIsCurrent()) {
+      this.$store.dispatch('getUserInfo');
     }
+  }
 };
 </script>
 

@@ -73,139 +73,139 @@ import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTa
 import MasterGameSummary from '@/components/modules/masterGameSummary';
 
 export default {
-    data() {
-        return {
-            searchGameName: null,
-            draftUnlistedGame: null,
-            draftMasterGame: null,
-            draftResult: null,
-            draftOverride: false,
-            possibleMasterGames: [],
-            searched: false,
-            showingUnlistedField: false,
-            isBusy: false,
-            showingTopAvailable: false,
-            showingQueuedGames: false
-        };
-    },
-    components: {
-        PossibleMasterGamesTable,
-        MasterGameSummary
-    },
-    computed: {
-        formIsValid() {
-            return (this.draftUnlistedGame || this.draftMasterGame);
-        }
-    },
-    props: ['userPublisher', 'maximumEligibilityLevel', 'isManager', 'year'],
-    methods: {
-        searchGame() {
-            this.clearDataExceptSearch();
-            this.isBusy = true;
-            axios
-                .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
-                .then(response => {
-                    this.possibleMasterGames = response.data;
-                    this.isBusy = false;
-                    this.searched = true;
-                })
-                .catch(response => {
-                    this.isBusy = false;
-                });
-        },
-        getTopGames() {
-            this.clearDataExceptSearch();
-            this.isBusy = true;
-            axios
-                .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
-                .then(response => {
-                    this.possibleMasterGames = response.data;
-                    this.isBusy = false;
-                    this.showingTopAvailable = true;
-                })
-                .catch(response => {
-                    this.isBusy = false;
-                });
-        },
-        getQueuedGames() {
-            this.clearDataExceptSearch();
-            this.isBusy = true;
-            axios
-                .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID)
-                .then(response => {
-                    this.possibleMasterGames = response.data;
-                    this.isBusy = false;
-                    this.showingQueuedGames = true;
-                })
-                .catch(response => {
-                    this.isBusy = false;
-                });
-        },
-        showUnlistedField() {
-            this.showingUnlistedField = true;
-            this.draftUnlistedGame = this.searchGameName;
-        },
-        addGame() {
-            this.isBusy = true;
-            var gameName = '';
-            if (this.draftMasterGame !== null) {
-                gameName = this.draftMasterGame.gameName;
-            } else if (this.draftUnlistedGame !== null) {
-                gameName = this.draftUnlistedGame;
-            }
-
-            var masterGameID = null;
-            if (this.draftMasterGame !== null) {
-                masterGameID = this.draftMasterGame.masterGameID;
-            }
-
-            var request = {
-                publisherID: this.userPublisher.publisherID,
-                gameName: gameName,
-                counterPick: this.draftCounterPick,
-                masterGameID: masterGameID,
-                managerOverride: this.draftOverride
-            };
-
-            axios
-                .post('/api/league/DraftGame', request)
-                .then(response => {
-                    this.draftResult = response.data;
-                    if (!this.draftResult.success) {
-                        this.isBusy = false;
-                        return;
-                    }
-                    this.$refs.playerDraftGameFormRef.hide();
-                    var draftInfo = {
-                        gameName
-                    };
-                    this.$emit('gameDrafted', draftInfo);
-                    this.clearData();
-                })
-                .catch(response => {
-
-                });
-        },
-        clearDataExceptSearch() {
-            this.isBusy = false;
-            this.draftUnlistedGame = null;
-            this.draftMasterGame = null;
-            this.draftResult = null;
-            this.draftOverride = false;
-            this.possibleMasterGames = [];
-            this.searched = false;
-            this.showingTopAvailable = false;
-            this.showingQueuedGames = false;
-            this.showingUnlistedField = false;
-        },
-        clearData() {
-            this.clearDataExceptSearch();
-            this.searchGameName = null;
-        },
-        newGameSelected() {
-            this.draftResult = null;
-        }
+  data() {
+    return {
+      searchGameName: null,
+      draftUnlistedGame: null,
+      draftMasterGame: null,
+      draftResult: null,
+      draftOverride: false,
+      possibleMasterGames: [],
+      searched: false,
+      showingUnlistedField: false,
+      isBusy: false,
+      showingTopAvailable: false,
+      showingQueuedGames: false
+    };
+  },
+  components: {
+    PossibleMasterGamesTable,
+    MasterGameSummary
+  },
+  computed: {
+    formIsValid() {
+      return (this.draftUnlistedGame || this.draftMasterGame);
     }
+  },
+  props: ['userPublisher', 'maximumEligibilityLevel', 'isManager', 'year'],
+  methods: {
+    searchGame() {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      axios
+        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
+        .then(response => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.searched = true;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
+    getTopGames() {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      axios
+        .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
+        .then(response => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.showingTopAvailable = true;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
+    getQueuedGames() {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      axios
+        .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID)
+        .then(response => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.showingQueuedGames = true;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
+    showUnlistedField() {
+      this.showingUnlistedField = true;
+      this.draftUnlistedGame = this.searchGameName;
+    },
+    addGame() {
+      this.isBusy = true;
+      var gameName = '';
+      if (this.draftMasterGame !== null) {
+        gameName = this.draftMasterGame.gameName;
+      } else if (this.draftUnlistedGame !== null) {
+        gameName = this.draftUnlistedGame;
+      }
+
+      var masterGameID = null;
+      if (this.draftMasterGame !== null) {
+        masterGameID = this.draftMasterGame.masterGameID;
+      }
+
+      var request = {
+        publisherID: this.userPublisher.publisherID,
+        gameName: gameName,
+        counterPick: this.draftCounterPick,
+        masterGameID: masterGameID,
+        managerOverride: this.draftOverride
+      };
+
+      axios
+        .post('/api/league/DraftGame', request)
+        .then(response => {
+          this.draftResult = response.data;
+          if (!this.draftResult.success) {
+            this.isBusy = false;
+            return;
+          }
+          this.$refs.playerDraftGameFormRef.hide();
+          var draftInfo = {
+            gameName
+          };
+          this.$emit('gameDrafted', draftInfo);
+          this.clearData();
+        })
+        .catch(response => {
+
+        });
+    },
+    clearDataExceptSearch() {
+      this.isBusy = false;
+      this.draftUnlistedGame = null;
+      this.draftMasterGame = null;
+      this.draftResult = null;
+      this.draftOverride = false;
+      this.possibleMasterGames = [];
+      this.searched = false;
+      this.showingTopAvailable = false;
+      this.showingQueuedGames = false;
+      this.showingUnlistedField = false;
+    },
+    clearData() {
+      this.clearDataExceptSearch();
+      this.searchGameName = null;
+    },
+    newGameSelected() {
+      this.draftResult = null;
+    }
+  }
 };
 </script>
 <style scoped>

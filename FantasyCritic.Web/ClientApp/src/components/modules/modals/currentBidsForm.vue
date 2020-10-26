@@ -49,67 +49,67 @@ import axios from 'axios';
 import draggable from 'vuedraggable';
 
 export default {
-    components: {
-        draggable,
-    },
-    props: ['publisher','currentBids'],
-    data() {
-        return {
-            desiredBidPriorities: [],
-            settingPriority: false
-        };
-    },
-    methods: {
-        setBidPriorityOrder() {
-            let desiredBidPriorityIDs = this.desiredBidPriorities.map(function (v) {
-                return v.bidID;
-            });
-            var model = {
-                publisherID: this.publisher.publisherID,
-                BidPriorities: desiredBidPriorityIDs
-            };
-            axios
-                .post('/api/league/SetBidPriorities', model)
-                .then(response => {
-                    this.$refs.currentBidsFormRef.hide();
-                    this.$emit('bidPriorityEdited');
-                })
-                .catch(response => {
+  components: {
+    draggable,
+  },
+  props: ['publisher','currentBids'],
+  data() {
+    return {
+      desiredBidPriorities: [],
+      settingPriority: false
+    };
+  },
+  methods: {
+    setBidPriorityOrder() {
+      let desiredBidPriorityIDs = this.desiredBidPriorities.map(function (v) {
+        return v.bidID;
+      });
+      var model = {
+        publisherID: this.publisher.publisherID,
+        BidPriorities: desiredBidPriorityIDs
+      };
+      axios
+        .post('/api/league/SetBidPriorities', model)
+        .then(response => {
+          this.$refs.currentBidsFormRef.hide();
+          this.$emit('bidPriorityEdited');
+        })
+        .catch(response => {
 
-                });
-        },
-        cancelBid(bid) {
-            var model = {
-                bidID: bid.bidID
-            };
-            axios
-                .post('/api/league/DeletePickupBid', model)
-                .then(response => {
-                    var bidInfo = {
-                        gameName: bid.masterGame.gameName,
-                        bidAmount: bid.bidAmount
-                    };
-                    this.$emit('bidCanceled', bidInfo);
-                })
-                .catch(response => {
+        });
+    },
+    cancelBid(bid) {
+      var model = {
+        bidID: bid.bidID
+      };
+      axios
+        .post('/api/league/DeletePickupBid', model)
+        .then(response => {
+          var bidInfo = {
+            gameName: bid.masterGame.gameName,
+            bidAmount: bid.bidAmount
+          };
+          this.$emit('bidCanceled', bidInfo);
+        })
+        .catch(response => {
 
-                });
-        },
-        clearData() {
-            this.desiredBidPriorities = this.currentBids;
-        }
+        });
     },
-    mounted() {
-        this.clearData();
-    },
-    watch: {
-        currentBids(newValue, oldValue) {
-            if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array &&
-          oldValue.length !== newValue.length)) {
-                this.clearData();
-            }
-        }
+    clearData() {
+      this.desiredBidPriorities = this.currentBids;
     }
+  },
+  mounted() {
+    this.clearData();
+  },
+  watch: {
+    currentBids(newValue, oldValue) {
+      if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array &&
+          oldValue.length !== newValue.length)) {
+        this.clearData();
+      }
+    }
+  }
 };
 </script>
 <style scoped>

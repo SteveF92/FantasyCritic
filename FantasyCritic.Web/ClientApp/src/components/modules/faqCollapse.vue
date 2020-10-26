@@ -19,7 +19,7 @@
 
 <script>
 export default {
-    props: ['defaultVisible']
+  props: ['defaultVisible']
 };
 </script>
 

@@ -30,70 +30,70 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            showTable: false,
-            internalPlayerActive: {},
-            errorInfo: ''
+  data() {
+    return {
+      showTable: false,
+      internalPlayerActive: {},
+      errorInfo: ''
+    };
+  },
+  props: ['league', 'leagueYear'],
+  methods: {
+    userIsManager(user) {
+      return this.league.leagueManager.userID === user.userID;
+    },
+    userIsActive(user) {
+      let matchingPlayer = _.find(this.leagueYear.players, function(item){
+        return item.user && item.user.userID === user.userID;
+      });
+
+      return !!matchingPlayer;
+    },
+    setCurrentActivePlayers() {
+      this.internalPlayerActive = {};
+      let outerScope = this;
+      this.league.players.forEach(function(player) {
+        let playerIsActive = outerScope.userIsActive(player);
+        let playerIsManager = outerScope.userIsManager(player);
+        outerScope.internalPlayerActive[player.userID] = {
+          displayName: player.displayName,
+          active: playerIsActive,
+          manager: playerIsManager
         };
+      });
+      this.showTable = true;
     },
-    props: ['league', 'leagueYear'],
-    methods: {
-        userIsManager(user) {
-            return this.league.leagueManager.userID === user.userID;
-        },
-        userIsActive(user) {
-            let matchingPlayer = _.find(this.leagueYear.players, function(item){
-                return item.user && item.user.userID === user.userID;
-            });
+    confirmActivePlayers() {
+      let playerStatus = {};
+      let playerActiveDict = this.internalPlayerActive;
 
-            return !!matchingPlayer;
-        },
-        setCurrentActivePlayers() {
-            this.internalPlayerActive = {};
-            let outerScope = this;
-            this.league.players.forEach(function(player) {
-                let playerIsActive = outerScope.userIsActive(player);
-                let playerIsManager = outerScope.userIsManager(player);
-                outerScope.internalPlayerActive[player.userID] = {
-                    displayName: player.displayName,
-                    active: playerIsActive,
-                    manager: playerIsManager
-                };
-            });
-            this.showTable = true;
-        },
-        confirmActivePlayers() {
-            let playerStatus = {};
-            let playerActiveDict = this.internalPlayerActive;
+      Object.keys(playerActiveDict).forEach(function(key) {
+        playerStatus[key] = playerActiveDict[key].active;
+      });
 
-            Object.keys(playerActiveDict).forEach(function(key) {
-                playerStatus[key] = playerActiveDict[key].active;
-            });
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.leagueYear.year,
+        activeStatus: playerStatus
+      };
 
-            var model = {
-                leagueID: this.league.leagueID,
-                year: this.leagueYear.year,
-                activeStatus: playerStatus
-            };
-
-            axios
-                .post('/api/leagueManager/SetPlayerActiveStatus', model)
-                .then(response => {
-                    this.$emit('activePlayersEdited');
-                    this.$refs.manageActivePlayersRef.hide();
-                })
-                .catch(response => {
-                    this.errorInfo = response.response.data;
-                });
-        },
-        setData() {
-            this.setCurrentActivePlayers();
-        }
+      axios
+        .post('/api/leagueManager/SetPlayerActiveStatus', model)
+        .then(response => {
+          this.$emit('activePlayersEdited');
+          this.$refs.manageActivePlayersRef.hide();
+        })
+        .catch(response => {
+          this.errorInfo = response.response.data;
+        });
     },
-    mounted() {
-        this.setCurrentActivePlayers();
+    setData() {
+      this.setCurrentActivePlayers();
     }
+  },
+  mounted() {
+    this.setCurrentActivePlayers();
+  }
 };
 </script>
 <style scoped>

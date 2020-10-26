@@ -29,43 +29,43 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            newleagueName: '',
-            publicLeague: true,
-            testLeague: false,
-            errorInfo: '',
-            initialTestLeague: false
-        };
+  data() {
+    return {
+      newleagueName: '',
+      publicLeague: true,
+      testLeague: false,
+      errorInfo: '',
+      initialTestLeague: false
+    };
+  },
+  props: ['league'],
+  methods: {
+    changeleagueName() {
+      var model = {
+        leagueID: this.league.leagueID,
+        leagueName: this.newleagueName,
+        publicLeague: this.publicLeague,
+        testLeague: this.testLeague
+      };
+      axios
+        .post('/api/leagueManager/ChangeLeagueOptions', model)
+        .then(response => {
+          this.$refs.changeLeagueOptionsFormRef.hide();
+          this.$emit('leagueOptionsChanged');
+          this.newleagueName = '';
+        })
+        .catch(response => {
+        });
     },
-    props: ['league'],
-    methods: {
-        changeleagueName() {
-            var model = {
-                leagueID: this.league.leagueID,
-                leagueName: this.newleagueName,
-                publicLeague: this.publicLeague,
-                testLeague: this.testLeague
-            };
-            axios
-                .post('/api/leagueManager/ChangeLeagueOptions', model)
-                .then(response => {
-                    this.$refs.changeLeagueOptionsFormRef.hide();
-                    this.$emit('leagueOptionsChanged');
-                    this.newleagueName = '';
-                })
-                .catch(response => {
-                });
-        },
-        clearData() {
-            this.newleagueName = this.league.leagueName;
-        }
-    },
-    mounted() {
-        this.newleagueName = this.league.leagueName;
-        this.publicLeague = this.league.publicLeague;
-        this.testLeague = this.league.testLeague;
-        this.initialTestLeague = this.league.testLeague;
+    clearData() {
+      this.newleagueName = this.league.leagueName;
     }
+  },
+  mounted() {
+    this.newleagueName = this.league.leagueName;
+    this.publicLeague = this.league.publicLeague;
+    this.testLeague = this.league.testLeague;
+    this.initialTestLeague = this.league.testLeague;
+  }
 };
 </script>

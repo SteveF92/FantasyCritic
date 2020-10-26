@@ -15,34 +15,34 @@
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            newPublisherName: '',
-            errorInfo: ''
-        };
+  data() {
+    return {
+      newPublisherName: '',
+      errorInfo: ''
+    };
+  },
+  props: ['userRoyalePublisher'],
+  methods: {
+    changePublisherName() {
+      var model = {
+        publisherID: this.userRoyalePublisher.publisherID,
+        publisherName: this.newPublisherName
+      };
+      axios
+        .post('/api/royale/changePublisherName', model)
+        .then(response => {
+          this.$refs.changeRoyalePublisherNameRef.hide();
+          this.$emit('publisherNameChanged');
+        })
+        .catch(response => {
+        });
     },
-    props: ['userRoyalePublisher'],
-    methods: {
-        changePublisherName() {
-            var model = {
-                publisherID: this.userRoyalePublisher.publisherID,
-                publisherName: this.newPublisherName
-            };
-            axios
-                .post('/api/royale/changePublisherName', model)
-                .then(response => {
-                    this.$refs.changeRoyalePublisherNameRef.hide();
-                    this.$emit('publisherNameChanged');
-                })
-                .catch(response => {
-                });
-        },
-        clearData() {
-            this.newPublisherName = this.userRoyalePublisher.publisherName;
-        }
-    },
-    mounted() {
-        this.clearData();
+    clearData() {
+      this.newPublisherName = this.userRoyalePublisher.publisherName;
     }
+  },
+  mounted() {
+    this.clearData();
+  }
 };
 </script>

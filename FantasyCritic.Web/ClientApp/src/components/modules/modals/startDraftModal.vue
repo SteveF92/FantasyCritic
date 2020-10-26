@@ -9,11 +9,11 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    methods: {
-        startDraft() {
-            this.$refs.startDraftRef.hide();
-            this.$emit('draftStarted');
-        }
+  methods: {
+    startDraft() {
+      this.$refs.startDraftRef.hide();
+      this.$emit('draftStarted');
     }
+  }
 };
 </script>

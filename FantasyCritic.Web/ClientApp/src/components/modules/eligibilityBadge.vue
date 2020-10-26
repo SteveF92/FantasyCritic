@@ -6,11 +6,11 @@
 import Vue from 'vue';
 
 export default {
-    props: ['eligibilityLevel', 'maximumEligibilityLevel'],
-    computed: {
-        isEligible() {
-            return (this.eligibilityLevel.level <= this.maximumEligibilityLevel.level);
-        }
+  props: ['eligibilityLevel', 'maximumEligibilityLevel'],
+  computed: {
+    isEligible() {
+      return (this.eligibilityLevel.level <= this.maximumEligibilityLevel.level);
     }
+  }
 };
 </script>

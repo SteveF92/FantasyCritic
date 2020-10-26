@@ -77,107 +77,107 @@ import Vue from 'vue';
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
 export default {
-    data() {
-        return {
-            searchGameName: null,
-            claimUnlistedGame: null,
-            claimPublisher: null,
-            claimMasterGame: null,
-            claimResult: null,
-            claimOverride: false,
-            claimCounterPick: false,
-            possibleMasterGames: [],
-            searched: false,
-            showingUnlistedField: false
-        };
-    },
-    components: {
-        PossibleMasterGamesTable
-    },
-    computed: {
-        formIsValid() {
-            return ((this.claimUnlistedGame || this.claimMasterGame) && this.claimPublisher);
-        }
-    },
-    props: ['publishers', 'maximumEligibilityLevel', 'year'],
-    methods: {
-        searchGame() {
-            this.clearDataExceptSearch();
-            this.isBusy = true;
-            axios
-                .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publishers[0].leagueID)
-                .then(response => {
-                    this.possibleMasterGames = response.data;
-                    this.isBusy = false;
-                    this.searched = true;
-                })
-                .catch(response => {
-                    this.isBusy = false;
-                });
-        },
-        addGame() {
-            var gameName = '';
-            if (this.claimMasterGame !== null) {
-                gameName = this.claimMasterGame.gameName;
-            } else if (this.claimUnlistedGame !== null) {
-                gameName = this.claimUnlistedGame;
-            }
-
-            var masterGameID = null;
-            if (this.claimMasterGame !== null) {
-                masterGameID = this.claimMasterGame.masterGameID;
-            }
-
-            var request = {
-                publisherID: this.claimPublisher.publisherID,
-                gameName: gameName,
-                counterPick: this.claimCounterPick,
-                masterGameID: masterGameID,
-                managerOverride: this.claimOverride
-            };
-
-            axios
-                .post('/api/leagueManager/ManagerClaimGame', request)
-                .then(response => {
-                    this.claimResult = response.data;
-                    if (!this.claimResult.success) {
-                        return;
-                    }
-                    this.$refs.claimGameFormRef.hide();
-                    var claimInfo = {
-                        gameName,
-                        publisherName: this.claimPublisher.publisherName
-                    };
-                    this.$emit('gameClaimed', claimInfo);
-                    this.clearData();
-                })
-                .catch(response => {
-
-                });
-        },
-        showUnlistedField() {
-            this.showingUnlistedField = true;
-            this.draftUnlistedGame = this.searchGameName;
-        },
-        clearDataExceptSearch() {
-            this.claimUnlistedGame = null;
-            this.claimMasterGame = null;
-            this.claimResult = null;
-            this.claimOverride = false;
-            this.possibleMasterGames = [];
-            this.searched = false;
-            this.showingUnlistedField = false;
-            this.claimCounterPick = false;
-            this.claimPublisher = null;
-        },
-        clearData() {
-            this.clearDataExceptSearch();
-            this.searchGameName = null;
-        },
-        newGameSelected() {
-            this.claimResult = null;
-        }
+  data() {
+    return {
+      searchGameName: null,
+      claimUnlistedGame: null,
+      claimPublisher: null,
+      claimMasterGame: null,
+      claimResult: null,
+      claimOverride: false,
+      claimCounterPick: false,
+      possibleMasterGames: [],
+      searched: false,
+      showingUnlistedField: false
+    };
+  },
+  components: {
+    PossibleMasterGamesTable
+  },
+  computed: {
+    formIsValid() {
+      return ((this.claimUnlistedGame || this.claimMasterGame) && this.claimPublisher);
     }
+  },
+  props: ['publishers', 'maximumEligibilityLevel', 'year'],
+  methods: {
+    searchGame() {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      axios
+        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publishers[0].leagueID)
+        .then(response => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.searched = true;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
+    addGame() {
+      var gameName = '';
+      if (this.claimMasterGame !== null) {
+        gameName = this.claimMasterGame.gameName;
+      } else if (this.claimUnlistedGame !== null) {
+        gameName = this.claimUnlistedGame;
+      }
+
+      var masterGameID = null;
+      if (this.claimMasterGame !== null) {
+        masterGameID = this.claimMasterGame.masterGameID;
+      }
+
+      var request = {
+        publisherID: this.claimPublisher.publisherID,
+        gameName: gameName,
+        counterPick: this.claimCounterPick,
+        masterGameID: masterGameID,
+        managerOverride: this.claimOverride
+      };
+
+      axios
+        .post('/api/leagueManager/ManagerClaimGame', request)
+        .then(response => {
+          this.claimResult = response.data;
+          if (!this.claimResult.success) {
+            return;
+          }
+          this.$refs.claimGameFormRef.hide();
+          var claimInfo = {
+            gameName,
+            publisherName: this.claimPublisher.publisherName
+          };
+          this.$emit('gameClaimed', claimInfo);
+          this.clearData();
+        })
+        .catch(response => {
+
+        });
+    },
+    showUnlistedField() {
+      this.showingUnlistedField = true;
+      this.draftUnlistedGame = this.searchGameName;
+    },
+    clearDataExceptSearch() {
+      this.claimUnlistedGame = null;
+      this.claimMasterGame = null;
+      this.claimResult = null;
+      this.claimOverride = false;
+      this.possibleMasterGames = [];
+      this.searched = false;
+      this.showingUnlistedField = false;
+      this.claimCounterPick = false;
+      this.claimPublisher = null;
+    },
+    clearData() {
+      this.clearDataExceptSearch();
+      this.searchGameName = null;
+    },
+    newGameSelected() {
+      this.claimResult = null;
+    }
+  }
 };
 </script>
 <style scoped>

@@ -128,8 +128,8 @@
 import SiteCounts from '@/components/modules/siteCounts';
 
 export default {
-    components: {
-        SiteCounts
-    }
+  components: {
+    SiteCounts
+  }
 };
 </script>

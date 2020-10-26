@@ -30,48 +30,48 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            selectedCounterPick: null
-        };
+  data() {
+    return {
+      selectedCounterPick: null
+    };
+  },
+  props: ['nextPublisherUp', 'availableCounterPicks'],
+  methods: {
+    selectCounterPick() {
+      var request = {
+        publisherID: this.nextPublisherUp.publisherID,
+        gameName: this.selectedCounterPick.gameName,
+        counterPick: true,
+        masterGameID: null
+      };
+
+      if (this.selectedCounterPick.masterGame) {
+        request.masterGameID = this.selectedCounterPick.masterGame.masterGameID;
+      }
+
+      axios
+        .post('/api/leagueManager/ManagerDraftGame', request)
+        .then(response => {
+          this.draftResult = response.data;
+          if (!this.draftResult.success) {
+            return;
+          }
+          this.$refs.managerDraftCounterPickFormRef.hide();
+          var draftInfo = {
+            gameName: this.selectedCounterPick.gameName,
+            publisherName: this.nextPublisherUp.publisherName
+          };
+          this.$emit('counterPickDrafted', draftInfo);
+          this.selectedCounterPick = null;
+        })
+        .catch(response => {
+
+        });
     },
-    props: ['nextPublisherUp', 'availableCounterPicks'],
-    methods: {
-        selectCounterPick() {
-            var request = {
-                publisherID: this.nextPublisherUp.publisherID,
-                gameName: this.selectedCounterPick.gameName,
-                counterPick: true,
-                masterGameID: null
-            };
-
-            if (this.selectedCounterPick.masterGame) {
-                request.masterGameID = this.selectedCounterPick.masterGame.masterGameID;
-            }
-
-            axios
-                .post('/api/leagueManager/ManagerDraftGame', request)
-                .then(response => {
-                    this.draftResult = response.data;
-                    if (!this.draftResult.success) {
-                        return;
-                    }
-                    this.$refs.managerDraftCounterPickFormRef.hide();
-                    var draftInfo = {
-                        gameName: this.selectedCounterPick.gameName,
-                        publisherName: this.nextPublisherUp.publisherName
-                    };
-                    this.$emit('counterPickDrafted', draftInfo);
-                    this.selectedCounterPick = null;
-                })
-                .catch(response => {
-
-                });
-        },
-        clearData() {
-            this.selectedCounterPick = null;
-        }
+    clearData() {
+      this.selectedCounterPick = null;
     }
+  }
 };
 </script>
 <style scoped>

@@ -37,14 +37,14 @@
 import moment from 'moment';
 
 export default {
-    props: ['masterGame'],
-    methods: {
-        releaseDate(game) {
-            return moment(game.releaseDate).format('MMMM Do, YYYY');
-        },
-        openCriticLink(game) {
-            return 'https://opencritic.com/game/' + game.openCriticID + '/a';
-        }
+  props: ['masterGame'],
+  methods: {
+    releaseDate(game) {
+      return moment(game.releaseDate).format('MMMM Do, YYYY');
+    },
+    openCriticLink(game) {
+      return 'https://opencritic.com/game/' + game.openCriticID + '/a';
     }
+  }
 };
 </script>

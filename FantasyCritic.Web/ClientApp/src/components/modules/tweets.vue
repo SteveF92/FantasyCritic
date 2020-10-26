@@ -10,9 +10,9 @@
 import { Timeline } from 'vue-tweet-embed';
 
 export default {
-    components: {
-        Timeline
-    }
+  components: {
+    Timeline
+  }
 };
 </script>
 

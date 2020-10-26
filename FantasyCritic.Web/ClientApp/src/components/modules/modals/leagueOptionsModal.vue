@@ -85,25 +85,25 @@
 import axios from 'axios';
 
 export default {
-    props: ['league', 'leagueYear'],
-    data() {
-        return {
-            leagueYearOptions: null
-        };
-    },
-    methods: {
-        fetchLeagueYearOptions() {
-            axios
-                .get('/api/League/GetLeagueYearOptions?leagueID=' + this.league.leagueID + '&year=' + this.leagueYear.year)
-                .then(response => {
-                    this.leagueYearOptions = response.data;
-                })
-                .catch(returnedError => (this.error = returnedError));
-        }
-    },
-    mounted() {
-        this.fetchLeagueYearOptions();
+  props: ['league', 'leagueYear'],
+  data() {
+    return {
+      leagueYearOptions: null
+    };
+  },
+  methods: {
+    fetchLeagueYearOptions() {
+      axios
+        .get('/api/League/GetLeagueYearOptions?leagueID=' + this.league.leagueID + '&year=' + this.leagueYear.year)
+        .then(response => {
+          this.leagueYearOptions = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
     }
+  },
+  mounted() {
+    this.fetchLeagueYearOptions();
+  }
 };
 </script>
 <style scoped>

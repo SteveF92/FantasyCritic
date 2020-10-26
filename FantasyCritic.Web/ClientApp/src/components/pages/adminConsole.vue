@@ -43,149 +43,149 @@
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            isBusy: false,
-            errorInfo: '',
-            jobSuccess: '',
-            recentSnapshots: null
-        };
-    },
-    computed: {
+  data() {
+    return {
+      isBusy: false,
+      errorInfo: '',
+      jobSuccess: '',
+      recentSnapshots: null
+    };
+  },
+  computed: {
 
+  },
+  methods: {
+    fullRefresh() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/FullDataRefresh')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Full Data Refresh';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
     },
-    methods: {
-        fullRefresh() {
-            this.isBusy = true;
-            axios
-                .post('/api/admin/FullDataRefresh')
-                .then(response => {
-                    this.isBusy = false;
-                    this.jobSuccess = 'Full Data Refresh';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-        refreshCriticScores() {
-            this.isBusy = true;
-            axios
-                .post('/api/admin/RefreshCriticInfo')
-                .then(response => {
-                    this.isBusy = false;
-                    this.jobSuccess = 'Refresh Critic Scores';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-        updateFantasyPoints() {
-            this.isBusy = true;
-            axios
-                .post('/api/admin/updateFantasyPoints')
-                .then(response => {
-                    this.isBusy = false;
-                    this.jobSuccess = 'Update Fantasy Points';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-        processBids() {
-            this.isBusy = true;
-            axios
-                .post('/api/admin/ProcessPickups')
-                .then(response => {
-                    this.isBusy = false;
-                    this.jobSuccess = 'Process Bids';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-        processDrops() {
-            this.isBusy = true;
-            axios
-                .post('/api/admin/ProcessDropRequests')
-                .then(response => {
-                    this.isBusy = false;
-                    this.jobSuccess = 'Process Drops';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-        turnOnBidProcessing() {
-            this.isBusy = true;
-            axios
-                .post('/api/admin/TurnOnBidProcessingMode')
-                .then(response => {
-                    this.isBusy = false;
-                    this.jobSuccess = 'Bid Processing Mode ON';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-        turnOffBidProcessing() {
-            this.isBusy = true;
-            axios
-                .post('/api/admin/TurnOffBidProcessingMode')
-                .then(response => {
-                    this.isBusy = false;
-                    this.jobSuccess = 'Bid Processing Mode OFF';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-        refreshCaches() {
-            this.isBusy = true;
-            axios
-                .post('/api/admin/refreshCaches')
-                .then(response => {
-                    this.isBusy = false;
-                    this.jobSuccess = 'Refresh Caches';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-        snapshotDatabase() {
-            this.isBusy = true;
-            axios
-                .post('/api/admin/snapshotDatabase')
-                .then(response => {
-                    this.isBusy = false;
-                    this.jobSuccess = 'Database snapshot started';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-        getRecentDatabaseSnapshots() {
-            this.isBusy = true;
-            axios
-                .get('/api/admin/GetRecentDatabaseSnapshots')
-                .then(response => {
-                    this.recentSnapshots = response.data;
-                    this.isBusy = false;
-                    this.jobSuccess = 'Getting snapshots';
-                })
-                .catch(returnedError => {
-                    this.isBusy = false;
-                    this.errorInfo = returnedError.response.data;
-                });
-        },
-    }
+    refreshCriticScores() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/RefreshCriticInfo')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Refresh Critic Scores';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    updateFantasyPoints() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/updateFantasyPoints')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Update Fantasy Points';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    processBids() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/ProcessPickups')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Process Bids';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    processDrops() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/ProcessDropRequests')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Process Drops';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    turnOnBidProcessing() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/TurnOnBidProcessingMode')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Bid Processing Mode ON';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    turnOffBidProcessing() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/TurnOffBidProcessingMode')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Bid Processing Mode OFF';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    refreshCaches() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/refreshCaches')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Refresh Caches';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    snapshotDatabase() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/snapshotDatabase')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Database snapshot started';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    getRecentDatabaseSnapshots() {
+      this.isBusy = true;
+      axios
+        .get('/api/admin/GetRecentDatabaseSnapshots')
+        .then(response => {
+          this.recentSnapshots = response.data;
+          this.isBusy = false;
+          this.jobSuccess = 'Getting snapshots';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+  }
 };
 </script>

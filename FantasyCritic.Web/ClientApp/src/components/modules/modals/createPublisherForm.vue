@@ -16,38 +16,38 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            publisherName: '',
-            errorInfo: ''
-        };
-    },
-    props: ['leagueYear'],
-    methods: {
-        createPublisher() {
-            var model = {
-                leagueID: this.leagueYear.leagueID,
-                year: this.leagueYear.year,
-                publisherName: this.publisherName
-            };
-            axios
-                .post('/api/league/createPublisher', model)
-                .then(response => {
-                    this.$refs.createPublisherRef.hide();
-                    let actionInfo = {
-                        message: this.publisherName + ' created.',
-                        fetchLeagueYear: true
-                    };
-                    this.$emit('actionTaken', actionInfo);
-                    this.publisherName = '';
-                })
-                .catch(response => {
+  data() {
+    return {
+      publisherName: '',
+      errorInfo: ''
+    };
+  },
+  props: ['leagueYear'],
+  methods: {
+    createPublisher() {
+      var model = {
+        leagueID: this.leagueYear.leagueID,
+        year: this.leagueYear.year,
+        publisherName: this.publisherName
+      };
+      axios
+        .post('/api/league/createPublisher', model)
+        .then(response => {
+          this.$refs.createPublisherRef.hide();
+          let actionInfo = {
+            message: this.publisherName + ' created.',
+            fetchLeagueYear: true
+          };
+          this.$emit('actionTaken', actionInfo);
+          this.publisherName = '';
+        })
+        .catch(response => {
             
-                });
-        },
-        clearData() {
-            this.publisherName = '';
-        }
+        });
+    },
+    clearData() {
+      this.publisherName = '';
     }
+  }
 };
 </script>

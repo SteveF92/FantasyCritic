@@ -20,42 +20,42 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            availableYears: [],
-            selectedYear: '',
-            error: ''
-        };
-    },
-    props: ['league', 'isManager'],
-    methods: {
-        addNewLeagueYear() {
-            var model = {
-                leagueID: this.league.leagueID,
-                year: this.selectedYear
-            };
-            axios
-                .post('/api/leagueManager/AddNewLeagueYear', model)
-                .then(response => {
-                    this.$refs.addNewLeagueYearRef.hide();
-                    this.$emit('newYearAdded', this.selectedYear);
-                })
-                .catch(response => {
-                    this.error = response;
-                });
-        }
-    },
-    mounted() {
-        if (!this.isManager) {
-            return;
-        }
-        axios
-            .get('/api/LeagueManager/AvailableYears/' + this.league.leagueID)
-            .then(response => {
-                this.availableYears = response.data;
-            })
-            .catch(returnedError => (this.error = returnedError));
+  data() {
+    return {
+      availableYears: [],
+      selectedYear: '',
+      error: ''
+    };
+  },
+  props: ['league', 'isManager'],
+  methods: {
+    addNewLeagueYear() {
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.selectedYear
+      };
+      axios
+        .post('/api/leagueManager/AddNewLeagueYear', model)
+        .then(response => {
+          this.$refs.addNewLeagueYearRef.hide();
+          this.$emit('newYearAdded', this.selectedYear);
+        })
+        .catch(response => {
+          this.error = response;
+        });
     }
+  },
+  mounted() {
+    if (!this.isManager) {
+      return;
+    }
+    axios
+      .get('/api/LeagueManager/AvailableYears/' + this.league.leagueID)
+      .then(response => {
+        this.availableYears = response.data;
+      })
+      .catch(returnedError => (this.error = returnedError));
+  }
 };
 </script>
 <style scoped>

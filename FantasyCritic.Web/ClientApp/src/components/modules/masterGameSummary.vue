@@ -63,28 +63,28 @@ import axios from 'axios';
 import moment from 'moment';
 
 export default {
-    data() {
-        return {
-            error: ''
-        };
-    },
-    props: ['masterGame'],
-    computed: {
-        boxartLink() {
-            if (this.masterGame.boxartFileName) {
-                return 'https://s3.amazonaws.com/fantasy-critic-box-art/' + this.masterGame.boxartFileName;
-            }
-            return null;
-        }
-    },
-    methods: {
-        releaseDate(game) {
-            return moment(game.releaseDate).format('MMMM Do, YYYY');
-        },
-        openCriticLink(game) {
-            return 'https://opencritic.com/game/' + game.openCriticID + '/a';
-        }
+  data() {
+    return {
+      error: ''
+    };
+  },
+  props: ['masterGame'],
+  computed: {
+    boxartLink() {
+      if (this.masterGame.boxartFileName) {
+        return 'https://s3.amazonaws.com/fantasy-critic-box-art/' + this.masterGame.boxartFileName;
+      }
+      return null;
     }
+  },
+  methods: {
+    releaseDate(game) {
+      return moment(game.releaseDate).format('MMMM Do, YYYY');
+    },
+    openCriticLink(game) {
+      return 'https://opencritic.com/game/' + game.openCriticID + '/a';
+    }
+  }
 };
 </script>
 <style scoped>

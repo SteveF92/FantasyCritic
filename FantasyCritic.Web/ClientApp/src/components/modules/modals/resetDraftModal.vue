@@ -14,23 +14,23 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            resetConfirmation: ''
-        };
-    },
-    computed: {
-        resetConfirmed() {
-            let lowerCase = this.resetConfirmation.toUpperCase();
-            return lowerCase === 'RESET DRAFT';
-        }
-    },
-    methods: {
-        resetDraft() {
-            this.resetConfirmation = '';
-            this.$refs.resetDraftModalRef.hide();
-            this.$emit('resetDraft');
-        }
+  data() {
+    return {
+      resetConfirmation: ''
+    };
+  },
+  computed: {
+    resetConfirmed() {
+      let lowerCase = this.resetConfirmation.toUpperCase();
+      return lowerCase === 'RESET DRAFT';
     }
+  },
+  methods: {
+    resetDraft() {
+      this.resetConfirmation = '';
+      this.$refs.resetDraftModalRef.hide();
+      this.$emit('resetDraft');
+    }
+  }
 };
 </script>

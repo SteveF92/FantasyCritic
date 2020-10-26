@@ -16,35 +16,35 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            newEmail: '',
-            errorInfo: ''
-        };
-    },
-    computed: {
-        formValid() {
-            return this.newEmail;
-        }
-    },
-    methods: {
-        sendChangeEmail() {
-            var model = {
-                newEmailAddress: this.newEmail
-            };
-            axios
-                .post('/api/account/SendChangeEmail', model)
-                .then(response => {
-                    this.$refs.changeEmailRef.hide();
-                    this.$emit('sentEmailChanged');
-                    this.clearData();
-                })
-                .catch(response => {
-                });
-        },
-        clearData() {
-            this.newEmail = '';
-        }
+  data() {
+    return {
+      newEmail: '',
+      errorInfo: ''
+    };
+  },
+  computed: {
+    formValid() {
+      return this.newEmail;
     }
+  },
+  methods: {
+    sendChangeEmail() {
+      var model = {
+        newEmailAddress: this.newEmail
+      };
+      axios
+        .post('/api/account/SendChangeEmail', model)
+        .then(response => {
+          this.$refs.changeEmailRef.hide();
+          this.$emit('sentEmailChanged');
+          this.clearData();
+        })
+        .catch(response => {
+        });
+    },
+    clearData() {
+      this.newEmail = '';
+    }
+  }
 };
 </script>

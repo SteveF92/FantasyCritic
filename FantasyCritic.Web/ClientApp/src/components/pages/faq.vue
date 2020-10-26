@@ -590,20 +590,20 @@
 import FaqCollapse from '@/components/modules/faqCollapse';
 
 export default {
-    components: {
-        FaqCollapse
-    },
-    data() {
-        return {
-            lastID: 1
-        };
-    },
-    methods: {
-        getCollapseID() {
-            let thisID = this.lastID;
-            this.lastID = this.lastID + 1;
-            return thisID;
-        }
+  components: {
+    FaqCollapse
+  },
+  data() {
+    return {
+      lastID: 1
+    };
+  },
+  methods: {
+    getCollapseID() {
+      let thisID = this.lastID;
+      this.lastID = this.lastID + 1;
+      return thisID;
     }
+  }
 };
 </script>

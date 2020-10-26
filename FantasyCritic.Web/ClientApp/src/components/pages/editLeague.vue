@@ -30,77 +30,77 @@ import axios from 'axios';
 import LeagueYearSettings from '@/components/modules/leagueYearSettings';
 
 export default {
-    data() {
-        return {
-            errorInfo: '',
-            possibleLeagueOptions: null,
-            leagueYearSettings: null,
-            leagueYear: null,
-            freshSettings: false
-        };
-    },
-    components: {
-        LeagueYearSettings
-    },
-    computed: {
-        leagueYearIsValid() {
-            let valid = this.leagueYearSettings &&
+  data() {
+    return {
+      errorInfo: '',
+      possibleLeagueOptions: null,
+      leagueYearSettings: null,
+      leagueYear: null,
+      freshSettings: false
+    };
+  },
+  components: {
+    LeagueYearSettings
+  },
+  computed: {
+    leagueYearIsValid() {
+      let valid = this.leagueYearSettings &&
           this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 &&
           this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 50 &&
           this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
-            return valid;
-        },
-        activePlayersInLeague() {
-            if (!this.leagueYear || !this.leagueYear.players) {
-                return null;
-            }
-            return this.leagueYear.players.length;
-        }
+      return valid;
     },
-    props: ['leagueid', 'year'],
-    methods: {
-        fetchLeagueOptions() {
-            axios
-                .get('/api/League/LeagueOptions')
-                .then(response => {
-                    this.possibleLeagueOptions = response.data;
-                })
-                .catch(returnedError => (this.error = returnedError));
-        },
-        fetchLeagueYear() {
-            axios
-                .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
-                .then(response => {
-                    this.leagueYear = response.data;
-                })
-                .catch(returnedError => (this.error = returnedError));
-        },
-        fetchCurrentLeagueYearOptions() {
-            axios
-                .get('/api/League/GetLeagueYearOptions?leagueID=' + this.leagueid + '&year=' + this.year)
-                .then(response => {
-                    this.leagueYearSettings = response.data;
-                })
-                .catch(returnedError => (this.error = returnedError));
-        },
-        postRequest() {
-            axios
-                .post('/api/leagueManager/EditLeagueYearSettings', this.leagueYearSettings)
-                .then(this.responseHandler)
-                .catch(this.catchHandler);
-        },
-        responseHandler(response) {
-            this.$router.push({ name: 'league', params: { leagueid: this.leagueid, year: this.year } });
-        },
-        catchHandler(returnedError) {
-            this.errorInfo = returnedError.response.data;
-        }
-    },
-    mounted() {
-        this.freshSettings = this.$route.query.freshSettings;
-        this.fetchLeagueOptions();
-        this.fetchCurrentLeagueYearOptions();
-        this.fetchLeagueYear();
+    activePlayersInLeague() {
+      if (!this.leagueYear || !this.leagueYear.players) {
+        return null;
+      }
+      return this.leagueYear.players.length;
     }
+  },
+  props: ['leagueid', 'year'],
+  methods: {
+    fetchLeagueOptions() {
+      axios
+        .get('/api/League/LeagueOptions')
+        .then(response => {
+          this.possibleLeagueOptions = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
+    },
+    fetchLeagueYear() {
+      axios
+        .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
+        .then(response => {
+          this.leagueYear = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
+    },
+    fetchCurrentLeagueYearOptions() {
+      axios
+        .get('/api/League/GetLeagueYearOptions?leagueID=' + this.leagueid + '&year=' + this.year)
+        .then(response => {
+          this.leagueYearSettings = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
+    },
+    postRequest() {
+      axios
+        .post('/api/leagueManager/EditLeagueYearSettings', this.leagueYearSettings)
+        .then(this.responseHandler)
+        .catch(this.catchHandler);
+    },
+    responseHandler(response) {
+      this.$router.push({ name: 'league', params: { leagueid: this.leagueid, year: this.year } });
+    },
+    catchHandler(returnedError) {
+      this.errorInfo = returnedError.response.data;
+    }
+  },
+  mounted() {
+    this.freshSettings = this.$route.query.freshSettings;
+    this.fetchLeagueOptions();
+    this.fetchCurrentLeagueYearOptions();
+    this.fetchLeagueYear();
+  }
 };
 </script>

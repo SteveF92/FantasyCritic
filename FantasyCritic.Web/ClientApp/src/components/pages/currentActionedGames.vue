@@ -21,29 +21,29 @@ import axios from 'axios';
 import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
 
 export default {
-    data() {
-        return {
-            actionedGames: null
-        };
-    },
-    components: {
-        MasterGamesTable
-    },
-    methods: {
-        fetchActionedGames() {
-            axios
-                .get('/api/admin/GetCurrentActionedGames')
-                .then(response => {
-                    this.actionedGames = response.data;
-                })
-                .catch(response => {
+  data() {
+    return {
+      actionedGames: null
+    };
+  },
+  components: {
+    MasterGamesTable
+  },
+  methods: {
+    fetchActionedGames() {
+      axios
+        .get('/api/admin/GetCurrentActionedGames')
+        .then(response => {
+          this.actionedGames = response.data;
+        })
+        .catch(response => {
 
-                });
-        }
-    },
-    mounted() {
-        this.fetchActionedGames();
+        });
     }
+  },
+  mounted() {
+    this.fetchActionedGames();
+  }
 };
 </script>
 <style scoped>

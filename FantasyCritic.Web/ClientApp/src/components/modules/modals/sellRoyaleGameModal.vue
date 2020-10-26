@@ -10,12 +10,12 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    props: ['publisherGame'],
-    methods: {
-        sellGame() {
-            this.$refs.sellRoyaleGameModalRef.hide();
-            this.$emit('sellGame', this.publisherGame);
-        }
+  props: ['publisherGame'],
+  methods: {
+    sellGame() {
+      this.$refs.sellRoyaleGameModalRef.hide();
+      this.$emit('sellGame', this.publisherGame);
     }
+  }
 };
 </script>

@@ -41,8 +41,8 @@
 import FaqCollapse from '@/components/modules/faqCollapse';
 
 export default {
-    components: {
-        FaqCollapse
-    }
+  components: {
+    FaqCollapse
+  }
 };
 </script>

@@ -29,37 +29,37 @@ import StatusBadge from '@/components/modules/statusBadge';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 
 export default {
-    data() {
-        return {
-            perPage: 10,
-            currentPage: 1,
-            selectedPossibleRoyaleGame: null,
-            lastPopoverShown: null,
-            gameFields: [
-                { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
-                { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-                { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-                { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary' },
-                { key: 'select', label: '', thClass: 'bg-primary' }
-            ],
-        };
-    },
-    components: {
-        StatusBadge,
-        MasterGamePopover
-    },
-    props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
-    computed: {
-        rows() {
-            return this.possibleGames.length;
-        }
-    },
-    methods: {
-        selectGame(possibleRoyaleGame) {
-            this.selectedPossibleRoyaleGame = possibleRoyaleGame;
-            this.$emit('input', this.selectedPossibleRoyaleGame);
-        }
+  data() {
+    return {
+      perPage: 10,
+      currentPage: 1,
+      selectedPossibleRoyaleGame: null,
+      lastPopoverShown: null,
+      gameFields: [
+        { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
+        { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary' },
+        { key: 'select', label: '', thClass: 'bg-primary' }
+      ],
+    };
+  },
+  components: {
+    StatusBadge,
+    MasterGamePopover
+  },
+  props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
+  computed: {
+    rows() {
+      return this.possibleGames.length;
     }
+  },
+  methods: {
+    selectGame(possibleRoyaleGame) {
+      this.selectedPossibleRoyaleGame = possibleRoyaleGame;
+      this.$emit('input', this.selectedPossibleRoyaleGame);
+    }
+  }
 };
 </script>
 <style scoped>

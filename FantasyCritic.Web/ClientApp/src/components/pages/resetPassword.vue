@@ -44,31 +44,31 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            emailAddress: '',
-            newPassword: '',
-            confirmNewPassword: '',
-            errorInfo: ''
-        };
-    },
-    methods: {
-        resetPassword() {
-            var model = {
-                emailAddress: this.emailAddress,
-                password: this.newPassword,
-                confirmPassword: this.confirmNewPassword,
-                code: this.$route.query.Code
-            };
-            axios
-                .post('/api/account/ResetPassword', model)
-                .then(response => {
-                    this.$router.push({ name: 'login' });
-                })
-                .catch(returnedError => {
-                    this.errorInfo = 'There was an error with your request.';
-                });
-        }
+  data() {
+    return {
+      emailAddress: '',
+      newPassword: '',
+      confirmNewPassword: '',
+      errorInfo: ''
+    };
+  },
+  methods: {
+    resetPassword() {
+      var model = {
+        emailAddress: this.emailAddress,
+        password: this.newPassword,
+        confirmPassword: this.confirmNewPassword,
+        code: this.$route.query.Code
+      };
+      axios
+        .post('/api/account/ResetPassword', model)
+        .then(response => {
+          this.$router.push({ name: 'login' });
+        })
+        .catch(returnedError => {
+          this.errorInfo = 'There was an error with your request.';
+        });
     }
+  }
 };
 </script>

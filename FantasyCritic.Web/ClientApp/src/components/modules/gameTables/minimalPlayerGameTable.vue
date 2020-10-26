@@ -63,40 +63,40 @@ import MinimalPlayerGameRow from '@/components/modules/gameTables/minimalPlayerG
 import MinimalBlankPlayerGameRow from '@/components/modules/gameTables/minimalBlankPlayerGameRow';
 
 export default {
-    components: {
-        MinimalPlayerGameRow,
-        MinimalBlankPlayerGameRow
+  components: {
+    MinimalPlayerGameRow,
+    MinimalBlankPlayerGameRow
+  },
+  props: ['publisher', 'options', 'yearFinished'],
+  computed: {
+    games() {
+      return this.publisher.games;
     },
-    props: ['publisher', 'options', 'yearFinished'],
-    computed: {
-        games() {
-            return this.publisher.games;
-        },
-        standardGames() {
-            return _.filter(this.games, { 'counterPick': false });
-        },
-        counterPicks() {
-            return _.filter(this.games, { 'counterPick': true });
-        },
-        standardFiller() {
-            var numberStandardGames = this.standardGames.length;
-            var openSlots = this.options.standardGameSlots - numberStandardGames;
-            return openSlots;
-        },
-        counterPickFiller() {
-            var numberCounterPicked = this.counterPicks.length;
-            var openSlots = this.options.counterPickSlots - numberCounterPicked;
-            return openSlots;
-        },
-        tableIsValid() {
-            return (this.standardGames.length <= this.options.standardGameSlots) && (this.counterPicks.length <= this.options.counterPickSlots);
-        },
-        advancedProjections: {
-            get() {
-                return this.$store.getters.advancedProjections;
-            }
-        }
+    standardGames() {
+      return _.filter(this.games, { 'counterPick': false });
+    },
+    counterPicks() {
+      return _.filter(this.games, { 'counterPick': true });
+    },
+    standardFiller() {
+      var numberStandardGames = this.standardGames.length;
+      var openSlots = this.options.standardGameSlots - numberStandardGames;
+      return openSlots;
+    },
+    counterPickFiller() {
+      var numberCounterPicked = this.counterPicks.length;
+      var openSlots = this.options.counterPickSlots - numberCounterPicked;
+      return openSlots;
+    },
+    tableIsValid() {
+      return (this.standardGames.length <= this.options.standardGameSlots) && (this.counterPicks.length <= this.options.counterPickSlots);
+    },
+    advancedProjections: {
+      get() {
+        return this.$store.getters.advancedProjections;
+      }
     }
+  }
 };
 </script>
 <style scoped>

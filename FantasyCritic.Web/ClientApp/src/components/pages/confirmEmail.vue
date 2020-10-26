@@ -57,68 +57,68 @@
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            isBusy: false,
-            attemptFailed: false,
-            errorInfo: '',
-            manaulUserID: '',
-            manualConfirmCode: ''
-        };
+  data() {
+    return {
+      isBusy: false,
+      attemptFailed: false,
+      errorInfo: '',
+      manaulUserID: '',
+      manualConfirmCode: ''
+    };
+  },
+  computed: {
+    accountConfirmed() {
+      if (this.$store.getters.userInfo) {
+        return this.$store.getters.userInfo.emailConfirmed;
+      }
+      return false;
     },
-    computed: {
-        accountConfirmed() {
-            if (this.$store.getters.userInfo) {
-                return this.$store.getters.userInfo.emailConfirmed;
-            }
-            return false;
-        },
-        isAuth() {
-            return this.$store.getters.tokenIsCurrent();
-        }
-    },
-    methods: {
-        confirmFromURL() {
-            this.attemptFailed = false;
-            this.errorInfo = '';
-            let request = {
-                userID: this.$route.query.UserID,
-                code: this.$route.query.Code
-            };
-            this.confirmEmail(request);
-        },
-        manualConfirm() {
-            this.attemptFailed = false;
-            this.errorInfo = '';
-            let request = {
-                userID: this.manaulUserID,
-                code: this.manualConfirmCode
-            };
-            this.confirmEmail(request);
-        },
-        confirmEmail(request) {
-            this.isBusy = true;
-            axios
-                .post('/api/account/ConfirmEmail', request)
-                .then(response => {
-                    this.isBusy = false;
-                    if (this.isAuth) {
-                        this.$store.dispatch('getUserInfo')
-                            .then(() => {
-                                setTimeout(() => this.$router.push({ name: 'home' }), 3000);
-                            })
-                            .catch(returnedError => {
-                            });
-                    } else {
-                        setTimeout(() => this.$router.push({ name: 'login' }), 3000);
-                    }
-                })
-                .catch(response => {
-                    this.isBusy = false;
-                    this.errorInfo = 'Something went wrong with automatic confirmation. Try confirming manually.';
-                    this.attemptFailed = true;
-                });
-        },
+    isAuth() {
+      return this.$store.getters.tokenIsCurrent();
     }
+  },
+  methods: {
+    confirmFromURL() {
+      this.attemptFailed = false;
+      this.errorInfo = '';
+      let request = {
+        userID: this.$route.query.UserID,
+        code: this.$route.query.Code
+      };
+      this.confirmEmail(request);
+    },
+    manualConfirm() {
+      this.attemptFailed = false;
+      this.errorInfo = '';
+      let request = {
+        userID: this.manaulUserID,
+        code: this.manualConfirmCode
+      };
+      this.confirmEmail(request);
+    },
+    confirmEmail(request) {
+      this.isBusy = true;
+      axios
+        .post('/api/account/ConfirmEmail', request)
+        .then(response => {
+          this.isBusy = false;
+          if (this.isAuth) {
+            this.$store.dispatch('getUserInfo')
+              .then(() => {
+                setTimeout(() => this.$router.push({ name: 'home' }), 3000);
+              })
+              .catch(returnedError => {
+              });
+          } else {
+            setTimeout(() => this.$router.push({ name: 'login' }), 3000);
+          }
+        })
+        .catch(response => {
+          this.isBusy = false;
+          this.errorInfo = 'Something went wrong with automatic confirmation. Try confirming manually.';
+          this.attemptFailed = true;
+        });
+    },
+  }
 };
 </script>

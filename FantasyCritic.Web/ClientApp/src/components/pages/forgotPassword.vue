@@ -28,26 +28,26 @@
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            emailAddress: '',
-            showSent: false
-        };
-    },
-    methods: {
-        sendForgotPasswordRequest() {
-            let request = {
-                emailAddress: this.emailAddress
-            };
-            axios
-                .post('/api/account/ForgotPassword', request)
-                .then(response => {
-                    this.showSent = true;
-                })
-                .catch(response => {
+  data() {
+    return {
+      emailAddress: '',
+      showSent: false
+    };
+  },
+  methods: {
+    sendForgotPasswordRequest() {
+      let request = {
+        emailAddress: this.emailAddress
+      };
+      axios
+        .post('/api/account/ForgotPassword', request)
+        .then(response => {
+          this.showSent = true;
+        })
+        .catch(response => {
 
-                });
-        }
+        });
     }
+  }
 };
 </script>

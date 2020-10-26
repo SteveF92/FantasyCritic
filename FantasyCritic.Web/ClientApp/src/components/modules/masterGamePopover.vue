@@ -27,21 +27,21 @@ import 'vue-popperjs/dist/vue-popper.css';
 import MasterGameSummary from '@/components/modules/masterGameSummary';
 
 export default {
-    data() {
-        return {
-            error: ''
-        };
-    },
-    components: {
-        'popper': Popper,
-        MasterGameSummary
-    },
-    props: ['masterGame'],
-    methods: {
-        closePopover() {
-            this.$refs.gamePopoverRef.doClose();
-        }
+  data() {
+    return {
+      error: ''
+    };
+  },
+  components: {
+    'popper': Popper,
+    MasterGameSummary
+  },
+  props: ['masterGame'],
+  methods: {
+    closePopover() {
+      this.$refs.gamePopoverRef.doClose();
     }
+  }
 };
 </script>
 <style scoped>

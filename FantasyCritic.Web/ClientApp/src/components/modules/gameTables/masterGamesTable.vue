@@ -51,66 +51,66 @@ import EligibilityBadge from '@/components/modules/eligibilityBadge';
 import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
 
 export default {
-    props: ['masterGames'],
-    data() {
-        return {
-            gameFields: [
-                { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-                { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-                { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
-                { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
-                { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary' },
-                { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
-                { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-                { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-                { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' }
-            ],
-            sortBy: 'dateAdjustedHypeFactor',
-            sortDesc: true
-        };
+  props: ['masterGames'],
+  data() {
+    return {
+      gameFields: [
+        { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+        { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
+        { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
+        { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary' },
+        { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
+        { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' }
+      ],
+      sortBy: 'dateAdjustedHypeFactor',
+      sortDesc: true
+    };
+  },
+  components: {
+    MasterGamePopover,
+    EligibilityBadge,
+    MasterGamesTable
+  },
+  computed: {
+    maximumEligibilityLevel() {
+      let level = {
+        level: 5
+      };
+      return level;
     },
-    components: {
-        MasterGamePopover,
-        EligibilityBadge,
-        MasterGamesTable
-    },
-    computed: {
-        maximumEligibilityLevel() {
-            let level = {
-                level: 5
-            };
-            return level;
-        },
-        tableIsSmall() {
-            if (window.innerWidth < 500) {
-                return true;
-            }
+    tableIsSmall() {
+      if (window.innerWidth < 500) {
+        return true;
+      }
 
-            return false;
-        },
-        gameRows() {
-            let gameRows = this.masterGames;
-            if (!gameRows) {
-                return [];
-            }
-            for (var i = 0; i < gameRows.length; ++i) {
-                if (gameRows[i].error) {
-                    gameRows[i]._rowVariant = 'danger';
-                }
-            }
-            return gameRows;
-        }
+      return false;
     },
-    methods: {
-        getReleaseDate(game) {
-            if (game.releaseDate) {
-                return moment(game.releaseDate).format('YYYY-MM-DD');
-            }
-            return game.estimatedReleaseDate + ' (Estimated)';
-        },
-        openCriticLink(game) {
-            return 'https://opencritic.com/game/' + game.openCriticID + '/a';
+    gameRows() {
+      let gameRows = this.masterGames;
+      if (!gameRows) {
+        return [];
+      }
+      for (var i = 0; i < gameRows.length; ++i) {
+        if (gameRows[i].error) {
+          gameRows[i]._rowVariant = 'danger';
         }
+      }
+      return gameRows;
     }
+  },
+  methods: {
+    getReleaseDate(game) {
+      if (game.releaseDate) {
+        return moment(game.releaseDate).format('YYYY-MM-DD');
+      }
+      return game.estimatedReleaseDate + ' (Estimated)';
+    },
+    openCriticLink(game) {
+      return 'https://opencritic.com/game/' + game.openCriticID + '/a';
+    }
+  }
 };
 </script>

@@ -39,20 +39,20 @@ import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 
 export default {
-    components: {
-        MasterGamePopover
+  components: {
+    MasterGamePopover
+  },
+  props: ['game', 'yearFinished'],
+  computed: {
+    releaseDate() {
+      return moment(this.game.releaseDate).format('MMMM Do, YYYY');
     },
-    props: ['game', 'yearFinished'],
-    computed: {
-        releaseDate() {
-            return moment(this.game.releaseDate).format('MMMM Do, YYYY');
-        },
-        advancedProjections: {
-            get() {
-                return this.$store.getters.advancedProjections;
-            }
-        }
+    advancedProjections: {
+      get() {
+        return this.$store.getters.advancedProjections;
+      }
     }
+  }
 };
 </script>
 <style scoped>

@@ -16,8 +16,8 @@ import axios from 'axios';
 import RegisterForm from '@/components/modules/registerForm';
 
 export default {
-    components: {
-        RegisterForm
-    }
+  components: {
+    RegisterForm
+  }
 };
 </script>

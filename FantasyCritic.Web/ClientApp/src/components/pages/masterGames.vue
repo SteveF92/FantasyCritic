@@ -47,66 +47,66 @@ import EligibilityBadge from '@/components/modules/eligibilityBadge';
 import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
 
 export default {
-    data() {
-        return {
-            selectedYear: null,
-            unreleasedOnly: false,
-            supportedYears: [],
-            gamesForYear: []
-        };
+  data() {
+    return {
+      selectedYear: null,
+      unreleasedOnly: false,
+      supportedYears: [],
+      gamesForYear: []
+    };
+  },
+  components: {
+    MasterGamePopover,
+    EligibilityBadge,
+    MasterGamesTable
+  },
+  computed: {
+    isAuth() {
+      return this.$store.getters.tokenIsCurrent();
     },
-    components: {
-        MasterGamePopover,
-        EligibilityBadge,
-        MasterGamesTable
-    },
-    computed: {
-        isAuth() {
-            return this.$store.getters.tokenIsCurrent();
-        },
-        gamesToShow() {
-            if (!this.unreleasedOnly) {
-                return this.gamesForYear;
-            }
+    gamesToShow() {
+      if (!this.unreleasedOnly) {
+        return this.gamesForYear;
+      }
 
-            return _.filter(this.gamesForYear, { 'isReleased': false });
-        },
-        showGames() {
-            return this.gamesToShow && this.gamesToShow.length > 0;
-        }
+      return _.filter(this.gamesForYear, { 'isReleased': false });
     },
-    methods: {
-        fetchSupportedYears() {
-            axios
-                .get('/api/game/SupportedYears')
-                .then(response => {
-                    let supportedYears = response.data;
-                    let openYears = _.filter(supportedYears, { 'openForPlay': true });
-                    let finishedYears = _.filter(supportedYears, { 'finished': true });
-                    this.supportedYears = openYears.concat(finishedYears).map(function (v) {
-                        return v.year;
-                    });
-                    this.selectedYear = this.supportedYears[0];
-                    this.fetchGamesForYear(this.selectedYear);
-                })
-                .catch(response => {
-
-                });
-        },
-        fetchGamesForYear(year) {
-            axios
-                .get('/api/game/MasterGameYear/' + year)
-                .then(response => {
-                    this.gamesForYear = response.data;
-                })
-                .catch(response => {
-
-                });
-        }
-    },
-    mounted() {
-        this.fetchSupportedYears();
+    showGames() {
+      return this.gamesToShow && this.gamesToShow.length > 0;
     }
+  },
+  methods: {
+    fetchSupportedYears() {
+      axios
+        .get('/api/game/SupportedYears')
+        .then(response => {
+          let supportedYears = response.data;
+          let openYears = _.filter(supportedYears, { 'openForPlay': true });
+          let finishedYears = _.filter(supportedYears, { 'finished': true });
+          this.supportedYears = openYears.concat(finishedYears).map(function (v) {
+            return v.year;
+          });
+          this.selectedYear = this.supportedYears[0];
+          this.fetchGamesForYear(this.selectedYear);
+        })
+        .catch(response => {
+
+        });
+    },
+    fetchGamesForYear(year) {
+      axios
+        .get('/api/game/MasterGameYear/' + year)
+        .then(response => {
+          this.gamesForYear = response.data;
+        })
+        .catch(response => {
+
+        });
+    }
+  },
+  mounted() {
+    this.fetchSupportedYears();
+  }
 };
 </script>
 <style scoped>

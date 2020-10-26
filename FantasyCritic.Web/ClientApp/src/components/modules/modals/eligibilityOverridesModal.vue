@@ -20,7 +20,7 @@
 <script>
 
 export default {
-    props: ['eligibilityOverrides']
+  props: ['eligibilityOverrides']
 };
 </script>
 

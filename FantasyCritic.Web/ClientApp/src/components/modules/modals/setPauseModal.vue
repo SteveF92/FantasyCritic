@@ -13,15 +13,15 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    props: ['paused'],
-    methods: {
-        setPause() {
-            this.$refs.setPauseModalRef.hide();
-            let pauseInfo = {
-                pause: !this.paused
-            };
-            this.$emit('setPause', pauseInfo);
-        }
+  props: ['paused'],
+  methods: {
+    setPause() {
+      this.$refs.setPauseModalRef.hide();
+      let pauseInfo = {
+        pause: !this.paused
+      };
+      this.$emit('setPause', pauseInfo);
     }
+  }
 };
 </script>

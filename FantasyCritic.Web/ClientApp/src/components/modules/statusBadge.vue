@@ -9,17 +9,17 @@
 import Vue from 'vue';
 
 export default {
-    props: ['possibleMasterGame'],
-    computed: {
-        status() {
-            return this.possibleMasterGame.status;
-        },
-        isAvailable() {
-            return this.possibleMasterGame.isAvailable;
-        },
-        alreadyOwned() {
-            return this.possibleMasterGame.alreadyOwned;
-        }
+  props: ['possibleMasterGame'],
+  computed: {
+    status() {
+      return this.possibleMasterGame.status;
+    },
+    isAvailable() {
+      return this.possibleMasterGame.isAvailable;
+    },
+    alreadyOwned() {
+      return this.possibleMasterGame.alreadyOwned;
     }
+  }
 };
 </script>

@@ -29,76 +29,76 @@ import axios from 'axios';
 import draggable from 'vuedraggable';
 
 export default {
-    components: {
-        draggable,
-    },
-    props: ['leagueYear'],
-    data() {
-        return {
-            desiredDraftOrder: [],
-            isDragging: false,
-            delayedDragging: false
-        };
-    },
-    computed: {
-        dragOptions() {
-            return {
-                animation: 0,
-                group: 'description',
-                disabled: false
-            };
-        }
-    },
-    methods: {
-        setDraftOrder() {
-            let desiredDraftOrderIDs = this.desiredDraftOrder.map(v=> v.publisherID);
-            var model = {
-                leagueID: this.leagueYear.leagueID,
-                year: this.leagueYear.year,
-                publisherDraftPositions: desiredDraftOrderIDs
-            };
-            axios
-                .post('/api/leagueManager/SetDraftOrder', model)
-                .then(response => {
-                    this.$refs.editDraftOrderFormRef.hide();
-                    this.$emit('draftOrderEdited');
-                })
-                .catch(response => {
+  components: {
+    draggable,
+  },
+  props: ['leagueYear'],
+  data() {
+    return {
+      desiredDraftOrder: [],
+      isDragging: false,
+      delayedDragging: false
+    };
+  },
+  computed: {
+    dragOptions() {
+      return {
+        animation: 0,
+        group: 'description',
+        disabled: false
+      };
+    }
+  },
+  methods: {
+    setDraftOrder() {
+      let desiredDraftOrderIDs = this.desiredDraftOrder.map(v=> v.publisherID);
+      var model = {
+        leagueID: this.leagueYear.leagueID,
+        year: this.leagueYear.year,
+        publisherDraftPositions: desiredDraftOrderIDs
+      };
+      axios
+        .post('/api/leagueManager/SetDraftOrder', model)
+        .then(response => {
+          this.$refs.editDraftOrderFormRef.hide();
+          this.$emit('draftOrderEdited');
+        })
+        .catch(response => {
 
-                });
-        },
-        clearData() {
-            this.desiredDraftOrder = this.leagueYear.publishers;
-        },
-        /**
+        });
+    },
+    clearData() {
+      this.desiredDraftOrder = this.leagueYear.publishers;
+    },
+    /**
        * On randomize, shuffle current `desiredDraftOrder` array
        * Uses Fisher–Yates_shuffle algorithm to randomize the publishers
        */
-        shuffleOrder() {
-            const array = this.desiredDraftOrder;
-            this.desiredDraftOrder = []; // detach the watchers
+    shuffleOrder() {
+      const array = this.desiredDraftOrder;
+      this.desiredDraftOrder = []; // detach the watchers
 
-            for (let i = array.length - 1; i > 0; i--) {
-                let j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            this.desiredDraftOrder = array;
-        }
-    },
-    mounted() {
-        this.clearData();
-    },
-    watch: {
-        isDragging(newValue) {
-            if (newValue) {
-                this.delayedDragging = true;
-                return;
-            }
-            this.$nextTick(() => {
-                this.delayedDragging = false;
-            });
-        }
+      for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      this.desiredDraftOrder = array;
     }
+  },
+  mounted() {
+    this.clearData();
+  },
+  watch: {
+    isDragging(newValue) {
+      if (newValue) {
+        this.delayedDragging = true;
+        return;
+      }
+      this.$nextTick(() => {
+        this.delayedDragging = false;
+      });
+    }
+  }
 };
 </script>
 <style>

@@ -102,58 +102,58 @@
 import axios from 'axios';
 
 export default {
-    computed: {
-        isAuth() {
-            return this.$store.getters.tokenIsCurrent();
-        },
-        hasUserInfo() {
-            return this.$store.getters.userInfo;
-        },
-        displayName() {
-            return this.$store.getters.userInfo.displayName;
-        },
-        storeIsBusy() {
-            return this.$store.getters.storeIsBusy;
-        },
-        activeRoyaleYear() {
-            if (!this.activeRoyaleYearQuarter) {
-                return;
-            }
-            return this.activeRoyaleYearQuarter.year;
-        },
-        activeRoyaleQuarter() {
-            if (!this.activeRoyaleYearQuarter) {
-                return;
-            }
-            return this.activeRoyaleYearQuarter.quarter;
-        }
+  computed: {
+    isAuth() {
+      return this.$store.getters.tokenIsCurrent();
     },
-    data() {
-        return {
-            activeRoyaleYearQuarter: null
-        };
+    hasUserInfo() {
+      return this.$store.getters.userInfo;
     },
-    methods: {
-        async fetchActiveRoyaleYearQuarter() {
-            axios
-                .get('/api/royale/ActiveRoyaleQuarter')
-                .then(response => {
-                    this.activeRoyaleYearQuarter = response.data;
-                })
-                .catch(response => {
-
-                });
-        },
-        logout() {
-            this.$store.dispatch('logout')
-                .then(() => {
-                    this.$router.push({ name: 'login' });
-                });
-        }
+    displayName() {
+      return this.$store.getters.userInfo.displayName;
     },
-    async mounted() {
-        await this.fetchActiveRoyaleYearQuarter();
+    storeIsBusy() {
+      return this.$store.getters.storeIsBusy;
+    },
+    activeRoyaleYear() {
+      if (!this.activeRoyaleYearQuarter) {
+        return;
+      }
+      return this.activeRoyaleYearQuarter.year;
+    },
+    activeRoyaleQuarter() {
+      if (!this.activeRoyaleYearQuarter) {
+        return;
+      }
+      return this.activeRoyaleYearQuarter.quarter;
     }
+  },
+  data() {
+    return {
+      activeRoyaleYearQuarter: null
+    };
+  },
+  methods: {
+    async fetchActiveRoyaleYearQuarter() {
+      axios
+        .get('/api/royale/ActiveRoyaleQuarter')
+        .then(response => {
+          this.activeRoyaleYearQuarter = response.data;
+        })
+        .catch(response => {
+
+        });
+    },
+    logout() {
+      this.$store.dispatch('logout')
+        .then(() => {
+          this.$router.push({ name: 'login' });
+        });
+    }
+  },
+  async mounted() {
+    await this.fetchActiveRoyaleYearQuarter();
+  }
 };
 </script>
 

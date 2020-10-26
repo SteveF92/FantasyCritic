@@ -24,29 +24,29 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    props: ['publisher','currentDrops'],
-    data() {
-        return {
+  props: ['publisher','currentDrops'],
+  data() {
+    return {
         
-        };
-    },
-    methods: {
-        cancelDrop(dropRequest) {
-            var model = {
-                dropRequestID: dropRequest.dropRequestID
-            };
-            axios
-                .post('/api/league/DeleteDropRequest', model)
-                .then(response => {
-                    var dropInfo = {
-                        gameName: dropRequest.masterGame.gameName
-                    };
-                    this.$emit('dropCancelled', dropInfo);
-                })
-                .catch(response => {
+    };
+  },
+  methods: {
+    cancelDrop(dropRequest) {
+      var model = {
+        dropRequestID: dropRequest.dropRequestID
+      };
+      axios
+        .post('/api/league/DeleteDropRequest', model)
+        .then(response => {
+          var dropInfo = {
+            gameName: dropRequest.masterGame.gameName
+          };
+          this.$emit('dropCancelled', dropInfo);
+        })
+        .catch(response => {
 
-                });
-        }
+        });
     }
+  }
 };
 </script>

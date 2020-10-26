@@ -15,39 +15,39 @@
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            newPublisherName: '',
-            errorInfo: ''
-        };
+  data() {
+    return {
+      newPublisherName: '',
+      errorInfo: ''
+    };
+  },
+  props: ['publisher'],
+  methods: {
+    changePublisherName() {
+      var model = {
+        publisherID: this.publisher.publisherID,
+        publisherName: this.newPublisherName
+      };
+      axios
+        .post('/api/league/changePublisherName', model)
+        .then(response => {
+          this.$refs.changePublisherNameRef.hide();
+          let actionInfo = {
+            oldName: this.publisher.publisherName,
+            newName: this.newPublisherName,
+            fetchLeagueYear: true
+          };
+          this.$emit('publisherNameChanged', actionInfo);
+        })
+        .catch(response => {
+        });
     },
-    props: ['publisher'],
-    methods: {
-        changePublisherName() {
-            var model = {
-                publisherID: this.publisher.publisherID,
-                publisherName: this.newPublisherName
-            };
-            axios
-                .post('/api/league/changePublisherName', model)
-                .then(response => {
-                    this.$refs.changePublisherNameRef.hide();
-                    let actionInfo = {
-                        oldName: this.publisher.publisherName,
-                        newName: this.newPublisherName,
-                        fetchLeagueYear: true
-                    };
-                    this.$emit('publisherNameChanged', actionInfo);
-                })
-                .catch(response => {
-                });
-        },
-        clearData() {
-            this.newPublisherName = this.publisher.publisherName;
-        }
-    },
-    mounted() {
-        this.clearData();
+    clearData() {
+      this.newPublisherName = this.publisher.publisherName;
     }
+  },
+  mounted() {
+    this.clearData();
+  }
 };
 </script>

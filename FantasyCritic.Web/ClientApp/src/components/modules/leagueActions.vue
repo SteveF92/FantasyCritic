@@ -205,306 +205,306 @@ import LeagueOptionsModal from '@/components/modules/modals/leagueOptionsModal';
 import ManageEligibilityOverridesModal from '@/components/modules/modals/manageEligibilityOverridesModal';
 
 export default {
-    data() {
-        return {
-            errorInfo: ''
-        };
+  data() {
+    return {
+      errorInfo: ''
+    };
+  },
+  props: ['league', 'leagueYear', 'leagueActions', 'currentBids', 'currentDrops', 'userIsNextInDraft', 'nextPublisherUp'],
+  components: {
+    BidGameForm,
+    CurrentBidsForm,
+    GameQueueForm,
+    DropGameForm,
+    CurrentDropsForm,
+    EligibilityOverridesModal,
+    ChangePublisherNameForm,
+    PlayerDraftGameForm,
+    PlayerDraftCounterPickForm,
+    EditAutoDraftForm,
+    ManageActivePlayersForm,
+    ManagerAssociateGameForm,
+    ManagerClaimGameForm,
+    ManagerDraftCounterPickForm,
+    ManagerDraftGameForm,
+    ManagerSetAutoDraftForm,
+    ManagerEditPublishersForm,
+    InvitePlayerForm,
+    RemoveGameForm,
+    ManuallyScoreGameForm,
+    ChangeLeagueOptionsForm,
+    EditDraftOrderForm,
+    SetPauseModal,
+    ResetDraftModal,
+    UndoLastDraftActionModal,
+    AddNewLeagueYearForm,
+    LeagueOptionsModal,
+    ManageEligibilityOverridesModal
+  },
+  methods: {
+    gameBid(bidInfo) {
+      let actionInfo = {
+        message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
     },
-    props: ['league', 'leagueYear', 'leagueActions', 'currentBids', 'currentDrops', 'userIsNextInDraft', 'nextPublisherUp'],
-    components: {
-        BidGameForm,
-        CurrentBidsForm,
-        GameQueueForm,
-        DropGameForm,
-        CurrentDropsForm,
-        EligibilityOverridesModal,
-        ChangePublisherNameForm,
-        PlayerDraftGameForm,
-        PlayerDraftCounterPickForm,
-        EditAutoDraftForm,
-        ManageActivePlayersForm,
-        ManagerAssociateGameForm,
-        ManagerClaimGameForm,
-        ManagerDraftCounterPickForm,
-        ManagerDraftGameForm,
-        ManagerSetAutoDraftForm,
-        ManagerEditPublishersForm,
-        InvitePlayerForm,
-        RemoveGameForm,
-        ManuallyScoreGameForm,
-        ChangeLeagueOptionsForm,
-        EditDraftOrderForm,
-        SetPauseModal,
-        ResetDraftModal,
-        UndoLastDraftActionModal,
-        AddNewLeagueYearForm,
-        LeagueOptionsModal,
-        ManageEligibilityOverridesModal
+    bidCanceled(bidInfo) {
+      let actionInfo = {
+        message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
     },
-    methods: {
-        gameBid(bidInfo) {
-            let actionInfo = {
-                message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        bidCanceled(bidInfo) {
-            let actionInfo = {
-                message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        dropRequestMade(dropInfo) {
-            let actionInfo = {
-                message: 'Drop Request for ' + dropInfo.gameName + ' was made.',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        dropCancelled(dropInfo) {
-            let actionInfo = {
-                message: 'Drop Request for ' + dropInfo.gameName + ' was cancelled.',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        publisherNameChanged(changeInfo) {
-            let actionInfo = {
-                message: 'Publisher name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        newYearAdded(year) {
-            this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: year }, query: { freshSettings: true }});
-        },
-        playerRemoved(removeInfo) {
-            let actionInfo = {
-                message: removeInfo.displayName + ' has been removed from the league.',
-                fetchLeague: true,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        gameDrafted(draftInfo) {
-            let actionInfo = {
-                message: 'You have drafted: ' + draftInfo.gameName,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        counterPickDrafted(gameInfo) {
-            let actionInfo = {
-                message: 'You have selected ' + gameInfo.gameName + ' as a counter pick.',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        setPause(pauseInfo) {
-            var model = {
-                leagueID: this.league.leagueID,
-                year: this.leagueYear.year,
-                pause: pauseInfo.pause
-            };
-            axios
-                .post('/api/leagueManager/SetDraftPause', model)
-                .then(response => {
-                    let pauseMessage = 'Draft has been paused.';
-                    if (!pauseInfo.pause) {
-                        pauseMessage = 'Draft has been un-paused.';
-                    }
-                    let actionInfo = {
-                        message: pauseMessage,
-                        fetchLeague: true,
-                        fetchLeagueYear: true
-                    };
-                    this.$emit('actionTaken', actionInfo);
-                })
-                .catch(response => {
+    dropRequestMade(dropInfo) {
+      let actionInfo = {
+        message: 'Drop Request for ' + dropInfo.gameName + ' was made.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    dropCancelled(dropInfo) {
+      let actionInfo = {
+        message: 'Drop Request for ' + dropInfo.gameName + ' was cancelled.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    publisherNameChanged(changeInfo) {
+      let actionInfo = {
+        message: 'Publisher name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    newYearAdded(year) {
+      this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: year }, query: { freshSettings: true }});
+    },
+    playerRemoved(removeInfo) {
+      let actionInfo = {
+        message: removeInfo.displayName + ' has been removed from the league.',
+        fetchLeague: true,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameDrafted(draftInfo) {
+      let actionInfo = {
+        message: 'You have drafted: ' + draftInfo.gameName,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    counterPickDrafted(gameInfo) {
+      let actionInfo = {
+        message: 'You have selected ' + gameInfo.gameName + ' as a counter pick.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    setPause(pauseInfo) {
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.leagueYear.year,
+        pause: pauseInfo.pause
+      };
+      axios
+        .post('/api/leagueManager/SetDraftPause', model)
+        .then(response => {
+          let pauseMessage = 'Draft has been paused.';
+          if (!pauseInfo.pause) {
+            pauseMessage = 'Draft has been un-paused.';
+          }
+          let actionInfo = {
+            message: pauseMessage,
+            fetchLeague: true,
+            fetchLeagueYear: true
+          };
+          this.$emit('actionTaken', actionInfo);
+        })
+        .catch(response => {
 
-                });
-        },
-        resetDraft() {
-            var model = {
-                leagueID: this.league.leagueID,
-                year: this.leagueYear.year
-            };
-            axios
-                .post('/api/leagueManager/ResetDraft', model)
-                .then(response => {
-                    let actionInfo = {
-                        message: 'Draft has been reset.',
-                        fetchLeague: true,
-                        fetchLeagueYear: true
-                    };
-                    this.$emit('actionTaken', actionInfo);
-                })
-                .catch(response => {
+        });
+    },
+    resetDraft() {
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.leagueYear.year
+      };
+      axios
+        .post('/api/leagueManager/ResetDraft', model)
+        .then(response => {
+          let actionInfo = {
+            message: 'Draft has been reset.',
+            fetchLeague: true,
+            fetchLeagueYear: true
+          };
+          this.$emit('actionTaken', actionInfo);
+        })
+        .catch(response => {
 
-                });
-        },
-        undoLastDraftAction() {
-            var model = {
-                leagueID: this.league.leagueID,
-                year: this.leagueYear.year
-            };
-            axios
-                .post('/api/leagueManager/UndoLastDraftAction', model)
-                .then(response => {
-                    let actionInfo = {
-                        message: 'Last action was undone.',
-                        fetchLeagueYear: true
-                    };
-                    this.$emit('actionTaken', actionInfo);
-                })
-                .catch(response => {
+        });
+    },
+    undoLastDraftAction() {
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.leagueYear.year
+      };
+      axios
+        .post('/api/leagueManager/UndoLastDraftAction', model)
+        .then(response => {
+          let actionInfo = {
+            message: 'Last action was undone.',
+            fetchLeagueYear: true
+          };
+          this.$emit('actionTaken', actionInfo);
+        })
+        .catch(response => {
 
-                });
-        },
-        playerInvited(inviteEmail) {
-            let actionInfo = {
-                message: 'Invite was sent to ' + inviteEmail,
-                fetchLeagueYear: true,
-                fetchLeague: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        linkCopied() {
-            let actionInfo = {
-                message: 'Invite Link copied to clipboard.',
-                fetchLeagueYear: false,
-                fetchLeague: false
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        activePlayersEdited() {
-            let actionInfo = {
-                message: 'Active players were changed.',
-                fetchLeagueYear: true,
-                fetchLeague: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        gameClaimed(claimInfo) {
-            let actionInfo = {
-                message: claimInfo.gameName + ' added to ' + claimInfo.publisherName,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        managerGameDrafted(draftInfo) {
-            let actionInfo = {
-                message: draftInfo.gameName + ' drafted by ' + draftInfo.publisherName,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        managerCounterPickDrafted(draftInfo) {
-            let actionInfo = {
-                message: draftInfo.gameName + ' selected as a counter pick by ' + draftInfo.publisherName,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        gameAssociated(associateInfo) {
-            let actionInfo = {
-                message: associateInfo.gameName + ' sucessfully associated.',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        gameRemoved(removeInfo) {
-            let actionInfo = {
-                message: removeInfo.gameName + ' removed from ' + removeInfo.publisherName,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        gameManuallyScored(manualScoreInfo) {
-            let actionInfo = {
-                message: manualScoreInfo.gameName + ' was given a score of ' + manualScoreInfo.score + '.',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        manualScoreRemoved(gameName) {
-            let actionInfo = {
-                message: gameName + '\'s manual score was removed.',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        leagueOptionsChanged() {
-            let actionInfo = {
-                message: 'League options have been updated',
-                fetchLeague: true,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        draftOrderEdited() {
-            let actionInfo = {
-                message: 'Draft order has been changed',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        bidPriorityEdited() {
-            let actionInfo = {
-                message: 'Bid priority has been changed',
-                fetchLeagueYear: true,
-                fetchCurrentBids: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        gameEligibilitySet(gameInfo) {
-            let message = '';
-            if (gameInfo.eligible) {
-                message = gameInfo.gameName + ' was marked as eligible.';
-            } else {
-                message = gameInfo.gameName + ' was marked as ineligible.';
-            }
-            let actionInfo = {
-                message: message,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        gameEligiblityReset(gameInfo) {
-            let actionInfo = {
-                message: gameInfo.gameName + '\'s eligibility was reset to normal.',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        autoDraftSet(autoDraftInfo) {
-            let autoDraftStatus = 'off.';
-            if (autoDraftInfo.autoDraft) {
-                autoDraftStatus = 'on.';
-            }
-            let actionInfo = {
-                message: 'Auto draft set to ' + autoDraftStatus,
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        publishersAutoDraftSet() {
-            let actionInfo = {
-                message: 'Auto draft changed',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        },
-        publishersEdited() {
-            let actionInfo = {
-                message: 'Publisher has been edited',
-                fetchLeagueYear: true
-            };
-            this.$emit('actionTaken', actionInfo);
-        }
+        });
+    },
+    playerInvited(inviteEmail) {
+      let actionInfo = {
+        message: 'Invite was sent to ' + inviteEmail,
+        fetchLeagueYear: true,
+        fetchLeague: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    linkCopied() {
+      let actionInfo = {
+        message: 'Invite Link copied to clipboard.',
+        fetchLeagueYear: false,
+        fetchLeague: false
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    activePlayersEdited() {
+      let actionInfo = {
+        message: 'Active players were changed.',
+        fetchLeagueYear: true,
+        fetchLeague: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameClaimed(claimInfo) {
+      let actionInfo = {
+        message: claimInfo.gameName + ' added to ' + claimInfo.publisherName,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    managerGameDrafted(draftInfo) {
+      let actionInfo = {
+        message: draftInfo.gameName + ' drafted by ' + draftInfo.publisherName,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    managerCounterPickDrafted(draftInfo) {
+      let actionInfo = {
+        message: draftInfo.gameName + ' selected as a counter pick by ' + draftInfo.publisherName,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameAssociated(associateInfo) {
+      let actionInfo = {
+        message: associateInfo.gameName + ' sucessfully associated.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameRemoved(removeInfo) {
+      let actionInfo = {
+        message: removeInfo.gameName + ' removed from ' + removeInfo.publisherName,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameManuallyScored(manualScoreInfo) {
+      let actionInfo = {
+        message: manualScoreInfo.gameName + ' was given a score of ' + manualScoreInfo.score + '.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    manualScoreRemoved(gameName) {
+      let actionInfo = {
+        message: gameName + '\'s manual score was removed.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    leagueOptionsChanged() {
+      let actionInfo = {
+        message: 'League options have been updated',
+        fetchLeague: true,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    draftOrderEdited() {
+      let actionInfo = {
+        message: 'Draft order has been changed',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    bidPriorityEdited() {
+      let actionInfo = {
+        message: 'Bid priority has been changed',
+        fetchLeagueYear: true,
+        fetchCurrentBids: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameEligibilitySet(gameInfo) {
+      let message = '';
+      if (gameInfo.eligible) {
+        message = gameInfo.gameName + ' was marked as eligible.';
+      } else {
+        message = gameInfo.gameName + ' was marked as ineligible.';
+      }
+      let actionInfo = {
+        message: message,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameEligiblityReset(gameInfo) {
+      let actionInfo = {
+        message: gameInfo.gameName + '\'s eligibility was reset to normal.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    autoDraftSet(autoDraftInfo) {
+      let autoDraftStatus = 'off.';
+      if (autoDraftInfo.autoDraft) {
+        autoDraftStatus = 'on.';
+      }
+      let actionInfo = {
+        message: 'Auto draft set to ' + autoDraftStatus,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    publishersAutoDraftSet() {
+      let actionInfo = {
+        message: 'Auto draft changed',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    publishersEdited() {
+      let actionInfo = {
+        message: 'Publisher has been edited',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
     }
+  }
 };
 </script>
 <style scoped>

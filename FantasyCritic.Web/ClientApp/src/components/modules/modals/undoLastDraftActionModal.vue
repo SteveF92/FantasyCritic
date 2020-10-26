@@ -14,11 +14,11 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-    methods: {
-        undoLastDraftAction() {
-            this.$refs.undoLastDraftActionModalRef.hide();
-            this.$emit('undoLastDraftAction');
-        }
+  methods: {
+    undoLastDraftAction() {
+      this.$refs.undoLastDraftActionModalRef.hide();
+      this.$emit('undoLastDraftAction');
     }
+  }
 };
 </script>

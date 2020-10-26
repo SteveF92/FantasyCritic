@@ -21,14 +21,14 @@
 </template>
 <script>
 export default {
-    props: ['leagues', 'leagueIcon', 'userID'],
-    data() {
-        return {
-            leagueFields: [
-                { key: 'leagueName' },
-            ]
-        };
-    }
+  props: ['leagues', 'leagueIcon', 'userID'],
+  data() {
+    return {
+      leagueFields: [
+        { key: 'leagueName' },
+      ]
+    };
+  }
 };
 </script>
 <style scoped>

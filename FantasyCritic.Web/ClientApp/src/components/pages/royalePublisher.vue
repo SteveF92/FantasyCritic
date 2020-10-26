@@ -105,140 +105,140 @@ import RoyalePurchaseGameForm from '@/components/modules/modals/royalePurchaseGa
 import RoyaleChangePublisherNameForm from '@/components/modules/modals/royaleChangePublisherNameForm';
 
 export default {
-    props: ['publisherid'],
-    data() {
-        return {
-            errorInfo: '',
-            publisher: null,
-            gameToModify: null,
-            advertisingBudgetToSet: 0,
-            gameFields: [
-                { key: 'masterGame', label: 'Game', thClass: 'bg-primary', sortable: true },
-                { key: 'masterGame.sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-                { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary', sortable: true },
-                { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true },
-                { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true },
-                { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
-                { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
-            ],
-            userPublisherFields: [
-                { key: 'sellGame', label: '', thClass: 'bg-primary', label: 'Sell' }
-            ]
-        };
+  props: ['publisherid'],
+  data() {
+    return {
+      errorInfo: '',
+      publisher: null,
+      gameToModify: null,
+      advertisingBudgetToSet: 0,
+      gameFields: [
+        { key: 'masterGame', label: 'Game', thClass: 'bg-primary', sortable: true },
+        { key: 'masterGame.sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary', sortable: true },
+        { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true },
+        { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true },
+        { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
+        { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
+      ],
+      userPublisherFields: [
+        { key: 'sellGame', label: '', thClass: 'bg-primary', label: 'Sell' }
+      ]
+    };
+  },
+  components: {
+    RoyaleChangePublisherNameForm,
+    RoyalePurchaseGameForm,
+    MasterGamePopover
+  },
+  computed: {
+    isAuth() {
+      return this.$store.getters.tokenIsCurrent();
     },
-    components: {
-        RoyaleChangePublisherNameForm,
-        RoyalePurchaseGameForm,
-        MasterGamePopover
+    userIsPublisher() {
+      return this.isAuth && (this.publisher.userID === this.$store.getters.userInfo.userID);
     },
-    computed: {
-        isAuth() {
-            return this.$store.getters.tokenIsCurrent();
-        },
-        userIsPublisher() {
-            return this.isAuth && (this.publisher.userID === this.$store.getters.userInfo.userID);
-        },
-        allFields() {
-            let conditionalFields = [];
-            if (this.userIsPublisher) {
-                conditionalFields = conditionalFields.concat(this.userPublisherFields);
-            }
-            return this.gameFields.concat(conditionalFields);
-        }
-    },
-    methods: {
-        fetchPublisher() {
-            axios
-                .get('/api/Royale/GetRoyalePublisher/' + this.publisherid)
-                .then(response => {
-                    this.publisher = response.data;
-                })
-                .catch(returnedError => (this.error = returnedError));
-        },
-        gamePurchased(purchaseInfo) {
-            this.fetchPublisher();
-            let message = purchaseInfo.gameName + ' was purchased for ' + this.$options.filters.money(purchaseInfo.purchaseCost);
-            let toast = this.$toasted.show(message, {
-                theme: 'primary',
-                position: 'top-right',
-                duration: 5000
-            });
-        },
-        publisherNameChanged() {
-            this.fetchPublisher();
-            let message = 'Publisher name changed.';
-            let toast = this.$toasted.show(message, {
-                theme: 'primary',
-                position: 'top-right',
-                duration: 5000
-            });
-        },
-        setGameToSell(publisherGame) {
-            this.gameToModify = publisherGame;
-            this.$refs.sellRoyaleGameModalRef.show();
-        },
-        sellGame() {
-            var request = {
-                publisherID: this.publisher.publisherID,
-                masterGameID: this.gameToModify.masterGame.masterGameID
-            };
-
-            axios
-                .post('/api/royale/SellGame', request)
-                .then(response => {
-                    this.fetchPublisher();
-                    let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.amountSpent / 2);
-                    let toast = this.$toasted.show(message, {
-                        theme: 'primary',
-                        position: 'top-right',
-                        duration: 5000
-                    });
-                })
-                .catch(response => {
-                    this.errorInfo = 'You can\'t sell that game. ' + response.response.data;
-                });
-        },
-        setGameToSetBudget(publisherGame) {
-            this.gameToModify = publisherGame;
-            this.advertisingBudgetToSet = publisherGame.advertisingMoney;
-            this.$refs.setAdvertisingMoneyModalRef.show();
-        },
-        setBudget() {
-            var request = {
-                publisherID: this.publisher.publisherID,
-                masterGameID: this.gameToModify.masterGame.masterGameID,
-                advertisingMoney: this.advertisingBudgetToSet
-            };
-
-            axios
-                .post('/api/royale/SetAdvertisingMoney', request)
-                .then(response => {
-                    this.fetchPublisher();
-                    this.advertisingBudgetToSet = 0;
-                })
-                .catch(response => {
-                    this.advertisingBudgetToSet = 0;
-                    this.errorInfo = 'You can\'t set that budget. ' + response.response.data;
-                });
-        },
-        getReleaseDate(game) {
-            if (game.releaseDate) {
-                return moment(game.releaseDate).format('YYYY-MM-DD');
-            }
-            return game.estimatedReleaseDate + ' (Estimated)';
-        },
-        openCriticLink(game) {
-            return 'https://opencritic.com/game/' + game.openCriticID + '/a';
-        }
-    },
-    mounted() {
-        this.fetchPublisher();
-    },
-    watch: {
-        '$route'(to, from) {
-            this.fetchPublisher();
-        }
+    allFields() {
+      let conditionalFields = [];
+      if (this.userIsPublisher) {
+        conditionalFields = conditionalFields.concat(this.userPublisherFields);
+      }
+      return this.gameFields.concat(conditionalFields);
     }
+  },
+  methods: {
+    fetchPublisher() {
+      axios
+        .get('/api/Royale/GetRoyalePublisher/' + this.publisherid)
+        .then(response => {
+          this.publisher = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
+    },
+    gamePurchased(purchaseInfo) {
+      this.fetchPublisher();
+      let message = purchaseInfo.gameName + ' was purchased for ' + this.$options.filters.money(purchaseInfo.purchaseCost);
+      let toast = this.$toasted.show(message, {
+        theme: 'primary',
+        position: 'top-right',
+        duration: 5000
+      });
+    },
+    publisherNameChanged() {
+      this.fetchPublisher();
+      let message = 'Publisher name changed.';
+      let toast = this.$toasted.show(message, {
+        theme: 'primary',
+        position: 'top-right',
+        duration: 5000
+      });
+    },
+    setGameToSell(publisherGame) {
+      this.gameToModify = publisherGame;
+      this.$refs.sellRoyaleGameModalRef.show();
+    },
+    sellGame() {
+      var request = {
+        publisherID: this.publisher.publisherID,
+        masterGameID: this.gameToModify.masterGame.masterGameID
+      };
+
+      axios
+        .post('/api/royale/SellGame', request)
+        .then(response => {
+          this.fetchPublisher();
+          let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.amountSpent / 2);
+          let toast = this.$toasted.show(message, {
+            theme: 'primary',
+            position: 'top-right',
+            duration: 5000
+          });
+        })
+        .catch(response => {
+          this.errorInfo = 'You can\'t sell that game. ' + response.response.data;
+        });
+    },
+    setGameToSetBudget(publisherGame) {
+      this.gameToModify = publisherGame;
+      this.advertisingBudgetToSet = publisherGame.advertisingMoney;
+      this.$refs.setAdvertisingMoneyModalRef.show();
+    },
+    setBudget() {
+      var request = {
+        publisherID: this.publisher.publisherID,
+        masterGameID: this.gameToModify.masterGame.masterGameID,
+        advertisingMoney: this.advertisingBudgetToSet
+      };
+
+      axios
+        .post('/api/royale/SetAdvertisingMoney', request)
+        .then(response => {
+          this.fetchPublisher();
+          this.advertisingBudgetToSet = 0;
+        })
+        .catch(response => {
+          this.advertisingBudgetToSet = 0;
+          this.errorInfo = 'You can\'t set that budget. ' + response.response.data;
+        });
+    },
+    getReleaseDate(game) {
+      if (game.releaseDate) {
+        return moment(game.releaseDate).format('YYYY-MM-DD');
+      }
+      return game.estimatedReleaseDate + ' (Estimated)';
+    },
+    openCriticLink(game) {
+      return 'https://opencritic.com/game/' + game.openCriticID + '/a';
+    }
+  },
+  mounted() {
+    this.fetchPublisher();
+  },
+  watch: {
+    '$route'(to, from) {
+      this.fetchPublisher();
+    }
+  }
 };
 </script>
 <style scoped>

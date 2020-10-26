@@ -31,15 +31,15 @@ import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 
 export default {
-    components: {
-        MasterGamePopover
-    },
-    props: ['game'],
-    computed: {
-        releaseDate() {
-            return moment(this.game.releaseDate).format('MMMM Do, YYYY');
-        }
+  components: {
+    MasterGamePopover
+  },
+  props: ['game'],
+  computed: {
+    releaseDate() {
+      return moment(this.game.releaseDate).format('MMMM Do, YYYY');
     }
+  }
 };
 </script>
 <style scoped>

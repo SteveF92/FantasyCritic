@@ -29,25 +29,25 @@
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            siteCounts: null,
-            error: ''
-        };
-    },
-    methods: {
-        fetchSiteCounts() {
-            axios
-                .get('/api/general/sitecounts')
-                .then(response => {
-                    this.siteCounts = response.data;
-                })
-                .catch(returnedError => (this.error = returnedError));
-        }
-    },
-    mounted() {
-        this.fetchSiteCounts();
+  data() {
+    return {
+      siteCounts: null,
+      error: ''
+    };
+  },
+  methods: {
+    fetchSiteCounts() {
+      axios
+        .get('/api/general/sitecounts')
+        .then(response => {
+          this.siteCounts = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
     }
+  },
+  mounted() {
+    this.fetchSiteCounts();
+  }
 };
 </script>
 

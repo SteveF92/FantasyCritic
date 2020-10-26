@@ -187,12 +187,12 @@ import HomeFaq from '@/components/modules/homeFAQ';
 import Tweets from '@/components/modules/tweets';
 
 export default {
-    components: {
-        RegisterForm,
-        HomeFaq,
-        Tweets,
-        SiteCounts
-    }
+  components: {
+    RegisterForm,
+    HomeFaq,
+    Tweets,
+    SiteCounts
+  }
 };
 </script>
 <style scoped>

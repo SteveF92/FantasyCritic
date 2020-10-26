@@ -34,29 +34,29 @@ import PlayerGameRow from '@/components/modules/gameTables/playerGameRow';
 import BlankPlayerGameRow from '@/components/modules/gameTables/blankPlayerGameRow';
 
 export default {
-    components: {
-        PlayerGameRow,
-        BlankPlayerGameRow
+  components: {
+    PlayerGameRow,
+    BlankPlayerGameRow
+  },
+  props: ['publisher', 'options'],
+  computed: {
+    standardGames() {
+      return _.filter(this.publisher.games, { 'counterPick': false });
     },
-    props: ['publisher', 'options'],
-    computed: {
-        standardGames() {
-            return _.filter(this.publisher.games, { 'counterPick': false });
-        },
-        counterPicks() {
-            return _.filter(this.publisher.games, { 'counterPick': true });
-        },
-        standardFiller() {
-            var numberStandardGames = this.standardGames.length;
-            var openSlots = this.options.standardGameSlots - numberStandardGames;
-            return openSlots;
-        },
-        counterPickFiller() {
-            var numberCounterPicked = this.counterPicks.length;
-            var openSlots = this.options.counterPickSlots - numberCounterPicked;
-            return openSlots;
-        }
+    counterPicks() {
+      return _.filter(this.publisher.games, { 'counterPick': true });
+    },
+    standardFiller() {
+      var numberStandardGames = this.standardGames.length;
+      var openSlots = this.options.standardGameSlots - numberStandardGames;
+      return openSlots;
+    },
+    counterPickFiller() {
+      var numberCounterPicked = this.counterPicks.length;
+      var openSlots = this.options.counterPickSlots - numberCounterPicked;
+      return openSlots;
     }
+  }
 };
 </script>
 <style scoped>

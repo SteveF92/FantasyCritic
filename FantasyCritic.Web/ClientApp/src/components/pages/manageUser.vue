@@ -49,54 +49,54 @@ import ChangeDisplayNameForm from '@/components/modules/modals/changeDisplayName
 import ChangeEmailForm from '@/components/modules/modals/changeEmailForm';
 
 export default {
-    data() {
-        return {
-            changeEmailSent: false,
-            emailError: ''
-        };
-    },
-    components: {
-        ChangePasswordForm,
-        ChangeDisplayNameForm,
-        ChangeEmailForm
-    },
-    computed: {
-        userInfo() {
-            return this.$store.getters.userInfo;
-        }
-    },
-    methods: {
-        sendConfirmationEmail() {
-            axios
-                .post('/api/account/ResendConfirmationEmail')
-                .then(response => {
-                    let toast = this.$toasted.show('Confirmation Email Sent!', {
-                        theme: 'primary',
-                        position: 'top-right',
-                        duration: 5000
-                    });
-                })
-                .catch(response => {
-                    this.emailError = response.response.data;
-                });
-        },
-        passwordChanged() {
-            let toast = this.$toasted.show('Your password has been changed.', {
-                theme: 'primary',
-                position: 'top-right',
-                duration: 5000
-            });
-        },
-        diplayNameChanged(newDisplayNameInfo) {
-            let toast = this.$toasted.show('Your display name has been changed to ' + newDisplayNameInfo.newDisplayName, {
-                theme: 'primary',
-                position: 'top-right',
-                duration: 5000
-            });
-        },
-        sentEmailChanged() {
-            this.changeEmailSent = true;
-        }
+  data() {
+    return {
+      changeEmailSent: false,
+      emailError: ''
+    };
+  },
+  components: {
+    ChangePasswordForm,
+    ChangeDisplayNameForm,
+    ChangeEmailForm
+  },
+  computed: {
+    userInfo() {
+      return this.$store.getters.userInfo;
     }
+  },
+  methods: {
+    sendConfirmationEmail() {
+      axios
+        .post('/api/account/ResendConfirmationEmail')
+        .then(response => {
+          let toast = this.$toasted.show('Confirmation Email Sent!', {
+            theme: 'primary',
+            position: 'top-right',
+            duration: 5000
+          });
+        })
+        .catch(response => {
+          this.emailError = response.response.data;
+        });
+    },
+    passwordChanged() {
+      let toast = this.$toasted.show('Your password has been changed.', {
+        theme: 'primary',
+        position: 'top-right',
+        duration: 5000
+      });
+    },
+    diplayNameChanged(newDisplayNameInfo) {
+      let toast = this.$toasted.show('Your display name has been changed to ' + newDisplayNameInfo.newDisplayName, {
+        theme: 'primary',
+        position: 'top-right',
+        duration: 5000
+      });
+    },
+    sentEmailChanged() {
+      this.changeEmailSent = true;
+    }
+  }
 };
 </script>
