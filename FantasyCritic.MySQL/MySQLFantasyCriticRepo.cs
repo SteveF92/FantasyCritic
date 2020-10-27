@@ -940,6 +940,18 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
+        {
+            string updateSQL = "update tbl_league_hasuser SET Archive = @archive WHERE LeagueID = @leagueID AND UserID = @userID;";
+            var parameters = new { leagueID = league.LeagueID, userID = user.UserID, archive };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync(updateSQL, parameters);
+            }
+        }
+
         public async Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
         {
             string deleteSQL = "delete from tbl_league_publisher where PublisherID = @publisherID;";

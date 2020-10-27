@@ -478,6 +478,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher)
         {
             throw new NotImplementedException();
