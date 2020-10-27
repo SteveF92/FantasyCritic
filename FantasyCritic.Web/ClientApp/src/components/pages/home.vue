@@ -241,7 +241,7 @@ export default {
         })
         .catch(response => {
         });
-    },
+    }
   },
   async mounted() {
     await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchUpcomingGames(), this.fetchActiveRoyaleYearQuarter()]);

@@ -16,24 +16,43 @@
           <div class="manager" v-if="data.item.leagueManager">Manager: {{data.item.leagueManager.displayName}}</div>
         </div>
         <div v-show="showArchive" class="archive-button-section">
-          <font-awesome-icon class="archive-button fake-link" icon="archive" v-on-click="setArchive" v-b-popover.hover.rightbottom="'Archive this league (only affects you)'" />
+          <font-awesome-icon class="archive-button fake-link" icon="archive" v-on:click="setArchive(data.item, true)" v-b-popover.hover.rightbottom="'Archive this league (only affects you)'" />
         </div>
         <div v-show="showUnArchive" class="archive-button-section">
-          <font-awesome-icon class="archive-button fake-link" icon="thumbtack" v-on-click="setNotArchive" v-b-popover.hover.rightbottom="'Un-Archive this league (only affects you)'" />
+          <font-awesome-icon class="archive-button fake-link" icon="thumbtack" v-on:click="setArchive(data.item, false)" v-b-popover.hover.rightbottom="'Un-Archive this league (only affects you)'" />
         </div>
       </div>
     </template>
   </b-table>
 </template>
 <script>
+import axios from 'axios';
+
 export default {
-    props: ['leagues', 'leagueIcon', 'userID', 'showArchive', 'showUnArchive'],
+  props: ['leagues', 'leagueIcon', 'userID', 'showArchive', 'showUnArchive'],
   data() {
     return {
       leagueFields: [
         { key: 'leagueName' },
       ]
     };
+  },
+  methods: {
+    setArchive(league, status) {
+      league.archived = status;
+      var model = {
+        leagueID: league.leagueID,
+        archive: status
+      };
+      axios
+        .post('/api/league/SetArchiveStatus', model)
+        .then(response => {
+
+        })
+        .catch(response => {
+
+        });
+    }
   }
 };
 </script>
@@ -44,7 +63,6 @@ table >>> .hidden_header {
 
 .row-flex {
   display: flex;
-
 }
 
 .league-icon{

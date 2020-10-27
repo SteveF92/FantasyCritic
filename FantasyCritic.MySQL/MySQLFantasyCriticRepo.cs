@@ -942,7 +942,7 @@ namespace FantasyCritic.MySQL
 
         public async Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
         {
-            string updateSQL = "update tbl_league_hasuser SET Archive = @archive WHERE LeagueID = @leagueID AND UserID = @userID;";
+            string updateSQL = "update tbl_league_hasuser SET Archived = @archive WHERE LeagueID = @leagueID AND UserID = @userID;";
             var parameters = new { leagueID = league.LeagueID, userID = user.UserID, archive };
 
             using (var connection = new MySqlConnection(_connectionString))
