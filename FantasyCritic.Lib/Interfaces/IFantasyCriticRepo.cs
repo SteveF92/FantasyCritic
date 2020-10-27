@@ -66,6 +66,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task UpdateFantasyPoints(Dictionary<Guid, decimal?> publisherGameScores);
         Task<Result> RemovePublisherGame(Guid publisherGameID);
         Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
+        Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease);
 
         Task CreatePickupBid(PickupBid currentBid);
         Task RemovePickupBid(PickupBid bid);

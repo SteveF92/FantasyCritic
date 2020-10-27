@@ -276,6 +276,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task CreatePickupBid(PickupBid currentBid)
         {
             throw new NotImplementedException();

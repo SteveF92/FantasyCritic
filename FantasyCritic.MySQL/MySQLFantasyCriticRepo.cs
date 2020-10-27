@@ -179,6 +179,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tbl_league_publishergame SET ManualWillNotRelease = @willNotRelease where PublisherGameID = @publisherGameID;",
+                    new { publisherGameID = publisherGame.PublisherGameID, willNotRelease });
+            }
+        }
+
         public async Task CreatePickupBid(PickupBid currentBid)
         {
             var entity = new PickupBidEntity(currentBid);

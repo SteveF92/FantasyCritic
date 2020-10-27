@@ -188,6 +188,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
         }
 
+        public Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease)
+        {
+            return _fantasyCriticRepo.ManuallySetWillNotRelease(publisherGame, willNotRelease);
+        }
+
         public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
         {
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);

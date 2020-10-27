@@ -988,6 +988,60 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> ManuallySetWillNotRelease([FromBody] ManualPublisherGameWillNotReleaseRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(publisher.Value.LeagueYear.League.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.LeagueYear.League.LeagueID, publisher.Value.LeagueYear.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+            if (!leagueYear.Value.PlayStatus.DraftFinished)
+            {
+                return BadRequest("You cannot set a game as will not release until after you draft.");
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.BidProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            Maybe<PublisherGame> publisherGame = await _publisherService.GetPublisherGame(request.PublisherGameID);
+            if (publisherGame.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            await _fantasyCriticService.ManuallySetWillNotRelease(publisherGame.Value, request.WillNotRelease);
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> StartDraft([FromBody] StartDraftRequest request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
