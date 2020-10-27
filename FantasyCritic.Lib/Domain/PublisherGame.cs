@@ -10,8 +10,8 @@ namespace FantasyCritic.Lib.Domain
 {
     public class PublisherGame
     {
-        public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, decimal? fantasyPoints, 
-            Maybe<MasterGameYear> masterGame, int? draftPosition, int? overallDraftPosition)
+        public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
+            decimal? fantasyPoints, Maybe<MasterGameYear> masterGame, int? draftPosition, int? overallDraftPosition)
         {
             PublisherID = publisherID;
             PublisherGameID = publisherGameID;
@@ -19,6 +19,7 @@ namespace FantasyCritic.Lib.Domain
             Timestamp = timestamp;
             CounterPick = counterPick;
             ManualCriticScore = manualCriticScore;
+            ManualWillNotRelease = manualWillNotRelease;
             FantasyPoints = fantasyPoints;
             MasterGame = masterGame;
             DraftPosition = draftPosition;
@@ -31,6 +32,7 @@ namespace FantasyCritic.Lib.Domain
         public Instant Timestamp { get; }
         public bool CounterPick { get; }
         public decimal? ManualCriticScore { get; }
+        public bool ManualWillNotRelease { get; }
         public decimal? FantasyPoints { get; }
         public Maybe<MasterGameYear> MasterGame { get; }
         public int? DraftPosition { get; }
@@ -38,6 +40,11 @@ namespace FantasyCritic.Lib.Domain
 
         public bool WillRelease()
         {
+            if (ManualWillNotRelease)
+            {
+                return false;
+            }
+
             if (MasterGame.HasNoValue)
             {
                 return false;

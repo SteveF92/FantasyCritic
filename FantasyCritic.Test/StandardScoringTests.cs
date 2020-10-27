@@ -31,7 +31,7 @@ namespace FantasyCritic.Test
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, 84.8095m, new LocalDate(2018,1,1), eligibilitySettings, "", "", 
                 fakeClock.GetCurrentInstant(), false, false, false, fakeClock.GetCurrentInstant());
-            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
+            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
             decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
@@ -49,7 +49,7 @@ namespace FantasyCritic.Test
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, new LocalDate(2018, 1, 1), eligibilitySettings, "", "", 
                 fakeClock.GetCurrentInstant(), false, false, false, fakeClock.GetCurrentInstant());
-            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, null, new MasterGameYear(masterGame, 2018), null, null);
+            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
             decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
@@ -67,7 +67,7 @@ namespace FantasyCritic.Test
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, 94.8125m, new LocalDate(2018, 1, 1), eligibilitySettings, "", "", 
                 fakeClock.GetCurrentInstant(), false, false, false, fakeClock.GetCurrentInstant());
-            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
+            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
             decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
@@ -85,7 +85,7 @@ namespace FantasyCritic.Test
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, 65.8559m, new LocalDate(2018, 1, 1), eligibilitySettings, "", "", 
                 fakeClock.GetCurrentInstant(), false, false, false, fakeClock.GetCurrentInstant());
-            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
+            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
             decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
@@ -103,7 +103,7 @@ namespace FantasyCritic.Test
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 10, 20), new LocalDate(2018, 10, 20), null, null, new LocalDate(2018, 1, 1), eligibilitySettings, "", "", 
                 fakeClock.GetCurrentInstant(), false, false, false, fakeClock.GetCurrentInstant());
-            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
+            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
             decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
@@ -121,7 +121,7 @@ namespace FantasyCritic.Test
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2019, 10, 20), new LocalDate(2019, 10, 20), null, null, new LocalDate(2019, 1, 1), eligibilitySettings, "", "", 
                 fakeClock.GetCurrentInstant(), false, false, false, fakeClock.GetCurrentInstant());
-            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, null, new MasterGameYear(masterGame, 2018), null, null);
+            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
             decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 
@@ -139,7 +139,7 @@ namespace FantasyCritic.Test
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, 65.8559m, new LocalDate(2018, 1, 1), eligibilitySettings, "", "", 
                 fakeClock.GetCurrentInstant(), false, false, false, fakeClock.GetCurrentInstant());
-            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, null, new MasterGameYear(masterGame, 2018), null, null);
+            PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
             decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeClock);
 

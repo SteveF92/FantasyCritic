@@ -274,7 +274,7 @@ namespace FantasyCritic.Lib.Services
                 masterGameYear = new MasterGameYear(request.MasterGame.Value, request.Publisher.LeagueYear.Year);
             }
 
-            PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, null,
+            PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
                 masterGameYear, request.DraftPosition, request.OverallDraftPosition);
 
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();

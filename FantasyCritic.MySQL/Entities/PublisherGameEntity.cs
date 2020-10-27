@@ -24,6 +24,7 @@ namespace FantasyCritic.MySQL.Entities
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
             CounterPick = publisherGame.CounterPick;
             ManualCriticScore = publisherGame.ManualCriticScore;
+            ManualWillNotRelease = publisherGame.ManualWillNotRelease;
             FantasyPoints = publisherGame.FantasyPoints;
 
             DraftPosition = publisherGame.DraftPosition;
@@ -40,6 +41,7 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime Timestamp { get; set; }
         public bool CounterPick { get; set; }
         public decimal? ManualCriticScore { get; set; }
+        public bool ManualWillNotRelease { get; set; }
         public decimal? FantasyPoints { get; set; }
         public Guid? MasterGameID { get; set; }
         public int? DraftPosition { get; set; }
@@ -48,7 +50,7 @@ namespace FantasyCritic.MySQL.Entities
         public PublisherGame ToDomain(Maybe<MasterGameYear> masterGame)
         {
             Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, instant, CounterPick, ManualCriticScore, FantasyPoints, masterGame, DraftPosition, OverallDraftPosition);
+            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, instant, CounterPick, ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, DraftPosition, OverallDraftPosition);
             return domain;
         }
     }

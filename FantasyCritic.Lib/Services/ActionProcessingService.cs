@@ -160,7 +160,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var successBid in successBids)
             {
                 PublisherGame newPublisherGame = new PublisherGame(successBid.Publisher.PublisherID, Guid.NewGuid(), successBid.MasterGame.GameName, clock.GetCurrentInstant(),
-                    false, null, null, new MasterGameYear(successBid.MasterGame, successBid.Publisher.LeagueYear.Year), null, null);
+                    false, null, false, null, new MasterGameYear(successBid.MasterGame, successBid.Publisher.LeagueYear.Year), null, null);
                 gamesToAdd.Add(newPublisherGame);
                 var affectedPublisher = updatedPublishers.Single(x => x.PublisherID == successBid.Publisher.PublisherID);
                 affectedPublisher.AcquireGame(newPublisherGame, successBid.BidAmount);
