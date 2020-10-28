@@ -113,6 +113,9 @@
             <li class="fake-link action" v-b-modal="'manuallyScorePublisherGame'" v-show="leagueYear.playStatus.draftFinished">
               Score a Game Manually
             </li>
+            <li class="fake-link action" v-b-modal="'manuallySetWillNotRelease'" v-show="leagueYear.playStatus.draftFinished">
+              Override "Will not Release"
+            </li>
             <li class="fake-link action">
               <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit Game Settings</router-link>
             </li>
@@ -163,6 +166,7 @@
         <managerSetAutoDraftForm v-on:publishersAutoDraftSet="publishersAutoDraftSet" :leagueYear="leagueYear"></managerSetAutoDraftForm>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
         <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
+        <manuallySetWillNotReleaseForm :leagueYear="leagueYear" v-on:gameWillNotReleaseSet="gameWillNotReleaseSet"></manuallySetWillNotReleaseForm>
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
         <manageEligibilityOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameEligibilitySet" v-on:gameEligiblityReset="gameEligiblityReset"></manageEligibilityOverridesModal>
       </div>
@@ -194,6 +198,7 @@ import InvitePlayerForm from '@/components/modules/modals/invitePlayerForm';
 import ManageActivePlayersForm from '@/components/modules/modals/manageActivePlayersForm';
 import RemoveGameForm from '@/components/modules/modals/removeGameForm';
 import ManuallyScoreGameForm from '@/components/modules/modals/manuallyScoreGameForm';
+import ManuallySetWillNotReleaseForm from '@/components/modules/modals/manuallySetWillNotReleaseForm';
 import ChangeLeagueOptionsForm from '@/components/modules/modals/changeLeagueOptionsForm';
 import EditDraftOrderForm from '@/components/modules/modals/editDraftOrderForm';
 import SetPauseModal from '@/components/modules/modals/setPauseModal';
@@ -232,6 +237,7 @@ export default {
     InvitePlayerForm,
     RemoveGameForm,
     ManuallyScoreGameForm,
+    ManuallySetWillNotReleaseForm,
     ChangeLeagueOptionsForm,
     EditDraftOrderForm,
     SetPauseModal,
@@ -432,6 +438,13 @@ export default {
     manualScoreRemoved(gameName) {
       let actionInfo = {
         message: gameName + '\'s manual score was removed.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameWillNotReleaseSet() {
+      let actionInfo = {
+        message: 'Will not release status updated.',
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);

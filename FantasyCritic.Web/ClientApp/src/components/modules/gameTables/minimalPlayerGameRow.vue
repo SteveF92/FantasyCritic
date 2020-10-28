@@ -15,9 +15,12 @@
         Not linked to Master Game
       </span>
 
-      <span v-if="!game.willRelease && game.linked" class="game-status">
+      <span v-if="!game.willRelease && game.linked && !game.manualWillNotRelease" class="game-status">
         <span v-show="!yearFinished">Will not Release</span>
         <span v-show="yearFinished">Did not Release</span>
+      </span>
+      <span v-if="game.manualWillNotRelease && game.linked" class="game-status">
+        Will not Release (League Override)
       </span>
       <span v-if="game.manualCriticScore && game.linked" class="game-status">
         Manually Scored
@@ -68,6 +71,7 @@ export default {
     float: right;
     color: #B1B1B1;
     font-style: italic;
+    padding-left:5px;
   }
 
   .popper {

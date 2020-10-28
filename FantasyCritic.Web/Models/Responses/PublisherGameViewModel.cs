@@ -47,6 +47,7 @@ namespace FantasyCritic.Web.Models.Responses
             }
 
             WillRelease = publisherGame.WillRelease();
+            ManualWillNotRelease = publisherGame.ManualWillNotRelease;
         }
 
         public Guid PublisherGameID { get; }
@@ -65,5 +66,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool Released { get; }
         public bool WillRelease { get; }
         public bool ManualCriticScore { get; }
+        public bool ManualWillNotRelease { get; }
     }
 }
