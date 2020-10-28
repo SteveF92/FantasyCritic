@@ -48,7 +48,7 @@ namespace FantasyCritic.Web.Models.Responses
             OutstandingInvite = outstandingInvite;
 
             GamesReleased = publisher.PublisherGames.Where(x => !x.CounterPick).Where(x => x.MasterGame.HasValue).Count(x => x.MasterGame.Value.MasterGame.IsReleased(clock.GetCurrentInstant()));
-            var allWillRelease = publisher.PublisherGames.Where(x => !x.CounterPick).Where(x => x.MasterGame.HasValue).Count(x => x.MasterGame.Value.WillRelease());
+            var allWillRelease = publisher.PublisherGames.Where(x => !x.CounterPick).Where(x => x.MasterGame.HasValue).Count(x => x.WillRelease());
             GamesWillRelease = allWillRelease - GamesReleased;
             FreeGamesDropped = publisher.FreeGamesDropped;
             WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
