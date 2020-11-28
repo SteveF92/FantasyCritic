@@ -47,9 +47,23 @@ namespace FantasyCritic.Web.Models.Responses
             PublicLeague = publisher.LeagueYear.Options.PublicLeague;
             OutstandingInvite = outstandingInvite;
 
-            GamesReleased = publisher.PublisherGames.Where(x => !x.CounterPick).Where(x => x.MasterGame.HasValue).Count(x => x.MasterGame.Value.MasterGame.IsReleased(clock.GetCurrentInstant()));
-            var allWillRelease = publisher.PublisherGames.Where(x => !x.CounterPick).Where(x => x.MasterGame.HasValue).Count(x => x.WillRelease());
+            var timeToCheck = clock.GetCurrentInstant();
+            if (yearFinished)
+            {
+                //Just before midnight on New Year's
+                timeToCheck = new LocalDate(Year + 1, 1, 1).AtMidnight().InUtc().Minus(Duration.FromMinutes(1)).ToInstant();
+            }
+
+            GamesReleased = publisher.PublisherGames
+                .Where(x => !x.CounterPick)
+                .Where(x => x.MasterGame.HasValue)
+                .Count(x => x.MasterGame.Value.MasterGame.IsReleased(timeToCheck));
+            var allWillRelease = publisher.PublisherGames
+                .Where(x => !x.CounterPick)
+                .Where(x => x.MasterGame.HasValue)
+                .Count(x => x.WillRelease());
             GamesWillRelease = allWillRelease - GamesReleased;
+
             FreeGamesDropped = publisher.FreeGamesDropped;
             WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
             WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
