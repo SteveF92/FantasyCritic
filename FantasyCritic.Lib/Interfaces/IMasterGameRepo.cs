@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Interfaces
     public interface IMasterGameRepo
     {
         Task<IReadOnlyList<MasterGame>> GetMasterGames();
-        Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year, bool useCache);
+        Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year);
         Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID);
         Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year);
         Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame);
@@ -40,6 +40,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote);
         Task LinkToOpenCritic(MasterGame masterGame, int openCriticID);
         Task UpdateReleaseDateEstimates(LocalDate tomorrow);
-        Task UpdateHypeFactors(IEnumerable<MasterGameCalculatedStats> hypeScores, int year);
+        Task UpdateCalculatedStats(IEnumerable<MasterGameCalculatedStats> calculatedStats, int year);
     }
 }

@@ -44,12 +44,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores, int year)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateHypeConstants(HypeConstants hypeConstants)
+        public Task UpdateCalculatedStats(IEnumerable<MasterGameCalculatedStats> calculatedStats, int year)
         {
             throw new NotImplementedException();
         }
@@ -162,6 +157,11 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
         {
             throw new NotImplementedException();
         }

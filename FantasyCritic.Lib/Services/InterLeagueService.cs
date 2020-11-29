@@ -59,9 +59,9 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.GetMasterGames();
         }
 
-        public Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year, bool useCache)
+        public Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
         {
-            return _masterGameRepo.GetMasterGameYears(year, useCache);
+            return _masterGameRepo.GetMasterGameYears(year);
         }
 
         public Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)

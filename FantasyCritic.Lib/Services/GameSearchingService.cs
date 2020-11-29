@@ -31,7 +31,7 @@ namespace FantasyCritic.Lib.Services
 
             HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
-            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
             IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames);
             List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
 
@@ -55,7 +55,7 @@ namespace FantasyCritic.Lib.Services
 
             HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
-            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year, true);
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
             IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
 
             List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
@@ -86,7 +86,7 @@ namespace FantasyCritic.Lib.Services
 
             HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
-            IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(currentPublisher.LeagueYear.Year, true);
+            IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(currentPublisher.LeagueYear.Year);
             var masterGamesForThisYear = masterGameYears.Where(x => x.Year == currentPublisher.LeagueYear.Year);
             var masterGameYearDictionary = masterGamesForThisYear.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
 

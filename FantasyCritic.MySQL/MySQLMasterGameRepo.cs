@@ -60,17 +60,16 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year, bool useCache)
+        public async Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
         {
-            if (useCache && _masterGameYearsCache.ContainsKey(year))
+            if (_masterGameYearsCache.ContainsKey(year))
             {
                 return _masterGameYearsCache[year].Values.ToList();
             }
 
-            string sqlSource = useCache ? "tbl_caching_mastergameyear" : "vw_cacher_mastergameyear";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>($"select * from {sqlSource} where Year = @year;", new { year });
+                var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>($"select * from tbl_caching_mastergameyear where Year = @year;", new { year });
                 var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tbl_mastergame_subgame;");
 
                 var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
@@ -83,10 +82,7 @@ namespace FantasyCritic.MySQL
                     masterGames.Add(domain);
                 }
 
-                if (useCache)
-                {
-                    _masterGameYearsCache[year] = masterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
-                }
+                _masterGameYearsCache[year] = masterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
 
                 return masterGames;
             }
@@ -112,7 +108,7 @@ namespace FantasyCritic.MySQL
         {
             if (!_masterGameYearsCache.ContainsKey(year))
             {
-                await GetMasterGameYears(year, true);
+                await GetMasterGameYears(year);
             }
 
             var yearCache = _masterGameYearsCache[year];
@@ -516,9 +512,9 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task UpdateHypeFactors(IEnumerable<MasterGameCalculatedStats> hypeScores, int year)
+        public async Task UpdateCalculatedStats(IEnumerable<MasterGameCalculatedStats> calculatedStats, int year)
         {
-            List<MasterGameYearEntity> masterGameYearEntities = hypeScores.Select(x => new MasterGameYearEntity(x)).ToList();
+            List<MasterGameYearEntity> masterGameYearEntities = calculatedStats.Select(x => new MasterGameYearEntity(x)).ToList();
 
             var excludeFields = new List<string>() {"DoNotRefreshDate", "DoNotRefreshAnything"};
             using (var connection = new MySqlConnection(_connectionString))

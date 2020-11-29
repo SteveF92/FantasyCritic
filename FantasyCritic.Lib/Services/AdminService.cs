@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
-using CsvHelper;
+﻿using CsvHelper;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -17,8 +6,13 @@ using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Statistics;
 using FantasyCritic.Lib.Utilities;
 using Microsoft.Extensions.Logging;
-using NLog.Targets;
 using NodaTime;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -206,7 +200,7 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                var masterGamesForYear = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, true);
+                var masterGamesForYear = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
                 var relevantGames = masterGamesForYear.Where(x => x.IsRelevantInYear(supportedYear));
                 allMasterGameYears.AddRange(relevantGames);
             }
@@ -256,53 +250,53 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                List<MasterGameCalculatedStats> hypeScores = new List<MasterGameCalculatedStats>();
-                var cleanMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, false);
-                var cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, true);
+                List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
+                var cleanMasterGames = await _masterGameRepo.GetMasterGames();
+                var cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
 
                 var masterGameCacheLookup = cachedMasterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
 
-                foreach (var masterGame in cleanMasterGames)
-                {
-                    var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGame.MasterGameID, out var cachedMasterGame);
-                    if (masterGame.MasterGame.CriticScore.HasValue && gameIsCached)
-                    {
-                        hypeScores.Add(new MasterGameCalculatedStats(masterGame, cachedMasterGame.HypeFactor, cachedMasterGame.DateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
-                        continue;
-                    }
+                //foreach (var masterGame in cleanMasterGames)
+                //{
+                //    var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGame.MasterGameID, out var cachedMasterGame);
+                //    if (masterGame.MasterGame.CriticScore.HasValue && gameIsCached)
+                //    {
+                //        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, cachedMasterGame.HypeFactor, cachedMasterGame.DateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
+                //        continue;
+                //    }
 
-                    double notNullAverageDraftPosition = masterGame.AverageDraftPosition ?? 0;
+                //    double notNullAverageDraftPosition = masterGame.AverageDraftPosition ?? 0;
 
-                    double percentStandardGameToUse = masterGame.EligiblePercentStandardGame;
-                    double percentCounterPickToUse = masterGame.EligiblePercentCounterPick;
-                    if (masterGame.MasterGame.EligibilityChanged)
-                    {
-                        percentStandardGameToUse = masterGame.PercentStandardGame;
-                        percentCounterPickToUse = masterGame.PercentStandardGame;
-                    }
+                //    double percentStandardGameToUse = masterGame.EligiblePercentStandardGame;
+                //    double percentCounterPickToUse = masterGame.EligiblePercentCounterPick;
+                //    if (masterGame.MasterGame.EligibilityChanged)
+                //    {
+                //        percentStandardGameToUse = masterGame.PercentStandardGame;
+                //        percentCounterPickToUse = masterGame.PercentStandardGame;
+                //    }
 
-                    double hypeFactor = (101 - notNullAverageDraftPosition) * masterGame.PercentStandardGame;
-                    double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGameToUse;
+                //    double hypeFactor = (101 - notNullAverageDraftPosition) * masterGame.PercentStandardGame;
+                //    double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGameToUse;
 
-                    double standardGameCalculation = percentStandardGameToUse * hypeConstants.StandardGameConstant;
-                    double counterPickCalculation = percentCounterPickToUse * hypeConstants.CounterPickConstant;
-                    double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
-                    double averageDraftPositionCalculation = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
-                    double totalBidCalculation = masterGame.TotalBidAmount * hypeConstants.TotalBidAmountConstant;
-                    double bidPercentileCalculation = masterGame.BidPercentile * hypeConstants.BidPercentileConstant;
+                //    double standardGameCalculation = percentStandardGameToUse * hypeConstants.StandardGameConstant;
+                //    double counterPickCalculation = percentCounterPickToUse * hypeConstants.CounterPickConstant;
+                //    double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
+                //    double averageDraftPositionCalculation = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
+                //    double totalBidCalculation = masterGame.TotalBidAmount * hypeConstants.TotalBidAmountConstant;
+                //    double bidPercentileCalculation = masterGame.BidPercentile * hypeConstants.BidPercentileConstant;
 
-                    double linearRegressionHypeFactor = hypeConstants.BaseScore 
-                                                        + standardGameCalculation 
-                                                        + counterPickCalculation 
-                                                        + hypeFactorCalculation 
-                                                        + averageDraftPositionCalculation 
-                                                        + totalBidCalculation 
-                                                        + bidPercentileCalculation;
+                //    double linearRegressionHypeFactor = hypeConstants.BaseScore 
+                //                                        + standardGameCalculation 
+                //                                        + counterPickCalculation 
+                //                                        + hypeFactorCalculation 
+                //                                        + averageDraftPositionCalculation 
+                //                                        + totalBidCalculation 
+                //                                        + bidPercentileCalculation;
 
-                    hypeScores.Add(new MasterGameCalculatedStats(masterGame, hypeFactor, dateAdjustedHypeFactor, linearRegressionHypeFactor));
-                }
+                //    calculatedStats.Add(new MasterGameCalculatedStats(masterGame, hypeFactor, dateAdjustedHypeFactor, linearRegressionHypeFactor));
+                //}
 
-                await _masterGameRepo.UpdateHypeFactors(hypeScores, supportedYear.Year);
+                await _masterGameRepo.UpdateCalculatedStats(calculatedStats, supportedYear.Year);
             }
         }
     }
