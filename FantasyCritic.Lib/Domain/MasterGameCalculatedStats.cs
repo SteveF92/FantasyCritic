@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FantasyCritic.Lib.Domain
+﻿namespace FantasyCritic.Lib.Domain
 {
-    public class MasterGameHypeScores
+    public class MasterGameCalculatedStats
     {
-        public MasterGameHypeScores(MasterGameYear masterGameYear, double hypeFactor, double dateAdjustedHypeFactor, double linearRegressionHypeFactor)
+        public MasterGameCalculatedStats(MasterGameYear masterGameYear, double hypeFactor, double dateAdjustedHypeFactor, double linearRegressionHypeFactor)
         {
             MasterGameYear = masterGameYear;
             HypeFactor = hypeFactor;

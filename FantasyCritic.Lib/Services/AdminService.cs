@@ -159,7 +159,7 @@ namespace FantasyCritic.Lib.Services
 
             await UpdateSystemWideValues();
             var hypeConstants = await GetHypeConstants();
-            await UpdateHypeFactor(hypeConstants);
+            await UpdateGameStats(hypeConstants);
             _logger.LogInformation("Done refreshing caches");
         }
 
@@ -246,7 +246,7 @@ namespace FantasyCritic.Lib.Services
             return hypeConstants;
         }
 
-        private async Task UpdateHypeFactor(HypeConstants hypeConstants)
+        private async Task UpdateGameStats(HypeConstants hypeConstants)
         {
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
@@ -256,7 +256,7 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                List<MasterGameHypeScores> hypeScores = new List<MasterGameHypeScores>();
+                List<MasterGameCalculatedStats> hypeScores = new List<MasterGameCalculatedStats>();
                 var cleanMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, false);
                 var cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year, true);
 
@@ -267,25 +267,25 @@ namespace FantasyCritic.Lib.Services
                     var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGame.MasterGameID, out var cachedMasterGame);
                     if (masterGame.MasterGame.CriticScore.HasValue && gameIsCached)
                     {
-                        hypeScores.Add(new MasterGameHypeScores(masterGame, cachedMasterGame.HypeFactor, cachedMasterGame.DateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
+                        hypeScores.Add(new MasterGameCalculatedStats(masterGame, cachedMasterGame.HypeFactor, cachedMasterGame.DateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
                         continue;
                     }
 
                     double notNullAverageDraftPosition = masterGame.AverageDraftPosition ?? 0;
 
                     double percentStandardGameToUse = masterGame.EligiblePercentStandardGame;
-                    double percentCounterpickToUse = masterGame.EligiblePercentCounterPick;
+                    double percentCounterPickToUse = masterGame.EligiblePercentCounterPick;
                     if (masterGame.MasterGame.EligibilityChanged)
                     {
                         percentStandardGameToUse = masterGame.PercentStandardGame;
-                        percentCounterpickToUse = masterGame.PercentStandardGame;
+                        percentCounterPickToUse = masterGame.PercentStandardGame;
                     }
 
                     double hypeFactor = (101 - notNullAverageDraftPosition) * masterGame.PercentStandardGame;
                     double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGameToUse;
 
                     double standardGameCalculation = percentStandardGameToUse * hypeConstants.StandardGameConstant;
-                    double counterPickCalculation = percentCounterpickToUse * hypeConstants.CounterPickConstant;
+                    double counterPickCalculation = percentCounterPickToUse * hypeConstants.CounterPickConstant;
                     double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
                     double averageDraftPositionCalculation = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
                     double totalBidCalculation = masterGame.TotalBidAmount * hypeConstants.TotalBidAmountConstant;
@@ -299,7 +299,7 @@ namespace FantasyCritic.Lib.Services
                                                         + totalBidCalculation 
                                                         + bidPercentileCalculation;
 
-                    hypeScores.Add(new MasterGameHypeScores(masterGame, hypeFactor, dateAdjustedHypeFactor, linearRegressionHypeFactor));
+                    hypeScores.Add(new MasterGameCalculatedStats(masterGame, hypeFactor, dateAdjustedHypeFactor, linearRegressionHypeFactor));
                 }
 
                 await _masterGameRepo.UpdateHypeFactors(hypeScores, supportedYear.Year);

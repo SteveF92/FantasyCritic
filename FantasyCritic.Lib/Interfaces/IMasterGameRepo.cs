@@ -40,6 +40,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote);
         Task LinkToOpenCritic(MasterGame masterGame, int openCriticID);
         Task UpdateReleaseDateEstimates(LocalDate tomorrow);
-        Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores, int year);
+        Task UpdateHypeFactors(IEnumerable<MasterGameCalculatedStats> hypeScores, int year);
     }
 }

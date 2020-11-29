@@ -516,7 +516,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task UpdateHypeFactors(IEnumerable<MasterGameHypeScores> hypeScores, int year)
+        public async Task UpdateHypeFactors(IEnumerable<MasterGameCalculatedStats> hypeScores, int year)
         {
             List<MasterGameYearEntity> masterGameYearEntities = hypeScores.Select(x => new MasterGameYearEntity(x)).ToList();
 
