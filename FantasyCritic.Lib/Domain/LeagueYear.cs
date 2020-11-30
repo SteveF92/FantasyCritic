@@ -45,6 +45,18 @@ namespace FantasyCritic.Lib.Domain
             return eligibilityOverride.Eligible;
         }
 
+        public bool GameIsEligible(MasterGame masterGame)
+        {
+            bool found = _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);
+            if (found)
+            {
+                return eligibilityOverride.Eligible;
+            }
+
+            var claimErrors = Options.AllowedEligibilitySettings.GameIsEligible(masterGame);
+            return !claimErrors.Any();
+        }
+
         public bool Equals(LeagueYear other)
         {
             if (ReferenceEquals(null, other)) return false;

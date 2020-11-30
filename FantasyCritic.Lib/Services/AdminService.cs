@@ -253,8 +253,47 @@ namespace FantasyCritic.Lib.Services
                 List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
                 var cleanMasterGames = await _masterGameRepo.GetMasterGames();
                 var cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
+                var allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year);
+                var publisherGames = allPublishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue).ToList();
+
+                var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame.Value.MasterGame.MasterGameID);
+                Dictionary<LeagueYear, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYear, HashSet<MasterGame>>();
+                Dictionary<LeagueYear, HashSet<MasterGame>> counterPicksByLeague = new Dictionary<LeagueYear, HashSet<MasterGame>>();
+                foreach (var publisher in allPublishers)
+                {
+                    if (!standardGamesByLeague.ContainsKey(publisher.LeagueYear))
+                    {
+                        standardGamesByLeague[publisher.LeagueYear] = new HashSet<MasterGame>();
+                    }
+
+                    if (!counterPicksByLeague.ContainsKey(publisher.LeagueYear))
+                    {
+                        counterPicksByLeague[publisher.LeagueYear] = new HashSet<MasterGame>();
+                    }
+
+                    foreach (var game in publisher.PublisherGames)
+                    {
+                        if (game.MasterGame.HasNoValue)
+                        {
+                            continue;
+                        }
+
+                        if (game.CounterPick)
+                        {
+                            counterPicksByLeague[publisher.LeagueYear].Add(game.MasterGame.Value.MasterGame);
+                        }
+                        else
+                        {
+                            standardGamesByLeague[publisher.LeagueYear].Add(game.MasterGame.Value.MasterGame);
+                        }
+
+                    }
+                }
 
                 var masterGameCacheLookup = cachedMasterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
+
+                var allLeagueYears = allPublishers.Select(x => x.LeagueYear).Distinct().ToList();
+                double totalLeagueCount = allLeagueYears.Count();
 
                 foreach (var masterGame in cleanMasterGames)
                 {
@@ -265,14 +304,20 @@ namespace FantasyCritic.Lib.Services
                         continue;
                     }
 
-                    double percentStandardGame = 0;
-                    double percentCounterPick = 0;
-                    double eligiblePercentStandardGame = 0;
-                    double eligiblePercentCounterPick = 0;
+                    var publisherGamesForMasterGame = publisherGamesByMasterGame[masterGame.MasterGameID];
+                    var leaguesWithGame = standardGamesByLeague.Count(x => x.Value.Contains(masterGame));
+                    var leaguesWithCounterPickGame = counterPicksByLeague.Count(x => x.Value.Contains(masterGame));
+                    var leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligible(masterGame)).ToList();
+                    double leaguesWhereEligibleCount = leaguesWhereEligible.Count;
+
+                    double percentStandardGame = leaguesWithGame / totalLeagueCount;
+                    double percentCounterPick = leaguesWithCounterPickGame / totalLeagueCount;
+                    double eligiblePercentStandardGame = leaguesWithGame / leaguesWhereEligibleCount;
+                    double eligiblePercentCounterPick = leaguesWithCounterPickGame / leaguesWhereEligibleCount;
                     int numberOfBids = 0;
                     int totalBidAmount = 0;
                     double bidPercentile = 0;
-                    double? averageDraftPosition = 0;
+                    double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.DraftPosition);
                     double? averageWinningBid = 0;
 
                     double notNullAverageDraftPosition = averageDraftPosition ?? 0;
