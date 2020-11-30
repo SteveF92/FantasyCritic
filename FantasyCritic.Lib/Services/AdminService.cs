@@ -251,10 +251,14 @@ namespace FantasyCritic.Lib.Services
                 }
 
                 List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
-                var cleanMasterGames = await _masterGameRepo.GetMasterGames();
-                var cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
-                var allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year);
-                var publisherGames = allPublishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue).ToList();
+                IReadOnlyList<MasterGame> cleanMasterGames = await _masterGameRepo.GetMasterGames();
+                IReadOnlyList<MasterGameYear> cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
+                IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year);
+                IReadOnlyList<PublisherGame> publisherGames = allPublishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue).ToList();
+                IReadOnlyList<PickupBid> processedBids = await _fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year);
+                ILookup<MasterGame, PickupBid> bidsByGame = processedBids.ToLookup(x => x.MasterGame);
+                IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
+                IReadOnlyList<MasterGame> allGamesWithBids = bidsByGame.Select(x => x.Key).ToList();
 
                 var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame.Value.MasterGame.MasterGameID);
                 Dictionary<LeagueYear, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYear, HashSet<MasterGame>>();
@@ -286,12 +290,10 @@ namespace FantasyCritic.Lib.Services
                         {
                             standardGamesByLeague[publisher.LeagueYear].Add(game.MasterGame.Value.MasterGame);
                         }
-
                     }
                 }
 
                 var masterGameCacheLookup = cachedMasterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
-
                 var allLeagueYears = allPublishers.Select(x => x.LeagueYear).Distinct().ToList();
                 double totalLeagueCount = allLeagueYears.Count();
 
@@ -314,11 +316,12 @@ namespace FantasyCritic.Lib.Services
                     double percentCounterPick = leaguesWithCounterPickGame / totalLeagueCount;
                     double eligiblePercentStandardGame = leaguesWithGame / leaguesWhereEligibleCount;
                     double eligiblePercentCounterPick = leaguesWithCounterPickGame / leaguesWhereEligibleCount;
-                    int numberOfBids = 0;
-                    int totalBidAmount = 0;
-                    double bidPercentile = 0;
+                    int numberOfBids = bidsByGame[masterGame].Count();
+                    int totalBidAmount = (int) totalBidAmounts[masterGame];
+                    var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
+                    double bidPercentile = gamesWithMoreBidTotal.Count() / (double) allGamesWithBids.Count;
                     double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.DraftPosition);
-                    double? averageWinningBid = 0;
+                    double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Average(x => x.BidAmount);
 
                     double notNullAverageDraftPosition = averageDraftPosition ?? 0;
 
