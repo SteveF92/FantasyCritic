@@ -296,6 +296,11 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult<IReadOnlyList<PickupBid>>(new List<PickupBid>());
         }
 
+        public Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year)
         {
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> activePickupBids = new Dictionary<LeagueYear, IReadOnlyList<PickupBid>>();

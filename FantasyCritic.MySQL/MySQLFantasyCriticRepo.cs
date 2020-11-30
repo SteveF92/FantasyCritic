@@ -241,16 +241,32 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year)
+        public async Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year)
+        {
+            var processedBids = await GetPickupBids(year, true);
+            var list = processedBids.SelectMany(x => x.Value).ToList();
+            return list;
+        }
+
+
+        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year) => GetPickupBids(year, false);
+
+        private async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetPickupBids(int year, bool processed)
         {
             var leagueYears = await GetLeagueYears(year);
             var leagueDictionary = leagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
             var publishers = await GetAllPublishersForYear(year);
             var publisherDictionary = publishers.ToDictionary(x => x.PublisherID, y => y);
 
+            var sql = "select * from vw_league_pickupbid where Year = @year and Successful is NULL and IsDeleted = 0";
+            if (processed)
+            {
+                sql = "select * from vw_league_pickupbid where Year = @year and Successful is NOT NULL and IsDeleted = 0";
+            }
+
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var bidEntities = await connection.QueryAsync<PickupBidEntity>("select * from vw_league_pickupbid where Year = @year and Successful is NULL and IsDeleted = 0", new { year });
+                var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, new { year });
 
                 Dictionary<LeagueYear, List<PickupBid>> pickupBidsByLeagueYear = leagueYears.ToDictionary(x => x, y => new List<PickupBid>());
 
@@ -264,7 +280,7 @@ namespace FantasyCritic.MySQL
                     pickupBidsByLeagueYear[leagueYear].Add(domainPickup);
                 }
 
-                IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> finalDictionary = pickupBidsByLeagueYear.ToDictionary(x => x.Key, y => (IReadOnlyList<PickupBid>) y.Value);
+                IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> finalDictionary = pickupBidsByLeagueYear.ToDictionary(x => x.Key, y => (IReadOnlyList<PickupBid>)y.Value);
 
                 return finalDictionary;
             }
