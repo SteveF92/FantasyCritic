@@ -17,39 +17,40 @@ namespace FantasyCritic.MySQL.Entities
 
         public MasterGameYearEntity(MasterGameCalculatedStats masterGameStats)
         {
-            MasterGameID = masterGameStats.MasterGameYear.MasterGame.MasterGameID;
-            Year = masterGameStats.MasterGameYear.Year;
-            GameName = masterGameStats.MasterGameYear.MasterGame.GameName;
-            EstimatedReleaseDate = masterGameStats.MasterGameYear.MasterGame.EstimatedReleaseDate;
-            SortableEstimatedReleaseDate = masterGameStats.MasterGameYear.MasterGame.SortableEstimatedReleaseDate?.ToDateTimeUnspecified();
-            ReleaseDate = masterGameStats.MasterGameYear.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
-            OpenCriticID = masterGameStats.MasterGameYear.MasterGame.OpenCriticID;
-            CriticScore = masterGameStats.MasterGameYear.MasterGame.CriticScore;
-            MinimumReleaseDate = masterGameStats.MasterGameYear.MasterGame.MinimumReleaseDate.ToDateTimeUnspecified();
-            EligibilityLevel = masterGameStats.MasterGameYear.MasterGame.EligibilitySettings.EligibilityLevel.Level;
-            YearlyInstallment = masterGameStats.MasterGameYear.MasterGame.EligibilitySettings.YearlyInstallment;
-            EarlyAccess = masterGameStats.MasterGameYear.MasterGame.EligibilitySettings.EarlyAccess;
-            FreeToPlay = masterGameStats.MasterGameYear.MasterGame.EligibilitySettings.FreeToPlay;
-            ReleasedInternationally = masterGameStats.MasterGameYear.MasterGame.EligibilitySettings.ReleasedInternationally;
-            ExpansionPack = masterGameStats.MasterGameYear.MasterGame.EligibilitySettings.ExpansionPack;
-            UnannouncedGame = masterGameStats.MasterGameYear.MasterGame.EligibilitySettings.UnannouncedGame;
-            Notes = masterGameStats.MasterGameYear.MasterGame.Notes;
-            BoxartFileName = masterGameStats.MasterGameYear.MasterGame.BoxartFileName;
-            EligibilityChanged = masterGameStats.MasterGameYear.MasterGame.EligibilityChanged;
-            FirstCriticScoreTimestamp = masterGameStats.MasterGameYear.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
-            PercentStandardGame = masterGameStats.MasterGameYear.PercentStandardGame;
-            PercentCounterPick = masterGameStats.MasterGameYear.PercentCounterPick;
-            EligiblePercentStandardGame = masterGameStats.MasterGameYear.EligiblePercentStandardGame;
-            EligiblePercentCounterPick = masterGameStats.MasterGameYear.EligiblePercentCounterPick;
-            NumberOfBids = masterGameStats.MasterGameYear.NumberOfBids;
-            TotalBidAmount = masterGameStats.MasterGameYear.TotalBidAmount;
-            BidPercentile = masterGameStats.MasterGameYear.BidPercentile;
-            AverageDraftPosition = masterGameStats.MasterGameYear.AverageDraftPosition;
-            AverageWinningBid = masterGameStats.MasterGameYear.AverageWinningBid;
+            MasterGameID = masterGameStats.MasterGame.MasterGameID;
+            Year = masterGameStats.Year;
+            GameName = masterGameStats.MasterGame.GameName;
+            EstimatedReleaseDate = masterGameStats.MasterGame.EstimatedReleaseDate;
+            SortableEstimatedReleaseDate = masterGameStats.MasterGame.SortableEstimatedReleaseDate?.ToDateTimeUnspecified();
+            ReleaseDate = masterGameStats.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
+            OpenCriticID = masterGameStats.MasterGame.OpenCriticID;
+            CriticScore = masterGameStats.MasterGame.CriticScore;
+            MinimumReleaseDate = masterGameStats.MasterGame.MinimumReleaseDate.ToDateTimeUnspecified();
+            EligibilityLevel = masterGameStats.MasterGame.EligibilitySettings.EligibilityLevel.Level;
+            YearlyInstallment = masterGameStats.MasterGame.EligibilitySettings.YearlyInstallment;
+            EarlyAccess = masterGameStats.MasterGame.EligibilitySettings.EarlyAccess;
+            FreeToPlay = masterGameStats.MasterGame.EligibilitySettings.FreeToPlay;
+            ReleasedInternationally = masterGameStats.MasterGame.EligibilitySettings.ReleasedInternationally;
+            ExpansionPack = masterGameStats.MasterGame.EligibilitySettings.ExpansionPack;
+            UnannouncedGame = masterGameStats.MasterGame.EligibilitySettings.UnannouncedGame;
+            Notes = masterGameStats.MasterGame.Notes;
+            BoxartFileName = masterGameStats.MasterGame.BoxartFileName;
+            EligibilityChanged = masterGameStats.MasterGame.EligibilityChanged;
+            FirstCriticScoreTimestamp = masterGameStats.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
+
+            PercentStandardGame = masterGameStats.PercentStandardGame;
+            PercentCounterPick = masterGameStats.PercentCounterPick;
+            EligiblePercentStandardGame = masterGameStats.EligiblePercentStandardGame;
+            EligiblePercentCounterPick = masterGameStats.EligiblePercentCounterPick;
+            NumberOfBids = masterGameStats.NumberOfBids;
+            TotalBidAmount = masterGameStats.TotalBidAmount;
+            BidPercentile = masterGameStats.BidPercentile;
+            AverageDraftPosition = masterGameStats.AverageDraftPosition;
+            AverageWinningBid = masterGameStats.AverageWinningBid;
             HypeFactor = masterGameStats.HypeFactor;
             DateAdjustedHypeFactor = masterGameStats.DateAdjustedHypeFactor;
             LinearRegressionHypeFactor = masterGameStats.LinearRegressionHypeFactor;
-            AddedTimestamp = masterGameStats.MasterGameYear.MasterGame.AddedTimestamp.ToDateTimeUtc();
+            AddedTimestamp = masterGameStats.MasterGame.AddedTimestamp.ToDateTimeUtc();
         }
 
         public Guid MasterGameID { get; set; }

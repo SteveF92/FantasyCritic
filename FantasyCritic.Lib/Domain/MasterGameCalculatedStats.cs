@@ -2,15 +2,16 @@
 {
     public class MasterGameCalculatedStats
     {
-        public MasterGameCalculatedStats(MasterGameYear masterGameYear, double hypeFactor, double dateAdjustedHypeFactor, double linearRegressionHypeFactor)
+        public MasterGameCalculatedStats(MasterGame masterGame, int year, double hypeFactor, double dateAdjustedHypeFactor, double linearRegressionHypeFactor)
         {
-            MasterGameYear = masterGameYear;
+            MasterGame = masterGame;
             HypeFactor = hypeFactor;
             DateAdjustedHypeFactor = dateAdjustedHypeFactor;
             LinearRegressionHypeFactor = linearRegressionHypeFactor;
         }
 
-        public MasterGameYear MasterGameYear { get; }
+        public MasterGame MasterGame { get; }
+        public int Year { get; }
         public double HypeFactor { get; }
         public double DateAdjustedHypeFactor { get; }
         public double LinearRegressionHypeFactor { get; }
