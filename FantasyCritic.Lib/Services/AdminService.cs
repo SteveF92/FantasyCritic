@@ -317,11 +317,15 @@ namespace FantasyCritic.Lib.Services
                     double eligiblePercentStandardGame = leaguesWithGame / leaguesWhereEligibleCount;
                     double eligiblePercentCounterPick = leaguesWithCounterPickGame / leaguesWhereEligibleCount;
                     int numberOfBids = bidsByGame[masterGame].Count();
-                    int totalBidAmount = (int) totalBidAmounts[masterGame];
+                    bool hasBids = totalBidAmounts.TryGetValue(masterGame, out long totalBidAmount);
+                    if (!hasBids)
+                    {
+                        totalBidAmount = 0;
+                    }
                     var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
                     double bidPercentile = gamesWithMoreBidTotal.Count() / (double) allGamesWithBids.Count;
                     double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.DraftPosition);
-                    double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Average(x => x.BidAmount);
+                    double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Select(x => (double) x.BidAmount).DefaultIfEmpty(0.0).Average();
 
                     double notNullAverageDraftPosition = averageDraftPosition ?? 0;
 
@@ -352,7 +356,7 @@ namespace FantasyCritic.Lib.Services
                                                         + bidPercentileCalculation;
 
                     calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame, 
-                        eligiblePercentCounterPick, numberOfBids, totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor, 
+                        eligiblePercentCounterPick, numberOfBids, (int) totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor, 
                         dateAdjustedHypeFactor, linearRegressionHypeFactor));
                 }
 
