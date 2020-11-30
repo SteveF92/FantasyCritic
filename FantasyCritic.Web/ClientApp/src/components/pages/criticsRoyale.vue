@@ -15,7 +15,7 @@
       </div>
 
       <div class="critic-royale-header-area-simple">
-        <h1>Critics Royale (Beta)</h1>
+        <h1>Critics Royale</h1>
       </div>
 
       <div v-if="!userPublisherBusy">
