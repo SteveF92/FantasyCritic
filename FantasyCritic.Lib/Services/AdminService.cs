@@ -254,7 +254,9 @@ namespace FantasyCritic.Lib.Services
                 IReadOnlyList<MasterGame> cleanMasterGames = await _masterGameRepo.GetMasterGames();
                 IReadOnlyList<MasterGameYear> cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
                 IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year);
-                IReadOnlyList<PublisherGame> publisherGames = allPublishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue).ToList();
+                IReadOnlyList<Publisher> publishersInRealLeagues = allPublishers.Where(x => !x.LeagueYear.League.TestLeague).ToList();
+                IReadOnlyList<Publisher> publishersInCompleteLeagues = publishersInRealLeagues.Where(x => x.LeagueYear.PlayStatus.DraftFinished).ToList();
+                IReadOnlyList<PublisherGame> publisherGames = publishersInCompleteLeagues.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue).ToList();
                 IReadOnlyList<PickupBid> processedBids = await _fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year);
                 ILookup<MasterGame, PickupBid> bidsByGame = processedBids.ToLookup(x => x.MasterGame);
                 IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
@@ -263,7 +265,7 @@ namespace FantasyCritic.Lib.Services
                 var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame.Value.MasterGame.MasterGameID);
                 Dictionary<LeagueYear, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYear, HashSet<MasterGame>>();
                 Dictionary<LeagueYear, HashSet<MasterGame>> counterPicksByLeague = new Dictionary<LeagueYear, HashSet<MasterGame>>();
-                foreach (var publisher in allPublishers)
+                foreach (var publisher in publishersInCompleteLeagues)
                 {
                     if (!standardGamesByLeague.ContainsKey(publisher.LeagueYear))
                     {
@@ -294,7 +296,7 @@ namespace FantasyCritic.Lib.Services
                 }
 
                 var masterGameCacheLookup = cachedMasterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
-                var allLeagueYears = allPublishers.Select(x => x.LeagueYear).Distinct().ToList();
+                var allLeagueYears = publishersInCompleteLeagues.Select(x => x.LeagueYear).Distinct().ToList();
                 double totalLeagueCount = allLeagueYears.Count();
 
                 foreach (var masterGame in cleanMasterGames)
@@ -316,15 +318,18 @@ namespace FantasyCritic.Lib.Services
                     double percentCounterPick = leaguesWithCounterPickGame / totalLeagueCount;
                     double eligiblePercentStandardGame = leaguesWithGame / leaguesWhereEligibleCount;
                     double eligiblePercentCounterPick = leaguesWithCounterPickGame / leaguesWhereEligibleCount;
-                    int numberOfBids = bidsByGame[masterGame].Count();
+                    var bidsForGame = bidsByGame[masterGame];
+                    int numberOfBids = bidsForGame.Count();
                     bool hasBids = totalBidAmounts.TryGetValue(masterGame, out long totalBidAmount);
                     if (!hasBids)
                     {
                         totalBidAmount = 0;
                     }
+
                     var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
-                    double bidPercentile = gamesWithMoreBidTotal.Count() / (double) allGamesWithBids.Count;
-                    double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.DraftPosition);
+                    double percentageGamesWithHigherBidTotal = gamesWithMoreBidTotal.Count() / (double) cleanMasterGames.Count;
+                    double bidPercentile = 100 - (percentageGamesWithHigherBidTotal * 100);
+                    double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.OverallDraftPosition);
                     double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Select(x => (double) x.BidAmount).DefaultIfEmpty(0.0).Average();
 
                     double notNullAverageDraftPosition = averageDraftPosition ?? 0;
