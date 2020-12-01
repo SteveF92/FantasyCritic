@@ -37,7 +37,7 @@
         <template v-slot:cell(masterGame)="data">
           <masterGamePopover :masterGame="data.item.masterGame"> </masterGamePopover>
         </template>
-        <template v-slot:cell(masterGame.sortableEstimatedReleaseDate)="data">
+        <template v-slot:cell(masterGame.maximumReleaseDate)="data">
           {{getReleaseDate(data.item.masterGame)}}
         </template>
         <template v-slot:cell(amountSpent)="data">
@@ -114,7 +114,7 @@ export default {
       advertisingBudgetToSet: 0,
       gameFields: [
         { key: 'masterGame', label: 'Game', thClass: 'bg-primary', sortable: true },
-        { key: 'masterGame.sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary', sortable: true },
         { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true },
         { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true },

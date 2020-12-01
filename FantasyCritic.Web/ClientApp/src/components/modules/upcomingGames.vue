@@ -11,7 +11,7 @@
       <template v-slot:cell(gameName)="data">
         <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
-      <template v-slot:cell(sortableEstimatedReleaseDate)="data">
+      <template v-slot:cell(maximumReleaseDate)="data">
         {{getReleaseDate(data.item)}}
       </template>
       <template v-slot:cell(league)="data">
@@ -39,11 +39,11 @@ export default {
   props: ['upcomingGames', 'mode'],
   data() {
     return {
-      sortBy: 'sortableEstimatedReleaseDate',
+      sortBy: 'maximumReleaseDate',
       sortDesc: false,
       baseUpcomingGamesFields: [
         { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
       ],
       userUpcomingGamesFields: [
         { key: 'league', label: 'League', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },

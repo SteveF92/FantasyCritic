@@ -12,7 +12,7 @@
       <template v-slot:cell(masterGame.gameName)="data">
         <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
-      <template v-slot:cell(masterGame.sortableEstimatedReleaseDate)="data">
+      <template v-slot:cell(masterGame.maximumReleaseDate)="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
           <span>{{data.item.masterGame.estimatedReleaseDate}}</span>
           <span v-show="data.item.masterGame.isReleased">(Released)</span>
@@ -43,7 +43,7 @@ export default {
       currentPage: 1,
       gameFields: [
         { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
-        { key: 'masterGame.sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'masterGame.eligibilityLevel', label: 'Status', thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'select', label: '', thClass: 'bg-primary' }

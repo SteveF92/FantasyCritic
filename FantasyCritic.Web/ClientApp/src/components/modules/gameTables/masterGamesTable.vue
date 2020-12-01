@@ -10,7 +10,7 @@
     <template v-slot:cell(gameName)="data">
       <masterGamePopover :masterGame="data.item"></masterGamePopover>
     </template>
-    <template v-slot:cell(sortableEstimatedReleaseDate)="data">
+    <template v-slot:cell(maximumReleaseDate)="data">
       {{getReleaseDate(data.item)}}
     </template>
     <template v-slot:cell(criticScore)="data">
@@ -56,7 +56,7 @@ export default {
     return {
       gameFields: [
         { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'sortableEstimatedReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
         { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
         { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary' },

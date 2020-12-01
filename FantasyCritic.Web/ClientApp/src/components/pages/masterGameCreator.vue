@@ -63,8 +63,8 @@
                 <flat-pickr v-model="minimumReleaseDate" class="form-control"></flat-pickr>
               </div>
               <div class="form-group">
-                <label for="sortableEstimatedReleaseDate" class="control-label">Sortable Estimated Release Date</label>
-                <flat-pickr v-model="sortableEstimatedReleaseDate" class="form-control"></flat-pickr>
+                <label for="maximumReleaseDate" class="control-label">Sortable Estimated Release Date</label>
+                <flat-pickr v-model="maximumReleaseDate" class="form-control"></flat-pickr>
               </div>
 
               <div class="form-group">
@@ -156,7 +156,7 @@ export default {
       gameName: '',
       estimatedReleaseDate: '',
       minimumReleaseDate: null,
-      sortableEstimatedReleaseDate: null,
+      maximumReleaseDate: null,
       releaseDate: null,
       eligibilityLevel: 0,
       yearlyInstallment: false,
@@ -221,7 +221,7 @@ export default {
         gameName: this.gameName,
         estimatedReleaseDate: this.estimatedReleaseDate,
         minimumReleaseDate: this.minimumReleaseDate,
-        sortableEstimatedReleaseDate: this.sortableEstimatedReleaseDate,
+        maximumReleaseDate: this.maximumReleaseDate,
         releaseDate: this.releaseDate,
         openCriticID: this.openCriticID,
         eligibilityLevel: this.eligibilityLevel,
@@ -251,35 +251,35 @@ export default {
     parseEstimatedReleaseDate() {
       if (this.estimatedReleaseDate === '' || this.estimatedReleaseDate === 'TBA') {
         this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-        this.sortableEstimatedReleaseDate = null;
+        this.maximumReleaseDate = null;
       }
       if (this.estimatedReleaseDate === '2020') {
         this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-        this.sortableEstimatedReleaseDate = '2020-12-31';
+        this.maximumReleaseDate = '2020-12-31';
       }
       if (this.estimatedReleaseDate === 'Q3 2020') {
         this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-        this.sortableEstimatedReleaseDate = '2020-09-30';
+        this.maximumReleaseDate = '2020-09-30';
       }
       if (this.estimatedReleaseDate === 'Q4 2020') {
         this.minimumReleaseDate = '2020-10-01';
-        this.sortableEstimatedReleaseDate = '2020-12-31';
+        this.maximumReleaseDate = '2020-12-31';
       }
       if (this.estimatedReleaseDate === '2021') {
         this.minimumReleaseDate = '2021-01-01';
-        this.sortableEstimatedReleaseDate = '2021-12-31';
+        this.maximumReleaseDate = '2021-12-31';
       }
       if (this.estimatedReleaseDate === 'Q1 2021') {
         this.minimumReleaseDate = '2021-01-01';
-        this.sortableEstimatedReleaseDate = '2021-03-31';
+        this.maximumReleaseDate = '2021-03-31';
       }
       if (this.estimatedReleaseDate === 'Q2 2021') {
         this.minimumReleaseDate = '2021-04-01';
-        this.sortableEstimatedReleaseDate = '2021-06-30';
+        this.maximumReleaseDate = '2021-06-30';
       }
       if (this.estimatedReleaseDate === 'Early 2021') {
         this.minimumReleaseDate = '2021-01-01';
-        this.sortableEstimatedReleaseDate = '2021-06-30';
+        this.maximumReleaseDate = '2021-06-30';
       }
     },
     populateFieldsFromURL() {
@@ -290,7 +290,7 @@ export default {
       this.estimatedReleaseDate = this.$route.query.estimatedReleaseDate;
       if (this.$route.query.releaseDate !== undefined) {
         this.releaseDate = this.$route.query.releaseDate;
-        this.sortableEstimatedReleaseDate = this.$route.query.releaseDate;
+        this.maximumReleaseDate = this.$route.query.releaseDate;
       }
       this.steamID = this.$route.query.steamID;
       this.openCriticID = this.$route.query.openCriticID;
@@ -304,14 +304,14 @@ export default {
       this.requestNote = this.$route.query.requestNote;
     },
     propagateDate() {
-      this.sortableEstimatedReleaseDate = this.releaseDate;
+      this.maximumReleaseDate = this.releaseDate;
       this.minimumReleaseDate = this.releaseDate;
       this.estimatedReleaseDate = this.releaseDate;
     },
     clearDates() {
       this.releaseDate = null;
       this.minimumReleaseDate = null;
-      this.sortableEstimatedReleaseDate = null;
+      this.maximumReleaseDate = null;
       this.estimatedReleaseDate = null;
     }
   },
