@@ -304,7 +304,7 @@ namespace FantasyCritic.Lib.Services
                     var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame);
                     if (masterGame.CriticScore.HasValue && gameIsCached)
                     {
-                        calculatedStats.Add(new MasterGameCalculatedStats(cachedMasterGame));
+                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, cachedMasterGame));
                         continue;
                     }
 

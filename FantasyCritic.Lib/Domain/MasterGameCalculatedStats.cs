@@ -2,24 +2,24 @@
 {
     public class MasterGameCalculatedStats
     {
-        public MasterGameCalculatedStats(MasterGameYear masterGameYear)
+        public MasterGameCalculatedStats(MasterGame masterGame, MasterGameYear cachedMasterGameYear)
         {
-            MasterGame = masterGameYear.MasterGame;
-            Year = masterGameYear.Year;
+            MasterGame = masterGame;
+            Year = cachedMasterGameYear.Year;
 
-            PercentStandardGame = masterGameYear.PercentStandardGame;
-            PercentCounterPick = masterGameYear.PercentCounterPick;
-            EligiblePercentStandardGame = masterGameYear.EligiblePercentStandardGame;
-            EligiblePercentCounterPick = masterGameYear.EligiblePercentCounterPick;
-            NumberOfBids = masterGameYear.NumberOfBids;
-            TotalBidAmount = masterGameYear.TotalBidAmount;
-            BidPercentile = masterGameYear.BidPercentile;
-            AverageDraftPosition = masterGameYear.AverageDraftPosition;
-            AverageWinningBid = masterGameYear.AverageWinningBid;
+            PercentStandardGame = cachedMasterGameYear.PercentStandardGame;
+            PercentCounterPick = cachedMasterGameYear.PercentCounterPick;
+            EligiblePercentStandardGame = cachedMasterGameYear.EligiblePercentStandardGame;
+            EligiblePercentCounterPick = cachedMasterGameYear.EligiblePercentCounterPick;
+            NumberOfBids = cachedMasterGameYear.NumberOfBids;
+            TotalBidAmount = cachedMasterGameYear.TotalBidAmount;
+            BidPercentile = cachedMasterGameYear.BidPercentile;
+            AverageDraftPosition = cachedMasterGameYear.AverageDraftPosition;
+            AverageWinningBid = cachedMasterGameYear.AverageWinningBid;
 
-            HypeFactor = masterGameYear.HypeFactor;
-            DateAdjustedHypeFactor = masterGameYear.DateAdjustedHypeFactor;
-            LinearRegressionHypeFactor = masterGameYear.LinearRegressionHypeFactor;
+            HypeFactor = cachedMasterGameYear.HypeFactor;
+            DateAdjustedHypeFactor = cachedMasterGameYear.DateAdjustedHypeFactor;
+            LinearRegressionHypeFactor = cachedMasterGameYear.LinearRegressionHypeFactor;
         }
 
         public MasterGameCalculatedStats(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame, 

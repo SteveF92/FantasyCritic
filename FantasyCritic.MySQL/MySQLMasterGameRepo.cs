@@ -522,7 +522,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync("delete from tbl_caching_mastergameyear where Year = @year", new {year});
+                    await connection.ExecuteAsync("delete from tbl_caching_mastergameyear where Year = @year", new {year}, transaction);
                     await connection.BulkInsertAsync(masterGameYearEntities, "tbl_caching_mastergameyear", 500, transaction, excludeFields);
                     transaction.Commit();
                 }
