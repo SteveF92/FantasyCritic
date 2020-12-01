@@ -302,7 +302,7 @@ namespace FantasyCritic.Lib.Services
                 foreach (var masterGame in cleanMasterGames)
                 {
                     var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame);
-                    if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate < new LocalDate(supportedYear.Year, 1, 1))
+                    if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate < new LocalDate(supportedYear.Year, 1, 1) && gameIsCached)
                     {
                         calculatedStats.Add(new MasterGameCalculatedStats(masterGame, cachedMasterGame));
                         continue;
@@ -356,18 +356,19 @@ namespace FantasyCritic.Lib.Services
                         percentCounterPickToUse = percentCounterPick;
                     }
 
-                    if (masterGame.CriticScore.HasValue && gameIsCached)
-                    {
-                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
-                            eligiblePercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, cachedMasterGame.HypeFactor,
-                            cachedMasterGame.DateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
-                        continue;
-                    }
-                    
                     //Derived Stats
                     double hypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGame;
                     double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGameToUse;
 
+                    if (masterGame.CriticScore.HasValue && gameIsCached)
+                    {
+                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
+                            eligiblePercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
+                            dateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
+                        continue;
+                    }
+
+                    //Linear Regression
                     double standardGameCalculation = percentStandardGameToUse * hypeConstants.StandardGameConstant;
                     double counterPickCalculation = percentCounterPickToUse * hypeConstants.CounterPickConstant;
                     double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
