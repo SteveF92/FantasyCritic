@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
 {
@@ -63,6 +64,8 @@ namespace FantasyCritic.MySQL.Entities
         public string PickupSystem { get; set; }
         public string ScoringSystem { get; set; }
         public string PlayStatus { get; set; }
+        public DateTime Timestamp { get; set; }
+        public DateTime? DraftStartedTimestamp { get; set; }
 
         public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel, IEnumerable<EligibilityOverride> eligibilityOverrides)
         {
@@ -75,7 +78,13 @@ namespace FantasyCritic.MySQL.Entities
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
                 DropOnlyDraftGames, eligibilitySettings, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
 
-            return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides);
+            Instant? draftStartedTimestamp = null;
+            if (DraftStartedTimestamp.HasValue)
+            {
+                draftStartedTimestamp = Instant.FromDateTimeUtc(DraftStartedTimestamp.Value);
+            }
+
+            return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides, draftStartedTimestamp);
         }
     }
 }

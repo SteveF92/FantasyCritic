@@ -301,19 +301,26 @@ namespace FantasyCritic.Lib.Services
 
                 foreach (var masterGame in cleanMasterGames)
                 {
-                    var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame);
-                    if (masterGame.CriticScore.HasValue && gameIsCached)
-                    {
-                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, cachedMasterGame));
-                        continue;
-                    }
-
+                    //Basic Stats
                     var publisherGamesForMasterGame = publisherGamesByMasterGame[masterGame.MasterGameID];
                     var leaguesWithGame = standardGamesByLeague.Count(x => x.Value.Contains(masterGame));
                     var leaguesWithCounterPickGame = counterPicksByLeague.Count(x => x.Value.Contains(masterGame));
-                    var leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligible(masterGame)).ToList();
-                    double leaguesWhereEligibleCount = leaguesWhereEligible.Count;
+                    List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligible(masterGame)).ToList();
 
+                    List<LeagueYear> timeAdjustedLeagues;
+                    if (masterGame.FirstCriticScoreTimestamp.HasValue)
+                    {
+                        timeAdjustedLeagues = leaguesWhereEligible.Where(x =>
+                                x.DraftStartedTimestamp.HasValue &&
+                                x.DraftStartedTimestamp <= masterGame.FirstCriticScoreTimestamp.Value)
+                            .ToList();
+                    }
+                    else
+                    {
+                        timeAdjustedLeagues = leaguesWhereEligible;
+                    }
+
+                    double leaguesWhereEligibleCount = timeAdjustedLeagues.Count;
                     double percentStandardGame = leaguesWithGame / totalLeagueCount;
                     double percentCounterPick = leaguesWithCounterPickGame / totalLeagueCount;
                     double eligiblePercentStandardGame = leaguesWithGame / leaguesWhereEligibleCount;
@@ -342,6 +349,16 @@ namespace FantasyCritic.Lib.Services
                         percentCounterPickToUse = percentCounterPick;
                     }
 
+                    var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame);
+                    if (masterGame.CriticScore.HasValue && gameIsCached)
+                    {
+                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
+                            eligiblePercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, cachedMasterGame.HypeFactor,
+                            cachedMasterGame.DateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
+                        continue;
+                    }
+                    
+                    //Derived Stats
                     double hypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGame;
                     double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGameToUse;
 

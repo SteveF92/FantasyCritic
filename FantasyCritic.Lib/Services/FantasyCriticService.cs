@@ -126,7 +126,7 @@ namespace FantasyCritic.Lib.Services
 
             var eligibilityOverrides = await GetEligibilityOverrides(league, parameters.Year);
 
-            LeagueYear newLeagueYear = new LeagueYear(league, parameters.Year, options, leagueYear.Value.PlayStatus, eligibilityOverrides);
+            LeagueYear newLeagueYear = new LeagueYear(league, parameters.Year, options, leagueYear.Value.PlayStatus, eligibilityOverrides, leagueYear.Value.DraftStartedTimestamp);
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear);
 
             return Result.Success();

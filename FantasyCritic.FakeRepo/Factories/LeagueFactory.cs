@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using NodaTime;
 
 namespace FantasyCritic.FakeRepo.Factories
 {
@@ -29,8 +30,8 @@ namespace FantasyCritic.FakeRepo.Factories
             {
                 var eligibilitySettings = new EligibilitySettings(eligibilityLevel, true, false, true, false, false, false);
                 var eligibilityOverrides = new List<EligibilityOverride>();
-                LeagueYear year = new LeagueYear(league, 2019, new LeagueOptions(12, 6, 1, 2, -1, 0, false, eligibilitySettings, DraftSystem.Flexible, 
-                    PickupSystem.Budget, ScoringSystem.GetScoringSystem("Standard"), true), PlayStatus.DraftFinal, eligibilityOverrides);
+                LeagueYear year = new LeagueYear(league, 2019, new LeagueOptions(12, 6, 1, 2, -1, 0, false, eligibilitySettings, DraftSystem.Flexible, PickupSystem.Budget, 
+                    ScoringSystem.GetScoringSystem("Standard"), true), PlayStatus.DraftFinal, eligibilityOverrides, Instant.FromUtc(2019, 1, 5, 12, 0, 0));
                 leagueYears.Add(year);
             }
 

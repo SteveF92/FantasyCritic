@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Enums;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
@@ -14,7 +15,7 @@ namespace FantasyCritic.Lib.Domain
     {
         private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverridesDictionary;
 
-        public LeagueYear(League league, int year, LeagueOptions options, PlayStatus playStatus, IEnumerable<EligibilityOverride> eligibilityOverrides)
+        public LeagueYear(League league, int year, LeagueOptions options, PlayStatus playStatus, IEnumerable<EligibilityOverride> eligibilityOverrides, Instant? draftStartedTimestamp)
         {
             League = league;
             Year = year;
@@ -22,6 +23,7 @@ namespace FantasyCritic.Lib.Domain
             PlayStatus = playStatus;
             EligibilityOverrides = eligibilityOverrides.ToList();
             _eligibilityOverridesDictionary = EligibilityOverrides.ToDictionary(x => x.MasterGame);
+            DraftStartedTimestamp = draftStartedTimestamp;
         }
 
         public League League { get; }
@@ -29,6 +31,7 @@ namespace FantasyCritic.Lib.Domain
         public LeagueOptions Options { get; }
         public PlayStatus PlayStatus { get; }
         public IReadOnlyList<EligibilityOverride> EligibilityOverrides { get; }
+        public Instant? DraftStartedTimestamp { get; }
 
         public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 
