@@ -27,10 +27,10 @@ namespace FantasyCritic.Lib.Services
         private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
         private readonly IClock _clock;
-        private readonly ILogger<OpenCriticService> _logger;
+        private readonly ILogger<AdminService> _logger;
 
         public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
-            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<OpenCriticService> logger, IRDSManager rdsManager,
+            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<AdminService> logger, IRDSManager rdsManager,
             RoyaleService royaleService, PythonRunner pythonRunner)
         {
             _fantasyCriticService = fantasyCriticService;
@@ -301,6 +301,13 @@ namespace FantasyCritic.Lib.Services
 
                 foreach (var masterGame in cleanMasterGames)
                 {
+                    var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame);
+                    if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate < new LocalDate(supportedYear.Year, 1, 1))
+                    {
+                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, cachedMasterGame));
+                        continue;
+                    }
+
                     //Basic Stats
                     var publisherGamesForMasterGame = publisherGamesByMasterGame[masterGame.MasterGameID];
                     var leaguesWithGame = standardGamesByLeague.Count(x => x.Value.Contains(masterGame));
@@ -349,7 +356,6 @@ namespace FantasyCritic.Lib.Services
                         percentCounterPickToUse = percentCounterPick;
                     }
 
-                    var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame);
                     if (masterGame.CriticScore.HasValue && gameIsCached)
                     {
                         calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
