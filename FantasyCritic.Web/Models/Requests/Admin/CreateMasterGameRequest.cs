@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Domain;
 using NodaTime;
@@ -40,7 +41,7 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         {
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
             Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
-                InternationalReleaseDate, EarlyAccessReleaseDate, ReleaseDate, OpenCriticID, null, eligibilitySettings, Notes, BoxartFileName, null, false, false, false, timestamp);
+                InternationalReleaseDate, EarlyAccessReleaseDate, ReleaseDate, OpenCriticID, null, eligibilitySettings, Notes, BoxartFileName, null, false, false, false, timestamp, new List<MasterSubGame>());
             return masterGame;
         }
     }

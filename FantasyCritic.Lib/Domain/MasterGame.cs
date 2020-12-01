@@ -15,7 +15,7 @@ namespace FantasyCritic.Lib.Domain
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
             LocalDate? internationalReleaseDate, LocalDate? earlyAccessReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
             EligibilitySettings eligibilitySettings, string notes, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
-            bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp)
+            bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -29,7 +29,7 @@ namespace FantasyCritic.Lib.Domain
             _criticScore = criticScore;
             EligibilitySettings = eligibilitySettings;
             Notes = notes;
-            SubGames = new List<MasterSubGame>();
+            SubGames = subGames.ToList();
             BoxartFileName = boxartFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
             DoNotRefreshDate = doNotRefreshDate;
