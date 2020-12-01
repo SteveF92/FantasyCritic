@@ -181,10 +181,13 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_mastergame(MasterGameID,GameName,EstimatedReleaseDate,SortableEstimatedReleaseDate,ReleaseDate,OpenCriticID,CriticScore,MinimumReleaseDate," +
-                    "EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,UnannouncedGame,Notes,BoxartFileName) VALUES " +
-                    "(@MasterGameID,@GameName,@EstimatedReleaseDate,@SortableEstimatedReleaseDate,@ReleaseDate,@OpenCriticID,@CriticScore,@MinimumReleaseDate," +
-                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@UnannouncedGame,@Notes,@BoxartFileName);",
+                    "insert into tbl_mastergame" +
+                    "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,InternationalReleaseDate,EarlyAccessReleaseDate,ReleaseDate," +
+                    "OpenCriticID,CriticScore,EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,UnannouncedGame,Notes,BoxartFileName," +
+                    "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,AddedTimestamp) VALUES " +
+                    "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@InternationalReleaseDate,@EarlyAccessReleaseDate,@ReleaseDate," +
+                    "@OpenCriticID,@CriticScore,@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@UnannouncedGame,@Notes,@BoxartFileName," +
+                    "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@AddedTimestamp);",
                     entity);
             }
         }
@@ -498,7 +501,7 @@ namespace FantasyCritic.MySQL
 
         public async Task UpdateReleaseDateEstimates(LocalDate tomorrow)
         {
-            var sql = "UPDATE tbl_mastergame SET MinimumReleaseDate = ReleaseDate, SortableEstimatedReleaseDate = ReleaseDate, EstimatedReleaseDate = ReleaseDate where ReleaseDate is not NULL;";
+            var sql = "UPDATE tbl_mastergame SET MinimumReleaseDate = ReleaseDate, MaximumReleaseDate = ReleaseDate, EstimatedReleaseDate = ReleaseDate where ReleaseDate is not NULL;";
             var sql2 = "UPDATE tbl_mastergame SET MinimumReleaseDate = @tomorrow WHERE MinimumReleaseDate < @tomorrow AND ReleaseDate IS NULL;";
             using (var connection = new MySqlConnection(_connectionString))
             {

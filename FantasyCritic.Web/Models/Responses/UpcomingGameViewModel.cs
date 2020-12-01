@@ -17,7 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             MasterGameID = masterGame.MasterGame.MasterGameID;
             GameName = masterGame.MasterGame.GameName;
             EstimatedReleaseDate = masterGame.MasterGame.EstimatedReleaseDate;
-            SortableEstimatedReleaseDate = masterGame.MasterGame.GetDefiniteMaximumReleaseDate();
+            MaximumReleaseDate = masterGame.MasterGame.GetDefiniteMaximumReleaseDate();
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
 
             if (userMode)
@@ -71,7 +71,7 @@ namespace FantasyCritic.Web.Models.Responses
         public Guid MasterGameID { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
-        public LocalDate SortableEstimatedReleaseDate { get; }
+        public LocalDate MaximumReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public Guid? LeagueID { get; }
         public int? Year { get; }
