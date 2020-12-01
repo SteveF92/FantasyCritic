@@ -12,19 +12,21 @@ namespace FantasyCritic.Lib.Domain
     {
         private readonly decimal? _criticScore;
 
-        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate, 
-            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings, string notes,
-            string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, bool eligibilityChanged,
-            Instant addedTimestamp)
+        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
+            LocalDate? internationalReleaseDate, LocalDate? earlyAccessReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
+            EligibilitySettings eligibilitySettings, string notes, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
+            bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
             EstimatedReleaseDate = estimatedReleaseDate;
-            SortableEstimatedReleaseDate = sortableEstimatedReleaseDate;
+            MinimumReleaseDate = minimumReleaseDate;
+            MaximumReleaseDate = maximumReleaseDate;
+            InternationalReleaseDate = internationalReleaseDate;
+            EarlyAccessReleaseDate = earlyAccessReleaseDate;
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
             _criticScore = criticScore;
-            MinimumReleaseDate = minimumReleaseDate;
             EligibilitySettings = eligibilitySettings;
             Notes = notes;
             SubGames = new List<MasterSubGame>();
@@ -36,34 +38,13 @@ namespace FantasyCritic.Lib.Domain
             AddedTimestamp = addedTimestamp;
         }
 
-        public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate? sortableEstimatedReleaseDate,
-            LocalDate? releaseDate, int? openCriticID, decimal? criticScore, LocalDate minimumReleaseDate, EligibilitySettings eligibilitySettings,
-            string notes, IReadOnlyList<MasterSubGame> subGames, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
-            bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp)
-        {
-            MasterGameID = masterGameID;
-            GameName = gameName;
-            EstimatedReleaseDate = estimatedReleaseDate;
-            SortableEstimatedReleaseDate = sortableEstimatedReleaseDate;
-            ReleaseDate = releaseDate;
-            OpenCriticID = openCriticID;
-            _criticScore = criticScore;
-            MinimumReleaseDate = minimumReleaseDate;
-            EligibilitySettings = eligibilitySettings;
-            Notes = notes;
-            SubGames = subGames;
-            BoxartFileName = boxartFileName;
-            FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
-            DoNotRefreshDate = doNotRefreshDate;
-            DoNotRefreshAnything = doNotRefreshAnything;
-            EligibilityChanged = eligibilityChanged;
-            AddedTimestamp = addedTimestamp;
-        }
-
         public Guid MasterGameID { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
-        public LocalDate? SortableEstimatedReleaseDate { get; }
+        public LocalDate MinimumReleaseDate { get; }
+        public LocalDate? MaximumReleaseDate { get; }
+        public LocalDate? InternationalReleaseDate { get; }
+        public LocalDate? EarlyAccessReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
 
@@ -74,7 +55,7 @@ namespace FantasyCritic.Lib.Domain
         public bool EligibilityChanged { get; }
         public Instant AddedTimestamp { get; }
 
-        public LocalDate GetDefiniteSortableEstimatedReleaseDate() => SortableEstimatedReleaseDate ?? LocalDate.MaxIsoValue;
+        public LocalDate GetDefiniteMaximumReleaseDate() => MaximumReleaseDate ?? LocalDate.MaxIsoValue;
 
         public decimal? CriticScore
         {
@@ -113,7 +94,6 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        public LocalDate MinimumReleaseDate { get; }
         public EligibilitySettings EligibilitySettings { get; }
         public string Notes { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }

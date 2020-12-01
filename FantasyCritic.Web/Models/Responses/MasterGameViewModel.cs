@@ -16,8 +16,12 @@ namespace FantasyCritic.Web.Models.Responses
             MasterGameID = masterGame.MasterGameID;
             GameName = masterGame.GameName;
             EstimatedReleaseDate = masterGame.EstimatedReleaseDate;
-            SortableEstimatedReleaseDate = masterGame.GetDefiniteSortableEstimatedReleaseDate();
+            MinimumReleaseDate = masterGame.MinimumReleaseDate;
+            MaximumReleaseDate = masterGame.GetDefiniteMaximumReleaseDate();
+            InternationalReleaseDate = masterGame.InternationalReleaseDate;
+            EarlyAccessReleaseDate = masterGame.EarlyAccessReleaseDate;
             ReleaseDate = masterGame.ReleaseDate;
+
             IsReleased = masterGame.IsReleased(clock.GetCurrentInstant());
             CriticScore = masterGame.CriticScore;
             AveragedScore = masterGame.AveragedScore;
@@ -34,7 +38,8 @@ namespace FantasyCritic.Web.Models.Responses
             MasterGameID = masterSubGame.MasterGameID;
             GameName = masterSubGame.GameName;
             EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
-            SortableEstimatedReleaseDate = masterSubGame.SortableEstimatedReleaseDate;
+            MinimumReleaseDate = masterSubGame.MinimumReleaseDate;
+            MaximumReleaseDate = masterSubGame.GetDefiniteMaximumReleaseDate();
             ReleaseDate = masterSubGame.ReleaseDate;
             IsReleased = masterSubGame.IsReleased(clock.GetCurrentInstant());
             CriticScore = masterSubGame.CriticScore;
@@ -53,7 +58,10 @@ namespace FantasyCritic.Web.Models.Responses
         public Guid MasterGameID { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
-        public LocalDate SortableEstimatedReleaseDate { get; }
+        public LocalDate MinimumReleaseDate { get; }
+        public LocalDate MaximumReleaseDate { get; }
+        public LocalDate? InternationalReleaseDate { get; }
+        public LocalDate? EarlyAccessReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public bool IsReleased { get; }
         public decimal? CriticScore { get; }

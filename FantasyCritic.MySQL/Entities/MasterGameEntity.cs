@@ -20,11 +20,13 @@ namespace FantasyCritic.MySQL.Entities
             MasterGameID = masterGame.MasterGameID;
             GameName = masterGame.GameName;
             EstimatedReleaseDate = masterGame.EstimatedReleaseDate;
-            SortableEstimatedReleaseDate = masterGame.SortableEstimatedReleaseDate?.ToDateTimeUnspecified();
+            MinimumReleaseDate = masterGame.MinimumReleaseDate.ToDateTimeUnspecified();
+            MaximumReleaseDate = masterGame.MaximumReleaseDate?.ToDateTimeUnspecified();
+            InternationalReleaseDate = masterGame.InternationalReleaseDate?.ToDateTimeUnspecified();
+            EarlyAccessReleaseDate = masterGame.EarlyAccessReleaseDate?.ToDateTimeUnspecified();
             ReleaseDate = masterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGame.OpenCriticID;
             CriticScore = masterGame.CriticScore;
-            MinimumReleaseDate = masterGame.MinimumReleaseDate.ToDateTimeUnspecified();
             EligibilityLevel = masterGame.EligibilitySettings.EligibilityLevel.Level;
             YearlyInstallment = masterGame.EligibilitySettings.YearlyInstallment;
             EarlyAccess = masterGame.EligibilitySettings.EarlyAccess;
@@ -39,11 +41,13 @@ namespace FantasyCritic.MySQL.Entities
         public Guid MasterGameID { get; set; }
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
-        public DateTime? SortableEstimatedReleaseDate { get; set; }
+        public DateTime MinimumReleaseDate { get; set; }
+        public DateTime? MaximumReleaseDate { get; set; }
+        public DateTime? InternationalReleaseDate { get; set; }
+        public DateTime? EarlyAccessReleaseDate { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
-        public DateTime MinimumReleaseDate { get; set; }
         public int EligibilityLevel { get; set; }
         public bool YearlyInstallment { get; set; }
         public bool EarlyAccess { get; set; }
@@ -67,10 +71,22 @@ namespace FantasyCritic.MySQL.Entities
                 releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
             }
 
-            LocalDate? sortableEstimatedReleaseDate = null;
-            if (SortableEstimatedReleaseDate.HasValue)
+            LocalDate? maximumReleaseDate = null;
+            if (MaximumReleaseDate.HasValue)
             {
-                sortableEstimatedReleaseDate = LocalDate.FromDateTime(SortableEstimatedReleaseDate.Value);
+                maximumReleaseDate = LocalDate.FromDateTime(MaximumReleaseDate.Value);
+            }
+
+            LocalDate? internationalReleaseDate = null;
+            if (InternationalReleaseDate.HasValue)
+            {
+                internationalReleaseDate = LocalDate.FromDateTime(InternationalReleaseDate.Value);
+            }
+
+            LocalDate? earlyAccessReleaseDate = null;
+            if (EarlyAccessReleaseDate.HasValue)
+            {
+                earlyAccessReleaseDate = LocalDate.FromDateTime(EarlyAccessReleaseDate.Value);
             }
 
             Instant? firstCriticScoreTimestamp = null;
@@ -82,8 +98,8 @@ namespace FantasyCritic.MySQL.Entities
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
 
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, sortableEstimatedReleaseDate, releaseDate, OpenCriticID, CriticScore, LocalDate.FromDateTime(MinimumReleaseDate), 
-                eligibilitySettings, Notes, subGames.ToList(), BoxartFileName, firstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, addedTimestamp);
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, internationalReleaseDate, earlyAccessReleaseDate, releaseDate, OpenCriticID, CriticScore,
+                eligibilitySettings, Notes, BoxartFileName, firstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, addedTimestamp);
         }
     }
 }

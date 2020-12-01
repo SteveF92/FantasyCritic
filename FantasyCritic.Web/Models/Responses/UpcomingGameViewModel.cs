@@ -17,7 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             MasterGameID = masterGame.MasterGame.MasterGameID;
             GameName = masterGame.MasterGame.GameName;
             EstimatedReleaseDate = masterGame.MasterGame.EstimatedReleaseDate;
-            SortableEstimatedReleaseDate = masterGame.MasterGame.GetDefiniteSortableEstimatedReleaseDate();
+            SortableEstimatedReleaseDate = masterGame.MasterGame.GetDefiniteMaximumReleaseDate();
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
 
             if (userMode)

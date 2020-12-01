@@ -18,7 +18,10 @@ namespace FantasyCritic.Web.Models.Responses
             Year = masterGame.Year;
             GameName = masterGame.MasterGame.GameName;
             EstimatedReleaseDate = masterGame.MasterGame.EstimatedReleaseDate;
-            SortableEstimatedReleaseDate = masterGame.MasterGame.GetDefiniteSortableEstimatedReleaseDate();
+            MinimumReleaseDate = masterGame.MasterGame.MinimumReleaseDate;
+            MaximumReleaseDate = masterGame.MasterGame.GetDefiniteMaximumReleaseDate();
+            InternationalReleaseDate = masterGame.MasterGame.InternationalReleaseDate;
+            EarlyAccessReleaseDate = masterGame.MasterGame.EarlyAccessReleaseDate;
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
             IsReleased = masterGame.MasterGame.IsReleased(clock.GetCurrentInstant());
             WillRelease = masterGame.WillRelease();
@@ -56,9 +59,10 @@ namespace FantasyCritic.Web.Models.Responses
             Year = masterGame.Year;
             GameName = masterSubGame.GameName;
             EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
-            SortableEstimatedReleaseDate = masterSubGame.SortableEstimatedReleaseDate;
-            ReleaseDate = masterSubGame.ReleaseDate;
-            IsReleased = masterSubGame.IsReleased(clock.GetCurrentInstant());
+            MinimumReleaseDate = masterSubGame.MinimumReleaseDate;
+            MaximumReleaseDate = masterSubGame.GetDefiniteMaximumReleaseDate();
+            ReleaseDate = masterGame.MasterGame.ReleaseDate;
+            IsReleased = masterGame.MasterGame.IsReleased(clock.GetCurrentInstant());
             WillRelease = masterGame.WillRelease();
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
@@ -92,7 +96,10 @@ namespace FantasyCritic.Web.Models.Responses
         public int Year { get; }
         public string GameName { get; }
         public string EstimatedReleaseDate { get; }
-        public LocalDate SortableEstimatedReleaseDate { get; }
+        public LocalDate MinimumReleaseDate { get; }
+        public LocalDate MaximumReleaseDate { get; }
+        public LocalDate? InternationalReleaseDate { get; }
+        public LocalDate? EarlyAccessReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public bool IsReleased { get; }
         public bool WillRelease { get; }

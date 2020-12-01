@@ -198,8 +198,8 @@ namespace FantasyCritic.Web.Controllers.API
                 bidGames.AddRange(dropVMs);
             }
 
-            pickupGames = pickupGames.OrderByDescending(x => x.Error).ThenBy(x => x.SortableEstimatedReleaseDate).ToList();
-            bidGames = bidGames.OrderByDescending(x => x.Error).ThenBy(x => x.SortableEstimatedReleaseDate).ToList();
+            pickupGames = pickupGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
+            bidGames = bidGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
             ActionedGameSet fullSet = new ActionedGameSet(pickupGames, bidGames);
             return Ok(fullSet);
         }

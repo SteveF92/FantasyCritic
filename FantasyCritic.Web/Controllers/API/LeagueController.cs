@@ -1350,8 +1350,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             var orderedByReleaseDate = publisherGames
                 .Distinct()
-                .Where(x => x.MasterGame.Value.MasterGame.GetDefiniteSortableEstimatedReleaseDate() > yesterday)
-                .OrderBy(x => x.MasterGame.Value.MasterGame.GetDefiniteSortableEstimatedReleaseDate())
+                .Where(x => x.MasterGame.Value.MasterGame.GetDefiniteMaximumReleaseDate() > yesterday)
+                .OrderBy(x => x.MasterGame.Value.MasterGame.GetDefiniteMaximumReleaseDate())
                 .GroupBy(x => x.MasterGame.Value)
                 .Take(10);
 
