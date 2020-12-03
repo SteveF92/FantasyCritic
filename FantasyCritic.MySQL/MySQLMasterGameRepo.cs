@@ -184,10 +184,10 @@ namespace FantasyCritic.MySQL
                     "insert into tbl_mastergame" +
                     "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,InternationalReleaseDate,EarlyAccessReleaseDate,ReleaseDate," +
                     "OpenCriticID,CriticScore,EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,UnannouncedGame,Notes,BoxartFileName," +
-                    "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,AddedTimestamp) VALUES " +
+                    "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged) VALUES " +
                     "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@InternationalReleaseDate,@EarlyAccessReleaseDate,@ReleaseDate," +
                     "@OpenCriticID,@CriticScore,@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@UnannouncedGame,@Notes,@BoxartFileName," +
-                    "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@AddedTimestamp);",
+                    "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged);",
                     entity);
             }
         }
