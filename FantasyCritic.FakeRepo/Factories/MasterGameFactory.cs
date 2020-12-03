@@ -31,7 +31,7 @@ namespace FantasyCritic.FakeRepo.Factories
             return games;
         }
 
-        private static MasterGame CreateMasterGame(string guid, string name, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate, LocalDate? internationalReleaseDate, LocalDate? earlyAccessReleaseDate,
+        private static MasterGame CreateMasterGame(string guid, string name, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate, LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate,
             LocalDate? releaseDate, int? openCriticID, decimal? criticScore, int eligibilityLevelID, bool yearlyInstallment, bool earlyAccess, bool freeToPlay, 
             bool releasedInternationally, bool expansionPack, bool unannouncedGame, string boxartFileName, string firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, string addedTimestamp)
         {
@@ -40,7 +40,7 @@ namespace FantasyCritic.FakeRepo.Factories
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, yearlyInstallment, earlyAccess,
                 freeToPlay, releasedInternationally, expansionPack, unannouncedGame);
 
-            var game = new MasterGame(Guid.Parse(guid), name, estimatedReleaseDate, minimumReleaseDate, maximumReleaseDate, internationalReleaseDate, earlyAccessReleaseDate, releaseDate,
+            var game = new MasterGame(Guid.Parse(guid), name, estimatedReleaseDate, minimumReleaseDate, maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, releaseDate,
                 openCriticID, criticScore, eligibilitySettings, "", boxartFileName, InstantPattern.ExtendedIso.Parse(firstCriticScoreTimestamp).GetValueOrThrow(), doNotRefreshDate,
                 doNotRefreshAnything, false, InstantPattern.ExtendedIso.Parse(addedTimestamp).GetValueOrThrow(), new List<MasterSubGame>());
 

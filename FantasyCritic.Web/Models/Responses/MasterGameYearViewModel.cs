@@ -20,8 +20,8 @@ namespace FantasyCritic.Web.Models.Responses
             EstimatedReleaseDate = masterGame.MasterGame.EstimatedReleaseDate;
             MinimumReleaseDate = masterGame.MasterGame.MinimumReleaseDate;
             MaximumReleaseDate = masterGame.MasterGame.GetDefiniteMaximumReleaseDate();
-            InternationalReleaseDate = masterGame.MasterGame.InternationalReleaseDate;
             EarlyAccessReleaseDate = masterGame.MasterGame.EarlyAccessReleaseDate;
+            InternationalReleaseDate = masterGame.MasterGame.InternationalReleaseDate;
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
             IsReleased = masterGame.MasterGame.IsReleased(clock.GetCurrentInstant());
             WillRelease = masterGame.WillRelease();
@@ -98,8 +98,8 @@ namespace FantasyCritic.Web.Models.Responses
         public string EstimatedReleaseDate { get; }
         public LocalDate MinimumReleaseDate { get; }
         public LocalDate MaximumReleaseDate { get; }
-        public LocalDate? InternationalReleaseDate { get; }
         public LocalDate? EarlyAccessReleaseDate { get; }
+        public LocalDate? InternationalReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public bool IsReleased { get; }
         public bool WillRelease { get; }

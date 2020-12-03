@@ -63,8 +63,16 @@
                 <flat-pickr v-model="minimumReleaseDate" class="form-control"></flat-pickr>
               </div>
               <div class="form-group">
-                <label for="maximumReleaseDate" class="control-label">Sortable Estimated Release Date</label>
+                <label for="maximumReleaseDate" class="control-label">Maximum Release Date</label>
                 <flat-pickr v-model="maximumReleaseDate" class="form-control"></flat-pickr>
+              </div>
+              <div class="form-group">
+                <label for="earlyAccessReleaseDate" class="control-label">Early Access Release Date</label>
+                <flat-pickr v-model="earlyAccessReleaseDate" class="form-control"></flat-pickr>
+              </div>
+              <div class="form-group">
+                <label for="internationalReleaseDate" class="control-label">International Release Date</label>
+                <flat-pickr v-model="internationalReleaseDate" class="form-control"></flat-pickr>
               </div>
 
               <div class="form-group">
@@ -139,188 +147,194 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
-import vueSlider from 'vue-slider-component';
-import Popper from 'vue-popperjs';
-import moment from 'moment';
-import 'vue-slider-component/theme/antd.css';
+  import axios from 'axios';
+  import vueSlider from 'vue-slider-component';
+  import Popper from 'vue-popperjs';
+  import moment from 'moment';
+  import 'vue-slider-component/theme/antd.css';
 
-export default {
-  data() {
-    return {
-      createdGame: null,
-      errorInfo: '',
-      requestNote: '',
-      steamID: null,
-      openCriticID: null,
-      gameName: '',
-      estimatedReleaseDate: '',
-      minimumReleaseDate: null,
-      maximumReleaseDate: null,
-      releaseDate: null,
-      eligibilityLevel: 0,
-      yearlyInstallment: false,
-      earlyAccess: false,
-      freeToPlay: false,
-      releasedInternationally: false,
-      expansionPack: false,
-      unannouncedGame: false,
-      notes: '',
-      possibleEligibilityLevels: null
-    };
-  },
-  components: {
-    vueSlider,
-    'popper': Popper,
-  },
-  computed: {
-    minimumPossibleEligibilityLevel() {
-      return 0;
-    },
-    maximumPossibleEligibilityLevel() {
-      if (!this.possibleEligibilityLevels) {
-        return 0;
-      }
-      let maxEligibilityLevel = _.maxBy(this.possibleEligibilityLevels, 'level');
-      return maxEligibilityLevel.level;
-    },
-    selectedEligibilityLevel() {
-      let matchingLevel = _.filter(this.possibleEligibilityLevels, { 'level': this.eligibilityLevel });
-      return matchingLevel[0];
-    },
-    openCriticLink() {
-      return 'https://opencritic.com/game/' + this.openCriticID + '/a';
-    },
-    steamLink() {
-      return 'https://store.steampowered.com/app/' + this.steamID;
-    },
-    marks() {
-      if (!this.possibleEligibilityLevels) {
-        return [];
-      }
-
-      let levels = this.possibleEligibilityLevels.map(function (v) {
-        return v.level;
-      });
-
-      return levels;
-    }
-
-  },
-  methods: {
-    fetchEligibilityLevels() {
-      axios
-        .get('/api/Game/EligibilityLevels')
-        .then(response => {
-          this.possibleEligibilityLevels = response.data;
-        })
-        .catch(returnedError => (this.error = returnedError));
-    },
-    createMasterGame() {
-      let request = {
-        gameName: this.gameName,
-        estimatedReleaseDate: this.estimatedReleaseDate,
-        minimumReleaseDate: this.minimumReleaseDate,
-        maximumReleaseDate: this.maximumReleaseDate,
-        releaseDate: this.releaseDate,
-        openCriticID: this.openCriticID,
-        eligibilityLevel: this.eligibilityLevel,
-        yearlyInstallment: this.yearlyInstallment,
-        earlyAccess: this.earlyAccess,
-        freeToPlay: this.freeToPlay,
-        releasedInternationally: this.releasedInternationally,
-        expansionPack: this.expansionPack,
-        unannouncedGame: this.unannouncedGame,
-        notes: this.notes
+  export default {
+    data() {
+      return {
+        createdGame: null,
+        errorInfo: '',
+        requestNote: '',
+        steamID: null,
+        openCriticID: null,
+        gameName: '',
+        estimatedReleaseDate: '',
+        minimumReleaseDate: null,
+        maximumReleaseDate: null,
+        earlyAccessReleaseDate: null,
+        internationalReleaseDate: null,
+        releaseDate: null,
+        eligibilityLevel: 0,
+        yearlyInstallment: false,
+        earlyAccess: false,
+        freeToPlay: false,
+        releasedInternationally: false,
+        expansionPack: false,
+        unannouncedGame: false,
+        notes: '',
+        possibleEligibilityLevels: null
       };
-      axios
-        .post('/api/admin/CreateMasterGame', request)
-        .then(response => {
-          this.createdGame = response.data;
-          window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-          });
-          this.clearData();
-        })
-        .catch(error => {
-          this.errorInfo = error.response;
+    },
+    components: {
+      vueSlider,
+      'popper': Popper,
+    },
+    computed: {
+      minimumPossibleEligibilityLevel() {
+        return 0;
+      },
+      maximumPossibleEligibilityLevel() {
+        if (!this.possibleEligibilityLevels) {
+          return 0;
+        }
+        let maxEligibilityLevel = _.maxBy(this.possibleEligibilityLevels, 'level');
+        return maxEligibilityLevel.level;
+      },
+      selectedEligibilityLevel() {
+        let matchingLevel = _.filter(this.possibleEligibilityLevels, { 'level': this.eligibilityLevel });
+        return matchingLevel[0];
+      },
+      openCriticLink() {
+        return 'https://opencritic.com/game/' + this.openCriticID + '/a';
+      },
+      steamLink() {
+        return 'https://store.steampowered.com/app/' + this.steamID;
+      },
+      marks() {
+        if (!this.possibleEligibilityLevels) {
+          return [];
+        }
+
+        let levels = this.possibleEligibilityLevels.map(function (v) {
+          return v.level;
         });
+
+        return levels;
+      }
+
     },
-    parseEstimatedReleaseDate() {
-      if (this.estimatedReleaseDate === '' || this.estimatedReleaseDate === 'TBA') {
-        this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
+    methods: {
+      fetchEligibilityLevels() {
+        axios
+          .get('/api/Game/EligibilityLevels')
+          .then(response => {
+            this.possibleEligibilityLevels = response.data;
+          })
+          .catch(returnedError => (this.error = returnedError));
+      },
+      createMasterGame() {
+        let request = {
+          gameName: this.gameName,
+          estimatedReleaseDate: this.estimatedReleaseDate,
+          minimumReleaseDate: this.minimumReleaseDate,
+          maximumReleaseDate: this.maximumReleaseDate,
+          earlyAccessReleaseDate: this.earlyAccessReleaseDate,
+          internationalReleaseDate: this.internationalReleaseDate,
+          releaseDate: this.releaseDate,
+          openCriticID: this.openCriticID,
+          eligibilityLevel: this.eligibilityLevel,
+          yearlyInstallment: this.yearlyInstallment,
+          earlyAccess: this.earlyAccess,
+          freeToPlay: this.freeToPlay,
+          releasedInternationally: this.releasedInternationally,
+          expansionPack: this.expansionPack,
+          unannouncedGame: this.unannouncedGame,
+          notes: this.notes
+        };
+        axios
+          .post('/api/admin/CreateMasterGame', request)
+          .then(response => {
+            this.createdGame = response.data;
+            window.scroll({
+              top: 0,
+              left: 0,
+              behavior: 'smooth'
+            });
+            this.clearData();
+          })
+          .catch(error => {
+            this.errorInfo = error.response;
+          });
+      },
+      parseEstimatedReleaseDate() {
+        if (this.estimatedReleaseDate === '' || this.estimatedReleaseDate === 'TBA') {
+          this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
+          this.maximumReleaseDate = null;
+        }
+        if (this.estimatedReleaseDate === '2020') {
+          this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
+          this.maximumReleaseDate = '2020-12-31';
+        }
+        if (this.estimatedReleaseDate === 'Q3 2020') {
+          this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
+          this.maximumReleaseDate = '2020-09-30';
+        }
+        if (this.estimatedReleaseDate === 'Q4 2020') {
+          this.minimumReleaseDate = '2020-10-01';
+          this.maximumReleaseDate = '2020-12-31';
+        }
+        if (this.estimatedReleaseDate === '2021') {
+          this.minimumReleaseDate = '2021-01-01';
+          this.maximumReleaseDate = '2021-12-31';
+        }
+        if (this.estimatedReleaseDate === 'Q1 2021') {
+          this.minimumReleaseDate = '2021-01-01';
+          this.maximumReleaseDate = '2021-03-31';
+        }
+        if (this.estimatedReleaseDate === 'Q2 2021') {
+          this.minimumReleaseDate = '2021-04-01';
+          this.maximumReleaseDate = '2021-06-30';
+        }
+        if (this.estimatedReleaseDate === 'Early 2021') {
+          this.minimumReleaseDate = '2021-01-01';
+          this.maximumReleaseDate = '2021-06-30';
+        }
+      },
+      populateFieldsFromURL() {
+        if (!this.$route.query.gameName) {
+          return;
+        }
+        this.gameName = this.$route.query.gameName;
+        this.estimatedReleaseDate = this.$route.query.estimatedReleaseDate;
+        if (this.$route.query.releaseDate !== undefined) {
+          this.releaseDate = this.$route.query.releaseDate;
+          this.maximumReleaseDate = this.$route.query.releaseDate;
+        }
+        this.steamID = this.$route.query.steamID;
+        this.openCriticID = this.$route.query.openCriticID;
+        this.eligibilityLevel = this.$route.query.eligibilityLevel;
+        this.yearlyInstallment = this.$route.query.yearlyInstallment;
+        this.earlyAccess = this.$route.query.earlyAccess;
+        this.freeToPlay = this.$route.query.freeToPlay;
+        this.releasedInternationally = this.$route.query.releasedInternationally;
+        this.expansionPack = this.$route.query.expansionPack;
+        this.unannouncedGame = this.$route.query.unannouncedGame;
+        this.requestNote = this.$route.query.requestNote;
+      },
+      propagateDate() {
+        this.maximumReleaseDate = this.releaseDate;
+        this.minimumReleaseDate = this.releaseDate;
+        this.estimatedReleaseDate = this.releaseDate;
+      },
+      clearDates() {
+        this.releaseDate = null;
+        this.minimumReleaseDate = null;
         this.maximumReleaseDate = null;
-      }
-      if (this.estimatedReleaseDate === '2020') {
-        this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-        this.maximumReleaseDate = '2020-12-31';
-      }
-      if (this.estimatedReleaseDate === 'Q3 2020') {
-        this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-        this.maximumReleaseDate = '2020-09-30';
-      }
-      if (this.estimatedReleaseDate === 'Q4 2020') {
-        this.minimumReleaseDate = '2020-10-01';
-        this.maximumReleaseDate = '2020-12-31';
-      }
-      if (this.estimatedReleaseDate === '2021') {
-        this.minimumReleaseDate = '2021-01-01';
-        this.maximumReleaseDate = '2021-12-31';
-      }
-      if (this.estimatedReleaseDate === 'Q1 2021') {
-        this.minimumReleaseDate = '2021-01-01';
-        this.maximumReleaseDate = '2021-03-31';
-      }
-      if (this.estimatedReleaseDate === 'Q2 2021') {
-        this.minimumReleaseDate = '2021-04-01';
-        this.maximumReleaseDate = '2021-06-30';
-      }
-      if (this.estimatedReleaseDate === 'Early 2021') {
-        this.minimumReleaseDate = '2021-01-01';
-        this.maximumReleaseDate = '2021-06-30';
+        this.estimatedReleaseDate = null;
+        this.interationalReleaseDate = null;
+        this.earlyAccessReleaseDate = null;
       }
     },
-    populateFieldsFromURL() {
-      if (!this.$route.query.gameName) {
-        return;
-      }
-      this.gameName = this.$route.query.gameName;
-      this.estimatedReleaseDate = this.$route.query.estimatedReleaseDate;
-      if (this.$route.query.releaseDate !== undefined) {
-        this.releaseDate = this.$route.query.releaseDate;
-        this.maximumReleaseDate = this.$route.query.releaseDate;
-      }
-      this.steamID = this.$route.query.steamID;
-      this.openCriticID = this.$route.query.openCriticID;
-      this.eligibilityLevel = this.$route.query.eligibilityLevel;
-      this.yearlyInstallment = this.$route.query.yearlyInstallment;
-      this.earlyAccess = this.$route.query.earlyAccess;
-      this.freeToPlay = this.$route.query.freeToPlay;
-      this.releasedInternationally = this.$route.query.releasedInternationally;
-      this.expansionPack = this.$route.query.expansionPack;
-      this.unannouncedGame = this.$route.query.unannouncedGame;
-      this.requestNote = this.$route.query.requestNote;
-    },
-    propagateDate() {
-      this.maximumReleaseDate = this.releaseDate;
-      this.minimumReleaseDate = this.releaseDate;
-      this.estimatedReleaseDate = this.releaseDate;
-    },
-    clearDates() {
-      this.releaseDate = null;
-      this.minimumReleaseDate = null;
-      this.maximumReleaseDate = null;
-      this.estimatedReleaseDate = null;
+    mounted() {
+      this.fetchEligibilityLevels();
+      this.parseEstimatedReleaseDate();
+      this.populateFieldsFromURL();
     }
-  },
-  mounted() {
-    this.fetchEligibilityLevels();
-    this.parseEstimatedReleaseDate();
-    this.populateFieldsFromURL();
-  }
-};
+  };
 </script>
 <style scoped>
   .select-cell {

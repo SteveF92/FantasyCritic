@@ -23,8 +23,8 @@ namespace FantasyCritic.MySQL.Entities
             EstimatedReleaseDate = masterGameStats.MasterGame.EstimatedReleaseDate;
             MinimumReleaseDate = masterGameStats.MasterGame.MinimumReleaseDate.ToDateTimeUnspecified();
             MaximumReleaseDate = masterGameStats.MasterGame.MaximumReleaseDate?.ToDateTimeUnspecified();
-            InternationalReleaseDate = masterGameStats.MasterGame.InternationalReleaseDate?.ToDateTimeUnspecified();
             EarlyAccessReleaseDate = masterGameStats.MasterGame.EarlyAccessReleaseDate?.ToDateTimeUnspecified();
+            InternationalReleaseDate = masterGameStats.MasterGame.InternationalReleaseDate?.ToDateTimeUnspecified();
             ReleaseDate = masterGameStats.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGameStats.MasterGame.OpenCriticID;
             CriticScore = masterGameStats.MasterGame.CriticScore;
@@ -61,8 +61,8 @@ namespace FantasyCritic.MySQL.Entities
         public string EstimatedReleaseDate { get; set; }
         public DateTime MinimumReleaseDate { get; set; }
         public DateTime? MaximumReleaseDate { get; set; }
-        public DateTime? InternationalReleaseDate { get; set; }
         public DateTime? EarlyAccessReleaseDate { get; set; }
+        public DateTime? InternationalReleaseDate { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
@@ -105,16 +105,16 @@ namespace FantasyCritic.MySQL.Entities
                 maximumReleaseDate = LocalDate.FromDateTime(MaximumReleaseDate.Value);
             }
 
-            LocalDate? internationalReleaseDate = null;
-            if (InternationalReleaseDate.HasValue)
-            {
-                internationalReleaseDate = LocalDate.FromDateTime(InternationalReleaseDate.Value);
-            }
-
             LocalDate? earlyAccessReleaseDate = null;
             if (EarlyAccessReleaseDate.HasValue)
             {
                 earlyAccessReleaseDate = LocalDate.FromDateTime(EarlyAccessReleaseDate.Value);
+            }
+
+            LocalDate? internationalReleaseDate = null;
+            if (InternationalReleaseDate.HasValue)
+            {
+                internationalReleaseDate = LocalDate.FromDateTime(InternationalReleaseDate.Value);
             }
 
             Instant? firstCriticScoreTimestamp = null;
@@ -126,7 +126,7 @@ namespace FantasyCritic.MySQL.Entities
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
 
-            var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, internationalReleaseDate, earlyAccessReleaseDate,
+            var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate,
                 releaseDate, OpenCriticID, CriticScore, eligibilitySettings, Notes, BoxartFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 

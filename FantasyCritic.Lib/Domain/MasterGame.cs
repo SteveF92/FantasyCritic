@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Domain
         private readonly decimal? _criticScore;
 
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
-            LocalDate? internationalReleaseDate, LocalDate? earlyAccessReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
+            LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate,  LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
             EligibilitySettings eligibilitySettings, string notes, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
             bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames)
         {
@@ -22,8 +22,8 @@ namespace FantasyCritic.Lib.Domain
             EstimatedReleaseDate = estimatedReleaseDate;
             MinimumReleaseDate = minimumReleaseDate;
             MaximumReleaseDate = maximumReleaseDate;
-            InternationalReleaseDate = internationalReleaseDate;
             EarlyAccessReleaseDate = earlyAccessReleaseDate;
+            InternationalReleaseDate = internationalReleaseDate;
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
             _criticScore = criticScore;
@@ -43,8 +43,8 @@ namespace FantasyCritic.Lib.Domain
         public string EstimatedReleaseDate { get; }
         public LocalDate MinimumReleaseDate { get; }
         public LocalDate? MaximumReleaseDate { get; }
-        public LocalDate? InternationalReleaseDate { get; }
         public LocalDate? EarlyAccessReleaseDate { get; }
+        public LocalDate? InternationalReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
 
