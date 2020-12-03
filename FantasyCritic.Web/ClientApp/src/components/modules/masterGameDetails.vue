@@ -3,8 +3,16 @@
     <ul>
       <li>
         <strong>Release Date: </strong>
-        <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
+        <span v-if="masterGame.releaseDate">{{formatDate(masterGame.releaseDate)}}</span>
         <span v-else>{{masterGame.estimatedReleaseDate}} (Estimated)</span>
+      </li>
+      <li v-if="masterGame.earlyAccessReleaseDate">
+        <strong>Early Access Release Date: </strong>
+        <span v-if="masterGame.earlyAccessReleaseDate">{{formatDate(masterGame.earlyAccessReleaseDate)}}</span>
+      </li>
+      <li v-if="masterGame.internationalReleaseDate">
+        <strong>International Release Date: </strong>
+        <span v-if="masterGame.internationalReleaseDate">{{formatDate(masterGame.internationalReleaseDate)}}</span>
       </li>
       <li>
         <label v-if="masterGame.averagedScore">This is an episodic game. We have caluclated an average score.</label>
@@ -39,8 +47,8 @@ import moment from 'moment';
 export default {
   props: ['masterGame'],
   methods: {
-    releaseDate(game) {
-      return moment(game.releaseDate).format('MMMM Do, YYYY');
+    formatDate(releaseDate) {
+      return moment(releaseDate).format('MMMM Do, YYYY');
     },
     openCriticLink(game) {
       return 'https://opencritic.com/game/' + game.openCriticID + '/a';
