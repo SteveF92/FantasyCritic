@@ -360,6 +360,14 @@ namespace FantasyCritic.Lib.Services
                     double hypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGame;
                     double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGameToUse;
 
+                    percentStandardGame = FixDouble(percentStandardGame);
+                    percentCounterPick = FixDouble(percentCounterPick);
+                    eligiblePercentStandardGame = FixDouble(eligiblePercentStandardGame);
+                    eligiblePercentCounterPick = FixDouble(eligiblePercentCounterPick);
+                    bidPercentile = FixDouble(bidPercentile);
+                    hypeFactor = FixDouble(hypeFactor);
+                    dateAdjustedHypeFactor = FixDouble(dateAdjustedHypeFactor);
+
                     if (masterGame.CriticScore.HasValue && gameIsCached)
                     {
                         calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
@@ -384,6 +392,8 @@ namespace FantasyCritic.Lib.Services
                                                         + totalBidCalculation
                                                         + bidPercentileCalculation;
 
+                    linearRegressionHypeFactor = FixDouble(linearRegressionHypeFactor);
+
                     calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame, 
                         eligiblePercentCounterPick, numberOfBids, (int) totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor, 
                         dateAdjustedHypeFactor, linearRegressionHypeFactor));
@@ -391,6 +401,16 @@ namespace FantasyCritic.Lib.Services
 
                 await _masterGameRepo.UpdateCalculatedStats(calculatedStats, supportedYear.Year);
             }
+        }
+
+        private double FixDouble(double num)
+        {
+            if (double.IsNaN(num))
+            {
+                return 0;
+            }
+
+            return num;
         }
     }
 }
