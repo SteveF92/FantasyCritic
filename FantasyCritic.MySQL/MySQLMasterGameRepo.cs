@@ -40,18 +40,26 @@ namespace FantasyCritic.MySQL
                 return _masterGamesCache.Values.ToList();
             }
 
+            var possibleTags = await GetMasterGameTags();
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var masterGameResults = await connection.QueryAsync<MasterGameEntity>("select * from tbl_mastergame;");
                 var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tbl_mastergame_subgame;");
+                var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
+                var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
 
                 var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
                 List<MasterGame> masterGames = new List<MasterGame>();
                 foreach (var entity in masterGameResults)
                 {
                     EligibilityLevel eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel);
-                    MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID),
-                            eligibilityLevel);
+                    var tagAssociations = masterGameTagLookup[entity.MasterGameID].Select(x => x.TagName);
+                    IReadOnlyList<MasterGameTag> tags = possibleTags
+                        .Where(x => tagAssociations.Contains(x.Name))
+                        .ToList();
+
+                    MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), eligibilityLevel, tags);
                     masterGames.Add(domain);
                 }
 
@@ -67,18 +75,26 @@ namespace FantasyCritic.MySQL
                 return _masterGameYearsCache[year].Values.ToList();
             }
 
+            var possibleTags = await GetMasterGameTags();
+
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>($"select * from tbl_caching_mastergameyear where Year = @year;", new { year });
+                var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from tbl_caching_mastergameyear where Year = @year;", new { year });
                 var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tbl_mastergame_subgame;");
+                var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
+                var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
 
                 var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
                 List<MasterGameYear> masterGames = new List<MasterGameYear>();
                 foreach (var entity in masterGameResults)
                 {
                     EligibilityLevel eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel);
-                    MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID),
-                            eligibilityLevel, year);
+                    var tagAssociations = masterGameTagLookup[entity.MasterGameID].Select(x => x.TagName);
+                    IReadOnlyList<MasterGameTag> tags = possibleTags
+                        .Where(x => tagAssociations.Contains(x.Name))
+                        .ToList();
+
+                    MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), eligibilityLevel, year, tags);
                     masterGames.Add(domain);
                 }
 
@@ -529,6 +545,17 @@ namespace FantasyCritic.MySQL
                     await connection.BulkInsertAsync(masterGameYearEntities, "tbl_caching_mastergameyear", 500, transaction, excludeFields);
                     transaction.Commit();
                 }
+            }
+        }
+
+        public async Task<IReadOnlyList<MasterGameTag>> GetMasterGameTags()
+        {
+            var sql = "select * from tbl_mastergame_tag;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<MasterGameTagEntity> entities = await connection.QueryAsync<MasterGameTagEntity>(sql);
+                return entities.Select(x => x.ToDomain()).ToList();
             }
         }
     }

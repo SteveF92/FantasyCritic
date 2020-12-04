@@ -154,12 +154,14 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.DeleteMasterGameChangeRequest(request);
         }
 
-        public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
+        public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime,
+            string responseNote, Maybe<MasterGame> masterGame)
         {
             return _masterGameRepo.CompleteMasterGameRequest(masterGameRequest, responseTime, responseNote, masterGame);
         }
 
-        public  Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote)
+        public Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime,
+            string responseNote)
         {
             return _masterGameRepo.CompleteMasterGameChangeRequest(masterGameRequest, responseTime, responseNote);
         }
@@ -187,6 +189,11 @@ namespace FantasyCritic.Lib.Services
         public Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame)
         {
             return _fantasyCriticRepo.MergeMasterGame(removeMasterGame, mergeIntoMasterGame);
+        }
+
+        public Task<IReadOnlyList<MasterGameTag>> GetMasterGameTags()
+        {
+            return _masterGameRepo.GetMasterGameTags();
         }
     }
 }

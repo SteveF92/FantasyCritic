@@ -41,5 +41,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task LinkToOpenCritic(MasterGame masterGame, int openCriticID);
         Task UpdateReleaseDateEstimates(LocalDate tomorrow);
         Task UpdateCalculatedStats(IEnumerable<MasterGameCalculatedStats> calculatedStats, int year);
+
+        Task<IReadOnlyList<MasterGameTag>> GetMasterGameTags();
     }
 }

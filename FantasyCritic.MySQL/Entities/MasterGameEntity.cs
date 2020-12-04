@@ -63,7 +63,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool EligibilityChanged { get; set; }
         public DateTime AddedTimestamp { get; set; }
 
-        public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel)
+        public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel, IEnumerable<MasterGameTag> tags)
         {
             LocalDate? releaseDate = null;
             if (ReleaseDate.HasValue)
@@ -99,7 +99,7 @@ namespace FantasyCritic.MySQL.Entities
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
 
             return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, releaseDate, OpenCriticID, CriticScore,
-                eligibilitySettings, Notes, BoxartFileName, firstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, addedTimestamp, subGames);
+                eligibilitySettings, Notes, BoxartFileName, firstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, addedTimestamp, subGames, tags);
         }
     }
 }

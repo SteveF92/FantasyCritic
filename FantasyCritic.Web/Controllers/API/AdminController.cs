@@ -55,7 +55,12 @@ namespace FantasyCritic.Web.Controllers.API
             EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(viewModel.EligibilityLevel);
             Instant instant = _clock.GetCurrentInstant();
 
-            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant);
+            var possibleTags = await _interLeagueService.GetMasterGameTags();
+            IReadOnlyList<MasterGameTag> tags = possibleTags
+                .Where(x => viewModel.GetRequestedTags().Contains(x.Name))
+                .ToList();
+
+            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, tags);
             await _interLeagueService.CreateMasterGame(masterGame);
             var vm = new MasterGameViewModel(masterGame, _clock);
 

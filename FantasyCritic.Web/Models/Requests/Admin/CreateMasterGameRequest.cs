@@ -36,13 +36,16 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         public string BoxartFileName { get; set; }
         [Required]
         public string Notes { get; set; }
+        public List<string> Tags { get; set; }
 
-        public Lib.Domain.MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp)
+        public List<string> GetRequestedTags() => Tags ?? new List<string>();
+
+        public Lib.Domain.MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp, IEnumerable<MasterGameTag> tags)
         {
             var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
             Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
                 EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, null, eligibilitySettings, Notes, BoxartFileName,
-                null, false, false, false, timestamp, new List<MasterSubGame>());
+                null, false, false, false, timestamp, new List<MasterSubGame>(), tags);
             return masterGame;
         }
     }

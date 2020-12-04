@@ -15,7 +15,7 @@ namespace FantasyCritic.Lib.Domain
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
             LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate,  LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
             EligibilitySettings eligibilitySettings, string notes, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
-            bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames)
+            bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -36,6 +36,7 @@ namespace FantasyCritic.Lib.Domain
             DoNotRefreshAnything = doNotRefreshAnything;
             EligibilityChanged = eligibilityChanged;
             AddedTimestamp = addedTimestamp;
+            Tags = tags.ToList();
         }
 
         public Guid MasterGameID { get; }
@@ -54,6 +55,7 @@ namespace FantasyCritic.Lib.Domain
         public bool DoNotRefreshAnything { get; }
         public bool EligibilityChanged { get; }
         public Instant AddedTimestamp { get; }
+        public IReadOnlyList<MasterGameTag> Tags { get; }
 
         public LocalDate GetDefiniteMaximumReleaseDate() => MaximumReleaseDate ?? LocalDate.MaxIsoValue;
 

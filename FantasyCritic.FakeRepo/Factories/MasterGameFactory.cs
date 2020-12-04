@@ -42,7 +42,7 @@ namespace FantasyCritic.FakeRepo.Factories
 
             var game = new MasterGame(Guid.Parse(guid), name, estimatedReleaseDate, minimumReleaseDate, maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, releaseDate,
                 openCriticID, criticScore, eligibilitySettings, "", boxartFileName, InstantPattern.ExtendedIso.Parse(firstCriticScoreTimestamp).GetValueOrThrow(), doNotRefreshDate,
-                doNotRefreshAnything, false, InstantPattern.ExtendedIso.Parse(addedTimestamp).GetValueOrThrow(), new List<MasterSubGame>());
+                doNotRefreshAnything, false, InstantPattern.ExtendedIso.Parse(addedTimestamp).GetValueOrThrow(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
 
             return game;

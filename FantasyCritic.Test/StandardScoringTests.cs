@@ -32,7 +32,7 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", 
                 new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, new LocalDate(2018, 7, 13),
                 null, 84.8095m, eligibilitySettings, "", "", fakeClock.GetCurrentInstant(), false, false, false,
-                fakeClock.GetCurrentInstant(), new List<MasterSubGame>());
+                fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
@@ -53,7 +53,7 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, new LocalDate(2018, 7, 13),
                 null, 84.8095m, eligibilitySettings, "", "", fakeClock.GetCurrentInstant(), false, false, false,
-                fakeClock.GetCurrentInstant(), new List<MasterSubGame>());
+                fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
@@ -74,7 +74,7 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
                 null, 94.8125m, eligibilitySettings, "", "", fakeClock.GetCurrentInstant(), false, false, false,
-                fakeClock.GetCurrentInstant(), new List<MasterSubGame>());
+                fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
@@ -95,7 +95,7 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
                 null, 65.8559m, eligibilitySettings, "", "", fakeClock.GetCurrentInstant(), false, false, false,
-                fakeClock.GetCurrentInstant(), new List<MasterSubGame>());
+                fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
@@ -116,7 +116,7 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 10, 20), new LocalDate(2018, 10, 20), null, null, new LocalDate(2018, 10, 20),
                 null, null, eligibilitySettings, "", "", fakeClock.GetCurrentInstant(), false, false, false,
-                fakeClock.GetCurrentInstant(), new List<MasterSubGame>());
+                fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
@@ -137,7 +137,7 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2019, 10, 20), new LocalDate(2019, 10, 20), null, null, new LocalDate(2019, 10, 20),
                 null, null, eligibilitySettings, "", "", fakeClock.GetCurrentInstant(), false, false, false,
-                fakeClock.GetCurrentInstant(), new List<MasterSubGame>());
+                fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
@@ -158,7 +158,7 @@ namespace FantasyCritic.Test
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
                 null, 65.8559m, eligibilitySettings, "", "", fakeClock.GetCurrentInstant(), false, false, false,
-                fakeClock.GetCurrentInstant(), new List<MasterSubGame>());
+                fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null, new MasterGameYear(masterGame, 2018), null, null);
 
