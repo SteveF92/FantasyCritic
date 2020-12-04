@@ -16,6 +16,7 @@ namespace FantasyCritic.Web.Models.Responses
             TagType = domain.TagType.Name;
             Description = domain.Description;
             Examples = domain.Examples;
+            BadgeColor = domain.BadgeColor;
         }
 
         public string Name { get; }
@@ -23,5 +24,6 @@ namespace FantasyCritic.Web.Models.Responses
         public string TagType { get; }
         public string Description { get; }
         public IReadOnlyList<string> Examples { get; }
+        public string BadgeColor { get; }
     }
 }

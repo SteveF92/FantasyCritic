@@ -12,11 +12,12 @@ namespace FantasyCritic.MySQL.Entities
         public bool HasCustomCode { get; set; }
         public string Description { get; set; }
         public string Examples { get; set; }
+        public string BadgeColor { get; set; }
 
         public MasterGameTag ToDomain()
         {
             var examples = JsonConvert.DeserializeObject<List<string>>(Examples);
-            return new MasterGameTag(Name, ReadableName, new MasterGameTagType(TagType), HasCustomCode, Description, examples);
+            return new MasterGameTag(Name, ReadableName, new MasterGameTagType(TagType), HasCustomCode, Description, examples, BadgeColor);
         }
     }
 }

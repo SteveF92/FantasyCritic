@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGameTag
     {
-        public MasterGameTag(string name, string readableName, MasterGameTagType tagType, bool hasCustomCode, string description, IEnumerable<string> examples)
+        public MasterGameTag(string name, string readableName, MasterGameTagType tagType, bool hasCustomCode, string description, IEnumerable<string> examples, string badgeColor)
         {
             Name = name;
             ReadableName = readableName;
@@ -16,6 +16,7 @@ namespace FantasyCritic.Lib.Domain
             HasCustomCode = hasCustomCode;
             Description = description;
             Examples = examples.ToList();
+            BadgeColor = badgeColor;
         }
 
         public string Name { get; }
@@ -24,5 +25,6 @@ namespace FantasyCritic.Lib.Domain
         public bool HasCustomCode { get; }
         public string Description { get; }
         public IReadOnlyList<string> Examples { get; }
+        public string BadgeColor { get; }
     }
 }
