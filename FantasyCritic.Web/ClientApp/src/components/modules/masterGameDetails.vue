@@ -34,10 +34,12 @@
       <li>Expansion Pack: {{ masterGame.eligibilitySettings.expansionPack | yesNo }}</li>
       <li>Unannounced: {{ masterGame.eligibilitySettings.unannouncedGame | yesNo }}</li>
     </ul>
-    <h4>Tags</h4>
-    <ul v-show="masterGame.tags && masterGame.tags.length > 0">
-      <li v-for="tag in masterGame.tags">{{tag.readableName}}</li>
-    </ul>
+    <div v-if="masterGame.tags && masterGame.tags.length > 0">
+      <h4>Tags</h4>
+      <span v-for="(tag, index) in masterGame.tags">
+        <masterGameTagBadge v-model="masterGame.tags[index]"></masterGameTagBadge>
+      </span>
+    </div>
     <div v-show="masterGame.notes">
       <h3>Special Notes</h3>
       {{masterGame.notes}}
@@ -47,9 +49,13 @@
 
 <script>
 import moment from 'moment';
+import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
 export default {
   props: ['masterGame'],
+  components: {
+    MasterGameTagBadge
+  },
   methods: {
     formatDate(releaseDate) {
       return moment(releaseDate).format('MMMM Do, YYYY');
