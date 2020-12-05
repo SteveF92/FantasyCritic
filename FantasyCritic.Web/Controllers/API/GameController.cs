@@ -269,5 +269,12 @@ namespace FantasyCritic.Web.Controllers.API
             var years = supportedYears.Where(x => x.Year > 2017).OrderByDescending(x => x);
             return years.ToList();
         }
+
+        public async Task<ActionResult<List<MasterGameTagViewModel>>> GetMasterGameTags()
+        {
+            var domains = await _interLeagueService.GetMasterGameTags();
+            var vms = domains.Select(x => new MasterGameTagViewModel(x)).ToList();
+            return vms;
+        }
     }
 }
