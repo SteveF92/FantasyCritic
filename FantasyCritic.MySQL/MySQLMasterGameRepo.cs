@@ -193,18 +193,25 @@ namespace FantasyCritic.MySQL
 
         public async Task CreateMasterGame(MasterGame masterGame)
         {
+            string masterGameCreateSQL = "insert into tbl_mastergame" +
+                                         "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,ReleaseDate," +
+                                         "OpenCriticID,CriticScore,EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,UnannouncedGame,Notes,BoxartFileName," +
+                                         "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged) VALUES " +
+                                         "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@ReleaseDate," +
+                                         "@OpenCriticID,@CriticScore,@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@UnannouncedGame,@Notes,@BoxartFileName," +
+                                         "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged);";
             var entity = new MasterGameEntity(masterGame);
+            var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
+            var excludeFields = new List<string>() { "TimeAdded" };
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(
-                    "insert into tbl_mastergame" +
-                    "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,ReleaseDate," +
-                    "OpenCriticID,CriticScore,EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,UnannouncedGame,Notes,BoxartFileName," +
-                    "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged) VALUES " +
-                    "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@ReleaseDate," +
-                    "@OpenCriticID,@CriticScore,@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@UnannouncedGame,@Notes,@BoxartFileName," +
-                    "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged);",
-                    entity);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(masterGameCreateSQL, entity);
+                    await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
+                    transaction.Commit();
+                }
             }
         }
 
