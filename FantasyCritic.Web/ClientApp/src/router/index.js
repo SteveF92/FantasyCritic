@@ -14,10 +14,28 @@ let router = new VueRouter({
   routes
 });
 
-router.beforeEach(function (toRoute, fromRoute, next) {
+router.beforeEach(async function (toRoute, fromRoute, next) {
   if (toRoute.meta.title) {
     document.title = toRoute.meta.title + ' - Fantasy Critic';
   }
+
+  var getPrereqs = function () {
+    var prereqs = [];
+    prereqs.push(new Promise(function (resolve, reject) {
+      if (!store.getters.allTags) {
+        store.dispatch("getAllTags")
+          .then(() => {
+            resolve();
+          });
+      } else {
+        resolve();
+      }
+    }));
+
+    return prereqs;
+  }
+
+  await Promise.all(getPrereqs());
 
   //Attempt to get local token if we don't have it in memory
   if (!store.getters.tokenIsCurrent()) {
