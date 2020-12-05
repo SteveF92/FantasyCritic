@@ -14,7 +14,7 @@ let router = new VueRouter({
   routes
 });
 
-router.beforeEach(async function (toRoute, fromRoute, next) {
+router.beforeEach(function (toRoute, fromRoute, next) {
   if (toRoute.meta.title) {
     document.title = toRoute.meta.title + ' - Fantasy Critic';
   }
@@ -35,7 +35,7 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     return prereqs;
   }
 
-  await Promise.all(getPrereqs());
+  Promise.all(getPrereqs());
 
   //Attempt to get local token if we don't have it in memory
   if (!store.getters.tokenIsCurrent()) {
