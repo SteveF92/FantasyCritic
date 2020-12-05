@@ -1,13 +1,13 @@
 export default {
   state: {
-    advancedProjections: false
+    advancedProjectionsInternal: false
   },
   getters: {
-    advancedProjections: (state) => state.advancedProjections
+    advancedProjections: (state) => state.advancedProjectionsInternal
   },
   mutations: {
     setAdvancedProjections(state, advancedProjections) {
-      state.advancedProjections = advancedProjections;
+      state.advancedProjectionsInternal = advancedProjections;
     }
   }
 };
