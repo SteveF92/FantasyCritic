@@ -22,6 +22,7 @@
               <th scope="col"></th>
               <th scope="col"></th>
               <th scope="col"></th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
@@ -34,6 +35,9 @@
               </td>
               <td class="select-cell">
                 <b-button variant="info" size="sm" v-on:click="createResponse(request)">Respond</b-button>
+              </td>
+              <td class="select-cell">
+                <b-button variant="info" size="sm" v-on:click="editGame(request)">Edit Game</b-button>
               </td>
               <td class="select-cell">
                 <b-button variant="info" size="sm" v-on:click="generateSQL(request)">Generate SQL</b-button>
@@ -111,6 +115,15 @@ export default {
         .catch(response => {
 
         });
+    },
+    editGame(request) {
+      let query = {
+        changeRequestID: request.requestID
+      };
+      let params = {
+        mastergameid: request.masterGame.masterGameID
+      };
+      this.$router.push({ name: 'masterGameEditor', params: params, query: query });
     },
     createResponse(request) {
       this.requestSelected = request;

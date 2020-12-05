@@ -50,6 +50,9 @@
             <div>
               <router-link class="text-primary" :to="{ name: 'masterGameChangeRequest', query: { mastergameid: masterGame.masterGameID }}"><strong>Suggest a correction</strong></router-link>
             </div>
+            <div v-if="isAdmin">
+              <router-link class="text-primary" :to="{ name: 'masterGameEditor', params: { mastergameid: masterGame.masterGameID }}"><strong>Edit Master Game</strong></router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -75,6 +78,9 @@ export default {
         return 'https://s3.amazonaws.com/fantasy-critic-box-art/' + this.masterGame.boxartFileName;
       }
       return null;
+    },
+    isAdmin() {
+      return this.$store.getters.isAdmin;
     }
   },
   methods: {

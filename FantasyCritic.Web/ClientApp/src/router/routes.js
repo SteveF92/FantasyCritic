@@ -29,6 +29,7 @@ import CurrentActionedGames from '@/components/pages/currentActionedGames';
 import CriticsRoyale from '@/components/pages/criticsRoyale';
 import RoyalePublisher from '@/components/pages/royalePublisher';
 import NotFound from '@/components/pages/notFound';
+import MasterGameEditor from '@/components/pages/masterGameEditor';
 
 export const routes = [
   { path: '/404', component: NotFound },
@@ -252,6 +253,19 @@ export const routes = [
     meta: {
       title: 'Master Game',
       isPublic: true
+    },
+    props: (route) => ({
+      mastergameid: route.params.mastergameid
+    })
+  },
+  ,
+  {
+    path: '/mastergameeditor/:mastergameid',
+    component: MasterGameEditor,
+    name: 'masterGameEditor',
+    meta: {
+      title: 'Master Game Editor',
+      isPublic: false
     },
     props: (route) => ({
       mastergameid: route.params.mastergameid
