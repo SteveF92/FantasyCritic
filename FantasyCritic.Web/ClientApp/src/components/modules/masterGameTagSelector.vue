@@ -1,8 +1,9 @@
 <template>
   <div>
-    <multiselect v-model="value" tag-placeholder="Add this as new tag"
+    <multiselect v-model="internalValue" tag-placeholder="Add this as new tag"
                  placeholder="Search or add a tag" label="readableName"
-                 track-by="name" :options="tagOptions" :multiple="true">
+                 track-by="name" :options="tagOptions" :multiple="true"
+                 @input="handleInput">
       <template slot="tag" slot-scope="{ option }">
           <masterGameTagBadge :tag="option"></masterGameTagBadge>
       </template>             
@@ -22,7 +23,7 @@ export default {
   },
   data() {
     return {
-      value: [
+      internalValue: [
       ]
     }
   },
@@ -32,8 +33,8 @@ export default {
     },
   },
   methods: {
-    updateValue: function (value) {
-      this.$emit('input', value)
+    handleInput (e) {
+      this.$emit('input', this.internalValue);
     }
   },
 }

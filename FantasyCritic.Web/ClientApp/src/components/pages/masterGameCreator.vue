@@ -130,7 +130,7 @@
               </div>
 
               <h3>Tags</h3>
-              <masterGameTagSelector></masterGameTagSelector>
+              <masterGameTagSelector v-model="tags"></masterGameTagSelector>
 
               <div class="form-group">
                 <label for="notes" class="control-label">Other Notes</label>
@@ -180,7 +180,8 @@
         expansionPack: false,
         unannouncedGame: false,
         notes: '',
-        possibleEligibilityLevels: null
+        possibleEligibilityLevels: null,
+        tags: null
       };
     },
     components: {
@@ -232,6 +233,8 @@
           .catch(returnedError => (this.error = returnedError));
       },
       createMasterGame() {
+        let tagNames = _.map(this.tags, 'name');
+
         let request = {
           gameName: this.gameName,
           estimatedReleaseDate: this.estimatedReleaseDate,
@@ -248,6 +251,7 @@
           releasedInternationally: this.releasedInternationally,
           expansionPack: this.expansionPack,
           unannouncedGame: this.unannouncedGame,
+          tags: tagNames,
           notes: this.notes
         };
         axios
