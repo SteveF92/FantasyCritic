@@ -19,6 +19,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame);
 
         Task CreateMasterGame(MasterGame masterGame);
+        Task EditMasterGame(MasterGame masterGame);
         Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels();
         Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel);
 

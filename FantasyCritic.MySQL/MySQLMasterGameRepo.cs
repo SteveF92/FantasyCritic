@@ -208,7 +208,52 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync(masterGameCreateSQL, entity);
+                    await connection.ExecuteAsync(masterGameCreateSQL, entity, transaction);
+                    await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
+                    transaction.Commit();
+                }
+            }
+        }
+
+        public async Task EditMasterGame(MasterGame masterGame)
+        {
+            string editSQL = "UPDATE tbl_mastergame SET " +
+                             "GameName = @GameName, " +
+                             "EstimatedReleaseDate = @EstimatedReleaseDate, " +
+                             "MinimumReleaseDate = @MinimumReleaseDate, " +
+                             "MaximumReleaseDate = @MaximumReleaseDate, " +
+                             "EarlyAccessReleaseDate = @EarlyAccessReleaseDate, " +
+                             "InternationalReleaseDate = @InternationalReleaseDate, " +
+                             "ReleaseDate = @ReleaseDate, " +
+                             "OpenCriticID = @OpenCriticID, " +
+                             "CriticScore = @CriticScore, " +
+                             "EligibilityLevel = @EligibilityLevel, " +
+                             "YearlyInstallment = @YearlyInstallment, " +
+                             "EarlyAccess = @EarlyAccess, " +
+                             "FreeToPlay = @FreeToPlay, " +
+                             "ReleasedInternationally = @ReleasedInternationally, " +
+                             "ExpansionPack = @ExpansionPack, " +
+                             "UnannouncedGame = @UnannouncedGame, " +
+                             "Notes = @Notes, " +
+                             "BoxartFileName = @BoxartFileName, " +
+                             "FirstCriticScoreTimestamp = @FirstCriticScoreTimestamp, " +
+                             "DoNotRefreshDate = @DoNotRefreshDate, " +
+                             "DoNotRefreshAnything = @DoNotRefreshAnything, " +
+                             "EligibilityChanged = @EligibilityChanged " +
+                             "WHERE MasterGameID = @MasterGameID;";
+
+            string deleteTagsSQL = "delete from tbl_mastergame_hastag where MasterGameID = @MasterGameID;";
+
+            var entity = new MasterGameEntity(masterGame);
+            var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
+            var excludeFields = new List<string>() { "TimeAdded" };
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(editSQL, entity, transaction);
+                    await connection.ExecuteAsync(deleteTagsSQL, new {masterGame.MasterGameID}, transaction);
                     await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
                     transaction.Commit();
                 }

@@ -43,6 +43,11 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.CreateMasterGame(masterGame);
         }
 
+        public Task EditMasterGame(MasterGame masterGame)
+        {
+            return _masterGameRepo.EditMasterGame(masterGame);
+        }
+
         public Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
             return _fantasyCriticRepo.GetSupportedYears();

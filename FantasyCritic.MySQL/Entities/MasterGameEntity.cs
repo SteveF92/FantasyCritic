@@ -36,6 +36,11 @@ namespace FantasyCritic.MySQL.Entities
             UnannouncedGame = masterGame.EligibilitySettings.UnannouncedGame;
             Notes = masterGame.Notes;
             BoxartFileName = masterGame.BoxartFileName;
+
+            FirstCriticScoreTimestamp = masterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
+            DoNotRefreshDate = masterGame.DoNotRefreshDate;
+            DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
+            EligibilityChanged = masterGame.EligibilityChanged;
         }
 
         public Guid MasterGameID { get; set; }

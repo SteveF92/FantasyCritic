@@ -69,6 +69,25 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> EditMasterGame([FromBody] EditMasterGameRequest viewModel)
+        {
+            EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(viewModel.EligibilityLevel);
+            Instant instant = _clock.GetCurrentInstant();
+
+            var possibleTags = await _interLeagueService.GetMasterGameTags();
+            IReadOnlyList<MasterGameTag> tags = possibleTags
+                .Where(x => viewModel.GetRequestedTags().Contains(x.Name))
+                .ToList();
+
+            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, tags);
+            await _interLeagueService.EditMasterGame(masterGame);
+            var vm = new MasterGameViewModel(masterGame, _clock);
+
+            _logger.LogInformation($"Edited master game: {masterGame.MasterGameID}");
+            return CreatedAtAction("MasterGame", "Game", new { id = masterGame.MasterGameID }, vm);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CompleteMasterGameRequest([FromBody] CompleteMasterGameRequestRequest request)
         {
             Maybe<MasterGameRequest> maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);

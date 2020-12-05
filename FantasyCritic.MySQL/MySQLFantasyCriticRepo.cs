@@ -1280,7 +1280,8 @@ namespace FantasyCritic.MySQL
                 "UPDATE tbl_mastergame_subgame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
                 "UPDATE tbl_royale_publishergame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;";
 
-            string removeSQL = "DELETE FROM tbl_mastergame WHERE MasterGameID = @removeMasterGameID;";
+            string removeGameSQL = "DELETE FROM tbl_mastergame WHERE MasterGameID = @removeMasterGameID;";
+            string removeTagsSQL = "DELETE FROM tbl_mastergame_hastag WHERE MasterGameID = @removeMasterGameID;";
 
             var requestObject = new
             {
@@ -1294,7 +1295,8 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync(mergeSQL, requestObject, transaction);
-                    await connection.ExecuteAsync(removeSQL, requestObject, transaction);
+                    await connection.ExecuteAsync(removeTagsSQL, requestObject, transaction);
+                    await connection.ExecuteAsync(removeGameSQL, requestObject, transaction);
                     await transaction.CommitAsync();
                 }
             }

@@ -59,6 +59,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task EditMasterGame(MasterGame masterGame)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task CreateMasterGameRequest(MasterGameRequest domainRequest)
         {
             throw new NotImplementedException();
