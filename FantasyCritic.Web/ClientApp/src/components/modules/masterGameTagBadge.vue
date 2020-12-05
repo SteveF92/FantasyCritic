@@ -20,8 +20,13 @@
 <script>
 
 export default {
-  props: ['tag'],
+  props: ['tagName'],
   computed: {
+    tag() {
+        let allTags = this.$store.getters.allTags;
+        let singleTag = _.filter(allTags, { 'name': this.tagName });
+        return singleTag[0];
+    },
     badgeColor() {
       let fontColor = 'white';
 

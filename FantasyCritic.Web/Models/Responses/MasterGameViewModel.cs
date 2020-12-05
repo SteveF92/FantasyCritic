@@ -29,7 +29,7 @@ namespace FantasyCritic.Web.Models.Responses
             Notes = masterGame.Notes;
             OpenCriticID = masterGame.OpenCriticID;
             SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, masterGame.EligibilitySettings, clock)).ToList();
-            Tags = masterGame.Tags.Select(x => new MasterGameTagViewModel(x)).ToList();
+            Tags = masterGame.Tags.Select(x => x.Name).ToList();
             BoxartFileName = masterGame.BoxartFileName;
             AddedTimestamp = masterGame.AddedTimestamp;
         }
@@ -70,7 +70,7 @@ namespace FantasyCritic.Web.Models.Responses
         public EligibilitySettingsViewModel EligibilitySettings { get; }
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameViewModel> SubGames { get; }
-        public IReadOnlyList<MasterGameTagViewModel> Tags { get; }
+        public IReadOnlyList<string> Tags { get; }
         public string Notes { get; }
         public string BoxartFileName { get; }
         public Instant AddedTimestamp { get; }

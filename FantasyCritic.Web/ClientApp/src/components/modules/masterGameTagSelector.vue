@@ -5,7 +5,7 @@
                  track-by="name" :options="tagOptions" :multiple="true"
                  @input="handleInput">
       <template slot="tag" slot-scope="{ option }">
-          <masterGameTagBadge :tag="option"></masterGameTagBadge>
+          <masterGameTagBadge :tagName="option.name"></masterGameTagBadge>
       </template>             
     </multiselect>
   </div>

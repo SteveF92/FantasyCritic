@@ -37,7 +37,7 @@
     <div v-if="masterGame.tags && masterGame.tags.length > 0">
       <h4>Tags</h4>
       <span v-for="(tag, index) in masterGame.tags">
-        <masterGameTagBadge :tag="masterGame.tags[index]"></masterGameTagBadge>
+        <masterGameTagBadge :tagName="masterGame.tags[index]"></masterGameTagBadge>
       </span>
     </div>
     <div v-show="masterGame.notes">

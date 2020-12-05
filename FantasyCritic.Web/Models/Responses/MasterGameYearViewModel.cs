@@ -30,7 +30,7 @@ namespace FantasyCritic.Web.Models.Responses
             EligibilitySettings = new EligibilitySettingsViewModel(masterGame.MasterGame.EligibilitySettings, false);
             OpenCriticID = masterGame.MasterGame.OpenCriticID;
             SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, clock)).ToList();
-            Tags = masterGame.MasterGame.Tags.Select(x => new MasterGameTagViewModel(x)).ToList();
+            Tags = masterGame.MasterGame.Tags.Select(x => x.Name).ToList();
             BoxartFileName = masterGame.MasterGame.BoxartFileName;
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
@@ -109,7 +109,7 @@ namespace FantasyCritic.Web.Models.Responses
         public EligibilitySettingsViewModel EligibilitySettings { get; }
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameYearViewModel> SubGames { get; }
-        public IReadOnlyList<MasterGameTagViewModel> Tags { get; }
+        public IReadOnlyList<string> Tags { get; }
         public string BoxartFileName { get; }
         public Instant AddedTimestamp { get; }
 
