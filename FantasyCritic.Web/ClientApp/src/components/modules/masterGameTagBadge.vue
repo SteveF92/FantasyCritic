@@ -1,9 +1,9 @@
 <template>
   <span>
-    <span class="badge badge-pill tag-badge" :id="'popover-target' + tag.name" v-bind:style="badgeColor">
+    <span class="badge badge-pill tag-badge" :id="'popover-target' + _uid" v-bind:style="badgeColor">
       {{tag.readableName}}
     </span>
-    <b-popover :target="'popover-target' + tag.name" triggers="hover" placement="top">
+    <b-popover :target="'popover-target' + _uid" triggers="hover" placement="top">
       <template #title class="popover-title">
         {{tag.readableName}}
       </template>
@@ -54,7 +54,7 @@ export default {
     color: black;
   }
   .tag-badge{
-    font-size: 15px;
+    font-size: 13px;
     margin: 3px;
   }
 </style>

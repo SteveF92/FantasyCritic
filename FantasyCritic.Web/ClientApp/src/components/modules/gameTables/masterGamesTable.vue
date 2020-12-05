@@ -37,8 +37,10 @@
     <template v-slot:cell(addedTimestamp)="data">
       {{data.item.addedTimestamp | date}}
     </template>
-    <template v-slot:cell(eligibilityLevel)="data">
-      <eligibilityBadge :eligibilityLevel="data.item.eligibilitySettings.eligibilityLevel" :maximumEligibilityLevel="maximumEligibilityLevel"></eligibilityBadge>
+    <template v-slot:cell(tags)="data">
+      <span v-for="(tag, index) in data.item.tags">
+        <masterGameTagBadge :tagName="data.item.tags[index]"></masterGameTagBadge>
+      </span>
     </template>
   </b-table>
 </template>
@@ -49,6 +51,7 @@ import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import EligibilityBadge from '@/components/modules/eligibilityBadge';
 import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
+import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
 export default {
   props: ['masterGames'],
@@ -62,7 +65,7 @@ export default {
         { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary' },
         { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
         { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' }
       ],
       sortBy: 'dateAdjustedHypeFactor',
@@ -72,7 +75,8 @@ export default {
   components: {
     MasterGamePopover,
     EligibilityBadge,
-    MasterGamesTable
+    MasterGamesTable,
+    MasterGameTagBadge
   },
   computed: {
     maximumEligibilityLevel() {
