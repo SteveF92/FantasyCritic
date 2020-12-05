@@ -37,7 +37,12 @@
                 <b-button variant="info" size="sm" v-on:click="createResponse(request)">Respond</b-button>
               </td>
               <td class="select-cell">
-                <b-button variant="info" size="sm" v-on:click="editGame(request)">Edit Game</b-button>
+                <b-button variant="info"
+                          :to="{ name: 'masterGameEditor',
+                          params: { mastergameid: request.masterGame.masterGameID },
+                          query: { changeRequestID: request.requestID }}">
+                Edit Game
+                </b-button>
               </td>
               <td class="select-cell">
                 <b-button variant="info" size="sm" v-on:click="generateSQL(request)">Generate SQL</b-button>

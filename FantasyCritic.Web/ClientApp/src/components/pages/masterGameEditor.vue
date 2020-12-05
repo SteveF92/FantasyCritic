@@ -6,9 +6,17 @@
         <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master change game requests</b-button>
         <b-button variant="info" :to="{ name: 'adminConsole' }">Admin Console</b-button>
       </div>
-      <h2>{{masterGame.gameName}}</h2>
-      <h3>{{masterGame.masterGameID}}</h3>
       <hr />
+      <div v-if="masterGame">
+        <h2>{{masterGame.gameName}}</h2>
+        <div class="row" v-if="changeRequest">
+          <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
+            <h2>Request Note</h2>
+            <p>{{changeRequest.requestNote}}</p>
+          </div>
+          <hr />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -24,7 +32,8 @@
     props: ['mastergameid'],
     data() {
       return {
-        masterGame: null
+        masterGame: null,
+        changeRequest: null
       };
     },
     components: {
@@ -40,10 +49,23 @@
             this.masterGame = response.data;
           })
           .catch(returnedError => (this.error = returnedError));
+      },
+      fetchChangeRequest() {
+        let changeRequestID = this.$route.query.changeRequestID;
+        if (!changeRequestID) {
+          return;
+        }
+        axios
+          .get('/api/admin/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID)
+          .then(response => {
+            this.changeRequest = response.data;
+          })
+          .catch(returnedError => (this.error = returnedError));
       }
     },
     mounted() {
       this.fetchMasterGame();
+      this.fetchChangeRequest();
     },
     watch: {
       '$route'(to, from) {

@@ -153,6 +153,15 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
+        public async Task<ActionResult<MasterGameChangeRequestViewModel>> GetMasterGameChangeRequest(Guid changeRequestID)
+        {
+            IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetAllMasterGameChangeRequests();
+
+            var request = requests.SingleOrDefault(x => x.RequestID == changeRequestID);
+            var vm = new MasterGameChangeRequestViewModel(request, _clock);
+            return vm;
+        }
+
         [HttpPost]
         public async Task<IActionResult> FullDataRefresh()
         {
