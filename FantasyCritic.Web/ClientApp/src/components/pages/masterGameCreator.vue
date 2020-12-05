@@ -129,6 +129,9 @@
                 </b-form-checkbox>
               </div>
 
+              <h3>Tags</h3>
+              <masterGameTagSelector></masterGameTagSelector>
+
               <div class="form-group">
                 <label for="notes" class="control-label">Other Notes</label>
                 <input v-model="notes" id="notes" name="notes" class="form-control input" />
@@ -152,6 +155,7 @@
   import Popper from 'vue-popperjs';
   import moment from 'moment';
   import 'vue-slider-component/theme/antd.css';
+  import MasterGameTagSelector from '@/components/modules/masterGameTagSelector';
 
   export default {
     data() {
@@ -182,6 +186,7 @@
     components: {
       vueSlider,
       'popper': Popper,
+      MasterGameTagSelector
     },
     computed: {
       minimumPossibleEligibilityLevel() {

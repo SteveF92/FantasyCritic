@@ -1,17 +1,17 @@
 <template>
   <span>
-    <span class="badge badge-pill" :id="'popover-target' + value.name" v-bind:style="badgeColor">
-      {{value.readableName}}
+    <span class="badge badge-pill tag-badge" :id="'popover-target' + tag.name" v-bind:style="badgeColor">
+      {{tag.readableName}}
     </span>
-    <b-popover :target="'popover-target' + value.name" triggers="hover" placement="top">
+    <b-popover :target="'popover-target' + tag.name" triggers="hover" placement="top">
       <template #title class="popover-title">
-        {{value.readableName}}
+        {{tag.readableName}}
       </template>
-      {{value.description}}
-      <div v-if="value.examples && value.examples.length > 0">
+      {{tag.description}}
+      <div v-if="tag.examples && tag.examples.length > 0">
         <h6>Examples</h6>
         <ul>
-          <li v-for="example in value.examples">{{example}}</li>
+          <li v-for="example in tag.examples">{{example}}</li>
         </ul>
       </div>
     </b-popover>
@@ -20,17 +20,26 @@
 <script>
 
 export default {
-  props: ['value'],
-  methods: {
-    updateValue: function (value) {
-      this.$emit('input', value)
-    }
-  },
+  props: ['tag'],
   computed: {
     badgeColor() {
+      let fontColor = 'white';
+
+      var rgb = parseInt(this.tag.badgeColor, 16);   // convert rrggbb to decimal
+      var r = (rgb >> 16) & 0xff;  // extract red
+      var g = (rgb >>  8) & 0xff;  // extract green
+      var b = (rgb >>  0) & 0xff;  // extract blue
+
+      var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
+
+      if (luma > 200) {
+          fontColor = 'black';
+      }
+
       return {
-        backgroundColor: '#' + this.value.badgeColor
-      };
+        backgroundColor: '#' + this.tag.badgeColor,
+        color: fontColor
+      }
     }
   }
 };
@@ -38,5 +47,9 @@ export default {
 <style>
   .popover-header{
     color: black;
+  }
+  .tag-badge{
+    font-size: 15px;
+    margin: 3px;
   }
 </style>
