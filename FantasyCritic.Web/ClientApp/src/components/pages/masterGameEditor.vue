@@ -5,13 +5,26 @@
         <h1>Edit Master Game</h1>
         <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master change game requests</b-button>
         <b-button variant="info" :to="{ name: 'adminConsole' }">Admin Console</b-button>
+        <b-button variant="info" size="sm" v-on:click="generateSQL(masterGame)">Generate SQL</b-button>
       </div>
       <hr />
       <div v-if="responseInfo" class="alert alert-success">
         Master Game edited successfully!
       </div>
+      <div v-if="generatedSQL">
+        <h3>Generated SQL</h3>
+        <div class="row">
+          <div class="col-xl-8 col-lg-10 col-md-12 text-well">
+            <div class="form-group">
+              <label for="generated SQL" class="control-label">GeneratedSQL</label>
+              <input v-model="generatedSQL" id="generatedSQL" name="generatedSQL" class="form-control input" />
+            </div>
+          </div>
+        </div>
+      </div>
       <div v-if="masterGame">
         <h2>{{masterGame.gameName}}</h2>
+        <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}"><strong>View full details</strong></router-link>
         <div class="row" v-if="changeRequest">
           <div class="text-well">
             <h2>Request Note</h2>
@@ -86,32 +99,32 @@
                 </div>
 
                 <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.yearlyInstallment">
+                  <b-form-checkbox v-model="masterGame.eligibilitySettings.yearlyInstallment">
                     <span class="checkbox-label">Yearly installment?</span>
                   </b-form-checkbox>
                 </div>
                 <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.earlyAccess">
+                  <b-form-checkbox v-model="masterGame.eligibilitySettings.earlyAccess">
                     <span class="checkbox-label">Early access?</span>
                   </b-form-checkbox>
                 </div>
                 <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.freeToPlay">
+                  <b-form-checkbox v-model="masterGame.eligibilitySettings.freeToPlay">
                     <span class="checkbox-label">Free to Play?</span>
                   </b-form-checkbox>
                 </div>
                 <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.releasedInternationally">
+                  <b-form-checkbox v-model="masterGame.eligibilitySettings.releasedInternationally">
                     <span class="checkbox-label">Released Internationally?</span>
                   </b-form-checkbox>
                 </div>
                 <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.expansionPack">
+                  <b-form-checkbox v-model="masterGame.eligibilitySettings.expansionPack">
                     <span class="checkbox-label">Expansion Pack?</span>
                   </b-form-checkbox>
                 </div>
                 <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.unannouncedGame">
+                  <b-form-checkbox v-model="masterGame.eligibilitySettings.unannouncedGame">
                     <span class="checkbox-label">Unannounced?</span>
                   </b-form-checkbox>
                 </div>
@@ -122,6 +135,27 @@
                 <div class="form-group">
                   <label for="notes" class="control-label">Other Notes</label>
                   <input v-model="masterGame.notes" id="notes" name="notes" class="form-control input" />
+                </div>
+
+                <h3>Other</h3>
+                <div class="form-group">
+                  <b-form-checkbox v-model="masterGame.doNotRefreshDate">
+                    <span class="checkbox-label">Do Not Refresh Date</span>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
+                  <b-form-checkbox v-model="masterGame.doNotRefreshAnything">
+                    <span class="checkbox-label">Do Not Refresh Anything</span>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
+                  <b-form-checkbox v-model="masterGame.eligibilityChanged">
+                    <span class="checkbox-label">Eligibility Changed</span>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
+                  <label for="notes" class="control-label">Box Art File Name</label>
+                  <input v-model="masterGame.boxartFileName" id="boxartFileName" name="boxartFileName" class="form-control input" />
                 </div>
 
                 <div class="form-group">
@@ -154,7 +188,8 @@
         tags: [],
         possibleEligibilityLevels: null,
         eligibilityLevel: 0,
-        responseInfo: null
+        responseInfo: null,
+        generatedSQL: null
       };
     },
     components: {
@@ -295,6 +330,9 @@
           .catch(error => {
             this.errorInfo = error.response;
           });
+      },
+      generateSQL(request) {
+        this.generatedSQL = 'select * from tbl_mastergame where MasterGameID = \'' + this.masterGame.masterGameID + '\';';
       }
     },
     async mounted() {
