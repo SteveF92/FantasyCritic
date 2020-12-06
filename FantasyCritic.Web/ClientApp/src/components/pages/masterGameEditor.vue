@@ -20,7 +20,7 @@
         <div class="row">
           <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
             <ValidationObserver v-slot="{ invalid }">
-              <form v-on:submit.prevent="createMasterGame">
+              <form v-on:submit.prevent="sendEditMasterGameRequest">
                 <div class="form-group">
                   <label for="gameName" class="control-label">Game Name</label>
                   <ValidationProvider rules="required" v-slot="{ errors }">
@@ -48,7 +48,7 @@
                 </div>
                 <div class="form-group">
                   <label for="maximumReleaseDate" class="control-label">Maximum Release Date</label>
-                  <flat-pickr v-model="maximumReleaseDate" class="form-control"></flat-pickr>
+                  <flat-pickr v-model="masterGame.maximumReleaseDate" class="form-control"></flat-pickr>
                 </div>
                 <div class="form-group">
                   <label for="earlyAccessReleaseDate" class="control-label">Early Access Release Date</label>
@@ -69,7 +69,7 @@
                   <p class="eligibility-explanation">
                     Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
                   </p>
-                  <vue-slider v-model="masterGame.eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
+                  <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
                               :marks="marks" :tooltip="'always'">
                   </vue-slider>
                   <div class="eligibility-description" v-if="selectedEligibilityLevel">
@@ -147,7 +147,10 @@
     data() {
       return {
         masterGame: null,
-        changeRequest: null
+        changeRequest: null,
+        tags: [],
+        possibleEligibilityLevels: null,
+        eligibilityLevel: 0
       };
     },
     components: {
@@ -156,19 +159,6 @@
       MasterGameTagSelector
     },
     computed: {
-      maximumReleaseDate() {
-        if (this.masterGame.maximumReleaseDate === '9999-12-31') {
-          return null;
-        }
-
-        return this.masterGame.maximumReleaseDate;
-      },
-      tags() {
-        let allTags = this.$store.getters.allTags;
-        let masterGameTagNames = this.masterGame.tags;
-        let matchingTags = _.filter(allTags, x => masterGameTagNames.includes(x.name));
-        return matchingTags;
-      },
       minimumPossibleEligibilityLevel() {
         return 0;
       },
@@ -196,28 +186,32 @@
       }
     },
     methods: {
-      fetchEligibilityLevels() {
-        axios
+      async fetchEligibilityLevels() {
+        await axios
           .get('/api/Game/EligibilityLevels')
           .then(response => {
             this.possibleEligibilityLevels = response.data;
           })
           .catch(returnedError => (this.error = returnedError));
       },
-      fetchMasterGame() {
-        axios
+      async fetchMasterGame() {
+        await axios
           .get('/api/game/MasterGame/' + this.mastergameid)
           .then(response => {
             this.masterGame = response.data;
+            if (this.masterGame.maximumReleaseDate === '9999-12-31') {
+              this.masterGame.maximumReleaseDate = null;
+            }
+            this.eligibilityLevel = this.masterGame.eligibilitySettings.eligibilityLevel.level;
           })
           .catch(returnedError => (this.error = returnedError));
       },
-      fetchChangeRequest() {
+      async fetchChangeRequest() {
         let changeRequestID = this.$route.query.changeRequestID;
         if (!changeRequestID) {
           return;
         }
-        axios
+        await axios
           .get('/api/admin/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID)
           .then(response => {
             this.changeRequest = response.data;
@@ -259,24 +253,52 @@
         }
       },
       propagateDate() {
-        this.maximumReleaseDate = this.releaseDate;
-        this.minimumReleaseDate = this.releaseDate;
-        this.estimatedReleaseDate = this.releaseDate;
+        this.masterGame.maximumReleaseDate = this.masterGame.releaseDate;
+        this.masterGame.minimumReleaseDate = this.masterGame.releaseDate;
+        this.masterGame.estimatedReleaseDate = this.masterGame.releaseDate;
+      },
+      populateTags() {
+        let allTags = this.$store.getters.allTags;
+        let masterGameTagNames = this.masterGame.tags;
+        let matchingTags = _.filter(allTags, x => masterGameTagNames.includes(x.name));
+        this.tags = matchingTags;
       },
       clearDates() {
-        this.releaseDate = null;
-        this.minimumReleaseDate = null;
-        this.maximumReleaseDate = null;
-        this.estimatedReleaseDate = null;
-        this.interationalReleaseDate = null;
-        this.earlyAccessReleaseDate = null;
+        this.masterGame.releaseDate = null;
+        this.masterGame.minimumReleaseDate = null;
+        this.masterGame.maximumReleaseDate = null;
+        this.masterGame.estimatedReleaseDate = null;
+        this.masterGame.interationalReleaseDate = null;
+        this.masterGame.earlyAccessReleaseDate = null;
+      },
+      sendEditMasterGameRequest() {
+        let tagNames = _.map(this.tags, 'name');
+
+        let request = this.masterGame;
+        request.tags = tagNames;
+
+        axios
+          .post('/api/admin/EditMasterGame', request)
+          .then(response => {
+            this.createdGame = response.data;
+            window.scroll({
+              top: 0,
+              left: 0,
+              behavior: 'smooth'
+            });
+            this.clearData();
+          })
+          .catch(error => {
+            this.errorInfo = error.response;
+          });
       }
     },
-    mounted() {
-      this.fetchEligibilityLevels();
-      this.fetchMasterGame();
+    async mounted() {
+      await this.fetchEligibilityLevels();
+      await this.fetchMasterGame();
+      await this.fetchChangeRequest();
       this.parseEstimatedReleaseDate();
-      this.fetchChangeRequest();
+      this.populateTags();
     },
     watch: {
       '$route'(to, from) {
