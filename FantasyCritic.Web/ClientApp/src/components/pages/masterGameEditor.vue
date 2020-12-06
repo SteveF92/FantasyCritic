@@ -7,6 +7,9 @@
         <b-button variant="info" :to="{ name: 'adminConsole' }">Admin Console</b-button>
       </div>
       <hr />
+      <div v-if="responseInfo" class="alert alert-success">
+        Master Game edited successfully!
+      </div>
       <div v-if="masterGame">
         <h2>{{masterGame.gameName}}</h2>
         <div class="row" v-if="changeRequest">
@@ -150,7 +153,8 @@
         changeRequest: null,
         tags: [],
         possibleEligibilityLevels: null,
-        eligibilityLevel: 0
+        eligibilityLevel: 0,
+        responseInfo: null
       };
     },
     components: {
@@ -219,37 +223,37 @@
           .catch(returnedError => (this.error = returnedError));
       },
       parseEstimatedReleaseDate() {
-        if (this.estimatedReleaseDate === '' || this.estimatedReleaseDate === 'TBA') {
-          this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-          this.maximumReleaseDate = null;
+        if (this.masterGame.estimatedReleaseDate === '' || this.masterGame.estimatedReleaseDate === 'TBA') {
+          this.masterGame.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
+          this.masterGame.maximumReleaseDate = null;
         }
-        if (this.estimatedReleaseDate === '2020') {
-          this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-          this.maximumReleaseDate = '2020-12-31';
+        if (this.masterGame.estimatedReleaseDate === '2020') {
+          this.masterGame.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
+          this.masterGame.maximumReleaseDate = '2020-12-31';
         }
-        if (this.estimatedReleaseDate === 'Q3 2020') {
-          this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-          this.maximumReleaseDate = '2020-09-30';
+        if (this.masterGame.estimatedReleaseDate === 'Q3 2020') {
+          this.masterGame.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
+          this.masterGame.maximumReleaseDate = '2020-09-30';
         }
-        if (this.estimatedReleaseDate === 'Q4 2020') {
-          this.minimumReleaseDate = '2020-10-01';
-          this.maximumReleaseDate = '2020-12-31';
+        if (this.masterGame.estimatedReleaseDate === 'Q4 2020') {
+          this.masterGame.minimumReleaseDate = '2020-10-01';
+          this.masterGame.maximumReleaseDate = '2020-12-31';
         }
-        if (this.estimatedReleaseDate === '2021') {
-          this.minimumReleaseDate = '2021-01-01';
-          this.maximumReleaseDate = '2021-12-31';
+        if (this.masterGame.estimatedReleaseDate === '2021') {
+          this.masterGame.minimumReleaseDate = '2021-01-01';
+          this.masterGame.maximumReleaseDate = '2021-12-31';
         }
-        if (this.estimatedReleaseDate === 'Q1 2021') {
-          this.minimumReleaseDate = '2021-01-01';
-          this.maximumReleaseDate = '2021-03-31';
+        if (this.masterGame.estimatedReleaseDate === 'Q1 2021') {
+          this.masterGame.minimumReleaseDate = '2021-01-01';
+          this.masterGame.maximumReleaseDate = '2021-03-31';
         }
-        if (this.estimatedReleaseDate === 'Q2 2021') {
-          this.minimumReleaseDate = '2021-04-01';
-          this.maximumReleaseDate = '2021-06-30';
+        if (this.masterGame.estimatedReleaseDate === 'Q2 2021') {
+          this.masterGame.minimumReleaseDate = '2021-04-01';
+          this.masterGame.maximumReleaseDate = '2021-06-30';
         }
-        if (this.estimatedReleaseDate === 'Early 2021') {
-          this.minimumReleaseDate = '2021-01-01';
-          this.maximumReleaseDate = '2021-06-30';
+        if (this.masterGame.estimatedReleaseDate === 'Early 2021') {
+          this.masterGame.minimumReleaseDate = '2021-01-01';
+          this.masterGame.maximumReleaseDate = '2021-06-30';
         }
       },
       propagateDate() {
@@ -280,13 +284,13 @@
         axios
           .post('/api/admin/EditMasterGame', request)
           .then(response => {
-            this.createdGame = response.data;
+            this.responseInfo = response.data;
             window.scroll({
               top: 0,
               left: 0,
               behavior: 'smooth'
             });
-            this.clearData();
+            
           })
           .catch(error => {
             this.errorInfo = error.response;
