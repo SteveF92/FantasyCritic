@@ -1,6 +1,6 @@
 <template>
   <div>
-    <multiselect v-model="internalValue" tag-placeholder="Add this as new tag"
+    <multiselect v-model="value" tag-placeholder="Add this as new tag"
                  placeholder="Search or add a tag" label="readableName"
                  track-by="name" :options="tagOptions" :multiple="true"
                  @input="handleInput">
@@ -23,8 +23,7 @@ export default {
   },
   data() {
     return {
-      internalValue: [
-      ]
+
     }
   },
   computed: {
@@ -34,12 +33,7 @@ export default {
   },
   methods: {
     handleInput (e) {
-      this.$emit('input', this.internalValue);
-    }
-  },
-  watch: {
-    value: function (val, oldVal) {
-      this.internalValue = val;
+      this.$emit('input', this.value);
     }
   }
 }
