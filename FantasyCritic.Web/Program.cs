@@ -22,7 +22,8 @@ namespace FantasyCritic.Web
                 .UseNLog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>()
+                        .UseIISIntegration();
                 });
     }
 }
