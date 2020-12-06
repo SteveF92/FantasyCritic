@@ -340,8 +340,8 @@
     },
     mounted() {
       this.fetchEligibilityLevels();
-      this.parseEstimatedReleaseDate();
       this.populateFieldsFromURL();
+      this.parseEstimatedReleaseDate();
     }
   };
 </script>

@@ -37,6 +37,11 @@ export default {
       this.$emit('input', this.internalValue);
     }
   },
+  watch: {
+    value: function (val, oldVal) {
+      this.internalValue = val;
+    }
+  }
 }
 </script>
 
