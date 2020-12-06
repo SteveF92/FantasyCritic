@@ -1,14 +1,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using VueCliMiddleware;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using VueCliMiddleware;
+using Microsoft.AspNetCore.SpaServices;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using FantasyCritic.FakeRepo;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
@@ -27,10 +31,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.SpaServices.Webpack;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using NodaTime;
@@ -40,11 +42,9 @@ namespace FantasyCritic.Web
 {
     public class Startup
     {
-        private readonly ILogger<Startup> _logger;
 
-        public Startup(ILogger<Startup> logger, IConfiguration configuration)
+        public Startup(IConfiguration configuration)
         {
-            _logger = logger;
             Configuration = configuration;
         }
 
@@ -53,8 +53,6 @@ namespace FantasyCritic.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            _logger.LogInformation("Initializing services.");
-
             int validMinutes = Convert.ToInt32(Configuration["Tokens:ValidMinutes"]);
             var keyString = Configuration["Tokens:Key"];
             var issuer = Configuration["Tokens:Issuer"];
@@ -127,7 +125,6 @@ namespace FantasyCritic.Web
             services.AddSingleton<IScheduledTask, RefreshDataTask>();
             services.AddScheduler((sender, args) =>
             {
-                _logger.LogError(args.Exception.Message);
                 args.SetObserved();
             });
 
@@ -205,7 +202,7 @@ namespace FantasyCritic.Web
             // In production, the Vue files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/dist";
+                configuration.RootPath = "ClientApp";
             });
         }
 
@@ -267,7 +264,16 @@ namespace FantasyCritic.Web
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "ClientApp";
+                if (env.IsDevelopment())
+                    spa.Options.SourcePath = "ClientApp/";
+                else
+                    spa.Options.SourcePath = "dist";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseVueCli(npmScript: "serve");
+                }
+
             });
         }
 
