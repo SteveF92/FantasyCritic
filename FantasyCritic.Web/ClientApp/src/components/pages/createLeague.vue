@@ -168,7 +168,17 @@ export default {
       allowFreeToPlay: false,
       allowReleasedInternationally: false,
       allowExpansions: false,
-      allowUnannouncedGames: false
+      allowUnannouncedGames: false,
+      requiredTags: [],
+      bannedTags: [
+        'CurrentlyInEarlyAccess',
+        'DirectorsCut',
+        'PlannedForEarlyAccess',
+        'Port',
+        'ReleasedInternationally',
+        'Remaster',
+        'UnannouncedGame',
+        'YearlyInstallment']
     };
   }
 };
