@@ -84,5 +84,59 @@ namespace FantasyCritic.Lib.Domain
 
             return claimErrors;
         }
+
+        public IReadOnlyList<MasterGameTag> GetEquivalentBannedTags(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+        {
+            var tags = new List<MasterGameTag>();
+
+            if (EligibilityLevel.Level < 5)
+            {
+                tags.Add(tagDictionary["Port"]);
+            }
+            if (EligibilityLevel.Level < 4)
+            {
+                tags.Add(tagDictionary["Remaster"]);
+            }
+            if (EligibilityLevel.Level < 2)
+            {
+                tags.Add(tagDictionary["Remake"]);
+            }
+            if (EligibilityLevel.Level < 1)
+            {
+                tags.Add(tagDictionary["Port"]);
+            }
+
+            if (!YearlyInstallment)
+            {
+                tags.Add(tagDictionary["YearlyInstallment"]);
+            }
+
+            if (!EarlyAccess)
+            {
+                tags.Add(tagDictionary["CurrentlyInEarlyAccess"]);
+            }
+
+            if (!FreeToPlay)
+            {
+                tags.Add(tagDictionary["FreeToPlay"]);
+            }
+
+            if (!ReleasedInternationally)
+            {
+                tags.Add(tagDictionary["ReleasedInternationally"]);
+            }
+
+            if (!ExpansionPack)
+            {
+                tags.Add(tagDictionary["ExpansionPack"]);
+            }
+
+            if (!UnannouncedGame)
+            {
+                tags.Add(tagDictionary["UnannouncedGame"]);
+            }
+
+            return tags;
+        }
     }
 }

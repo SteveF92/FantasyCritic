@@ -202,6 +202,13 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ConvertToTags()
+        {
+            await _adminService.ConvertToTags();
+            return Ok();
+        }
+
         public async Task<ActionResult<ActionedGameSet>> GetCurrentActionedGames()
         {
             var supportedYears = await _interLeagueService.GetSupportedYears();

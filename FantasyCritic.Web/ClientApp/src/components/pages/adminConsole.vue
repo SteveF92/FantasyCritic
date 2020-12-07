@@ -34,6 +34,7 @@
       <div>
         <b-button variant="info" v-on:click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
         <b-button variant="warning" v-on:click="snapshotDatabase">Snapshot Database</b-button>
+        <b-button variant="danger" v-on:click="convertToTags">Convert to Tags</b-button>
       </div>
       <b-table v-if="recentSnapshots" :items="recentSnapshots" striped bordered responsive></b-table>
     </div>
@@ -180,6 +181,19 @@ export default {
           this.recentSnapshots = response.data;
           this.isBusy = false;
           this.jobSuccess = 'Getting snapshots';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    convertToTags() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/convertToTags')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Converted Leagues to Tags';
         })
         .catch(returnedError => {
           this.isBusy = false;

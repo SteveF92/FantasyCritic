@@ -116,5 +116,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
         Task SaveProcessedDropResults(DropProcessingResults dropProcessingResults);
         Task UpdateSystemWideValues(SystemWideValues systemWideValues);
+        Task ConvertToTags(IReadOnlyDictionary<LeagueYear, IReadOnlyList<MasterGameTag>> tagsToAddByLeagueYear);
     }
 }

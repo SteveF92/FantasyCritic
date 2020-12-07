@@ -488,6 +488,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task ConvertToTags(IReadOnlyDictionary<LeagueYear, IReadOnlyList<MasterGameTag>> tagsToAddByLeagueYear)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
         {
             throw new NotImplementedException();
