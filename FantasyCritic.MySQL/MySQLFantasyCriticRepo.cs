@@ -559,23 +559,26 @@ namespace FantasyCritic.MySQL
         {
             LeagueEntity entity = new LeagueEntity(league);
             LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear, options, PlayStatus.NotStartedDraft);
+            var tagEntities = options.LeagueTags.Select(x => new LeagueYearTagEntity(league, initialYear, x));
+
+            string createLeagueSQL =
+                "insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague) VALUES " +
+                "(@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague);";
+
+            string createLeagueYearSQL =
+                "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
+                "MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,AllowFreeToPlay,AllowReleasedInternationally,AllowExpansions,AllowUnannouncedGames,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
+                "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames,@MaximumEligibilityLevel," +
+                "@AllowYearlyInstallments,@AllowEarlyAccess,@AllowFreeToPlay,@AllowReleasedInternationally,@AllowExpansions,@AllowUnannouncedGames,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync(
-                        "insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague) VALUES " +
-                        "(@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague);",
-                        entity, transaction);
-
-                    await connection.ExecuteAsync(
-                        "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-                        "MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,AllowFreeToPlay,AllowReleasedInternationally,AllowExpansions,AllowUnannouncedGames,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
-                        "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames,@MaximumEligibilityLevel," +
-                        "@AllowYearlyInstallments,@AllowEarlyAccess,@AllowFreeToPlay,@AllowReleasedInternationally,@AllowExpansions,@AllowUnannouncedGames,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);",
-                        leagueYearEntity, transaction);
+                    await connection.ExecuteAsync(createLeagueSQL, entity, transaction);
+                    await connection.ExecuteAsync(createLeagueYearSQL, leagueYearEntity, transaction);
+                    await connection.BulkInsertAsync(tagEntities, "tbl_league_yearusestag", 500, transaction);
 
                     transaction.Commit();
                 }
@@ -587,17 +590,28 @@ namespace FantasyCritic.MySQL
         public async Task EditLeagueYear(LeagueYear leagueYear)
         {
             LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.PlayStatus);
+            var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
+
+            string editLeagueYearSQL =
+                "update tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, " +
+                "FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames, " +
+                "DropOnlyDraftGames = @DropOnlyDraftGames, MaximumEligibilityLevel = @MaximumEligibilityLevel, AllowYearlyInstallments = @AllowYearlyInstallments, " +
+                "AllowEarlyAccess = @AllowEarlyAccess, AllowFreeToPlay = @AllowFreeToPlay, AllowReleasedInternationally = @AllowReleasedInternationally, " +
+                "AllowExpansions = @AllowExpansions, AllowUnannouncedGames = @AllowUnannouncedGames, DraftSystem = @DraftSystem, " +
+                "PickupSystem = @PickupSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year";
+
+            var deleteTagsSQL = "delete from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(
-                    "update tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, " +
-                    "FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames, " +
-                    "DropOnlyDraftGames = @DropOnlyDraftGames, MaximumEligibilityLevel = @MaximumEligibilityLevel, AllowYearlyInstallments = @AllowYearlyInstallments, " +
-                    "AllowEarlyAccess = @AllowEarlyAccess, AllowFreeToPlay = @AllowFreeToPlay, AllowReleasedInternationally = @AllowReleasedInternationally, " +
-                    "AllowExpansions = @AllowExpansions, AllowUnannouncedGames = @AllowUnannouncedGames, DraftSystem = @DraftSystem, " +
-                    "PickupSystem = @PickupSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year",
-                    leagueYearEntity);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(editLeagueYearSQL, leagueYearEntity, transaction);
+                    await connection.ExecuteAsync(deleteTagsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
+                    await connection.BulkInsertAsync(tagEntities, "tbl_league_yearusestag", 500, transaction);
+                    transaction.Commit();
+                }
             }
         }
 
