@@ -39,32 +39,12 @@
             <td>{{leagueYearOptions.dropOnlyDraftGames | yesNo }}</td>
           </tr>
           <tr>
-            <th class="bg-primary">Maximum Eligibility Level</th>
-            <td>{{leagueYearOptions.maximumEligibilityLevel}}</td>
-          </tr>
-          <tr>
-            <th class="bg-primary">Allow Yearly Installments</th>
-            <td>{{leagueYearOptions.allowYearlyInstallments | yesNo}}</td>
-          </tr>
-          <tr>
-            <th class="bg-primary">Allow Early Access</th>
-            <td>{{leagueYearOptions.allowEarlyAccess | yesNo}}</td>
-          </tr>
-          <tr>
-            <th class="bg-primary">Allow Free to Play</th>
-            <td>{{leagueYearOptions.allowFreeToPlay | yesNo}}</td>
-          </tr>
-          <tr>
-            <th class="bg-primary">Allow Released Internationally</th>
-            <td>{{leagueYearOptions.allowReleasedInternationally | yesNo}}</td>
-          </tr>
-          <tr>
-            <th class="bg-primary">Allow Expansion Packs</th>
-            <td>{{leagueYearOptions.allowExpansions | yesNo}}</td>
-          </tr>
-          <tr>
-            <th class="bg-primary">Allow Unannounced Games</th>
-            <td>{{leagueYearOptions.allowUnannouncedGames | yesNo}}</td>
+            <th class="bg-primary">Banned Tags</th>
+            <td>
+              <span v-for="tag in leagueYearOptions.tags.banned">
+                <masterGameTagBadge :tagName="tag" short="true"></masterGameTagBadge>
+              </span>
+            </td>
           </tr>
 
           <tr>
@@ -83,9 +63,13 @@
 
 <script>
 import axios from 'axios';
+import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
 export default {
   props: ['league', 'leagueYear'],
+  components: {
+    MasterGameTagBadge
+  },
   data() {
     return {
       leagueYearOptions: null
