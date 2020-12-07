@@ -68,7 +68,7 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime? DraftStartedTimestamp { get; set; }
 
         public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel, IEnumerable<EligibilityOverride> eligibilityOverrides, 
-            IEnumerable<LeagueTagOption> leagueTags)
+            IEnumerable<LeagueTagStatus> leagueTags)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);

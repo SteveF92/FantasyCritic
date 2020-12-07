@@ -15,22 +15,22 @@ namespace FantasyCritic.MySQL.Entities
 
         }
 
-        public LeagueYearTagEntity(League league, int year, LeagueTagOption domain)
+        public LeagueYearTagEntity(League league, int year, LeagueTagStatus domain)
         {
             LeagueID = league.LeagueID;
             Year = year;
             Tag = domain.Tag.Name;
-            Option = domain.Option.Value;
+            Status = domain.Status.Value;
         }
 
         public Guid LeagueID { get; set; }
         public int Year { get; set; }
         public string Tag { get; set; }
-        public string Option { get; set; }
+        public string Status { get; set; }
 
-        public LeagueTagOption ToDomain(MasterGameTag tag)
+        public LeagueTagStatus ToDomain(MasterGameTag tag)
         {
-            return new LeagueTagOption(tag, TagOption.FromValue(Option));
+            return new LeagueTagStatus(tag, TagStatus.FromValue(Status));
         }
     }
 }

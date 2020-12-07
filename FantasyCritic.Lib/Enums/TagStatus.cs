@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Enums
 {
-    public class TagOption : TypeSafeEnum<TagOption>
+    public class TagStatus : TypeSafeEnum<TagStatus>
     {
         // Define values here.
-        public static readonly TagOption Banned = new TagOption("Banned");
-        public static readonly TagOption Required = new TagOption("Required");
+        public static readonly TagStatus Banned = new TagStatus("Banned");
+        public static readonly TagStatus Required = new TagStatus("Required");
 
         // Constructor is private: values are defined within this class only!
-        private TagOption(string value)
+        private TagStatus(string value)
             : base(value)
         {
 

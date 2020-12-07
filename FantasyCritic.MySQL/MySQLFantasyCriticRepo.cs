@@ -2044,7 +2044,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        private static IReadOnlyList<LeagueTagOption> ConvertLeagueTagEntities(IEnumerable<LeagueYearTagEntity> leagueTags, IReadOnlyDictionary<string, MasterGameTag> tagOptions)
+        private static IReadOnlyList<LeagueTagStatus> ConvertLeagueTagEntities(IEnumerable<LeagueYearTagEntity> leagueTags, IReadOnlyDictionary<string, MasterGameTag> tagOptions)
         {
             var domains = leagueTags.Select(x => x.ToDomain(tagOptions[x.Tag])).ToList();
             return domains;

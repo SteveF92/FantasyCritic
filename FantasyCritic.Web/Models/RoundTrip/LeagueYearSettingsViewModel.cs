@@ -164,7 +164,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
                 willReleaseDroppableGames = -1;
             }
 
-            List<LeagueTagOption> leagueTags = new List<LeagueTagOption>();
+            List<LeagueTagStatus> leagueTags = new List<LeagueTagStatus>();
             foreach (var bannedTag in BannedTags)
             {
                 bool hasTag = tagDictionary.TryGetValue(bannedTag, out var foundTag);
@@ -173,7 +173,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
                     continue;
                 }
 
-                leagueTags.Add(new LeagueTagOption(foundTag, TagOption.Banned));
+                leagueTags.Add(new LeagueTagStatus(foundTag, TagStatus.Banned));
             }
             foreach (var requiredTag in RequiredTags)
             {
@@ -183,7 +183,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
                     continue;
                 }
 
-                leagueTags.Add(new LeagueTagOption(foundTag, TagOption.Required));
+                leagueTags.Add(new LeagueTagStatus(foundTag, TagStatus.Required));
             }
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,

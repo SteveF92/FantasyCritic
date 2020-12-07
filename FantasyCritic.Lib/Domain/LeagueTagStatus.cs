@@ -7,15 +7,15 @@ using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class LeagueTagOption
+    public class LeagueTagStatus
     {
-        public LeagueTagOption(MasterGameTag tag, TagOption option)
+        public LeagueTagStatus(MasterGameTag tag, TagStatus status)
         {
             Tag = tag;
-            Option = option;
+            Status = status;
         }
 
         public MasterGameTag Tag { get; }
-        public TagOption Option { get; }
+        public TagStatus Status { get; }
     }
 }

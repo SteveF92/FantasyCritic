@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Domain
     public class LeagueOptions
     {
         public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
-            bool dropOnlyDraftGames, EligibilitySettings eligibilitySettings, IEnumerable<LeagueTagOption> leagueTags, 
+            bool dropOnlyDraftGames, EligibilitySettings eligibilitySettings, IEnumerable<LeagueTagStatus> leagueTags, 
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
@@ -73,7 +73,7 @@ namespace FantasyCritic.Lib.Domain
         public int WillReleaseDroppableGames { get; }
         public bool DropOnlyDraftGames { get; }
         public EligibilitySettings AllowedEligibilitySettings { get; }
-        public IReadOnlyList<LeagueTagOption> LeagueTags { get; }
+        public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }

@@ -10,7 +10,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, 
             int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, int initialYear, EligibilityLevel maximumEligibilityLevel,
             bool allowYearlyInstallments,  bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally,
-            bool allowExpansions, bool allowUnannouncedGames, IEnumerable<LeagueTagOption> leagueTags,
+            bool allowExpansions, bool allowUnannouncedGames, IEnumerable<LeagueTagStatus> leagueTags,
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague, bool testLeague)
         {
             Manager = manager;
@@ -43,7 +43,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int WillReleaseDroppableGames { get; }
         public bool DropOnlyDraftGames { get; }
         public int InitialYear { get; }
-        public IReadOnlyList<LeagueTagOption> LeagueTags { get; }
+        public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
         public EligibilitySettings AllowedEligibilitySettings { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
