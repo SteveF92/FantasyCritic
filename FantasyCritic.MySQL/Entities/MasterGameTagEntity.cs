@@ -8,6 +8,7 @@ namespace FantasyCritic.MySQL.Entities
     {
         public string Name { get; set; }
         public string ReadableName { get; set; }
+        public string ShortName { get; set; }
         public string TagType { get; set; }
         public bool HasCustomCode { get; set; }
         public string Description { get; set; }
@@ -17,7 +18,7 @@ namespace FantasyCritic.MySQL.Entities
         public MasterGameTag ToDomain()
         {
             var examples = JsonConvert.DeserializeObject<List<string>>(Examples);
-            return new MasterGameTag(Name, ReadableName, new MasterGameTagType(TagType), HasCustomCode, Description, examples, BadgeColor);
+            return new MasterGameTag(Name, ReadableName, ShortName, new MasterGameTagType(TagType), HasCustomCode, Description, examples, BadgeColor);
         }
     }
 }

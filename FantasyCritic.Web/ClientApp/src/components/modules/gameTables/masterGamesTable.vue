@@ -39,7 +39,7 @@
     </template>
     <template v-slot:cell(tags)="data">
       <span v-for="(tag, index) in data.item.tags">
-        <masterGameTagBadge :tagName="data.item.tags[index]"></masterGameTagBadge>
+        <masterGameTagBadge :tagName="data.item.tags[index]" short="true"></masterGameTagBadge>
       </span>
     </template>
   </b-table>

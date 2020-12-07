@@ -1,7 +1,10 @@
 <template>
   <span>
-    <span class="badge badge-pill tag-badge" :id="'popover-target' + _uid" v-bind:style="badgeColor">
+    <span v-if="!short" class="badge badge-pill tag-badge" :id="'popover-target' + _uid" v-bind:style="badgeColor">
       {{tag.readableName}}
+    </span>
+    <span v-if="short" class="badge badge-pill tag-badge" :id="'popover-target' + _uid" v-bind:style="badgeColor">
+      {{tag.shortName}}
     </span>
     <b-popover :target="'popover-target' + _uid" triggers="hover" placement="top">
       <template #title class="popover-title">
@@ -20,7 +23,7 @@
 <script>
 
 export default {
-  props: ['tagName'],
+  props: ['tagName', 'short'],
   computed: {
     tag() {
         let allTags = this.$store.getters.allTags;
