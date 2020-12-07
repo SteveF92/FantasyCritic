@@ -54,6 +54,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task<IReadOnlyDictionary<string, MasterGameTag>> GetMasterGameTagDictionary()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task CreateMasterGame(MasterGame masterGame)
         {
             throw new NotImplementedException();

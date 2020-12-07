@@ -44,5 +44,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task UpdateCalculatedStats(IEnumerable<MasterGameCalculatedStats> calculatedStats, int year);
 
         Task<IReadOnlyList<MasterGameTag>> GetMasterGameTags();
+        Task<IReadOnlyDictionary<string, MasterGameTag>> GetMasterGameTagDictionary();
     }
 }

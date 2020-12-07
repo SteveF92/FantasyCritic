@@ -82,6 +82,9 @@ namespace FantasyCritic.MySQL
 
         public async Task<Maybe<LeagueYear>> GetLeagueYear(League requestLeague, int requestYear)
         {
+            var leagueTags = await GetLeagueYearTagEntities(requestLeague.LeagueID, requestYear);
+            var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var queryObject = new
@@ -98,13 +101,18 @@ namespace FantasyCritic.MySQL
 
                 var eligibilityLevel = await _masterGameRepo.GetEligibilityLevel(yearEntity.MaximumEligibilityLevel);
                 var eligibilityOverrides = await GetEligibilityOverrides(requestLeague, requestYear);
-                LeagueYear year = yearEntity.ToDomain(requestLeague, eligibilityLevel, eligibilityOverrides);
+                var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
+                LeagueYear year = yearEntity.ToDomain(requestLeague, eligibilityLevel, eligibilityOverrides, domainLeagueTags);
                 return year;
             }
         }
 
         public async Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
         {
+            var allLeagueTags = await GetLeagueYearTagEntities(year);
+            var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
+            var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var queryObject = new
@@ -133,7 +141,9 @@ namespace FantasyCritic.MySQL
                     {
                         eligibilityOverrides = new List<EligibilityOverride>();
                     }
-                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel, eligibilityOverrides);
+
+                    var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
+                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel, eligibilityOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -732,6 +742,10 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year)
         {
+            var allLeagueTags = await GetLeagueYearTagEntities(year);
+            var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
+            var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var queryObject = new
@@ -764,7 +778,9 @@ namespace FantasyCritic.MySQL
                     {
                         eligibilityOverrides = new List<EligibilityOverride>();
                     }
-                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel, eligibilityOverrides);
+
+                    var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
+                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel, eligibilityOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -1990,6 +2006,34 @@ namespace FantasyCritic.MySQL
             }
 
             return entity.ToDomain(league.Value);
+        }
+
+        private async Task<IReadOnlyList<LeagueYearTagEntity>> GetLeagueYearTagEntities(int year)
+        {
+            var sql = "select * from tbl_league_yearusestag where Year = @year;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<LeagueYearTagEntity> entities = await connection.QueryAsync<LeagueYearTagEntity>(sql, new { year });
+                return entities.ToList();
+            }
+        }
+
+        private async Task<IReadOnlyList<LeagueYearTagEntity>> GetLeagueYearTagEntities(Guid leagueID, int year)
+        {
+            var sql = "select * from tbl_league_yearusestag where LeagueID = @leagueID, Year = @year;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<LeagueYearTagEntity> entities = await connection.QueryAsync<LeagueYearTagEntity>(sql, new { leagueID, year });
+                return entities.ToList();
+            }
+        }
+
+        private static IReadOnlyList<LeagueTagOption> ConvertLeagueTagEntities(IEnumerable<LeagueYearTagEntity> leagueTags, IReadOnlyDictionary<string, MasterGameTag> tagOptions)
+        {
+            var domains = leagueTags.Select(x => x.ToDomain(tagOptions[x.Tag])).ToList();
+            return domains;
         }
     }
 }

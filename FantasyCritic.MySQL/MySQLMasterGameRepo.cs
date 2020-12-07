@@ -609,5 +609,11 @@ namespace FantasyCritic.MySQL
                 return entities.Select(x => x.ToDomain()).ToList();
             }
         }
+
+        public async Task<IReadOnlyDictionary<string, MasterGameTag>> GetMasterGameTagDictionary()
+        {
+            var tags = await GetMasterGameTags();
+            return tags.ToDictionary(x => x.Name);
+        }
     }
 }

@@ -95,8 +95,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
             EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(request.MaximumEligibilityLevel);
-            LeagueCreationParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel);
+            LeagueCreationParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel, tagDictionary);
             var league = await _fantasyCriticService.CreateLeague(domainRequest);
             if (league.IsFailure)
             {
@@ -273,8 +274,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
+            var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
             EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(request.MaximumEligibilityLevel);
-            EditLeagueYearParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel);
+            EditLeagueYearParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel, tagDictionary);
             Result result = await _fantasyCriticService.EditLeague(league.Value, domainRequest);
             if (result.IsFailure)
             {

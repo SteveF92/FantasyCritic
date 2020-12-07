@@ -200,5 +200,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _masterGameRepo.GetMasterGameTags();
         }
+
+        public Task<IReadOnlyDictionary<string, MasterGameTag>> GetMasterGameTagDictionary()
+        {
+            return _masterGameRepo.GetMasterGameTagDictionary();
+        }
     }
 }

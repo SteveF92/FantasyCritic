@@ -67,7 +67,8 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime Timestamp { get; set; }
         public DateTime? DraftStartedTimestamp { get; set; }
 
-        public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel, IEnumerable<EligibilityOverride> eligibilityOverrides)
+        public LeagueYear ToDomain(League league, EligibilityLevel maximumEligibilityLevel, IEnumerable<EligibilityOverride> eligibilityOverrides, 
+            IEnumerable<LeagueTagOption> leagueTags)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
@@ -76,7 +77,7 @@ namespace FantasyCritic.MySQL.Entities
                 AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, AllowUnannouncedGames);
 
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-                DropOnlyDraftGames, eligibilitySettings, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
+                DropOnlyDraftGames, eligibilitySettings, leagueTags, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
 
             Instant? draftStartedTimestamp = null;
             if (DraftStartedTimestamp.HasValue)

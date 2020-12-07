@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
@@ -66,6 +67,10 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         public bool TestLeague { get; set; }
 
+        public List<string> BannedTags { get; set; }
+        public List<string> RequiredTags { get; set; }
+
+
         //Don't need this once 2019 is no longer create-able.
         public bool ValidForOldYears()
         {
@@ -92,7 +97,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             return true;
         }
 
-        public LeagueCreationParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel)
+        public LeagueCreationParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
@@ -114,9 +119,31 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
                 willReleaseDroppableGames = -1;
             }
 
+            List<LeagueTagOption> leagueTags = new List<LeagueTagOption>();
+            foreach (var bannedTag in BannedTags)
+            {
+                bool hasTag = tagDictionary.TryGetValue(bannedTag, out var foundTag);
+                if (!hasTag)
+                {
+                    continue;
+                }
+
+                leagueTags.Add(new LeagueTagOption(foundTag, TagOption.Banned));
+            }
+            foreach (var requiredTag in RequiredTags)
+            {
+                bool hasTag = tagDictionary.TryGetValue(requiredTag, out var foundTag);
+                if (!hasTag)
+                {
+                    continue;
+                }
+
+                leagueTags.Add(new LeagueTagOption(foundTag, TagOption.Required));
+            }
+
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
-                AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, AllowUnannouncedGames, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
+                AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, AllowUnannouncedGames, leagueTags, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }
     }

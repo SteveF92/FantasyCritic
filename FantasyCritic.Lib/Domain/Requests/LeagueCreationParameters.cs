@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 
@@ -8,7 +10,8 @@ namespace FantasyCritic.Lib.Domain.Requests
         public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, 
             int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, int initialYear, EligibilityLevel maximumEligibilityLevel,
             bool allowYearlyInstallments,  bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally,
-            bool allowExpansions, bool allowUnannouncedGames, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague, bool testLeague)
+            bool allowExpansions, bool allowUnannouncedGames, IEnumerable<LeagueTagOption> leagueTags,
+            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague, bool testLeague)
         {
             Manager = manager;
             LeagueName = leagueName;
@@ -20,6 +23,7 @@ namespace FantasyCritic.Lib.Domain.Requests
             WillReleaseDroppableGames = willReleaseDroppableGames;
             DropOnlyDraftGames = dropOnlyDraftGames;
             InitialYear = initialYear;
+            LeagueTags = leagueTags.ToList();
             AllowedEligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, allowYearlyInstallments, allowEarlyAccess, 
                 allowFreeToPlay, allowReleasedInternationally, allowExpansions, allowUnannouncedGames);
             DraftSystem = draftSystem;
@@ -39,6 +43,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int WillReleaseDroppableGames { get; }
         public bool DropOnlyDraftGames { get; }
         public int InitialYear { get; }
+        public IReadOnlyList<LeagueTagOption> LeagueTags { get; }
         public EligibilitySettings AllowedEligibilitySettings { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
