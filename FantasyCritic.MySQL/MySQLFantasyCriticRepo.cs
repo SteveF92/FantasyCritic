@@ -2035,7 +2035,7 @@ namespace FantasyCritic.MySQL
 
         private async Task<IReadOnlyList<LeagueYearTagEntity>> GetLeagueYearTagEntities(Guid leagueID, int year)
         {
-            var sql = "select * from tbl_league_yearusestag where LeagueID = @leagueID, Year = @year;";
+            var sql = "select * from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
 
             using (var connection = new MySqlConnection(_connectionString))
             {

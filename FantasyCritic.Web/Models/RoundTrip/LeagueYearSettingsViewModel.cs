@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using Amazon.RDS.Model;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
@@ -54,6 +56,22 @@ namespace FantasyCritic.Web.Models.RoundTrip
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
+
+            var bannedTags = leagueYear.Options.LeagueTags
+                .Where(x => x.Status == TagStatus.Banned)
+                .Select(x => x.Tag.Name)
+                .ToList();
+
+            var requiredTags = leagueYear.Options.LeagueTags
+                .Where(x => x.Status == TagStatus.Required)
+                .Select(x => x.Tag.Name)
+                .ToList();
+
+            Tags = new LeagueTagOptionsViewModel()
+            {
+                Banned = bannedTags,
+                Required = requiredTags
+            };
         }
 
         [Required]
@@ -113,8 +131,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Required]
         public bool PublicLeague { get; set; }
 
-        public List<string> BannedTags { get; set; }
-        public List<string> RequiredTags { get; set; }
+        [Required]
+        public LeagueTagOptionsViewModel Tags { get; set; }
 
         //Don't need this once 2019 is no longer editable.
         public bool ValidForOldYears()
@@ -164,27 +182,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
                 willReleaseDroppableGames = -1;
             }
 
-            List<LeagueTagStatus> leagueTags = new List<LeagueTagStatus>();
-            foreach (var bannedTag in BannedTags)
-            {
-                bool hasTag = tagDictionary.TryGetValue(bannedTag, out var foundTag);
-                if (!hasTag)
-                {
-                    continue;
-                }
-
-                leagueTags.Add(new LeagueTagStatus(foundTag, TagStatus.Banned));
-            }
-            foreach (var requiredTag in RequiredTags)
-            {
-                bool hasTag = tagDictionary.TryGetValue(requiredTag, out var foundTag);
-                if (!hasTag)
-                {
-                    continue;
-                }
-
-                leagueTags.Add(new LeagueTagStatus(foundTag, TagStatus.Required));
-            }
+            var leagueTags = Tags.ToDomain(tagDictionary);
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, maximumEligibilityLevel, AllowYearlyInstallments,

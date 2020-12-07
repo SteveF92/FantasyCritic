@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Requests.LeagueManager
 {
@@ -67,8 +68,8 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         public bool TestLeague { get; set; }
 
-        public List<string> BannedTags { get; set; }
-        public List<string> RequiredTags { get; set; }
+        [Required]
+        public LeagueTagOptionsViewModel Tags { get; set; }
 
 
         //Don't need this once 2019 is no longer create-able.
@@ -119,27 +120,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
                 willReleaseDroppableGames = -1;
             }
 
-            List<LeagueTagStatus> leagueTags = new List<LeagueTagStatus>();
-            foreach (var bannedTag in BannedTags)
-            {
-                bool hasTag = tagDictionary.TryGetValue(bannedTag, out var foundTag);
-                if (!hasTag)
-                {
-                    continue;
-                }
-
-                leagueTags.Add(new LeagueTagStatus(foundTag, TagStatus.Banned));
-            }
-            foreach (var requiredTag in RequiredTags)
-            {
-                bool hasTag = tagDictionary.TryGetValue(requiredTag, out var foundTag);
-                if (!hasTag)
-                {
-                    continue;
-                }
-
-                leagueTags.Add(new LeagueTagStatus(foundTag, TagStatus.Required));
-            }
+            var leagueTags = Tags.ToDomain(tagDictionary);
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,

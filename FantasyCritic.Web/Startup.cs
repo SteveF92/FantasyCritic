@@ -271,7 +271,7 @@ namespace FantasyCritic.Web
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseVueCli(npmScript: "serve", port: 8080);
+                    spa.UseVueCli(npmScript: "serve");
                 }
 
             });
