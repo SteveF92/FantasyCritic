@@ -22,14 +22,14 @@
         </draggable>
       </div>
 
-      <div class="tag-flex-drag">
+      <!--<div class="tag-flex-drag">
         <draggable class="tag-drag-list" :list="required" group="tags" @change="updateValue">
           <div class="tag-drag-item" v-for="(element, index) in required" :key="element">
             <masterGameTagBadge :tagName="element"></masterGameTagBadge>
           </div>
           <span slot="header" class="tag-header">Required Tags</span>
         </draggable>
-      </div>
+      </div>-->
     </div>
   </div>
 </template>
