@@ -169,16 +169,18 @@ export default {
       allowReleasedInternationally: false,
       allowExpansions: false,
       allowUnannouncedGames: false,
-      requiredTags: [],
-      bannedTags: [
-        'CurrentlyInEarlyAccess',
-        'DirectorsCut',
-        'PlannedForEarlyAccess',
-        'Port',
-        'ReleasedInternationally',
-        'Remaster',
-        'UnannouncedGame',
-        'YearlyInstallment']
+      tags: {
+        required: [],
+        banned: [
+          'CurrentlyInEarlyAccess',
+          'DirectorsCut',
+          'PlannedForEarlyAccess',
+          'Port',
+          'ReleasedInternationally',
+          'Remaster',
+          'YearlyInstallment'
+        ]
+      }
     };
   }
 };

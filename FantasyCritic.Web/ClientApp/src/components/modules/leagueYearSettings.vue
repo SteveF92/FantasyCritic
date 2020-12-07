@@ -156,92 +156,13 @@
       <hr />
       <h3>Eligibility Settings</h3>
       <div class="alert alert-info">
-        These options let you choose what games are available in your league. These settings can be overriden on a game by game basis, and I reccomend you lean towards being more restrictive,
+        These options let you choose what games are available in your league. These settings can be overriden on a game by game basis, and I recommend you lean towards being more restrictive,
         and allow specific exemptions if your entire league decides on one. The default options are the recommended settings.
-      </div>
-
-      <div class="form-group eligibility-section">
-        <label class="control-label eligibility-slider-label">Maximum Eligibility Level</label>
-        <p class="eligibility-explanation">
-          Eligibility levels are designed to prevent people from taking "uninteresting" games. Every game on the site is assigned a 'level' to seperate 'new games' from remakes, remasters, ports, and everything
-          in between. Setting this to a low number means being more restrictive, setting it to a higher number means being more lenient. The recommended setting is "2", which is a basic remake. For more information,
-          <a href="/faq#eligibility" target="_blank">
-            click here.
-          </a>
-        </p>
-        <div class="alert alert-warning" v-show="local.maximumEligibilityLevel === 0">
-          Are you sure you want to be this restrictive? At this level, you wouldn't allow a game such as "Resident Evil 2: Remake".
-        </div>
-        <div class="alert alert-info" v-show="local.maximumEligibilityLevel === 1">
-          Are you sure you want to be this restrictive? At this level, you wouldn't allow a game such as "The Legend of Zelda: Link's Awakening (Switch)".
-        </div>
-        <div class="alert alert-warning" v-show="local.maximumEligibilityLevel === 5">
-          I really don't recommend using setting '5'. Games that fall under this category often don't even get re-reviewed when they are released on their new platforms. Again, I recomend that you
-          be restrictive here and allow exemptions if need be.
-        </div>
-        <vue-slider v-model="local.maximumEligibilityLevel" @input="update('maximumEligibilityLevel', $event.target.value)" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                    :marks="marks" :tooltip="'always'">
-        </vue-slider>
-        <div class="eligibility-description">
-          <h3>{{ selectedEligibilityLevel.name }}</h3>
-          <p>{{ selectedEligibilityLevel.description }}</p>
-          <p>Examples: </p>
-          <ul>
-            <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-          </ul>
-        </div>
         <br />
-
-        <div>
-          <div>
-            <b-form-checkbox v-model="local.allowYearlyInstallments" @input="update('allowYearlyInstallments', local.allowYearlyInstallments)">
-              <span class="checkbox-label">Allow Yearly Installments (IE Yearly Sports Franchises)</span>
-              <p>These are often pretty safe bets, so they may not be the most interesting choices.</p>
-            </b-form-checkbox>
-          </div>
-          <div>
-            <b-form-checkbox v-model="local.allowEarlyAccess" @input="update('allowEarlyAccess', local.allowEarlyAccess)">
-              <span class="checkbox-label">Allow Early Access Games</span>
-              <p>
-                If this is left unchecked, a game that is already in early access will not be selectable, since it is already playable.
-                Games that are planned for early access that are not yet playable are always selectable.
-              </p>
-            </b-form-checkbox>
-          </div>
-          <div>
-            <b-form-checkbox v-model="local.allowFreeToPlay" @input="update('allowFreeToPlay', local.allowFreeToPlay)">
-              <span class="checkbox-label">Allow Free to Play Games</span>
-              <p>These are often hard to review and may not get a score.</p>
-            </b-form-checkbox>
-          </div>
-          <div>
-            <b-form-checkbox v-model="local.allowReleasedInternationally" @input="update('allowReleasedInternationally', local.allowReleasedInternationally)">
-              <span class="checkbox-label">Allow games already released in other regions</span>
-              <p>
-                If this is left unchecked, a game that has already been released in another region will not be selectable.
-                For example, a game that came out in Japan in 2018 and is getting an English release in 2019.
-              </p>
-            </b-form-checkbox>
-          </div>
-          <div>
-            <b-form-checkbox v-model="local.allowExpansions" @input="update('allowExpansions', local.allowExpansions)">
-              <span class="checkbox-label">Allow expansion packs/DLC</span>
-              <p>
-                If this is left unchecked, expansion packs and DLC will not be selectable. There's a lot of grey zone with these games and I recommend using the override system to allow
-                specific games, rather than the whole category.
-              </p>
-            </b-form-checkbox>
-          </div>
-          <div>
-            <b-form-checkbox v-model="local.allowUnannouncedGames" @input="update('allowUnannouncedGames', local.allowUnannouncedGames)">
-              <span class="checkbox-label">Allow unannounced games</span>
-              <p>
-                If this is left unchecked, games that are merely rumored will not be selectable.
-              </p>
-            </b-form-checkbox>
-          </div>
-        </div>
+        <br />
+        All games have a number of tags associated with them. If you place a tag in the "Banned" column, any game with that tag will not be selectable.
       </div>
+      <leagueTagSelector v-model="local.tags"></leagueTagSelector>
     </div>
   </div>
 </template>
@@ -250,6 +171,7 @@ import vueSlider from 'vue-slider-component';
 import Popper from 'vue-popperjs';
 import 'vue-slider-component/theme/antd.css';
 import { cloneDeep, tap, set } from 'lodash';
+import LeagueTagSelector from '@/components/modules/leagueTagSelector';
 
 export default {
   props: ['year', 'possibleLeagueOptions', 'editMode', 'value', 'currentNumberOfPlayers', 'freshSettings'],
@@ -323,6 +245,7 @@ export default {
   components: {
     vueSlider,
     'popper': Popper,
+    LeagueTagSelector
   },
   computed: {
     minimumPossibleEligibilityLevel() {
