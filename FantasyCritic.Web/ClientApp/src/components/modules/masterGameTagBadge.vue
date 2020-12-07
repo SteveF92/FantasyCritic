@@ -6,7 +6,7 @@
     <span v-if="short" class="badge badge-pill tag-badge" :id="'popover-target' + _uid" v-bind:style="badgeColor">
       {{tag.shortName}}
     </span>
-    <b-popover :target="'popover-target' + _uid" triggers="hover" placement="top">
+    <b-popover :target="'popover-target' + _uid" triggers="hover" placement="right">
       <template #title class="popover-title">
         {{tag.readableName}}
       </template>

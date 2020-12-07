@@ -137,6 +137,8 @@ export default {
         allowReleasedInternationally: this.leagueYearSettings.allowReleasedInternationally,
         allowExpansions: this.leagueYearSettings.allowExpansions,
         allowUnannouncedGames: this.leagueYearSettings.allowUnannouncedGames,
+        bannedTags: this.leagueYearSettings.tags.banned,
+        requiredTags: this.leagueYearSettings.tags.required,
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,
         draftSystem: 'Flexible',
