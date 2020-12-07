@@ -174,7 +174,6 @@ export default {
         banned: [
           'CurrentlyInEarlyAccess',
           'DirectorsCut',
-          'PlannedForEarlyAccess',
           'Port',
           'ReleasedInternationally',
           'Remaster',
