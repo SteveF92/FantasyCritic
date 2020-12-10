@@ -593,9 +593,7 @@ namespace FantasyCritic.MySQL
             string editLeagueYearSQL =
                 "update tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, " +
                 "FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames, " +
-                "DropOnlyDraftGames = @DropOnlyDraftGames, MaximumEligibilityLevel = @MaximumEligibilityLevel, AllowYearlyInstallments = @AllowYearlyInstallments, " +
-                "AllowEarlyAccess = @AllowEarlyAccess, AllowFreeToPlay = @AllowFreeToPlay, AllowReleasedInternationally = @AllowReleasedInternationally, " +
-                "AllowExpansions = @AllowExpansions, AllowUnannouncedGames = @AllowUnannouncedGames, DraftSystem = @DraftSystem, " +
+                "DropOnlyDraftGames = @DropOnlyDraftGames, DraftSystem = @DraftSystem, " +
                 "PickupSystem = @PickupSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year";
 
             var deleteTagsSQL = "delete from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
