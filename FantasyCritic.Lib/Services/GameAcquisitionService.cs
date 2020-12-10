@@ -111,7 +111,7 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
-        public DropResult CanDropGame(DropRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear, Publisher publisher)
+        public DropResult CanDropGame(DropRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear, Publisher publisher, IEnumerable<Publisher> otherPublishers)
         {
             List<ClaimError> dropErrors = new List<ClaimError>();
 
@@ -136,6 +136,15 @@ namespace FantasyCritic.Lib.Services
             if (!gameWasDrafted && leagueYear.Options.DropOnlyDraftGames)
             {
                 return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."), false);
+            }
+
+            bool gameWasCounterPicked = otherPublishers
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.CounterPick)
+                .ContainsGame(request.MasterGame);
+            if (gameWasCounterPicked && leagueYear.Options.CounterPicksBlockDrops)
+            {
+                return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."), false);
             }
 
             var dropResult = publisher.CanDropGame(gameWillRelease);
@@ -427,8 +436,10 @@ namespace FantasyCritic.Lib.Services
 
             DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, publisher.LeagueYear, masterGame, _clock.GetCurrentInstant(), null);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+            var publishersInLeague = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
+            var otherPublishers = publishersInLeague.Except(new List<Publisher>(){publisher});
 
-            var dropResult = CanDropGame(dropRequest, supportedYears, publisher.LeagueYear, publisher);
+            var dropResult = CanDropGame(dropRequest, supportedYears, publisher.LeagueYear, publisher, otherPublishers);
             if (dropResult.Result.IsFailure)
             {
                 return dropResult;

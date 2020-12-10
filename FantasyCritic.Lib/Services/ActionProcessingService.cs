@@ -211,7 +211,10 @@ namespace FantasyCritic.Lib.Services
                 foreach (var dropRequest in leagueYearGroup.Value)
                 {
                     var affectedPublisher = updatedPublishers.Single(x => x.PublisherID == dropRequest.Publisher.PublisherID);
-                    var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, supportedYears, leagueYearGroup.Key, affectedPublisher);
+                    var publishersInLeague = updatedPublishers.Where(x => x.LeagueYear.Equals(affectedPublisher.LeagueYear));
+                    var otherPublishersInLeague = publishersInLeague.Except(new List<Publisher>() { affectedPublisher });
+
+                    var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, supportedYears, leagueYearGroup.Key, affectedPublisher, otherPublishersInLeague);
                     if (dropResult.Result.IsSuccess)
                     {
                         successDrops.Add(dropRequest);
