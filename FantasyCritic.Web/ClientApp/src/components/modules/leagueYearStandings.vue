@@ -51,8 +51,12 @@
         <span v-if="data.item.publisher">{{data.item.publisher.budget | money}}</span>
       </template>
       <template v-slot:cell(totalFantasyPoints)="data">{{data.item.totalFantasyPoints | score(2)}}</template>
-      <template v-slot:cell(gamesReleased)="data">{{data.item.publisher.gamesReleased}}</template>
-      <template v-slot:cell(gamesWillRelease)="data">{{data.item.publisher.gamesWillRelease}}</template>
+      <template v-slot:cell(gamesReleased)="data">
+        <span v-if="data.item.publisher">{{data.item.publisher.gamesReleased}}</span>
+      </template>
+      <template v-slot:cell(gamesWillRelease)="data">
+        <span v-if="data.item.publisher">{{data.item.publisher.gamesWillRelease}}</span>
+      </template>
     </b-table>
   </div>
 </template>
