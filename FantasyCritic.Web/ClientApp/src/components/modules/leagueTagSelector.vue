@@ -4,6 +4,8 @@
       <h5 class="help-text">Drag and Drop to Rearrange</h5>
       <b-button variant="warning" class="reset-button" v-on:click="resetValues">Reset Changes</b-button>
     </div>
+    <div class="alert alert-warning" v-show="showWarning && !showDanger">You've chosen slightly non-standard settings. Be sure this is what you want.</div>
+    <div class="alert alert-danger" v-show="showDanger">The settings you have selected are REALLY not recommended, unless you really know what you are doing and want a highly custom league.</div>
     <div class="tag-flex-container">
       <div class="tag-flex-drag">
         <draggable class="tag-drag-list" :list="banned" group="tags" @change="updateValue">
@@ -62,6 +64,34 @@
       tagOptions() {
         return this.$store.getters.allTags;
       },
+      showWarning() {
+        let recommendedAllowedTags = [
+          'Reimagining',
+          'PlannedForEarlyAccess',
+          'WillReleaseInternationallyFirst',
+        ];
+        let recommendedBannedTags = [
+          'DirectorsCut',
+          'ReleasedInternationally',
+          'CurrentlyInEarlyAccess'
+        ];
+        let bannedIntersection = _.intersection(this.banned, recommendedAllowedTags);
+        let allowedIntersection = _.intersection(this.allowed, recommendedBannedTags);
+        return bannedIntersection.length > 0 || allowedIntersection.length > 0;
+      },
+      showDanger() {
+        let recommendedAllowedTags = [
+          'NewGame',
+          'PlannedForEarlyAccess',
+          'WillReleaseInternationallyFirst'
+        ];
+        let recommendedBannedTags = [
+          'Port'
+        ];
+        let bannedIntersection = _.intersection(this.banned, recommendedAllowedTags);
+        let allowedIntersection = _.intersection(this.allowed, recommendedBannedTags);
+        return bannedIntersection.length > 0 || allowedIntersection.length > 0;
+      }
     },
     methods: {
       handleInput(e) {
