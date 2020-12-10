@@ -43,7 +43,6 @@ import Vue from 'vue';
 import axios from 'axios';
 import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
-import EligibilityBadge from '@/components/modules/eligibilityBadge';
 import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
 
 export default {
@@ -57,7 +56,6 @@ export default {
   },
   components: {
     MasterGamePopover,
-    EligibilityBadge,
     MasterGamesTable
   },
   computed: {

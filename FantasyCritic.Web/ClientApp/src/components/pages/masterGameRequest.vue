@@ -47,61 +47,6 @@
                   <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
                 </div>
 
-                <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
-                  <label class="control-label eligibility-slider-label">Eligibility Level</label>
-                  <p class="eligibility-explanation">
-                    Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
-                  </p>
-                  <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                              :marks="marks" :tooltip="'always'">
-                  </vue-slider>
-                  <div class="eligibility-description">
-                    <h3>{{ selectedEligibilityLevel.name }}</h3>
-                    <p>{{ selectedEligibilityLevel.description }}</p>
-                    <p>Examples: </p>
-                    <ul>
-                      <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <b-form-checkbox v-model="yearlyInstallment">
-                    <span class="checkbox-label">Is this game a yearly installment?</span>
-                    <p>Check this for games like yearly sports titles.</p>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="earlyAccess">
-                    <span class="checkbox-label">Is this game currently in early access?</span>
-                    <p>Games that are already playable in early access are only selectable in some leagues.</p>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="freeToPlay">
-                    <span class="checkbox-label">Is this game free to play?</span>
-                    <p>Check this for free to play games.</p>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="releasedInternationally">
-                    <span class="checkbox-label">Has this game already been released in a non-English speaking region?</span>
-                    <p>Games that are already playable in other regions are only selectable in some leagues.</p>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="expansionPack">
-                    <span class="checkbox-label">Is this an expansion pack or DLC?</span>
-                    <p>Expansion packs are only selectable in some leagues.</p>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="unannouncedGame">
-                    <span class="checkbox-label">Is this unannounced?</span>
-                    <p>If the game is only a rumor right now, check this box.</p>
-                  </b-form-checkbox>
-                </div>
-
                 <div class="form-group">
                   <label for="requestNote" class="control-label">Any other notes?</label>
                   <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
@@ -177,48 +122,15 @@ export default {
       openCriticLink: '',
       releaseDate: new Date(),
       estimatedReleaseDate: '',
-      yearlyInstallment: false,
-      earlyAccess: false,
-      freeToPlay: false,
-      releasedInternationally: false,
-      expansionPack: false,
-      unannouncedGame: false,
-      eligibilityLevel: 0,
-      possibleEligibilityLevels: null,
       hasReleaseDate: false
     };
   },
   components: {
     MasterGamePopover,
-    vueSlider,
     'popper': Popper,
   },
   computed: {
-    minimumPossibleEligibilityLevel() {
-      return 0;
-    },
-    maximumPossibleEligibilityLevel() {
-      if (!this.possibleEligibilityLevels) {
-        return 0;
-      }
-      let maxEligibilityLevel = _.maxBy(this.possibleEligibilityLevels, 'level');
-      return maxEligibilityLevel.level;
-    },
-    selectedEligibilityLevel() {
-      let matchingLevel = _.filter(this.possibleEligibilityLevels, { 'level': this.eligibilityLevel });
-      return matchingLevel[0];
-    },
-    marks() {
-      if (!this.possibleEligibilityLevels) {
-        return [];
-      }
 
-      let levels =  this.possibleEligibilityLevels.map(function (v) {
-        return v.level;
-      });
-
-      return levels;
-    }
   },
   methods: {
     fetchMyRequests() {
@@ -231,28 +143,13 @@ export default {
 
         });
     },
-    fetchEligibilityLevels() {
-      axios
-        .get('/api/Game/EligibilityLevels')
-        .then(response => {
-          this.possibleEligibilityLevels = response.data;
-        })
-        .catch(returnedError => (this.error = returnedError));
-    },
     sendMasterGameRequestRequest() {
       let request = {
         gameName: this.gameName,
         requestNote: this.requestNote,
         steamLink: this.steamLink,
         openCriticLink: this.openCriticLink,
-        estimatedReleaseDate: this.estimatedReleaseDate,
-        eligibilityLevel: this.eligibilityLevel,
-        yearlyInstallment: this.yearlyInstallment,
-        earlyAccess: this.earlyAccess,
-        freeToPlay: this.freeToPlay,
-        releasedInternationally: this.releasedInternationally,
-        expansionPack: this.expansionPack,
-        unannouncedGame: this.unannouncedGame
+        estimatedReleaseDate: this.estimatedReleaseDate
       };
 
       if (this.hasReleaseDate) {
@@ -282,13 +179,6 @@ export default {
       this.openCriticLink = '';
       this.releaseDate = '';
       this.estimatedReleaseDate = '';
-      this.eligibilitySettings.yearlyInstallment = false;
-      this.eligibilitySettings.earlyAccess = false;
-      this.eligibilitySettings.freeToPlay = false;
-      this.eligibilitySettings.releasedInternationally = false;
-      this.eligibilitySettings.expansionPack = false;
-      this.eligibilitySettings.unannouncedGame = false;
-      this.eligibilitySettings.eligibilityLevel = 0;
       this.$validator.reset();
     },
     cancelRequest(request) {
@@ -320,7 +210,6 @@ export default {
     }
   },
   mounted() {
-    this.fetchEligibilityLevels();
     this.fetchMyRequests();
   }
 };

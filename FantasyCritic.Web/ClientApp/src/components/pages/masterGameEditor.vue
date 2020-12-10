@@ -152,7 +152,6 @@
             if (this.masterGame.maximumReleaseDate === '9999-12-31') {
               this.masterGame.maximumReleaseDate = null;
             }
-            this.eligibilityLevel = this.masterGame.eligibilitySettings.eligibilityLevel.level;
           })
           .catch(returnedError => (this.error = returnedError));
       },
@@ -247,7 +246,6 @@
       }
     },
     async mounted() {
-      await this.fetchEligibilityLevels();
       await this.fetchMasterGame();
       await this.fetchChangeRequest();
       this.parseEstimatedReleaseDate();

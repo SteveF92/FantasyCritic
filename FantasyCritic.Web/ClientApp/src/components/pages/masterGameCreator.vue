@@ -159,13 +159,6 @@
           internationalReleaseDate: this.internationalReleaseDate,
           releaseDate: this.releaseDate,
           openCriticID: this.openCriticID,
-          eligibilityLevel: this.eligibilityLevel,
-          yearlyInstallment: this.yearlyInstallment,
-          earlyAccess: this.earlyAccess,
-          freeToPlay: this.freeToPlay,
-          releasedInternationally: this.releasedInternationally,
-          expansionPack: this.expansionPack,
-          unannouncedGame: this.unannouncedGame,
           tags: tagNames,
           notes: this.notes
         };
