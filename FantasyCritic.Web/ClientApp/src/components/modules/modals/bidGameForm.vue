@@ -27,7 +27,6 @@
         <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
         <h3 class="text-black" v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames"
-                                  :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel"
                                   v-on:input="newGameSelected"></possibleMasterGamesTable>
       </div>
 
@@ -98,7 +97,7 @@ export default {
       return userStandardGames.length >= standardGameSlots;
     }
   },
-  props: ['leagueYear', 'maximumEligibilityLevel'],
+  props: ['leagueYear'],
   methods: {
     searchGame() {
       this.clearDataExceptSearch();

@@ -48,7 +48,7 @@ export default {
     StatusBadge,
     MasterGamePopover
   },
-  props: ['possibleGames', 'value', 'maximumEligibilityLevel'],
+  props: ['possibleGames', 'value'],
   computed: {
     rows() {
       return this.possibleGames.length;

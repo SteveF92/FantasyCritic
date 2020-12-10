@@ -112,7 +112,6 @@ export default {
         .get('/api/League/LeagueOptions')
         .then(response => {
           this.possibleLeagueOptions = response.data;
-          this.maximumEligibilityLevel = this.possibleLeagueOptions.defaultMaximumEligibilityLevel;
         })
         .catch(returnedError => (this.error = returnedError));
     },
@@ -130,13 +129,6 @@ export default {
         unlimitedWillNotReleaseDroppableGames: this.leagueYearSettings.unlimitedWillNotReleaseDroppableGames,
         unlimitedWillReleaseDroppableGames: this.leagueYearSettings.unlimitedWillReleaseDroppableGames,
         dropOnlyDraftGames: this.leagueYearSettings.dropOnlyDraftGames,
-        maximumEligibilityLevel: this.leagueYearSettings.maximumEligibilityLevel,
-        allowYearlyInstallments: this.leagueYearSettings.allowYearlyInstallments,
-        allowEarlyAccess: this.leagueYearSettings.allowEarlyAccess,
-        allowFreeToPlay: this.leagueYearSettings.allowFreeToPlay,
-        allowReleasedInternationally: this.leagueYearSettings.allowReleasedInternationally,
-        allowExpansions: this.leagueYearSettings.allowExpansions,
-        allowUnannouncedGames: this.leagueYearSettings.allowUnannouncedGames,
         tags: this.leagueYearSettings.tags,
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,
@@ -163,13 +155,6 @@ export default {
       gamesToDraft: '',
       counterPicks: '',
       initialYear: '',
-      maximumEligibilityLevel: 2,
-      allowYearlyInstallments: false,
-      allowEarlyAccess: false,
-      allowFreeToPlay: false,
-      allowReleasedInternationally: false,
-      allowExpansions: false,
-      allowUnannouncedGames: false,
       tags: {
         required: [],
         banned: [

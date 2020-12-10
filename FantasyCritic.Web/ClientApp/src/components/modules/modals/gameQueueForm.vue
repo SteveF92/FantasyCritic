@@ -14,8 +14,7 @@
     <b-button v-show="!showingTopAvailable" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
     <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
 
-    <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
-                              v-on:input="addGameToQueue"></possibleMasterGamesTable>
+    <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possibleGames="possibleMasterGames" v-on:input="addGameToQueue"></possibleMasterGamesTable>
 
     <hr />
     <h3 class="text-black">Current Watchlist</h3>
@@ -65,7 +64,7 @@ export default {
     draggable,
     PossibleMasterGamesTable
   },
-  props: ['publisher', 'maximumEligibilityLevel', 'year'],
+  props: ['publisher', 'year'],
   data() {
     return {
       queuedGames: null,

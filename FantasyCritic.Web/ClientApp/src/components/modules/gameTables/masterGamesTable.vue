@@ -49,7 +49,6 @@ import Vue from 'vue';
 import axios from 'axios';
 import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
-import EligibilityBadge from '@/components/modules/eligibilityBadge';
 import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
 import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
@@ -74,17 +73,10 @@ export default {
   },
   components: {
     MasterGamePopover,
-    EligibilityBadge,
     MasterGamesTable,
     MasterGameTagBadge
   },
   computed: {
-    maximumEligibilityLevel() {
-      let level = {
-        level: 5
-      };
-      return level;
-    },
     tableIsSmall() {
       if (window.innerWidth < 500) {
         return true;

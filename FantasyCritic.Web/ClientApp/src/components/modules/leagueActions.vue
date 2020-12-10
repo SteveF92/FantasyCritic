@@ -137,15 +137,15 @@
       <eligibilityOverridesModal :eligibilityOverrides="leagueYear.eligibilityOverrides"></eligibilityOverridesModal>
 
       <div v-if="leagueYear.userPublisher">
-        <playerDraftGameForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :userPublisher="leagueYear.userPublisher" :isManager="league.isManager" :year="leagueYear.year" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
+        <playerDraftGameForm :userPublisher="leagueYear.userPublisher" :isManager="league.isManager" :year="leagueYear.year" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
         <playerDraftCounterPickForm :userPublisher="leagueYear.userPublisher" :availableCounterPicks="leagueYear.availableCounterPicks" v-on:counterPickDrafted="counterPickDrafted"></playerDraftCounterPickForm>
 
-        <bidGameForm :leagueYear="leagueYear" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" v-on:gameBid="gameBid"></bidGameForm>
+        <bidGameForm :leagueYear="leagueYear" v-on:gameBid="gameBid"></bidGameForm>
         <currentBidsForm :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
 
         <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
         <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
-        <gameQueueForm :publisher="leagueYear.userPublisher" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year"></gameQueueForm>
+        <gameQueueForm :publisher="leagueYear.userPublisher" :year="leagueYear.year"></gameQueueForm>
 
         <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
 
@@ -154,14 +154,14 @@
         <manageActivePlayersForm :league="league" :leagueYear="leagueYear" v-on:activePlayersEdited="activePlayersEdited"></manageActivePlayersForm>
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
         <editAutoDraftForm :publisher="leagueYear.userPublisher" v-on:autoDraftSet="autoDraftSet"></editAutoDraftForm>
-        <managerDraftGameForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
-        <managerDraftCounterPickForm :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :availableCounterPicks="leagueYear.availableCounterPicks"
+        <managerDraftGameForm :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
+        <managerDraftCounterPickForm :availableCounterPicks="leagueYear.availableCounterPicks"
                                      :nextPublisherUp="nextPublisherUp" v-on:counterPickDrafted="managerCounterPickDrafted"></managerDraftCounterPickForm>
         <undoLastDraftActionModal v-on:undoLastDraftAction="undoLastDraftAction"></undoLastDraftActionModal>
         <setPauseModal v-on:setPause="setPause" :paused="leagueYear.playStatus.draftIsPaused"></setPauseModal>
         <resetDraftModal v-on:resetDraft="resetDraft"></resetDraftModal>
-        <managerClaimGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
-        <managerAssociateGameForm :publishers="leagueYear.publishers" :maximumEligibilityLevel="leagueYear.eligibilitySettings.eligibilityLevel" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
+        <managerClaimGameForm :publishers="leagueYear.publishers" :year="leagueYear.year" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
+        <managerAssociateGameForm :publishers="leagueYear.publishers" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
         <managerEditPublishersForm v-on:publishersEdited="publishersEdited" :leagueYear="leagueYear"></managerEditPublishersForm>
         <managerSetAutoDraftForm v-on:publishersAutoDraftSet="publishersAutoDraftSet" :leagueYear="leagueYear"></managerSetAutoDraftForm>
         <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>

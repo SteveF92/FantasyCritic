@@ -27,8 +27,7 @@
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
-                                  v-on:input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
 
         <label v-if="associateMasterGame" for="associateMasterGame" class="control-label">Selected Game: {{associateMasterGame.gameName}}</label>
       </div>
@@ -78,7 +77,7 @@ export default {
   components: {
     PossibleMasterGamesTable
   },
-  props: ['publishers', 'maximumEligibilityLevel', 'year'],
+  props: ['publishers', 'year'],
   methods: {
     searchGame() {
       this.possibleMasterGames = [];

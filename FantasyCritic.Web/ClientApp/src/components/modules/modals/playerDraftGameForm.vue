@@ -16,8 +16,7 @@
         <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
         <h3 class="text-black" v-show="showingQueuedGames">Watchlist</h3>
         <h3 class="text-black" v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" :maximumEligibilityLevel="maximumEligibilityLevel"
-                                  v-on:input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
       </div>
 
       <div v-show="searched && !draftMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
@@ -97,7 +96,7 @@ export default {
       return (this.draftUnlistedGame || this.draftMasterGame);
     }
   },
-  props: ['userPublisher', 'maximumEligibilityLevel', 'isManager', 'year'],
+  props: ['userPublisher', 'isManager', 'year'],
   methods: {
     searchGame() {
       this.clearDataExceptSearch();

@@ -248,31 +248,6 @@ export default {
     LeagueTagSelector
   },
   computed: {
-    minimumPossibleEligibilityLevel() {
-      return 0;
-    },
-    maximumPossibleEligibilityLevel() {
-      if (!this.possibleLeagueOptions.eligibilityLevels) {
-        return 0;
-      }
-      let maxEligibilityLevel = _.maxBy(this.possibleLeagueOptions.eligibilityLevels, 'level');
-      return maxEligibilityLevel.level;
-    },
-    selectedEligibilityLevel() {
-      let matchingLevel = _.filter(this.possibleLeagueOptions.eligibilityLevels, { 'level': this.value.maximumEligibilityLevel });
-      return matchingLevel[0];
-    },
-    marks() {
-      if (!this.possibleLeagueOptions.eligibilityLevels) {
-        return [];
-      }
-  
-      let levels =  this.possibleLeagueOptions.eligibilityLevels.map(function (v) {
-        return v.level;
-      });
-  
-      return levels;
-    },
     local() {
       return this.value;
     },
