@@ -40,6 +40,10 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         public bool UnlimitedWillReleaseDroppableGames { get; set; }
         [Required]
         public bool DropOnlyDraftGames { get; set; }
+        [Required]
+        public bool CounterPicksBlockDrops { get; set; }
+        [Required]
+        public int MinimumBidAmount { get; set; }
 
         [Required]
         public int InitialYear { get; set; }
@@ -109,8 +113,8 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             var leagueTags = Tags.ToDomain(tagDictionary);
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
-                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, InitialYear,
-                leagueTags, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
+                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
+                InitialYear, leagueTags, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }
     }

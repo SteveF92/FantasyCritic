@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Domain
     public class LeagueOptions
     {
         public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
-            bool dropOnlyDraftGames, IEnumerable<LeagueTagStatus> leagueTags, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
+            bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
@@ -22,6 +22,8 @@ namespace FantasyCritic.Lib.Domain
             WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
             WillReleaseDroppableGames = willReleaseDroppableGames;
             DropOnlyDraftGames = dropOnlyDraftGames;
+            CounterPicksBlockDrops = counterPicksBlockDrops;
+            MinimumBidAmount = minimumBidAmount;
             LeagueTags = leagueTags.ToList();
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
@@ -38,6 +40,8 @@ namespace FantasyCritic.Lib.Domain
             WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
             WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
             DropOnlyDraftGames = parameters.DropOnlyDraftGames;
+            CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
+            MinimumBidAmount = parameters.MinimumBidAmount;
             LeagueTags = parameters.LeagueTags;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
@@ -54,6 +58,8 @@ namespace FantasyCritic.Lib.Domain
             WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
             WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
             DropOnlyDraftGames = parameters.DropOnlyDraftGames;
+            CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
+            MinimumBidAmount = parameters.MinimumBidAmount;
             LeagueTags = parameters.LeagueTags;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
@@ -68,6 +74,8 @@ namespace FantasyCritic.Lib.Domain
         public int WillNotReleaseDroppableGames { get; }
         public int WillReleaseDroppableGames { get; }
         public bool DropOnlyDraftGames { get; }
+        public bool CounterPicksBlockDrops { get; }
+        public int MinimumBidAmount { get; }
         public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }

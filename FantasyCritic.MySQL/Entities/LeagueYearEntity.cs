@@ -29,6 +29,8 @@ namespace FantasyCritic.MySQL.Entities
             WillNotReleaseDroppableGames = options.WillNotReleaseDroppableGames;
             WillReleaseDroppableGames = options.WillReleaseDroppableGames;
             DropOnlyDraftGames = options.DropOnlyDraftGames;
+            CounterPicksBlockDrops = options.CounterPicksBlockDrops;
+            MinimumBidAmount = options.MinimumBidAmount;
 
             DraftSystem = options.DraftSystem.Value;
             PickupSystem = options.PickupSystem.Value;
@@ -45,6 +47,8 @@ namespace FantasyCritic.MySQL.Entities
         public int WillNotReleaseDroppableGames { get; set; }
         public int WillReleaseDroppableGames { get; set; }
         public bool DropOnlyDraftGames { get; set; }
+        public bool CounterPicksBlockDrops { get; set; }
+        public int MinimumBidAmount { get; set; }
         public string DraftSystem { get; set; }
         public string PickupSystem { get; set; }
         public string ScoringSystem { get; set; }
@@ -59,7 +63,7 @@ namespace FantasyCritic.MySQL.Entities
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-                DropOnlyDraftGames, leagueTags, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
+                DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
 
             Instant? draftStartedTimestamp = null;
             if (DraftStartedTimestamp.HasValue)

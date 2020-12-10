@@ -9,8 +9,8 @@ namespace FantasyCritic.Lib.Domain.Requests
     public class EditLeagueYearParameters
     {
         public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks,
-            int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, IEnumerable<LeagueTagStatus> leagueTags,
-            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
+            int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount,
+            IEnumerable<LeagueTagStatus> leagueTags, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             Manager = manager;
             LeagueID = leagueID;
@@ -22,6 +22,8 @@ namespace FantasyCritic.Lib.Domain.Requests
             WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
             WillReleaseDroppableGames = willReleaseDroppableGames;
             DropOnlyDraftGames = dropOnlyDraftGames;
+            CounterPicksBlockDrops = counterPicksBlockDrops;
+            MinimumBidAmount = minimumBidAmount;
             LeagueTags = leagueTags.ToList();
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
@@ -39,6 +41,8 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int WillNotReleaseDroppableGames { get; }
         public int WillReleaseDroppableGames { get; }
         public bool DropOnlyDraftGames { get; }
+        public bool CounterPicksBlockDrops { get; }
+        public int MinimumBidAmount { get; }
         public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
