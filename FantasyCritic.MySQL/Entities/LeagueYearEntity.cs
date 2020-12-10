@@ -44,7 +44,6 @@ namespace FantasyCritic.MySQL.Entities
         public int FreeDroppableGames { get; set; }
         public int WillNotReleaseDroppableGames { get; set; }
         public int WillReleaseDroppableGames { get; set; }
-        public int MaximumEligibilityLevel { get; set; }
         public bool DropOnlyDraftGames { get; set; }
         public string DraftSystem { get; set; }
         public string PickupSystem { get; set; }

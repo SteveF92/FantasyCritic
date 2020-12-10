@@ -17,13 +17,11 @@ namespace FantasyCritic.Web.Models.Responses
             DraftSystems = draftSystems.Select(x => x.Value).ToList();
             PickupSystems = pickupSystems.Select(x => x.Value).ToList();
             ScoringSystems = scoringSystems.Select(x => x.Name).ToList();
-            DefaultMaximumEligibilityLevel = 2;
         }
 
         public IReadOnlyList<int> OpenYears { get; }
         public IReadOnlyList<string> DraftSystems { get; }
         public IReadOnlyList<string> PickupSystems { get; }
         public IReadOnlyList<string> ScoringSystems { get; }
-        public int DefaultMaximumEligibilityLevel { get; }
     }
 }

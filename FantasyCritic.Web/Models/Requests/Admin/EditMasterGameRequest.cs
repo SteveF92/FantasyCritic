@@ -22,20 +22,6 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         public LocalDate? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         [Required]
-        public int EligibilityLevel { get; set; }
-        [Required]
-        public bool YearlyInstallment { get; set; }
-        [Required]
-        public bool EarlyAccess { get; set; }
-        [Required]
-        public bool FreeToPlay { get; set; }
-        [Required]
-        public bool ReleasedInternationally { get; set; }
-        [Required]
-        public bool ExpansionPack { get; set; }
-        [Required]
-        public bool UnannouncedGame { get; set; }
-        [Required]
         public string BoxartFileName { get; set; }
         [Required]
         public string Notes { get; set; }
