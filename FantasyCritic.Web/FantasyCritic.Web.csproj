@@ -36,6 +36,29 @@
     <ProjectReference Include="..\FantasyCritic.SendGrid\FantasyCritic.SendGrid.csproj" />
   </ItemGroup>
 
+    <PropertyGroup>
+        <PreserveCompilationReferences>true</PreserveCompilationReferences>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Update="EmailTemplates\ChangeEmail.cshtml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="EmailTemplates\ConfirmEmail.cshtml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="EmailTemplates\LeagueInvite.cshtml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="EmailTemplates\PasswordReset.cshtml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="EmailTemplates\SiteInvite.cshtml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
