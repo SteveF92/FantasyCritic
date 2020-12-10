@@ -20,6 +20,10 @@
             <td>{{leagueYearOptions.counterPicks}}</td>
           </tr>
           <tr>
+            <th class="bg-primary">Minimum Bid Amount</th>
+            <td>{{leagueYearOptions.minimumBidAmount}}</td>
+          </tr>
+          <tr>
             <th class="bg-primary">"Any Unreleased" Droppable Games</th>
             <td v-show="!leagueYearOptions.unlimitedFreeDroppableGames">{{leagueYearOptions.freeDroppableGames}}</td>
             <td v-show="leagueYearOptions.unlimitedFreeDroppableGames">Unlimited</td>
@@ -37,6 +41,10 @@
           <tr>
             <th class="bg-primary">Drop Only Drafted Games</th>
             <td>{{leagueYearOptions.dropOnlyDraftGames | yesNo }}</td>
+          </tr>
+          <tr>
+            <th class="bg-primary">Counter Picks Block Drops</th>
+            <td>{{leagueYearOptions.counterPicksBlockDrops | yesNo }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Banned Tags</th>
