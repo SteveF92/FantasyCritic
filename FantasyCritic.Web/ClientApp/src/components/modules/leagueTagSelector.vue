@@ -1,12 +1,14 @@
 <template>
   <div>
     <div class="reset-button-flex">
+      <h5 class="help-text">Drag and Drop to Rearrange</h5>
       <b-button variant="warning" class="reset-button" v-on:click="resetValues">Reset Changes</b-button>
     </div>
     <div class="tag-flex-container">
       <div class="tag-flex-drag">
         <draggable class="tag-drag-list" :list="banned" group="tags" @change="updateValue">
           <div class="tag-drag-item" v-for="(element, index) in banned" :key="element">
+            <font-awesome-icon icon="bars" />
             <masterGameTagBadge :tagName="element"></masterGameTagBadge>
           </div>
           <span slot="header" class="tag-header">Banned Tags</span>
@@ -16,6 +18,7 @@
       <div class="tag-flex-drag">
         <draggable class="tag-drag-list" :list="allowed" group="tags" @change="updateValue">
           <div class="tag-drag-item" v-for="(element, index) in allowed" :key="element">
+            <font-awesome-icon icon="bars" />
             <masterGameTagBadge :tagName="element"></masterGameTagBadge>
           </div>
           <span slot="header" class="tag-header">Allowed Tags</span>
@@ -103,7 +106,7 @@
 <style>
   .reset-button-flex {
     display: flex;
-    flex-direction: row-reverse;
+    justify-content: space-between;
     margin-bottom: 10px;
   }
 
@@ -119,8 +122,14 @@
     border-radius: 10px;
     padding: 5px;
   }
-  .tag-drag-item{
+  .tag-drag-item {
     margin: 10px;
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    background-color: #5B6977 !important;
+    border: 1px solid #ddd;
   }
   .tag-header {
     padding-left: 10px;
