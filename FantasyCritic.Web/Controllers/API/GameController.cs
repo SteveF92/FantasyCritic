@@ -91,8 +91,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(request.EligibilityLevel);
-            MasterGameRequest domainRequest = request.ToDomain(currentUser, _clock.GetCurrentInstant(), eligibilityLevel);
+            MasterGameRequest domainRequest = request.ToDomain(currentUser, _clock.GetCurrentInstant());
 
             await _interLeagueService.CreateMasterGameRequest(domainRequest);
             return Ok();
@@ -248,13 +247,6 @@ namespace FantasyCritic.Web.Controllers.API
 
             var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, _clock)).ToList();
             return viewModels;
-        }
-
-        public async Task<IActionResult> EligibilityLevels()
-        {
-            IReadOnlyList<EligibilityLevel> eligibilityLevels = await _interLeagueService.GetEligibilityLevels();
-            var vms = eligibilityLevels.Select(x => new EligibilityLevelViewModel(x, true));
-            return Ok(vms);
         }
 
         public async Task<ActionResult<List<SupportedYearViewModel>>> SupportedYears()

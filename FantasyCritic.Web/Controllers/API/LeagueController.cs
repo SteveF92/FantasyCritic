@@ -78,9 +78,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
             
             var openYearInts = openYears.Select(x => x.Year);
-            IReadOnlyList<EligibilityLevel> eligibilityLevels = await _interLeagueService.GetEligibilityLevels();
             LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYearInts, DraftSystem.GetAllPossibleValues(),
-                PickupSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), eligibilityLevels);
+                PickupSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues());
 
             return Ok(viewModel);
         }

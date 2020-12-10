@@ -96,8 +96,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
-            EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(request.MaximumEligibilityLevel);
-            LeagueCreationParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel, tagDictionary);
+            LeagueCreationParameters domainRequest = request.ToDomain(currentUser, tagDictionary);
             var league = await _fantasyCriticService.CreateLeague(domainRequest);
             if (league.IsFailure)
             {
@@ -275,8 +274,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
-            EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(request.MaximumEligibilityLevel);
-            EditLeagueYearParameters domainRequest = request.ToDomain(currentUser, eligibilityLevel, tagDictionary);
+            EditLeagueYearParameters domainRequest = request.ToDomain(currentUser, tagDictionary);
             Result result = await _fantasyCriticService.EditLeague(league.Value, domainRequest);
             if (result.IsFailure)
             {
@@ -1433,7 +1431,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't change the override setting of a game that game out in a previous year.");
             }
 
-            bool alreadyEligible = !leagueYear.Value.Options.AllowedEligibilitySettings.GameIsEligible(masterGame.Value).Any();
+            bool alreadyEligible = !leagueYear.Value.Options.LeagueTags.GameIsEligible(masterGame.Value).Any();
             bool isAllowing = request.Eligible.HasValue && request.Eligible.Value;
             bool isBanning = request.Eligible.HasValue && !request.Eligible.Value;
 

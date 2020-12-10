@@ -25,16 +25,15 @@ namespace FantasyCritic.Web.Models.Responses
             IsReleased = masterGame.IsReleased(clock.GetCurrentInstant());
             CriticScore = masterGame.CriticScore;
             AveragedScore = masterGame.AveragedScore;
-            EligibilitySettings = new EligibilitySettingsViewModel(masterGame.EligibilitySettings, false);
             Notes = masterGame.Notes;
             OpenCriticID = masterGame.OpenCriticID;
-            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, masterGame.EligibilitySettings, clock)).ToList();
+            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, clock)).ToList();
             Tags = masterGame.Tags.Select(x => x.Name).ToList();
             BoxartFileName = masterGame.BoxartFileName;
             AddedTimestamp = masterGame.AddedTimestamp;
         }
 
-        public MasterGameViewModel(MasterSubGame masterSubGame, EligibilitySettings eligibilitySettings, IClock clock)
+        public MasterGameViewModel(MasterSubGame masterSubGame, IClock clock)
         {
             MasterGameID = masterSubGame.MasterGameID;
             GameName = masterSubGame.GameName;
@@ -45,7 +44,6 @@ namespace FantasyCritic.Web.Models.Responses
             IsReleased = masterSubGame.IsReleased(clock.GetCurrentInstant());
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
-            EligibilitySettings = new EligibilitySettingsViewModel(eligibilitySettings, false);
             OpenCriticID = masterSubGame.OpenCriticID;
             SubGames = null;
         }
@@ -67,7 +65,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool IsReleased { get; }
         public decimal? CriticScore { get; }
         public bool AveragedScore { get; }
-        public EligibilitySettingsViewModel EligibilitySettings { get; }
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameViewModel> SubGames { get; }
         public IReadOnlyList<string> Tags { get; }

@@ -114,16 +114,6 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel)
-        {
-            return Task.FromResult(EligibilityLevelFactory.GetEligibilityLevels().Single(x => x.Level == eligibilityLevel));
-        }
-
-        public Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
-        {
-            return Task.FromResult(EligibilityLevelFactory.GetEligibilityLevels());
-        }
-
         public Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
         {
             Maybe<MasterGame> masterGame = _masterGames.SingleOrDefault(x => x.MasterGameID == masterGameID);

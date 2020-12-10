@@ -44,20 +44,6 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         public int InitialYear { get; set; }
         [Required]
-        public int MaximumEligibilityLevel { get; set; }
-        [Required]
-        public bool AllowYearlyInstallments { get; set; }
-        [Required]
-        public bool AllowEarlyAccess { get; set; }
-        [Required]
-        public bool AllowFreeToPlay { get; set; }
-        [Required]
-        public bool AllowReleasedInternationally { get; set; }
-        [Required]
-        public bool AllowExpansions { get; set; }
-        [Required]
-        public bool AllowUnannouncedGames { get; set; }
-        [Required]
         public string DraftSystem { get; set; }
         [Required]
         public string PickupSystem { get; set; }
@@ -98,7 +84,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             return true;
         }
 
-        public LeagueCreationParameters ToDomain(FantasyCriticUser manager, EligibilityLevel maximumEligibilityLevel, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+        public LeagueCreationParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
@@ -123,8 +109,8 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             var leagueTags = Tags.ToDomain(tagDictionary);
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
-                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, InitialYear, maximumEligibilityLevel, AllowYearlyInstallments, AllowEarlyAccess,
-                AllowFreeToPlay, AllowReleasedInternationally, AllowExpansions, AllowUnannouncedGames, leagueTags, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
+                freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, InitialYear,
+                leagueTags, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }
     }

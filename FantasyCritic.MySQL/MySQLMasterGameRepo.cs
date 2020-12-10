@@ -18,7 +18,6 @@ namespace FantasyCritic.MySQL
     public class MySQLMasterGameRepo : IMasterGameRepo
     {
         private readonly string _connectionString;
-        private IReadOnlyList<EligibilityLevel> _eligibilityLevels;
         private readonly Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
         private readonly IReadOnlyFantasyCriticUserStore _userStore;
 
@@ -52,13 +51,12 @@ namespace FantasyCritic.MySQL
                 List<MasterGame> masterGames = new List<MasterGame>();
                 foreach (var entity in masterGameResults)
                 {
-                    EligibilityLevel eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel);
                     var tagAssociations = masterGameTagLookup[entity.MasterGameID].Select(x => x.TagName);
                     IReadOnlyList<MasterGameTag> tags = possibleTags
                         .Where(x => tagAssociations.Contains(x.Name))
                         .ToList();
 
-                    MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), eligibilityLevel, tags);
+                    MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags);
                     masterGames.Add(domain);
                 }
 
@@ -87,13 +85,12 @@ namespace FantasyCritic.MySQL
                 List<MasterGameYear> masterGames = new List<MasterGameYear>();
                 foreach (var entity in masterGameResults)
                 {
-                    EligibilityLevel eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel);
                     var tagAssociations = masterGameTagLookup[entity.MasterGameID].Select(x => x.TagName);
                     IReadOnlyList<MasterGameTag> tags = possibleTags
                         .Where(x => tagAssociations.Contains(x.Name))
                         .ToList();
 
-                    MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), eligibilityLevel, year, tags);
+                    MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), year, tags);
                     masterGames.Add(domain);
                 }
 
@@ -259,26 +256,6 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel)
-        {
-            var eligbilityLevel = await GetEligibilityLevels();
-            return eligbilityLevel.Single(x => x.Level == eligibilityLevel);
-        }
-
-        public async Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
-        {
-            if (_eligibilityLevels != null)
-            {
-                return _eligibilityLevels;
-            }
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                var entities = await connection.QueryAsync<EligibilityLevelEntity>("select * from tbl_settings_eligibilitylevel;");
-                _eligibilityLevels = entities.Select(x => x.ToDomain()).ToList();
-                return _eligibilityLevels;
-            }
-        }
-
         public async Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)
         {
             var sql = "select distinct MasterGameID from tbl_league_publishergame " +
@@ -405,20 +382,18 @@ namespace FantasyCritic.MySQL
 
         private async Task<IReadOnlyList<MasterGameRequest>> ConvertMasterGameRequestEntities(IEnumerable<MasterGameRequestEntity> entities)
         {
-            var eligibilityLevels = await GetEligibilityLevels();
             var masterGames = await GetMasterGames();
             var users = await _userStore.GetAllUsers();
             List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
             foreach (var entity in entities)
             {
-                EligibilityLevel eligibilityLevel = eligibilityLevels.Single(x => x.Level == entity.EligibilityLevel);
                 Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
                 if (entity.MasterGameID.HasValue)
                 {
                     masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID.Value);
                 }
 
-                MasterGameRequest domain = entity.ToDomain(users.Single(x => x.UserID == entity.UserID), eligibilityLevel, masterGame);
+                MasterGameRequest domain = entity.ToDomain(users.Single(x => x.UserID == entity.UserID), masterGame);
                 domainRequests.Add(domain);
             }
 
@@ -452,7 +427,6 @@ namespace FantasyCritic.MySQL
                     return Maybe<MasterGameRequest>.None;
                 }
 
-                var eligibilityLevel = await GetEligibilityLevel(entity.EligibilityLevel);
                 Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
                 if (entity.MasterGameID.HasValue)
                 {
@@ -461,7 +435,7 @@ namespace FantasyCritic.MySQL
 
                 var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
 
-                return entity.ToDomain(user, eligibilityLevel, masterGame);
+                return entity.ToDomain(user, masterGame);
             }
         }
 

@@ -295,6 +295,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var masterGameTags = await _interLeagueService.GetMasterGameTags();
             var masterGames = await _royaleService.GetMasterGamesForYearQuarter(yearQuarter.Value.YearQuarter);
             if (!string.IsNullOrWhiteSpace(gameName))
             {
@@ -305,14 +306,14 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGames = masterGames
                     .Where(x => x.WillReleaseInQuarter(yearQuarter.Value.YearQuarter))
                     .Where(x => !x.MasterGame.IsReleased(_clock.GetCurrentInstant()))
-                    .Where(x => !EligibilitySettings.GetRoyaleEligibilitySettings().GameIsEligible(x.MasterGame).Any())
+                    .Where(x => !LeagueTagExtensions.GetRoyaleEligibilitySettings(masterGameTags).GameIsEligible(x.MasterGame).Any())
                     .Take(100)
                     .ToList();
             }
 
             var viewModels = masterGames.Select(masterGame =>
                 new PossibleRoyaleMasterGameViewModel(masterGame, _clock, yearQuarter.Value, publisher.Value.PublisherGames.Any(y =>
-                    y.MasterGame.MasterGame.Equals(masterGame.MasterGame)))).ToList();
+                    y.MasterGame.MasterGame.Equals(masterGame.MasterGame)), masterGameTags)).ToList();
             return viewModels;
         }
     }

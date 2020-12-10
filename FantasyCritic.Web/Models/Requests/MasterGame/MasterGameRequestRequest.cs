@@ -17,17 +17,10 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
         public string OpenCriticLink { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         public string EstimatedReleaseDate { get; set; }
-        public int EligibilityLevel { get; set; }
-        public bool YearlyInstallment { get; set; }
-        public bool EarlyAccess { get; set; }
-        public bool FreeToPlay { get; set; }
-        public bool ReleasedInternationally { get; set; }
-        public bool ExpansionPack { get; set; }
-        public bool UnannouncedGame { get; set; }
 
         public string RequestNote { get; set; }
 
-        public MasterGameRequest ToDomain(FantasyCriticUser user, Instant requestTimestamp, EligibilityLevel eligibilityLevel)
+        public MasterGameRequest ToDomain(FantasyCriticUser user, Instant requestTimestamp)
         {
             int? steamID = null;
             var steamGameIDString = SubstringSearching.GetBetween(SteamLink, "/app/", "/");
@@ -42,8 +35,7 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
 
             int? openCriticID = URLParsingExtensions.GetOpenCriticIDFromURL(OpenCriticLink);
 
-            return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, ReleaseDate, EstimatedReleaseDate, eligibilityLevel,
-                YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame, false, null, null, Maybe<Lib.Domain.MasterGame>.None, false);
+            return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, ReleaseDate, EstimatedReleaseDate, false, null, null, Maybe<Lib.Domain.MasterGame>.None, false);
         }
     }
 }

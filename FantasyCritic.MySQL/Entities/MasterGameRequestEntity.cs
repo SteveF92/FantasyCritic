@@ -29,14 +29,6 @@ namespace FantasyCritic.MySQL.Entities
             ReleaseDate = domain.ReleaseDate?.ToDateTimeUnspecified();
             EstimatedReleaseDate = domain.EstimatedReleaseDate;
 
-            EligibilityLevel = domain.EligibilityLevel.Level;
-            YearlyInstallment = domain.YearlyInstallment;
-            EarlyAccess = domain.EarlyAccess;
-            FreeToPlay = domain.FreeToPlay;
-            ReleasedInternationally = domain.ReleasedInternationally;
-            ExpansionPack = domain.ExpansionPack;
-            UnannouncedGame = domain.UnannouncedGame;
-
             Answered = domain.Answered;
             ResponseTimestamp = domain.ResponseTimestamp?.ToDateTimeUtc();
             ResponseNote = domain.ResponseNote;
@@ -61,13 +53,6 @@ namespace FantasyCritic.MySQL.Entities
         public int? OpenCriticID { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public string EstimatedReleaseDate { get; set; }
-        public int EligibilityLevel { get; set; }
-        public bool YearlyInstallment { get; set; }
-        public bool EarlyAccess { get; set; }
-        public bool FreeToPlay { get; set; }
-        public bool ReleasedInternationally { get; set; }
-        public bool ExpansionPack { get; set; }
-        public bool UnannouncedGame { get; set; }
 
         //Response
         public bool Answered { get; set; }
@@ -77,7 +62,7 @@ namespace FantasyCritic.MySQL.Entities
         
         public bool Hidden { get; set; }
 
-        public MasterGameRequest ToDomain(FantasyCriticUser user, EligibilityLevel eligibilityLevel, Maybe<MasterGame> masterGame)
+        public MasterGameRequest ToDomain(FantasyCriticUser user, Maybe<MasterGame> masterGame)
         {
             Instant requestTimestamp = LocalDateTime.FromDateTime(RequestTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
             Instant? responseTimestamp = null;
@@ -92,8 +77,8 @@ namespace FantasyCritic.MySQL.Entities
                 releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
             }
 
-            return new MasterGameRequest(RequestID, user, requestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, releaseDate, EstimatedReleaseDate, eligibilityLevel,
-                YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame, Answered, responseTimestamp, ResponseNote, masterGame, Hidden);
+            return new MasterGameRequest(RequestID, user, requestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, releaseDate, EstimatedReleaseDate,
+                Answered, responseTimestamp, ResponseNote, masterGame, Hidden);
         }
     }
 }

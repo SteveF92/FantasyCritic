@@ -25,7 +25,6 @@ namespace FantasyCritic.Web.Models.Responses
             StandardGames = leagueYear.Options.StandardGames;
             GamesToDraft = leagueYear.Options.GamesToDraft;
             CounterPicks = leagueYear.Options.CounterPicks;
-            EligibilitySettings = new EligibilitySettingsViewModel(leagueYear.Options.AllowedEligibilitySettings, false);
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
@@ -110,7 +109,6 @@ namespace FantasyCritic.Web.Models.Responses
         public int StandardGames { get; }
         public int GamesToDraft { get; }
         public int CounterPicks { get; }
-        public EligibilitySettingsViewModel EligibilitySettings { get; }
         public string DraftSystem { get; }
         public string PickupSystem { get; }
         public string ScoringSystem { get; }

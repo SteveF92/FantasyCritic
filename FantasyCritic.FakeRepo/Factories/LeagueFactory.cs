@@ -24,13 +24,11 @@ namespace FantasyCritic.FakeRepo.Factories
         public static List<LeagueYear> GetLeagueYears()
         {
             var leagues = GetLeagues();
-            var eligibilityLevel = EligibilityLevelFactory.GetEligibilityLevels().Single(x => x.Level == 0);
             List<LeagueYear> leagueYears = new List<LeagueYear>();
             foreach (var league in leagues)
             {
-                var eligibilitySettings = new EligibilitySettings(eligibilityLevel, true, false, true, false, false, false);
                 var eligibilityOverrides = new List<EligibilityOverride>();
-                LeagueYear year = new LeagueYear(league, 2019, new LeagueOptions(12, 6, 1, 2, -1, 0, false, eligibilitySettings, new List<LeagueTagStatus>(),  DraftSystem.Flexible, PickupSystem.Budget, 
+                LeagueYear year = new LeagueYear(league, 2019, new LeagueOptions(12, 6, 1, 2, -1, 0, false, new List<LeagueTagStatus>(),  DraftSystem.Flexible, PickupSystem.Budget, 
                     ScoringSystem.GetScoringSystem("Standard"), true), PlayStatus.DraftFinal, eligibilityOverrides, Instant.FromUtc(2019, 1, 5, 12, 0, 0));
                 leagueYears.Add(year);
             }

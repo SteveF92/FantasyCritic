@@ -27,7 +27,6 @@ namespace FantasyCritic.Web.Models.Responses
             WillRelease = masterGame.WillRelease();
             CriticScore = masterGame.MasterGame.CriticScore;
             AveragedScore = masterGame.MasterGame.AveragedScore;
-            EligibilitySettings = new EligibilitySettingsViewModel(masterGame.MasterGame.EligibilitySettings, false);
             OpenCriticID = masterGame.MasterGame.OpenCriticID;
             SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, clock)).ToList();
             Tags = masterGame.MasterGame.Tags.Select(x => x.Name).ToList();
@@ -67,7 +66,6 @@ namespace FantasyCritic.Web.Models.Responses
             WillRelease = masterGame.WillRelease();
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
-            EligibilitySettings = new EligibilitySettingsViewModel(masterGame.MasterGame.EligibilitySettings, false);
             OpenCriticID = masterSubGame.OpenCriticID;
             SubGames = null;
 
@@ -106,7 +104,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool WillRelease { get; }
         public decimal? CriticScore { get; }
         public bool AveragedScore { get; }
-        public EligibilitySettingsViewModel EligibilitySettings { get; }
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameYearViewModel> SubGames { get; }
         public IReadOnlyList<string> Tags { get; }

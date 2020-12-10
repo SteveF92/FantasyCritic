@@ -28,13 +28,6 @@ namespace FantasyCritic.MySQL.Entities
             ReleaseDate = masterGameStats.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGameStats.MasterGame.OpenCriticID;
             CriticScore = masterGameStats.MasterGame.CriticScore;
-            EligibilityLevel = masterGameStats.MasterGame.EligibilitySettings.EligibilityLevel.Level;
-            YearlyInstallment = masterGameStats.MasterGame.EligibilitySettings.YearlyInstallment;
-            EarlyAccess = masterGameStats.MasterGame.EligibilitySettings.EarlyAccess;
-            FreeToPlay = masterGameStats.MasterGame.EligibilitySettings.FreeToPlay;
-            ReleasedInternationally = masterGameStats.MasterGame.EligibilitySettings.ReleasedInternationally;
-            ExpansionPack = masterGameStats.MasterGame.EligibilitySettings.ExpansionPack;
-            UnannouncedGame = masterGameStats.MasterGame.EligibilitySettings.UnannouncedGame;
             Notes = masterGameStats.MasterGame.Notes;
             BoxartFileName = masterGameStats.MasterGame.BoxartFileName;
             EligibilityChanged = masterGameStats.MasterGame.EligibilityChanged;
@@ -66,13 +59,6 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
-        public int EligibilityLevel { get; set; }
-        public bool YearlyInstallment { get; set; }
-        public bool EarlyAccess { get; set; }
-        public bool FreeToPlay { get; set; }
-        public bool ReleasedInternationally { get; set; }
-        public bool ExpansionPack { get; set; }
-        public bool UnannouncedGame { get; set; }
         public string Notes { get; set; }
         public string BoxartFileName { get; set; }
         public bool EligibilityChanged { get; set; }
@@ -91,7 +77,7 @@ namespace FantasyCritic.MySQL.Entities
         public double LinearRegressionHypeFactor { get; set; }
         public DateTime AddedTimestamp { get; set; }
 
-        public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, EligibilityLevel eligibilityLevel, int year, IEnumerable<MasterGameTag> tags)
+        public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, int year, IEnumerable<MasterGameTag> tags)
         {
             LocalDate? releaseDate = null;
             if (ReleaseDate.HasValue)
@@ -124,10 +110,9 @@ namespace FantasyCritic.MySQL.Entities
             }
 
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
 
             var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate,
-                releaseDate, OpenCriticID, CriticScore, eligibilitySettings, Notes, BoxartFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames, tags);
+                releaseDate, OpenCriticID, CriticScore, Notes, BoxartFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames, tags);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 
                 NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);
