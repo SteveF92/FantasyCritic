@@ -119,32 +119,6 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Required]
         public LeagueTagOptionsViewModel Tags { get; set; }
 
-        //Don't need this once 2019 is no longer editable.
-        public bool ValidForOldYears()
-        {
-            if (Year > 2019)
-            {
-                return true;
-            }
-
-            if (FreeDroppableGames != 0 || UnlimitedFreeDroppableGames)
-            {
-                return false;
-            }
-
-            if (WillNotReleaseDroppableGames != 0 || UnlimitedWillNotReleaseDroppableGames)
-            {
-                return false;
-            }
-
-            if (WillReleaseDroppableGames != 0 || UnlimitedWillReleaseDroppableGames)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);

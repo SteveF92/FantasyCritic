@@ -76,9 +76,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (!request.ValidForOldYears())
+            if (request.Tags.Required.Any())
             {
-                return BadRequest();
+                return BadRequest("Impressive API usage, but required tags are not ready for prime time yet.");
             }
 
             var supportedYears = await _interLeagueService.GetSupportedYears();
@@ -240,9 +240,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (!request.ValidForOldYears())
+            if (request.Tags.Required.Any())
             {
-                return BadRequest();
+                return BadRequest("Impressive API usage, but required tags are not ready for prime time yet.");
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();

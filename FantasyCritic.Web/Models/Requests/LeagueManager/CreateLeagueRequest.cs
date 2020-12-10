@@ -61,33 +61,6 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         public LeagueTagOptionsViewModel Tags { get; set; }
 
-
-        //Don't need this once 2019 is no longer create-able.
-        public bool ValidForOldYears()
-        {
-            if (InitialYear > 2019)
-            {
-                return true;
-            }
-
-            if (FreeDroppableGames != 0 || UnlimitedFreeDroppableGames)
-            {
-                return false;
-            }
-
-            if (WillNotReleaseDroppableGames != 0 || UnlimitedWillNotReleaseDroppableGames)
-            {
-                return false;
-            }
-
-            if (WillReleaseDroppableGames != 0 || UnlimitedWillReleaseDroppableGames)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public LeagueCreationParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
