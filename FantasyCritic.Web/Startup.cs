@@ -202,7 +202,7 @@ namespace FantasyCritic.Web
             // In production, the Vue files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp";
+                configuration.RootPath = "ClientApp/dist";
             });
         }
 
