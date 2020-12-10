@@ -312,8 +312,13 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
-        public async Task<ClaimResult> MakePickupBid(Publisher publisher, MasterGame masterGame, uint bidAmount)
+        public async Task<ClaimResult> MakePickupBid(Publisher publisher, MasterGame masterGame, uint bidAmount, LeagueOptions leagueOptions)
         {
+            if (bidAmount < leagueOptions.MinimumBidAmount)
+            {
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("That bid does not meet the league's minimum bid.", false) });
+            }
+
             if (bidAmount > publisher.Budget)
             {
                 return new ClaimResult(new List<ClaimError>() { new ClaimError("You do not have enough budget to make that bid.", false) });

@@ -639,7 +639,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That master game does not exist.");
             }
             
-            ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, request.BidAmount);
+            ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, request.BidAmount, leagueYear.Value.Options);
             var viewModel = new PickupBidResultViewModel(bidResult);
 
             return Ok(viewModel);
