@@ -129,6 +129,8 @@ export default {
         unlimitedWillNotReleaseDroppableGames: this.leagueYearSettings.unlimitedWillNotReleaseDroppableGames,
         unlimitedWillReleaseDroppableGames: this.leagueYearSettings.unlimitedWillReleaseDroppableGames,
         dropOnlyDraftGames: this.leagueYearSettings.dropOnlyDraftGames,
+        counterPicksBlockDrops: this.leagueYearSettings.counterPicksBlockDrops,
+        minimumBidAmount: this.leagueYearSettings.minimumBidAmount,
         tags: this.leagueYearSettings.tags,
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,

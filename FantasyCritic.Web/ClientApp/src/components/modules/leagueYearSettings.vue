@@ -81,6 +81,15 @@
         </ValidationProvider>
       </div>
 
+      <div class="form-group">
+        <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
+        <ValidationProvider rules="required|min_value:0|max_value:100" v-slot="{ errors }">
+          <input v-model="minimumBidAmount" id="minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors[0] }}</span>
+        </ValidationProvider>
+        <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
+      </div>
+
       <hr />
       <h3>Game Dropping Settings</h3>
       <div class="alert alert-info">
@@ -105,7 +114,7 @@
             <th scope="row">Will Release</th>
             <td>
               <ValidationProvider rules="required|max_value:100" v-slot="{ errors }" v-if="!local.unlimitedWillReleaseDroppableGames">
-                <input v-model="local.willReleaseDroppableGames" @input="update('willReleaseDroppableGames', $event.target.value)" 
+                <input v-model="local.willReleaseDroppableGames" @input="update('willReleaseDroppableGames', $event.target.value)"
                        id="willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
                 <span class="text-danger">{{ errors[0] }}</span>
               </ValidationProvider>
@@ -132,7 +141,7 @@
           <tr>
             <th scope="row">Any Unreleased</th>
             <td>
-              <ValidationProvider rules="required|max_value:100" v-slot="{ errors }"  v-if="!local.unlimitedFreeDroppableGames">
+              <ValidationProvider rules="required|max_value:100" v-slot="{ errors }" v-if="!local.unlimitedFreeDroppableGames">
                 <input v-model="local.freeDroppableGames" @input="update('freeDroppableGames', $event.target.value)"
                        id="freeDroppableGames" name="Unrestricted Droppable Games" type="text" class="form-control input drop-number" />
                 <span class="text-danger">{{ errors[0] }}</span>
@@ -150,6 +159,13 @@
         <b-form-checkbox v-model="local.dropOnlyDraftGames" @input="update('dropOnlyDraftGames', local.dropOnlyDraftGames)">
           <span class="checkbox-label">Only allow drafted to be dropped</span>
           <p>If this is checked, pickup games will not be droppable, no matter what the above settings are. Counter picks are never droppable.</p>
+        </b-form-checkbox>
+      </div>
+
+      <div>
+        <b-form-checkbox v-model="local.counterPicksBlockDrops" @input="update('counterPicksBlockDrops', local.counterPicksBlockDrops)">
+          <span class="checkbox-label">Counter Picks Block Drops</span>
+          <p>If this is checked, counter picking a game will prevent the original player from droppping the game.</p>
         </b-form-checkbox>
       </div>
 
