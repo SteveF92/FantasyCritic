@@ -96,17 +96,16 @@ namespace FantasyCritic.Lib.Services
                 var masterGame = masterGameYearDictionary[queuedGame.MasterGame.MasterGameID];
 
                 PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, 
-                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.AllowedEligibilitySettings);
+                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.LeagueTags);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
             return possibleMasterGames;
         }
 
-        public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherStandardMasterGames, HashSet<MasterGame> myPublisherMasterGames,
-            EligibilitySettings eligibilitySettings)
+        public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherStandardMasterGames, HashSet<MasterGame> myPublisherMasterGames, IEnumerable<LeagueTagStatus> leagueTags)
         {
-            var eligibilityErrors = eligibilitySettings.GameIsEligible(masterGame.MasterGame);
+            var eligibilityErrors = leagueTags.GameIsEligible(masterGame.MasterGame);
             bool isEligible = !eligibilityErrors.Any();
             bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
             bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);

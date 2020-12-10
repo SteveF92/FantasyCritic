@@ -8,9 +8,7 @@ namespace FantasyCritic.Lib.Domain.Requests
     public class LeagueCreationParameters
     {
         public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, 
-            int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, int initialYear, EligibilityLevel maximumEligibilityLevel,
-            bool allowYearlyInstallments,  bool allowEarlyAccess, bool allowFreeToPlay, bool allowReleasedInternationally,
-            bool allowExpansions, bool allowUnannouncedGames, IEnumerable<LeagueTagStatus> leagueTags,
+            int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, int initialYear, IEnumerable<LeagueTagStatus> leagueTags,
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague, bool testLeague)
         {
             Manager = manager;
@@ -24,8 +22,6 @@ namespace FantasyCritic.Lib.Domain.Requests
             DropOnlyDraftGames = dropOnlyDraftGames;
             InitialYear = initialYear;
             LeagueTags = leagueTags.ToList();
-            AllowedEligibilitySettings = new EligibilitySettings(maximumEligibilityLevel, allowYearlyInstallments, allowEarlyAccess, 
-                allowFreeToPlay, allowReleasedInternationally, allowExpansions, allowUnannouncedGames);
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
@@ -44,7 +40,6 @@ namespace FantasyCritic.Lib.Domain.Requests
         public bool DropOnlyDraftGames { get; }
         public int InitialYear { get; }
         public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
-        public EligibilitySettings AllowedEligibilitySettings { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }

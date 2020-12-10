@@ -13,8 +13,7 @@ namespace FantasyCritic.Lib.Domain
     public class LeagueOptions
     {
         public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
-            bool dropOnlyDraftGames, EligibilitySettings eligibilitySettings, IEnumerable<LeagueTagStatus> leagueTags, 
-            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
+            bool dropOnlyDraftGames, IEnumerable<LeagueTagStatus> leagueTags, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
@@ -23,7 +22,6 @@ namespace FantasyCritic.Lib.Domain
             WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
             WillReleaseDroppableGames = willReleaseDroppableGames;
             DropOnlyDraftGames = dropOnlyDraftGames;
-            AllowedEligibilitySettings = eligibilitySettings;
             LeagueTags = leagueTags.ToList();
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
@@ -40,7 +38,6 @@ namespace FantasyCritic.Lib.Domain
             WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
             WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
             DropOnlyDraftGames = parameters.DropOnlyDraftGames;
-            AllowedEligibilitySettings = parameters.AllowedEligibilitySettings;
             LeagueTags = parameters.LeagueTags;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
@@ -57,7 +54,6 @@ namespace FantasyCritic.Lib.Domain
             WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
             WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
             DropOnlyDraftGames = parameters.DropOnlyDraftGames;
-            AllowedEligibilitySettings = parameters.AllowedEligibilitySettings;
             LeagueTags = parameters.LeagueTags;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
@@ -72,7 +68,6 @@ namespace FantasyCritic.Lib.Domain
         public int WillNotReleaseDroppableGames { get; }
         public int WillReleaseDroppableGames { get; }
         public bool DropOnlyDraftGames { get; }
-        public EligibilitySettings AllowedEligibilitySettings { get; }
         public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }

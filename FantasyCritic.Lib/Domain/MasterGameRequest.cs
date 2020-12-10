@@ -11,8 +11,7 @@ namespace FantasyCritic.Lib.Domain
     public class MasterGameRequest
     {
         public MasterGameRequest(Guid requestID, FantasyCriticUser user, Instant requestTimestamp, string requestNote, 
-            string gameName, int? steamID, int? openCriticID, LocalDate? releaseDate, string estimatedReleaseDate, EligibilityLevel eligibilityLevel,
-            bool yearlyInstallment, bool earlyAccess, bool freeToPlay, bool releasedInternationally, bool expansionPack, bool unannouncedGame,
+            string gameName, int? steamID, int? openCriticID, LocalDate? releaseDate, string estimatedReleaseDate, 
             bool answered, Instant? responseTimestamp, string responseNote, Maybe<MasterGame> masterGame, bool hidden)
         {
             RequestID = requestID;
@@ -24,13 +23,6 @@ namespace FantasyCritic.Lib.Domain
             OpenCriticID = openCriticID;
             ReleaseDate = releaseDate;
             EstimatedReleaseDate = estimatedReleaseDate;
-            EligibilityLevel = eligibilityLevel;
-            YearlyInstallment = yearlyInstallment;
-            EarlyAccess = earlyAccess;
-            FreeToPlay = freeToPlay;
-            ReleasedInternationally = releasedInternationally;
-            ExpansionPack = expansionPack;
-            UnannouncedGame = unannouncedGame;
             Answered = answered;
             ResponseTimestamp = responseTimestamp;
             ResponseNote = responseNote;
@@ -50,7 +42,6 @@ namespace FantasyCritic.Lib.Domain
         public int? OpenCriticID { get; }
         public LocalDate? ReleaseDate { get; }
         public string EstimatedReleaseDate { get; }
-        public EligibilityLevel EligibilityLevel { get; }
         public bool YearlyInstallment { get; }
         public bool EarlyAccess { get; }
         public bool FreeToPlay { get; }

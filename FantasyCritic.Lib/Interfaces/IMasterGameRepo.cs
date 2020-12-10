@@ -20,8 +20,6 @@ namespace FantasyCritic.Lib.Interfaces
 
         Task CreateMasterGame(MasterGame masterGame);
         Task EditMasterGame(MasterGame masterGame);
-        Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels();
-        Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel);
 
         Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year);
 
