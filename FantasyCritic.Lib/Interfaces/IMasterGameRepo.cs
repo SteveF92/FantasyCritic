@@ -43,5 +43,6 @@ namespace FantasyCritic.Lib.Interfaces
 
         Task<IReadOnlyList<MasterGameTag>> GetMasterGameTags();
         Task<IReadOnlyDictionary<string, MasterGameTag>> GetMasterGameTagDictionary();
+        Task UpdateCodeBasedTags(IReadOnlyDictionary<MasterGame, IReadOnlyList<MasterGameTag>> tagsToAdd);
     }
 }

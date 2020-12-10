@@ -582,5 +582,28 @@ namespace FantasyCritic.MySQL
             var tags = await GetMasterGameTags();
             return tags.ToDictionary(x => x.Name);
         }
+
+        public async Task UpdateCodeBasedTags(IReadOnlyDictionary<MasterGame, IReadOnlyList<MasterGameTag>> tagsToAdd)
+        {
+            string deleteExistingTagsSQL = "DELETE tbl_mastergame_hastag FROM tbl_mastergame_hastag " +
+                                        "JOIN tbl_mastergame_tag ON tbl_mastergame_hastag.TagName = tbl_mastergame_tag.Name " +
+                                        "WHERE tbl_mastergame_tag.HasCustomCode";
+
+            var tagEntities = tagsToAdd
+                .SelectMany(masterGame => masterGame.Value, (masterGame, tag) => new MasterGameHasTagEntity(masterGame.Key, tag))
+                .ToList();
+
+            var excludeFields = new List<string>() { "TimeAdded" };
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(deleteExistingTagsSQL, transaction: transaction);
+                    await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
+                    transaction.Commit();
+                }
+            }
+        }
     }
 }

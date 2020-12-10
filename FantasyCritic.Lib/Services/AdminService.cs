@@ -148,7 +148,9 @@ namespace FantasyCritic.Lib.Services
         {
             _logger.LogInformation("Refreshing caches");
 
-            LocalDate tomorrow = _clock.GetToday().PlusDays(1);
+            LocalDate today = _clock.GetToday();
+            LocalDate tomorrow = today.PlusDays(1);
+            await UpdateCodeBasedTags(today);
             await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
             await UpdateSystemWideValues();
@@ -401,6 +403,43 @@ namespace FantasyCritic.Lib.Services
 
                 await _masterGameRepo.UpdateCalculatedStats(calculatedStats, supportedYear.Year);
             }
+        }
+
+        private async Task UpdateCodeBasedTags(LocalDate today)
+        {
+            var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+            var allMasterGames = await _masterGameRepo.GetMasterGames();
+            var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);
+            var masterGamesWithInternationalDate = allMasterGames.Where(x => x.InternationalReleaseDate.HasValue);
+            Dictionary<MasterGame, List<MasterGameTag>> tagsToAdd = allMasterGames.ToDictionary(x => x, y => new List<MasterGameTag>());
+
+            foreach (var masterGame in masterGamesWithEarlyAccessDate)
+            {
+                bool inEarlyAccess = today >= masterGame.EarlyAccessReleaseDate.Value;
+                if (inEarlyAccess)
+                {
+                    tagsToAdd[masterGame].Add(tagDictionary["CurrentlyInEarlyAccess"]);
+                }
+                else
+                {
+                    tagsToAdd[masterGame].Add(tagDictionary["PlannedForEarlyAccess"]);
+                }
+            }
+
+            foreach (var masterGame in masterGamesWithInternationalDate)
+            {
+                bool releasedInternationally = today >= masterGame.InternationalReleaseDate.Value;
+                if (releasedInternationally)
+                {
+                    tagsToAdd[masterGame].Add(tagDictionary["ReleasedInternationally"]);
+                }
+                else
+                {
+                    tagsToAdd[masterGame].Add(tagDictionary["WillReleaseInternationallyFirst"]);
+                }
+            }
+
+            await _masterGameRepo.UpdateCodeBasedTags(tagsToAdd.SealDictionary());
         }
 
         private double FixDouble(double num)
