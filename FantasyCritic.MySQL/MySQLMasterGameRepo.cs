@@ -191,10 +191,10 @@ namespace FantasyCritic.MySQL
         {
             string masterGameCreateSQL = "insert into tbl_mastergame" +
                                          "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,ReleaseDate," +
-                                         "OpenCriticID,CriticScore,EligibilityLevel,YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,UnannouncedGame,Notes,BoxartFileName," +
+                                         "OpenCriticID,CriticScore,Notes,BoxartFileName," +
                                          "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged) VALUES " +
                                          "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@ReleaseDate," +
-                                         "@OpenCriticID,@CriticScore,@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@UnannouncedGame,@Notes,@BoxartFileName," +
+                                         "@OpenCriticID,@CriticScore,@Notes,@BoxartFileName," +
                                          "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged);";
             var entity = new MasterGameEntity(masterGame);
             var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
@@ -223,13 +223,6 @@ namespace FantasyCritic.MySQL
                              "ReleaseDate = @ReleaseDate, " +
                              "OpenCriticID = @OpenCriticID, " +
                              "CriticScore = @CriticScore, " +
-                             "EligibilityLevel = @EligibilityLevel, " +
-                             "YearlyInstallment = @YearlyInstallment, " +
-                             "EarlyAccess = @EarlyAccess, " +
-                             "FreeToPlay = @FreeToPlay, " +
-                             "ReleasedInternationally = @ReleasedInternationally, " +
-                             "ExpansionPack = @ExpansionPack, " +
-                             "UnannouncedGame = @UnannouncedGame, " +
                              "Notes = @Notes, " +
                              "BoxartFileName = @BoxartFileName, " +
                              "FirstCriticScoreTimestamp = @FirstCriticScoreTimestamp, " +
@@ -277,10 +270,10 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,ReleaseDate,EstimatedReleaseDate,EligibilityLevel," +
-                    "YearlyInstallment,EarlyAccess,FreeToPlay,ReleasedInternationally,ExpansionPack,UnannouncedGame,Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
+                    "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,ReleaseDate,EstimatedReleaseDate," +
+                    "Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
                     "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@ReleaseDate,@EstimatedReleaseDate," +
-                    "@EligibilityLevel,@YearlyInstallment,@EarlyAccess,@FreeToPlay,@ReleasedInternationally,@ExpansionPack,@UnannouncedGame,@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
+                    "@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
                     entity);
             }
         }

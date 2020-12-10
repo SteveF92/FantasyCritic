@@ -565,9 +565,9 @@ namespace FantasyCritic.MySQL
 
             string createLeagueYearSQL =
                 "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-                "MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,AllowFreeToPlay,AllowReleasedInternationally,AllowExpansions,AllowUnannouncedGames,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
-                "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames,@MaximumEligibilityLevel," +
-                "@AllowYearlyInstallments,@AllowEarlyAccess,@AllowFreeToPlay,@AllowReleasedInternationally,@AllowExpansions,@AllowUnannouncedGames,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);";
+                "DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
+                "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
+                "@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -620,9 +620,9 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync(
                     "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-                    "MaximumEligibilityLevel,AllowYearlyInstallments,AllowEarlyAccess,AllowFreeToPlay,AllowReleasedInternationally,AllowExpansions,AllowUnannouncedGames,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
-                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames,@MaximumEligibilityLevel," +
-                    "@AllowYearlyInstallments,@AllowEarlyAccess,@AllowFreeToPlay,@AllowReleasedInternationally,@AllowExpansions,@AllowUnannouncedGames,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);",
+                    "DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
+                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
+                    "@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);",
                     leagueYearEntity);
             }
         }
