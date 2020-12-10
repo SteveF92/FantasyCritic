@@ -18,33 +18,18 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         public LocalDate? InternationalReleaseDate { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
-        [Required]
-        public int EligibilityLevel { get; set; }
-        [Required]
-        public bool YearlyInstallment { get; set; }
-        [Required]
-        public bool EarlyAccess { get; set; }
-        [Required]
-        public bool FreeToPlay { get; set; }
-        [Required]
-        public bool ReleasedInternationally { get; set; }
-        [Required]
-        public bool ExpansionPack { get; set; }
-        [Required]
-        public bool UnannouncedGame { get; set; }
-        [Required]
         public string BoxartFileName { get; set; }
         [Required]
         public string Notes { get; set; }
+        [Required]
         public List<string> Tags { get; set; }
 
         public List<string> GetRequestedTags() => Tags ?? new List<string>();
 
-        public Lib.Domain.MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp, IEnumerable<MasterGameTag> tags)
+        public Lib.Domain.MasterGame ToDomain(Instant timestamp, IEnumerable<MasterGameTag> tags)
         {
-            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
             Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
-                EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, null, eligibilitySettings, Notes, BoxartFileName,
+                EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, null, Notes, BoxartFileName,
                 null, false, false, false, timestamp, new List<MasterSubGame>(), tags);
             return masterGame;
         }

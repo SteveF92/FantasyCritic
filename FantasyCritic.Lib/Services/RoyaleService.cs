@@ -110,7 +110,8 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult("Game has a score.");
             }
 
-            var eligibilityErrors = EligibilitySettings.GetRoyaleEligibilitySettings().GameIsEligible(masterGame.MasterGame);
+            var masterGameTags = await _masterGameRepo.GetMasterGameTags();
+            var eligibilityErrors = LeagueTagExtensions.GetRoyaleEligibilitySettings(masterGameTags).GameIsEligible(masterGame.MasterGame);
             if (eligibilityErrors.Any())
             {
                 return new ClaimResult("Game is not eligible under Royale rules.");

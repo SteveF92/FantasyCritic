@@ -412,25 +412,5 @@ namespace FantasyCritic.Lib.Services
 
             return num;
         }
-
-        public async Task ConvertToTags()
-        {
-            var tagsDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
-            var supportedYears = await _interLeagueService.GetSupportedYears();
-
-            Dictionary<LeagueYear, IReadOnlyList<MasterGameTag>> tagsToAddByLeagueYear = new Dictionary<LeagueYear, IReadOnlyList<MasterGameTag>>();
-            foreach (var supportedYear in supportedYears)
-            {
-                var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
-                foreach (var leagueYear in leagueYears)
-                {
-                    var eligibillitySettings = leagueYear.Options.AllowedEligibilitySettings;
-                    IReadOnlyList<MasterGameTag> bannedTags = eligibillitySettings.GetEquivalentBannedTags(tagsDictionary);
-                    tagsToAddByLeagueYear.Add(leagueYear, bannedTags);
-                }
-            }
-
-            await _fantasyCriticRepo.ConvertToTags(tagsToAddByLeagueYear);
-        }
     }
 }

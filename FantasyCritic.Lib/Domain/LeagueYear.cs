@@ -55,7 +55,7 @@ namespace FantasyCritic.Lib.Domain
                 return eligibilityOverride.Eligible;
             }
 
-            var claimErrors = Options.AllowedEligibilitySettings.GameIsEligible(masterGame);
+            var claimErrors = Options.LeagueTags.GameIsEligible(masterGame);
             return !claimErrors.Any();
         }
 

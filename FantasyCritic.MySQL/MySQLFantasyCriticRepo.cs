@@ -99,10 +99,9 @@ namespace FantasyCritic.MySQL
                     return Maybe<LeagueYear>.None;
                 }
 
-                var eligibilityLevel = await _masterGameRepo.GetEligibilityLevel(yearEntity.MaximumEligibilityLevel);
                 var eligibilityOverrides = await GetEligibilityOverrides(requestLeague, requestYear);
                 var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
-                LeagueYear year = yearEntity.ToDomain(requestLeague, eligibilityLevel, eligibilityOverrides, domainLeagueTags);
+                LeagueYear year = yearEntity.ToDomain(requestLeague, eligibilityOverrides, domainLeagueTags);
                 return year;
             }
         }
@@ -135,7 +134,6 @@ namespace FantasyCritic.MySQL
                         continue;
                     }
 
-                    var eligibilityLevel = await _masterGameRepo.GetEligibilityLevel(entity.MaximumEligibilityLevel);
                     bool hasOverrides = allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides);
                     if (!hasOverrides)
                     {
@@ -143,7 +141,7 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel, eligibilityOverrides, domainLeagueTags);
+                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -786,7 +784,6 @@ namespace FantasyCritic.MySQL
                         continue;
                     }
 
-                    var eligibilityLevel = await _masterGameRepo.GetEligibilityLevel(entity.MaximumEligibilityLevel);
                     bool hasOverrides = allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides);
                     if (!hasOverrides)
                     {
@@ -794,7 +791,7 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityLevel, eligibilityOverrides, domainLeagueTags);
+                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -17,7 +18,6 @@ namespace FantasyCritic.Lib.Domain
             var requiredTags = leagueTags.Where(x => x.Status == TagStatus.Required).Select(x => x.Tag);
 
             var bannedTagsIntersection = masterGame.Tags.Intersect(bannedTags);
-            var requiredTagsIntersection = masterGame.Tags.Intersect(requiredTags);
             var missingRequiredTags = requiredTags.Except(masterGame.Tags);
 
             var bannedClaimErrors = bannedTagsIntersection.Select(x => new ClaimError($"That game is not eligible because the {x.ReadableName} tag has been banned.", true));
@@ -25,6 +25,22 @@ namespace FantasyCritic.Lib.Domain
 
             var allErrors = bannedClaimErrors.Concat(requiredClaimErrors).ToList();
             return allErrors;
+        }
+
+        public static IReadOnlyList<LeagueTagStatus> GetRoyaleEligibilitySettings(IEnumerable<MasterGameTag> allMasterGameTags)
+        {
+            var bannedTagNames = new List<string>()
+            {
+                "CurrentlyInEarlyAccess",
+                "DirectorsCut",
+                "Port",
+                "ReleasedInternationally",
+                "Remaster",
+                "YearlyInstallment"
+            };
+
+            var bannedTags = allMasterGameTags.Where(x => bannedTagNames.Contains(x.Name));
+            return bannedTags.Select(x => new LeagueTagStatus(x, TagStatus.Banned)).ToList();
         }
     }
 }

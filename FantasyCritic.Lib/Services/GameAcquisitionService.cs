@@ -224,7 +224,7 @@ namespace FantasyCritic.Lib.Services
                 else
                 {
                     //Normal eligibility (not manually set)
-                    var eligibilityErrors = leagueYear.Options.AllowedEligibilitySettings.GameIsEligible(masterGame);
+                    var eligibilityErrors = leagueYear.Options.LeagueTags.GameIsEligible(masterGame);
                     claimErrors.AddRange(eligibilityErrors);
                 }
             }

@@ -38,7 +38,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var masterGame in matchingMasterGames)
             {
                 PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
-                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.AllowedEligibilitySettings);
+                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.LeagueTags);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
@@ -62,7 +62,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var masterGame in matchingMasterGames)
             {
                 PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
-                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.AllowedEligibilitySettings);
+                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.LeagueTags);
 
                 if (!possibleMasterGame.IsAvailable)
                 {

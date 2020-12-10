@@ -94,16 +94,6 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.UpdateCriticStats(masterSubGame, openCriticGame);
         }
 
-        public Task<EligibilityLevel> GetEligibilityLevel(int eligibilityLevel)
-        {
-            return _masterGameRepo.GetEligibilityLevel(eligibilityLevel);
-        }
-
-        public Task<IReadOnlyList<EligibilityLevel>> GetEligibilityLevels()
-        {
-            return _masterGameRepo.GetEligibilityLevels();
-        }
-
         public Task SetBidProcessingMode(bool modeOn)
         {
             return _fantasyCriticRepo.SetBidProcessingMode(modeOn);

@@ -52,7 +52,6 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
         {
-            EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(viewModel.EligibilityLevel);
             Instant instant = _clock.GetCurrentInstant();
 
             var possibleTags = await _interLeagueService.GetMasterGameTags();
@@ -60,7 +59,7 @@ namespace FantasyCritic.Web.Controllers.API
                 .Where(x => viewModel.GetRequestedTags().Contains(x.Name))
                 .ToList();
 
-            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, tags);
+            MasterGame masterGame = viewModel.ToDomain(instant, tags);
             await _interLeagueService.CreateMasterGame(masterGame);
             var vm = new MasterGameViewModel(masterGame, _clock);
 
@@ -71,7 +70,6 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> EditMasterGame([FromBody] EditMasterGameRequest viewModel)
         {
-            EligibilityLevel eligibilityLevel = await _interLeagueService.GetEligibilityLevel(viewModel.EligibilityLevel);
             Instant instant = _clock.GetCurrentInstant();
 
             var possibleTags = await _interLeagueService.GetMasterGameTags();
@@ -79,7 +77,7 @@ namespace FantasyCritic.Web.Controllers.API
                 .Where(x => viewModel.GetRequestedTags().Contains(x.Name))
                 .ToList();
 
-            MasterGame masterGame = viewModel.ToDomain(eligibilityLevel, instant, tags);
+            MasterGame masterGame = viewModel.ToDomain(instant, tags);
             await _interLeagueService.EditMasterGame(masterGame);
             var vm = new MasterGameViewModel(masterGame, _clock);
 
@@ -199,13 +197,6 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> UpdateFantasyPoints()
         {
             await _adminService.UpdateFantasyPoints();
-            return Ok();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ConvertToTags()
-        {
-            await _adminService.ConvertToTags();
             return Ok();
         }
 

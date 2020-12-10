@@ -46,11 +46,10 @@ namespace FantasyCritic.Web.Models.Requests.Admin
 
         public List<string> GetRequestedTags() => Tags ?? new List<string>();
 
-        public Lib.Domain.MasterGame ToDomain(EligibilityLevel eligibilityLevel, Instant timestamp, IEnumerable<MasterGameTag> tags)
+        public Lib.Domain.MasterGame ToDomain(Instant timestamp, IEnumerable<MasterGameTag> tags)
         {
-            var eligibilitySettings = new EligibilitySettings(eligibilityLevel, YearlyInstallment, EarlyAccess, FreeToPlay, ReleasedInternationally, ExpansionPack, UnannouncedGame);
             Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
-                EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, null, eligibilitySettings, Notes, BoxartFileName,
+                EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, null, Notes, BoxartFileName,
                 null, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, timestamp, new List<MasterSubGame>(), tags);
             return masterGame;
         }
