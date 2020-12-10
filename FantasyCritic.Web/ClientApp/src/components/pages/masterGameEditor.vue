@@ -80,55 +80,6 @@
                   <input v-model="masterGame.openCriticID" id="openCriticID" name="openCriticID" class="form-control input" />
                 </div>
 
-                <div class="form-group eligibility-section" v-if="possibleEligibilityLevels">
-                  <label class="control-label eligibility-slider-label">Eligibility Level</label>
-                  <p class="eligibility-explanation">
-                    Eligibility levels are designed to prevent people from taking "uninteresting" games. While I will make the final decision on how a game should be classified, I'm interested in your opinion.
-                  </p>
-                  <vue-slider v-model="eligibilityLevel" :min="minimumPossibleEligibilityLevel" :max="maximumPossibleEligibilityLevel"
-                              :marks="marks" :tooltip="'always'">
-                  </vue-slider>
-                  <div class="eligibility-description" v-if="selectedEligibilityLevel">
-                    <h3>{{ selectedEligibilityLevel.name }}</h3>
-                    <p>{{ selectedEligibilityLevel.description }}</p>
-                    <p>Examples: </p>
-                    <ul>
-                      <li v-for="example in selectedEligibilityLevel.examples">{{example}}</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.eligibilitySettings.yearlyInstallment">
-                    <span class="checkbox-label">Yearly installment?</span>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.eligibilitySettings.earlyAccess">
-                    <span class="checkbox-label">Early access?</span>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.eligibilitySettings.freeToPlay">
-                    <span class="checkbox-label">Free to Play?</span>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.eligibilitySettings.releasedInternationally">
-                    <span class="checkbox-label">Released Internationally?</span>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.eligibilitySettings.expansionPack">
-                    <span class="checkbox-label">Expansion Pack?</span>
-                  </b-form-checkbox>
-                </div>
-                <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.eligibilitySettings.unannouncedGame">
-                    <span class="checkbox-label">Unannounced?</span>
-                  </b-form-checkbox>
-                </div>
-
                 <h3>Tags</h3>
                 <masterGameTagSelector v-model="tags"></masterGameTagSelector>
 
@@ -173,10 +124,8 @@
 </template>
 <script>
   import axios from 'axios';
-  import vueSlider from 'vue-slider-component';
   import Popper from 'vue-popperjs';
   import moment from 'moment';
-  import 'vue-slider-component/theme/antd.css';
   import MasterGameTagSelector from '@/components/modules/masterGameTagSelector';
 
   export default {
@@ -186,53 +135,15 @@
         masterGame: null,
         changeRequest: null,
         tags: [],
-        possibleEligibilityLevels: null,
-        eligibilityLevel: 0,
         responseInfo: null,
         generatedSQL: null
       };
     },
     components: {
-      vueSlider,
       'popper': Popper,
       MasterGameTagSelector
     },
-    computed: {
-      minimumPossibleEligibilityLevel() {
-        return 0;
-      },
-      maximumPossibleEligibilityLevel() {
-        if (!this.possibleEligibilityLevels) {
-          return 0;
-        }
-        let maxEligibilityLevel = _.maxBy(this.possibleEligibilityLevels, 'level');
-        return maxEligibilityLevel.level;
-      },
-      selectedEligibilityLevel() {
-        let matchingLevel = _.filter(this.possibleEligibilityLevels, { 'level': this.eligibilityLevel });
-        return matchingLevel[0];
-      },
-      marks() {
-        if (!this.possibleEligibilityLevels) {
-          return [];
-        }
-
-        let levels = this.possibleEligibilityLevels.map(function (v) {
-          return v.level;
-        });
-
-        return levels;
-      }
-    },
     methods: {
-      async fetchEligibilityLevels() {
-        await axios
-          .get('/api/Game/EligibilityLevels')
-          .then(response => {
-            this.possibleEligibilityLevels = response.data;
-          })
-          .catch(returnedError => (this.error = returnedError));
-      },
       async fetchMasterGame() {
         await axios
           .get('/api/game/MasterGame/' + this.mastergameid)

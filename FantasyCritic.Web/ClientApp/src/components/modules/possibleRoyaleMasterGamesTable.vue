@@ -12,8 +12,10 @@
           <span v-show="data.item.masterGame.isReleased">(Released)</span>
         </div>
       </template>
-      <template v-slot:cell(eligibilityLevel)="data">
-        <statusBadge :possibleMasterGame="data.item"></statusBadge>
+      <template v-slot:cell(tags)="data">
+        <span v-for="(tag, index) in data.item.tags">
+          <masterGameTagBadge :tagName="data.item.tags[index]" short="true"></masterGameTagBadge>
+        </span>
       </template>
       <template v-slot:cell(cost)="data">
         {{data.item.cost | money}}
@@ -38,7 +40,7 @@ export default {
       gameFields: [
         { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
         { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'eligibilityLevel', label: 'Eligibility Level', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'tags', label: 'Tags', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary' },
         { key: 'select', label: '', thClass: 'bg-primary' }
       ],

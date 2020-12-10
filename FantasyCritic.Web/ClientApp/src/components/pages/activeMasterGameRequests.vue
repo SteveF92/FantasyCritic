@@ -93,13 +93,6 @@ export default {
         estimatedReleaseDate: request.estimatedReleaseDate,
         steamID: request.steamID,
         openCriticID: request.openCriticID,
-        eligibilityLevel: request.eligibilityLevel,
-        yearlyInstallment: request.yearlyInstallment,
-        earlyAccess: request.earlyAccess,
-        freeToPlay: request.freeToPlay,
-        releasedInternationally: request.releasedInternationally,
-        expansionPack: request.expansionPack,
-        unannouncedGame: request.unannouncedGame,
         requestNote: request.requestNote
       };
       if (request.releaseDate) {

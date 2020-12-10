@@ -26,13 +26,6 @@
         <a v-if="masterGame.openCriticID" :href="openCriticLink(masterGame)" target="_blank">OpenCritic Link <font-awesome-icon icon="external-link-alt" size="xs" /></a>
         <span v-else>Not linked to OpenCritic</span>
       </li>
-      <li>Eligibility Level: {{ masterGame.eligibilitySettings.eligibilityLevel.name }}</li>
-      <li>Yearly Installment: {{ masterGame.eligibilitySettings.yearlyInstallment | yesNo }}</li>
-      <li>Early Access: {{ masterGame.eligibilitySettings.earlyAccess | yesNo }}</li>
-      <li>Free to Play: {{ masterGame.eligibilitySettings.freeToPlay | yesNo }}</li>
-      <li>Released Internationally: {{ masterGame.eligibilitySettings.releasedInternationally | yesNo }}</li>
-      <li>Expansion Pack: {{ masterGame.eligibilitySettings.expansionPack | yesNo }}</li>
-      <li>Unannounced: {{ masterGame.eligibilitySettings.unannouncedGame | yesNo }}</li>
     </ul>
     <div v-if="masterGame.tags && masterGame.tags.length > 0">
       <h4>Tags</h4>
