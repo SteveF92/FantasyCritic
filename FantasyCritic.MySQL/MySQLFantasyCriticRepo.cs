@@ -614,14 +614,23 @@ namespace FantasyCritic.MySQL
         public async Task AddNewLeagueYear(League league, int year, LeagueOptions options)
         {
             LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options, PlayStatus.NotStartedDraft);
+            var tagEntities = options.LeagueTags.Select(x => new LeagueYearTagEntity(league, year, x));
+
+            string newLeagueYearSQL =
+                "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
+                "DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
+                "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
+                "@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);";
+
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(
-                    "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-                    "DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
-                    "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
-                    "@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);",
-                    leagueYearEntity);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(newLeagueYearSQL, leagueYearEntity, transaction);
+                    await connection.BulkInsertAsync(tagEntities, "tbl_league_yearusestag", 500, transaction);
+                    transaction.Commit();
+                }
             }
         }
 
