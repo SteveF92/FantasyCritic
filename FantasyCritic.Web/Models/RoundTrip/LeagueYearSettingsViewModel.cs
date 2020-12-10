@@ -45,6 +45,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
                 UnlimitedWillReleaseDroppableGames = true;
             }
             DropOnlyDraftGames = leagueYear.Options.DropOnlyDraftGames;
+            CounterPicksBlockDrops = leagueYear.Options.CounterPicksBlockDrops;
+            MinimumBidAmount = leagueYear.Options.MinimumBidAmount;
 
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;

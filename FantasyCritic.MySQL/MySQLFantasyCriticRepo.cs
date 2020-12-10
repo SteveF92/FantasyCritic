@@ -565,9 +565,9 @@ namespace FantasyCritic.MySQL
 
             string createLeagueYearSQL =
                 "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-                "DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
+                "CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,ScoringSystem,PlayStatus) VALUES " +
                 "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
-                "@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);";
+                "@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@ScoringSystem,@PlayStatus);";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -593,7 +593,7 @@ namespace FantasyCritic.MySQL
             string editLeagueYearSQL =
                 "update tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, " +
                 "FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames, " +
-                "DropOnlyDraftGames = @DropOnlyDraftGames, DraftSystem = @DraftSystem, " +
+                "DropOnlyDraftGames = @DropOnlyDraftGames, CounterPicksBlockDrops = @CounterPicksBlockDrops, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem, " +
                 "PickupSystem = @PickupSystem, ScoringSystem = @ScoringSystem WHERE LeagueID = @LeagueID and Year = @Year";
 
             var deleteTagsSQL = "delete from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";

@@ -84,7 +84,7 @@
       <div class="form-group">
         <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
         <ValidationProvider rules="required|min_value:0|max_value:100" v-slot="{ errors }">
-          <input v-model="minimumBidAmount" id="minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
+          <input v-model="local.minimumBidAmount" id="minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
         <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
