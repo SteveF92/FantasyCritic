@@ -449,6 +449,11 @@ namespace FantasyCritic.Lib.Services
                 return 0;
             }
 
+            if (double.IsInfinity(num))
+            {
+                return 1;
+            }
+
             return num;
         }
     }
