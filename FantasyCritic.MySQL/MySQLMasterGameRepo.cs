@@ -587,7 +587,8 @@ namespace FantasyCritic.MySQL
         {
             string deleteExistingTagsSQL = "DELETE tbl_mastergame_hastag FROM tbl_mastergame_hastag " +
                                         "JOIN tbl_mastergame_tag ON tbl_mastergame_hastag.TagName = tbl_mastergame_tag.Name " +
-                                        "WHERE tbl_mastergame_tag.HasCustomCode";
+                                        "WHERE tbl_mastergame_tag.HasCustomCode " +
+                                        "AND (EarlyAccessReleaseDate IS NOT NULL OR InternationalReleaseDate IS NOT NULL)";
 
             var tagEntities = tagsToAdd
                 .SelectMany(masterGame => masterGame.Value, (masterGame, tag) => new MasterGameHasTagEntity(masterGame.Key, tag))
