@@ -587,6 +587,7 @@ namespace FantasyCritic.MySQL
         {
             string deleteExistingTagsSQL = "DELETE tbl_mastergame_hastag FROM tbl_mastergame_hastag " +
                                         "JOIN tbl_mastergame_tag ON tbl_mastergame_hastag.TagName = tbl_mastergame_tag.Name " +
+                                        "JOIN tbl_mastergame ON tbl_mastergame_hastag.MasterGameID = tbl_mastergame.MasterGameID " +
                                         "WHERE tbl_mastergame_tag.HasCustomCode " +
                                         "AND (EarlyAccessReleaseDate IS NOT NULL OR InternationalReleaseDate IS NOT NULL)";
 
