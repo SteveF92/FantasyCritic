@@ -347,5 +347,13 @@ namespace FantasyCritic.Web.Controllers.API
             var vms = snaps.Select(x => new DatabaseSnapshotInfoViewModel(x));
             return Ok(vms);
         }
+
+        [HttpGet]
+        public ActionResult<DateParseResponse> ParseEstimatedDate(DateParseRequest request)
+        {
+            var dates = TimeFunctions.ParseEstimatedReleaseDate(request.EstimatedReleaseDate, _clock);
+            var response = new DateParseResponse(dates.minimumReleaseDate, dates.maximumReleaseDate);
+            return response;
+        }
     }
 }

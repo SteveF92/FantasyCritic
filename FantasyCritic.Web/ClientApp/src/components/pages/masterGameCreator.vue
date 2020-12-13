@@ -177,39 +177,14 @@
             this.errorInfo = error.response;
           });
       },
-      parseEstimatedReleaseDate() {
-        if (this.estimatedReleaseDate === '' || this.estimatedReleaseDate === 'TBA') {
-          this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-          this.maximumReleaseDate = null;
-        }
-        if (this.estimatedReleaseDate === '2020') {
-          this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-          this.maximumReleaseDate = '2020-12-31';
-        }
-        if (this.estimatedReleaseDate === 'Q3 2020') {
-          this.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-          this.maximumReleaseDate = '2020-09-30';
-        }
-        if (this.estimatedReleaseDate === 'Q4 2020') {
-          this.minimumReleaseDate = '2020-10-01';
-          this.maximumReleaseDate = '2020-12-31';
-        }
-        if (this.estimatedReleaseDate === '2021') {
-          this.minimumReleaseDate = '2021-01-01';
-          this.maximumReleaseDate = '2021-12-31';
-        }
-        if (this.estimatedReleaseDate === 'Q1 2021') {
-          this.minimumReleaseDate = '2021-01-01';
-          this.maximumReleaseDate = '2021-03-31';
-        }
-        if (this.estimatedReleaseDate === 'Q2 2021') {
-          this.minimumReleaseDate = '2021-04-01';
-          this.maximumReleaseDate = '2021-06-30';
-        }
-        if (this.estimatedReleaseDate === 'Early 2021') {
-          this.minimumReleaseDate = '2021-01-01';
-          this.maximumReleaseDate = '2021-06-30';
-        }
+      async parseEstimatedReleaseDate() {
+        await axios
+          .get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate)
+          .then(response => {
+            this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
+            this.masterGame.maximumReleaseDate = response.data.maximumReleaseDate;
+          })
+          .catch(returnedError => (this.error = returnedError));
       },
       populateFieldsFromURL() {
         if (!this.$route.query.gameName) {

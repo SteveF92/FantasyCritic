@@ -167,39 +167,14 @@
           })
           .catch(returnedError => (this.error = returnedError));
       },
-      parseEstimatedReleaseDate() {
-        if (this.masterGame.estimatedReleaseDate === '' || this.masterGame.estimatedReleaseDate === 'TBA') {
-          this.masterGame.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-          this.masterGame.maximumReleaseDate = null;
-        }
-        if (this.masterGame.estimatedReleaseDate === '2020') {
-          this.masterGame.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-          this.masterGame.maximumReleaseDate = '2020-12-31';
-        }
-        if (this.masterGame.estimatedReleaseDate === 'Q3 2020') {
-          this.masterGame.minimumReleaseDate = moment().add(1, 'days').format('YYYY-MM-DD');
-          this.masterGame.maximumReleaseDate = '2020-09-30';
-        }
-        if (this.masterGame.estimatedReleaseDate === 'Q4 2020') {
-          this.masterGame.minimumReleaseDate = '2020-10-01';
-          this.masterGame.maximumReleaseDate = '2020-12-31';
-        }
-        if (this.masterGame.estimatedReleaseDate === '2021') {
-          this.masterGame.minimumReleaseDate = '2021-01-01';
-          this.masterGame.maximumReleaseDate = '2021-12-31';
-        }
-        if (this.masterGame.estimatedReleaseDate === 'Q1 2021') {
-          this.masterGame.minimumReleaseDate = '2021-01-01';
-          this.masterGame.maximumReleaseDate = '2021-03-31';
-        }
-        if (this.masterGame.estimatedReleaseDate === 'Q2 2021') {
-          this.masterGame.minimumReleaseDate = '2021-04-01';
-          this.masterGame.maximumReleaseDate = '2021-06-30';
-        }
-        if (this.masterGame.estimatedReleaseDate === 'Early 2021') {
-          this.masterGame.minimumReleaseDate = '2021-01-01';
-          this.masterGame.maximumReleaseDate = '2021-06-30';
-        }
+      async parseEstimatedReleaseDate() {
+        await axios
+          .get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate)
+          .then(response => {
+            this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
+            this.masterGame.maximumReleaseDate = response.data.maximumReleaseDate;
+          })
+          .catch(returnedError => (this.error = returnedError));
       },
       propagateDate() {
         this.masterGame.maximumReleaseDate = this.masterGame.releaseDate;
