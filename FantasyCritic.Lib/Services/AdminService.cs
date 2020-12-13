@@ -352,7 +352,7 @@ namespace FantasyCritic.Lib.Services
 
                     double percentStandardGameToUse = eligiblePercentStandardGame;
                     double percentCounterPickToUse = eligiblePercentCounterPick;
-                    if (masterGame.EligibilityChanged)
+                    if (masterGame.EligibilityChanged || eligiblePercentStandardGame > 1)
                     {
                         percentStandardGameToUse = percentStandardGame;
                         percentCounterPickToUse = percentCounterPick;
