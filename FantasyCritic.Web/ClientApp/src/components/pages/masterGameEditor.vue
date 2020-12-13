@@ -217,7 +217,7 @@
         this.masterGame.minimumReleaseDate = null;
         this.masterGame.maximumReleaseDate = null;
         this.masterGame.estimatedReleaseDate = null;
-        this.masterGame.interationalReleaseDate = null;
+        this.masterGame.internationalReleaseDate = null;
         this.masterGame.earlyAccessReleaseDate = null;
       },
       sendEditMasterGameRequest() {

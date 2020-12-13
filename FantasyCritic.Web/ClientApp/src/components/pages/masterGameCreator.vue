@@ -235,12 +235,11 @@
         this.minimumReleaseDate = null;
         this.maximumReleaseDate = null;
         this.estimatedReleaseDate = null;
-        this.interationalReleaseDate = null;
+        this.internationalReleaseDate = null;
         this.earlyAccessReleaseDate = null;
       }
     },
     mounted() {
-      this.fetchEligibilityLevels();
       this.populateFieldsFromURL();
       this.parseEstimatedReleaseDate();
     }
