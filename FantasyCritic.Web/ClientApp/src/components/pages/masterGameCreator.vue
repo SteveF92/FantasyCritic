@@ -123,7 +123,7 @@
         releaseDate: null,
         notes: '',
         possibleEligibilityLevels: null,
-        tags: null
+        tags: []
       };
     },
     components: {
