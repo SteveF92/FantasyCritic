@@ -179,10 +179,10 @@
       },
       async parseEstimatedReleaseDate() {
         await axios
-          .get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate)
+          .get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.estimatedReleaseDate)
           .then(response => {
-            this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
-            this.masterGame.maximumReleaseDate = response.data.maximumReleaseDate;
+            this.minimumReleaseDate = response.data.minimumReleaseDate;
+            this.maximumReleaseDate = response.data.maximumReleaseDate;
           })
           .catch(returnedError => (this.error = returnedError));
       },
