@@ -1,6 +1,6 @@
 <template>
   <div>
-    <multiselect v-model="value" tag-placeholder="Add this as new tag"
+    <multiselect v-if="tagOptions" v-model="value" tag-placeholder="Add this as new tag"
                  placeholder="Search or add a tag" label="readableName"
                  track-by="name" :options="tagOptions" :multiple="true"
                  @input="handleInput">

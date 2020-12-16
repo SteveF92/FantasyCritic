@@ -51,7 +51,11 @@
                 <b-button variant="info" size="sm" v-on:click="assignGame(request)">Assign Game</b-button>
               </td>
               <td class="select-cell">
-                <b-button variant="info" size="sm" v-on:click="createGame(request)">Create Game</b-button>
+                <b-button variant="info"
+                          :to="{ name: 'masterGameCreator',
+                          query: { requestID: request.requestID }}">
+                  Create Game
+                </b-button>
               </td>
             </tr>
           </tbody>
@@ -86,19 +90,6 @@ export default {
         .catch(response => {
 
         });
-    },
-    createGame(request) {
-      let query = {
-        gameName: request.gameName,
-        estimatedReleaseDate: request.estimatedReleaseDate,
-        steamID: request.steamID,
-        openCriticID: request.openCriticID,
-        requestNote: request.requestNote
-      };
-      if (request.releaseDate) {
-        query.releaseDate = request.releaseDate;
-      }
-      this.$router.push({ name: 'masterGameCreator', query: query });
     },
     assignGame(request) {
       this.requestSelected = request;

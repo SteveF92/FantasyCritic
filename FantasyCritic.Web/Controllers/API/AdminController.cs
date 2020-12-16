@@ -170,6 +170,15 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
+        public async Task<ActionResult<MasterGameRequestViewModel>> GetMasterGameRequest(Guid requestID)
+        {
+            IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
+
+            var request = requests.SingleOrDefault(x => x.RequestID == requestID);
+            var vm = new MasterGameRequestViewModel(request, _clock);
+            return vm;
+        }
+
         public async Task<ActionResult<MasterGameChangeRequestViewModel>> GetMasterGameChangeRequest(Guid changeRequestID)
         {
             IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetAllMasterGameChangeRequests();

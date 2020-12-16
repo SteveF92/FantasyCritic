@@ -122,7 +122,7 @@
         internationalReleaseDate: null,
         releaseDate: null,
         notes: '',
-        possibleEligibilityLevels: null,
+        request: null,
         tags: []
       };
     },
@@ -139,14 +139,6 @@
       }
     },
     methods: {
-      fetchEligibilityLevels() {
-        axios
-          .get('/api/Game/EligibilityLevels')
-          .then(response => {
-            this.possibleEligibilityLevels = response.data;
-          })
-          .catch(returnedError => (this.error = returnedError));
-      },
       createMasterGame() {
         let tagNames = _.map(this.tags, 'name');
 
@@ -186,19 +178,27 @@
           })
           .catch(returnedError => (this.error = returnedError));
       },
-      populateFieldsFromURL() {
-        if (!this.$route.query.gameName) {
+      async fetchRequest() {
+        let requestID = this.$route.query.requestID;
+        if (!requestID) {
           return;
         }
-        this.gameName = this.$route.query.gameName;
-        this.estimatedReleaseDate = this.$route.query.estimatedReleaseDate;
-        if (this.$route.query.releaseDate !== undefined) {
-          this.releaseDate = this.$route.query.releaseDate;
-          this.maximumReleaseDate = this.$route.query.releaseDate;
-        }
-        this.steamID = this.$route.query.steamID;
-        this.openCriticID = this.$route.query.openCriticID;
-        this.requestNote = this.$route.query.requestNote;
+        await axios
+          .get('/api/admin/GetMasterGameRequest?requestID=' + requestID)
+          .then(response => {
+            this.request = response.data;
+            this.gameName = this.request.gameName;
+            this.estimatedReleaseDate = this.request.estimatedReleaseDate;
+            if (this.request.releaseDate !== undefined) {
+              this.releaseDate = this.request.releaseDate;
+              this.minimumReleaseDate = this.request.releaseDate;
+              this.maximumReleaseDate = this.request.releaseDate;
+            }
+            this.steamID = this.request.steamID;
+            this.openCriticID = this.request.openCriticID;
+            this.requestNote = this.request.requestNote;
+          })
+          .catch(returnedError => (this.error = returnedError));
       },
       propagateDate() {
         this.maximumReleaseDate = this.releaseDate;
@@ -214,8 +214,8 @@
         this.earlyAccessReleaseDate = null;
       }
     },
-    mounted() {
-      this.populateFieldsFromURL();
+    async mounted() {
+      await this.fetchRequest();
       this.parseEstimatedReleaseDate();
     }
   };
