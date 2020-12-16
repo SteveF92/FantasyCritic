@@ -81,17 +81,6 @@ namespace FantasyCritic.Lib.Utilities
             {"october", (new LocalDate(1, 10, 1), new LocalDate(1, 10, 31))},
             {"november", (new LocalDate(1, 11, 1), new LocalDate(1, 11, 30))},
             {"december", (new LocalDate(1, 12, 1), new LocalDate(1, 12, 31))},
-            {"jan", (new LocalDate(1, 1, 1), new LocalDate(1, 1, 31))},
-            {"feb", (new LocalDate(1, 2, 1), new LocalDate(1, 2, 28))},
-            {"mar", (new LocalDate(1, 3, 1), new LocalDate(1, 3, 31))},
-            {"apr", (new LocalDate(1, 4, 1), new LocalDate(1, 4, 30))},
-            {"jun", (new LocalDate(1, 6, 1), new LocalDate(1, 6, 30))},
-            {"jul", (new LocalDate(1, 7, 1), new LocalDate(1, 7, 31))},
-            {"aug", (new LocalDate(1, 8, 1), new LocalDate(1, 8, 31))},
-            {"sep", (new LocalDate(1, 9, 1), new LocalDate(1, 9, 30))},
-            {"oct", (new LocalDate(1, 10, 1), new LocalDate(1, 10, 31))},
-            {"nov", (new LocalDate(1, 11, 1), new LocalDate(1, 11, 30))},
-            {"dec", (new LocalDate(1, 12, 1), new LocalDate(1, 12, 31))},
         };
     }
 }
