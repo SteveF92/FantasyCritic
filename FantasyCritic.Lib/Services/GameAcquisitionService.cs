@@ -244,6 +244,11 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError("That game has already been released.", true));
             }
 
+            if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year != year)
+            {
+                claimErrors.Add(new ClaimError($"That game is not scheduled to release in {year}.", true));
+            }
+
             if (nextBidTime.HasValue)
             {
                 bool releaseBeforeNextBids = masterGame.IsReleased(nextBidTime.Value);
@@ -368,13 +373,13 @@ namespace FantasyCritic.Lib.Services
             var nyc = TimeExtensions.EasternTimeZone;
             LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
             LocalDate nextBidDate;
-            if (currentDate.DayOfWeek == IsoDayOfWeek.Monday)
+            if (currentDate.DayOfWeek == IsoDayOfWeek.Saturday)
             {
                 nextBidDate = currentDate;
             }
             else
             {
-                nextBidDate = currentDate.Next(IsoDayOfWeek.Monday);
+                nextBidDate = currentDate.Next(IsoDayOfWeek.Saturday);
             }
 
             LocalDateTime dateTime = nextBidDate + new LocalTime(20, 0);
