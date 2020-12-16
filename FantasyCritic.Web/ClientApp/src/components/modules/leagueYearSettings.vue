@@ -165,7 +165,7 @@
       <div>
         <b-form-checkbox v-model="local.counterPicksBlockDrops" @input="update('counterPicksBlockDrops', local.counterPicksBlockDrops)">
           <span class="checkbox-label">Counter Picks Block Drops</span>
-          <p>If this is checked, counter picking a game will prevent the original player from droppping the game.</p>
+          <p>If this is checked, counter picking a game will prevent the original player from dropping the game.</p>
         </b-form-checkbox>
       </div>
 
