@@ -92,8 +92,8 @@
             <li class="fake-link action" v-b-modal="'manageActivePlayers'" v-show="!leagueYear.playStatus.playStarted">
               Manage Active Players
             </li>
-            <li class="fake-link action" v-b-modal="'removePlayerForm'">
-              Remove a Player
+            <li class="fake-link action" v-b-modal="'managerMessageForm'">
+              Post new Message to League
             </li>
             <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">
               Edit Draft Order
@@ -127,6 +127,12 @@
             </li>
             <li class="fake-link action" v-b-modal="'changeLeagueOptionsForm'">
               Change League Options
+            </li>
+            <li class="fake-link action" v-b-modal="'removePlayerForm'">
+              Remove a Player
+            </li>
+            <li class="fake-link action" v-b-modal="'transferManagerForm'">
+              Promote new League Manager
             </li>
             <li class="fake-link action" v-b-modal="'addNewLeagueYear'">
               Start New Year
@@ -173,6 +179,8 @@
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
         <manageEligibilityOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameEligibilitySet" v-on:gameEligiblityReset="gameEligiblityReset"></manageEligibilityOverridesModal>
         <removePlayerModal v-on:playerRemoved="playerRemoved" :league="league" :leagueYear="leagueYear"></removePlayerModal>
+        <transferManagerModal v-on:managerTransferred="managerTransferred" :league="league" :leagueYear="leagueYear"></transferManagerModal>
+        <managerMessageModal v-on:managerMessagePosted="managerMessagePosted" :league="league" :leagueYear="leagueYear"></managerMessageModal>
       </div>
     </div>
   </div>
@@ -213,6 +221,8 @@ import AddNewLeagueYearForm from '@/components/modules/modals/addNewLeagueYearFo
 import LeagueOptionsModal from '@/components/modules/modals/leagueOptionsModal';
 import ManageEligibilityOverridesModal from '@/components/modules/modals/manageEligibilityOverridesModal';
 import RemovePlayerModal from '@/components/modules/modals/removePlayerModal';
+import ManagerMessageModal from '@/components/modules/modals/managerMessageModal';
+import TransferManagerModal from '@/components/modules/modals/transferManagerModal';
 
 export default {
   data() {
@@ -250,7 +260,10 @@ export default {
     UndoLastDraftActionModal,
     AddNewLeagueYearForm,
     LeagueOptionsModal,
-    ManageEligibilityOverridesModal
+    ManageEligibilityOverridesModal,
+    RemovePlayerModal,
+    ManagerMessageModal,
+    TransferManagerModal
   },
   methods: {
     gameBid(bidInfo) {
@@ -456,7 +469,7 @@ export default {
     },
     leagueOptionsChanged() {
       let actionInfo = {
-        message: 'League options have been updated',
+        message: 'League options have been updated.',
         fetchLeague: true,
         fetchLeagueYear: true
       };
@@ -464,14 +477,14 @@ export default {
     },
     draftOrderEdited() {
       let actionInfo = {
-        message: 'Draft order has been changed',
+        message: 'Draft order has been changed.',
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
     },
     bidPriorityEdited() {
       let actionInfo = {
-        message: 'Bid priority has been changed',
+        message: 'Bid priority has been changed.',
         fetchLeagueYear: true,
         fetchCurrentBids: true
       };
@@ -510,21 +523,37 @@ export default {
     },
     publishersAutoDraftSet() {
       let actionInfo = {
-        message: 'Auto draft changed',
+        message: 'Auto draft changed.',
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
     },
     publishersEdited() {
       let actionInfo = {
-        message: 'Publisher has been edited',
+        message: 'Publisher has been edited.',
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
     },
     playerRemoved() {
       let actionInfo = {
-        message: 'Player has been removed from the league',
+        message: 'Player has been removed from the league.',
+        fetchLeague: true,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    managerTransferred() {
+      let actionInfo = {
+        message: 'You have transferred league manager status.',
+        fetchLeague: true,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    managerMessagePosted() {
+      let actionInfo = {
+        message: 'New manager\'s message posted.',
         fetchLeague: true,
         fetchLeagueYear: true
       };

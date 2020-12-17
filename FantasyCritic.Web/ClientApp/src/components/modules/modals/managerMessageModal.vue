@@ -1,6 +1,6 @@
 <template>
-  <b-modal id="removePlayerForm" ref="removePlayerFormRef" size="lg" title="Remove Player" hide-footer @hidden="clearData">
-    Removing players?
+  <b-modal id="managerMessageForm" ref="managerMessageFormRef" size="lg" title="Post New Message to League" hide-footer @hidden="clearData">
+    Post a message!
   </b-modal>
 </template>
 
