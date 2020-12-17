@@ -92,6 +92,9 @@
             <li class="fake-link action" v-b-modal="'manageActivePlayers'" v-show="!leagueYear.playStatus.playStarted">
               Manage Active Players
             </li>
+            <li class="fake-link action" v-b-modal="'removePlayerForm'">
+              Remove a Player
+            </li>
             <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">
               Edit Draft Order
             </li>
@@ -169,6 +172,7 @@
         <manuallySetWillNotReleaseForm :leagueYear="leagueYear" v-on:gameWillNotReleaseSet="gameWillNotReleaseSet"></manuallySetWillNotReleaseForm>
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
         <manageEligibilityOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameEligibilitySet" v-on:gameEligiblityReset="gameEligiblityReset"></manageEligibilityOverridesModal>
+        <removePlayerModal v-on:playerRemoved="playerRemoved" :league="league" :leagueYear="leagueYear"></removePlayerModal>
       </div>
     </div>
   </div>
@@ -208,6 +212,7 @@ import ManagerDraftCounterPickForm from '@/components/modules/modals/managerDraf
 import AddNewLeagueYearForm from '@/components/modules/modals/addNewLeagueYearForm';
 import LeagueOptionsModal from '@/components/modules/modals/leagueOptionsModal';
 import ManageEligibilityOverridesModal from '@/components/modules/modals/manageEligibilityOverridesModal';
+import RemovePlayerModal from '@/components/modules/modals/removePlayerModal';
 
 export default {
   data() {
@@ -513,6 +518,14 @@ export default {
     publishersEdited() {
       let actionInfo = {
         message: 'Publisher has been edited',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    playerRemoved() {
+      let actionInfo = {
+        message: 'Player has been removed from the league',
+        fetchLeague: true,
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
