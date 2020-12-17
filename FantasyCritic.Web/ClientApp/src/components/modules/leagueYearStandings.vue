@@ -26,7 +26,8 @@
             <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: data.item.publisher.publisherID }}">
               {{ data.item.publisher.publisherName }}
             </router-link>
-            <span class="publisher-badge badge badge-pill badge-primary badge-info" v-show="data.item.publisher.autoDraft">Auto Draft</span>
+            <span class="publisher-badge badge badge-pill badge-primary badge-info"
+                  v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraft">Auto Draft</span>
           </span>
         <span v-if="data.item.publisher && showRemovePublisher">
           <b-button variant="danger" size="sm" v-on:click="removePublisher(data.item.publisher)">Remove Publisher</b-button>
