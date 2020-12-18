@@ -1,6 +1,17 @@
 <template>
   <b-modal id="transferManagerForm" ref="transferManagerFormRef" size="lg" title="Transfer Manager" hide-footer @hidden="clearData">
-    Promoting a new Manager?
+    <div class="alert alert-warning">Warning! If you promote a new player to be League Manager, you will no longer be League Manager! There can only be one!</div>
+    <div class="form-group">
+      <label for="newManager" class="control-label">New Manager</label>
+      <b-form-select v-model="newManager">
+        <option v-for="user in players" v-bind:value="user">
+          {{ user.displayName }}
+        </option>
+      </b-form-select>
+      <br />
+      <br />
+      <b-button variant="danger" v-on:click="promoteNewManager">Transfer League Manager</b-button>
+    </div>
   </b-modal>
 </template>
 
@@ -9,18 +20,33 @@
   export default {
     data() {
       return {
-
+        newManager: null
       };
     },
-    props: ['league','leagueYear'],
+    props: ['league'],
     computed: {
-      publishers() {
-        return this.leagueYear.publishers;
+      players() {
+        return this.league.players;
       }
     },
     methods: {
-      clearData() {
+      promoteNewManager() {
+        var model = {
+          leagueID: this.league.leagueID,
+          newManagerUserID: this.newManager.userID
+        };
+        axios
+          .post('/api/leagueManager/PromoteNewLeagueManager', model)
+          .then(response => {
+            this.$refs.transferManagerFormRef.hide();
+            this.$emit('managerTransferred');
+          })
+          .catch(response => {
 
+          });
+      },
+      clearData() {
+        this.newManager = null;
       }
     }
   };

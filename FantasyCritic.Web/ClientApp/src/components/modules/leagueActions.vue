@@ -179,7 +179,7 @@
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
         <manageEligibilityOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameEligibilitySet" v-on:gameEligiblityReset="gameEligiblityReset"></manageEligibilityOverridesModal>
         <removePlayerModal v-on:playerRemoved="playerRemoved" :league="league" :leagueYear="leagueYear"></removePlayerModal>
-        <transferManagerModal v-on:managerTransferred="managerTransferred" :league="league" :leagueYear="leagueYear"></transferManagerModal>
+        <transferManagerModal v-on:managerTransferred="managerTransferred" :league="league"></transferManagerModal>
         <managerMessageModal v-on:managerMessagePosted="managerMessagePosted" :league="league" :leagueYear="leagueYear"></managerMessageModal>
       </div>
     </div>
