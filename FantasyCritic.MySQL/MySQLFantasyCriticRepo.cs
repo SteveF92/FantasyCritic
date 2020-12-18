@@ -1058,6 +1058,23 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task TransferLeagueManager(League league, FantasyCriticUser newManager)
+        {
+            string sql = "UPDATE tbl_league SET LeagueManager = @newManagerUserID WHERE LeagueID = @leagueID;";
+
+            var transferObject = new
+            {
+                leagueID = league.LeagueID,
+                newManagerUserID = newManager.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync(sql, transferObject);
+            }
+        }
+
         public async Task CreatePublisher(Publisher publisher)
         {
             var entity = new PublisherEntity(publisher);

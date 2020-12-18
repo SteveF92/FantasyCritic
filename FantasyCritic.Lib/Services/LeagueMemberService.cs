@@ -287,5 +287,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.SetArchiveStatusForUser(league, archive, user);
         }
+
+        public Task TransferLeagueManager(League league, FantasyCriticUser newManager)
+        {
+            return _fantasyCriticRepo.TransferLeagueManager(league, newManager);
+        }
     }
 }

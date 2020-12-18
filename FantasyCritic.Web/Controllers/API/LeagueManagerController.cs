@@ -1485,6 +1485,15 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
+            var newManager = await _userManager.FindByIdAsync(request.NewManagerUserID.ToString());
+            var usersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
+            if (!usersInLeague.Contains(newManager))
+            {
+                return BadRequest();
+            }
+
+            await _leagueMemberService.TransferLeagueManager(league.Value, newManager);
+
             return Ok();
         }
 

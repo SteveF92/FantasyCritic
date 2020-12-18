@@ -181,6 +181,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task TransferLeagueManager(League league, FantasyCriticUser newManager)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
         {
             return Task.FromResult<Maybe<Publisher>>(_publishers.SingleOrDefault(x => x.PublisherID == publisherID));

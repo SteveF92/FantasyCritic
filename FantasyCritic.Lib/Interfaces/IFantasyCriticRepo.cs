@@ -48,6 +48,7 @@ namespace FantasyCritic.Lib.Interfaces
 
         Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
         Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
+        Task TransferLeagueManager(League league, FantasyCriticUser newManager);
 
         Task<Maybe<Publisher>> GetPublisher(Guid publisherID);
         Task<Maybe<Publisher>> GetPublisher(LeagueYear leagueYear, FantasyCriticUser user);
