@@ -1,5 +1,7 @@
 <template>
   <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData">
+    <div class="alert alert-info">This form will allow you to draft a game for another player. You can use this if you are running a draft off of one computer, for example. If you are just
+    looking to draft your own games, you should use "Draft Game" under "Player Actions"</div>
     <div v-if="nextPublisherUp">
       <div class="form-group">
         <label for="nextPublisherUp" class="control-label">Select the next game for publisher: </label>

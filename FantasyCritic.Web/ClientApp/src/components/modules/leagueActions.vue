@@ -62,10 +62,10 @@
             <h4>Draft Management</h4>
             <ul class="actions-list">
               <li class="fake-link action" v-b-modal="'managerDraftGameForm'" v-show="!leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
-                Select Next Game
+                Draft Game for Next Player
               </li>
               <li class="fake-link action" v-b-modal="'managerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
-                Select Next Game
+                Draft Game for Next Player
               </li>
               <li class="fake-link action" v-b-modal="'setPauseModal'">
                 <span v-show="leagueYear.playStatus.draftIsActive">Pause Draft</span>
