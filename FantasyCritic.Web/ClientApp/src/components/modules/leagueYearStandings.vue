@@ -29,14 +29,8 @@
             <span class="publisher-badge badge badge-pill badge-primary badge-info"
                   v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraft">Auto Draft</span>
           </span>
-        <span v-if="data.item.publisher && showRemovePublisher">
-          <b-button variant="danger" size="sm" v-on:click="removePublisher(data.item.publisher)">Remove Publisher</b-button>
-        </span>
         <span v-if="data.item.user && !data.item.publisher">
-          &lt;Publisher Not Created&gt;
-          <span v-if="showRemove(data.item.user)">
-            <b-button variant="danger" size="sm" v-on:click="removeUser(data.item.user)">Remove</b-button>
-          </span>
+          &lt;Not Created&gt;
         </span>
         <span v-if="!data.item.user">
           &lt;Invite Sent&gt;
@@ -129,70 +123,9 @@ export default {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
         return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
       }
-    },
-    showRemovePublisher() {
-      if (!this.league.isManager) {
-        return false;
-      }
-
-      if (this.leagueYear.playStatus.playStarted) {
-        return false;
-      }
-
-      return true;
     }
   },
   methods: {
-    showRemove(user) {
-      if (!this.league.isManager) {
-        return false;
-      }
-
-      let matchingLeagueLevelPlayer = _.find(this.league.players, function (item) {
-        return item.userID === user.userID;
-      });
-
-      return matchingLeagueLevelPlayer.removable;
-    },
-
-    removeUser(user) {
-      var model = {
-        leagueID: this.leagueYear.leagueID,
-        userID: user.userID
-      };
-      axios
-        .post('/api/leagueManager/RemovePlayer', model)
-        .then(response => {
-          let actionInfo = {
-            message: 'User ' + user.displayName + ' has been removed from the league.',
-            fetchLeague: true,
-            fetchLeagueYear: true
-          };
-          this.$emit('actionTaken', actionInfo);
-        })
-        .catch(response => {
-
-        });
-    },
-    removePublisher(publisher) {
-      var model = {
-        leagueID: this.leagueYear.leagueID,
-        publisherID: publisher.publisherID
-      };
-      axios
-        .post('/api/leagueManager/RemovePublisher', model)
-        .then(response => {
-          let actionInfo = {
-            message: 'Publisher ' + publisher.publisherName + ' has been removed from the league.',
-            fetchLeague: true,
-            fetchLeagueYear: true
-          };
-          this.$emit('actionTaken', actionInfo);
-        })
-        .catch(response => {
-
-        });
-    },
     rescindInvite(inviteID, inviteName) {
       var model = {
         inviteID: inviteID
