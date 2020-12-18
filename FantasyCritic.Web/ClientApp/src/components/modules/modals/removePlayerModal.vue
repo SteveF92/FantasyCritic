@@ -14,7 +14,32 @@
     </div>
     <hr/>
     <div>
-      <label>Remove Player</label>
+      <label>Use this option to remove a player.</label>
+      <div class="alert alert-info">
+        This option will allow you to remove any player, even after the draft, midway through the year. You should not do this lightly, as it will invariably affect the experience of your other players.
+        It cannot easily be reversed either. Proceed at your own risk.
+      </div>
+      <div class="form-group">
+        <label for="playerToRemove" class="control-label">Player to Remove</label>
+        <b-form-select v-model="playerToRemove">
+          <option v-for="player in players" v-bind:value="player">
+            {{ player.user.displayName }}
+          </option>
+        </b-form-select>
+      </div>
+      <div class="form-check" v-show="playerToRemove">
+        <input type="checkbox" class="form-check-input" v-model="deletePublishers">
+        <label class="form-check-label" for="deletePublishers">Delete User's Publishers?</label>
+      </div>
+      <div class="alert alert-info" v-show="playerToRemove && !deletePublishers">
+        Removing a player without removing their publisher will preserve the publisher for gameplay purposes, but the removed player will no longer control that player.
+        Other players will not be able to pick up any of the removed publishers games. It will effectively be an "orphaned" or "inactive" publisher. This is the recommended option.
+      </div>
+      <div class="alert alert-danger" v-show="playerToRemove && deletePublishers">
+        If you delete a user's publishers, all of their games will become available for pickup.
+        This is not reverseable. You should be really, really, sure that this is what you want.
+      </div>
+      <b-button variant="danger" v-show="playerToRemove" v-on:click="removePlayer">Remove Player</b-button>
     </div>
   </b-modal>
 </template>
@@ -24,13 +49,18 @@
   export default {
     data() {
       return {
-        publisherToRemove: null
+        publisherToRemove: null,
+        playerToRemove: null,
+        deletePublishers: false
       };
     },
     props: ['league','leagueYear'],
     computed: {
       publishers() {
         return this.leagueYear.publishers;
+      },
+      players() {
+        return this.leagueYear.players;
       }
     },
     methods: {
@@ -43,11 +73,26 @@
           .post('/api/leagueManager/RemovePlayer', model)
           .then(response => {
             let actionInfo = {
-              message: 'User ' + user.displayName + ' has been removed from the league.',
-              fetchLeague: true,
-              fetchLeagueYear: true
+              playerName: user.displayName,
             };
-            this.$emit('actionTaken', actionInfo);
+            this.$emit('playerRemoved', actionInfo);
+          })
+          .catch(response => {
+
+          });
+
+        var model = {
+          leagueID: this.leagueYear.leagueID,
+          userID: this.playerToRemove.user.userID,
+          deletePublishers: this.deletePublishers
+        };
+        axios
+          .post('/api/leagueManager/RemovePlayer', model)
+          .then(response => {
+            let actionInfo = {
+              playerName: this.playerToRemove.user.displayName
+            };
+            this.$emit('playerRemoved', actionInfo);
           })
           .catch(response => {
 

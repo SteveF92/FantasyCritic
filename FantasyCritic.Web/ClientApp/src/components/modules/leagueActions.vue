@@ -304,14 +304,6 @@ export default {
     newYearAdded(year) {
       this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: year }, query: { freshSettings: true }});
     },
-    playerRemoved(removeInfo) {
-      let actionInfo = {
-        message: removeInfo.displayName + ' has been removed from the league.',
-        fetchLeague: true,
-        fetchLeagueYear: true
-      };
-      this.$emit('actionTaken', actionInfo);
-    },
     gameDrafted(draftInfo) {
       let actionInfo = {
         message: 'You have drafted: ' + draftInfo.gameName,
@@ -545,7 +537,7 @@ export default {
     },
     playerRemoved() {
       let actionInfo = {
-        message: 'Player has been removed from the league.',
+        message: 'Player ' + removeInfo.playerName + ' has been removed from the league.',
         fetchLeague: true,
         fetchLeagueYear: true
       };
