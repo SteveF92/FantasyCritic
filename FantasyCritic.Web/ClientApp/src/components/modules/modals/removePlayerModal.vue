@@ -11,8 +11,8 @@
         </b-form-select>
       </div>
       <b-button variant="danger" v-show="publisherToRemove" v-on:click="removePublisher">Remove Publisher</b-button>
+      <hr />
     </div>
-    <hr/>
     <div>
       <label>Use this option to remove a player.</label>
       <div class="alert alert-info">
@@ -84,23 +84,7 @@
       playerIsLeagueManager(player) {
         return player.user.userID === this.league.leagueManager.userID;
       },
-      removePlayer(player) {
-        var model = {
-          leagueID: this.leagueYear.leagueID,
-          userID: player.user.userID
-        };
-        axios
-          .post('/api/leagueManager/RemovePlayer', model)
-          .then(response => {
-            let actionInfo = {
-              playerName: player.user.displayName,
-            };
-            this.$emit('playerRemoved', actionInfo);
-          })
-          .catch(response => {
-
-          });
-
+      removePlayer() {
         var model = {
           leagueID: this.leagueYear.leagueID,
           userID: this.playerToRemove.user.userID,
@@ -136,7 +120,9 @@
           });
       },
       clearData() {
-
+        this.publisherToRemove = null;
+        this.playerToRemove = null;
+        this.deletePublishers = false;
       }
     }
   };
