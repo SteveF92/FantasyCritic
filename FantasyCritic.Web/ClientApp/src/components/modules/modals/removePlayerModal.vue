@@ -27,19 +27,28 @@
           </option>
         </b-form-select>
       </div>
-      <div class="form-check" v-show="playerToRemove">
+
+      <div class="form-check" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
         <input type="checkbox" class="form-check-input" v-model="deletePublishers">
         <label class="form-check-label" for="deletePublishers">Delete User's Publishers?</label>
       </div>
-      <div class="alert alert-info" v-show="playerToRemove && !deletePublishers">
+
+      <div class="alert alert-info" v-show="playerToRemove && playerIsSafelyRemoveable(playerToRemove)">
+        This player does not have any publishers created and can be safely removed without any issues.
+      </div>
+      <div class="alert alert-info" v-show="playerToRemove && !deletePublishers && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
         Removing a player without removing their publisher will preserve the publisher for gameplay purposes, but the removed player will no longer control that player.
         Other players will not be able to pick up any of the removed publishers games. It will effectively be an "orphaned" or "inactive" publisher. This is the recommended option.
       </div>
-      <div class="alert alert-danger" v-show="playerToRemove && deletePublishers">
+      <div class="alert alert-danger" v-show="playerToRemove && deletePublishers && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
         If you delete a user's publishers, all of their games will become available for pickup.
         This is not reverseable. You should be really, really, sure that this is what you want.
       </div>
-      <b-button variant="danger" v-show="playerToRemove" v-on:click="removePlayer">Remove Player</b-button>
+      <div class="alert alert-danger" v-show="playerToRemove && playerIsLeagueManager(playerToRemove)">
+        You cannot remove yourself!
+      </div>
+
+      <b-button variant="danger" v-show="playerToRemove && !playerIsLeagueManager(playerToRemove)" v-on:click="removePlayer">Remove Player</b-button>
     </div>
   </b-modal>
 </template>
@@ -61,19 +70,30 @@
       },
       players() {
         return this.leagueYear.players;
-      }
+      },
+      
     },
     methods: {
-      removeUser(user) {
+      playerIsSafelyRemoveable(player) {
+        let matchingLeagueLevelPlayer = _.find(this.league.players, function (item) {
+          return item.userID === player.user.userID;
+        });
+
+        return matchingLeagueLevelPlayer.removable;
+      },
+      playerIsLeagueManager(player) {
+        return player.user.userID === this.league.leagueManager.userID;
+      },
+      removePlayer(player) {
         var model = {
           leagueID: this.leagueYear.leagueID,
-          userID: user.userID
+          userID: player.user.userID
         };
         axios
           .post('/api/leagueManager/RemovePlayer', model)
           .then(response => {
             let actionInfo = {
-              playerName: user.displayName,
+              playerName: player.user.displayName,
             };
             this.$emit('playerRemoved', actionInfo);
           })
