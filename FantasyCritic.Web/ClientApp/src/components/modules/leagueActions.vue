@@ -178,7 +178,7 @@
         <manuallySetWillNotReleaseForm :leagueYear="leagueYear" v-on:gameWillNotReleaseSet="gameWillNotReleaseSet"></manuallySetWillNotReleaseForm>
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
         <manageEligibilityOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameEligibilitySet" v-on:gameEligiblityReset="gameEligiblityReset"></manageEligibilityOverridesModal>
-        <removePlayerModal v-on:playerRemoved="playerRemoved" :league="league" :leagueYear="leagueYear"></removePlayerModal>
+        <removePlayerModal v-on:playerRemoved="playerRemoved" v-on:publisherRemoved="publisherRemoved" :league="league" :leagueYear="leagueYear"></removePlayerModal>
         <transferManagerModal v-on:managerTransferred="managerTransferred" :league="league"></transferManagerModal>
         <managerMessageModal v-on:managerMessagePosted="managerMessagePosted" :league="league" :leagueYear="leagueYear"></managerMessageModal>
       </div>
@@ -531,6 +531,14 @@ export default {
     publishersEdited() {
       let actionInfo = {
         message: 'Publisher has been edited.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    publisherRemoved(removeInfo) {
+      let actionInfo = {
+        message: 'Publisher ' + removeInfo.publisherName + ' has been removed from the league.',
+        fetchLeague: true,
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
