@@ -38,7 +38,7 @@ export default {
   methods: {
     deleteAccount() {
       axios
-        .post('/api/account/DeleteUserAccount', model)
+        .post('/api/account/DeleteAccount')
         .then(response => {
           this.$store.dispatch('logout')
             .then(() => {

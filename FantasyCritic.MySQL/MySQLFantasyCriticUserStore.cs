@@ -383,17 +383,17 @@ namespace FantasyCritic.MySQL
                                        "where UserID = @userID;";
             string deleteRoyalePublishers = "delete tbl_royale_publisher from tbl_royale_publisher " +
                                             "where UserID = @userID;";
-            string updatePublisherNames = "UPDATE tbl_publisher SET PublisherName = '<Deleted>' WHERE UserID = @userID;";
+            string updatePublisherNames = "UPDATE tbl_league_publisher SET PublisherName = '<Deleted>' WHERE UserID = @userID;";
             string deleteUnprocessedDrops = "DELETE tbl_league_pickupbid FROM tbl_league_pickupbid " +
-                                            "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_pickupbid.PublisherID" +
+                                            "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_pickupbid.PublisherID " +
                                             "WHERE UserID = @userID AND Successful IS null;";
             string deleteUnprocessedBids = "DELETE tbl_league_droprequest FROM tbl_league_droprequest " +
                                            "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_droprequest.PublisherID " +
-                                           "WHERE UserID = @userID AND PublisherID in @publisherIDs AND Successful IS null;";
+                                           "WHERE UserID = @userID AND Successful IS null;";
             string updateUserAccount = "UPDATE tbl_user SET " +
                                        "DisplayName = '<Deleted>', " +
-                                       "EmailAddress = '<Deleted>', " +
-                                       "NormalizedEmailAddress = '<Deleted>', " +
+                                       "EmailAddress = @fakeEmailAddress, " +
+                                       "NormalizedEmailAddress = @fakeEmailAddress, " +
                                        "PasswordHash = '', " +
                                        "SecurityStamp = '', " +
                                        "IsDeleted = 1 " +
@@ -401,7 +401,8 @@ namespace FantasyCritic.MySQL
 
             var deleteObject = new
             {
-                userID = user.UserID
+                userID = user.UserID,
+                fakeEmailAddress = $"{user.UserID}@fake.fake"
             };
 
             using (var connection = new MySqlConnection(_connectionString))
