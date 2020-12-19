@@ -33,8 +33,8 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbl_user(UserID,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed) VALUES " +
-                    "(@UserID,@DisplayName,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed)",
+                    "insert into tbl_user(UserID,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed,IsDeleted) VALUES " +
+                    "(@UserID,@DisplayName,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed,@IsDeleted)",
                     entity);
             }
 
@@ -373,6 +373,42 @@ namespace FantasyCritic.MySQL
                 var oldEnoughTokens = tokenTimestamps.Where(x => x < cutoff);
                 var tokensToDelete = oldEnoughTokens.Except(tokensToKeep);
                 await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID and CreatedTimestamp in @tokensToDelete", new { user.UserID, tokensToDelete });
+            }
+        }
+
+        public async Task DeleteUserAccount(FantasyCriticUser user)
+        {
+            string deleteRoyaleGames = "delete tbl_royale_publishergame from tbl_royale_publishergame " +
+                                       "join tbl_royale_publisher on tbl_royale_publisher.PublisherID = tbl_royale_publishergame.PublisherID " +
+                                       "where UserID = @userID;";
+            string deleteRoyalePublishers = "delete tbl_royale_publisher from tbl_royale_publisher " +
+                                            "where UserID = @userID;";
+            string updatePublisherNames = "UPDATE tbl_publisher SET PublisherName = '<Deleted>' WHERE UserID = @userID;";
+            string updateUserAccount = "UPDATE tbl_user SET " +
+                                       "DisplayName = '<Deleted>', " +
+                                       "EmailAddress = '<Deleted>', " +
+                                       "NormalizedEmailAddress = '<Deleted>', " +
+                                       "PasswordHash = '', " +
+                                       "SecurityStamp = '', " +
+                                       "IsDeleted = 1 " +
+                                       "WHERE UserID = @userID;";
+
+            var deleteObject = new
+            {
+                userID = user.UserID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(deleteRoyaleGames, deleteObject, transaction);
+                    await connection.ExecuteAsync(deleteRoyalePublishers, deleteObject, transaction);
+                    await connection.ExecuteAsync(updatePublisherNames, deleteObject, transaction);
+                    await connection.ExecuteAsync(updateUserAccount, deleteObject, transaction);
+                    transaction.Commit();
+                }
             }
         }
 

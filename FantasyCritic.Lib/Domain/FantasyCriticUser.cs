@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain
     public class FantasyCriticUser : IEquatable<FantasyCriticUser>
     {
         public FantasyCriticUser(Guid userID, string displayName, int displayNumber, string emailAddress, string normalizedEmailAddress, 
-            bool emailConfirmed, string securityStamp, string passwordHash, Instant lastChangedCredentials)
+            bool emailConfirmed, string securityStamp, string passwordHash, Instant lastChangedCredentials, bool isDeleted)
         {
             UserID = userID;
             DisplayName = displayName;
@@ -22,6 +22,7 @@ namespace FantasyCritic.Lib.Domain
             SecurityStamp = securityStamp;
             PasswordHash = passwordHash;
             LastChangedCredentials = lastChangedCredentials;
+            IsDeleted = isDeleted;
         }
 
         public Guid UserID { get; set; }
@@ -33,6 +34,7 @@ namespace FantasyCritic.Lib.Domain
         public string SecurityStamp { get; set; }
         public string PasswordHash { get; set; }
         public Instant LastChangedCredentials { get; set; }
+        public bool IsDeleted { get; set; }
 
         public void UpdateLastUsedCredentials(Instant currentInstant)
         {

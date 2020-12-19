@@ -226,6 +226,11 @@ namespace FantasyCritic.FakeRepo
             return Task.CompletedTask;
         }
 
+        public Task DeleteUserAccount(FantasyCriticUser user)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
 

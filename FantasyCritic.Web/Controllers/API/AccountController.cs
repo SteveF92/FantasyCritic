@@ -72,7 +72,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             int openUserNumber = await _userManager.GetOpenDisplayNumber(model.DisplayName);
 
-            var user = new FantasyCriticUser(Guid.NewGuid(), model.DisplayName, openUserNumber, model.EmailAddress, model.EmailAddress, false, "", "", _clock.GetCurrentInstant());
+            var user = new FantasyCriticUser(Guid.NewGuid(), model.DisplayName, openUserNumber, model.EmailAddress, model.EmailAddress, false, "", "", _clock.GetCurrentInstant(), false);
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
@@ -257,6 +257,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            if (user.IsDeleted)
+            {
+                return BadRequest();
+            }
+
             var result = await _signInManager.PasswordSignInAsync(user.NormalizedEmailAddress, model.Password, false, false);
             if (!result.Succeeded)
             {
@@ -287,6 +292,20 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest();
             }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            await _userManager.DeleteUserAccount(user);
 
             return Ok();
         }

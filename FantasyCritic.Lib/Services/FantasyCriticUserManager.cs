@@ -66,5 +66,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _userStore.FindByDisplayName(displayName, displayNumber);
         }
+
+        public Task DeleteUserAccount(FantasyCriticUser user)
+        {
+            return _userStore.DeleteUserAccount(user);
+        }
     }
 }

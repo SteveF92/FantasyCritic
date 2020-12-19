@@ -1024,17 +1024,22 @@ namespace FantasyCritic.MySQL
             var remainingOrderedPublishers = publishersInLeague.Except(new List<Publisher>{ deletePublisher }).OrderBy(x => x.DraftPosition).ToList();
             IEnumerable<SetDraftOrderEntity> setDraftOrderEntities = remainingOrderedPublishers.Select((publisher, index) => new SetDraftOrderEntity(publisher.PublisherID, index + 1));
 
+            var deleteObject = new
+            {
+                publisherID = deletePublisher.PublisherID
+            };
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync(deleteQueueSQL, new { publisherID = deletePublisher.PublisherID }, transaction);
-                    await connection.ExecuteAsync(deleteHistorySQL, new { publisherID = deletePublisher.PublisherID }, transaction);
-                    await connection.ExecuteAsync(deletePublisherGameSQL, new { publisherID = deletePublisher.PublisherID }, transaction);
-                    await connection.ExecuteAsync(deletePublisherBidsSQL, new { publisherID = deletePublisher.PublisherID }, transaction);
-                    await connection.ExecuteAsync(deletePublisherDropsSQL, new { publisherID = deletePublisher.PublisherID }, transaction);
-                    await connection.ExecuteAsync(deleteSQL, new { publisherID = deletePublisher.PublisherID }, transaction);
+                    await connection.ExecuteAsync(deleteQueueSQL, deleteObject, transaction);
+                    await connection.ExecuteAsync(deleteHistorySQL, deleteObject, transaction);
+                    await connection.ExecuteAsync(deletePublisherGameSQL, deleteObject, transaction);
+                    await connection.ExecuteAsync(deletePublisherBidsSQL, deleteObject, transaction);
+                    await connection.ExecuteAsync(deletePublisherDropsSQL, deleteObject, transaction);
+                    await connection.ExecuteAsync(deleteSQL, deleteObject, transaction);
                     await connection.ExecuteAsync(fixDraftOrderSQL, setDraftOrderEntities);
                     transaction.Commit();
                 }
