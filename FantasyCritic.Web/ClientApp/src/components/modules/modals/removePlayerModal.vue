@@ -31,15 +31,9 @@
       <div class="alert alert-info" v-show="playerToRemove && playerIsSafelyRemoveable(playerToRemove)">
         This player can be safely removed without any issues.
       </div>
-      <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
-        <div class="alert alert-danger">
-          If you delete a user's publishers, all of their games will become available for pickup.
-          This is not reverseable. You should be really, really, sure that this is what you want.
-        </div>
-        <div class="alert alert-warning">
-          A safer option is to transfer the unwanted player's publishers to a new user, even if you don't plan on using it going forward. Use the "Transfer Publisher" option for that.
-          Once you have transferred all of a player's publishers (more than one if they've played multiple years), you can safely delete them using this feature.
-        </div>
+      <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
+        If you delete a user's publishers, all of their games will become available for pickup.
+        This is not reverseable. You should be really, really, sure that this is what you want.
       </div>
       
       <div class="alert alert-danger" v-show="playerToRemove && playerIsLeagueManager(playerToRemove)">
