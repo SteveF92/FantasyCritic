@@ -384,6 +384,12 @@ namespace FantasyCritic.MySQL
             string deleteRoyalePublishers = "delete tbl_royale_publisher from tbl_royale_publisher " +
                                             "where UserID = @userID;";
             string updatePublisherNames = "UPDATE tbl_publisher SET PublisherName = '<Deleted>' WHERE UserID = @userID;";
+            string deleteUnprocessedDrops = "DELETE tbl_league_pickupbid FROM tbl_league_pickupbid " +
+                                            "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_pickupbid.PublisherID" +
+                                            "WHERE UserID = @userID AND Successful IS null;";
+            string deleteUnprocessedBids = "DELETE tbl_league_droprequest FROM tbl_league_droprequest " +
+                                           "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_droprequest.PublisherID " +
+                                           "WHERE UserID = @userID AND PublisherID in @publisherIDs AND Successful IS null;";
             string updateUserAccount = "UPDATE tbl_user SET " +
                                        "DisplayName = '<Deleted>', " +
                                        "EmailAddress = '<Deleted>', " +
@@ -406,6 +412,8 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(deleteRoyaleGames, deleteObject, transaction);
                     await connection.ExecuteAsync(deleteRoyalePublishers, deleteObject, transaction);
                     await connection.ExecuteAsync(updatePublisherNames, deleteObject, transaction);
+                    await connection.ExecuteAsync(deleteUnprocessedDrops, deleteObject, transaction);
+                    await connection.ExecuteAsync(deleteUnprocessedBids, deleteObject, transaction);
                     await connection.ExecuteAsync(updateUserAccount, deleteObject, transaction);
                     transaction.Commit();
                 }

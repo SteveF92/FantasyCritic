@@ -6,7 +6,8 @@
       <ul>
         <li>All of your Royale Publishers will be deleted.</li>
         <li>Any publishers you have in a normal league will be marked as 'Deleted', but the games will remain, as to not affect the other players.</li>
-        <li>All of your personal information, including display name, email address, and hashed password, will be deleted</li>
+        <li>Any outstanding drops or bids you have made will be cancelled.</li>
+        <li>All of your personal information, including display name, email address, and hashed password, will be deleted.</li>
         <li>You will not be able to log in anymore.</li>
       </ul>
     </div>
