@@ -502,31 +502,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That user is not in that league.");
             }
 
-            bool canFullyRemove = true;
-            foreach (var year in league.Value.Years)
-            {
-                var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
-                var publishersForYear = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-                if (!publishersForYear.Any(x => x.User.Equals(removeUser)))
-                {
-                    //User did not play in this year, safe to remove.
-                    continue;
-                }
-                if (leagueYear.Value.PlayStatus.PlayStarted)
-                {
-                    canFullyRemove = false;
-                    break;
-                }
-            }
-
-            if (canFullyRemove)
-            {
-                await _leagueMemberService.FullyRemovePlayerFromLeague(league.Value, removeUser);
-            }
-            else
-            {
-                await _leagueMemberService.SafelyRemovePlayerFromLeague(league.Value, removeUser, request.DeletePublishers);
-            }
+            await _leagueMemberService.FullyRemovePlayerFromLeague(league.Value, removeUser);
 
             return Ok();
         }

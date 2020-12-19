@@ -28,22 +28,20 @@
         </b-form-select>
       </div>
 
-      <div class="form-check" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
-        <input type="checkbox" class="form-check-input" v-model="deletePublishers">
-        <label class="form-check-label" for="deletePublishers">Delete User's Publishers?</label>
-      </div>
-
       <div class="alert alert-info" v-show="playerToRemove && playerIsSafelyRemoveable(playerToRemove)">
-        This player does not have any publishers created and can be safely removed without any issues.
+        This player can be safely removed without any issues.
       </div>
-      <div class="alert alert-info" v-show="playerToRemove && !deletePublishers && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
-        Removing a player without removing their publisher will preserve the publisher for gameplay purposes, but the removed player will no longer control that player.
-        Other players will not be able to pick up any of the removed publishers games. It will effectively be an "orphaned" or "inactive" publisher. This is the recommended option.
+      <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
+        <div class="alert alert-danger">
+          If you delete a user's publishers, all of their games will become available for pickup.
+          This is not reverseable. You should be really, really, sure that this is what you want.
+        </div>
+        <div class="alert alert-warning">
+          A safer option is to transfer the unwanted player's publishers to a new user, even if you don't plan on using it going forward. Use the "Transfer Publisher" option for that.
+          Once you have transferred all of a player's publishers (more than one if they've played multiple years), you can safely delete them using this feature.
+        </div>
       </div>
-      <div class="alert alert-danger" v-show="playerToRemove && deletePublishers && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
-        If you delete a user's publishers, all of their games will become available for pickup.
-        This is not reverseable. You should be really, really, sure that this is what you want.
-      </div>
+      
       <div class="alert alert-danger" v-show="playerToRemove && playerIsLeagueManager(playerToRemove)">
         You cannot remove yourself!
       </div>
@@ -59,8 +57,7 @@
     data() {
       return {
         publisherToRemove: null,
-        playerToRemove: null,
-        deletePublishers: false
+        playerToRemove: null
       };
     },
     props: ['league','leagueYear'],
@@ -87,8 +84,7 @@
       removePlayer() {
         var model = {
           leagueID: this.leagueYear.leagueID,
-          userID: this.playerToRemove.user.userID,
-          deletePublishers: this.deletePublishers
+          userID: this.playerToRemove.user.userID
         };
         axios
           .post('/api/leagueManager/RemovePlayer', model)
@@ -97,6 +93,7 @@
               playerName: this.playerToRemove.user.displayName
             };
             this.$emit('playerRemoved', actionInfo);
+            this.clearData();
           })
           .catch(response => {
 
@@ -114,6 +111,7 @@
               publisherName: this.publisherToRemove.publisherName
             };
             this.$emit('publisherRemoved', actionInfo);
+            this.clearData();
           })
           .catch(response => {
 

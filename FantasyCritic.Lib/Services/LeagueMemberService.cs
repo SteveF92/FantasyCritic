@@ -241,22 +241,6 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
         }
 
-        public async Task SafelyRemovePlayerFromLeague(League league, FantasyCriticUser removeUser, bool deletePublishers)
-        {
-            foreach (var year in league.Years)
-            {
-                var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
-                var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.Value);
-                var deletePublisher = allPublishers.SingleOrDefault(x => x.User.UserID == removeUser.UserID);
-                if (deletePublisher != null)
-                {
-                    await _fantasyCriticRepo.SafelyRemovePublisher(deletePublisher, allPublishers);
-                }
-            }
-
-            await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
-        }
-
         public Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year)
         {
             return _fantasyCriticRepo.GetActivePlayersForLeagueYear(league, year);

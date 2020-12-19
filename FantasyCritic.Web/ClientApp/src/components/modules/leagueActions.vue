@@ -535,7 +535,7 @@ export default {
       };
       this.$emit('actionTaken', actionInfo);
     },
-    playerRemoved() {
+    playerRemoved(removeInfo) {
       let actionInfo = {
         message: 'Player ' + removeInfo.playerName + ' has been removed from the league.',
         fetchLeague: true,

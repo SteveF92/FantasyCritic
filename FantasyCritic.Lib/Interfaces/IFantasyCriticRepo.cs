@@ -47,7 +47,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user);
 
         Task FullyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
-        Task SafelyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
         Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
         Task TransferLeagueManager(League league, FantasyCriticUser newManager);
 

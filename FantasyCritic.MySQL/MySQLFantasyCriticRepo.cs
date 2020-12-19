@@ -1016,9 +1016,9 @@ namespace FantasyCritic.MySQL
             string deleteSQL = "delete from tbl_league_publisher where PublisherID = @publisherID;";
             string deleteQueueSQL = "delete from tbl_league_publisherqueue where PublisherID = @publisherID;";
             string deleteHistorySQL = "delete from tbl_league_action where PublisherID = @publisherID;";
-            string deletePublisherGameSQL = "delete tbl_league_publishergame WHERE PublisherID = @publisherID;";
-            string deletePublisherBidsSQL = "delete tbl_league_pickupbid WHERE PublisherID = @publisherID;";
-            string deletePublisherDropsSQL = "delete tbl_league_droprequest WHERE PublisherID = @publisherID;";
+            string deletePublisherGameSQL = "delete from tbl_league_publishergame WHERE PublisherID = @publisherID;";
+            string deletePublisherBidsSQL = "delete from tbl_league_pickupbid WHERE PublisherID = @publisherID;";
+            string deletePublisherDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @publisherID;";
             string fixDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
 
             var remainingOrderedPublishers = publishersInLeague.Except(new List<Publisher>{ deletePublisher }).OrderBy(x => x.DraftPosition).ToList();
@@ -1039,11 +1039,6 @@ namespace FantasyCritic.MySQL
                     transaction.Commit();
                 }
             }
-        }
-
-        public Task SafelyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
