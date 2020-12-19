@@ -2131,5 +2131,13 @@ namespace FantasyCritic.MySQL
                 return entities.Select(x => x.ToDomain()).ToList();
             }
         }
+
+        public async Task DeleteManagerMessage(Guid messageId)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("delete from tbl_league_managermessage where MessageID = @messageId;", new { messageId });
+            }
+        }
     }
 }

@@ -388,5 +388,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.GetManagerMessages(leagueYear);
         }
+
+        public Task DeleteManagerMessage(Guid messageID)
+        {
+            return _fantasyCriticRepo.DeleteManagerMessage(messageID);
+        }
     }
 }

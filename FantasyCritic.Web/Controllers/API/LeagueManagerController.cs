@@ -47,8 +47,8 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly GameAcquisitionService _gameAcquisitionService;
 
         public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
-            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext, IEmailSender emailSender,
-            GameAcquisitionService gameAcquisitionService)
+            LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext,
+            IEmailSender emailSender, GameAcquisitionService gameAcquisitionService)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
@@ -1510,6 +1510,38 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.PostNewManagerMessage(leagueYear.Value, request.Message, request.IsPublic);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteManagerMessage([FromBody] DeleteManagerMessageRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            {
+                return Forbid();
+            }
+
+            await _fantasyCriticService.DeleteManagerMessage(request.MessageID);
 
             return Ok();
         }

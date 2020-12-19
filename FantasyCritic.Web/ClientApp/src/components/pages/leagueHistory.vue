@@ -10,14 +10,15 @@
       <div v-if="league">
         <h1>League History: {{league.leagueName}} (Year {{year}})</h1>
         <hr />
-        <div v-if="leagueYear && leagueYear.managerMessages">
+        <div v-if="leagueYear && leagueYear.managerMessages && leagueYear.managerMessages.length > 0">
           <h2>Manager's Messages</h2>
           <div class="alert alert-info" v-for="message in leagueYear.managerMessages">
+            <b-button class="delete-button" variant="warning" v-if="league.isManager" v-on:click="deleteMessage(message)">Delete</b-button>
             <h5>{{message.timestamp | dateTime}}</h5>
             <div class="preserve-whitespace">{{message.messageText}}</div>
           </div>
+          <hr />
         </div>
-        <hr />
         <h2>Actions</h2>
         <div class="history-table">
           <b-table :sort-by.sync="sortBy"
@@ -94,6 +95,20 @@ export default {
         .catch(returnedError => {
         });
     },
+    deleteMessage(message) {
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.leagueYear.year,
+        messageID: message.messageID
+      };
+      axios
+        .post('/api/leagueManager/DeleteManagerMessage', model)
+        .then(response => {
+          this.fetchLeagueYear();
+        })
+        .catch(response => {
+        });
+    }
   },
   mounted() {
     this.fetchLeague();
@@ -106,5 +121,8 @@ export default {
   .history-table {
     margin-left: 15px;
     margin-right: 15px;
+  }
+  .delete-button{
+      float:right;
   }
 </style>

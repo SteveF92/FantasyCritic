@@ -120,5 +120,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task ConvertToTags(IReadOnlyDictionary<LeagueYear, IReadOnlyList<MasterGameTag>> tagsToAddByLeagueYear);
         Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage domainMessage);
         Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear);
+        Task DeleteManagerMessage(Guid messageId);
     }
 }
