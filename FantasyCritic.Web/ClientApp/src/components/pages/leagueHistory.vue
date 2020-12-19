@@ -6,9 +6,19 @@
           You do not have permission to view this league.
         </div>
       </div>
+      
       <div v-if="league">
         <h1>League History: {{league.leagueName}} (Year {{year}})</h1>
         <hr />
+        <div v-if="leagueYear && leagueYear.managerMessages">
+          <h2>Manager's Messages</h2>
+          <div class="alert alert-info" v-for="message in leagueYear.managerMessages">
+            <h5>{{message.timestamp | dateTime}}</h5>
+            <div class="preserve-whitespace">{{message.messageText}}</div>
+          </div>
+        </div>
+        <hr />
+        <h2>Actions</h2>
         <div class="history-table">
           <b-table :sort-by.sync="sortBy"
                    :sort-desc.sync="sortDesc"
@@ -38,6 +48,7 @@ export default {
     return {
       errorInfo: '',
       league: null,
+      leagueYear: null,
       leagueActions: [],
       actionFields: [
         { key: 'publisherName', label: 'Name', sortable: true, thClass: 'bg-primary' },
@@ -72,9 +83,21 @@ export default {
           this.forbidden = (returnedError.response.status === 403);
         });
     },
+    fetchLeagueYear() {
+      let queryURL = '/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year;
+      axios
+        .get(queryURL)
+        .then(response => {
+          this.leagueYear = response.data;
+          this.selectedYear = this.leagueYear.year;
+        })
+        .catch(returnedError => {
+        });
+    },
   },
   mounted() {
     this.fetchLeague();
+    this.fetchLeagueYear();
     this.fetchLeagueActions();
   }
 };
