@@ -1498,10 +1498,18 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
             if (league.Value.LeagueManager.UserID != currentUser.UserID)
             {
                 return Forbid();
             }
+
+            await _fantasyCriticService.PostNewManagerMessage(leagueYear.Value, request.Message, request.IsPublic);
 
             return Ok();
         }

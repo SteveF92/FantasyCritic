@@ -503,6 +503,16 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage domainMessage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
         {
             throw new NotImplementedException();

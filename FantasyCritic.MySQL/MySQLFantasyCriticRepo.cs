@@ -2103,5 +2103,33 @@ namespace FantasyCritic.MySQL
                 }
             }
         }
+
+        public async Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage message)
+        {
+            var entity = new ManagerMessageEntity(leagueYear, message);
+            string sql = "INSERT INTO tbl_league_managermessage(MessageID,LeagueID,Year,MessageText,IsPublic,Timestamp) VALUES " +
+                         "(@MessageID,@LeagueID,@Year,@MessageText,@IsPublic,@Timestamp);";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, entity);
+            }
+        }
+
+        public async Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear)
+        {
+            var sql = "select * from tbl_league_managermessage where LeagueID = @leagueID AND Year = @year;";
+            var queryObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<ManagerMessageEntity> entities = await connection.QueryAsync<ManagerMessageEntity>(sql, queryObject);
+                return entities.Select(x => x.ToDomain()).ToList();
+            }
+        }
     }
 }

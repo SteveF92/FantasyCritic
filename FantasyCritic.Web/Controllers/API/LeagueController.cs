@@ -258,10 +258,11 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+            IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear.Value);
 
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, activeUsers, nextDraftPublisher, draftPhase, availableCounterPicks,
-                leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager, currentUser);
+                leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager, currentUser, managerMessages);
             return Ok(leagueViewModel);
         }
 

@@ -118,5 +118,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task SaveProcessedDropResults(DropProcessingResults dropProcessingResults);
         Task UpdateSystemWideValues(SystemWideValues systemWideValues);
         Task ConvertToTags(IReadOnlyDictionary<LeagueYear, IReadOnlyList<MasterGameTag>> tagsToAddByLeagueYear);
+        Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage domainMessage);
+        Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear);
     }
 }

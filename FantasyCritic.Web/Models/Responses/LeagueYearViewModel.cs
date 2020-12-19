@@ -17,7 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
         public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Maybe<Publisher> userPublisher,
             IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher, DraftPhase draftPhase,
             IEnumerable<PublisherGame> availableCounterPicks, LeagueOptions options, SystemWideValues systemWideValues, IEnumerable<LeagueInvite> invitedPlayers,
-            bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager, Maybe<FantasyCriticUser> accessingUser)
+            bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager, Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -101,6 +101,11 @@ namespace FantasyCritic.Web.Models.Responses
                 .Select(x => new PublisherGameViewModel(x, clock, leagueYear.Options.ScoringSystem, systemWideValues))
                 .OrderBy(x => x.GameName).ToList();
             EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, clock)).ToList();
+
+            if (userIsInLeague)
+            {
+                ManagerMessages = managerMessages.Select(x => new ManagerMessageViewModel(x)).ToList();
+            }
         }
 
         public Guid LeagueID { get; }
@@ -120,5 +125,6 @@ namespace FantasyCritic.Web.Models.Responses
         public PublisherViewModel UserPublisher { get; }
         public PlayStatusViewModel PlayStatus { get; }
         public IReadOnlyList<PublisherGameViewModel> AvailableCounterPicks { get; }
+        public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
     }
 }

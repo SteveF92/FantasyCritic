@@ -377,5 +377,16 @@ namespace FantasyCritic.Lib.Services
             LeagueAction eligibilityAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Eligibility Setting Changed", description, true);
             await _fantasyCriticRepo.AddLeagueAction(eligibilityAction);
         }
+
+        public async Task PostNewManagerMessage(LeagueYear leagueYear, string message, bool isPublic)
+        {
+            var domainMessage = new ManagerMessage(Guid.NewGuid(), message, isPublic, _clock.GetCurrentInstant());
+            await _fantasyCriticRepo.PostNewManagerMessage(leagueYear, domainMessage);
+        }
+
+        public Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear)
+        {
+            return _fantasyCriticRepo.GetManagerMessages(leagueYear);
+        }
     }
 }

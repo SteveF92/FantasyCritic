@@ -554,7 +554,6 @@ export default {
     managerMessagePosted() {
       let actionInfo = {
         message: 'New manager\'s message posted.',
-        fetchLeague: true,
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
