@@ -184,3 +184,7 @@ svg, img.critic-royale-nav {
 .table-responsive table thead th span.sr-only {
     display: none;
 }
+
+.preserve-whitespace {
+    white-space: pre-wrap;
+}

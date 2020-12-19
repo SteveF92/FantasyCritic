@@ -102,9 +102,10 @@ namespace FantasyCritic.Web.Models.Responses
                 .OrderBy(x => x.GameName).ToList();
             EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, clock)).ToList();
 
-            if (userIsInLeague)
+            ManagerMessages = managerMessages.Select(x => new ManagerMessageViewModel(x)).OrderBy(x => x.Timestamp).ToList();
+            if (!userIsInLeague)
             {
-                ManagerMessages = managerMessages.Select(x => new ManagerMessageViewModel(x)).ToList();
+                ManagerMessages = ManagerMessages.Where(x => x.IsPublic).ToList();
             }
         }
 

@@ -14,12 +14,13 @@ namespace FantasyCritic.Web.Models.Responses
         {
             MessageID = domain.MessageID;
             MessageText = domain.MessageText;
+            IsPublic = domain.IsPublic;
             Timestamp = domain.Timestamp;
         }
 
         public Guid MessageID { get; }
         public string MessageText { get; }
-        public bool Public { get; }
+        public bool IsPublic { get; }
         public Instant Timestamp { get; }
     }
 }

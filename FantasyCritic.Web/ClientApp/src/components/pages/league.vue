@@ -39,6 +39,11 @@
           <label>Followers: </label> {{league.numberOfFollowers}}
         </div>
 
+        <div class="alert alert-info" v-if="mostRecentManagerMessage">
+          <h5>Manager's Message ({{mostRecentManagerMessage.timestamp | dateTime}})</h5>
+          <div class="preserve-whitespace">{{mostRecentManagerMessage.messageText}}</div>
+        </div>
+
         <div v-if="league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-info" role="info">
           You are viewing a public league.
         </div>
@@ -231,6 +236,13 @@ export default {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
         return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
       }
+    },
+    mostRecentManagerMessage() {
+      if (!this.leagueYear || !this.leagueYear.managerMessages || this.leagueYear.managerMessages.length === 0) {
+        return null;
+      }
+
+      return this.leagueYear.managerMessages[this.leagueYear.managerMessages.length - 1];
     }
   },
   methods: {
