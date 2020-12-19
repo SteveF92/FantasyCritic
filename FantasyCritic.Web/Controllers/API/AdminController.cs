@@ -9,9 +9,11 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
+using FantasyCritic.Web.Extensions;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Requests.Admin;
@@ -36,9 +38,12 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private readonly GameAcquisitionService _gameAcquisitionService;
+        private readonly FantasyCriticUserManager _userManager;
+        private readonly IEmailSender _emailSender;
 
         public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService,
-            IClock clock, InterLeagueService interLeagueService, ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService)
+            IClock clock, InterLeagueService interLeagueService, ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService,
+            FantasyCriticUserManager userManager, IEmailSender emailSender)
         {
             _adminService = adminService;
             _fantasyCriticService = fantasyCriticService;
@@ -47,6 +52,8 @@ namespace FantasyCritic.Web.Controllers.API
             _interLeagueService = interLeagueService;
             _logger = logger;
             _gameAcquisitionService = gameAcquisitionService;
+            _userManager = userManager;
+            _emailSender = emailSender;
         }
 
         [HttpPost]
@@ -351,6 +358,22 @@ namespace FantasyCritic.Web.Controllers.API
             var dates = TimeFunctions.ParseEstimatedReleaseDate(request.EstimatedReleaseDate, _clock);
             var response = new DateParseResponse(dates.minimumReleaseDate, dates.maximumReleaseDate);
             return response;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResendConfirmationEmail([FromBody] AdminResendConfirmationEmail request)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserID.ToString());
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
+            await _emailSender.SendConfirmationEmail(user, code, baseURL);
+
+            return Ok();
         }
     }
 }

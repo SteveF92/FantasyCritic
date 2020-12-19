@@ -4,6 +4,7 @@
       <h1>Confirm Your Email</h1>
       <div v-if="accountConfirmed" class="alert alert-success">
         <span>Email Confirmation Successful!</span>
+        <br />
         <span>You will be redirected in a few seconds...</span>
       </div>
       <div v-else>

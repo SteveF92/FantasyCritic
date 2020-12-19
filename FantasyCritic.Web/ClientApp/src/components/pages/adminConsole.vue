@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="col-md-10 offset-md-1 col-sm-12">
+  <div class="col-md-10 offset-md-1 col-sm-12">
+    <div>
       <h1>Admin Console</h1>
       <div class="alert alert-danger" v-show="errorInfo">{{errorInfo}}</div>
       <div class="alert alert-info" v-show="isBusy">Request is processing...</div>
@@ -30,12 +30,26 @@
         <b-button variant="danger" v-on:click="processDrops">Process Drops</b-button>
       </div>
 
+      <h2>Other</h2>
+      <div>
+        <b-button variant="info" v-on:click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
+      </div>
+
       <h2>Database</h2>
       <div>
         <b-button variant="info" v-on:click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
         <b-button variant="warning" v-on:click="snapshotDatabase">Snapshot Database</b-button>
       </div>
-      <b-table v-if="recentSnapshots" :items="recentSnapshots" striped bordered responsive></b-table>
+    </div>
+
+    <b-table v-if="recentSnapshots" :items="recentSnapshots" striped bordered responsive></b-table>
+
+    <div v-show="showRecentConfirmationEmail">
+      <div class="form-group">
+        <label for="resendConfirmationUserID" class="control-label">User ID</label>
+        <input v-model="resendConfirmationUserID" type="text" class="form-control input" />
+      </div>
+      <b-button variant="info" v-on:click="resendConfirmationEmail">Send Confirmation</b-button>
     </div>
   </div>
 </template>
@@ -48,7 +62,9 @@ export default {
       isBusy: false,
       errorInfo: '',
       jobSuccess: '',
-      recentSnapshots: null
+      recentSnapshots: null,
+      showRecentConfirmationEmail: false,
+      resendConfirmationUserID: null
     };
   },
   computed: {
@@ -180,6 +196,22 @@ export default {
           this.recentSnapshots = response.data;
           this.isBusy = false;
           this.jobSuccess = 'Getting snapshots';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    resendConfirmationEmail() {
+      this.isBusy = true;
+      let request = {
+        UserID: this.resendConfirmationUserID
+      };
+      axios
+        .post('/api/admin/ResendConfirmationEmail', request)
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Recent Confirmation Email';
         })
         .catch(returnedError => {
           this.isBusy = false;
