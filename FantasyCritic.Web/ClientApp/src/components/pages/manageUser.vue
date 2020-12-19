@@ -35,9 +35,13 @@
             <b-button variant="info" v-b-modal="'changePasswordForm'">Change Password</b-button>
           </dd>
         </dl>
+        <h3>Other Actions</h3>
+        <b-button variant="danger" v-b-modal="'deleteUserAccountForm'">Delete Account</b-button>
+
         <changePasswordForm v-on:passwordChanged="passwordChanged"></changePasswordForm>
         <changeDisplayNameForm v-on:diplayNameChanged="diplayNameChanged"></changeDisplayNameForm>
         <changeEmailForm v-on:sentEmailChanged="sentEmailChanged"></changeEmailForm>
+        <deleteUserAccountForm></deleteUserAccountForm>
       </div>
     </div>
   </div>
@@ -47,6 +51,7 @@ import axios from 'axios';
 import ChangePasswordForm from '@/components/modules/modals/changePasswordForm';
 import ChangeDisplayNameForm from '@/components/modules/modals/changeDisplayNameForm';
 import ChangeEmailForm from '@/components/modules/modals/changeEmailForm';
+import DeleteUserAccountForm from '@/components/modules/modals/deleteUserAccountForm';
 
 export default {
   data() {
@@ -58,7 +63,8 @@ export default {
   components: {
     ChangePasswordForm,
     ChangeDisplayNameForm,
-    ChangeEmailForm
+    ChangeEmailForm,
+    DeleteUserAccountForm
   },
   computed: {
     userInfo() {
