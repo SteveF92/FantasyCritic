@@ -171,7 +171,12 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
+        public Task FullyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SafelyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
         {
             throw new NotImplementedException();
         }

@@ -502,6 +502,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That user is not in that league.");
             }
 
+            bool canFullyRemove = true;
             foreach (var year in league.Value.Years)
             {
                 var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, year);
@@ -513,11 +514,19 @@ namespace FantasyCritic.Web.Controllers.API
                 }
                 if (leagueYear.Value.PlayStatus.PlayStarted)
                 {
-                    return BadRequest("You can't remove a player from a league that has already started playing");
+                    canFullyRemove = false;
+                    break;
                 }
             }
 
-            await _leagueMemberService.RemovePlayerFromLeague(league.Value, removeUser);
+            if (canFullyRemove)
+            {
+                await _leagueMemberService.FullyRemovePlayerFromLeague(league.Value, removeUser);
+            }
+            else
+            {
+                await _leagueMemberService.SafelyRemovePlayerFromLeague(league.Value, removeUser, request.DeletePublishers);
+            }
 
             return Ok();
         }
@@ -602,7 +611,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            await _publisherService.RemovePublisher(publisher.Value);
+            await _publisherService.FullyRemovePublisher(publisher.Value);
 
             return Ok();
         }

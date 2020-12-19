@@ -46,7 +46,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task<Maybe<LeagueInviteLink>> GetInviteLinkByInviteCode(Guid inviteCode);
         Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user);
 
-        Task RemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
+        Task FullyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
+        Task SafelyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
         Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
         Task TransferLeagueManager(League league, FantasyCriticUser newManager);
 

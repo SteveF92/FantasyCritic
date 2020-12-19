@@ -225,7 +225,7 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.DeleteInvite(invite);
         }
 
-        public async Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
+        public async Task FullyRemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
         {
             foreach (var year in league.Years)
             {
@@ -234,7 +234,23 @@ namespace FantasyCritic.Lib.Services
                 var deletePublisher = allPublishers.SingleOrDefault(x => x.User.UserID == removeUser.UserID);
                 if (deletePublisher != null)
                 {
-                    await _fantasyCriticRepo.RemovePublisher(deletePublisher, allPublishers);
+                    await _fantasyCriticRepo.FullyRemovePublisher(deletePublisher, allPublishers);
+                }
+            }
+
+            await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
+        }
+
+        public async Task SafelyRemovePlayerFromLeague(League league, FantasyCriticUser removeUser, bool deletePublishers)
+        {
+            foreach (var year in league.Years)
+            {
+                var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
+                var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.Value);
+                var deletePublisher = allPublishers.SingleOrDefault(x => x.User.UserID == removeUser.UserID);
+                if (deletePublisher != null)
+                {
+                    await _fantasyCriticRepo.SafelyRemovePublisher(deletePublisher, allPublishers);
                 }
             }
 
@@ -245,7 +261,6 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.GetActivePlayersForLeagueYear(league, year);
         }
-
 
         private async Task<Maybe<LeagueInvite>> GetMatchingInvite(League league, string emailAddress)
         {

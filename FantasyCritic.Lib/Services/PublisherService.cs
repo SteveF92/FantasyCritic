@@ -139,10 +139,10 @@ namespace FantasyCritic.Lib.Services
             return Result.Success();
         }
 
-        public async Task RemovePublisher(Publisher publisher)
+        public async Task FullyRemovePublisher(Publisher publisher)
         {
             var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
-            await _fantasyCriticRepo.RemovePublisher(publisher, allPublishers);
+            await _fantasyCriticRepo.FullyRemovePublisher(publisher, allPublishers);
         }
 
         public async Task<Result> SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
