@@ -180,43 +180,43 @@ export default {
     padding-bottom: 3px;
   }
 
-  @media only screen and (max-width: 980px) {
+  @media only screen and (max-width: 1020px) {
     .full-logo {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 981px) {
+  @media only screen and (min-width: 1021px) {
     .minimal-logo {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 400px) {
+  @media only screen and (max-width: 430px) {
     .optional-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 450px) {
+  @media only screen and (max-width: 480px) {
     .super-optional-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 350px) {
+  @media only screen and (max-width: 380px) {
     .optional-link {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 640px) {
     .brand-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 475px) {
+  @media only screen and (max-width: 525px) {
     .topnav-icon {
       font-size: 15px;
     }
@@ -226,13 +226,13 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 830px) {
     .full-nav {
       display: none;
     }
   }
 
-  @media screen and (min-width: 799px) and (max-width: 1143px) {
+  @media screen and (min-width: 829px) and (max-width: 1203px) {
     .minimal-nav {
       display: none;
     }
