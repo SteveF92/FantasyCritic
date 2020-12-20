@@ -244,7 +244,7 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError("That game has already been released.", true));
             }
 
-            if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year != year)
+            if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year != year && !dropping)
             {
                 claimErrors.Add(new ClaimError($"That game is not scheduled to release in {year}.", true));
             }
