@@ -6,7 +6,7 @@
       <div class="text-well">
         <p>
           Fantasy Critic was created by me, Steve Fallon. The visual design for the site was created by <a href="http://dalemahabir.rocks/" target="_blank">Dale Mahabir <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
-          As of now, this site is brand new and there are bound to be bugs, oversights, and design issues. However, I am committed to improving the site for the foreseeable future.
+          I work on the site solely in my spare time, and there are bound to be bugs, oversights, and design issues. However, I am committed to improving the site for the foreseeable future.
           I created this site because I wanted to merge my love of video games with my love of fantasy football. I think anyone that likes both of those things will have a great time playing Fantasy Critic.
         </p>
 
@@ -27,6 +27,7 @@
       <hr />
       <h2>A little history</h2>
       <div class="text-well">
+        <h4>The beginnings</h4>
         <p>
           I had the idea for Fantasy Critic in late 2017. I was already a big fantasy football fan, and I had a group of friends that I wanted to form a league with. Problem: most of them don't really like football.
           So I got to thinking about how to apply the idea of fantasy football to something we do all like. I'm not totally sure when the moment was, but that's about when I had the idea for Fantasy Critic.
@@ -40,9 +41,21 @@
         </p>
 
         <p>
-          At the time I'm writing this (early January 2019), the site is "officially" launched, but we're just getting started. The site's first major advertisement -
+          At the time I'm writing this section (early January 2019), the site is "officially" launched, but we're just getting started. The site's first major advertisement -
           on the <a href="https://www.youtube.com/channel/UCZrxXp1reP8E353rZsB3jaA" target="_blank">Easy Allies <font-awesome-icon icon="external-link-alt" size="sm" /></a> Podcast - airs in about a week.
           I couldn't be more excited for people to start playing. I hope you find it as entertaining as my friends and I already have.
+        </p>
+
+        <h4>2 Years later</h4>
+        <p>
+          Fantasy Critic has now been live for 2 full years. The site has grown from just my closest friends<span class="inside-joke"> (and one buddy)</span> to nearly ten thousand users. There are now a handful of extremely engaged users that frequently assist
+          with answering user questions, fixing errors with the games list, and even contributing code. It's so incredible to me to see this community spring up around this thing I created. If you've been a user
+          for a while, or you're just starting now, please know that I'm super happy to have you here.
+        </p>
+        <p>
+          The site continues to grow in features as well. In late 2019 I added "Critic's Royale", with the goal of making the site easier to jump into. 2020 saw the addition of "game dropping", which
+          was intended to keep people engaged throughout the year, even if some of their games get delayed. For 2021, the big new feature so far is a streamlining of the "eligibility" system, which
+          let's you choose what games you can select in your leagues. I have more planned for later in the year as well, including a way to handle "shadow drops".
         </p>
       </div>
       <hr />
@@ -101,13 +114,13 @@
           <li>CSharpFunctionalExtensions</li>
           <li>NLog</li>
           <li>NUnit</li>
-          <li>R.NET</li>
+          <li>Python Packages (sklearn, numpy, pandas)</li>
         </ul>
 
         <h3>Other Credits</h3>
         <ul>
           <li><a href="https://wildermuth.com/" target="_blank">Shawn Wildermuth</a>, whose ASP.NET Core + Vue.JS tutorial gave me a great introduction to Vue.JS.</li>
-          <li><a href="https://github.com/TrilonIO/aspnetcore-Vue-starter" target="_blank">Mark Piesak</a>, for his excellent ASP.NET Core + Vue.JS template, which forms the foundation of this website.</li>
+          <li><a href="https://github.com/TrilonIO/aspnetcore-Vue-starter" target="_blank">Mark Piesak</a>, for his excellent ASP.NET Core + Vue.JS template, which I used for a number of years.</li>
           <li><a href="https://github.com/AndrewKralovec" target="_blank">Andrew Kralovec</a>, for additional front end development.</li>
           <li><a href="https://github.com/uioreanu" target="_blank">Calin Uioreanu</a>, for helping develop the "Advanced Projections" statistic.</li>
           <li><a href="https://twitter.com/WhatsGoode1" target="_blank">Matt Goode</a>, for the draft notification sound.</li>
@@ -133,3 +146,8 @@ export default {
   }
 };
 </script>
+<style>
+  .inside-joke{
+    font-size: 0;
+  }
+</style>
