@@ -97,11 +97,12 @@
             </p>
             <p>
               However many people you have, we <em>strongly</em> reccommend setting aside at least an hour to dedicate to your draft. While being together in person is not required, we do think that
-              is the most fun way to do it.
+              is the most fun way to do it. Unless there's a pandemic. Then take appropriate precautions.
             </p>
             <p>
               Finally, make sure to set your draft order. Different groups may like to decide this in different ways. There is no obvious best position in the draft, so different players may prefer to be
-              first, last, or somewhere in the middle. If you don't change anything, the system will default to the order in which people joined the league.
+              first, last, or somewhere in the middle. If you don't change anything, the system will default to the order in which people joined the league. You can choose to set a custom order,
+              or you can tell the site to randomize the order.
             </p>
           </div>
         </div>
