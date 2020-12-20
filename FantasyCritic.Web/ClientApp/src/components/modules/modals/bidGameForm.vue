@@ -6,7 +6,7 @@
     <p>
       You can use this form to place a bid on a game.
       <br />
-      Bids are processed on Monday Nights. See the FAQ for more info.
+      Bids are processed on Saturday Nights. See the FAQ for more info.
     </p>
 
     <div class="alert alert-warning" v-show="publisherSlotsAreFilled">Warning! You have already filled all of your game slots.

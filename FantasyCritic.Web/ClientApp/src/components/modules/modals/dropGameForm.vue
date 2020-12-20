@@ -8,7 +8,7 @@
       <br />
       Your league's settings determine how often you can do this.
       <br />
-      Drop requests are processed on Sunday Nights. See the FAQ for more info.
+      Drop requests are processed on Saturday Nights. See the FAQ for more info.
     </p>
     <form class="form-horizontal" v-on:submit.prevent="dropGame" hide-footer>
       <div class="form-group">
