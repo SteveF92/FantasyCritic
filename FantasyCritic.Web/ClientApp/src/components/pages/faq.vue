@@ -474,6 +474,13 @@
         <div slot="answer">
           New for 2021, chosing what games are eligible has been streamlined. All games now have one or more "tags", such as "Remake", "New Game", or "Yearly Installment". The league manager can choose
           what tags are and are not allowed. Mouse over any tag to see a description of it.
+          <br />
+          <br />
+          <div v-if="allTags">
+            <span v-for="tag in allTags">
+              <masterGameTagBadge :tagName="tag.name"></masterGameTagBadge>
+            </span>
+          </div>
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -522,15 +529,22 @@
 </template>
 <script>
 import FaqCollapse from '@/components/modules/faqCollapse';
+import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
 export default {
   components: {
-    FaqCollapse
+    FaqCollapse,
+    MasterGameTagBadge
   },
   data() {
     return {
       lastID: 1
     };
+  },
+  computed: {
+    allTags() {
+      return this.$store.getters.allTags;
+    }
   },
   methods: {
     getCollapseID() {
