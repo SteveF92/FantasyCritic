@@ -21,10 +21,10 @@
       <faqCollapse>
         <div slot="question">Something about the site is broken!</div>
         <div slot="answer">
-          Sounds likely. We’re just getting started here at Fantasy Critic and there are bound to be issues.
+          Sounds likely. I don't have a dedicated testing team and there are bound to be issues.
           Honestly, most issues can be fixed by refreshing the page.
           Beyond that, the best option is to open an issue on <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">GitHub <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
-          Contacting me on Twitter or Reddit is also an option.
+          Contacting me on Twitter or Discord is also an option.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -102,10 +102,9 @@
             <li>Amount of games per team.</li>
             <li>How many games to draft vs how many games to leave as mid-year pickups.</li>
             <li>Number of counter picks to draft per team.</li>
-            <li>The league’s “eligibility level” (more on this below).</li>
-            <li>Whether or not to allow yearly installments, early access games, free to play games, and games already released in other regions.</li>
-            <li>Whether or not to allow expansion packs/DLC.</li>
-            <li>Whether or not to allow unannounced (rumored) games</li>
+            <li>Whether or not to allow dropping games during the year.</li>
+            <li>What games are eligible to be chosen (more on this below).</li>
+            <li>Plus a few other settings.</li>
           </ul>
         </div>
       </faqCollapse>
@@ -114,13 +113,6 @@
         <div slot="answer">
           The league creation page will guide you through this. The answer will vary depending on how many people will be in your league and your players' familiarity with
           the site and games as a whole.
-        </div>
-      </faqCollapse>
-      <faqCollapse>
-        <div slot="question">How many games should I set as “Games to draft”?</div>
-        <div slot="answer">
-          The standard is that half of your games should be draft games. If you are in a 6 person league, the default is 12 games per player, 6 of them being selected at the draft,
-          and 1 counter pick. That leaves you with 6 pickup games per player.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -173,6 +165,12 @@
         <div slot="answer">
           A snake draft means that the person who goes last in a round of drafting, goes first in the next round. So with 4 teams the first 9 games
           would go Team A, B, C, D, D, C, B, A, A.
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">How do I can change the draft order?</div>
+        <div slot="answer">
+          Once all players have created their publishers, the option to "Edit Draft Order" will appear for the league manager. You can manually set an order or click the "randomize" button.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -247,7 +245,7 @@
       <faqCollapse>
         <div slot="question">Can I bid zero dollars on a game?</div>
         <div slot="answer">
-          Yes, but you will be outbid by anyone who bids at least a dollar.
+          Yes, unless your league sets a minimum bid amount, which is a new option for 2021.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -260,10 +258,12 @@
       <faqCollapse>
         <div slot="question">When are bids processed?</div>
         <div slot="answer">
-          Bids are processed on Monday evenings at 8PM Eastern (New York City time). While bids are processing, you will not be able to:
+          Bids (and drops, described below) are processed on Saturday evenings at 8PM Eastern (New York City time). While bids are processing, you will not be able to:
           <ul>
             <li>Make bids</li>
             <li>Cancel bids</li>
+            <li>Request drops</li>
+            <li>Cancel drops</li>
             <li>Add/Remove Publisher Games post draft (as a manager)</li>
             <li>Associate Publisher Games</li>
           </ul>
@@ -273,8 +273,21 @@
       <faqCollapse>
         <div slot="question">How are ties handled on bids?</div>
         <div slot="answer">
-          If two or more players bid the same amount for the same game, the tie goes to the player with less projected points, and then if THAT's a tie, the game goes to the person who drafted later in
-          the draft. My hope is that we rarely have to go to that level of tiebreaker.
+          Here's the tiebreaker order:
+          <ol>
+            <li>Highest bid wins.</li>
+            <li>Lowest projected points wins.</li>
+            <li>The bid placed earlier wins.</li>
+            <li>The player who was later in the draft order wins.</li>
+          </ol>
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">Drops and bids are processed at the same time? How does that work?</div>
+        <div slot="answer">
+          This is new for 2021. Before, drops were on Sunday night and bids were on Monday night. Now I run both at 8PM on Saturday. Drops run first, then bids.
+          The system WILL allow you to bid on a game even if you have no slots left, but it will fail if there are no available when the bids actually run. This allows you to place a drop and a bid, have the drop
+          process first, then you will have a spot for the bid to succeed.
         </div>
       </faqCollapse>
       <br />
@@ -300,7 +313,7 @@
       <faqCollapse>
         <div slot="question">How do I drop a game?</div>
         <div slot="answer">
-          Games are dropped in similar way to the way games are bid on. Drops are requested, and then those drops are processed on Sunday night at 8PM Eastern Time. The reason for this is to make sure that someone can't drop a game
+          Games are dropped in similar way to the way games are bid on. Drops are requested, and then those drops are processed on Saturday night at 8PM Eastern Time. The reason for this is to make sure that someone can't drop a game
           that releases and gets a bad score before my database recognizes that the game has been reviewed. Doing it this way allows us to confirm that all games being dropped have up to date information.
         </div>
       </faqCollapse>
@@ -457,91 +470,15 @@
 
       <h2><a name="eligibility">Eligibility</a></h2>
       <faqCollapse>
-        <div slot="question">What is an “eligibility level”?</div>
+        <div slot="question">How does the new "tags" system work?</div>
         <div slot="answer">
-          When deciding on the settings for a league, the league manager must choose what games to allow. The spirit of the game is to make predictions.
-          In keeping with that spirit, some games are simply too safe of a bet, and don’t create interesting discussion. All games are categorized (by me) into “eligibility levels”,
-          ranging from the most acceptable in all leagues, to games allowable in only the most lenient leagues.
-        </div>
-      </faqCollapse>
-      <faqCollapse>
-        <div slot="question">What are the different levels?</div>
-        <div slot="answer">
-          <ul>
-            <li>
-              <h4>New Game</h4>
-              A definitively new game.
-              <h5>Examples</h5>
-              <ul>
-                <li>Spider Man (2018)</li>
-                <li>Red Dead Redemption 2</li>
-                <li>Detroit: Become Human</li>
-                <li>Call of Duty: Black Ops 4</li>
-                <li>Assassin's Creed Odyssey</li>
-              </ul>
-            </li>
-            <li>
-              <h4>Complete Remake</h4>
-              A remake that radically overhauls the original gameplay.
-              <h5>Examples</h5>
-              <ul>
-                <li>Silent Hill: Shattered Memories</li>
-                <li>Resident Evil 2 Remake</li>
-                <li>Final Fantasy VII Remake</li>
-                <li>Metroid: Samus Returns</li>
-                <li>Tomb Raider: Anniversary</li>
-              </ul>
-            </li>
-            <li>
-              <h4>Remake</h4>
-              A remake that modernizes gameplay without fundamentally changing it.
-              <h5>Examples</h5>
-              <ul>
-                <li>Pokemon Omega Ruby and Alpha Sapphire</li>
-                <li>Fire Emblem: Shadow Dragon</li>
-                <li>Mario & Luigi: Superstar Saga + Bowser's Minions</li>
-              </ul>
-            </li>
-            <li>
-              <h4>Partial Remake</h4>
-              A game that adds some new features while largely playing the same as the original.
-              <h5>Examples</h5>
-              <ul>
-                <li>Crash Bandicoot N. Sane Trilogy</li>
-                <li>The Legend of Zelda: Ocarina of Time 3D</li>
-                <li>The Legend of Zelda: The Windwaker HD</li>
-                <li>Metroid Prime Trilogy</li>
-                <li>Shadow of the Colossus (2018)</li>
-              </ul>
-            </li>
-            <li>
-              <h4>Remaster</h4>
-              A re-release that updates graphics while changing little else.
-              <h5>Examples</h5>
-              <ul>
-                <li>Halo: The Master Chief Collection</li>
-                <li>Uncharted: The Nathan Drake Collection</li>
-                <li>Gears of War: Ultimate Edition</li>
-                <li>Call of Duty: Modern Warfare Remastered</li>
-              </ul>
-            </li>
-            <li>
-              <h4>Port</h4>
-              A game that was not originally released on a particular platform that is ported to it without many changes.
-              <h5>Examples</h5>
-              <ul>
-                <li>Doom - Nintendo Switch Edition</li>
-                <li>Sonic Mania Plus</li>
-                <li>Captain Toad: Treasure Tracker (Nintendo Switch)</li>
-              </ul>
-            </li>
-          </ul>
+          New for 2021, chosing what games are eligible has been streamlined. All games now have one or more "tags", such as "Remake", "New Game", or "Yearly Installment". The league manager can choose
+          what tags are and are not allowed. Mouse over any tag to see a description of it.
         </div>
       </faqCollapse>
       <faqCollapse>
         <div slot="question">
-          I don't agree with your eligibility levels! My league is set to a maximum level of “Complete Remake” but I should be able
-          to take the new 'Mario & Luigi: Bowser's Inside Story' on 3DS.
+          I don't agree with your tags! My league allows "remakes" but "Tony Hawk 1 + 2" is really just a remaster. It shouldn't be allowed!
         </div>
         <div slot="answer">
           It's up to your league and ultimately up to your league manager. League managers can override the eligibility rules and assign
@@ -565,11 +502,8 @@
           How do early access games work?
         </div>
         <div slot="answer">
-          If you check "Allow Early Access Games", then there's no restrictions on early access at all. If you don't check it, then once a game enters
-          early access (as in, once you can play it), then it is no longer eligible. You never get points until reviews come in. That part, I don't decide.
-
-          The idea of the rule is to prevent people from taking games that are playable now, despite not having review scores. It's not much of a prediction if you can go play it
-          at the time you are picking it.
+          There are two tags related to early access games. You can use them to chooses to ban games from being drafted/picked up if they are already playable in early access, or,
+          alternatively, if they are even PLANNED for early access.
         </div>
       </faqCollapse>
       <br />
