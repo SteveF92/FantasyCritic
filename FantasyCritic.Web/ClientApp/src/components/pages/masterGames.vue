@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="showGames">
+      <div v-if="showGames">
         <masterGamesTable :masterGames="gamesToShow"></masterGamesTable>
       </div>
 
