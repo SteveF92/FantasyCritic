@@ -18,6 +18,11 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
                 return new StandardScoringSystem();
             }
 
+            if (scoringSystemName == "Diminishing")
+            {
+                return new DiminishingScoringSystem();
+            }
+
             throw new Exception($"Scoring system not implemented: {scoringSystemName}");
         }
 
@@ -25,7 +30,7 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
 
         public static IReadOnlyList<ScoringSystem> GetAllPossibleValues()
         {
-            return new List<ScoringSystem>(){new StandardScoringSystem()};
+            return new List<ScoringSystem>(){new StandardScoringSystem(), new DiminishingScoringSystem()};
         }
 
         public abstract string Name { get; }
