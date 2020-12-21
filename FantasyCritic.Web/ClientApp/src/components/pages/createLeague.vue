@@ -136,7 +136,7 @@ export default {
         testLeague: this.testLeague,
         draftSystem: 'Flexible',
         pickupSystem: 'Budget',
-        scoringSystem: 'Standard'
+        scoringSystem: 'Diminishing'
       };
 
       axios
