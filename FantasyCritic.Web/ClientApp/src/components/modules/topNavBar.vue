@@ -192,7 +192,7 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 430px) {
+  @media only screen and (max-width: 340px) {
     .optional-nav {
       display: none;
     }
