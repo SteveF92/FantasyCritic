@@ -338,8 +338,15 @@
         <div slot="answer">
           A game's score is based on it’s score from <a href="https://opencritic.com/" target="_blank">opencritic.com <font-awesome-icon icon="external-link-alt" size="sm" /></a>. Your team will gain or lose points based upon how well your game reviews.
           Only critic reviews are taken into account. For every point above a 70 on OpenCritic, your game gets you one point. For every point below 70,
-          you lose one point. However, to really separate the cream of the crop, every point above 90 gets you <em>two</em> points. If a game doesn’t release in the
-          year you are playing, it is treated as getting a 70, and therefore 0 points.
+          you lose one point. If a game doesn’t release in the year you are playing, it is treated as getting a 70, and therefore 0 points.
+          <br />
+          <br />
+          However, there are special rules to make certain points worth more or less. If a game scores above a 90, every point above 90 is worth two points. So if a game gets a 94,
+          you get 20 points for 70 through 90, and 8 points for 90 through 94, for a total of 28 points for the 94.
+          <br />
+          <br />
+          Also, new for 2021, there are diminishing returns on how much a very bad game hurts you. Each point from 60 through 70 loses you one point, but every 10 point range below that,
+          each point is worth half of the range above it. I realize that sounds complicated, but I will provide examples below.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -371,6 +378,7 @@
                 <th>OpenCritic Score</th>
                 <th>Fantasy Points</th>
                 <th>Counter Pick Points</th>
+                <th>Notes</th>
               </tr>
             </thead>
             <tbody>
@@ -379,30 +387,58 @@
                 <td>86</td>
                 <td>16</td>
                 <td>-16</td>
+                <td></td>
               </tr>
               <tr>
                 <td>Shadow of the Tomb Raider</td>
                 <td>80</td>
                 <td>10</td>
                 <td>-10</td>
-              </tr>
-              <tr>
-                <td>Fallout 76</td>
-                <td>52</td>
-                <td>-18</td>
-                <td>18</td>
+                <td></td>
               </tr>
               <tr>
                 <td>Red Dead Redemption 2</td>
                 <td>97</td>
                 <td>34</td>
                 <td>-34</td>
+                <td>
+                  1 point per point for 70->90
+                  <br />
+                  2 points per point for 90->97
+                </td>
+              </tr>
+              <tr>
+                <td>Fallout 76</td>
+                <td>52</td>
+                <td>-14</td>
+                <td>14</td>
+                <td>
+                  -1 point per point for 60->70
+                  <br />
+                  -0.5 points per point for 52->60
+                </td>
+              </tr>
+              <tr>
+                <td>Left Alive</td>
+                <td>38</td>
+                <td>-17.75</td>
+                <td>17.75</td>
+                <td>
+                  -1 point per point for 60->70
+                  <br />
+                  -0.5 points per point for 50->60
+                  <br />
+                  -0.25 per point for 40->50
+                  <br />
+                  -0.125 per point for 38->40
+                </td>
               </tr>
               <tr>
                 <td>Kingdom Hearts III</td>
                 <td>Delayed to 2019</td>
                 <td>0</td>
                 <td>0</td>
+                <td></td>
               </tr>
             </tbody>
           </table>
