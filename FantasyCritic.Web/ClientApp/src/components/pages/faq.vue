@@ -346,7 +346,7 @@
           <br />
           <br />
           Also, new for 2021, there are diminishing returns on how much a very bad game hurts you. Each point from 60 through 70 loses you one point, but every 10 point range below that,
-          each point is worth half of the range above it. I realize that sounds complicated, but I will provide examples below.
+          each point is worth half of the range above it. I realize that sounds complicated, but I will provide examples below. The effect is that you can never lose more than 20 points, no matter how bad a game is.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -434,11 +434,11 @@
                 </td>
               </tr>
               <tr>
-                <td>Kingdom Hearts III</td>
-                <td>Delayed to 2019</td>
+                <td>Halo Infinite</td>
+                <td>Delayed to 2021</td>
                 <td>0</td>
                 <td>0</td>
-                <td></td>
+                <td>This assumes a 2020 league.</td>
               </tr>
             </tbody>
           </table>
