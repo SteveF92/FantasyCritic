@@ -104,7 +104,8 @@
              responsive
              :per-page="perPage"
              :current-page="currentPage"
-             striped>
+             striped
+             @filtered="onFiltered">
       <template v-slot:cell(gameName)="data">
         <masterGamePopover :masterGame="data.item"></masterGamePopover>
       </template>
@@ -166,6 +167,7 @@ export default {
         { key: 'tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' }
       ],
+      totalRows: 1,
       currentPage: 1,
       perPage: 50,
       pageOptions: [10, 50, 100, 1000],
@@ -208,13 +210,6 @@ export default {
         }
       }
       return gameRows;
-    },
-    totalRows() {
-      let gameRows = this.masterGames;
-      if (!gameRows) {
-        return 0;
-      }
-      return gameRows.length;
     }
   },
   methods: {
@@ -226,8 +221,16 @@ export default {
     },
     openCriticLink(game) {
       return 'https://opencritic.com/game/' + game.openCriticID + '/a';
+    },
+    onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1;
     }
-  }
+  },
+  mounted() {
+    this.totalRows = this.masterGames.length;
+  },
 };
 </script>
 <style scoped>
