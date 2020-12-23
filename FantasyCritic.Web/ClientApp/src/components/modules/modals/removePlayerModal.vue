@@ -17,7 +17,7 @@
       <label>Use this option to remove a player.</label>
       <div class="alert alert-info">
         This option will allow you to remove any player, even after the draft, midway through the year. You should not do this lightly, as it will invariably affect the experience of your other players.
-        It cannot easily be reversed either. Proceed at your own risk.
+        This affects all years of your league, not just the current one. It cannot easily be reversed either. Proceed at your own risk.
       </div>
       <div class="form-group">
         <label for="playerToRemove" class="control-label">Player to Remove</label>
@@ -35,7 +35,11 @@
         If you delete a user's publishers, all of their games will become available for pickup.
         This is not reverseable. You should be really, really, sure that this is what you want.
       </div>
-      
+      <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
+        This will affect prior years of this league, not only the current one. Removing a player for the current year in this way will delete their publishers from prior years. If you
+        just want to remove a player because they won't be participating in the league anymore, you should use the "Manage Active Players" feature.
+      </div>
+
       <div class="alert alert-danger" v-show="playerToRemove && playerIsLeagueManager(playerToRemove)">
         You cannot remove yourself!
       </div>
