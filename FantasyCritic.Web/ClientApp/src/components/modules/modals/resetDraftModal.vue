@@ -21,8 +21,8 @@ export default {
   },
   computed: {
     resetConfirmed() {
-      let lowerCase = this.resetConfirmation.toUpperCase();
-      return lowerCase === 'RESET DRAFT';
+      let upperCase = this.resetConfirmation.toUpperCase();
+      return upperCase === 'RESET DRAFT';
     }
   },
   methods: {

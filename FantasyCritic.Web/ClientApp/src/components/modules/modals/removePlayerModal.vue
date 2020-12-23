@@ -32,19 +32,26 @@
         This player can be safely removed without any issues.
       </div>
       <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
+        This will affect prior years of this league, not only the current one. Removing a player for the current year in this way will delete their publishers from prior years. If you
+        just want to remove a player because they won't be participating in the league anymore, you should use the "Manage Active Players" feature.
+      </div>
+      <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
         If you delete a user's publishers, all of their games will become available for pickup.
         This is not reverseable. You should be really, really, sure that this is what you want.
       </div>
       <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
-        This will affect prior years of this league, not only the current one. Removing a player for the current year in this way will delete their publishers from prior years. If you
-        just want to remove a player because they won't be participating in the league anymore, you should use the "Manage Active Players" feature.
+        If you are sure, type <strong>REMOVE PLAYER</strong> into the box below and click the button.
       </div>
+
 
       <div class="alert alert-danger" v-show="playerToRemove && playerIsLeagueManager(playerToRemove)">
         You cannot remove yourself!
       </div>
 
-      <b-button variant="danger" v-show="playerToRemove && !playerIsLeagueManager(playerToRemove)" v-on:click="removePlayer">Remove Player</b-button>
+      <input v-model="removeConfirmation" v-show="playerToRemove && !playerIsLeagueManager(playerToRemove)" type="text" class="form-control input" />
+
+
+      <b-button variant="danger" class="remove-button" v-show="playerToRemove && !playerIsLeagueManager(playerToRemove)" v-on:click="removePlayer" :disabled="!removeConfirmed">Remove Player</b-button>
     </div>
   </b-modal>
 </template>
@@ -55,10 +62,12 @@
     data() {
       return {
         publisherToRemove: null,
-        playerToRemove: null
+        playerToRemove: null,
+        removeConfirmation: ""
       };
     },
     props: ['league','leagueYear'],
+    props: ['league', 'leagueYear'],
     computed: {
       publishers() {
         return this.leagueYear.publishers;
@@ -66,7 +75,10 @@
       players() {
         return this.leagueYear.players;
       },
-      
+      removeConfirmed() {
+        let upperCase = this.removeConfirmation.toUpperCase();
+        return upperCase === 'REMOVE PLAYER';
+      }
     },
     methods: {
       playerIsSafelyRemoveable(player) {
@@ -123,3 +135,9 @@
     }
   };
 </script>
+<style scoped>
+  .remove-button {
+    margin-top: 10px;
+    float: right;
+  }
+</style>
