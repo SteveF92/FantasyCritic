@@ -24,13 +24,14 @@ namespace FantasyCritic.Web.Models.Responses
 
         public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, IClock clock,
             LeagueOptions options, SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague,
-            SupportedYear supportedYear, bool removable)
+            SupportedYear supportedYear, bool removable, bool previousYearWinner)
         {
             User = new PlayerViewModel(leagueYear.League, user, removable);
             Publisher = new PublisherViewModel(publisher, clock, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
             SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, true, clock);
             AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, false, clock);
+            PreviousYearWinner = previousYearWinner;
         }
 
         public Guid InviteID { get; }
@@ -40,6 +41,6 @@ namespace FantasyCritic.Web.Models.Responses
         public decimal TotalFantasyPoints { get; }
         public decimal SimpleProjectedFantasyPoints { get; }
         public decimal AdvancedProjectedFantasyPoints { get; }
-
+        public bool PreviousYearWinner { get; }
     }
 }

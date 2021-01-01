@@ -15,9 +15,10 @@ namespace FantasyCritic.Web.Models.Responses
     public class LeagueYearViewModel
     {
         public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Maybe<Publisher> userPublisher,
-            IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher, DraftPhase draftPhase,
-            IEnumerable<PublisherGame> availableCounterPicks, LeagueOptions options, SystemWideValues systemWideValues, IEnumerable<LeagueInvite> invitedPlayers,
-            bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager, Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages)
+            IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
+            DraftPhase draftPhase, IEnumerable<PublisherGame> availableCounterPicks, LeagueOptions options, SystemWideValues systemWideValues,
+            IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
+            Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -52,8 +53,9 @@ namespace FantasyCritic.Web.Models.Responses
                 }
                 else
                 {
+                    bool isPreviousYearWinner = previousYearWinner.HasValue && previousYearWinner.Value.UserID == user.UserID;
                     playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, options, systemWideValues,
-                        userIsInLeague, userIsInvitedToLeague, supportedYear, false));
+                        userIsInLeague, userIsInvitedToLeague, supportedYear, false, isPreviousYearWinner));
                 }
             }
 

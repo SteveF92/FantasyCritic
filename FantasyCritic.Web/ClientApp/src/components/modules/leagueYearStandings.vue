@@ -19,6 +19,7 @@
              striped>
       <template v-slot:cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
+        <font-awesome-icon v-if="data.item.previousYearWinner" icon="crown" class="previous-year-winner" v-b-popover.hover="'Reigning Champion'"/>
         <span v-if="!data.item.user">{{ data.item.inviteName }}</span>
       </template>
       <template v-slot:cell(publisher)="data">
@@ -185,5 +186,10 @@ export default {
   }
   div >>> tr.table-success td {
     font-weight: bolder;
+  }
+
+  .previous-year-winner {
+    margin-left: 4px;
+    color: #D6993A;
   }
 </style>

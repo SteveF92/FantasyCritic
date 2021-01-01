@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using MoreLinq;
 using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
@@ -235,7 +236,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value, activeUsers);
-            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == year);
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            var supportedYear = supportedYears.SingleOrDefault(x => x.Year == year);
             if (supportedYear is null)
             {
                 return BadRequest();
@@ -260,9 +262,25 @@ namespace FantasyCritic.Web.Controllers.API
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear.Value);
 
+            Maybe<FantasyCriticUser> previousYearWinner = Maybe<FantasyCriticUser>.None;
+            int previousYear = leagueYear.Value.Year - 1;
+            if (leagueYear.Value.League.Years.Contains(previousYear))
+            {
+                var previousSupportedYear = supportedYears.SingleOrDefault(x => x.Year == previousYear);
+                Maybe<LeagueYear> previousLeagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, previousYear);
+                if (previousLeagueYear.HasValue && previousLeagueYear.Value.PlayStatus.DraftFinished && previousSupportedYear.Finished)
+                {
+                    var previousYearActiveUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, previousYear);
+                    var previousYearPublishers = await _publisherService.GetPublishersInLeagueForYear(previousLeagueYear.Value, previousYearActiveUsers);
+                    var topPublisher = previousYearPublishers.MaxBy(x => x.TotalFantasyPoints).First();
+                    previousYearWinner = topPublisher.User;
+                }
+            }
+
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
                 leagueYear.Value.PlayStatus, startDraftResult, activeUsers, nextDraftPublisher, draftPhase, availableCounterPicks,
-                leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager, currentUser, managerMessages);
+                leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager,
+                currentUser, managerMessages, previousYearWinner);
             return Ok(leagueViewModel);
         }
 

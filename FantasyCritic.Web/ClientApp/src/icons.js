@@ -39,7 +39,8 @@ import {
   faAtom,
   faCircleNotch,
   faArchive,
-  faThumbtack
+  faThumbtack,
+  faCrown
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -107,7 +108,8 @@ library.add(
   faCircleNotch,
   faDiscord,
   faArchive,
-  faThumbtack
+  faThumbtack,
+  faCrown
 );
 
 export {
