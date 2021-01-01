@@ -20,5 +20,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter);
         Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores);
         Task ChangePublisherName(RoyalePublisher publisher, string publisherName);
+        Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(FantasyCriticUser user);
+        Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners();
     }
 }

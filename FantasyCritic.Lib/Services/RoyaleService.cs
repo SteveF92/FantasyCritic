@@ -202,5 +202,15 @@ namespace FantasyCritic.Lib.Services
 
             await _royaleRepo.UpdateFantasyPoints(publisherGameScores);
         }
+
+        public Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(FantasyCriticUser user)
+        {
+            return _royaleRepo.GetQuartersWonByUser(user);
+        }
+
+        public Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners()
+        {
+            return _royaleRepo.GetRoyaleWinners();
+        }
     }
 }

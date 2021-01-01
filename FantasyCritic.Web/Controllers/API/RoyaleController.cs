@@ -138,7 +138,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
-            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock, null);
+            IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.Value.User);
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock, null, quartersWon);
             return Ok(viewModel);
         }
 
@@ -152,7 +153,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
-            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock, null);
+            IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.Value.User);
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock, null, quartersWon);
             return Ok(viewModel);
         }
 
@@ -164,6 +166,7 @@ namespace FantasyCritic.Web.Controllers.API
             var publishersToShow = publishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
             int ranking = 1;
             List<RoyalePublisherViewModel> viewModels = new List<RoyalePublisherViewModel>();
+            IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> previousWinners = await _royaleService.GetRoyaleWinners();
             foreach (var publisher in publishersToShow)
             {
                 int? thisRanking = null;
@@ -173,7 +176,13 @@ namespace FantasyCritic.Web.Controllers.API
                     ranking++;
                 }
 
-                var vm = new RoyalePublisherViewModel(publisher, _clock, thisRanking);
+                bool hasWinningQuarters = previousWinners.TryGetValue(publisher.User, out var winningQuarters);
+                if (!hasWinningQuarters)
+                {
+                    winningQuarters = new List<RoyaleYearQuarter>();
+                }
+
+                var vm = new RoyalePublisherViewModel(publisher, _clock, thisRanking, winningQuarters);
                 viewModels.Add(vm);
             }
 

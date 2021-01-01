@@ -51,11 +51,16 @@
                 --
               </template>
             </template>
-              <template v-slot:cell(publisherName)="data">
-                <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
-                  {{ data.item.publisherName }}
-                </router-link>
-              </template>
+            <template v-slot:cell(publisherName)="data">
+              <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
+                {{ data.item.publisherName }}
+              </router-link>
+            </template>
+            <template v-slot:cell(playerName)="data">
+              {{ data.item.playerName }}
+              <font-awesome-icon v-if="data.item.previousQuarterWinner" icon="crown" class="previous-quarter-winner" v-b-popover.hover="'Reigning Champion'" />
+              <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" icon="crown" class="onetime-winner" v-b-popover.hover="'Previous Champion'" />
+            </template>
           </b-table>
           <b-pagination class="pagination-dark" v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
         </div>
@@ -253,6 +258,15 @@ export default {
 
   .quarter-select {
     float: right;
+  }
+
+  .previous-quarter-winner {
+    margin-left: 4px;
+    color: #D6993A;
+  }
+  .onetime-winner {
+    margin-left: 4px;
+    color: white;
   }
 </style>
 <style>

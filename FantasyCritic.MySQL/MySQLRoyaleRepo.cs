@@ -3,6 +3,7 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,9 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Royale;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
+using MoreLinq.Extensions;
 using MySql.Data.MySqlClient;
 
 namespace FantasyCritic.MySQL
@@ -280,6 +283,52 @@ namespace FantasyCritic.MySQL
                     transaction.Commit();
                 }
             }
+        }
+
+        public async Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(FantasyCriticUser user)
+        {
+            var royaleWinners = await GetRoyaleWinners();
+            if (royaleWinners.ContainsKey(user))
+            {
+                return royaleWinners[user];
+            }
+
+            return new List<RoyaleYearQuarter>();
+        }
+
+        public async Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners()
+        {
+            var quarters = await GetYearQuarters();
+            string sql =
+                "SELECT tbl_royale_publisher.PublisherID, YEAR, QUARTER, SUM(FantasyPoints) AS TotalFantasyPoints FROM tbl_royale_publisher " +
+                "JOIN tbl_royale_publishergame ON tbl_royale_publisher.PublisherID = tbl_royale_publishergame.PublisherID " +
+                "GROUP BY tbl_royale_publisher.PublisherID";
+
+            Dictionary<FantasyCriticUser, List<RoyaleYearQuarter>> winners = new Dictionary<FantasyCriticUser, List<RoyaleYearQuarter>>();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var results = await connection.QueryAsync<RoyaleStandingsEntity>(sql);
+                var groupedByQuarter = results.GroupBy(x => (x.Year, x.Quarter));
+                foreach (var group in groupedByQuarter)
+                {
+                    var quarter = quarters.Single(x => x.YearQuarter.Year == group.Key.Year && x.YearQuarter.Quarter == group.Key.Quarter);
+                    if (!quarter.Finished)
+                    {
+                        continue;
+                    }
+
+                    var topPublisher = group.MaxBy(x => x.TotalFantasyPoints).First();
+                    var topDomainPublisher = await GetPublisher(topPublisher.PublisherID);
+                    if (!winners.ContainsKey(topDomainPublisher.Value.User))
+                    {
+                        winners.Add(topDomainPublisher.Value.User, new List<RoyaleYearQuarter>());
+                    }
+
+                    winners[topDomainPublisher.Value.User].Add(quarter);
+                }
+            }
+
+            return winners.SealDictionary();
         }
     }
 }

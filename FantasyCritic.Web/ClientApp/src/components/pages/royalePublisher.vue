@@ -26,6 +26,11 @@
             <royalePurchaseGameForm :yearQuarter="publisher.yearQuarter" :userRoyalePublisher="publisher" v-on:gamePurchased="gamePurchased"></royalePurchaseGameForm>
             <royaleChangePublisherNameForm :userRoyalePublisher="publisher" v-on:publisherNameChanged="publisherNameChanged"></royaleChangePublisherNameForm>
           </div>
+          <ul class="won-quarters-list">
+            <li v-for="quarter in publisher.quartersWon">
+              <span class="badge badge-pill badge-primary">{{quarter.year}}-Q{{quarter.quarter}} Winner</span>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -269,5 +274,9 @@ export default {
 
   .user-actions .action-button {
     margin: 5px;
+  }
+
+  .won-quarters-list{
+      list-style: none;
   }
 </style>
