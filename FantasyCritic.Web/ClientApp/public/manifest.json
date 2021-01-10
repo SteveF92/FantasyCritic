@@ -1,6 +1,6 @@
 {
-  "name": "fantasy-critic",
-  "short_name": "fantasy-critic",
+  "name": "Fantasy Critic",
+  "short_name": "FC",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
