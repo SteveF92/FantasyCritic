@@ -93,7 +93,7 @@
       <hr />
       <h3>Game Dropping Settings</h3>
       <div class="alert alert-info">
-        New for 2020, players can now choose to drop a game before it releases. This setting allows you to choose how many such games can be dropped, if any.
+        If you like, players can now choose to drop a game before it releases. This setting allows you to choose how many such games can be dropped, if any.
         You can customize how many games are droppable after the game is confirmed to be delayed, as well as how many are droppable that are still scheduled to release.
         <br />
         You can also use the "Any Unreleased" setting, which applies to all unreleased games, delayed or not.
