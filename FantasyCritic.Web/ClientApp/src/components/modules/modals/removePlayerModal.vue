@@ -29,7 +29,7 @@
       </div>
 
       <div class="alert alert-info" v-show="playerToRemove && playerIsSafelyRemoveable(playerToRemove)">
-        This player can be safely removed without any issues.
+        This player can be safely removed without any issues. Please type <strong>REMOVE PLAYER</strong> into the box below and click the button.
       </div>
       <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
         This will affect prior years of this league, not only the current one. Removing a player for the current year in this way will delete their publishers from prior years. If you

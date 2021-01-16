@@ -15,6 +15,14 @@
                 You can check back on this page to see the status of previous requests, as well.
               </strong>
             </p>
+            <div class="alert alert-info">
+              Note! Any game that you request should meet at least one of these criteria:
+              <ul>
+                <li>A game that you want to draft or bid on immediately.</li>
+                <li>A game that you think there's an extremely high chance that someone else will.</li>
+              </ul>
+              Having an obscure game on the list that is not drafted by anyone doesn't do much for the site.
+            </div>
             <ValidationObserver v-slot="{ invalid }">
               <form v-on:submit.prevent="sendMasterGameRequestRequest">
                 <div class="form-group">
