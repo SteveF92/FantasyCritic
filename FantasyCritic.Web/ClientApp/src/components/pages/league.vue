@@ -88,9 +88,11 @@
               This year is finished! The winner is <strong>{{topPublisher.publisherName}}</strong>!
             </div>
           </div>
-          <div v-if="userShouldBeActive && !leagueYear.userIsActive">
+          <div>
             <div class="alert alert-warning" role="alert">
-              An (minor) error has occurred.
+              A (minor) error has occurred and this page will no longer update automatically. The draft itself is not affected.
+              <br />
+              Press reload to reconnect.
               <b-button variant="primary" v-on:click="reloadPage">Reload</b-button>
             </div>
           </div>
