@@ -1184,14 +1184,14 @@ namespace FantasyCritic.MySQL
                 year
             };
 
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(
-                    "select tbl_league_publishergame.* from tbl_league_publishergame " +
+            string sql = "select tbl_league_publishergame.* from tbl_league_publishergame " +
                     "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
                     "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
-                    "where tbl_league_publisher.Year = @year and IsDeleted = 0;",
-                    query);
+                    "where tbl_league_publisher.Year = @year and IsDeleted = 0;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(sql, query);
 
                 List<PublisherGame> domainGames = new List<PublisherGame>();
                 foreach (var entity in gameEntities)
