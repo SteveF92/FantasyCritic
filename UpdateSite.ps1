@@ -1,3 +1,4 @@
+Get-ChildItem C:\FantasyCritic\BuildArea\ -Recurse | Remove-Item -Recurse -Force
 dotnet publish -c Release -o C:\FantasyCritic\BuildArea\
 Write-Output "Stopping site"
 Stop-Website "FantasyCritic"
