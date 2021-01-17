@@ -252,12 +252,18 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessPickups()
+        public async Task<IActionResult> ProcessPickups() 
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
             if (!systemWideSettings.BidProcessingMode)
             {
                 return BadRequest("Turn on bid processing mode first.");
+            }
+
+            var today = _clock.GetCurrentInstant().ToEasternDate();
+            if (today.DayOfWeek != IsoDayOfWeek.Saturday)
+            {
+                return BadRequest($"You probably didn't mean to process pickups on a {today.DayOfWeek}");
             }
 
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
@@ -282,6 +288,12 @@ namespace FantasyCritic.Web.Controllers.API
             if (!systemWideSettings.BidProcessingMode)
             {
                 return BadRequest("Turn on bid processing mode first.");
+            }
+
+            var today = _clock.GetCurrentInstant().ToEasternDate();
+            if (today.DayOfWeek != IsoDayOfWeek.Saturday)
+            {
+                return BadRequest($"You probably didn't mean to process drops on a {today.DayOfWeek}");
             }
 
             var supportedYears = await _interLeagueService.GetSupportedYears();
