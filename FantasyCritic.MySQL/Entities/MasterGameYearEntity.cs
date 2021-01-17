@@ -66,7 +66,7 @@ namespace FantasyCritic.MySQL.Entities
         public double PercentStandardGame { get; set; }
         public double PercentCounterPick { get; set; }
         public double EligiblePercentStandardGame { get; set; }
-        public double AdjustedPercentCounterPick { get; set; }
+        public double? AdjustedPercentCounterPick { get; set; }
         public int NumberOfBids { get; set; }
         public int TotalBidAmount { get; set; }
         public double BidPercentile { get; set; }

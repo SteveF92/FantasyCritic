@@ -337,7 +337,7 @@ namespace FantasyCritic.Lib.Services
                     double? adjustedPercentCounterPick = null;
                     if (leaguesWithGame >= 3)
                     {
-                        adjustedPercentCounterPick = leaguesWithCounterPickGame / leaguesWithGame;
+                        adjustedPercentCounterPick = (double)leaguesWithCounterPickGame / (double) leaguesWithGame;
                     }
 
                     var bidsForGame = bidsByGame[masterGame];
