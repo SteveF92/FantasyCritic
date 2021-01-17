@@ -36,7 +36,7 @@ namespace FantasyCritic.MySQL.Entities
             PercentStandardGame = masterGameStats.PercentStandardGame;
             PercentCounterPick = masterGameStats.PercentCounterPick;
             EligiblePercentStandardGame = masterGameStats.EligiblePercentStandardGame;
-            AdjustedPercentCounterPick = masterGameStats.AdjustedPercentCounterPick ?? 0;
+            AdjustedPercentCounterPick = masterGameStats.AdjustedPercentCounterPick;
             NumberOfBids = masterGameStats.NumberOfBids;
             TotalBidAmount = masterGameStats.TotalBidAmount;
             BidPercentile = masterGameStats.BidPercentile;
