@@ -10,7 +10,7 @@ dat = pd.read_csv(filePath)
 dat.head(5)
 
 # # Selecting the required Columns
-ds = dat[["EligiblePercentStandardGame","EligiblePercentCounterPick","DateAdjustedHypeFactor","AverageDraftPosition","TotalBidAmount","BidPercentile","CriticScore"]]
+ds = dat[["EligiblePercentStandardGame","AdjustedPercentCounterPick","DateAdjustedHypeFactor","AverageDraftPosition","TotalBidAmount","BidPercentile","CriticScore"]]
 
 # # Checking that how many null values in each column
 ds.isnull().sum(axis = 0)
@@ -19,7 +19,7 @@ ds.isnull().sum(axis = 0)
 ds = ds.fillna(ds.mean())
 
 # # Selecing input and outputs for the Linear Regression Model
-X = ds[["EligiblePercentStandardGame","EligiblePercentCounterPick","DateAdjustedHypeFactor","AverageDraftPosition","TotalBidAmount","BidPercentile"]]
+X = ds[["EligiblePercentStandardGame","AdjustedPercentCounterPick","DateAdjustedHypeFactor","AverageDraftPosition","TotalBidAmount","BidPercentile"]]
 Y = ds[["CriticScore"]]
 
 # # Applying the Linear Regression Model
@@ -32,4 +32,4 @@ print('intercept:', model.intercept_)
 print('slope:', model.coef_)
 
 # # Printing the equation of Linear Regression Model
-print("CriticScoreFormula = ",model.intercept_[0],"+",model.coef_[0][0],"* EligiblePercentStandardGame +",model.coef_[0][1],"* EligiblePercentCounterPick +",model.coef_[0][2],"* DateAdjustedHypeFactor +",model.coef_[0][3],"* AverageDraftPosition +",model.coef_[0][4],"* TotalBidAmount +",model.coef_[0][5],"* BidPercentile")
+print("CriticScoreFormula = ",model.intercept_[0],"+",model.coef_[0][0],"* EligiblePercentStandardGame +",model.coef_[0][1],"* AdjustedPercentCounterPick +",model.coef_[0][2],"* DateAdjustedHypeFactor +",model.coef_[0][3],"* AverageDraftPosition +",model.coef_[0][4],"* TotalBidAmount +",model.coef_[0][5],"* BidPercentile")

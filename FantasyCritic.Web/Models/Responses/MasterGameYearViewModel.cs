@@ -33,16 +33,15 @@ namespace FantasyCritic.Web.Models.Responses
             BoxartFileName = masterGame.MasterGame.BoxartFileName;
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
+            AdjustedPercentCounterPick = masterGame.AdjustedPercentCounterPick;
 
             if (masterGame.MasterGame.EligibilityChanged)
             {
                 EligiblePercentStandardGame = masterGame.PercentStandardGame;
-                EligiblePercentCounterPick = masterGame.PercentCounterPick;
             }
             else
             {
                 EligiblePercentStandardGame = masterGame.EligiblePercentStandardGame;
-                EligiblePercentCounterPick = masterGame.EligiblePercentCounterPick;
             }
 
             AverageDraftPosition = masterGame.AverageDraftPosition;
@@ -71,16 +70,15 @@ namespace FantasyCritic.Web.Models.Responses
 
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
+            AdjustedPercentCounterPick = masterGame.AdjustedPercentCounterPick;
 
             if (masterGame.MasterGame.EligibilityChanged)
             {
                 EligiblePercentStandardGame = masterGame.PercentStandardGame;
-                EligiblePercentCounterPick = masterGame.PercentCounterPick;
             }
             else
             {
                 EligiblePercentStandardGame = masterGame.EligiblePercentStandardGame;
-                EligiblePercentCounterPick = masterGame.EligiblePercentCounterPick;
             }
 
             AverageDraftPosition = masterGame.AverageDraftPosition;
@@ -113,7 +111,7 @@ namespace FantasyCritic.Web.Models.Responses
         public double PercentStandardGame { get; }
         public double PercentCounterPick { get; }
         public double EligiblePercentStandardGame { get; }
-        public double EligiblePercentCounterPick { get; }
+        public double? AdjustedPercentCounterPick { get; }
         public double? AverageDraftPosition { get; }
         public double HypeFactor { get; }
         public double DateAdjustedHypeFactor { get; }

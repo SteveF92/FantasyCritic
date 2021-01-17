@@ -10,7 +10,7 @@
             PercentStandardGame = cachedMasterGameYear.PercentStandardGame;
             PercentCounterPick = cachedMasterGameYear.PercentCounterPick;
             EligiblePercentStandardGame = cachedMasterGameYear.EligiblePercentStandardGame;
-            EligiblePercentCounterPick = cachedMasterGameYear.EligiblePercentCounterPick;
+            AdjustedPercentCounterPick = cachedMasterGameYear.AdjustedPercentCounterPick;
             NumberOfBids = cachedMasterGameYear.NumberOfBids;
             TotalBidAmount = cachedMasterGameYear.TotalBidAmount;
             BidPercentile = cachedMasterGameYear.BidPercentile;
@@ -23,7 +23,7 @@
         }
 
         public MasterGameCalculatedStats(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame, 
-            double eligiblePercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageWinningBid, 
+            double? adjustedPercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageWinningBid, 
             double hypeFactor, double dateAdjustedHypeFactor, double linearRegressionHypeFactor)
         {
             MasterGame = masterGame;
@@ -32,7 +32,7 @@
             PercentStandardGame = percentStandardGame;
             PercentCounterPick = percentCounterPick;
             EligiblePercentStandardGame = eligiblePercentStandardGame;
-            EligiblePercentCounterPick = eligiblePercentCounterPick;
+            AdjustedPercentCounterPick = adjustedPercentCounterPick;
             NumberOfBids = numberOfBids;
             TotalBidAmount = totalBidAmount;
             BidPercentile = bidPercentile;
@@ -50,7 +50,7 @@
         public double PercentStandardGame { get; set; }
         public double PercentCounterPick { get; set; }
         public double EligiblePercentStandardGame { get; set; }
-        public double EligiblePercentCounterPick { get; set; }
+        public double? AdjustedPercentCounterPick { get; set; }
         public int NumberOfBids { get; set; }
         public int TotalBidAmount { get; set; }
         public double BidPercentile { get; set; }

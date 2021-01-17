@@ -331,9 +331,15 @@ namespace FantasyCritic.Lib.Services
 
                     double leaguesWhereEligibleCount = timeAdjustedLeagues.Count;
                     double percentStandardGame = leaguesWithGame / totalLeagueCount;
-                    double percentCounterPick = leaguesWithCounterPickGame / totalLeagueCount;
                     double eligiblePercentStandardGame = leaguesWithGame / leaguesWhereEligibleCount;
-                    double eligiblePercentCounterPick = leaguesWithCounterPickGame / leaguesWhereEligibleCount;
+
+                    double percentCounterPick = leaguesWithCounterPickGame / totalLeagueCount;
+                    double? adjustedPercentCounterPick = null;
+                    if (leaguesWithGame >= 3)
+                    {
+                        adjustedPercentCounterPick = leaguesWithCounterPickGame / leaguesWithGame;
+                    }
+
                     var bidsForGame = bidsByGame[masterGame];
                     int numberOfBids = bidsForGame.Count();
                     bool hasBids = totalBidAmounts.TryGetValue(masterGame, out long totalBidAmount);
@@ -351,7 +357,7 @@ namespace FantasyCritic.Lib.Services
                     double notNullAverageDraftPosition = averageDraftPosition ?? 0;
 
                     double percentStandardGameToUse = eligiblePercentStandardGame;
-                    double percentCounterPickToUse = eligiblePercentCounterPick;
+                    double percentCounterPickToUse = adjustedPercentCounterPick ?? percentCounterPick;
                     if (masterGame.EligibilityChanged || eligiblePercentStandardGame > 1)
                     {
                         percentStandardGameToUse = percentStandardGame;
@@ -365,7 +371,7 @@ namespace FantasyCritic.Lib.Services
                     percentStandardGame = FixDouble(percentStandardGame);
                     percentCounterPick = FixDouble(percentCounterPick);
                     eligiblePercentStandardGame = FixDouble(eligiblePercentStandardGame);
-                    eligiblePercentCounterPick = FixDouble(eligiblePercentCounterPick);
+                    adjustedPercentCounterPick = FixDouble(adjustedPercentCounterPick);
                     bidPercentile = FixDouble(bidPercentile);
                     hypeFactor = FixDouble(hypeFactor);
                     dateAdjustedHypeFactor = FixDouble(dateAdjustedHypeFactor);
@@ -373,7 +379,7 @@ namespace FantasyCritic.Lib.Services
                     if (masterGame.CriticScore.HasValue && gameIsCached)
                     {
                         calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
-                            eligiblePercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
+                            adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
                             dateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
                         continue;
                     }
@@ -397,7 +403,7 @@ namespace FantasyCritic.Lib.Services
                     linearRegressionHypeFactor = FixDouble(linearRegressionHypeFactor);
 
                     calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame, 
-                        eligiblePercentCounterPick, numberOfBids, (int) totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor, 
+                        adjustedPercentCounterPick, numberOfBids, (int) totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor, 
                         dateAdjustedHypeFactor, linearRegressionHypeFactor));
                 }
 
@@ -450,6 +456,25 @@ namespace FantasyCritic.Lib.Services
             }
 
             if (double.IsInfinity(num))
+            {
+                return 1;
+            }
+
+            return num;
+        }
+
+        private double? FixDouble(double? num)
+        {
+            if (!num.HasValue)
+            {
+                return null;
+            }
+            if (double.IsNaN(num.Value))
+            {
+                return 0;
+            }
+
+            if (double.IsInfinity(num.Value))
             {
                 return 1;
             }

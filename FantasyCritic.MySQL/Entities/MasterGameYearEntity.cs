@@ -36,7 +36,7 @@ namespace FantasyCritic.MySQL.Entities
             PercentStandardGame = masterGameStats.PercentStandardGame;
             PercentCounterPick = masterGameStats.PercentCounterPick;
             EligiblePercentStandardGame = masterGameStats.EligiblePercentStandardGame;
-            EligiblePercentCounterPick = masterGameStats.EligiblePercentCounterPick;
+            AdjustedPercentCounterPick = masterGameStats.AdjustedPercentCounterPick ?? 0;
             NumberOfBids = masterGameStats.NumberOfBids;
             TotalBidAmount = masterGameStats.TotalBidAmount;
             BidPercentile = masterGameStats.BidPercentile;
@@ -66,7 +66,7 @@ namespace FantasyCritic.MySQL.Entities
         public double PercentStandardGame { get; set; }
         public double PercentCounterPick { get; set; }
         public double EligiblePercentStandardGame { get; set; }
-        public double EligiblePercentCounterPick { get; set; }
+        public double AdjustedPercentCounterPick { get; set; }
         public int NumberOfBids { get; set; }
         public int TotalBidAmount { get; set; }
         public double BidPercentile { get; set; }
@@ -114,7 +114,7 @@ namespace FantasyCritic.MySQL.Entities
             var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate,
                 releaseDate, OpenCriticID, CriticScore, Notes, BoxartFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames, tags);
 
-            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, EligiblePercentCounterPick, 
+            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick, 
                 NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);
         }
     }

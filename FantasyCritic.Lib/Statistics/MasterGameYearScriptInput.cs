@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Statistics
             GameName = masterGameYear.MasterGame.GameName;
 
             EligiblePercentStandardGame = masterGameYear.EligiblePercentStandardGame;
-            EligiblePercentCounterPick = masterGameYear.EligiblePercentCounterPick;
+            AdjustedPercentCounterPick = masterGameYear.AdjustedPercentCounterPick ?? 0;
             AverageDraftPosition = masterGameYear.AverageDraftPosition;
             DateAdjustedHypeFactor = masterGameYear.DateAdjustedHypeFactor;
             TotalBidAmount = masterGameYear.TotalBidAmount;
@@ -32,7 +32,7 @@ namespace FantasyCritic.Lib.Statistics
         public Guid MasterGameID { get; }
         public string GameName { get; }
         public double EligiblePercentStandardGame { get; }
-        public double EligiblePercentCounterPick { get; }
+        public double AdjustedPercentCounterPick { get; }
         public double DateAdjustedHypeFactor { get; }
         public double? AverageDraftPosition { get; }
         public int TotalBidAmount { get; }

@@ -130,8 +130,13 @@
       <template v-slot:cell(eligiblePercentStandardGame)="data">
         {{data.item.eligiblePercentStandardGame | percent(1)}}
       </template>
-      <template v-slot:cell(eligiblePercentCounterPick)="data">
-        {{data.item.eligiblePercentCounterPick | percent(1)}}
+      <template v-slot:cell(adjustedPercentCounterPick)="data">
+        <span v-if="data.item.adjustedPercentCounterPick">
+          {{data.item.adjustedPercentCounterPick | percent(1)}} 
+        </span>
+        <span v-else>
+          N/A
+        </span>
       </template>
       <template v-slot:cell(addedTimestamp)="data">
         {{data.item.addedTimestamp | date}}
@@ -163,7 +168,7 @@ export default {
         { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
         { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary' },
         { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
-        { key: 'eligiblePercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'adjustedPercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' }
       ],
