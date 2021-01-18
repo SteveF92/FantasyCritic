@@ -20,11 +20,11 @@
             </div>
             <div>
               <strong>Percent Published: </strong>
-              {{masterGame.percentStandardGame | percent(1)}}
+              {{masterGame.eligiblePercentStandardGame | percent(1)}}
             </div>
             <div>
               <strong>Percent Counterpicked: </strong>
-              {{masterGame.percentCounterPick | percent(1)}}
+              {{masterGame.adjustedPercentCounterPick | percent(1)}}
             </div>
             <div>
               <strong>Average Draft Position: </strong>
