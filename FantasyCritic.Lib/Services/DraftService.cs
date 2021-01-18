@@ -290,7 +290,8 @@ namespace FantasyCritic.Lib.Services
                     .Where(x => x.MasterGame.HasValue);
                 var possibleGames = otherPublisherGames
                     .Select(x => x.MasterGame.Value)
-                    .OrderByDescending(x => x.PercentCounterPick);
+                    .Where(x => x.AdjustedPercentCounterPick.HasValue)
+                    .OrderByDescending(x => x.AdjustedPercentCounterPick);
                 foreach (var possibleGame in possibleGames)
                 {
                     var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.MasterGame.GameName, true, false, true, possibleGame.MasterGame, 
