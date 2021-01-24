@@ -468,7 +468,9 @@ export default {
   },
   watch: {
     '$route'(to, from) {
-      this.fetchLeagueYear();
+      if (to.path !== from.path) {
+        this.fetchLeagueYear();
+      }
     },
     userIsNextInDraft: function (val, oldVal) {
       if (val && val !== oldVal) {

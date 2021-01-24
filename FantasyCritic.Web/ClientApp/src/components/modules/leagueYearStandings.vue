@@ -24,9 +24,10 @@
       </template>
       <template v-slot:cell(publisher)="data">
         <span v-if="data.item.publisher">
-            <router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: data.item.publisher.publisherID }}">
+            <a :href="'#' + data.item.publisher.publisherID">{{ data.item.publisher.publisherName }}</a>
+            <!--<router-link class="text-primary publisher-name" :to="{ name: 'publisher', params: { publisherid: data.item.publisher.publisherID }}">
               {{ data.item.publisher.publisherName }}
-            </router-link>
+            </router-link>-->
             <span class="publisher-badge badge badge-pill badge-primary badge-info"
                   v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraft">Auto Draft</span>
           </span>
