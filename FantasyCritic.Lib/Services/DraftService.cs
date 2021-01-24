@@ -126,14 +126,14 @@ namespace FantasyCritic.Lib.Services
             }
         }
 
-        public async Task UndoLastDraftAction(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+        public async Task UndoLastDraftAction(IReadOnlyList<Publisher> publishers)
         {
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
             var newestGame = publisherGames.MaxBy(x => x.Timestamp).First();
 
             var publisher = publishers.Single(x => x.PublisherGames.Select(y => y.PublisherGameID).Contains(newestGame.PublisherGameID));
 
-            await _publisherService.RemovePublisherGame(leagueYear, publisher, newestGame);
+            await _publisherService.RemovePublisherGame(publisher, newestGame);
         }
 
         public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)

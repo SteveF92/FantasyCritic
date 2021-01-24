@@ -24,7 +24,7 @@
           <b-button variant="primary" class="add-game-button" v-on:click="removePublisherGame">Remove Game</b-button>
           <div v-if="errorInfo" class="alert alert-danger remove-error">
             <h3 class="alert-heading">Error!</h3>
-            <p>{{errorInfo}}</p>
+            <p class="text-white">{{errorInfo}}</p>
           </div>
         </div>
       </b-modal>

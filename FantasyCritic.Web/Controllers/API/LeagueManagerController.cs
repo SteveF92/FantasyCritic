@@ -883,7 +883,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            Result result = await _publisherService.RemovePublisherGame(leagueYear.Value, publisher.Value, publisherGame.Value);
+            Result result = await _publisherService.RemovePublisherGame(publisher.Value, publisherGame.Value);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);
@@ -1366,7 +1366,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Can't undo a drafted game if no games have been drafted.");
             }
 
-            await _draftService.UndoLastDraftAction(leagueYear.Value, publishers);
+            await _draftService.UndoLastDraftAction(publishers);
             await _hubContext.Clients.Group(leagueYear.Value.GetGroupName).SendAsync("RefreshLeagueYear");
 
             return Ok();
