@@ -41,47 +41,48 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import axios from 'axios';
+  import Vue from 'vue';
+  import axios from 'axios';
 
-export default {
-  data() {
-    return {
-      emailAddress: '',
-      password: '',
-      isBusy: false,
-      error: ''
-    };
-  },
-  computed: {
-    newAccountCreated() {
-      return this.$store.getters.newAccountCreated;
-    }
-  },
-  methods: {
-    login() {
-      var credentials = {
-        emailAddress: this.emailAddress,
-        password: this.password
+  export default {
+    data() {
+      return {
+        emailAddress: '',
+        password: '',
+        isBusy: false,
+        error: ''
       };
-      this.$store.dispatch('doAuthentication', credentials)
-        .then(() => {
-          this.isBusy = false;
-          let leagueid = this.$route.query.leagueid;
-          let inviteCode = this.$route.query.inviteCode;
-          let year = this.$route.query.year;
-          if (leagueid && inviteCode && year) {
-            let routeObject = { name: 'league', params: { leagueid: leagueid, year: year }, query: { inviteCode: inviteCode } };
-            this.$router.push(routeObject);
-          } else {
-            this.$router.push('/');
-          }
-        })
-        .catch(returnedError => {
-          this.isBusy = false;
-          this.error = 'Failed Login';
-        });
+    },
+    computed: {
+      newAccountCreated() {
+        return this.$store.getters.newAccountCreated;
+      }
+    },
+    methods: {
+      login() {
+        var credentials = {
+          emailAddress: this.emailAddress,
+          password: this.password
+        };
+        this.$store.dispatch('doAuthentication', credentials)
+          .then(() => {
+            this.isBusy = false;
+            let leagueid = this.$route.query.leagueid;
+            let inviteCode = this.$route.query.inviteCode;
+            let year = this.$route.query.year;
+            if (leagueid && inviteCode && year) {
+              let routeObject = { name: 'league', params: { leagueid: leagueid, year: year }, query: { inviteCode: inviteCode } };
+              this.$router.push(routeObject);
+            } else {
+              let routeObject = { name: 'home' };
+              this.$router.push(routeObject);
+            }
+          })
+          .catch(returnedError => {
+            this.isBusy = false;
+            this.error = 'Failed Login';
+          });
+      }
     }
-  }
-};
+  };
 </script>
