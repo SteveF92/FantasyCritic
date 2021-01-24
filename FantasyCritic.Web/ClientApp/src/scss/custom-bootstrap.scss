@@ -13,19 +13,23 @@ $card-bg: #414141;
 $modal-content-bg: #D4D4D4;
 
 $table-bg: #222222;
-$table-bg-accent: #333333;
+$table-accent-bg: #333333;
 $alert-bg-level: 0;
 
 $grid-breakpoints: (
-    xs: 0,
-    sm: 576px,
-    md: 768px,
-    lg: 992px,
-    xl: 1550px
+    "xs" : 0,
+    "sm": 576px,
+    "md": 768px,
+    "lg": 992px,
+    "xl": 1550px
 );
 
-.table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
-    background-color: $table-bg-accent;
+.table-striped > tbody > tr:nth-child(2n) > td.b-table-sticky-column, .table-striped > tbody > tr:nth-child(2n) > th {
+    background-color: $table-bg;
+}
+
+.table-striped > tbody > tr:nth-child(2n+1) > td.b-table-sticky-column, .table-striped > tbody > tr:nth-child(2n+1) > th {
+    background-color: $table-accent-bg;
 }
 
 .table tbody tr > td.success {

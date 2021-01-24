@@ -105,6 +105,7 @@
              :per-page="perPage"
              :current-page="currentPage"
              striped
+             sticky-header="1000px"
              @filtered="onFiltered">
       <template v-slot:cell(gameName)="data">
         <masterGamePopover :masterGame="data.item"></masterGamePopover>
@@ -168,15 +169,15 @@ export default {
   data() {
     return {
       gameFields: [
-        { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+        { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary', stickyColumn: true },
         { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
+        { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary'],  },
         { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
         { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary' },
-        { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
-        { key: 'adjustedPercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' }
+        { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary'] },
+        { key: 'adjustedPercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary'] },
+        { key: 'tags', label: 'Tags', thClass: ['bg-primary'] },
+        { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary'] }
       ],
       totalRows: 1,
       currentPage: 1,
