@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="reset-button-flex">
-      <h5 class="help-text">Drag and Drop to Rearrange</h5>
+      <h5 class="help-text">Drag and Drop to Re-arrange</h5>
       <b-button variant="warning" class="reset-button" v-on:click="resetValues">Reset Changes</b-button>
     </div>
     <div class="alert alert-warning" v-show="showWarning && !showDanger">You've chosen slightly non-standard settings. Be sure this is what you want.</div>
