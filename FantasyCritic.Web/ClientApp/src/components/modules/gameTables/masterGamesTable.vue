@@ -132,7 +132,7 @@
       </template>
       <template v-slot:cell(adjustedPercentCounterPick)="data">
         <span v-if="data.item.adjustedPercentCounterPick !== null">
-          {{data.item.adjustedPercentCounterPick | percent(1)}} 
+          {{data.item.adjustedPercentCounterPick | percent(1)}}
         </span>
         <span v-else>
           N/A
@@ -147,6 +147,12 @@
         </span>
       </template>
     </b-table>
+    <b-pagination v-model="currentPage"
+                  :total-rows="totalRows"
+                  :per-page="perPage"
+                  align="fill"
+                  size="sm"
+                  class="my-0 pagination-dark"></b-pagination>
   </div>
 </template>
 <script>
