@@ -299,7 +299,7 @@ namespace FantasyCritic.Lib.Services
                     var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers);
                     if (autoDraftResult.Success)
                     {
-                        standardGamesAdded++;
+                        counterPicksAdded++;
                         break;
                     }
                 }
