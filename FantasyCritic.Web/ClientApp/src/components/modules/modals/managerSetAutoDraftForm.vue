@@ -5,7 +5,7 @@
     </div>
 
     <b-form-group class="form-checkbox-group stacked checkboxes">
-      <b-form-checkbox v-for="publisher in publishers" v-model="publisher.autoDraft" @change="onChange(publisher)">
+      <b-form-checkbox v-for="publisher in publishers" v-model="publisher.autoDraft">
         {{ publisher.publisherName }}
       </b-form-checkbox>
     </b-form-group>
@@ -21,21 +21,22 @@ import axios from 'axios';
 export default {
   name: 'managerSetAutoDraftForm',
   props: ['leagueYear'],
-  data: () => ({ publishers: [], publisherAutoDraft: {} }),
-  methods: {
-    // Keep track of publishers that need the updates.
-    onChange(pub) {
-      this.publisherAutoDraft[pub.publisherID] = !pub.autoDraft;
+    data() {
+      return {
+        publishers: null
+      };
     },
+  methods: {
     setAutoDraft() {
-      if (Object.keys(this.publisherAutoDraft).length === 0) {
-        return;
+      let autoDraftSettings = {};
+      for (let i = 0; i < this.publishers.length; i++) {
+        autoDraftSettings[this.publishers[i].publisherID] = this.publishers[i].autoDraft;
       }
 
       const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
-        publisherAutoDraft: this.publisherAutoDraft
+        publisherAutoDraft: autoDraftSettings
       };
       axios
         .post('/api/leagueManager/SetAutoDraft', model)
