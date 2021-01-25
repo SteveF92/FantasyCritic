@@ -21,6 +21,7 @@ using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Statistics;
+using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.RDS;
 using FantasyCritic.SendGrid;
@@ -58,13 +59,12 @@ namespace FantasyCritic.Web
             var audience = Configuration["Tokens:Audience"];
             IClock clock = NodaTime.SystemClock.Instance;
             string pythonPath = Configuration["Python:PythonPath"];
-
             var rdsInstanceName = Configuration["AWS:rdsInstanceName"];
+            var mailgunAPIKey = Configuration["Mailgun:apiKey"];
 
             // Add application services.
 
             var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
-            SendGridEmailSender sendGridEmailSender = new SendGridEmailSender();
 
             services.AddHttpClient();
 
@@ -107,7 +107,8 @@ namespace FantasyCritic.Web
             services.AddScoped<FantasyCriticService>();
             services.AddScoped<RoyaleService>();
 
-            services.AddTransient<IEmailSender>(factory => sendGridEmailSender);
+            //services.AddTransient<IEmailSender>(factory => new SendGridEmailSender());
+            services.AddTransient<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games"));
             services.AddTransient<ISMSSender, SMSSender>();
             services.AddTransient<ITokenService>(factory => tokenService);
             services.AddTransient<IClock>(factory => clock);
