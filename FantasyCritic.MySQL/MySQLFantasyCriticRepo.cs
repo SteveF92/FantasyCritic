@@ -336,7 +336,7 @@ namespace FantasyCritic.MySQL
         public async Task QueueGame(QueuedGame queuedGame)
         {
             var entity = new QueuedGameEntity(queuedGame);
-            string sql = "insert into tbl_league_publisherqueue(PublisherID,MasterGameID,Rank) VALUES (@PublisherID,@MasterGameID,@Rank);";
+            string sql = "insert into tbl_league_publisherqueue(PublisherID,MasterGameID,`Rank`) VALUES (@PublisherID,@MasterGameID,@Rank);";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql, entity);

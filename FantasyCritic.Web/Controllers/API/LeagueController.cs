@@ -25,8 +25,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using MoreLinq;
 using NodaTime;
+using static MoreLinq.Extensions.MaxByExtension;
 
 namespace FantasyCritic.Web.Controllers.API
 {
@@ -1172,7 +1172,19 @@ namespace FantasyCritic.Web.Controllers.API
 
             var queuedGames = await _publisherService.GetQueuedGames(publisher.Value);
 
-            var viewModels = queuedGames.Select(x => new QueuedGameViewModel(x, _clock)).OrderBy(x => x.Rank);
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(publisher.Value.LeagueYear);
+            HashSet<MasterGame> publisherMasterGames = publishersInLeague
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => !x.CounterPick && x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .ToHashSet();
+
+            HashSet<MasterGame> myPublisherMasterGames = publisher.Value.MyMasterGames;
+
+            var viewModels = queuedGames.Select(x =>
+                new QueuedGameViewModel(x, _clock, publisherMasterGames.Contains(x.MasterGame),
+                    myPublisherMasterGames.Contains(x.MasterGame)
+                )).OrderBy(x => x.Rank);
             return Ok(viewModels);
         }
 

@@ -28,6 +28,7 @@
           <th scope="col" class="game-column">Game</th>
           <th scope="col" class="game-column">Release Date</th>
           <th scope="col">Ranking</th>
+          <th scope="col">Status</th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -40,6 +41,9 @@
             <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
           </td>
           <td>{{queuedGame.rank}}</td>
+          <td>
+            <statusBadge :possibleMasterGame="queuedGame"></statusBadge>
+          </td>
           <td class="select-cell">
             <b-button variant="danger" size="sm" v-on:click="removeQueuedGame(queuedGame)">Remove</b-button>
           </td>
@@ -58,11 +62,13 @@ import axios from 'axios';
 import draggable from 'vuedraggable';
 
 import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
+import StatusBadge from '@/components/modules/statusBadge';
 
 export default {
   components: {
     draggable,
-    PossibleMasterGamesTable
+    PossibleMasterGamesTable,
+    StatusBadge
   },
   props: ['publisher', 'year'],
   data() {
