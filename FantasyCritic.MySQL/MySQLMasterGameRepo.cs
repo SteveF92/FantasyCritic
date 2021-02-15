@@ -148,7 +148,8 @@ namespace FantasyCritic.MySQL
             }
 
             string setReleaseDate = "";
-            if (!masterGame.DoNotRefreshDate)
+            //if (!masterGame.DoNotRefreshDate)
+            if (false)
             {
                 setFirstTimestamp = ", ReleaseDate = @releaseDate ";
             }
