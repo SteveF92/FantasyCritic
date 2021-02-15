@@ -5,7 +5,7 @@
     </div>
 
     <b-form-group class="form-checkbox-group stacked checkboxes">
-      <b-form-checkbox v-for="publisher in publishers" v-model="publisher.autoDraft">
+      <b-form-checkbox v-for="publisher in publishers" v-bind:data="publisher" v-bind:key="publisher.publisherID" v-model="publisher.autoDraft">
         {{ publisher.publisherName }}
       </b-form-checkbox>
     </b-form-group>
