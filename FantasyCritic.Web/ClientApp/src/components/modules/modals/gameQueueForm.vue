@@ -198,6 +198,9 @@ export default {
           oldValue.length !== newValue.length)) {
         this.clearQueueData();
       }
+    },
+    year() {
+      this.fetchQueuedGames();
     }
   }
 };
