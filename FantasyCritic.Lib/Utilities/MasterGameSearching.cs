@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Utilities
         public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames) 
         {
             var substringMatches = masterGames
-                .Select(x => new Tuple<MasterGame, double>(x, GetAbsoluteSubstringInCommon(gameName, x.GameName)));
+                .Select(x => new Tuple<MasterGame, double>(x, GetAbsoluteSubsequenceInCommon(gameName, x.GameName)));
 
             var perfectMatches = substringMatches.Where(x => string.Equals(gameName, x.Item1.GameName, StringComparison.InvariantCultureIgnoreCase));
             var filteredSubstringMatches = substringMatches.OrderByDescending(x => x.Item2);
@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Utilities
         public static IReadOnlyList<MasterGameYear> SearchMasterGameYears(string gameName, IEnumerable<MasterGameYear> masterGames)
         {
             var substringMatches = masterGames
-                .Select(x => new Tuple<MasterGameYear, double>(x, GetAbsoluteSubstringInCommon(gameName, x.MasterGame.GameName)));
+                .Select(x => new Tuple<MasterGameYear, double>(x, GetAbsoluteSubsequenceInCommon(gameName, x.MasterGame.GameName)));
 
             var perfectMatches = substringMatches.Where(x => string.Equals(gameName, x.Item1.MasterGame.GameName, StringComparison.InvariantCultureIgnoreCase));
             var filteredSubstringMatches = substringMatches.OrderByDescending(x => x.Item2).ThenByDescending(x => x.Item1.DateAdjustedHypeFactor);
@@ -40,9 +40,9 @@ namespace FantasyCritic.Lib.Utilities
             return combinedSequences.Distinct().ToList();
         }
 
-        private static double GetAbsoluteSubstringInCommon(string source, string target)
+        private static double GetAbsoluteSubsequenceInCommon(string source, string target)
         {
-            var longestCommon = source.ToLowerInvariant().LongestCommonSubstring(target.ToLowerInvariant());
+            var longestCommon = source.ToLowerInvariant().LongestCommonSubsequence(target.ToLowerInvariant()); 
             double result = longestCommon.Length;
             return result;
         }
