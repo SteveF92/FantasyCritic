@@ -73,7 +73,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest("Some of the settings you chose are not valid.");
             }
 
             if (request.Tags.Required.Any())
