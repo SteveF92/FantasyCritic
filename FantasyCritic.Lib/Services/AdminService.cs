@@ -317,11 +317,12 @@ namespace FantasyCritic.Lib.Services
                     List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligible(masterGame)).ToList();
 
                     List<LeagueYear> timeAdjustedLeagues;
-                    if (masterGame.FirstCriticScoreTimestamp.HasValue)
+                    var scoreOrReleaseTime = masterGame.FirstCriticScoreTimestamp ?? masterGame.ReleaseDate?.AtStartOfDayInZone(TimeExtensions.EasternTimeZone).ToInstant();
+                    if (scoreOrReleaseTime.HasValue)
                     {
                         timeAdjustedLeagues = leaguesWhereEligible.Where(x =>
                                 x.DraftStartedTimestamp.HasValue &&
-                                x.DraftStartedTimestamp <= masterGame.FirstCriticScoreTimestamp.Value)
+                                x.DraftStartedTimestamp <= scoreOrReleaseTime)
                             .ToList();
                     }
                     else

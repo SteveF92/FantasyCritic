@@ -142,7 +142,7 @@ namespace FantasyCritic.MySQL
             }
 
             string setFirstTimestamp = "";
-            if (!masterGame.CriticScore.HasValue && openCriticGame.Score.HasValue)
+            if (!masterGame.FirstCriticScoreTimestamp.HasValue && openCriticGame.Score.HasValue)
             {
                 setFirstTimestamp = ", FirstCriticScoreTimestamp = CURRENT_TIMESTAMP ";
             }
@@ -151,7 +151,7 @@ namespace FantasyCritic.MySQL
             //if (!masterGame.DoNotRefreshDate)
             if (false)
             {
-                setFirstTimestamp = ", ReleaseDate = @releaseDate ";
+                setReleaseDate = ", ReleaseDate = @releaseDate ";
             }
 
             string sql = $"update tbl_mastergame set CriticScore = @criticScore {setReleaseDate} {setFirstTimestamp} where MasterGameID = @masterGameID";
