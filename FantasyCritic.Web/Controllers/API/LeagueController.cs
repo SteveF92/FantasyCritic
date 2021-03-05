@@ -1389,7 +1389,7 @@ namespace FantasyCritic.Web.Controllers.API
             foreach (var publisherGameGroup in orderedByReleaseDate)
             {
                 IEnumerable<Publisher> publishersThatHaveGame = publishers.Where(x => publisherGameGroup.Select(y => y.PublisherID).Contains(x.PublisherID));
-                IEnumerable<Publisher> publishersThatHaveStandardGame = publishersThatHaveGame.Where(x => x.PublisherGames.Where(y => !y.CounterPick).Select(y => y.MasterGame.Value).Contains(publisherGameGroup.Key));
+                IEnumerable<Publisher> publishersThatHaveStandardGame = publishersThatHaveGame.Where(x => x.PublisherGames.Where(y => !y.CounterPick).Where(x => x.MasterGame.HasValue).Select(y => y.MasterGame.Value).Contains(publisherGameGroup.Key));
                 viewModels.Add(new UpcomingGameViewModel(publisherGameGroup.Key, publishersThatHaveGame, publishersThatHaveStandardGame, userMode, _clock));
             }
 
