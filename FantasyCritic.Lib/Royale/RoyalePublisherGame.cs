@@ -33,7 +33,7 @@ namespace FantasyCritic.Lib.Royale
             {
                 return 0m;
             }
-            var basePoints = MasterGame.CalculateFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(), false, clock, true);
+            var basePoints = MasterGame.CalculateFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(YearQuarter.YearQuarter.Year), false, clock, true);
             if (!basePoints.HasValue)
             {
                 return null;

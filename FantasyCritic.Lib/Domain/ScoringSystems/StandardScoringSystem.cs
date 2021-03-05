@@ -9,7 +9,8 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
 {
     public class StandardScoringSystem : ScoringSystem
     {
-        public override string Name => "Standard";
+        public static string StaticName => "Standard";
+        public override string Name => StaticName;
 
         public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
         {

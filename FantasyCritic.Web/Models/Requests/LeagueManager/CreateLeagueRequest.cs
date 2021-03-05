@@ -65,7 +65,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
-            ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
+            ScoringSystem scoringSystem = new DiminishingScoringSystem();
 
             int freeDroppableGames = FreeDroppableGames;
             if (UnlimitedFreeDroppableGames)

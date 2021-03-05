@@ -10,7 +10,8 @@ namespace FantasyCritic.Lib.Domain.ScoringSystems
 {
     public class DiminishingScoringSystem : ScoringSystem
     {
-        public override string Name => "Diminishing";
+        public static string StaticName => "Diminishing";
+        public override string Name => StaticName;
 
         public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
         {
