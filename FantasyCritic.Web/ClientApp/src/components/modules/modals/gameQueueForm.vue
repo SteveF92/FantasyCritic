@@ -32,9 +32,9 @@
           <th scope="col"></th>
         </tr>
       </thead>
-      <draggable v-model="desiredQueueRanks" tag="tbody">
+      <draggable v-model="desiredQueueRanks" tag="tbody" handle=".handle">
         <tr v-for="queuedGame in desiredQueueRanks" :key="queuedGame.rank">
-          <td scope="row"><font-awesome-icon icon="bars" size="lg" /></td>
+          <td scope="row" class="handle"><font-awesome-icon icon="bars" size="lg" /></td>
           <td>{{queuedGame.masterGame.gameName}}</td>
           <td>
             <span>{{queuedGame.masterGame.estimatedReleaseDate}}</span>

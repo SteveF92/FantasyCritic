@@ -4,10 +4,11 @@
       Drag and drop to change order.
     </label>
     <div class="fluid container draft-order-editor">
-      <draggable class="list-group" element="ul" v-model="desiredDraftOrder" :options="dragOptions" @start="isDragging=true" @end="isDragging=false">
+      <draggable class="list-group" element="ul" v-model="desiredDraftOrder" :options="dragOptions"
+                 @start="isDragging=true" @end="isDragging=false" handle=".handle">
         <transition-group type="transition" :name="'flip-list'">
           <li class="draft-order-item" v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition">
-            <font-awesome-icon icon="bars" />
+            <font-awesome-icon icon="bars" class="handle" />
             <span class="badge">{{publisher.draftPosition}}</span>
             {{publisher.publisherName}} ({{publisher.playerName}})
           </li>

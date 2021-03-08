@@ -18,14 +18,14 @@
           <th scope="col" v-show="!settingPriority">Cancel</th>
         </tr>
       </thead>
-        <draggable v-model="desiredBidPriorities" tag="tbody" v-if="settingPriority">
-          <tr v-for="bid in desiredBidPriorities" :key="bid.priority">
-            <td scope="row"><font-awesome-icon icon="bars" size="lg" /></td>
-            <td>{{bid.masterGame.gameName}}</td>
-            <td>{{bid.bidAmount | money}}</td>
-            <td>{{bid.priority}}</td>
-          </tr>
-        </draggable>
+      <draggable v-model="desiredBidPriorities" tag="tbody" v-if="settingPriority" handle=".handle">
+        <tr v-for="bid in desiredBidPriorities" :key="bid.priority">
+          <td scope="row" handle=".handle"><font-awesome-icon icon="bars" size="lg" /></td>
+          <td>{{bid.masterGame.gameName}}</td>
+          <td>{{bid.bidAmount | money}}</td>
+          <td>{{bid.priority}}</td>
+        </tr>
+      </draggable>
       <tbody v-if="!settingPriority">
         <tr v-for="bid in desiredBidPriorities">
           <td>{{bid.masterGame.gameName}}</td>
