@@ -20,7 +20,7 @@
       </thead>
       <draggable v-model="desiredBidPriorities" tag="tbody" v-if="settingPriority" handle=".handle">
         <tr v-for="bid in desiredBidPriorities" :key="bid.priority">
-          <td scope="row" handle=".handle"><font-awesome-icon icon="bars" size="lg" /></td>
+          <td scope="row" class="handle"><font-awesome-icon icon="bars" size="lg" /></td>
           <td>{{bid.masterGame.gameName}}</td>
           <td>{{bid.bidAmount | money}}</td>
           <td>{{bid.priority}}</td>
