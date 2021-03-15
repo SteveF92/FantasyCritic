@@ -105,6 +105,7 @@
              :per-page="perPage"
              :current-page="currentPage"
              striped
+             primary-key="masterGameID"
              sticky-header="1000px"
              @filtered="onFiltered">
       <template v-slot:cell(gameName)="data">
