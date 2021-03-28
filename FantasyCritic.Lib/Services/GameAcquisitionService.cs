@@ -220,9 +220,9 @@ namespace FantasyCritic.Lib.Services
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
+            var overriddenEligibility = leagueYear.GetOverriddenEligibility(masterGame);
             if (!dropping)
             {
-                var overriddenEligibility = leagueYear.GetOverriddenEligibility(masterGame);
                 if (overriddenEligibility.HasValue)
                 {
                     if (!overriddenEligibility.Value)
@@ -238,13 +238,14 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
+            bool manuallyEligible = overriddenEligibility.HasValue && overriddenEligibility.Value;
             bool released = masterGame.IsReleased(_clock.GetCurrentInstant());
             if (released)
             {
                 claimErrors.Add(new ClaimError("That game has already been released.", true));
             }
 
-            if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year != year && !dropping)
+            if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year != year && !dropping && !manuallyEligible)
             {
                 claimErrors.Add(new ClaimError($"That game is not scheduled to release in {year}.", true));
             }
@@ -265,14 +266,14 @@ namespace FantasyCritic.Lib.Services
 
             if (!dropping)
             {
-                if (!released && masterGame.MinimumReleaseDate.Year > year && !counterPick)
+                if (!released && masterGame.MinimumReleaseDate.Year > year && !counterPick && !manuallyEligible)
                 {
                     claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
                 }
             }
 
             bool hasScore = masterGame.CriticScore.HasValue;
-            if (hasScore)
+            if (hasScore && !manuallyEligible)
             {
                 claimErrors.Add(new ClaimError("That game already has a score.", true));
             }
