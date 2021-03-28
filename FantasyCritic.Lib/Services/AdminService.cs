@@ -262,7 +262,6 @@ namespace FantasyCritic.Lib.Services
                 IReadOnlyList<PickupBid> processedBids = await _fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year);
                 ILookup<MasterGame, PickupBid> bidsByGame = processedBids.ToLookup(x => x.MasterGame);
                 IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
-                IReadOnlyList<MasterGame> allGamesWithBids = bidsByGame.Select(x => x.Key).ToList();
 
                 var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame.Value.MasterGame.MasterGameID);
                 Dictionary<LeagueYear, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYear, HashSet<MasterGame>>();

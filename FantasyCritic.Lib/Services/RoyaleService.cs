@@ -82,7 +82,7 @@ namespace FantasyCritic.Lib.Services
             IEnumerable<MasterGameYear> masterGameYears = await _masterGameRepo.GetMasterGameYears(yearQuarter.Year);
 
             masterGameYears = masterGameYears.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate >= yearQuarter.FirstDateOfQuarter);
-            masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedOrRealFantasyPoints(ScoringSystem.GetRoyaleScoringSystem(yearQuarter.Year), false, _clock));
+            masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedOrRealFantasyPoints(ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year), false, _clock));
 
             return masterGameYears.ToList();
         }
