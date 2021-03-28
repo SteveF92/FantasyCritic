@@ -10,7 +10,19 @@ namespace FantasyCritic.Lib.Utilities
 {
     public static class TimeFunctions
     {
-        public static (LocalDate? minimumReleaseDate, LocalDate? maximumReleaseDate) ParseEstimatedReleaseDate(string estimatedReleaseDate, IClock clock)
+        public static (LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate) ParseEstimatedReleaseDate(string estimatedReleaseDate, IClock clock)
+        {
+            var range = ParseEstimatedReleaseDateInner(estimatedReleaseDate, clock);
+            var tomorrow = clock.GetToday().PlusDays(1);
+            if (range.minimumReleaseDate < tomorrow)
+            {
+                return new (tomorrow, range.maximumReleaseDate);
+            }
+
+            return range;
+        }
+
+        private static (LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate) ParseEstimatedReleaseDateInner(string estimatedReleaseDate, IClock clock)
         {
             var tomorrow = clock.GetToday().PlusDays(1);
             if (estimatedReleaseDate == "TBA")
