@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
@@ -31,6 +32,7 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly FantasyCriticUserManager _userManager;
         private readonly RoyaleService _royaleService;
         private readonly InterLeagueService _interLeagueService;
+        private readonly SemaphoreSlim _royaleSemaphore;
 
         public RoyaleController(IClock clock, ILogger<RoyaleController> logger, FantasyCriticUserManager userManager, RoyaleService royaleService, InterLeagueService interLeagueService)
         {
@@ -39,6 +41,7 @@ namespace FantasyCritic.Web.Controllers.API
             _userManager = userManager;
             _royaleService = royaleService;
             _interLeagueService = interLeagueService;
+            _royaleSemaphore = new SemaphoreSlim(1, 1);
         }
 
         [AllowAnonymous]
@@ -192,6 +195,7 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
         {
+            
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             if (currentUser is null)
             {
@@ -215,9 +219,17 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
-            var purchaseResult = await _royaleService.PurchaseGame(publisher.Value, masterGame.Value);
-            var viewModel = new PlayerClaimResultViewModel(purchaseResult);
-            return Ok(viewModel);
+            await _royaleSemaphore.WaitAsync();
+            try
+            {
+                var purchaseResult = await _royaleService.PurchaseGame(publisher.Value, masterGame.Value);
+                var viewModel = new PlayerClaimResultViewModel(purchaseResult);
+                return Ok(viewModel);
+            }
+            finally
+            {
+                _royaleSemaphore.Release(1);
+            }
         }
 
         [HttpPost]
@@ -240,19 +252,27 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
-            if (publisherGame is null)
+            await _royaleSemaphore.WaitAsync();
+            try
             {
-                return BadRequest();
-            }
+                var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
+                if (publisherGame is null)
+                {
+                    return BadRequest();
+                }
 
-            var sellResult = await _royaleService.SellGame(publisher.Value, publisherGame);
-            if (sellResult.IsFailure)
+                var sellResult = await _royaleService.SellGame(publisher.Value, publisherGame);
+                if (sellResult.IsFailure)
+                {
+                    return BadRequest(sellResult.Error);
+                }
+
+                return Ok();
+            }
+            finally
             {
-                return BadRequest(sellResult.Error);
+                _royaleSemaphore.Release(1);
             }
-
-            return Ok();
         }
 
         [HttpPost]
@@ -275,19 +295,27 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
-            if (publisherGame is null)
+            await _royaleSemaphore.WaitAsync();
+            try
             {
-                return BadRequest();
-            }
+                var publisherGame = publisher.Value.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
+                if (publisherGame is null)
+                {
+                    return BadRequest();
+                }
 
-            var setAdvertisingMoneyResult = await _royaleService.SetAdvertisingMoney(publisher.Value, publisherGame, request.AdvertisingMoney);
-            if (setAdvertisingMoneyResult.IsFailure)
+                var setAdvertisingMoneyResult = await _royaleService.SetAdvertisingMoney(publisher.Value, publisherGame, request.AdvertisingMoney);
+                if (setAdvertisingMoneyResult.IsFailure)
+                {
+                    return BadRequest(setAdvertisingMoneyResult.Error);
+                }
+
+                return Ok();
+            }
+            finally
             {
-                return BadRequest(setAdvertisingMoneyResult.Error);
+                _royaleSemaphore.Release(1);
             }
-
-            return Ok();
         }
 
         public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string gameName, Guid publisherID)
