@@ -195,5 +195,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _masterGameRepo.GetMasterGameTagDictionary();
         }
+
+        public Task FinishYear(SupportedYear supportedYear)
+        {
+            return _fantasyCriticRepo.FinishYear(supportedYear);
+        }
     }
 }

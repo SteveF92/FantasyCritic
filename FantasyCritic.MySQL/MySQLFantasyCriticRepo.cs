@@ -2144,5 +2144,21 @@ namespace FantasyCritic.MySQL
                 await connection.ExecuteAsync("delete from tbl_league_managermessage where MessageID = @messageId;", new { messageId });
             }
         }
+
+        public async Task FinishYear(SupportedYear supportedYear)
+        {
+            string sql = "UPDATE tbl_meta_supportedyear SET Finished = 1 WHERE Year = @year;";
+
+            var finishObject = new
+            {
+                year = supportedYear.Year
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync(sql, finishObject);
+            }
+        }
     }
 }

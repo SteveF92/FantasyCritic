@@ -20,6 +20,11 @@ namespace FantasyCritic.Lib.Royale
         public bool OpenForPlay { get; }
         public bool Finished { get; }
 
+        public override string ToString()
+        {
+            return YearQuarter.ToString();
+        }
+
         public bool Equals(RoyaleYearQuarter other)
         {
             if (ReferenceEquals(null, other)) return false;

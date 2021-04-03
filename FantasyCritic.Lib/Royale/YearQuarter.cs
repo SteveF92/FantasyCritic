@@ -20,6 +20,11 @@ namespace FantasyCritic.Lib.Royale
 
         public LocalDate LastDateOfQuarter => NextQuarter.FirstDateOfQuarter.PlusDays(-1);
 
+        public override string ToString()
+        {
+            return $"{Year}-Q{Quarter}";
+        }
+
         public YearQuarter LastQuarter
         {
             get

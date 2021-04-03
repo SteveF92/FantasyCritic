@@ -123,6 +123,7 @@ namespace FantasyCritic.Web
 
             //Add scheduled tasks & scheduler
             services.AddSingleton<IScheduledTask, RefreshDataTask>();
+            services.AddSingleton<IScheduledTask, TimeFlagsTask>();
             services.AddScheduler((sender, args) =>
             {
                 args.SetObserved();

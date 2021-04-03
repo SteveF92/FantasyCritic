@@ -121,5 +121,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage domainMessage);
         Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear);
         Task DeleteManagerMessage(Guid messageId);
+        Task FinishYear(SupportedYear supportedYear);
     }
 }

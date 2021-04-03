@@ -40,6 +40,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task FinishQuarter(RoyaleYearQuarter supportedQuarter)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
         {
             throw new NotImplementedException();

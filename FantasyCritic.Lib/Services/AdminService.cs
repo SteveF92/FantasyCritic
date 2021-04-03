@@ -170,6 +170,57 @@ namespace FantasyCritic.Lib.Services
             return _rdsManager.GetRecentSnapshots();
         }
 
+        public async Task SetTimeFlags()
+        {
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+
+            var now = _clock.GetCurrentInstant();
+            var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
+
+            foreach (var supportedYear in supportedYears)
+            {
+                if (supportedYear.Finished)
+                {
+                    continue;
+                }
+
+                var endDate = new LocalDate(supportedYear.Year, 12, 31);
+                if (nycNow.Date > endDate)
+                {
+                    _logger.LogInformation($"Automatically setting {supportedYear} as finished because date/time is: {nycNow}");
+                    await _interLeagueService.FinishYear(supportedYear);
+                }
+            }
+
+            var supportedQuarters = await _royaleService.GetYearQuarters();
+            foreach (var supportedQuarter in supportedQuarters)
+            {
+                if (supportedQuarter.Finished)
+                {
+                    continue;
+                }
+
+                var endDate = supportedQuarter.YearQuarter.LastDateOfQuarter;
+                if (nycNow.Date > endDate)
+                {
+                    _logger.LogInformation($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
+                    await _royaleService.FinishQuarter(supportedQuarter);
+                }
+            }
+
+            var dayOfWeek = nycNow.DayOfWeek;
+            var timeOfDay = nycNow.TimeOfDay;
+            var earliestTimeToSet = new LocalTime(19, 59);
+            var latestTimeToSet = new LocalTime(20, 59);
+            if (dayOfWeek == IsoDayOfWeek.Saturday && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet)
+            {
+                _logger.LogInformation($"Automatically setting bid processing mode = true because date/time is: {nycNow}");
+                await _interLeagueService.SetBidProcessingMode(true);
+                _logger.LogInformation("Snapshotting database");
+                await _rdsManager.SnapshotRDS(now);
+            }
+        }
+
         private async Task UpdateSystemWideValues()
         {
             List<PublisherGame> allGamesWithPoints = new List<PublisherGame>();
