@@ -32,7 +32,7 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly FantasyCriticUserManager _userManager;
         private readonly RoyaleService _royaleService;
         private readonly InterLeagueService _interLeagueService;
-        private readonly SemaphoreSlim _royaleSemaphore;
+        private static readonly SemaphoreSlim _royaleSemaphore = new SemaphoreSlim(1, 1);
 
         public RoyaleController(IClock clock, ILogger<RoyaleController> logger, FantasyCriticUserManager userManager, RoyaleService royaleService, InterLeagueService interLeagueService)
         {
@@ -41,7 +41,6 @@ namespace FantasyCritic.Web.Controllers.API
             _userManager = userManager;
             _royaleService = royaleService;
             _interLeagueService = interLeagueService;
-            _royaleSemaphore = new SemaphoreSlim(1, 1);
         }
 
         [AllowAnonymous]
