@@ -6,6 +6,7 @@ Write-Output "Deleting files"
 while((Get-ChildItem "C:\FantasyCritic\Binary\" | Measure-Object).Count -gt 0)
 {
     Get-ChildItem C:\FantasyCritic\Binary\ -Recurse | Remove-Item -Recurse -Force
+    Start-Sleep -Seconds 5
 }
 $numFiles = (Get-ChildItem "C:\FantasyCritic\Binary\" | Measure-Object).Count
 Write-Output "Delete done, $numFiles in folder."
