@@ -303,7 +303,8 @@ namespace FantasyCritic.Web.Controllers.API
                     return BadRequest();
                 }
 
-                var setAdvertisingMoneyResult = await _royaleService.SetAdvertisingMoney(publisher.Value, publisherGame, request.AdvertisingMoney);
+                var truncatedRequest = request.AdvertisingMoney.TruncateToPrecision(2);
+                var setAdvertisingMoneyResult = await _royaleService.SetAdvertisingMoney(publisher.Value, publisherGame, truncatedRequest);
                 if (setAdvertisingMoneyResult.IsFailure)
                 {
                     return BadRequest(setAdvertisingMoneyResult.Error);
