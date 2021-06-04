@@ -10,10 +10,10 @@
         </tr>
       </thead>
       <tbody>
-        <playerGameRow v-for="game in standardGames" :game="game"></playerGameRow>
-        <blankPlayerGameRow v-for="blankSpace in standardFiller"></blankPlayerGameRow>
-        <playerGameRow v-for="game in counterPicks" :game="game"></playerGameRow>
-        <blankPlayerGameRow v-for="blankSpace in counterPickFiller"></blankPlayerGameRow>
+        <playerGameRow v-for="game in standardGames" :game="game" v-bind:key="game.publisherGameID"></playerGameRow>
+        <blankPlayerGameRow v-for="blankSpace in standardFiller" v-bind:key="blankSpace"></blankPlayerGameRow>
+        <playerGameRow v-for="game in counterPicks" :game="game" v-bind:key="game.publisherGameID"></playerGameRow>
+        <blankPlayerGameRow v-for="blankSpace in counterPickFiller" v-bind:key="blankSpace"></blankPlayerGameRow>
         <tr>
           <td id="total-description">
             <span id="total-description-text">

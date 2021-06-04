@@ -4,6 +4,7 @@
       <div v-show="royaleYearQuarterOptions">
         <b-dropdown text="Quarters" class="quarter-select">
           <b-dropdown-item v-for="royaleYearQuarterOption in royaleYearQuarterOptions"
+                           v-bind:key="royaleYearQuarterOption.year + '-' + royaleYearQuarterOption.quarter"
                            :active="royaleYearQuarterOption.year === year && royaleYearQuarterOption.quarter === quarter"
                            :to="{ name: 'criticsRoyale', params: {year: royaleYearQuarterOption.year, quarter: royaleYearQuarterOption.quarter }}">
           {{royaleYearQuarterOption.year}}-Q{{royaleYearQuarterOption.quarter}}
