@@ -122,12 +122,12 @@ namespace FantasyCritic.Web
             services.AddScoped<AdminService>();
 
             //Add scheduled tasks & scheduler
-            //services.AddSingleton<IScheduledTask, RefreshDataTask>();
-            //services.AddSingleton<IScheduledTask, TimeFlagsTask>();
-            //services.AddScheduler((sender, args) =>
-            //{
-            //    args.SetObserved();
-            //});
+            services.AddSingleton<IScheduledTask, RefreshDataTask>();
+            services.AddSingleton<IScheduledTask, TimeFlagsTask>();
+            services.AddScheduler((sender, args) =>
+            {
+                args.SetObserved();
+            });
 
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
             {
