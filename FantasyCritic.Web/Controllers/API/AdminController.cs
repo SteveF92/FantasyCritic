@@ -66,6 +66,14 @@ namespace FantasyCritic.Web.Controllers.API
                 .Where(x => viewModel.GetRequestedTags().Contains(x.Name))
                 .ToList();
 
+            if (!tags.Any())
+            {
+                tags = new List<MasterGameTag>()
+                {
+                    possibleTags.Single(x => x.Name == "NewGame")
+                };
+            }
+
             MasterGame masterGame = viewModel.ToDomain(instant, tags);
             await _interLeagueService.CreateMasterGame(masterGame);
             var vm = new MasterGameViewModel(masterGame, _clock);
