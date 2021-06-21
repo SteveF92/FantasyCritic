@@ -47,14 +47,14 @@ namespace FantasyCritic.MySQL
 
             if (transaction == null)
             {
-                using (var internalTransaction = conn.BeginTransaction())
+                using (var internalTransaction = await conn.BeginTransactionAsync())
                 {
                     foreach (var batch in batches)
                     {
                         await InsertBatchAsync(conn, batch, tableName, internalTransaction, includedProperties);
                     }
 
-                    internalTransaction.Commit();
+                    await internalTransaction.CommitAsync();
                 }
             }
             else

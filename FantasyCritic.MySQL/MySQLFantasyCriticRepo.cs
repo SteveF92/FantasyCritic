@@ -507,7 +507,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(gameDeleteSQL, paramsObject, transaction);
                     await connection.ExecuteAsync(draftResetSQL, paramsObject, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -578,7 +578,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(createLeagueYearSQL, leagueYearEntity, transaction);
                     await connection.BulkInsertAsync(tagEntities, "tbl_league_yearusestag", 500, transaction);
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
 
@@ -606,7 +606,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(editLeagueYearSQL, leagueYearEntity, transaction);
                     await connection.ExecuteAsync(deleteTagsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
                     await connection.BulkInsertAsync(tagEntities, "tbl_league_yearusestag", 500, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -629,7 +629,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(newLeagueYearSQL, leagueYearEntity, transaction);
                     await connection.BulkInsertAsync(tagEntities, "tbl_league_yearusestag", 500, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -718,7 +718,7 @@ namespace FantasyCritic.MySQL
                         }
                     }
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -1041,7 +1041,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(deletePublisherDropsSQL, deleteObject, transaction);
                     await connection.ExecuteAsync(deleteSQL, deleteObject, transaction);
                     await connection.ExecuteAsync(fixDraftOrderSQL, setDraftOrderEntities);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -1064,7 +1064,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(deleteActiveUserSQL, userDeleteObject, transaction);
                     await connection.ExecuteAsync(deleteUserSQL, userDeleteObject, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -1494,7 +1494,7 @@ namespace FantasyCritic.MySQL
                             }, transaction);
                     }
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -1572,7 +1572,7 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await DeleteEligibilityOverride(leagueYear, masterGame, connection, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -1597,7 +1597,7 @@ namespace FantasyCritic.MySQL
                 {
                     await DeleteEligibilityOverride(leagueYear, masterGame, connection, transaction);
                     await connection.ExecuteAsync(sql, insertObject, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -1690,7 +1690,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(sql, parameters);
                     await AddLeagueActions(new[] {leagueAction}, connection, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -1785,7 +1785,7 @@ namespace FantasyCritic.MySQL
                     tasks.Add(AddPublisherGames(bidProcessingResults.PublisherGames, connection, transaction));
 
                     await Task.WhenAll(tasks);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }   
         }
@@ -1805,7 +1805,7 @@ namespace FantasyCritic.MySQL
                     tasks.Add(DeletePublisherGames(dropProcessingResults.PublisherGames, connection, transaction));
 
                     await Task.WhenAll(tasks);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -1823,7 +1823,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(deleteSQL);
                     await connection.ExecuteAsync(insertSQL, entity);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -1859,7 +1859,7 @@ namespace FantasyCritic.MySQL
                             }, transaction);
                     }
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -2006,7 +2006,7 @@ namespace FantasyCritic.MySQL
                         };
                         await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);
                     }
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -2105,7 +2105,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(deleteTagsSQL, transaction);
                     await connection.BulkInsertAsync(entities, "tbl_league_yearusestag", 500, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
