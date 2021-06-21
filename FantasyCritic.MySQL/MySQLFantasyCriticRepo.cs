@@ -1752,7 +1752,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task<bool> LeagueHasBeenStarted(Guid leagueID)
+        public async Task<bool> LeagueHasBeenStarted(Guid leagueID)
         {
             var selectObject = new
             {
@@ -1761,7 +1761,8 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteScalarAsync<bool>(
+                await connection.OpenAsync();
+                return await connection.ExecuteScalarAsync<bool>(
                     "select count(1) from vw_league " +
                     "join tbl_league_year on (vw_league.LeagueID = tbl_league_year.LeagueID) " +
                     "where PlayStatus <> 'NotStartedDraft' and vw_league.LeagueID = @leagueID and IsDeleted = 0;",

@@ -13,6 +13,7 @@ using VueCliMiddleware;
 using Microsoft.AspNetCore.SpaServices;
 using System.Net;
 using System.Text;
+using Dapper.NodaTime;
 using FantasyCritic.FakeRepo;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
@@ -205,6 +206,8 @@ namespace FantasyCritic.Web
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            DapperNodaTimeSetup.Register();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
