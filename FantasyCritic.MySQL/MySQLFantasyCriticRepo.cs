@@ -16,7 +16,7 @@ using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL.Entities;
 using MoreLinq;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using NLog;
 using NLog.Targets.Wrappers;
 using NodaTime;

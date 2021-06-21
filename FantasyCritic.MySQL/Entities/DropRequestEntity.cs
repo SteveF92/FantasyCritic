@@ -20,7 +20,7 @@ namespace FantasyCritic.MySQL.Entities
             DropRequestID = domain.DropRequestID;
             PublisherID = domain.Publisher.PublisherID;
             MasterGameID = domain.MasterGame.MasterGameID;
-            Timestamp = domain.Timestamp.ToDateTimeUtc();
+            Timestamp = domain.Timestamp;
             Successful = domain.Successful;
         }
 
@@ -29,20 +29,19 @@ namespace FantasyCritic.MySQL.Entities
             DropRequestID = domain.DropRequestID;
             PublisherID = domain.Publisher.PublisherID;
             MasterGameID = domain.MasterGame.MasterGameID;
-            Timestamp = domain.Timestamp.ToDateTimeUtc();
+            Timestamp = domain.Timestamp;
             Successful = successful;
         }
 
         public Guid DropRequestID { get; set; }
         public Guid PublisherID { get; set; }
         public Guid MasterGameID { get; set; }
-        public DateTime Timestamp { get; set; }
+        public Instant Timestamp { get; set; }
         public bool? Successful { get; set; }
 
         public DropRequest ToDomain(Publisher publisher, MasterGame masterGame, LeagueYear leagueYear)
         {
-            Instant instant = LocalDateTime.FromDateTime(Timestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            return new DropRequest(DropRequestID, publisher, leagueYear, masterGame, instant, Successful);
+            return new DropRequest(DropRequestID, publisher, leagueYear, masterGame, Timestamp, Successful);
         }
     }
 }

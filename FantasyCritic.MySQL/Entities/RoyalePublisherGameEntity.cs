@@ -8,7 +8,6 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
-using Org.BouncyCastle.Asn1.X509;
 
 namespace FantasyCritic.MySQL.Entities
 {
@@ -23,7 +22,7 @@ namespace FantasyCritic.MySQL.Entities
         {
             PublisherID = domainPublisherGame.PublisherID;
             MasterGameID = domainPublisherGame.MasterGame.MasterGame.MasterGameID;
-            Timestamp = domainPublisherGame.Timestamp.ToDateTimeUtc();
+            Timestamp = domainPublisherGame.Timestamp;
             AmountSpent = domainPublisherGame.AmountSpent;
             AdvertisingMoney = domainPublisherGame.AdvertisingMoney;
             FantasyPoints = domainPublisherGame.FantasyPoints;
@@ -31,20 +30,14 @@ namespace FantasyCritic.MySQL.Entities
 
         public Guid PublisherID { get; set; }
         public Guid MasterGameID { get; set; }
-        public DateTime Timestamp { get; set; }
+        public Instant Timestamp { get; set; }
         public decimal AmountSpent { get; set; }
         public decimal AdvertisingMoney { get; set; }
         public decimal? FantasyPoints { get; set; }
 
         public RoyalePublisherGame ToDomain(RoyaleYearQuarter yearQuarter, MasterGameYear masterGameYear)
         {
-            if (Timestamp.Kind != DateTimeKind.Utc)
-            {
-                LocalDateTime localDateTime = LocalDateTime.FromDateTime(Timestamp);
-                Instant instant = localDateTime.InZoneStrictly(TimeExtensions.EasternTimeZone).ToInstant();
-                return new RoyalePublisherGame(PublisherID, yearQuarter, masterGameYear, instant, AmountSpent, AdvertisingMoney, FantasyPoints);
-            }
-            return new RoyalePublisherGame(PublisherID, yearQuarter, masterGameYear, Instant.FromDateTimeUtc(Timestamp), AmountSpent, AdvertisingMoney, FantasyPoints);
+            return new RoyalePublisherGame(PublisherID, yearQuarter, masterGameYear, Timestamp, AmountSpent, AdvertisingMoney, FantasyPoints);
         }
     }
 }

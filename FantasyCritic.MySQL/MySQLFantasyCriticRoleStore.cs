@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using FantasyCritic.MySQL.Entities;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace FantasyCritic.MySQL
 {

@@ -20,13 +20,13 @@ namespace FantasyCritic.MySQL.Entities
         {
             RequestID = domain.RequestID;
             UserID = domain.User.UserID;
-            RequestTimestamp = domain.RequestTimestamp.ToDateTimeUtc();
+            RequestTimestamp = domain.RequestTimestamp;
             RequestNote = domain.RequestNote;
             MasterGameID = domain.MasterGame.MasterGameID;
             OpenCriticID = domain.OpenCriticID;
 
             Answered = domain.Answered;
-            ResponseTimestamp = domain.ResponseTimestamp?.ToDateTimeUtc();
+            ResponseTimestamp = domain.ResponseTimestamp;
             ResponseNote = domain.ResponseNote;
 
             Hidden = domain.Hidden;
@@ -35,28 +35,21 @@ namespace FantasyCritic.MySQL.Entities
         //Request
         public Guid RequestID { get; set; }
         public Guid UserID { get; set; }
-        public DateTime RequestTimestamp { get; set; }
+        public Instant RequestTimestamp { get; set; }
         public string RequestNote { get; set; }
         public Guid MasterGameID { get; set; }
         public int? OpenCriticID { get; set; }
 
         //Response
         public bool Answered { get; set; }
-        public DateTime? ResponseTimestamp { get; set; }
+        public Instant? ResponseTimestamp { get; set; }
         public string ResponseNote { get; set; }
         
         public bool Hidden { get; set; }
 
         public MasterGameChangeRequest ToDomain(FantasyCriticUser user, MasterGame masterGame)
         {
-            Instant requestTimestamp = LocalDateTime.FromDateTime(RequestTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            Instant? responseTimestamp = null;
-            if (ResponseTimestamp.HasValue)
-            {
-                responseTimestamp = LocalDateTime.FromDateTime(ResponseTimestamp.Value).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            }
-
-            return new MasterGameChangeRequest(RequestID, user, requestTimestamp, RequestNote, masterGame, OpenCriticID, Answered, responseTimestamp, ResponseNote, Hidden);
+            return new MasterGameChangeRequest(RequestID, user, RequestTimestamp, RequestNote, masterGame, OpenCriticID, Answered, ResponseTimestamp, ResponseNote, Hidden);
         }
     }
 }

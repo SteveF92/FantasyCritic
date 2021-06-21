@@ -10,7 +10,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.MySQL.Entities;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using NodaTime;
 
 namespace FantasyCritic.MySQL

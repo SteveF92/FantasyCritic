@@ -22,7 +22,7 @@ namespace FantasyCritic.MySQL.Entities
             Year = leagueYear.Year;
             MessageText = domainMessage.MessageText;
             IsPublic = domainMessage.IsPublic;
-            Timestamp = domainMessage.Timestamp.ToDateTimeUtc();
+            Timestamp = domainMessage.Timestamp;
         }
 
         public Guid MessageID { get; set; }
@@ -30,11 +30,11 @@ namespace FantasyCritic.MySQL.Entities
         public int Year { get; set; }
         public string MessageText { get; set; }
         public bool IsPublic { get; set; }
-        public DateTime Timestamp { get; set; }
+        public Instant Timestamp { get; set; }
 
         public ManagerMessage ToDomain()
         {
-            return new ManagerMessage(MessageID, MessageText, IsPublic, Instant.FromDateTimeUtc(Timestamp));
+            return new ManagerMessage(MessageID, MessageText, IsPublic, Timestamp);
         }
     }
 }

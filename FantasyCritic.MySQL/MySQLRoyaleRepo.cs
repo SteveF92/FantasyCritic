@@ -14,7 +14,7 @@ using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
 using MoreLinq.Extensions;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace FantasyCritic.MySQL
 {

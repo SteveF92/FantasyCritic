@@ -20,17 +20,17 @@ namespace FantasyCritic.MySQL.Entities
         {
             RequestID = domain.RequestID;
             UserID = domain.User.UserID;
-            RequestTimestamp = domain.RequestTimestamp.ToDateTimeUtc();
+            RequestTimestamp = domain.RequestTimestamp;
             RequestNote = domain.RequestNote;
 
             GameName = domain.GameName;
             SteamID = domain.SteamID;
             OpenCriticID = domain.OpenCriticID;
-            ReleaseDate = domain.ReleaseDate?.ToDateTimeUnspecified();
+            ReleaseDate = domain.ReleaseDate;
             EstimatedReleaseDate = domain.EstimatedReleaseDate;
 
             Answered = domain.Answered;
-            ResponseTimestamp = domain.ResponseTimestamp?.ToDateTimeUtc();
+            ResponseTimestamp = domain.ResponseTimestamp;
             ResponseNote = domain.ResponseNote;
 
             if (domain.MasterGame.HasValue)
@@ -44,19 +44,19 @@ namespace FantasyCritic.MySQL.Entities
         //Request
         public Guid RequestID { get; set; }
         public Guid UserID { get; set; }
-        public DateTime RequestTimestamp { get; set; }
+        public Instant RequestTimestamp { get; set; }
         public string RequestNote { get; set; }
 
         //Game Details
         public string GameName { get; set; }
         public int? SteamID { get; set; }
         public int? OpenCriticID { get; set; }
-        public DateTime? ReleaseDate { get; set; }
+        public LocalDate? ReleaseDate { get; set; }
         public string EstimatedReleaseDate { get; set; }
 
         //Response
         public bool Answered { get; set; }
-        public DateTime? ResponseTimestamp { get; set; }
+        public Instant? ResponseTimestamp { get; set; }
         public string ResponseNote { get; set; }
         public Guid? MasterGameID { get; set; }
         
@@ -64,21 +64,8 @@ namespace FantasyCritic.MySQL.Entities
 
         public MasterGameRequest ToDomain(FantasyCriticUser user, Maybe<MasterGame> masterGame)
         {
-            Instant requestTimestamp = LocalDateTime.FromDateTime(RequestTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            Instant? responseTimestamp = null;
-            if (ResponseTimestamp.HasValue)
-            {
-                responseTimestamp = LocalDateTime.FromDateTime(ResponseTimestamp.Value).InZoneStrictly(DateTimeZone.Utc).ToInstant();
-            }
-
-            LocalDate? releaseDate = null;
-            if (ReleaseDate.HasValue)
-            {
-                releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
-            }
-
-            return new MasterGameRequest(RequestID, user, requestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, releaseDate, EstimatedReleaseDate,
-                Answered, responseTimestamp, ResponseNote, masterGame, Hidden);
+            return new MasterGameRequest(RequestID, user, RequestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, ReleaseDate, EstimatedReleaseDate,
+                Answered, ResponseTimestamp, ResponseNote, masterGame, Hidden);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
 {
@@ -22,6 +23,6 @@ namespace FantasyCritic.MySQL.Entities
 
         public Guid MasterGameID { get; set; }
         public string TagName { get; set; }
-        public DateTime TimeAdded { get; set; }
+        public Instant TimeAdded { get; set; }
     }
 }

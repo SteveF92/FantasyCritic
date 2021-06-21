@@ -53,8 +53,8 @@ namespace FantasyCritic.MySQL.Entities
         public string PickupSystem { get; set; }
         public string ScoringSystem { get; set; }
         public string PlayStatus { get; set; }
-        public DateTime Timestamp { get; set; }
-        public DateTime? DraftStartedTimestamp { get; set; }
+        public Instant Timestamp { get; set; }
+        public Instant? DraftStartedTimestamp { get; set; }
 
         public LeagueYear ToDomain(League league, IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<LeagueTagStatus> leagueTags)
         {
@@ -65,13 +65,7 @@ namespace FantasyCritic.MySQL.Entities
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
                 DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
 
-            Instant? draftStartedTimestamp = null;
-            if (DraftStartedTimestamp.HasValue)
-            {
-                draftStartedTimestamp = Instant.FromDateTimeUtc(DraftStartedTimestamp.Value);
-            }
-
-            return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides, draftStartedTimestamp);
+            return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides, DraftStartedTimestamp);
         }
     }
 }

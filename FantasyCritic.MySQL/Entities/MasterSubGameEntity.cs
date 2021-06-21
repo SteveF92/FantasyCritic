@@ -14,28 +14,16 @@ namespace FantasyCritic.MySQL.Entities
         public Guid MasterGameID { get; set; }
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
-        public DateTime MinimumReleaseDate { get; set; }
-        public DateTime? MaximumReleaseDate { get; set; }
-        public DateTime? ReleaseDate { get; set; }
+        public LocalDate MinimumReleaseDate { get; set; }
+        public LocalDate? MaximumReleaseDate { get; set; }
+        public LocalDate? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
 
         public MasterSubGame ToDomain()
         {
-            LocalDate? releaseDate = null;
-            if (ReleaseDate.HasValue)
-            {
-                releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
-            }
-
-            LocalDate maximumReleaseDate = LocalDate.MaxIsoValue;
-            if (MaximumReleaseDate.HasValue)
-            {
-                maximumReleaseDate = LocalDate.FromDateTime(MaximumReleaseDate.Value);
-            }
-
-            return new MasterSubGame(MasterSubGameID, MasterGameID, GameName, EstimatedReleaseDate, 
-                LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, releaseDate, OpenCriticID, CriticScore);
+            return new MasterSubGame(MasterSubGameID, MasterGameID, GameName, EstimatedReleaseDate,
+                MinimumReleaseDate, MaximumReleaseDate, ReleaseDate, OpenCriticID, CriticScore);
         }
     }
 }

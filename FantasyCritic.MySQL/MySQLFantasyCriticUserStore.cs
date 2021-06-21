@@ -6,7 +6,7 @@ using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Dapper;
 using FantasyCritic.MySQL.Entities;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using System;
 using System.Linq;
 using NodaTime;

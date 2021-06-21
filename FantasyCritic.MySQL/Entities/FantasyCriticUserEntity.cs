@@ -24,7 +24,7 @@ namespace FantasyCritic.MySQL.Entities
             EmailConfirmed = user.EmailConfirmed;
             SecurityStamp = user.SecurityStamp;
             PasswordHash = user.PasswordHash;
-            LastChangedCredentials = user.LastChangedCredentials.ToDateTimeUtc();
+            LastChangedCredentials = user.LastChangedCredentials;
             IsDeleted = user.IsDeleted;
         }
 
@@ -36,14 +36,13 @@ namespace FantasyCritic.MySQL.Entities
         public bool EmailConfirmed { get; set; }
         public string SecurityStamp { get; set; }
         public string PasswordHash { get; set; }
-        public DateTime LastChangedCredentials { get; set; }
+        public Instant LastChangedCredentials { get; set; }
         public bool IsDeleted { get; set; }
 
         public FantasyCriticUser ToDomain()
         {
-            Instant instant = LocalDateTime.FromDateTime(LastChangedCredentials).InZoneStrictly(DateTimeZone.Utc).ToInstant();
             FantasyCriticUser domain = new FantasyCriticUser(UserID, DisplayName, DisplayNumber, EmailAddress, NormalizedEmailAddress, EmailConfirmed, 
-                SecurityStamp, PasswordHash, instant, IsDeleted);
+                SecurityStamp, PasswordHash, LastChangedCredentials, IsDeleted);
             return domain;
         }
     }
