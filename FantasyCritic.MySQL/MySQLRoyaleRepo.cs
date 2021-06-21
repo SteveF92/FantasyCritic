@@ -151,7 +151,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(
                         "update tbl_royale_publishergame SET FantasyPoints = @FantasyPoints where PublisherID = @PublisherID AND MasterGameID = @MasterGameID;",
                         updateEntities, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -196,7 +196,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(gameAddSQL, entity, transaction);
                     await connection.ExecuteAsync(budgetDescreaseSQL,
                         new {amountSpent = game.AmountSpent, publisherID = game.PublisherID}, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -261,7 +261,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(gameRemoveSQL, new { masterGameID = publisherGame.MasterGame.MasterGame.MasterGameID, publisherID = publisherGame.PublisherID }, transaction);
                     await connection.ExecuteAsync(budgetIncreaseSQL, new { amountGained, publisherID = publisherGame.PublisherID }, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -280,7 +280,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(advertisingMoneySetSQL, new { advertisingMoney, publisherID = publisherGame.PublisherID, masterGameID }, transaction);
                     await connection.ExecuteAsync(budgetDescreaseSQL, new { amountToSpend, publisherID = publisherGame.PublisherID }, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }

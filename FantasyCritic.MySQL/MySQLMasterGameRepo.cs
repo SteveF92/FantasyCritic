@@ -543,9 +543,9 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync(sql);
-                    await connection.ExecuteAsync(sql2, new { tomorrow = tomorrow.ToDateTimeUnspecified() });
-                    transaction.Commit();
+                    await connection.ExecuteAsync(sql, transaction);
+                    await connection.ExecuteAsync(sql2, new { tomorrow = tomorrow.ToDateTimeUnspecified() }, transaction);
+                    await transaction.CommitAsync();
                 }
             }
         }

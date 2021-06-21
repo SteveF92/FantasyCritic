@@ -160,7 +160,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(
                         "update tbl_league_publishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;",
                         updateEntities, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -222,7 +222,7 @@ namespace FantasyCritic.MySQL
                         await connection.ExecuteAsync(
                             "update tbl_league_pickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority",
                             new {publisherID = pickupBid.Publisher.PublisherID, oldPriority = pickupBid.Priority}, transaction);
-                        transaction.Commit();
+                        await transaction.CommitAsync();
                     }
                 }
             }
@@ -354,7 +354,7 @@ namespace FantasyCritic.MySQL
                     string alterRankSQL = "update tbl_league_pickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority";
                     await connection.ExecuteAsync(deleteSQL, new { queuedGame.Publisher.PublisherID, queuedGame.MasterGame.MasterGameID }, transaction);
                     await connection.ExecuteAsync(alterRankSQL, new { publisherID = queuedGame.Publisher.PublisherID, oldPriority = queuedGame.Rank }, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
@@ -392,7 +392,7 @@ namespace FantasyCritic.MySQL
                             }, transaction);
                     }
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }

@@ -416,7 +416,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(deleteUnprocessedDrops, deleteObject, transaction);
                     await connection.ExecuteAsync(deleteUnprocessedBids, deleteObject, transaction);
                     await connection.ExecuteAsync(updateUserAccount, deleteObject, transaction);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
             }
         }
