@@ -1821,8 +1821,8 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync(deleteSQL);
-                    await connection.ExecuteAsync(insertSQL, entity);
+                    await connection.ExecuteAsync(deleteSQL, transaction: transaction);
+                    await connection.ExecuteAsync(insertSQL, entity, transaction);
                     await transaction.CommitAsync();
                 }
             }

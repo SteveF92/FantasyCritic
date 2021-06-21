@@ -21,17 +21,17 @@ namespace FantasyCritic.MySQL.Entities
             Year = masterGameStats.Year;
             GameName = masterGameStats.MasterGame.GameName;
             EstimatedReleaseDate = masterGameStats.MasterGame.EstimatedReleaseDate;
-            MinimumReleaseDate = masterGameStats.MasterGame.MinimumReleaseDate;
-            MaximumReleaseDate = masterGameStats.MasterGame.MaximumReleaseDate;
-            EarlyAccessReleaseDate = masterGameStats.MasterGame.EarlyAccessReleaseDate;
-            InternationalReleaseDate = masterGameStats.MasterGame.InternationalReleaseDate;
-            ReleaseDate = masterGameStats.MasterGame.ReleaseDate;
+            MinimumReleaseDate = masterGameStats.MasterGame.MinimumReleaseDate.ToDateTimeUnspecified();
+            MaximumReleaseDate = masterGameStats.MasterGame.MaximumReleaseDate?.ToDateTimeUnspecified();
+            EarlyAccessReleaseDate = masterGameStats.MasterGame.EarlyAccessReleaseDate?.ToDateTimeUnspecified();
+            InternationalReleaseDate = masterGameStats.MasterGame.InternationalReleaseDate?.ToDateTimeUnspecified();
+            ReleaseDate = masterGameStats.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGameStats.MasterGame.OpenCriticID;
             CriticScore = masterGameStats.MasterGame.CriticScore;
             Notes = masterGameStats.MasterGame.Notes;
             BoxartFileName = masterGameStats.MasterGame.BoxartFileName;
             EligibilityChanged = masterGameStats.MasterGame.EligibilityChanged;
-            FirstCriticScoreTimestamp = masterGameStats.MasterGame.FirstCriticScoreTimestamp;
+            FirstCriticScoreTimestamp = masterGameStats.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
 
             PercentStandardGame = masterGameStats.PercentStandardGame;
             PercentCounterPick = masterGameStats.PercentCounterPick;
@@ -45,24 +45,24 @@ namespace FantasyCritic.MySQL.Entities
             HypeFactor = masterGameStats.HypeFactor;
             DateAdjustedHypeFactor = masterGameStats.DateAdjustedHypeFactor;
             LinearRegressionHypeFactor = masterGameStats.LinearRegressionHypeFactor;
-            AddedTimestamp = masterGameStats.MasterGame.AddedTimestamp;
+            AddedTimestamp = masterGameStats.MasterGame.AddedTimestamp.ToDateTimeUtc();
         }
 
         public Guid MasterGameID { get; set; }
         public int Year { get; set; }
         public string GameName { get; set; }
         public string EstimatedReleaseDate { get; set; }
-        public LocalDate MinimumReleaseDate { get; set; }
-        public LocalDate? MaximumReleaseDate { get; set; }
-        public LocalDate? EarlyAccessReleaseDate { get; set; }
-        public LocalDate? InternationalReleaseDate { get; set; }
-        public LocalDate? ReleaseDate { get; set; }
+        public DateTime MinimumReleaseDate { get; set; }
+        public DateTime? MaximumReleaseDate { get; set; }
+        public DateTime? EarlyAccessReleaseDate { get; set; }
+        public DateTime? InternationalReleaseDate { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public decimal? CriticScore { get; set; }
         public string Notes { get; set; }
         public string BoxartFileName { get; set; }
         public bool EligibilityChanged { get; set; }
-        public Instant? FirstCriticScoreTimestamp { get; set; }
+        public DateTimeOffset? FirstCriticScoreTimestamp { get; set; }
         public double PercentStandardGame { get; set; }
         public double PercentCounterPick { get; set; }
         public double EligiblePercentStandardGame { get; set; }
@@ -75,14 +75,46 @@ namespace FantasyCritic.MySQL.Entities
         public double HypeFactor { get; set; }
         public double DateAdjustedHypeFactor { get; set; }
         public double LinearRegressionHypeFactor { get; set; }
-        public Instant AddedTimestamp { get; set; }
+        public DateTime AddedTimestamp { get; set; }
 
         public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, int year, IEnumerable<MasterGameTag> tags)
         {
-            var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
-                ReleaseDate, OpenCriticID, CriticScore, Notes, BoxartFileName, FirstCriticScoreTimestamp, false, false, EligibilityChanged, AddedTimestamp, subGames, tags);
+            LocalDate? releaseDate = null;
+            if (ReleaseDate.HasValue)
+            {
+                releaseDate = LocalDate.FromDateTime(ReleaseDate.Value);
+            }
 
-            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick, 
+            LocalDate? maximumReleaseDate = null;
+            if (MaximumReleaseDate.HasValue)
+            {
+                maximumReleaseDate = LocalDate.FromDateTime(MaximumReleaseDate.Value);
+            }
+
+            LocalDate? earlyAccessReleaseDate = null;
+            if (EarlyAccessReleaseDate.HasValue)
+            {
+                earlyAccessReleaseDate = LocalDate.FromDateTime(EarlyAccessReleaseDate.Value);
+            }
+
+            LocalDate? internationalReleaseDate = null;
+            if (InternationalReleaseDate.HasValue)
+            {
+                internationalReleaseDate = LocalDate.FromDateTime(InternationalReleaseDate.Value);
+            }
+
+            Instant? firstCriticScoreTimestamp = null;
+            if (FirstCriticScoreTimestamp.HasValue)
+            {
+                firstCriticScoreTimestamp = Instant.FromDateTimeOffset(FirstCriticScoreTimestamp.Value);
+            }
+
+            var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
+
+            var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate,
+                releaseDate, OpenCriticID, CriticScore, Notes, BoxartFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames, tags);
+
+            return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
                 NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);
         }
     }
