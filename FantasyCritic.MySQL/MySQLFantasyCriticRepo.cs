@@ -1777,14 +1777,12 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    List<Task> tasks = new List<Task>();
-                    tasks.Add(MarkBidStatus(bidProcessingResults.SuccessBids, true, connection, transaction));
-                    tasks.Add(MarkBidStatus(bidProcessingResults.FailedBids, false, connection, transaction));
-                    tasks.Add(AddLeagueActions(bidProcessingResults.LeagueActions, connection, transaction));
-                    tasks.Add(UpdatePublisherBudgetsAndDroppedGames(bidProcessingResults.UpdatedPublishers, connection, transaction));
-                    tasks.Add(AddPublisherGames(bidProcessingResults.PublisherGames, connection, transaction));
+                    await MarkBidStatus(bidProcessingResults.SuccessBids, true, connection, transaction);
+                    await MarkBidStatus(bidProcessingResults.FailedBids, false, connection, transaction);
+                    await AddLeagueActions(bidProcessingResults.LeagueActions, connection, transaction);
+                    await UpdatePublisherBudgetsAndDroppedGames(bidProcessingResults.UpdatedPublishers, connection, transaction);
+                    await AddPublisherGames(bidProcessingResults.PublisherGames, connection, transaction);
 
-                    await Task.WhenAll(tasks);
                     await transaction.CommitAsync();
                 }
             }   
@@ -1797,14 +1795,12 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    List<Task> tasks = new List<Task>();
-                    tasks.Add(MarkDropStatus(dropProcessingResults.SuccessDrops, true, connection, transaction));
-                    tasks.Add(MarkDropStatus(dropProcessingResults.FailedDrops, false, connection, transaction));
-                    tasks.Add(AddLeagueActions(dropProcessingResults.LeagueActions, connection, transaction));
-                    tasks.Add(UpdatePublisherBudgetsAndDroppedGames(dropProcessingResults.PublishersToUpdate, connection, transaction));
-                    tasks.Add(DeletePublisherGames(dropProcessingResults.PublisherGames, connection, transaction));
+                    await MarkDropStatus(dropProcessingResults.SuccessDrops, true, connection, transaction);
+                    await MarkDropStatus(dropProcessingResults.FailedDrops, false, connection, transaction);
+                    await AddLeagueActions(dropProcessingResults.LeagueActions, connection, transaction);
+                    await UpdatePublisherBudgetsAndDroppedGames(dropProcessingResults.PublishersToUpdate, connection, transaction);
+                    await DeletePublisherGames(dropProcessingResults.PublisherGames, connection, transaction);
 
-                    await Task.WhenAll(tasks);
                     await transaction.CommitAsync();
                 }
             }
