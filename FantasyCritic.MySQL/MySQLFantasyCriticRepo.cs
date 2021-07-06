@@ -576,7 +576,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(createLeagueSQL, entity, transaction);
                     await connection.ExecuteAsync(createLeagueYearSQL, leagueYearEntity, transaction);
-                    await connection.BulkInsertAsync(tagEntities, "tbl_league_yearusestag", 500, transaction);
+                    await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
 
                     await transaction.CommitAsync();
                 }
@@ -605,7 +605,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(editLeagueYearSQL, leagueYearEntity, transaction);
                     await connection.ExecuteAsync(deleteTagsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
-                    await connection.BulkInsertAsync(tagEntities, "tbl_league_yearusestag", 500, transaction);
+                    await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
                     await transaction.CommitAsync();
                 }
             }
@@ -628,7 +628,7 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync(newLeagueYearSQL, leagueYearEntity, transaction);
-                    await connection.BulkInsertAsync(tagEntities, "tbl_league_yearusestag", 500, transaction);
+                    await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
                     await transaction.CommitAsync();
                 }
             }
@@ -2100,7 +2100,7 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync(deleteTagsSQL, transaction);
-                    await connection.BulkInsertAsync(entities, "tbl_league_yearusestag", 500, transaction);
+                    await connection.BulkInsertAsync<LeagueYearTagEntity>(entities, "tbl_league_yearusestag", 500, transaction);
                     await transaction.CommitAsync();
                 }
             }

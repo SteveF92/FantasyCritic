@@ -206,7 +206,7 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync(masterGameCreateSQL, entity, transaction);
-                    await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
+                    await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
                     await transaction.CommitAsync();
                 }
             }
@@ -244,7 +244,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(editSQL, entity, transaction);
                     await connection.ExecuteAsync(deleteTagsSQL, new {masterGame.MasterGameID}, transaction);
-                    await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
+                    await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
                     await transaction.CommitAsync();
                 }
             }
@@ -561,7 +561,7 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync("delete from tbl_caching_mastergameyear where Year = @year", new {year}, transaction);
-                    await connection.BulkInsertAsync(masterGameYearEntities, "tbl_caching_mastergameyear", 500, transaction, excludeFields);
+                    await connection.BulkInsertAsync<MasterGameYearEntity>(masterGameYearEntities, "tbl_caching_mastergameyear", 500, transaction, excludeFields);
                     await transaction.CommitAsync();
                 }
             }
@@ -603,7 +603,7 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync(deleteExistingTagsSQL, transaction: transaction);
-                    await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
+                    await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
                     await transaction.CommitAsync();
                 }
             }

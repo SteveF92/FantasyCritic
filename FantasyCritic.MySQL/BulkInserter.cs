@@ -7,31 +7,17 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Extensions;
+using Faithlife.Utility.Dapper;
 
 namespace FantasyCritic.MySQL
 {
     public static class BulkInserter
     {
-        public static async Task BulkInsertAsync(this DbConnection conn, IEnumerable<object> objects, string tableName, int batchSize = 0, DbTransaction transaction = null, IEnumerable<string> excludedFields = null)
+        public static Task BulkInsertAsync<TInsertType>(this DbConnection conn, IEnumerable<TInsertType> objects, string tableName, int batchSize = 0, DbTransaction transaction = null, IEnumerable<string> excludedFields = null)
         {
-            if (!objects.Any())
-            {
-                return;
-            }
-
-            IEnumerable<IEnumerable<object>> batches;
-
-            if (batchSize > 0)
-            {
-                batches = objects.SplitList(batchSize);
-            }
-            else
-            {
-                batches = objects.SplitList(objects.Count());
-            }
-
-            Type objectType = objects.First().GetType();
-            bool allSameType = objects.All(x => x.GetType() == objectType);
+            List<TInsertType> objectList = objects.ToList();
+            Type objectType = objectList.First().GetType();
+            bool allSameType = objectList.All(x => x.GetType() == objectType);
             if (!allSameType)
             {
                 throw new Exception("All objects must be of the same type.");
@@ -45,65 +31,12 @@ namespace FantasyCritic.MySQL
             PropertyInfo[] properties = objectType.GetProperties();
             List<PropertyInfo> includedProperties = properties.Where(x => !excludedFields.Contains(x.Name)).ToList();
 
-            if (transaction == null)
-            {
-                using (var internalTransaction = await conn.BeginTransactionAsync())
-                {
-                    foreach (var batch in batches)
-                    {
-                        await InsertBatchAsync(conn, batch, tableName, internalTransaction, includedProperties);
-                    }
-
-                    await internalTransaction.CommitAsync();
-                }
-            }
-            else
-            {
-                foreach (var batch in batches)
-                {
-                    await InsertBatchAsync(conn, batch, tableName, transaction, includedProperties);
-                }
-            }
-        }
-
-        private static async Task InsertBatchAsync(DbConnection conn, IEnumerable<object> batch, string tableName, DbTransaction transaction, IEnumerable<PropertyInfo> includedProperties)
-        {
             var propertyNames = includedProperties.Select(x => x.Name);
+            var atPropertyNames = includedProperties.Select(x => $"@{x.Name}");
             string propertiesList = string.Join(", ", propertyNames);
-            string sqlCommand = $"insert into {tableName} ({propertiesList}) VALUES ";
-
-            using (DbCommand myCmd = conn.CreateCommand())
-            {
-                myCmd.CommandType = CommandType.Text;
-                myCmd.Transaction = transaction;
-
-                int counter = 0;
-                foreach (object currentObject in batch)
-                {
-                    string thisValue = "(";
-                    foreach (PropertyInfo property in includedProperties)
-                    {
-                        string parameterName = "@" + property.Name + counter;
-                        thisValue += parameterName + ", ";
-
-                        DbParameter parameter = myCmd.CreateParameter();
-                        parameter.ParameterName = parameterName;
-                        object propertyValue = property.GetValue(currentObject, null);
-                        parameter.Value = propertyValue;
-
-                        myCmd.Parameters.Add(parameter);
-                    }
-                    thisValue = thisValue.Substring(0, thisValue.Length - 2);
-                    thisValue += "), ";
-                    sqlCommand += thisValue;
-
-                    counter++;
-                }
-
-                myCmd.CommandText = sqlCommand.Substring(0, sqlCommand.Length - 2);
-                await myCmd.ExecuteNonQueryAsync();
-                myCmd.Dispose();
-            }
+            string atPropertiesList = string.Join(", ", atPropertyNames);
+            string sqlCommand = $"insert into {tableName} ({propertiesList}) VALUES ({atPropertiesList}) ...";
+            return conn.BulkInsertAsync(sqlCommand, objectList, transaction, batchSize);
         }
     }
 }
