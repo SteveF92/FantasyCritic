@@ -1688,7 +1688,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync(sql, parameters);
+                    await connection.ExecuteAsync(sql, parameters, transaction);
                     await AddLeagueActions(new[] {leagueAction}, connection, transaction);
                     await transaction.CommitAsync();
                 }
