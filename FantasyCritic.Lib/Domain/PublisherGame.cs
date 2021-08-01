@@ -6,6 +6,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
@@ -121,12 +122,60 @@ namespace FantasyCritic.Lib.Domain
                 return false;
             }
 
-            //TODO
+            var dateGameWasAcquired = Timestamp.InZone(TimeExtensions.EasternTimeZone).Date;
+            if (masterGame.EarlyAccessReleaseDate.HasValue)
+            {
+                var plannedForEarlyAccessTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "PlannedForEarlyAccess");
+                if (plannedForEarlyAccessTag is not null)
+                {
+                    if (plannedForEarlyAccessTag.Status == TagStatus.Banned)
+                    {
+                        return true;
+                    }
+                }
+
+                var currentlyInEarlyAccessTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "CurrentlyInEarlyAccess");
+                if (currentlyInEarlyAccessTag is not null)
+                {
+                    if (currentlyInEarlyAccessTag.Status == TagStatus.Banned)
+                    {
+                        var pickedUpBeforeInEarlyAccess = dateGameWasAcquired < masterGame.EarlyAccessReleaseDate.Value;
+                        if (!pickedUpBeforeInEarlyAccess)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            if (masterGame.InternationalReleaseDate.HasValue)
+            {
+                var willReleaseInternationallyFirstTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "PlannedForEarlyAccess");
+                if (willReleaseInternationallyFirstTag is not null)
+                {
+                    if (willReleaseInternationallyFirstTag.Status == TagStatus.Banned)
+                    {
+                        return true;
+                    }
+                }
+
+                var releasedInternationallyTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "CurrentlyInEarlyAccess");
+                if (releasedInternationallyTag is not null)
+                {
+                    if (releasedInternationallyTag.Status == TagStatus.Banned)
+                    {
+                        var pickedUpBeforeReleasedInternationally = dateGameWasAcquired < masterGame.InternationalReleaseDate.Value;
+                        if (!pickedUpBeforeReleasedInternationally)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
             return false;
         }
 
         public override string ToString() => GameName;
-
-        
     }
 }
