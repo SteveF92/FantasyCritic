@@ -34,7 +34,6 @@
     <ProjectReference Include="..\FantasyCritic.Mailgun\FantasyCritic.Mailgun.csproj" />
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
     <ProjectReference Include="..\FantasyCritic.RDS\FantasyCritic.RDS.csproj" />
-    <ProjectReference Include="..\FantasyCritic.SendGrid\FantasyCritic.SendGrid.csproj" />
   </ItemGroup>
 
     <PropertyGroup>

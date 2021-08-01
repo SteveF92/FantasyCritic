@@ -25,7 +25,6 @@ using FantasyCritic.Lib.Statistics;
 using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.RDS;
-using FantasyCritic.SendGrid;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication;
