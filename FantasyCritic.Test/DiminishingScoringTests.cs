@@ -7,6 +7,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using NodaTime;
 using NodaTime.Testing;
 using NodaTime.Text;
@@ -25,6 +26,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", 
@@ -34,7 +36,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(14.8095m, fantasyPoints);
         }
@@ -45,6 +47,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -54,7 +57,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(13.8095m, fantasyPoints);
         }
@@ -65,6 +68,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -74,7 +78,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(29.625m, fantasyPoints);
         }
@@ -85,6 +89,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -94,7 +99,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(-4.1441m, fantasyPoints);
         }
@@ -105,6 +110,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -114,7 +120,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(-12.5m, fantasyPoints);
         }
@@ -125,6 +131,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -134,7 +141,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(-16.25m, fantasyPoints);
         }
@@ -145,6 +152,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -154,7 +162,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(-18.125m, fantasyPoints);
         }
@@ -165,6 +173,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -174,7 +183,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(-19.0625m, fantasyPoints);
         }
@@ -185,6 +194,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -194,7 +204,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(-19.53125m, fantasyPoints);
         }
@@ -205,6 +215,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -214,7 +225,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(-19.765625m, fantasyPoints);
         }
@@ -225,6 +236,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -234,7 +246,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(-19.84375m, fantasyPoints);
         }
@@ -245,6 +257,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -254,7 +267,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(null, fantasyPoints);
         }
@@ -265,6 +278,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -274,7 +288,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(0m, fantasyPoints);
         }
@@ -285,6 +299,7 @@ namespace FantasyCritic.Test
             Instant pickupTime = InstantPattern.ExtendedIso.Parse("2018-01-02T12:34:24Z").GetValueOrThrow();
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
+            var fakeToday = fakeClock.GetToday();
             ScoringSystem diminishingScoring = ScoringSystem.GetScoringSystem("Diminishing");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
@@ -294,7 +309,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null, new MasterGameYear(masterGame, 2018), null, null, false);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeClock);
+            decimal? fantasyPoints = testGame.CalculateFantasyPoints(diminishingScoring, fakeToday);
 
             Assert.AreEqual(4.1441m, fantasyPoints);
         }

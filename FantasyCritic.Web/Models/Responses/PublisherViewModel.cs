@@ -10,14 +10,14 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherViewModel
     {
-        public PublisherViewModel(Publisher publisher, IClock clock, bool userIsInLeague,
+        public PublisherViewModel(Publisher publisher, LocalDate currentDate, bool userIsInLeague,
             bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished)
-        : this(publisher, clock, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues, yearFinished)
+        : this(publisher, currentDate, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues, yearFinished)
         {
 
         }
 
-        public PublisherViewModel(Publisher publisher, IClock clock, Maybe<Publisher> nextDraftPublisher,
+        public PublisherViewModel(Publisher publisher, LocalDate currentDate, Maybe<Publisher> nextDraftPublisher,
             bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished)
         {
             PublisherID = publisher.PublisherID;
@@ -30,12 +30,12 @@ namespace FantasyCritic.Web.Models.Responses
             AutoDraft = publisher.AutoDraft;
             Games = publisher.PublisherGames
                 .OrderBy(x => x.Timestamp)
-                .Select(x => new PublisherGameViewModel(x, clock, publisher.LeagueYear.Options.ScoringSystem, systemWideValues))
+                .Select(x => new PublisherGameViewModel(x, currentDate, publisher.LeagueYear.Options.ScoringSystem, systemWideValues))
                 .ToList();
 
             AverageCriticScore = publisher.AverageCriticScore;
             TotalFantasyPoints = publisher.TotalFantasyPoints;
-            TotalProjectedPoints = publisher.GetProjectedFantasyPoints(publisher.LeagueYear.Options, systemWideValues, yearFinished, false, clock);
+            TotalProjectedPoints = publisher.GetProjectedFantasyPoints(publisher.LeagueYear.Options, systemWideValues, yearFinished, false, currentDate);
             Budget = publisher.Budget;
 
             if (nextDraftPublisher.HasValue && nextDraftPublisher.Value.PublisherID == publisher.PublisherID)
@@ -47,17 +47,16 @@ namespace FantasyCritic.Web.Models.Responses
             PublicLeague = publisher.LeagueYear.Options.PublicLeague;
             OutstandingInvite = outstandingInvite;
 
-            var timeToCheck = clock.GetCurrentInstant();
+            var dateToCheck = currentDate;
             if (yearFinished)
             {
-                //Just before midnight on New Year's
-                timeToCheck = new LocalDate(Year + 1, 1, 1).AtMidnight().InUtc().Minus(Duration.FromMinutes(1)).ToInstant();
+                dateToCheck = new LocalDate(Year, 12, 31);
             }
 
             GamesReleased = publisher.PublisherGames
                 .Where(x => !x.CounterPick)
                 .Where(x => x.MasterGame.HasValue)
-                .Count(x => x.MasterGame.Value.MasterGame.IsReleased(timeToCheck));
+                .Count(x => x.MasterGame.Value.MasterGame.IsReleased(dateToCheck));
             var allWillRelease = publisher.PublisherGames
                 .Where(x => !x.CounterPick)
                 .Where(x => x.MasterGame.HasValue)

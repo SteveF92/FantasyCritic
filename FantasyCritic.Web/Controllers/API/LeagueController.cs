@@ -277,7 +277,8 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, _clock,
+            var currentDate = _clock.GetToday();
+            var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, currentDate,
                 leagueYear.Value.PlayStatus, startDraftResult, activeUsers, nextDraftPublisher, draftPhase, availableCounterPicks,
                 leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager,
                 currentUser, managerMessages, previousYearWinner);
@@ -360,11 +361,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Requested player is not in requested league.");
             }
 
-
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == publisher.Value.LeagueYear.Year);
 
-            var publisherViewModel = new PublisherViewModel(publisher.Value, _clock, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
+            var currentDate = _clock.GetToday();
+            var publisherViewModel = new PublisherViewModel(publisher.Value, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
             return Ok(publisherViewModel);
         }
 
@@ -720,7 +721,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             var bids = await _gameAcquisitionService.GetActiveAcquistitionBids(publisher.Value);
 
-            var viewModels = bids.Select(x => new PickupBidViewModel(x, _clock)).OrderBy(x => x.Priority);
+            var currentDate = _clock.GetToday();
+            var viewModels = bids.Select(x => new PickupBidViewModel(x, currentDate)).OrderBy(x => x.Priority);
             return Ok(viewModels);
         }
 
@@ -1001,8 +1003,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var currentDate = _clock.GetToday();
             var matchingGames = await _gameSearchingService.SearchGames(gameName, userPublisher, publishersInLeague, year);
-            var viewModels = matchingGames.Select(x => new PossibleMasterGameYearViewModel(x, _clock)).Take(50).ToList();
+            var viewModels = matchingGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(50).ToList();
 
             return viewModels;
         }
@@ -1024,8 +1027,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var currentDate = _clock.GetToday();
             var topAvailableGames = await _gameSearchingService.GetTopAvailableGames(userPublisher, publishersInLeague, year);
-            var viewModels = topAvailableGames.Select(x => new PossibleMasterGameYearViewModel(x, _clock)).Take(100).ToList();
+            var viewModels = topAvailableGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(100).ToList();
 
             return viewModels;
         }
@@ -1151,7 +1155,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             var dropRequests = await _gameAcquisitionService.GetActiveDropRequests(publisher.Value);
 
-            var viewModels = dropRequests.Select(x => new DropGameRequestViewModel(x, _clock));
+            var currentDate = _clock.GetToday();
+            var viewModels = dropRequests.Select(x => new DropGameRequestViewModel(x, currentDate));
             return Ok(viewModels);
         }
 
@@ -1181,8 +1186,9 @@ namespace FantasyCritic.Web.Controllers.API
 
             HashSet<MasterGame> myPublisherMasterGames = publisher.Value.MyMasterGames;
 
+            var currentDate = _clock.GetToday();
             var viewModels = queuedGames.Select(x =>
-                new QueuedGameViewModel(x, _clock, publisherMasterGames.Contains(x.MasterGame),
+                new QueuedGameViewModel(x, currentDate, publisherMasterGames.Contains(x.MasterGame),
                     myPublisherMasterGames.Contains(x.MasterGame)
                 )).OrderBy(x => x.Rank);
             return Ok(viewModels);
@@ -1212,8 +1218,9 @@ namespace FantasyCritic.Web.Controllers.API
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var queuedGames = await _publisherService.GetQueuedGames(publisher.Value);
 
+            var currentDate = _clock.GetToday();
             var queuedPossibleGames = await _gameSearchingService.GetQueuedPossibleGames(publisher.Value, publishersInLeague, queuedGames);
-            var viewModels = queuedPossibleGames.Select(x => new PossibleMasterGameYearViewModel(x, _clock)).Take(100).ToList();
+            var viewModels = queuedPossibleGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(100).ToList();
 
             return Ok(viewModels);
         }
@@ -1375,7 +1382,7 @@ namespace FantasyCritic.Web.Controllers.API
                 throw new Exception("Time has broken.");
             }
 
-            var currentDate = _clock.GetCurrentInstant().InZone(easternZone).Date;
+            var currentDate = _clock.GetToday();
             var yesterday = currentDate.PlusDays(-1);
 
             var orderedByReleaseDate = publisherGames
@@ -1390,7 +1397,7 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 IEnumerable<Publisher> publishersThatHaveGame = publishers.Where(x => publisherGameGroup.Select(y => y.PublisherID).Contains(x.PublisherID));
                 IEnumerable<Publisher> publishersThatHaveStandardGame = publishersThatHaveGame.Where(x => x.PublisherGames.Where(y => !y.CounterPick).Where(x => x.MasterGame.HasValue).Select(y => y.MasterGame.Value).Contains(publisherGameGroup.Key));
-                viewModels.Add(new UpcomingGameViewModel(publisherGameGroup.Key, publishersThatHaveGame, publishersThatHaveStandardGame, userMode, _clock));
+                viewModels.Add(new UpcomingGameViewModel(publisherGameGroup.Key, publishersThatHaveGame, publishersThatHaveStandardGame, userMode, currentDate));
             }
 
             return viewModels;

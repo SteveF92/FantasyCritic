@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
@@ -43,7 +44,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
-            var viewModel = new MasterGameViewModel(masterGame.Value, _clock);
+            var currentDate = _clock.GetToday();
+            var viewModel = new MasterGameViewModel(masterGame.Value, currentDate);
             return viewModel;
         }
 
@@ -56,7 +58,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
-            var viewModel = new MasterGameYearViewModel(masterGame.Value, _clock);
+            var currentDate = _clock.GetToday();
+            var viewModel = new MasterGameYearViewModel(masterGame.Value, currentDate);
             return viewModel;
         }
 
@@ -75,7 +78,8 @@ namespace FantasyCritic.Web.Controllers.API
                 relevantGames = masterGames.Where(x => chosenGames.Contains(x.MasterGame.MasterGameID));
             }
 
-            List<MasterGameYearViewModel> viewModels = relevantGames.Select(x => new MasterGameYearViewModel(x, _clock)).ToList();
+            var currentDate = _clock.GetToday();
+            List<MasterGameYearViewModel> viewModels = relevantGames.Select(x => new MasterGameYearViewModel(x, currentDate)).ToList();
 
             return viewModels;
         }
@@ -234,7 +238,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetMasterGameRequestsForUser(currentUser);
 
-            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, _clock)).ToList();
+            var currentDate = _clock.GetToday();
+            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, currentDate)).ToList();
             return viewModels;
         }
 
@@ -245,7 +250,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetMasterGameChangeRequestsForUser(currentUser);
 
-            var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, _clock)).ToList();
+            var currentDate = _clock.GetToday();
+            var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, currentDate)).ToList();
             return viewModels;
         }
 

@@ -8,9 +8,9 @@ namespace FantasyCritic.Web.Models.Responses.Royale
 {
     public class PossibleRoyaleMasterGameViewModel
     {
-        public PossibleRoyaleMasterGameViewModel(MasterGameYear masterGame, IClock clock, RoyaleYearQuarter yearQuarter, bool alreadyOwned, IEnumerable<MasterGameTag> masterGameTags)
+        public PossibleRoyaleMasterGameViewModel(MasterGameYear masterGame, LocalDate currentDate, RoyaleYearQuarter yearQuarter, bool alreadyOwned, IEnumerable<MasterGameTag> masterGameTags)
         {
-            MasterGame = new MasterGameYearViewModel(masterGame, clock);
+            MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
             WillReleaseInQuarter = masterGame.WillReleaseInQuarter(yearQuarter.YearQuarter);
             IsEligible = !LeagueTagExtensions.GetRoyaleEligibilitySettings(masterGameTags).GameIsEligible(masterGame.MasterGame).Any();
             AlreadyOwned = alreadyOwned;

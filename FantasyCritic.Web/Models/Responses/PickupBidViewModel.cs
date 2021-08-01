@@ -6,14 +6,14 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PickupBidViewModel
     {
-        public PickupBidViewModel(PickupBid pickupBid, IClock clock)
+        public PickupBidViewModel(PickupBid pickupBid, LocalDate currentDate)
         {
             BidID = pickupBid.BidID;
             BidAmount = pickupBid.BidAmount;
             Priority = pickupBid.Priority;
             Timestamp = pickupBid.Timestamp.ToDateTimeUtc();
             Successful = pickupBid.Successful;
-            MasterGame = new MasterGameViewModel(pickupBid.MasterGame, clock);
+            MasterGame = new MasterGameViewModel(pickupBid.MasterGame, currentDate);
         }
 
         public Guid BidID { get; }

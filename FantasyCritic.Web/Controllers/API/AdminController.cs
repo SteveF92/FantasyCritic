@@ -76,7 +76,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             MasterGame masterGame = viewModel.ToDomain(instant, tags);
             await _interLeagueService.CreateMasterGame(masterGame);
-            var vm = new MasterGameViewModel(masterGame, _clock);
+            var currentDate = _clock.GetToday();
+            var vm = new MasterGameViewModel(masterGame, currentDate);
 
             _logger.LogInformation($"Created master game: {masterGame.MasterGameID}");
             return CreatedAtAction("MasterGame", "Game", new {id = masterGame.MasterGameID}, vm);
@@ -94,7 +95,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             MasterGame masterGame = viewModel.ToDomain(instant, tags);
             await _interLeagueService.EditMasterGame(masterGame);
-            var vm = new MasterGameViewModel(masterGame, _clock);
+            var currentDate = _clock.GetToday();
+            var vm = new MasterGameViewModel(masterGame, currentDate);
 
             _logger.LogInformation($"Edited master game: {masterGame.MasterGameID}");
             return CreatedAtAction("MasterGame", "Game", new { id = masterGame.MasterGameID }, vm);
@@ -173,7 +175,8 @@ namespace FantasyCritic.Web.Controllers.API
         {
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
 
-            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, _clock)).OrderBy(x => x.GameName).ToList();
+            var currentDate = _clock.GetToday();
+            var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, currentDate)).OrderBy(x => x.GameName).ToList();
             return viewModels;
         }
 
@@ -181,7 +184,8 @@ namespace FantasyCritic.Web.Controllers.API
         {
             IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetAllMasterGameChangeRequests();
 
-            var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, _clock)).OrderBy(x => x.MasterGame.GameName).ToList();
+            var currentDate = _clock.GetToday();
+            var viewModels = requests.Select(x => new MasterGameChangeRequestViewModel(x, currentDate)).OrderBy(x => x.MasterGame.GameName).ToList();
             return viewModels;
         }
 
@@ -190,7 +194,8 @@ namespace FantasyCritic.Web.Controllers.API
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
 
             var request = requests.SingleOrDefault(x => x.RequestID == requestID);
-            var vm = new MasterGameRequestViewModel(request, _clock);
+            var currentDate = _clock.GetToday();
+            var vm = new MasterGameRequestViewModel(request, currentDate);
             return vm;
         }
 
@@ -198,8 +203,9 @@ namespace FantasyCritic.Web.Controllers.API
         {
             IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetAllMasterGameChangeRequests();
 
+            var currentDate = _clock.GetToday();
             var request = requests.SingleOrDefault(x => x.RequestID == changeRequestID);
-            var vm = new MasterGameChangeRequestViewModel(request, _clock);
+            var vm = new MasterGameChangeRequestViewModel(request, currentDate);
             return vm;
         }
 
@@ -240,16 +246,17 @@ namespace FantasyCritic.Web.Controllers.API
 
             List<MasterGameViewModel> pickupGames = new List<MasterGameViewModel>();
             List<MasterGameViewModel> bidGames = new List<MasterGameViewModel>();
+            var currentDate = _clock.GetToday();
             foreach (var supportedYear in supportedYears)
             {
                 var allBids = await _gameAcquisitionService.GetActiveAcquistitionBids(supportedYear);
                 var distinctBids = allBids.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
-                var bidVMs = distinctBids.Select(x => new MasterGameViewModel(x.MasterGame, _clock, failingBidGames.Contains(x.MasterGame.GameName)));
+                var bidVMs = distinctBids.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, failingBidGames.Contains(x.MasterGame.GameName)));
                 pickupGames.AddRange(bidVMs);
 
                 var allDrops = await _gameAcquisitionService.GetActiveDropRequests(supportedYear);
                 var distinctDrops = allDrops.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
-                var dropVMs = distinctDrops.Select(x => new MasterGameViewModel(x.MasterGame, _clock, failingDropGames.Contains(x.MasterGame.GameName)));
+                var dropVMs = distinctDrops.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, failingDropGames.Contains(x.MasterGame.GameName)));
                 bidGames.AddRange(dropVMs);
             }
 

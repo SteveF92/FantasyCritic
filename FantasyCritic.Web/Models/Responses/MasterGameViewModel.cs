@@ -11,7 +11,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class MasterGameViewModel
     {
-        public MasterGameViewModel(MasterGame masterGame, IClock clock)
+        public MasterGameViewModel(MasterGame masterGame, LocalDate currentDate)
         {
             MasterGameID = masterGame.MasterGameID;
             GameName = masterGame.GameName;
@@ -22,18 +22,18 @@ namespace FantasyCritic.Web.Models.Responses
             InternationalReleaseDate = masterGame.InternationalReleaseDate;
             ReleaseDate = masterGame.ReleaseDate;
 
-            IsReleased = masterGame.IsReleased(clock.GetCurrentInstant());
+            IsReleased = masterGame.IsReleased(currentDate);
             CriticScore = masterGame.CriticScore;
             AveragedScore = masterGame.AveragedScore;
             Notes = masterGame.Notes;
             OpenCriticID = masterGame.OpenCriticID;
-            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, clock)).ToList();
+            SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
             Tags = masterGame.Tags.Select(x => x.Name).ToList();
             BoxartFileName = masterGame.BoxartFileName;
             AddedTimestamp = masterGame.AddedTimestamp;
         }
 
-        public MasterGameViewModel(MasterSubGame masterSubGame, IClock clock)
+        public MasterGameViewModel(MasterSubGame masterSubGame, LocalDate currentDate)
         {
             MasterGameID = masterSubGame.MasterGameID;
             GameName = masterSubGame.GameName;
@@ -41,15 +41,15 @@ namespace FantasyCritic.Web.Models.Responses
             MinimumReleaseDate = masterSubGame.MinimumReleaseDate;
             MaximumReleaseDate = masterSubGame.GetDefiniteMaximumReleaseDate();
             ReleaseDate = masterSubGame.ReleaseDate;
-            IsReleased = masterSubGame.IsReleased(clock.GetCurrentInstant());
+            IsReleased = masterSubGame.IsReleased(currentDate);
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
             OpenCriticID = masterSubGame.OpenCriticID;
             SubGames = null;
         }
 
-        public MasterGameViewModel(MasterGame masterGame, IClock clock, bool error)
-            : this(masterGame, clock)
+        public MasterGameViewModel(MasterGame masterGame, LocalDate currentDate, bool error)
+            : this(masterGame, currentDate)
         {
             Error = error;
         }

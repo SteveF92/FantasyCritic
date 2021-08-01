@@ -6,7 +6,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class MasterGameRequestViewModel
     {
-        public MasterGameRequestViewModel(MasterGameRequest domain, IClock clock)
+        public MasterGameRequestViewModel(MasterGameRequest domain, LocalDate currentDate)
         {
             RequestID = domain.RequestID;
             RequesterDisplayName = domain.User.DisplayName;
@@ -21,7 +21,7 @@ namespace FantasyCritic.Web.Models.Responses
             ResponseTimestamp = domain.ResponseTimestamp;
             if (domain.MasterGame.HasValue)
             {
-                MasterGame = new MasterGameViewModel(domain.MasterGame.Value, clock);
+                MasterGame = new MasterGameViewModel(domain.MasterGame.Value, currentDate);
             }
             Hidden = domain.Hidden;
             RequestNote = domain.RequestNote;

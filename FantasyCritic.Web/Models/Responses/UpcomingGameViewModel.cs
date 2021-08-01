@@ -10,9 +10,9 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class UpcomingGameViewModel
     {
-        public UpcomingGameViewModel(MasterGameYear masterGame, IEnumerable<Publisher> publishers, IEnumerable<Publisher> standardGamePublishers, bool userMode, IClock clock)
+        public UpcomingGameViewModel(MasterGameYear masterGame, IEnumerable<Publisher> publishers, IEnumerable<Publisher> standardGamePublishers, bool userMode, LocalDate currentDate)
         {
-            MasterGame = new MasterGameYearViewModel(masterGame, clock);
+            MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
             MasterGameID = masterGame.MasterGame.MasterGameID;
             GameName = masterGame.MasterGame.GameName;
             EstimatedReleaseDate = masterGame.MasterGame.EstimatedReleaseDate;

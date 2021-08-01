@@ -10,9 +10,9 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class EligibilityOverrideViewModel
     {
-        public EligibilityOverrideViewModel(EligibilityOverride domain, IClock clock)
+        public EligibilityOverrideViewModel(EligibilityOverride domain, LocalDate currentDate)
         {
-            MasterGame = new MasterGameViewModel(domain.MasterGame, clock);
+            MasterGame = new MasterGameViewModel(domain.MasterGame, currentDate);
             Eligible = domain.Eligible;
         }
 

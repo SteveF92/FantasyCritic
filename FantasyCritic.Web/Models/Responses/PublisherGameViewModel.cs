@@ -11,7 +11,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherGameViewModel
     {
-        public PublisherGameViewModel(PublisherGame publisherGame, IClock clock, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
+        public PublisherGameViewModel(PublisherGame publisherGame, LocalDate currentDate, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
         {
             PublisherGameID = publisherGame.PublisherGameID;
             GameName = publisherGame.GameName;
@@ -19,8 +19,8 @@ namespace FantasyCritic.Web.Models.Responses
             Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
             CounterPick = publisherGame.CounterPick;
             FantasyPoints = publisherGame.FantasyPoints;
-            SimpleProjectedFantasyPoints = publisherGame.GetProjectedOrRealFantasyPoints(scoringSystem, systemWideValues, true, clock);
-            AdvancedProjectedFantasyPoints = publisherGame.GetProjectedOrRealFantasyPoints(scoringSystem, systemWideValues, false, clock);
+            SimpleProjectedFantasyPoints = publisherGame.GetProjectedOrRealFantasyPoints(scoringSystem, systemWideValues, true, currentDate);
+            AdvancedProjectedFantasyPoints = publisherGame.GetProjectedOrRealFantasyPoints(scoringSystem, systemWideValues, false, currentDate);
 
             Linked = publisherGame.MasterGame.HasValue;
             if (Linked)
@@ -33,10 +33,10 @@ namespace FantasyCritic.Web.Models.Responses
                 }
 
                 CriticScore = publisherGame.MasterGame.Value.MasterGame.CriticScore;
-                Released = publisherGame.MasterGame.Value.MasterGame.IsReleased(clock.GetCurrentInstant());
+                Released = publisherGame.MasterGame.Value.MasterGame.IsReleased(currentDate);
                 if (publisherGame.MasterGame.HasValue)
                 {
-                    MasterGame = new MasterGameYearViewModel(publisherGame.MasterGame.Value, clock);
+                    MasterGame = new MasterGameYearViewModel(publisherGame.MasterGame.Value, currentDate);
                 }  
             }
 

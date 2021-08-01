@@ -15,7 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
     public class LeagueYearViewModel
     {
         public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Maybe<Publisher> userPublisher,
-            IClock clock, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
+            LocalDate currentDate, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
             DraftPhase draftPhase, IEnumerable<PublisherGame> availableCounterPicks, LeagueOptions options, SystemWideValues systemWideValues,
             IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
             Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner)
@@ -33,12 +33,12 @@ namespace FantasyCritic.Web.Models.Responses
             UserIsActive = activeUsers.Any(x => x.UserID == accessingUser.Unwrap(y => y.UserID));
             Publishers = publishers
                 .OrderBy(x => x.DraftPosition)
-                .Select(x => new PublisherViewModel(x, clock, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished))
+                .Select(x => new PublisherViewModel(x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished))
                 .ToList();
 
             if (userPublisher.HasValue)
             {
-                UserPublisher = new PublisherViewModel(userPublisher.Value, clock, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
+                UserPublisher = new PublisherViewModel(userPublisher.Value, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
             }
 
             List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
@@ -54,7 +54,7 @@ namespace FantasyCritic.Web.Models.Responses
                 else
                 {
                     bool isPreviousYearWinner = previousYearWinner.HasValue && previousYearWinner.Value.UserID == user.UserID;
-                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, clock, options, systemWideValues,
+                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, options, systemWideValues,
                         userIsInLeague, userIsInvitedToLeague, supportedYear, false, isPreviousYearWinner));
                 }
             }
@@ -100,9 +100,9 @@ namespace FantasyCritic.Web.Models.Responses
 
             PlayStatus = new PlayStatusViewModel(playStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
             AvailableCounterPicks = availableCounterPicks
-                .Select(x => new PublisherGameViewModel(x, clock, leagueYear.Options.ScoringSystem, systemWideValues))
+                .Select(x => new PublisherGameViewModel(x, currentDate, leagueYear.Options.ScoringSystem, systemWideValues))
                 .OrderBy(x => x.GameName).ToList();
-            EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, clock)).ToList();
+            EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
 
             ManagerMessages = managerMessages.Select(x => new ManagerMessageViewModel(x)).OrderBy(x => x.Timestamp).ToList();
             if (!userIsInLeague)

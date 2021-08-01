@@ -11,12 +11,12 @@ namespace FantasyCritic.Web.Models.Responses.Royale
 {
     public class RoyalePublisherGameViewModel
     {
-        public RoyalePublisherGameViewModel(RoyalePublisherGame domain, IClock clock)
+        public RoyalePublisherGameViewModel(RoyalePublisherGame domain, LocalDate currentDate)
         {
             PublisherID = domain.PublisherID;
             YearQuarter = new RoyaleYearQuarterViewModel(domain.YearQuarter);
-            MasterGame = new MasterGameYearViewModel(domain.MasterGame, clock);
-            Locked = domain.IsLocked(clock);
+            MasterGame = new MasterGameYearViewModel(domain.MasterGame, currentDate);
+            Locked = domain.IsLocked(currentDate);
             Timestamp = domain.Timestamp;
             AmountSpent = domain.AmountSpent;
             AdvertisingMoney = domain.AdvertisingMoney;

@@ -6,9 +6,9 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class QueuedGameViewModel
     {
-        public QueuedGameViewModel(QueuedGame queuedGame, IClock clock, bool taken, bool alreadyOwned)
+        public QueuedGameViewModel(QueuedGame queuedGame, LocalDate currentDate, bool taken, bool alreadyOwned)
         {
-            MasterGame = new MasterGameViewModel(queuedGame.MasterGame, clock);
+            MasterGame = new MasterGameViewModel(queuedGame.MasterGame, currentDate);
             Rank = queuedGame.Rank;
             Taken = taken;
             AlreadyOwned = alreadyOwned;

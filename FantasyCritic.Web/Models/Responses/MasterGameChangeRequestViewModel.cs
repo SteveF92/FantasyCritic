@@ -6,11 +6,11 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class MasterGameChangeRequestViewModel
     {
-        public MasterGameChangeRequestViewModel(MasterGameChangeRequest domain, IClock clock)
+        public MasterGameChangeRequestViewModel(MasterGameChangeRequest domain, LocalDate currentDate)
         {
             RequestID = domain.RequestID;
             RequesterDisplayName = domain.User.DisplayName;
-            MasterGame = new MasterGameViewModel(domain.MasterGame, clock);
+            MasterGame = new MasterGameViewModel(domain.MasterGame, currentDate);
 
             RequestNote = domain.RequestNote;
             OpenCriticID = domain.OpenCriticID;

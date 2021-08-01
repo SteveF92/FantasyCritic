@@ -12,7 +12,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class MasterGameYearViewModel
     {
-        public MasterGameYearViewModel(MasterGameYear masterGame, IClock clock)
+        public MasterGameYearViewModel(MasterGameYear masterGame, LocalDate currentDate)
         {
             MasterGameID = masterGame.MasterGame.MasterGameID;
             Year = masterGame.Year;
@@ -23,12 +23,12 @@ namespace FantasyCritic.Web.Models.Responses
             EarlyAccessReleaseDate = masterGame.MasterGame.EarlyAccessReleaseDate;
             InternationalReleaseDate = masterGame.MasterGame.InternationalReleaseDate;
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
-            IsReleased = masterGame.MasterGame.IsReleased(clock.GetCurrentInstant());
+            IsReleased = masterGame.MasterGame.IsReleased(currentDate);
             WillRelease = masterGame.WillRelease();
             CriticScore = masterGame.MasterGame.CriticScore;
             AveragedScore = masterGame.MasterGame.AveragedScore;
             OpenCriticID = masterGame.MasterGame.OpenCriticID;
-            SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, clock)).ToList();
+            SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, currentDate)).ToList();
             Tags = masterGame.MasterGame.Tags.Select(x => x.Name).ToList();
             BoxartFileName = masterGame.MasterGame.BoxartFileName;
             PercentStandardGame = masterGame.PercentStandardGame;
@@ -48,11 +48,11 @@ namespace FantasyCritic.Web.Models.Responses
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
             ProjectedFantasyPoints = masterGame.GetAlwaysProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false);
-            ProjectedOrRealFantasyPoints = masterGame.GetProjectedOrRealFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, clock);
+            ProjectedOrRealFantasyPoints = masterGame.GetProjectedOrRealFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
             AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
         }
 
-        public MasterGameYearViewModel(MasterSubGame masterSubGame, MasterGameYear masterGame, IClock clock)
+        public MasterGameYearViewModel(MasterSubGame masterSubGame, MasterGameYear masterGame, LocalDate currentDate)
         {
             MasterGameID = masterSubGame.MasterGameID;
             Year = masterGame.Year;
@@ -61,7 +61,7 @@ namespace FantasyCritic.Web.Models.Responses
             MinimumReleaseDate = masterSubGame.MinimumReleaseDate;
             MaximumReleaseDate = masterSubGame.GetDefiniteMaximumReleaseDate();
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
-            IsReleased = masterGame.MasterGame.IsReleased(clock.GetCurrentInstant());
+            IsReleased = masterGame.MasterGame.IsReleased(currentDate);
             WillRelease = masterGame.WillRelease();
             CriticScore = masterSubGame.CriticScore;
             AveragedScore = false;
@@ -85,7 +85,7 @@ namespace FantasyCritic.Web.Models.Responses
             HypeFactor = masterGame.HypeFactor;
             DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
             ProjectedFantasyPoints = masterGame.GetAlwaysProjectedFantasyPoints(new StandardScoringSystem(), false);
-            ProjectedOrRealFantasyPoints = masterGame.GetProjectedOrRealFantasyPoints(new StandardScoringSystem(), false, clock);
+            ProjectedOrRealFantasyPoints = masterGame.GetProjectedOrRealFantasyPoints(new StandardScoringSystem(), false, currentDate);
             AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
         }
 

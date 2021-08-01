@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Royale;
@@ -141,7 +142,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.Value.User);
-            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock, null, quartersWon);
+            var currentDate = _clock.GetToday();
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, currentDate, null, quartersWon);
             return Ok(viewModel);
         }
 
@@ -156,7 +158,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.Value.User);
-            var viewModel = new RoyalePublisherViewModel(publisher.Value, _clock, null, quartersWon);
+            var currentDate = _clock.GetToday();
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, currentDate, null, quartersWon);
             return Ok(viewModel);
         }
 
@@ -184,7 +187,8 @@ namespace FantasyCritic.Web.Controllers.API
                     winningQuarters = new List<RoyaleYearQuarter>();
                 }
 
-                var vm = new RoyalePublisherViewModel(publisher, _clock, thisRanking, winningQuarters);
+                var currentDate = _clock.GetToday();
+                var vm = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters);
                 viewModels.Add(vm);
             }
 
@@ -332,6 +336,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var currentDate = _clock.GetToday();
             var masterGameTags = await _interLeagueService.GetMasterGameTags();
             var masterGames = await _royaleService.GetMasterGamesForYearQuarter(yearQuarter.Value.YearQuarter);
             if (!string.IsNullOrWhiteSpace(gameName))
@@ -342,14 +347,14 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 masterGames = masterGames
                     .Where(x => x.WillReleaseInQuarter(yearQuarter.Value.YearQuarter))
-                    .Where(x => !x.MasterGame.IsReleased(_clock.GetCurrentInstant()))
+                    .Where(x => !x.MasterGame.IsReleased(currentDate))
                     .Where(x => !LeagueTagExtensions.GetRoyaleEligibilitySettings(masterGameTags).GameIsEligible(x.MasterGame).Any())
                     .Take(1000)
                     .ToList();
             }
 
             var viewModels = masterGames.Select(masterGame =>
-                new PossibleRoyaleMasterGameViewModel(masterGame, _clock, yearQuarter.Value, publisher.Value.PublisherGames.Any(y =>
+                new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, yearQuarter.Value, publisher.Value.PublisherGames.Any(y =>
                     y.MasterGame.MasterGame.Equals(masterGame.MasterGame)), masterGameTags)).ToList();
             return viewModels;
         }

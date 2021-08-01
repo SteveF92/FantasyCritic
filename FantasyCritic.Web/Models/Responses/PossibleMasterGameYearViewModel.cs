@@ -11,9 +11,9 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PossibleMasterGameYearViewModel
     {
-        public PossibleMasterGameYearViewModel(PossibleMasterGameYear masterGame, IClock clock)
+        public PossibleMasterGameYearViewModel(PossibleMasterGameYear masterGame, LocalDate currentDate)
         {
-            MasterGame = new MasterGameYearViewModel(masterGame.MasterGame, clock);
+            MasterGame = new MasterGameYearViewModel(masterGame.MasterGame, currentDate);
             Taken = masterGame.Taken;
             AlreadyOwned = masterGame.AlreadyOwned;
             IsEligible = masterGame.IsEligible;
