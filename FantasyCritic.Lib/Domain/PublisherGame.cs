@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain
     public class PublisherGame
     {
         public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
-            decimal? fantasyPoints, Maybe<MasterGameYear> masterGame, int? draftPosition, int? overallDraftPosition)
+            decimal? fantasyPoints, Maybe<MasterGameYear> masterGame, int? draftPosition, int? overallDraftPosition, bool currentlyInEligible)
         {
             PublisherID = publisherID;
             PublisherGameID = publisherGameID;
@@ -24,6 +24,7 @@ namespace FantasyCritic.Lib.Domain
             MasterGame = masterGame;
             DraftPosition = draftPosition;
             OverallDraftPosition = overallDraftPosition;
+            CurrentlyInEligible = currentlyInEligible;
         }
 
         public Guid PublisherID { get; }
@@ -37,6 +38,7 @@ namespace FantasyCritic.Lib.Domain
         public Maybe<MasterGameYear> MasterGame { get; }
         public int? DraftPosition { get; }
         public int? OverallDraftPosition { get; }
+        public bool CurrentlyInEligible { get; }
 
         public bool WillRelease()
         {

@@ -33,6 +33,8 @@ namespace FantasyCritic.MySQL.Entities
             {
                 MasterGameID = publisherGame.MasterGame.Value.MasterGame.MasterGameID;
             }
+
+            CurrentlyInEligible = publisherGame.CurrentlyInEligible;
         }
 
         public Guid PublisherGameID { get; set; }
@@ -46,10 +48,13 @@ namespace FantasyCritic.MySQL.Entities
         public Guid? MasterGameID { get; set; }
         public int? DraftPosition { get; set; }
         public int? OverallDraftPosition { get; set; }
+        public bool CurrentlyInEligible { get; set; }
 
         public PublisherGame ToDomain(Maybe<MasterGameYear> masterGame)
         {
-            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, DraftPosition, OverallDraftPosition);
+            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick, 
+                ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, DraftPosition, OverallDraftPosition,
+                CurrentlyInEligible);
             return domain;
         }
     }
