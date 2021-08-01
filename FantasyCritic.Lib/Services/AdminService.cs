@@ -63,6 +63,8 @@ namespace FantasyCritic.Lib.Services
             _logger.LogInformation("Refreshing critic scores");
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var masterGames = await _interLeagueService.GetMasterGames();
+
+            var currentDate = _clock.GetToday();
             foreach (var masterGame in masterGames)
             {
                 if (!masterGame.OpenCriticID.HasValue)
@@ -75,7 +77,7 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                if (masterGame.IsReleased(_clock.GetCurrentInstant()) && masterGame.ReleaseDate.HasValue)
+                if (masterGame.IsReleased(currentDate) && masterGame.ReleaseDate.HasValue)
                 {
                     var year = masterGame.ReleaseDate.Value.Year;
                     var supportedYear = supportedYears.SingleOrDefault(x => x.Year == year);

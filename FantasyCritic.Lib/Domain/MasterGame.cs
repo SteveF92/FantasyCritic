@@ -98,9 +98,9 @@ namespace FantasyCritic.Lib.Domain
         public string Notes { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
 
-        public bool IsReleased(Instant timeToCheck)
+        public bool IsReleased(LocalDate currentDate)
         {
-            if (SubGames.Any(x => x.IsReleased(timeToCheck)))
+            if (SubGames.Any(x => x.IsReleased(currentDate)))
             {
                 return true;
             }
@@ -110,7 +110,6 @@ namespace FantasyCritic.Lib.Domain
                 return false;
             }
 
-            LocalDate currentDate = timeToCheck.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
             if (currentDate >= ReleaseDate.Value)
             {
                 return true;

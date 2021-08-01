@@ -27,13 +27,13 @@ namespace FantasyCritic.Lib.Royale
         public decimal AdvertisingMoney { get; }
         public decimal? FantasyPoints { get; }
         
-        public decimal? CalculateFantasyPoints(IClock clock)
+        public decimal? CalculateFantasyPoints(LocalDate currentDate)
         {
-            if (!MasterGame.MasterGame.IsReleased(clock.GetCurrentInstant()))
+            if (!MasterGame.MasterGame.IsReleased(currentDate))
             {
                 return 0m;
             }
-            var basePoints = MasterGame.CalculateFantasyPoints(ScoringSystem.GetDefaultScoringSystem(YearQuarter.YearQuarter.Year), false, clock, true);
+            var basePoints = MasterGame.CalculateFantasyPoints(ScoringSystem.GetDefaultScoringSystem(YearQuarter.YearQuarter.Year), false, currentDate, true);
             if (!basePoints.HasValue)
             {
                 return null;
@@ -45,9 +45,9 @@ namespace FantasyCritic.Lib.Royale
             return modifiedPoints;
         }
 
-        public bool IsLocked(IClock clock)
+        public bool IsLocked(LocalDate currentDate)
         {
-            if (MasterGame.MasterGame.IsReleased(clock.GetCurrentInstant()))
+            if (MasterGame.MasterGame.IsReleased(currentDate))
             {
                 return true;
             }

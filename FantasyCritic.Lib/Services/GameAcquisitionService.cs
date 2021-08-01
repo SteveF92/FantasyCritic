@@ -238,8 +238,9 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
+            var currentDate = _clock.GetToday();
             bool manuallyEligible = overriddenEligibility.HasValue && overriddenEligibility.Value;
-            bool released = masterGame.IsReleased(_clock.GetCurrentInstant());
+            bool released = masterGame.IsReleased(currentDate);
             if (released)
             {
                 claimErrors.Add(new ClaimError("That game has already been released.", true));
@@ -252,7 +253,7 @@ namespace FantasyCritic.Lib.Services
 
             if (nextBidTime.HasValue)
             {
-                bool releaseBeforeNextBids = masterGame.IsReleased(nextBidTime.Value);
+                bool releaseBeforeNextBids = masterGame.IsReleased(currentDate);
                 if (releaseBeforeNextBids)
                 {
                     claimErrors.Add(new ClaimError("That game will release before bids are processed.", true));

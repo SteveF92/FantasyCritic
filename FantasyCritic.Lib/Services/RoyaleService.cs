@@ -9,6 +9,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Royale;
 using MoreLinq;
 using NLog.Targets.Wrappers;
@@ -81,8 +82,9 @@ namespace FantasyCritic.Lib.Services
         {
             IEnumerable<MasterGameYear> masterGameYears = await _masterGameRepo.GetMasterGameYears(yearQuarter.Year);
 
+            var currentDate = _clock.GetToday();
             masterGameYears = masterGameYears.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate >= yearQuarter.FirstDateOfQuarter);
-            masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedOrRealFantasyPoints(ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year), false, _clock));
+            masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedOrRealFantasyPoints(ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year), false, currentDate));
 
             return masterGameYears.ToList();
         }
@@ -101,7 +103,8 @@ namespace FantasyCritic.Lib.Services
             {
                 return new ClaimResult("Game will not release this quarter.");
             }
-            if (masterGame.MasterGame.IsReleased(_clock.GetCurrentInstant()))
+            var currentDate = _clock.GetToday();
+            if (masterGame.MasterGame.IsReleased(currentDate))
             {
                 return new ClaimResult("Game has been released.");
             }
@@ -131,7 +134,8 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> SellGame(RoyalePublisher publisher, RoyalePublisherGame publisherGame)
         {
-            if (publisherGame.MasterGame.MasterGame.IsReleased(_clock.GetCurrentInstant()))
+            var currentDate = _clock.GetToday();
+            if (publisherGame.MasterGame.MasterGame.IsReleased(currentDate))
             {
                 return Result.Failure("That game has already been released.");
             }
@@ -151,7 +155,8 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> SetAdvertisingMoney(RoyalePublisher publisher, RoyalePublisherGame publisherGame, decimal advertisingMoney)
         {
-            if (publisherGame.MasterGame.MasterGame.IsReleased(_clock.GetCurrentInstant()))
+            var currentDate = _clock.GetToday();
+            if (publisherGame.MasterGame.MasterGame.IsReleased(currentDate))
             {
                 return Result.Failure("That game has already been released.");
             }
@@ -191,11 +196,12 @@ namespace FantasyCritic.Lib.Services
             Dictionary<(Guid, Guid), decimal?> publisherGameScores = new Dictionary<(Guid, Guid), decimal?>();
             var allPublishersForQuarter = await _royaleRepo.GetAllPublishers(yearQuarter.Year, yearQuarter.Quarter);
 
+            var currentDate = _clock.GetToday();
             foreach (var publisher in allPublishersForQuarter)
             {
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
-                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(_clock);
+                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(currentDate);
                     publisherGameScores.Add((publisherGame.PublisherID, publisherGame.MasterGame.MasterGame.MasterGameID), fantasyPoints);
                 }
             }

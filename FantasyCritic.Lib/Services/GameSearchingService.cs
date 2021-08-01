@@ -5,6 +5,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
@@ -109,7 +110,8 @@ namespace FantasyCritic.Lib.Services
             bool isEligible = !eligibilityErrors.Any();
             bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
             bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
-            bool isReleased = masterGame.MasterGame.IsReleased(_clock.GetCurrentInstant());
+            var currentDate = _clock.GetToday();
+            bool isReleased = masterGame.MasterGame.IsReleased(currentDate);
             bool willRelease = masterGame.WillRelease();
             bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
 

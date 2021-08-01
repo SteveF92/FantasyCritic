@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
+using FantasyCritic.Lib.Extensions;
 using MoreLinq;
 using NodaTime;
 
@@ -134,6 +135,7 @@ namespace FantasyCritic.Lib.Services
 
             var enoughBudgetBids = activeBidsForLeagueYear.Where(x => x.BidAmount <= x.Publisher.Budget);
             var groupedByGame = enoughBudgetBids.GroupBy(x => x.MasterGame);
+            var currentDate = _clock.GetToday();
             foreach (var gameGroup in groupedByGame)
             {
                 PickupBid bestBid;
@@ -144,7 +146,7 @@ namespace FantasyCritic.Lib.Services
                 else
                 {
                     var bestBids = gameGroup.MaxBy(x => x.BidAmount);
-                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.Publisher.GetProjectedFantasyPoints(options, systemWideValues, false, false, _clock));
+                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.Publisher.GetProjectedFantasyPoints(options, systemWideValues, false, false, currentDate));
                     bestBid = bestBidsByProjectedScore.OrderBy(x => x.Timestamp).ThenByDescending(x => x.Publisher.DraftPosition).First();
                 }
 

@@ -152,14 +152,16 @@ namespace FantasyCritic.Lib.Services
             Dictionary<LeagueYearKey, LeagueYear> leagueYearDictionary = activeLeagueYears.ToDictionary(x => x.Key, y => y);
             IReadOnlyList<Publisher> allPublishersForYear = await _fantasyCriticRepo.GetAllPublishersForYear(year);
 
+            var currentDate = _clock.GetToday();
             foreach (var publisher in allPublishersForYear)
             {
                 var key = new LeagueYearKey(publisher.LeagueYear.League.LeagueID, publisher.LeagueYear.Year);
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
                     var leagueYear = leagueYearDictionary[key];
-                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, _clock);
-                    var stats = new PublisherGameCalculatedStats(fantasyPoints, false);
+                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, currentDate);
+                    bool currentlyIneligible = publisherGame.CalculateIsCurrentlyIneligible(leagueYear.Options, currentDate);
+                    var stats = new PublisherGameCalculatedStats(fantasyPoints, currentlyIneligible);
                     calculatedStats.Add(publisherGame.PublisherGameID, stats);
                 }
             }
@@ -171,13 +173,15 @@ namespace FantasyCritic.Lib.Services
         {
             Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
 
+            var currentDate = _clock.GetToday();
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
             foreach (var publisher in publishersInLeague)
             {
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
-                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, _clock);
-                    var stats = new PublisherGameCalculatedStats(fantasyPoints, false);
+                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, currentDate);
+                    bool currentlyIneligible = publisherGame.CalculateIsCurrentlyIneligible(leagueYear.Options, currentDate);
+                    var stats = new PublisherGameCalculatedStats(fantasyPoints, currentlyIneligible);
                     calculatedStats.Add(publisherGame.PublisherGameID, stats);
                 }
             }

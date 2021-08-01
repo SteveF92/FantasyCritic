@@ -100,9 +100,9 @@ namespace FantasyCritic.Lib.Domain
             return true;
         }
 
-        public decimal GetProjectedOrRealFantasyPoints(ScoringSystem scoringSystem, bool counterPick, IClock clock)
+        public decimal GetProjectedOrRealFantasyPoints(ScoringSystem scoringSystem, bool counterPick, LocalDate currentDate)
         {
-            decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick, clock, false);
+            decimal? fantasyPoints = CalculateFantasyPoints(scoringSystem, counterPick, currentDate, false);
             if (fantasyPoints.HasValue)
             {
                 return fantasyPoints.Value;
@@ -133,14 +133,14 @@ namespace FantasyCritic.Lib.Domain
             return systemWideValues.GetAveragePoints(counterPick);
         }
 
-        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, bool counterPick, IClock clock, bool mustBeReleased)
+        public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, bool counterPick, LocalDate currentDate, bool mustBeReleased)
         {
             if (!WillRelease())
             {
                 return 0m;
             }
 
-            if (mustBeReleased && !MasterGame.IsReleased(clock.GetCurrentInstant()))
+            if (mustBeReleased && !MasterGame.IsReleased(currentDate))
             {
                 return null;
             }

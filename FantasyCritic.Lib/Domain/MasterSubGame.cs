@@ -35,14 +35,13 @@ namespace FantasyCritic.Lib.Domain
 
         public LocalDate GetDefiniteMaximumReleaseDate() => MaximumReleaseDate ?? LocalDate.MaxIsoValue;
 
-        public bool IsReleased(Instant timeToCheck)
+        public bool IsReleased(LocalDate currentDate)
         {
             if (!ReleaseDate.HasValue)
             {
                 return false;
             }
 
-            LocalDate currentDate = timeToCheck.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
             if (currentDate >= ReleaseDate.Value)
             {
                 return true;
