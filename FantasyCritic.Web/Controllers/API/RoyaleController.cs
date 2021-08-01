@@ -25,7 +25,7 @@ namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class RoyaleController : Controller
+    public class RoyaleController : ControllerBase
     {
         private readonly IClock _clock;
         private readonly ILogger<RoyaleController> _logger;

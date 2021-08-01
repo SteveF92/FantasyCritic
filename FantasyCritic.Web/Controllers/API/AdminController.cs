@@ -29,7 +29,7 @@ namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public class AdminController : Controller
+    public class AdminController : ControllerBase
     {
         private readonly AdminService _adminService;
         private readonly FantasyCriticService _fantasyCriticService;

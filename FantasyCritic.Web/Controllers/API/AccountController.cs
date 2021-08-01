@@ -25,7 +25,7 @@ namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AccountController : Controller
+    public class AccountController : ControllerBase
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticRoleManager _roleManager;

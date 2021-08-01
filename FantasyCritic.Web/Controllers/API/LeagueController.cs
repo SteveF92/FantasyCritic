@@ -32,7 +32,7 @@ namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class LeagueController : Controller
+    public class LeagueController : ControllerBase
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;

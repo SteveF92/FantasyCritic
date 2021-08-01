@@ -18,7 +18,7 @@ namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class TokenController : Controller
+    public class TokenController : ControllerBase
     {
         private readonly ITokenService _tokenService;
         private readonly FantasyCriticUserManager _userManager;

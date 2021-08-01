@@ -21,7 +21,7 @@ using NodaTime;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    public class GameController : Controller
+    public class GameController : ControllerBase
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly InterLeagueService _interLeagueService;
