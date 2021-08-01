@@ -271,7 +271,7 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult<IReadOnlyList<LeagueYear>>(leagueYears);
         }
 
-        public Task UpdateFantasyPoints(Dictionary<Guid, decimal?> publisherGameScores)
+        public Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
         {
             throw new NotImplementedException();
         }

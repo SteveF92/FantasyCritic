@@ -281,7 +281,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest(result.Error);
             }
 
-            await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
+            await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear.Value);
 
             return Ok();
         }
@@ -762,7 +762,7 @@ namespace FantasyCritic.Web.Controllers.API
             ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, false, publishersInLeague);
             var viewModel = new ManagerClaimResultViewModel(result);
 
-            await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
+            await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear.Value);
             return Ok(viewModel);
         }
 
@@ -833,7 +833,7 @@ namespace FantasyCritic.Web.Controllers.API
             ClaimResult result = await _gameAcquisitionService.AssociateGame(domainRequest);
             var viewModel = new ManagerClaimResultViewModel(result);
 
-            await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
+            await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear.Value);
 
             return Ok(viewModel);
         }
@@ -889,7 +889,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest(result.Error);
             }
 
-            await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
+            await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear.Value);
 
             return Ok();
         }
@@ -967,7 +967,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.ManuallyScoreGame(publisherGame.Value, manualCriticScore);
-            await _fantasyCriticService.UpdateFantasyPoints(leagueYear.Value);
+            await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear.Value);
 
             return Ok();
         }

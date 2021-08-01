@@ -144,9 +144,9 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.SetPlayersActive(league, year, mostRecentActivePlayers);
         }
 
-        public async Task UpdateFantasyPoints(int year)
+        public async Task UpdateLeaguePointsAndStatuses(int year)
         {
-            Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
+            Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
 
             IReadOnlyList<LeagueYear> activeLeagueYears = await GetLeagueYears(year);
             Dictionary<LeagueYearKey, LeagueYear> leagueYearDictionary = activeLeagueYears.ToDictionary(x => x.Key, y => y);
@@ -159,16 +159,17 @@ namespace FantasyCritic.Lib.Services
                 {
                     var leagueYear = leagueYearDictionary[key];
                     decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, _clock);
-                    publisherGameScores.Add(publisherGame.PublisherGameID, fantasyPoints);
+                    var stats = new PublisherGameCalculatedStats(fantasyPoints, false);
+                    calculatedStats.Add(publisherGame.PublisherGameID, stats);
                 }
             }
 
-            await _fantasyCriticRepo.UpdateFantasyPoints(publisherGameScores);
+            await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats);
         }
 
-        public async Task UpdateFantasyPoints(LeagueYear leagueYear)
+        public async Task UpdatePublisherGameCalculatedStats(LeagueYear leagueYear)
         {
-            Dictionary<Guid, decimal?> publisherGameScores = new Dictionary<Guid, decimal?>();
+            Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
 
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
             foreach (var publisher in publishersInLeague)
@@ -176,11 +177,12 @@ namespace FantasyCritic.Lib.Services
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
                     decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, _clock);
-                    publisherGameScores.Add(publisherGame.PublisherGameID, fantasyPoints);
+                    var stats = new PublisherGameCalculatedStats(fantasyPoints, false);
+                    calculatedStats.Add(publisherGame.PublisherGameID, stats);
                 }
             }
 
-            await _fantasyCriticRepo.UpdateFantasyPoints(publisherGameScores);
+            await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats);
         }
 
         public Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)
