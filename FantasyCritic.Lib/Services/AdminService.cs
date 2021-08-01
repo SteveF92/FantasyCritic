@@ -13,6 +13,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Royale;
+using MoreLinq;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -206,6 +208,14 @@ namespace FantasyCritic.Lib.Services
                     _logger.LogInformation($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
                     await _royaleService.FinishQuarter(supportedQuarter);
                 }
+            }
+
+            var latestQuarter = supportedQuarters.MaxBy(x => x.YearQuarter).Single();
+            var nextQuarter = latestQuarter.YearQuarter.NextQuarter;
+            var dayToStartNextQuarter = nextQuarter.FirstDateOfQuarter.Minus(Period.FromDays(5));
+            if (nycNow.Date > dayToStartNextQuarter)
+            {
+                await _royaleService.StartNewQuarter(nextQuarter);
             }
 
             var dayOfWeek = nycNow.DayOfWeek;

@@ -22,6 +22,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task ChangePublisherName(RoyalePublisher publisher, string publisherName);
         Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(FantasyCriticUser user);
         Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners();
+        Task StartNewQuarter(YearQuarter nextQuarter);
         Task FinishQuarter(RoyaleYearQuarter supportedQuarter);
     }
 }

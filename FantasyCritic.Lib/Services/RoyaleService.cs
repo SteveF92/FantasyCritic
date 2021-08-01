@@ -213,6 +213,11 @@ namespace FantasyCritic.Lib.Services
             return _royaleRepo.GetRoyaleWinners();
         }
 
+        public Task StartNewQuarter(YearQuarter nextQuarter)
+        {
+            return _royaleRepo.StartNewQuarter(nextQuarter);
+        }
+
         public Task FinishQuarter(RoyaleYearQuarter supportedQuarter)
         {
             return _royaleRepo.FinishQuarter(supportedQuarter);

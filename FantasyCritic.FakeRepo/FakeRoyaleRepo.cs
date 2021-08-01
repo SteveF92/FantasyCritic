@@ -40,6 +40,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task StartNewQuarter(YearQuarter nextQuarter)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task FinishQuarter(RoyaleYearQuarter supportedQuarter)
         {
             throw new NotImplementedException();

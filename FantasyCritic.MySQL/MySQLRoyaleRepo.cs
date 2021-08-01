@@ -331,6 +331,26 @@ namespace FantasyCritic.MySQL
             return winners.SealDictionary();
         }
 
+        public async Task StartNewQuarter(YearQuarter nextQuarter)
+        {
+            string sql = "insert into tbl_royale_supportedquarter (Year,Quarter,OpenForPlay,Finished) " +
+                         "VALUES (@Year,@Quarter,@OpenForPlay,@Finished)";
+
+            var newQuarterObject = new RoyaleYearQuarterEntity()
+            {
+                Finished = false,
+                OpenForPlay = true,
+                Quarter = nextQuarter.Quarter,
+                Year = nextQuarter.Year
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync(sql, newQuarterObject);
+            }
+        }
+
         public async Task FinishQuarter(RoyaleYearQuarter supportedQuarter)
         {
             string sql = "UPDATE tbl_royale_supportedquarter SET Finished = 1 WHERE Year = @year AND Quarter = @quarter;";
