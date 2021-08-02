@@ -1,11 +1,10 @@
 <template>
-  <tr class="minimal-game-row table-default" v-bind:class="{ 'counter-pick-row': game.counterPick }">
+  <tr class="minimal-game-row table-default" v-bind:class="{ 'counter-pick-row': game.counterPick, 'table-warning': game.currentlyIneligible }">
     <td class="game-column">
       <span class="master-game-popover">
         <masterGamePopover v-if="game.linked" :masterGame="game.masterGame"></masterGamePopover>
         <span v-if="!game.linked">{{game.gameName}}</span>
       </span>
-
 
       <span v-if="game.counterPick" class="counter-pick-text">
         (Counter-Pick)
@@ -24,6 +23,9 @@
       </span>
       <span v-if="game.manualCriticScore && game.linked" class="game-status">
         Manually Scored
+      </span>
+      <span v-if="game.currentlyIneligible" class="game-status">
+        Ineligible
       </span>
     </td>
     <td class="score-column">{{game.criticScore | score}}</td>

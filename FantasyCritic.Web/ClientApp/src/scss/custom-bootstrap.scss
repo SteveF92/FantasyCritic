@@ -47,3 +47,15 @@ tr.table-success td {
 tr.table-danger td {
     background-color: $danger !important;
 }
+
+.table tbody tr > td.warning {
+    background-color: $warning;
+}
+
+tr.table-warning td {
+    background-color: $warning !important;
+}
+
+tr.table-warning td span {
+    color: white !important;
+}

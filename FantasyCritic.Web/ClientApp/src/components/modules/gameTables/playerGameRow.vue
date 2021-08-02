@@ -1,11 +1,10 @@
 <template>
-  <tr v-bind:class="{ 'table-danger': game.counterPick }">
+  <tr v-bind:class="{ 'table-danger': game.counterPick, 'table-warning': game.currentlyIneligible }">
     <td>
       <span class="master-game-popover">
         <masterGamePopover v-if="game.linked" :masterGame="game.masterGame"></masterGamePopover>
         <span v-if="!game.linked">{{game.gameName}}</span>
       </span>
-
 
       <span v-if="game.counterPick" class="counter-pick-text">
         (Counter-Pick)
@@ -15,8 +14,18 @@
         Not linked to Master Game
       </span>
 
-      <span v-if="!game.willRelease && game.linked" class="game-status">
-        Will not Release
+      <span v-if="!game.willRelease && game.linked && !game.manualWillNotRelease" class="game-status">
+        <span v-show="!yearFinished">Will not Release</span>
+        <span v-show="yearFinished">Did not Release</span>
+      </span>
+      <span v-if="game.manualWillNotRelease && game.linked" class="game-status">
+        Will not Release (League Override)
+      </span>
+      <span v-if="game.manualCriticScore && game.linked" class="game-status">
+        Manually Scored
+      </span>
+      <span v-if="game.currentlyIneligible" class="game-status">
+        Ineligible
       </span>
     </td>
     <td v-if="game.releaseDate">{{releaseDate}}</td>
