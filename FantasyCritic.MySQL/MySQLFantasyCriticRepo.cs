@@ -153,17 +153,19 @@ namespace FantasyCritic.MySQL
         {
             string sql = "update tbl_league_publishergame SET FantasyPoints = @FantasyPoints, CurrentlyIneligible = @CurrentlyIneligible where PublisherGameID = @PublisherGameID;";
             List<PublisherGameUpdateEntity> updateEntities = calculatedStats.Select(x => new PublisherGameUpdateEntity(x)).ToList();
-            var updateBatches = updateEntities.Batch(10_000);
+            var updateBatches = updateEntities.Batch(1000).ToList();
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    foreach (var batch in updateBatches)
+                    for (var index = 0; index < updateBatches.Count; index++)
                     {
+                        _logger.Info($"Running publisher game update {index+1}/{updateBatches.Count}");
+                        var batch = updateBatches[index];
                         await connection.ExecuteAsync(sql, batch, transaction);
                     }
-                    
+
                     await transaction.CommitAsync();
                 }
             }
