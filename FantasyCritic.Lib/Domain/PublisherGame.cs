@@ -150,7 +150,7 @@ namespace FantasyCritic.Lib.Domain
 
             if (masterGame.InternationalReleaseDate.HasValue)
             {
-                var willReleaseInternationallyFirstTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "PlannedForEarlyAccess");
+                var willReleaseInternationallyFirstTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "WillReleaseInternationallyFirst");
                 if (willReleaseInternationallyFirstTag is not null)
                 {
                     if (willReleaseInternationallyFirstTag.Status == TagStatus.Banned)
@@ -159,7 +159,7 @@ namespace FantasyCritic.Lib.Domain
                     }
                 }
 
-                var releasedInternationallyTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "CurrentlyInEarlyAccess");
+                var releasedInternationallyTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "ReleasedInternationally");
                 if (releasedInternationallyTag is not null)
                 {
                     if (releasedInternationallyTag.Status == TagStatus.Banned)

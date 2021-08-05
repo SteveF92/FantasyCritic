@@ -151,15 +151,19 @@ namespace FantasyCritic.MySQL
 
         public async Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
         {
+            string sql = "update tbl_league_publishergame SET FantasyPoints = @FantasyPoints, CurrentlyIneligible = @CurrentlyIneligible where PublisherGameID = @PublisherGameID;";
             List<PublisherGameUpdateEntity> updateEntities = calculatedStats.Select(x => new PublisherGameUpdateEntity(x)).ToList();
+            var updateBatches = updateEntities.Batch(10_000);
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync(
-                        "update tbl_league_publishergame SET FantasyPoints = @FantasyPoints, CurrentlyIneligible = @CurrentlyIneligible where PublisherGameID = @PublisherGameID;",
-                        updateEntities, transaction);
+                    foreach (var batch in updateBatches)
+                    {
+                        await connection.ExecuteAsync(sql, batch, transaction);
+                    }
+                    
                     await transaction.CommitAsync();
                 }
             }
