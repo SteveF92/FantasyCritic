@@ -276,7 +276,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var today = _clock.GetCurrentInstant().ToEasternDate();
-            if (today.DayOfWeek != IsoDayOfWeek.Saturday)
+            if (today.DayOfWeek != IsoDayOfWeek.Saturday && today.DayOfWeek != IsoDayOfWeek.Sunday)
             {
                 return BadRequest($"You probably didn't mean to process pickups on a {today.DayOfWeek}");
             }
@@ -306,7 +306,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var today = _clock.GetCurrentInstant().ToEasternDate();
-            if (today.DayOfWeek != IsoDayOfWeek.Saturday)
+            if (today.DayOfWeek != IsoDayOfWeek.Saturday && today.DayOfWeek != IsoDayOfWeek.Sunday)
             {
                 return BadRequest($"You probably didn't mean to process drops on a {today.DayOfWeek}");
             }
