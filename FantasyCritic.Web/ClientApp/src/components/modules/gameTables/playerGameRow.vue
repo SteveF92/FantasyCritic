@@ -24,8 +24,9 @@
       <span v-if="game.manualCriticScore && game.linked" class="game-status">
         Manually Scored
       </span>
-      <span v-if="game.currentlyIneligible" class="game-status">
+      <span v-if="game.currentlyIneligible" class="game-ineligible">
         Ineligible
+        <font-awesome-icon color="white" size="md" icon="info-circle" v-b-popover.hover="inEligibleText" />
       </span>
     </td>
     <td v-if="game.releaseDate">{{releaseDate}}</td>
@@ -47,6 +48,20 @@ export default {
   computed: {
     releaseDate() {
       return moment(this.game.releaseDate).format('MMMM Do, YYYY');
+    },
+    inEligibleText() {
+      return {
+        html: true,
+        title: () => {
+          return "What does this mean?";
+        },
+        content: () => {
+          return 'This game is currently ineligible based on your league rules. Until you take action, any points the game recieved still count. <br/> <br/>' +
+            'The intention is for the league to discuss what should happen. If you manually mark the game as eligible or change your ' +
+            'league rules, this will disappear. <br/> <br/>' +
+            'You could also choose to remove the game. The manager can use "Remove Publisher Game" to do that.';
+        }
+      }
     }
   }
 };
@@ -66,6 +81,14 @@ export default {
     color: #B1B1B1;
     font-style: italic;
   }
+
+  .game-ineligible {
+    float: right;
+    color: white;
+    font-style: italic;
+    padding-left: 5px;
+  }
+
   .master-game-popover {
     float: left;
   }
