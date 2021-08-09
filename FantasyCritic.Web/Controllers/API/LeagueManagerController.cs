@@ -1445,6 +1445,12 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.SetEligibilityOverride(leagueYear.Value, masterGame.Value, request.Eligible);
+            var refreshedLeagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (refreshedLeagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+            await _fantasyCriticService.UpdatePublisherGameCalculatedStats(refreshedLeagueYear.Value);
 
             return Ok();
         }
