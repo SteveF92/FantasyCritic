@@ -10,7 +10,7 @@
           </div>
         </div>
 
-        <span slot="reference" class="text-primary fake-link">
+        <span slot="reference" class="fake-link" :class="{ 'text-primary': !currentlyIneligible }">
           {{masterGame.gameName}}
         </span>
       </popper>
@@ -36,7 +36,7 @@ export default {
     'popper': Popper,
     MasterGameSummary
   },
-  props: ['masterGame'],
+  props: ['masterGame', 'currentlyIneligible'],
   methods: {
     closePopover() {
       this.$refs.gamePopoverRef.doClose();
