@@ -47,6 +47,8 @@ namespace FantasyCritic.Lib.Domain
             return eligibilityOverride.Eligible;
         }
 
+        public bool? GetOverriddenEligibility(Maybe<MasterGameYear> masterGameYear) => masterGameYear.HasNoValue ? null : GetOverriddenEligibility(masterGameYear.Value.MasterGame);
+
         public bool GameIsEligible(MasterGame masterGame)
         {
             bool found = _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);

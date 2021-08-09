@@ -93,8 +93,13 @@ namespace FantasyCritic.Lib.Domain
             return MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
         }
 
-        public bool CalculateIsCurrentlyIneligible(LeagueOptions options, LocalDate currentDate)
+        public bool CalculateIsCurrentlyIneligible(LeagueOptions options, bool? overridenEligibility)
         {
+            if (overridenEligibility.HasValue)
+            {
+                return !overridenEligibility.Value;
+            }
+
             if (MasterGame.HasNoValue)
             {
                 return false;
