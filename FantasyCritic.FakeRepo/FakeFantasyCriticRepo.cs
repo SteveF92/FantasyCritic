@@ -547,5 +547,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task<Result> DismissManagerMessage(Guid messageId, Guid userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

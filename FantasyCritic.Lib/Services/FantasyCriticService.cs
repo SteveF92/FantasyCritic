@@ -401,5 +401,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.DeleteManagerMessage(messageID);
         }
+
+        public Task<Result> DismissManagerMessage(Guid messageID, Guid userID)
+        {
+            return _fantasyCriticRepo.DismissManagerMessage(messageID, userID);
+        }
     }
 }

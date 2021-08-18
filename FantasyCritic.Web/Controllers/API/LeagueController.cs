@@ -1373,6 +1373,25 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DismissManagerMessage([FromBody] DismissManagerMessageRequest request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            Result result = await _fantasyCriticService.DismissManagerMessage(request.MessageID, currentUser.UserID);
+            if (result.IsFailure)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
         private IReadOnlyList<UpcomingGameViewModel> GetUpcomingGameViewModels(IEnumerable<Publisher> publishers, bool userMode)
         {
             var publisherGames = publishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue);

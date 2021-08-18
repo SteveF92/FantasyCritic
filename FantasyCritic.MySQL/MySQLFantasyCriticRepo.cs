@@ -2168,6 +2168,22 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<Result> DismissManagerMessage(Guid messageId, Guid userId)
+        {
+            string sql = "INSERT IGNORE INTO `tbl_league_managermessagedismissal` " +
+                         "(`MessageID`, `UserID`) VALUES(@messageId, @userID);";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var rowsAdded = await connection.ExecuteAsync(sql, new { messageId, userId });
+                if (rowsAdded != 1)
+                {
+                    return Result.Failure("Invalid request");
+                }
+            }
+
+            return Result.Success();
+        }
+
         public async Task FinishYear(SupportedYear supportedYear)
         {
             string sql = "UPDATE tbl_meta_supportedyear SET Finished = 1 WHERE Year = @year;";

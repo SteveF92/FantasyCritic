@@ -39,10 +39,10 @@
           <label>Followers: </label> {{league.numberOfFollowers}}
         </div>
 
-        <div class="alert alert-info" v-if="mostRecentManagerMessage">
+        <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
           <h5>Manager's Message ({{mostRecentManagerMessage.timestamp | dateTime}})</h5>
           <div class="preserve-whitespace">{{mostRecentManagerMessage.messageText}}</div>
-        </div>
+        </b-alert>
 
         <div v-if="league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-info" role="info">
           You are viewing a public league.
@@ -438,6 +438,19 @@ export default {
       if (inviteCode) {
         this.inviteCode = inviteCode;
       }
+    },
+    dismissRecentManagerMessage() {
+      var model = {
+        messageID: this.mostRecentManagerMessage.messageID
+      };
+      axios
+        .post('/api/league/DismissManagerMessage', model)
+        .then(response => {
+          this.fetchLeague();
+        })
+        .catch(response => {
+
+        });
     },
     async startHubConnection() {
       let token = this.$store.getters.token;
