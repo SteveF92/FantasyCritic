@@ -2126,18 +2126,38 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear)
         {
-            var sql = "select * from tbl_league_managermessage where LeagueID = @leagueID AND Year = @year;";
+            var messageSQL = "select * from tbl_league_managermessage where LeagueID = @leagueID AND Year = @year;";
             var queryObject = new
             {
                 leagueID = leagueYear.League.LeagueID,
                 year = leagueYear.Year
             };
 
+            var dismissSQL = "select * from tbl_league_managermessagedismissal where MessageID in @messageIDs;";
+
+            IEnumerable<ManagerMessageEntity> messageEntities;
+            IEnumerable<ManagerMessageDismissalEntity> dismissalEntities;
             using (var connection = new MySqlConnection(_connectionString))
             {
-                IEnumerable<ManagerMessageEntity> entities = await connection.QueryAsync<ManagerMessageEntity>(sql, queryObject);
-                return entities.Select(x => x.ToDomain()).ToList();
+                messageEntities = await connection.QueryAsync<ManagerMessageEntity>(messageSQL, queryObject);
+
+                var messageIDs = messageEntities.Select(x => x.MessageID);
+                var dismissQueryObject = new
+                {
+                    messageIDs
+                };
+                dismissalEntities = await connection.QueryAsync<ManagerMessageDismissalEntity>(dismissSQL, dismissQueryObject);
             }
+
+            List<ManagerMessage> domainMessages = new List<ManagerMessage>();
+            var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
+            foreach (var messageEntity in messageEntities)
+            {
+                var dismissedUserIDs = dismissalLookup[messageEntity.MessageID].Select(x => x.UserID);
+                domainMessages.Add(messageEntity.ToDomain(dismissedUserIDs));
+            }
+
+            return domainMessages;
         }
 
         public async Task DeleteManagerMessage(Guid messageId)

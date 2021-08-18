@@ -32,9 +32,9 @@ namespace FantasyCritic.MySQL.Entities
         public bool IsPublic { get; set; }
         public Instant Timestamp { get; set; }
 
-        public ManagerMessage ToDomain()
+        public ManagerMessage ToDomain(IEnumerable<Guid> dismissedByUserIDs)
         {
-            return new ManagerMessage(MessageID, MessageText, IsPublic, Timestamp);
+            return new ManagerMessage(MessageID, MessageText, IsPublic, Timestamp, dismissedByUserIDs);
         }
     }
 }

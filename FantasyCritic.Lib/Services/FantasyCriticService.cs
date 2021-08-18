@@ -388,7 +388,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task PostNewManagerMessage(LeagueYear leagueYear, string message, bool isPublic)
         {
-            var domainMessage = new ManagerMessage(Guid.NewGuid(), message, isPublic, _clock.GetCurrentInstant());
+            var domainMessage = new ManagerMessage(Guid.NewGuid(), message, isPublic, _clock.GetCurrentInstant(), new List<Guid>());
             await _fantasyCriticRepo.PostNewManagerMessage(leagueYear, domainMessage);
         }
 

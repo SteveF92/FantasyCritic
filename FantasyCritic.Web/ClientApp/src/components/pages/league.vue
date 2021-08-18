@@ -242,7 +242,12 @@ export default {
         return null;
       }
 
-      return this.leagueYear.managerMessages[this.leagueYear.managerMessages.length - 1];
+      let mostRecentMessage = this.leagueYear.managerMessages[this.leagueYear.managerMessages.length - 1];
+      if (mostRecentMessage.isDismissed) {
+        return null;
+      }
+
+      return mostRecentMessage;
     }
   },
   methods: {
