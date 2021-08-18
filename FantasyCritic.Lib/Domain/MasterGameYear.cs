@@ -62,6 +62,11 @@ namespace FantasyCritic.Lib.Domain
                 return false;
             }
 
+            if (MasterGame.Tags.Any(x => x.Name == "Cancelled"))
+            {
+                return false;
+            }
+
             return true;
         }
 
