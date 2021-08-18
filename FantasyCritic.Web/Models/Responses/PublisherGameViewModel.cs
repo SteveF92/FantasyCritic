@@ -49,6 +49,7 @@ namespace FantasyCritic.Web.Models.Responses
             WillRelease = publisherGame.WillRelease();
             ManualWillNotRelease = publisherGame.ManualWillNotRelease;
             CurrentlyIneligible = publisherGame.CurrentlyIneligible;
+            OverallDraftPosition = publisherGame.OverallDraftPosition;
         }
 
         public Guid PublisherGameID { get; }
@@ -62,6 +63,7 @@ namespace FantasyCritic.Web.Models.Responses
         public decimal SimpleProjectedFantasyPoints { get; }
         public decimal AdvancedProjectedFantasyPoints { get; }
         public MasterGameYearViewModel MasterGame { get; }
+        public int? OverallDraftPosition { get; }
 
         public bool Linked { get; }
         public bool Released { get; }

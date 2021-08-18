@@ -20,7 +20,7 @@
         <li>Will Not Release Games Dropped: {{getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames)}}</li>
         <li>"Any Unreleased" Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
       </ul>
-      <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options"></playerGameTable>
+      <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options" :yearFinished="leagueYear.supportedYear.finished"></playerGameTable>
     </div>
   </div>
 </template>

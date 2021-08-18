@@ -5,12 +5,13 @@
         <tr class="bg-primary">
           <th scope="col">Game Name</th>
           <th scope="col">Release Date</th>
+          <th scope="col">Date Acquired</th>
           <th scope="col">Critic Score</th>
           <th scope="col">Fantasy Points</th>
         </tr>
       </thead>
       <tbody>
-        <playerGameRow v-for="game in standardGames" :game="game" v-bind:key="game.publisherGameID"></playerGameRow>
+        <playerGameRow v-for="game in standardGames" :game="game" :yearFinished="yearFinished" v-bind:key="game.publisherGameID"></playerGameRow>
         <blankPlayerGameRow v-for="blankSpace in standardFiller" v-bind:key="blankSpace"></blankPlayerGameRow>
         <playerGameRow v-for="game in counterPicks" :game="game" v-bind:key="game.publisherGameID"></playerGameRow>
         <blankPlayerGameRow v-for="blankSpace in counterPickFiller" v-bind:key="blankSpace"></blankPlayerGameRow>
@@ -20,6 +21,7 @@
               Total Fantasy Points
             </span>
           </td>
+          <td></td>
           <td></td>
           <td id="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</td>
           <td id="total-column" class="success">{{publisher.totalFantasyPoints | score(2)}}</td>
@@ -38,7 +40,7 @@ export default {
     PlayerGameRow,
     BlankPlayerGameRow
   },
-  props: ['publisher', 'options'],
+  props: ['publisher', 'options', 'yearFinished'],
   computed: {
     standardGames() {
       return _.filter(this.publisher.games, { 'counterPick': false });

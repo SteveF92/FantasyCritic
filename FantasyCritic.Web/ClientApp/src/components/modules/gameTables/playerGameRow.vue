@@ -31,6 +31,7 @@
     </td>
     <td v-if="game.releaseDate">{{releaseDate}}</td>
     <td v-else>{{game.estimatedReleaseDate}} (Estimated)</td>
+    <td>{{acquireDate}}</td>
     <td>{{game.criticScore | score(2)}}</td>
     <td>{{game.fantasyPoints | score(2)}}</td>
   </tr>
@@ -44,10 +45,18 @@ export default {
   components: {
     MasterGamePopover
   },
-  props: ['game'],
+  props: ['game', 'yearFinished'],
   computed: {
     releaseDate() {
       return moment(this.game.releaseDate).format('MMMM Do, YYYY');
+    },
+    acquireDate() {
+      let type = 'Drafted';
+      if (!this.game.overallDraftPosition) {
+        type = 'Picked up';
+      }
+      let date = moment(this.game.timestamp).format('MMMM Do, YYYY');
+      return type + ' on ' + date;
     },
     inEligibleText() {
       return {
