@@ -320,7 +320,7 @@
       <faqCollapse>
         <div slot="question">What happens if I drop a game that someone counter picked?</div>
         <div slot="answer">
-          Your game is dropped, but the counterpick the other player has stays and is not affected.
+          Your game is dropped, but the counterpick the other player has stays and is not affected. However, if your league has the "counter picks block drops" option on, then you will not be able to drop a game if it has been counter picked by another player.
         </div>
       </faqCollapse>
       <faqCollapse>
