@@ -251,12 +251,12 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 var allBids = await _gameAcquisitionService.GetActiveAcquistitionBids(supportedYear);
                 var distinctBids = allBids.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
-                var bidVMs = distinctBids.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, failingBidGames.Contains(x.MasterGame.GameName)));
+                var bidVMs = distinctBids.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingBidGames.Contains(x.MasterGame.GameName)));
                 pickupGames.AddRange(bidVMs);
 
                 var allDrops = await _gameAcquisitionService.GetActiveDropRequests(supportedYear);
                 var distinctDrops = allDrops.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
-                var dropVMs = distinctDrops.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, failingDropGames.Contains(x.MasterGame.GameName)));
+                var dropVMs = distinctDrops.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingDropGames.Contains(x.MasterGame.GameName)));
                 bidGames.AddRange(dropVMs);
             }
 

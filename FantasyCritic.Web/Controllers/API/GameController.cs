@@ -44,8 +44,10 @@ namespace FantasyCritic.Web.Controllers.API
                 return NotFound();
             }
 
+            var numberOutstandingCorrections = await _interLeagueService.GetNumberOutstandingCorrections(masterGame.Value);
+
             var currentDate = _clock.GetToday();
-            var viewModel = new MasterGameViewModel(masterGame.Value, currentDate);
+            var viewModel = new MasterGameViewModel(masterGame.Value, currentDate, numberOutstandingCorrections: numberOutstandingCorrections);
             return viewModel;
         }
 

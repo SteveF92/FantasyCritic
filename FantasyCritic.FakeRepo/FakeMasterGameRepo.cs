@@ -29,6 +29,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task<int> GetNumberOutstandingCorrections(MasterGame masterGame)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
         {
             throw new NotImplementedException();

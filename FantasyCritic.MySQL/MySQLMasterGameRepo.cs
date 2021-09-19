@@ -314,6 +314,22 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<int> GetNumberOutstandingCorrections(MasterGame masterGame)
+        {
+            var sql = "select count(*) from tbl_mastergame_changerequest where MasterGameID = @masterGameID";
+
+            var queryObject = new
+            {
+                masterGameID = masterGame.MasterGameID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                int count = await connection.QuerySingleAsync<int>(sql, queryObject);
+                return count;
+            }
+        }
+
         public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
         {
             Guid? masterGameID = null;

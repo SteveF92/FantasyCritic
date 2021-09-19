@@ -11,7 +11,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class MasterGameViewModel
     {
-        public MasterGameViewModel(MasterGame masterGame, LocalDate currentDate)
+        public MasterGameViewModel(MasterGame masterGame, LocalDate currentDate, bool error = false, int numberOutstandingCorrections = 0)
         {
             MasterGameID = masterGame.MasterGameID;
             GameName = masterGame.GameName;
@@ -31,6 +31,9 @@ namespace FantasyCritic.Web.Models.Responses
             Tags = masterGame.Tags.Select(x => x.Name).ToList();
             BoxartFileName = masterGame.BoxartFileName;
             AddedTimestamp = masterGame.AddedTimestamp;
+
+            Error = error;
+            NumberOutstandingCorrections = numberOutstandingCorrections;
         }
 
         public MasterGameViewModel(MasterSubGame masterSubGame, LocalDate currentDate)
@@ -46,12 +49,6 @@ namespace FantasyCritic.Web.Models.Responses
             AveragedScore = false;
             OpenCriticID = masterSubGame.OpenCriticID;
             SubGames = null;
-        }
-
-        public MasterGameViewModel(MasterGame masterGame, LocalDate currentDate, bool error)
-            : this(masterGame, currentDate)
-        {
-            Error = error;
         }
 
         public Guid MasterGameID { get; }
@@ -72,5 +69,6 @@ namespace FantasyCritic.Web.Models.Responses
         public string BoxartFileName { get; }
         public Instant AddedTimestamp { get; }
         public bool Error { get; }
+        public int NumberOutstandingCorrections { get; }
     }
 }
