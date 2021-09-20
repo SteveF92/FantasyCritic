@@ -316,7 +316,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<int> GetNumberOutstandingCorrections(MasterGame masterGame)
         {
-            var sql = "select count(*) from tbl_mastergame_changerequest where MasterGameID = @masterGameID";
+            var sql = "select count(*) from tbl_mastergame_changerequest where MasterGameID = @masterGameID AND Answered = 0";
 
             var queryObject = new
             {

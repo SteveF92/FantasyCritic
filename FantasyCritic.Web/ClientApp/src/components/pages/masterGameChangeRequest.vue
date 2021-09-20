@@ -17,7 +17,7 @@
             Also, you can use this form to let me know if I am missing a link to a game's OpenCritic page.
           </strong>
         </p>
-        <div v-if="masterGame.numberOutstandingCorrections" class="alert alert-warning">There are {{masterGame.numberOutstandingCorrections}} correction(s) currently submitted that I have not reviewed.
+        <div v-if="masterGame && masterGame.numberOutstandingCorrections" class="alert alert-warning">There are {{masterGame.numberOutstandingCorrections}} correction(s) currently submitted that I have not reviewed.
         You may not need to submit anything.</div>
         <p v-show="!masterGame">
           <strong>
