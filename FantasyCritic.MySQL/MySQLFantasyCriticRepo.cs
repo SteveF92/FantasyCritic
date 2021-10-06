@@ -833,7 +833,7 @@ namespace FantasyCritic.MySQL
             return leagues;
         }
 
-        public Task FollowLeague(League league, FantasyCriticUser user)
+        public async Task FollowLeague(League league, FantasyCriticUser user)
         {
             var userAddObject = new
             {
@@ -843,12 +843,12 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync(
+                await connection.ExecuteAsync(
                     "insert into tbl_user_followingleague(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
             }
         }
 
-        public Task UnfollowLeague(League league, FantasyCriticUser user)
+        public async Task UnfollowLeague(League league, FantasyCriticUser user)
         {
             var deleteObject = new
             {
@@ -858,7 +858,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync(
+                await connection.ExecuteAsync(
                     "delete from tbl_user_followingleague where LeagueID = @leagueID and UserID = @userID;",
                     deleteObject);
             }
@@ -900,13 +900,13 @@ namespace FantasyCritic.MySQL
             return leagueInvites;
         }
 
-        public Task SaveInvite(LeagueInvite leagueInvite)
+        public async Task SaveInvite(LeagueInvite leagueInvite)
         {
             var entity = new LeagueInviteEntity(leagueInvite);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync(
+                await connection.ExecuteAsync(
                     "insert into tbl_league_invite(InviteID,LeagueID,EmailAddress,UserID) VALUES (@inviteID, @leagueID, @emailAddress, @userID);",
                     entity);
             }
@@ -1701,7 +1701,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task DeletePublisher(Publisher publisher)
+        public async Task DeletePublisher(Publisher publisher)
         {
             var deleteObject = new
             {
@@ -1710,13 +1710,13 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync(
+                await connection.ExecuteAsync(
                     "delete from tbl_league_publisher where PublisherID = @publisherID;",
                     deleteObject);
             }
         }
 
-        public Task DeleteLeagueYear(LeagueYear leagueYear)
+        public async Task DeleteLeagueYear(LeagueYear leagueYear)
         {
             var deleteObject = new
             {
@@ -1726,13 +1726,13 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync(
+                await connection.ExecuteAsync(
                     "delete from tbl_league_year where LeagueID = @leagueID and Year = @year;",
                     deleteObject);
             }
         }
 
-        public Task DeleteLeague(League league)
+        public async Task DeleteLeague(League league)
         {
             var deleteObject = new
             {
@@ -1741,11 +1741,11 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync("delete from tbl_league where LeagueID = @leagueID;", deleteObject);
+                await connection.ExecuteAsync("delete from tbl_league where LeagueID = @leagueID;", deleteObject);
             }
         }
 
-        public Task DeleteLeagueActions(Publisher publisher)
+        public async Task DeleteLeagueActions(Publisher publisher)
         {
             var deleteObject = new
             {
@@ -1754,7 +1754,7 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                return connection.ExecuteAsync("delete from tbl_league_action where PublisherID = @publisherID;", deleteObject);
+                await connection.ExecuteAsync("delete from tbl_league_action where PublisherID = @publisherID;", deleteObject);
             }
         }
 
