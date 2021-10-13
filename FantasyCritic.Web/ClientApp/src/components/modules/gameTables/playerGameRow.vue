@@ -18,6 +18,9 @@
         <span v-show="!yearFinished">Will not Release</span>
         <span v-show="yearFinished">Did not Release</span>
       </span>
+      <span v-if="game.released && game.linked && !game.criticScore" class="game-status">
+        <span>Needs more reviews</span>
+      </span>
       <span v-if="game.manualWillNotRelease && game.linked" class="game-status">
         Will not Release (League Override)
       </span>
