@@ -14,10 +14,10 @@ df=df.replace(0,np.nan)
 
 df=df.fillna(df.mean())
 
-X=df[['EligiblePercentStandardGame', 'AdjustedPercentCounterPick', 'DateAdjustedHypeFactor','AverageDraftPosition','TotalBidAmount','BidPercentile']]
+X=df[['EligiblePercentStandardGame', 'AdjustedPercentCounterPick', 'DateAdjustedHypeFactor']]
 Y=df['CriticScore']
 
 regr = linear_model.LinearRegression()
 regr.fit(X, Y)
 
-print("CriticScoreFormula = {:.4} + {:.4} * EligiblePercentStandardGame + {:.4} * AdjustedPercentCounterPick + {:.4} * DateAdjustedHypeFactor + {:.4} * AverageDraftPosition + {:.4} * TotalBidAmount + {:.4} * BidPercentile".format(regr.intercept_, regr.coef_[0], regr.coef_[1], regr.coef_[2],regr.coef_[3],regr.coef_[4],regr.coef_[5]))
+print("CriticScoreFormula = {:.4} + {:.4} * EligiblePercentStandardGame + {:.4} * AdjustedPercentCounterPick + {:.4} * DateAdjustedHypeFactor".format(regr.intercept_, regr.coef_[0], regr.coef_[1], regr.coef_[2]))

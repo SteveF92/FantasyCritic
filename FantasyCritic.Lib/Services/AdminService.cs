@@ -285,20 +285,16 @@ namespace FantasyCritic.Lib.Services
             }
 
             var result = _pythonRunner.RunPython(scriptPath, dataPath);
-            var splitString = result.Split(' ');
+            var splitString = result.Split(Environment.NewLine);
 
             File.Delete(dataPath);
 
-            double baseScore = double.Parse(splitString[2]);
-            double standardGameConstant = double.Parse(splitString[4]);
-            double counterPickConstant = double.Parse(splitString[8]);
-            double hypeFactorConstant = double.Parse(splitString[12]);
-            double averageDraftPositionConstant = double.Parse(splitString[16]);
-            double totalBidAmountConstant = double.Parse(splitString[20]);
-            double bidPercentileConstant = double.Parse(splitString[24]);
+            double baseScore = double.Parse(splitString[0].Split(":")[1]);
+            double standardGameConstant = double.Parse(splitString[1].Split(":")[1]);
+            double counterPickConstant = double.Parse(splitString[2].Split(":")[1]);
+            double hypeFactorConstant = double.Parse(splitString[3].Split(":")[1]);
 
-            HypeConstants hypeConstants = new HypeConstants(baseScore, standardGameConstant, counterPickConstant,
-                hypeFactorConstant, averageDraftPositionConstant, totalBidAmountConstant, bidPercentileConstant);
+            HypeConstants hypeConstants = new HypeConstants(baseScore, standardGameConstant, counterPickConstant, hypeFactorConstant);
 
             _logger.LogInformation($"Hype Constants: {hypeConstants}");
 
@@ -451,17 +447,11 @@ namespace FantasyCritic.Lib.Services
                     double standardGameCalculation = percentStandardGameToUse * hypeConstants.StandardGameConstant;
                     double counterPickCalculation = percentCounterPickToUse * hypeConstants.CounterPickConstant;
                     double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
-                    double averageDraftPositionCalculation = notNullAverageDraftPosition * hypeConstants.AverageDraftPositionConstant;
-                    double totalBidCalculation = totalBidAmount * hypeConstants.TotalBidAmountConstant;
-                    double bidPercentileCalculation = bidPercentile * hypeConstants.BidPercentileConstant;
 
                     double linearRegressionHypeFactor = hypeConstants.BaseScore
                                                         + standardGameCalculation
                                                         + counterPickCalculation
-                                                        + hypeFactorCalculation
-                                                        + averageDraftPositionCalculation
-                                                        + totalBidCalculation
-                                                        + bidPercentileCalculation;
+                                                        + hypeFactorCalculation;
 
                     linearRegressionHypeFactor = FixDouble(linearRegressionHypeFactor);
 
