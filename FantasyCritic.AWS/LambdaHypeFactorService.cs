@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon;
@@ -15,11 +16,14 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Statistics;
 using Newtonsoft.Json;
+using NLog;
 
 namespace FantasyCritic.AWS
 {
     public class LambdaHypeFactorService : IHypeFactorService
     {
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly string _region;
         private readonly string _bucket;
 
@@ -42,6 +46,14 @@ namespace FantasyCritic.AWS
             };
 
             InvokeResponse response = await lambdaClient.InvokeAsync(request);
+            if (response.HttpStatusCode != HttpStatusCode.OK)
+            {
+                _logger.Error(response.HttpStatusCode);
+                _logger.Error(response.FunctionError);
+                _logger.Error(response.LogResult);
+                throw new Exception("Lambda function failed.");
+            }
+
             var stringReader = new StreamReader(response.Payload);
             var responseString = stringReader.ReadToEnd().Trim('"').Replace("\\", "");
             var entity = JsonConvert.DeserializeObject<HypeConstantsEntity>(responseString);
