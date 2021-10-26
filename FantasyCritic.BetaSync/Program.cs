@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Configuration;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
+using Dapper;
 using Dapper.NodaTime;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -12,6 +15,8 @@ using Microsoft.Extensions.Logging;
 using NLog;
 using NodaTime;
 using FantasyCritic.AWS;
+using FantasyCritic.MySQL.Entities;
+using MySqlConnector;
 
 namespace FantasyCritic.BetaSync
 {
@@ -47,9 +52,20 @@ namespace FantasyCritic.BetaSync
             await cleaner.CleanEmailsAndPasswords(allUsers, betaUsers);
 
             _logger.Info("Getting master games from production");
+            var productionMasterGameTags = await productionMasterGameRepo.GetMasterGameTags();
             var productionMasterGames = await productionMasterGameRepo.GetMasterGames();
-            await cleaner.UpdateMasterGames(productionMasterGames);
+            IReadOnlyList<MasterGameHasTagEntity> productionGamesHaveTagEntities = await GetProductionGamesHaveTagEntities();
+            await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, productionGamesHaveTagEntities);
             await betaAdminService.RefreshCaches();
+        }
+
+        private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
+        {
+            using (var connection = new MySqlConnection(_productionReadOnlyConnectionString))
+            {
+                var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
+                return masterGameTagResults.ToList();
+            }
         }
 
         private static AdminService GetAdminService()

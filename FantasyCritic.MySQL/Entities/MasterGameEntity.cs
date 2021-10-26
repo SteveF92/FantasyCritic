@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using NodaTime;
 
+[assembly: InternalsVisibleTo("FantasyCritic.BetaSync")]
 namespace FantasyCritic.MySQL.Entities
 {
     internal class MasterGameEntity
@@ -34,6 +36,7 @@ namespace FantasyCritic.MySQL.Entities
             DoNotRefreshDate = masterGame.DoNotRefreshDate;
             DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
             EligibilityChanged = masterGame.EligibilityChanged;
+            AddedTimestamp = masterGame.AddedTimestamp;
         }
 
         public Guid MasterGameID { get; set; }
