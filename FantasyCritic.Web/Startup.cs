@@ -95,8 +95,7 @@ namespace FantasyCritic.Web
             //services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             //services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
-            services.AddScoped<IPythonService>(factory => new LambdaService());
-            services.AddScoped<IFantasyCriticFileRepository>(factory => new S3FantasyCriticFileRepository(awsRegion, awsBucket));
+            services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
             services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticRoleManager>();

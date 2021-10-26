@@ -7,8 +7,8 @@ using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Lib.Interfaces
 {
-    public interface IPythonService
+    public interface IHypeFactorService
     {
-        Task<HypeConstants> GetHypeConstants();
+        Task<HypeConstants> GetHypeConstants(IEnumerable<MasterGameYear> allMasterGameYears);
     }
 }

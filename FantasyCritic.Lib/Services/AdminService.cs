@@ -22,8 +22,7 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly IRDSManager _rdsManager;
         private readonly RoyaleService _royaleService;
-        private readonly IFantasyCriticFileRepository _fileRepository;
-        private readonly IPythonService _pythonService;
+        private readonly IHypeFactorService _hypeFactorService;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
         private readonly IMasterGameRepo _masterGameRepo;
@@ -34,7 +33,7 @@ namespace FantasyCritic.Lib.Services
 
         public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
             InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<AdminService> logger, IRDSManager rdsManager,
-            RoyaleService royaleService, IFantasyCriticFileRepository fileRepository, IPythonService pythonService)
+            RoyaleService royaleService, IHypeFactorService hypeFactorService)
         {
             _fantasyCriticService = fantasyCriticService;
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -45,8 +44,7 @@ namespace FantasyCritic.Lib.Services
             _logger = logger;
             _rdsManager = rdsManager;
             _royaleService = royaleService;
-            _fileRepository = fileRepository;
-            _pythonService = pythonService;
+            _hypeFactorService = hypeFactorService;
         }
 
         public async Task FullDataRefresh()
@@ -154,12 +152,12 @@ namespace FantasyCritic.Lib.Services
         {
             _logger.LogInformation("Refreshing caches");
 
-            LocalDate today = _clock.GetToday();
-            LocalDate tomorrow = today.PlusDays(1);
-            await UpdateCodeBasedTags(today);
-            await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
+            //LocalDate today = _clock.GetToday();
+            //LocalDate tomorrow = today.PlusDays(1);
+            //await UpdateCodeBasedTags(today);
+            //await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
-            await UpdateSystemWideValues();
+            //await UpdateSystemWideValues();
             var hypeConstants = await GetHypeConstants();
             await UpdateGameStats(hypeConstants);
             _logger.LogInformation("Done refreshing caches");
@@ -274,16 +272,7 @@ namespace FantasyCritic.Lib.Services
                 allMasterGameYears.AddRange(relevantGames);
             }
 
-            var outputModels = allMasterGameYears.Select(x => new MasterGameYearScriptInput(x));
-
-            var memoryStream = new MemoryStream();
-            var writer = new StreamWriter(memoryStream);
-            var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-            csv.WriteRecords(outputModels);
-            await _fileRepository.UploadMasterGameYearStats(memoryStream);
-
-            var hypeConstants = await _pythonService.GetHypeConstants();
-
+            var hypeConstants = await _hypeFactorService.GetHypeConstants(allMasterGameYears);
             _logger.LogInformation($"Hype Constants: {hypeConstants}");
 
             return hypeConstants;
