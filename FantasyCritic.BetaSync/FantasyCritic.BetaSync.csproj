@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FantasyCritic.AWS\FantasyCritic.AWS.csproj" />
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
   </ItemGroup>

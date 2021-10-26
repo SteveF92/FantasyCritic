@@ -15,11 +15,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Royale;
 using MoreLinq;
+using NLog;
 
 namespace FantasyCritic.Lib.Services
 {
     public class AdminService
     {
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly IRDSManager _rdsManager;
         private readonly RoyaleService _royaleService;
         private readonly IHypeFactorService _hypeFactorService;
@@ -29,10 +32,9 @@ namespace FantasyCritic.Lib.Services
         private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
         private readonly IClock _clock;
-        private readonly ILogger<AdminService> _logger;
 
         public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
-            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<AdminService> logger, IRDSManager rdsManager,
+            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, IRDSManager rdsManager,
             RoyaleService royaleService, IHypeFactorService hypeFactorService)
         {
             _fantasyCriticService = fantasyCriticService;
@@ -41,7 +43,6 @@ namespace FantasyCritic.Lib.Services
             _interLeagueService = interLeagueService;
             _openCriticService = openCriticService;
             _clock = clock;
-            _logger = logger;
             _rdsManager = rdsManager;
             _royaleService = royaleService;
             _hypeFactorService = hypeFactorService;
@@ -60,7 +61,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task RefreshCriticInfo()
         {
-            _logger.LogInformation("Refreshing critic scores");
+            _logger.Info("Refreshing critic scores");
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var masterGames = await _interLeagueService.GetMasterGames();
 
@@ -94,7 +95,7 @@ namespace FantasyCritic.Lib.Services
                 }
                 else
                 {
-                    _logger.LogWarning($"Getting an open critic game failed (empty return): {masterGame.GameName} | [{masterGame.OpenCriticID.Value}]");
+                    _logger.Warn($"Getting an open critic game failed (empty return): {masterGame.GameName} | [{masterGame.OpenCriticID.Value}]");
                 }
 
                 foreach (var subGame in masterGame.SubGames)
@@ -113,12 +114,12 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            _logger.LogInformation("Done refreshing critic scores");
+            _logger.Info("Done refreshing critic scores");
         }
 
         public async Task UpdateFantasyPoints()
         {
-            _logger.LogInformation("Updating fantasy points");
+            _logger.Info("Updating fantasy points");
 
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
@@ -131,8 +132,8 @@ namespace FantasyCritic.Lib.Services
                 await _fantasyCriticService.UpdateLeaguePointsAndStatuses(supportedYear.Year);
             }
 
-            _logger.LogInformation("Done updating fantasy points");
-            _logger.LogInformation("Updating royale fantasy points");
+            _logger.Info("Done updating fantasy points");
+            _logger.Info("Updating royale fantasy points");
 
             var supportedQuarters = await _royaleService.GetYearQuarters();
             foreach (var supportedQuarter in supportedQuarters)
@@ -145,22 +146,22 @@ namespace FantasyCritic.Lib.Services
                 await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
             }
 
-            _logger.LogInformation("Done updating royale fantasy points");
+            _logger.Info("Done updating royale fantasy points");
         }
 
         public async Task RefreshCaches()
         {
-            _logger.LogInformation("Refreshing caches");
+            _logger.Info("Refreshing caches");
 
-            //LocalDate today = _clock.GetToday();
-            //LocalDate tomorrow = today.PlusDays(1);
-            //await UpdateCodeBasedTags(today);
-            //await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
+            LocalDate today = _clock.GetToday();
+            LocalDate tomorrow = today.PlusDays(1);
+            await UpdateCodeBasedTags(today);
+            await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
-            //await UpdateSystemWideValues();
+            await UpdateSystemWideValues();
             var hypeConstants = await GetHypeConstants();
             await UpdateGameStats(hypeConstants);
-            _logger.LogInformation("Done refreshing caches");
+            _logger.Info("Done refreshing caches");
         }
 
         public Task SnapshotDatabase()
@@ -191,7 +192,7 @@ namespace FantasyCritic.Lib.Services
                 var endDate = new LocalDate(supportedYear.Year, 12, 31);
                 if (nycNow.Date > endDate)
                 {
-                    _logger.LogInformation($"Automatically setting {supportedYear} as finished because date/time is: {nycNow}");
+                    _logger.Info($"Automatically setting {supportedYear} as finished because date/time is: {nycNow}");
                     await _interLeagueService.FinishYear(supportedYear);
                 }
             }
@@ -207,7 +208,7 @@ namespace FantasyCritic.Lib.Services
                 var endDate = supportedQuarter.YearQuarter.LastDateOfQuarter;
                 if (nycNow.Date > endDate)
                 {
-                    _logger.LogInformation($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
+                    _logger.Info($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
                     await _royaleService.FinishQuarter(supportedQuarter);
                 }
             }
@@ -226,16 +227,16 @@ namespace FantasyCritic.Lib.Services
             var latestTimeToSet = new LocalTime(20, 59);
             if (dayOfWeek == IsoDayOfWeek.Saturday && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet)
             {
-                _logger.LogInformation($"Automatically setting bid processing mode = true because date/time is: {nycNow}");
+                _logger.Info($"Automatically setting bid processing mode = true because date/time is: {nycNow}");
                 await _interLeagueService.SetBidProcessingMode(true);
-                _logger.LogInformation("Snapshotting database");
+                _logger.Info("Snapshotting database");
                 await _rdsManager.SnapshotRDS(now);
             }
         }
 
         private async Task UpdateSystemWideValues()
         {
-            _logger.LogInformation("Updating system wide values");
+            _logger.Info("Updating system wide values");
 
             List<PublisherGame> allGamesWithPoints = new List<PublisherGame>();
             var supportedYears = await _interLeagueService.GetSupportedYears();
@@ -256,7 +257,7 @@ namespace FantasyCritic.Lib.Services
 
         private async Task<HypeConstants> GetHypeConstants()
         {
-            _logger.LogInformation("Getting Hype Constants");
+            _logger.Info("Getting Hype Constants");
             var supportedYears = await _interLeagueService.GetSupportedYears();
             List<MasterGameYear> allMasterGameYears = new List<MasterGameYear>();
 
@@ -273,14 +274,14 @@ namespace FantasyCritic.Lib.Services
             }
 
             var hypeConstants = await _hypeFactorService.GetHypeConstants(allMasterGameYears);
-            _logger.LogInformation($"Hype Constants: {hypeConstants}");
+            _logger.Info($"Hype Constants: {hypeConstants}");
 
             return hypeConstants;
         }
 
         private async Task UpdateGameStats(HypeConstants hypeConstants)
         {
-            _logger.LogInformation("Updating game stats.");
+            _logger.Info("Updating game stats.");
 
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
@@ -445,7 +446,7 @@ namespace FantasyCritic.Lib.Services
 
         private async Task UpdateCodeBasedTags(LocalDate today)
         {
-            _logger.LogInformation("Updating Code Based Tags");
+            _logger.Info("Updating Code Based Tags");
             var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
             var allMasterGames = await _masterGameRepo.GetMasterGames();
             var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);

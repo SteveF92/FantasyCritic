@@ -53,5 +53,10 @@ namespace FantasyCritic.BetaSync
                 }
             }
         }
+
+        public async Task UpdateMasterGames(IEnumerable<MasterGame> productionMasterGames)
+        {
+            return;
+        }
     }
 }
