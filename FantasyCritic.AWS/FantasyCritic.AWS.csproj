@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.4.11" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.5.20" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.3.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
+  </ItemGroup>
+
+</Project>

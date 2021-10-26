@@ -22,7 +22,8 @@ namespace FantasyCritic.Lib.Services
     {
         private readonly IRDSManager _rdsManager;
         private readonly RoyaleService _royaleService;
-        private readonly PythonRunner _pythonRunner;
+        private readonly IFantasyCriticFileRepository _fileRepository;
+        private readonly IPythonService _pythonService;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
         private readonly IMasterGameRepo _masterGameRepo;
@@ -33,7 +34,7 @@ namespace FantasyCritic.Lib.Services
 
         public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
             InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, ILogger<AdminService> logger, IRDSManager rdsManager,
-            RoyaleService royaleService, PythonRunner pythonRunner)
+            RoyaleService royaleService, IFantasyCriticFileRepository fileRepository, IPythonService pythonService)
         {
             _fantasyCriticService = fantasyCriticService;
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -44,7 +45,8 @@ namespace FantasyCritic.Lib.Services
             _logger = logger;
             _rdsManager = rdsManager;
             _royaleService = royaleService;
-            _pythonRunner = pythonRunner;
+            _fileRepository = fileRepository;
+            _pythonService = pythonService;
         }
 
         public async Task FullDataRefresh()
@@ -235,6 +237,8 @@ namespace FantasyCritic.Lib.Services
 
         private async Task UpdateSystemWideValues()
         {
+            _logger.LogInformation("Updating system wide values");
+
             List<PublisherGame> allGamesWithPoints = new List<PublisherGame>();
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
@@ -271,30 +275,14 @@ namespace FantasyCritic.Lib.Services
             }
 
             var outputModels = allMasterGameYears.Select(x => new MasterGameYearScriptInput(x));
-            
-            string scriptsFolder = "C:\\FantasyCritic\\Scripts\\";
-            string scriptFileName = "regression_model.py";
-            string scriptPath = Path.Combine(scriptsFolder, scriptFileName);
 
-            string dataFileName = Guid.NewGuid() + ".csv";
-            string dataPath = Path.Combine(scriptsFolder, dataFileName);
-            using (var writer = new StreamWriter(dataPath))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            {
-                csv.WriteRecords(outputModels);
-            }
+            var memoryStream = new MemoryStream();
+            var writer = new StreamWriter(memoryStream);
+            var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+            csv.WriteRecords(outputModels);
+            await _fileRepository.UploadMasterGameYearStats(memoryStream);
 
-            var result = _pythonRunner.RunPython(scriptPath, dataPath);
-            var splitString = result.Split(Environment.NewLine);
-
-            File.Delete(dataPath);
-
-            double baseScore = double.Parse(splitString[0].Split(":")[1]);
-            double standardGameConstant = double.Parse(splitString[1].Split(":")[1]);
-            double counterPickConstant = double.Parse(splitString[2].Split(":")[1]);
-            double hypeFactorConstant = double.Parse(splitString[3].Split(":")[1]);
-
-            HypeConstants hypeConstants = new HypeConstants(baseScore, standardGameConstant, counterPickConstant, hypeFactorConstant);
+            var hypeConstants = await _pythonService.GetHypeConstants();
 
             _logger.LogInformation($"Hype Constants: {hypeConstants}");
 
@@ -303,6 +291,8 @@ namespace FantasyCritic.Lib.Services
 
         private async Task UpdateGameStats(HypeConstants hypeConstants)
         {
+            _logger.LogInformation("Updating game stats.");
+
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
@@ -466,6 +456,7 @@ namespace FantasyCritic.Lib.Services
 
         private async Task UpdateCodeBasedTags(LocalDate today)
         {
+            _logger.LogInformation("Updating Code Based Tags");
             var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
             var allMasterGames = await _masterGameRepo.GetMasterGames();
             var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);

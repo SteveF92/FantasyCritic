@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.SpaServices;
 using System.Net;
 using System.Text;
 using Dapper.NodaTime;
+using FantasyCritic.AWS;
 using FantasyCritic.FakeRepo;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
@@ -58,8 +59,9 @@ namespace FantasyCritic.Web
             var issuer = Configuration["Tokens:Issuer"];
             var audience = Configuration["Tokens:Audience"];
             IClock clock = NodaTime.SystemClock.Instance;
-            string pythonPath = Configuration["Python:PythonPath"];
             var rdsInstanceName = Configuration["AWS:rdsInstanceName"];
+            var awsRegion = Configuration["AWS:region"];
+            var awsBucket = Configuration["AWS:bucket"];
             var mailgunAPIKey = Configuration["Mailgun:apiKey"];
 
             // Add application services.
@@ -93,7 +95,8 @@ namespace FantasyCritic.Web
             //services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             //services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
-            services.AddScoped<PythonRunner>(factory => new PythonRunner(pythonPath));
+            services.AddScoped<IPythonService>(factory => new LambdaService());
+            services.AddScoped<IFantasyCriticFileRepository>(factory => new S3FantasyCriticFileRepository(awsRegion, awsBucket));
             services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
             services.AddScoped<FantasyCriticUserManager>();
             services.AddScoped<FantasyCriticRoleManager>();

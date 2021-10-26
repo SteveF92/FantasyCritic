@@ -11,13 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.FakeRepo", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.MySQL", "FantasyCritic.MySQL\FantasyCritic.MySQL.csproj", "{2C9E61A1-F785-4245-82DA-CE695442F359}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.RDS", "FantasyCritic.RDS\FantasyCritic.RDS.csproj", "{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Test", "FantasyCritic.Test\FantasyCritic.Test.csproj", "{FD9CE006-F47D-4620-8DCF-A25032189044}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "CriticScoreRegression", "CriticScoreRegression\CriticScoreRegression.pyproj", "{2D2175EB-1B6E-4D09-8ECC-6C26D1BCCE27}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Mailgun", "FantasyCritic.Mailgun\FantasyCritic.Mailgun.csproj", "{014CB984-41FE-4C2B-9B8F-2BE3945DD327}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.AWS", "FantasyCritic.AWS\FantasyCritic.AWS.csproj", "{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,20 +39,18 @@ Global
 		{2C9E61A1-F785-4245-82DA-CE695442F359}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C9E61A1-F785-4245-82DA-CE695442F359}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C9E61A1-F785-4245-82DA-CE695442F359}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8BB1B7F5-2BAE-4692-B73E-635C1CD7F2D9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FD9CE006-F47D-4620-8DCF-A25032189044}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FD9CE006-F47D-4620-8DCF-A25032189044}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD9CE006-F47D-4620-8DCF-A25032189044}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD9CE006-F47D-4620-8DCF-A25032189044}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D2175EB-1B6E-4D09-8ECC-6C26D1BCCE27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D2175EB-1B6E-4D09-8ECC-6C26D1BCCE27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{014CB984-41FE-4C2B-9B8F-2BE3945DD327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{014CB984-41FE-4C2B-9B8F-2BE3945DD327}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{014CB984-41FE-4C2B-9B8F-2BE3945DD327}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{014CB984-41FE-4C2B-9B8F-2BE3945DD327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

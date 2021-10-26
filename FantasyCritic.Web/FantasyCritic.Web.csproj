@@ -29,11 +29,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FantasyCritic.AWS\FantasyCritic.AWS.csproj" />
     <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
     <ProjectReference Include="..\FantasyCritic.Mailgun\FantasyCritic.Mailgun.csproj" />
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
-    <ProjectReference Include="..\FantasyCritic.RDS\FantasyCritic.RDS.csproj" />
   </ItemGroup>
 
     <PropertyGroup>
