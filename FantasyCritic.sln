@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Test", "Fanta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Mailgun", "FantasyCritic.Mailgun\FantasyCritic.Mailgun.csproj", "{014CB984-41FE-4C2B-9B8F-2BE3945DD327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.AWS", "FantasyCritic.AWS\FantasyCritic.AWS.csproj", "{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.AWS", "FantasyCritic.AWS\FantasyCritic.AWS.csproj", "{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.BetaSync", "FantasyCritic.BetaSync\FantasyCritic.BetaSync.csproj", "{9718DCF9-CB20-4917-BF8C-2242626696EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77DA11E6-194B-42B9-A0BB-78B5755FD3B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9718DCF9-CB20-4917-BF8C-2242626696EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9718DCF9-CB20-4917-BF8C-2242626696EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9718DCF9-CB20-4917-BF8C-2242626696EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9718DCF9-CB20-4917-BF8C-2242626696EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

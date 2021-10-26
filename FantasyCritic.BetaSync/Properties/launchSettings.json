@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FantasyCritic.BetaSync": {
+      "commandName": "Project",
+      "commandLineArgs": "--clean"
+    }
+  }
+}
