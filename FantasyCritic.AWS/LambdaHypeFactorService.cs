@@ -38,15 +38,24 @@ namespace FantasyCritic.AWS
             var dataStream = CreateDataStream(allMasterGameYears);
             await UploadMasterGameYearStats(dataStream);
 
+            var requestParams = new
+            {
+                bucket = _bucket,
+                key = "HypeFactor/LiveData.csv"
+            };
+
+            var jsonRequest = JsonConvert.SerializeObject(requestParams);
+
             AmazonLambdaClient lambdaClient = new AmazonLambdaClient();
             InvokeRequest request = new InvokeRequest()
             {
                 FunctionName = "getHypeFactor",
-                InvocationType = InvocationType.RequestResponse
+                InvocationType = InvocationType.RequestResponse,
+                Payload = jsonRequest
             };
 
             InvokeResponse response = await lambdaClient.InvokeAsync(request);
-            if (response.HttpStatusCode != HttpStatusCode.OK)
+            if (response.HttpStatusCode != HttpStatusCode.OK || !string.IsNullOrWhiteSpace(response.FunctionError))
             {
                 _logger.Error(response.HttpStatusCode);
                 _logger.Error(response.FunctionError);

@@ -9,8 +9,14 @@ from sklearn import linear_model
 from io import BytesIO
 
 def handler(event, context):
+    bucket = event['bucket']
+    key = event['key']
+
+    print("Bucket: " + bucket)
+    print("Key: " + key)
+
     s3 = boto3.resource('s3')
-    obj = s3.Object('fantasy-critic-production', 'HypeFactor/LiveData.csv')
+    obj = s3.Object(bucket, key)
     body = obj.get()['Body'].read()
 
     data = pd.read_csv(BytesIO(body))
