@@ -109,7 +109,6 @@ namespace FantasyCritic.Web
             services.AddScoped<FantasyCriticService>();
             services.AddScoped<RoyaleService>();
 
-            //services.AddTransient<IEmailSender>(factory => new SendGridEmailSender());
             services.AddTransient<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games"));
             services.AddTransient<ISMSSender, SMSSender>();
             services.AddTransient<ITokenService>(factory => tokenService);
@@ -278,7 +277,6 @@ namespace FantasyCritic.Web
                 {
                     spa.UseVueCli(npmScript: "serve", forceKill: true);
                 }
-
             });
         }
 
