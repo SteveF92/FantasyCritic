@@ -188,3 +188,7 @@ svg, img.critic-royale-nav {
 .preserve-whitespace {
     white-space: pre-wrap;
 }
+
+.nested-list {
+    list-style: none;
+}

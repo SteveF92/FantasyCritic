@@ -549,6 +549,66 @@
           alternatively, if they are even PLANNED for early access.
         </div>
       </faqCollapse>
+      <faqCollapse>
+        <div slot="question">
+          Why can't I ban 'Planned for Early Access' without also banning 'Currently in Early Access'?
+        </div>
+        <div slot="answer">
+          This used to be allowed, but truthfully never should have been. Consider this scenerio:
+          <ul>
+            <li>A game is announced on Feburary 5th, 2022. It will go into early access on March 3rd, 2022, and have a full release on October 10th, 2022.</li>
+            <li>Let's say you want to allow both 'Planned for Early Access' and 'Currently in Early Access'.</li>
+            <li class="nested-list">
+              <ul>
+                <li>
+                  On Feburary 5th, 2022, the game becomes draftable/biddable. It remains draftable/biddable up until either it's full release on October 10th, 2022,
+                  or when it gets reviews, whichever comes first.
+                </li>
+                <li>
+                  Most of the time, a game will not get critic reviews while in early access. Howeever, it does happen sometimes, and that does mean you can't draft or bid on the game.
+                </li>
+              </ul>
+            </li>
+            <li>Now consider what happens if you BAN both 'Planned for Early Access' and 'Currently in Early Access'.</li>
+            <li class="nested-list">
+              <ul>
+                <li>
+                  On Feburary 5th, 2022, the game is immediately 'Planned for Early Access', so you cannot ever bid on it or draft it.
+                </li>
+              </ul>
+            </li>
+            <li>Now consider what happens if you allow 'Planned for Early Access', but not 'Currently in Early Access'.</li>
+            <li class="nested-list">
+              <ul>
+                <li>
+                  On Feburary 5th, 2022, the game becomes draftable/biddable. It remains draftable/biddable up until either it enters early access on March 3rd, 2022.
+                </li>
+              </ul>
+            </li>
+            <li>Finally, consider what happens if you allow 'Currently in Early Access', but not 'Planned for Early Access'.</li>
+            <li class="nested-list">
+              <ul>
+                <li>
+                  On Feburary 5th, 2022, the game is immediately 'Planned for Early Access', so you cannot bid on it or draft it. However, when the game enters early access on March 3rd, 2022,
+                  now it is 'Currently in Early access', which IS allowed, so now you CAN bid on it/draft it up until it's full release on October 10th, 2022,
+                  or when it gets reviews, whichever comes first.
+                </li>
+                <li>
+                  We believe that this setup should not be allowed, due to it's confusing nature. It's also a nightmare to code for.
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">
+          Why can't I ban 'Will Release Internationally First' without also banning 'Released Internationally'?
+        </div>
+        <div slot="answer">
+          See the above answer about 'Planned for Early Access' and 'Currently in Early Access', because the same logic applies.
+        </div>
+      </faqCollapse>
       <br />
 
 

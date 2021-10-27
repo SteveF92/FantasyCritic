@@ -94,6 +94,16 @@ namespace FantasyCritic.Lib.Domain
                 return Result.Failure("Can't have more counter picks than drafted games.");
             }
 
+            var bannedTagNames = LeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag.Name).ToHashSet();
+            if (bannedTagNames.Contains("PlannedForEarlyAccess") && !bannedTagNames.Contains("CurrentlyInEarlyAccess"))
+            {
+                return Result.Failure("If you ban 'Planned for Early Access' you must also ban 'Currently in Early Access'.");
+            }
+            if (bannedTagNames.Contains("WillReleaseInternationallyFirst") && !bannedTagNames.Contains("ReleasedInternationally"))
+            {
+                return Result.Failure("If you ban 'Will Release Internationally First' you must also ban 'Released Internationally'.");
+            }
+
             return Result.Success();
         }
     }
