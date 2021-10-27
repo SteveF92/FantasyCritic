@@ -56,11 +56,33 @@ namespace FantasyCritic.BetaSync
             }
         }
 
-        internal async Task UpdateMasterGames(IEnumerable<MasterGameTag> productionTags, IEnumerable<MasterGame> productionMasterGames, IEnumerable<MasterGameHasTagEntity> productionGamesHaveTagEntities)
+        internal async Task UpdateMasterGames(IEnumerable<MasterGameTag> productionTags, IEnumerable<MasterGame> productionMasterGames, 
+            IEnumerable<MasterGameTag> betaTags, IEnumerable<MasterGame> betaMasterGames, IEnumerable<MasterGameHasTagEntity> productionGamesHaveTagEntities)
         {
+            var tagsOnBetaNotOnProduction = betaTags.Except(productionTags).ToList();
+            foreach (var tag in tagsOnBetaNotOnProduction)
+            {
+                _logger.Warn($"Tag: {tag.ReadableName} on beta but not production.");
+            }
+
+            var gamesOnBetaNotOnProduction = betaMasterGames.Except(productionMasterGames).ToList();
+            foreach (var game in gamesOnBetaNotOnProduction)
+            {
+                _logger.Warn($"Game: {game.GameName} on beta but not production.");
+            }
+
+            var betaKeepTags = tagsOnBetaNotOnProduction.Select(x => x.Name);
+            var betaKeepGames = gamesOnBetaNotOnProduction.Select(x => x.MasterGameID);
+
             List<MasterGameTagEntity> tagEntities = productionTags.Select(x => new MasterGameTagEntity(x)).ToList();
             List<MasterGameEntity> masterGameEntities = productionMasterGames.Select(x => new MasterGameEntity(x)).ToList();
             List<MasterSubGameEntity> masterSubGameEntities = productionMasterGames.SelectMany(x => x.SubGames).Select(x => new MasterSubGameEntity(x)).ToList();
+
+            var paramsObject = new
+            {
+                betaKeepTags,
+                betaKeepGames
+            };
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -68,10 +90,10 @@ namespace FantasyCritic.BetaSync
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync("SET foreign_key_checks = 0;", transaction: transaction);
-                    await connection.ExecuteAsync("DELETE FROM tbl_mastergame_hastag;", transaction: transaction);
-                    await connection.ExecuteAsync("DELETE FROM tbl_mastergame_subgame;", transaction: transaction);
-                    await connection.ExecuteAsync("DELETE FROM tbl_mastergame;", transaction: transaction);
-                    await connection.ExecuteAsync("DELETE FROM tbl_mastergame_tag;", transaction: transaction);
+                    await connection.ExecuteAsync("DELETE FROM tbl_mastergame_hastag WHERE MasterGameID NOT IN @betaKeepGames AND TagName NOT IN @betaKeepTags;", paramsObject, transaction);
+                    await connection.ExecuteAsync("DELETE FROM tbl_mastergame_subgame WHERE MasterGameID NOT IN @betaKeepGames;", paramsObject, transaction);
+                    await connection.ExecuteAsync("DELETE FROM tbl_mastergame WHERE MasterGameID NOT IN @betaKeepGames;", paramsObject, transaction);
+                    await connection.ExecuteAsync("DELETE FROM tbl_mastergame_tag WHERE Name NOT IN @betaKeepTags;", paramsObject, transaction);
 
                     await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_tag", 500, transaction);
                     await connection.BulkInsertAsync(masterGameEntities, "tbl_mastergame", 500, transaction);

@@ -43,6 +43,7 @@ namespace FantasyCritic.BetaSync
             MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(_productionReadOnlyConnectionString, _clock);
             MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
             MySQLMasterGameRepo productionMasterGameRepo = new MySQLMasterGameRepo(_productionReadOnlyConnectionString, productionUserStore);
+            MySQLMasterGameRepo betaMasterGameRepo = new MySQLMasterGameRepo(_betaConnectionString, betaUserStore);
             MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
             AdminService betaAdminService = GetAdminService();
 
@@ -54,8 +55,10 @@ namespace FantasyCritic.BetaSync
             _logger.Info("Getting master games from production");
             var productionMasterGameTags = await productionMasterGameRepo.GetMasterGameTags();
             var productionMasterGames = await productionMasterGameRepo.GetMasterGames();
+            var betaMasterGameTags = await betaMasterGameRepo.GetMasterGameTags();
+            var betaMasterGames = await betaMasterGameRepo.GetMasterGames();
             IReadOnlyList<MasterGameHasTagEntity> productionGamesHaveTagEntities = await GetProductionGamesHaveTagEntities();
-            await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, productionGamesHaveTagEntities);
+            await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, betaMasterGameTags, betaMasterGames, productionGamesHaveTagEntities);
             await betaAdminService.RefreshCaches();
         }
 

@@ -195,10 +195,10 @@ namespace FantasyCritic.MySQL
             string masterGameCreateSQL = "insert into tbl_mastergame" +
                                          "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,ReleaseDate," +
                                          "OpenCriticID,CriticScore,Notes,BoxartFileName," +
-                                         "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged) VALUES " +
+                                         "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,AddedTimestamp) VALUES " +
                                          "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@ReleaseDate," +
                                          "@OpenCriticID,@CriticScore,@Notes,@BoxartFileName," +
-                                         "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged);";
+                                         "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@AddedTimestamp);";
             var entity = new MasterGameEntity(masterGame);
             var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
             var excludeFields = new List<string>() { "TimeAdded" };
