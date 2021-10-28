@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using NodaTime;
 
@@ -20,6 +21,7 @@ namespace FantasyCritic.MySQL.Entities
             BidID = domain.BidID;
             PublisherID = domain.Publisher.PublisherID;
             MasterGameID = domain.MasterGame.MasterGameID;
+            ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.Unwrap(x => (Guid?) x.PublisherGameID);
             Timestamp = domain.Timestamp;
             Priority = domain.Priority;
             BidAmount = domain.BidAmount;
@@ -31,6 +33,7 @@ namespace FantasyCritic.MySQL.Entities
             BidID = domain.BidID;
             PublisherID = domain.Publisher.PublisherID;
             MasterGameID = domain.MasterGame.MasterGameID;
+            ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.Unwrap(x => (Guid?) x.PublisherGameID);
             Timestamp = domain.Timestamp;
             Priority = domain.Priority;
             BidAmount = domain.BidAmount;
@@ -40,14 +43,15 @@ namespace FantasyCritic.MySQL.Entities
         public Guid BidID { get; set; }
         public Guid PublisherID { get; set; }
         public Guid MasterGameID { get; set; }
+        public Guid? ConditionalDropMasterGameID { get; set; }
         public Instant Timestamp { get; set; }
         public int Priority { get; set; }
         public uint BidAmount { get; set; }
         public bool? Successful { get; set; }
 
-        public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, LeagueYear leagueYear)
+        public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame, LeagueYear leagueYear)
         {
-            return new PickupBid(BidID, publisher, leagueYear, masterGame, BidAmount, Priority, Timestamp, Successful);
+            return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, BidAmount, Priority, Timestamp, Successful);
         }
     }
 }

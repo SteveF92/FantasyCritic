@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
     public class PickupBid : IEquatable<PickupBid>
     {
-        public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, uint bidAmount, int priority, Instant timestamp, bool? successful)
+        public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame,
+            uint bidAmount, int priority, Instant timestamp, bool? successful)
         {
             BidID = bidID;
             Publisher = publisher;
             LeagueYear = leagueYear;
             MasterGame = masterGame;
+            ConditionalDropPublisherGame = conditionalDropPublisherGame;
             BidAmount = bidAmount;
             Priority = priority;
             Timestamp = timestamp;
@@ -25,6 +28,7 @@ namespace FantasyCritic.Lib.Domain
         public Publisher Publisher { get; }
         public LeagueYear LeagueYear { get; }
         public MasterGame MasterGame { get; }
+        public Maybe<PublisherGame> ConditionalDropPublisherGame { get; }
         public uint BidAmount { get; }
         public int Priority { get; }
         public Instant Timestamp { get; }
