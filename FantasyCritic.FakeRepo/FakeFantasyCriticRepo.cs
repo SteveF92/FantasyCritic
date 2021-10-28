@@ -414,7 +414,7 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult(new SiteCounts(3001, 1140, 300, 150));
         }
 
-        public Task SetBidProcessingMode(bool modeOn)
+        public Task SetActionProcessingMode(bool modeOn)
         {
             throw new NotImplementedException();
         }
@@ -483,7 +483,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults)
+        public Task SaveProcessedBidResults(ActionProcessingResults actionProcessingResults)
         {
             throw new NotImplementedException();
         }

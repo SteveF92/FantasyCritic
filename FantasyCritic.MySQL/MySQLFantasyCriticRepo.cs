@@ -1663,11 +1663,11 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task SetBidProcessingMode(bool modeOn)
+        public async Task SetActionProcessingMode(bool modeOn)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("update tbl_meta_systemwidesettings set BidProcessingMode = @modeOn;", new { modeOn });
+                await connection.ExecuteAsync("update tbl_meta_systemwidesettings set ActionProcessingMode = @modeOn;", new { modeOn });
             }
         }
 
@@ -1791,18 +1791,18 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults)
+        public async Task SaveProcessedBidResults(ActionProcessingResults actionProcessingResults)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await MarkBidStatus(bidProcessingResults.SuccessBids, true, connection, transaction);
-                    await MarkBidStatus(bidProcessingResults.FailedBids, false, connection, transaction);
-                    await AddLeagueActions(bidProcessingResults.LeagueActions, connection, transaction);
-                    await UpdatePublisherBudgetsAndDroppedGames(bidProcessingResults.UpdatedPublishers, connection, transaction);
-                    await AddPublisherGames(bidProcessingResults.PublisherGames, connection, transaction);
+                    await MarkBidStatus(actionProcessingResults.SuccessBids, true, connection, transaction);
+                    await MarkBidStatus(actionProcessingResults.FailedBids, false, connection, transaction);
+                    await AddLeagueActions(actionProcessingResults.LeagueActions, connection, transaction);
+                    await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.UpdatedPublishers, connection, transaction);
+                    await AddPublisherGames(actionProcessingResults.PublisherGames, connection, transaction);
 
                     await transaction.CommitAsync();
                 }

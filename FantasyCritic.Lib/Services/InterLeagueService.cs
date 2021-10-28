@@ -94,9 +94,9 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.UpdateCriticStats(masterSubGame, openCriticGame);
         }
 
-        public Task SetBidProcessingMode(bool modeOn)
+        public Task SetActionProcessingMode(bool modeOn)
         {
-            return _fantasyCriticRepo.SetBidProcessingMode(modeOn);
+            return _fantasyCriticRepo.SetActionProcessingMode(modeOn);
         }
 
         public Task CreateMasterGameRequest(MasterGameRequest domainRequest)

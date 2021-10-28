@@ -206,7 +206,7 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);
         }
 
-        public async Task<BidProcessingResults> GetBidProcessingDryRun(SystemWideValues systemWideValues, int year)
+        public async Task<ActionProcessingResults> GetActionProcessingDryRun(SystemWideValues systemWideValues, int year)
         {
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
@@ -214,14 +214,14 @@ namespace FantasyCritic.Lib.Services
 
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> onlyLeaguesWithBids = leaguesAndBids.Where(x => x.Value.Any()).ToDictionary(x => x.Key, y => y.Value);
             var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithBids.ContainsKey(x.LeagueYear));
-            BidProcessingResults results = _actionProcessingService.ProcessPickupsIteration(systemWideValues, onlyLeaguesWithBids, publishersInLeagues, _clock, supportedYears);
+            ActionProcessingResults results = _actionProcessingService.ProcessPickupsIteration(systemWideValues, onlyLeaguesWithBids, publishersInLeagues, _clock, supportedYears);
 
             return results;
         }
 
         public async Task ProcessPickups(SystemWideValues systemWideValues, int year)
         {
-            var results = await GetBidProcessingDryRun(systemWideValues, year);
+            var results = await GetActionProcessingDryRun(systemWideValues, year);
             await _fantasyCriticRepo.SaveProcessedBidResults(results);
         }
 

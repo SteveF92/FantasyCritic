@@ -8,11 +8,11 @@ namespace FantasyCritic.Lib.Domain
 {
     public class SystemWideSettings
     {
-        public SystemWideSettings(bool bidProcessingMode)
+        public SystemWideSettings(bool actionProcessingMode)
         {
-            BidProcessingMode = bidProcessingMode;
+            ActionProcessingMode = actionProcessingMode;
         }
 
-        public bool BidProcessingMode { get; }
+        public bool ActionProcessingMode { get; }
     }
 }

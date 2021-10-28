@@ -9,11 +9,11 @@ namespace FantasyCritic.MySQL.Entities
 {
     public class SystemWideSettingsEntity
     {
-        public bool BidProcessingMode { get; set; }
+        public bool ActionProcessingMode { get; set; }
 
         public SystemWideSettings ToDomain()
         {
-            return new SystemWideSettings(BidProcessingMode);
+            return new SystemWideSettings(ActionProcessingMode);
         }
     }
 }

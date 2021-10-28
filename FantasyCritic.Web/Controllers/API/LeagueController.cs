@@ -613,7 +613,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }
@@ -680,7 +680,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }
@@ -1049,7 +1049,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }
@@ -1115,7 +1115,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }

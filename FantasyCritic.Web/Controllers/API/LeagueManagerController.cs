@@ -246,7 +246,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }
@@ -712,7 +712,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }
@@ -777,7 +777,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }
@@ -849,7 +849,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }
@@ -925,7 +925,7 @@ namespace FantasyCritic.Web.Controllers.API
         private async Task<IActionResult> UpdateManualCriticScore(Guid publisherID, Guid publisherGameID, decimal? manualCriticScore)
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }
@@ -1010,7 +1010,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }
@@ -1376,7 +1376,7 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> SetGameEligibilityOverride([FromBody] EligiblityOverrideRequest request)
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.BidProcessingMode)
+            if (systemWideSettings.ActionProcessingMode)
             {
                 return BadRequest();
             }

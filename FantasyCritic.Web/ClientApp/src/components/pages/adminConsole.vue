@@ -24,8 +24,8 @@
       <h2>Bids</h2>
       <div>
         <b-button variant="info" :to="{ name: 'currentActionedGames' }">Current Actioned Games</b-button>
-        <b-button variant="warning" v-on:click="turnOnBidProcessing">Turn on bid processing mode</b-button>
-        <b-button variant="info" v-on:click="turnOffBidProcessing">Turn off bid processing mode</b-button>
+        <b-button variant="warning" v-on:click="turnOnActionProcessing">Turn on action processing mode</b-button>
+        <b-button variant="info" v-on:click="turnOffActionProcessing">Turn off action processing mode</b-button>
         <b-button variant="danger" v-on:click="processBids">Process Bids</b-button>
         <b-button variant="danger" v-on:click="processDrops">Process Drops</b-button>
       </div>
@@ -136,26 +136,26 @@ export default {
           this.errorInfo = returnedError.response.data;
         });
     },
-    turnOnBidProcessing() {
+    turnOnActionProcessing() {
       this.isBusy = true;
       axios
-        .post('/api/admin/TurnOnBidProcessingMode')
+        .post('/api/admin/TurnOnActionProcessingMode')
         .then(response => {
           this.isBusy = false;
-          this.jobSuccess = 'Bid Processing Mode ON';
+          this.jobSuccess = 'Action Processing Mode ON';
         })
         .catch(returnedError => {
           this.isBusy = false;
           this.errorInfo = returnedError.response.data;
         });
     },
-    turnOffBidProcessing() {
+    turnOffActionProcessing() {
       this.isBusy = true;
       axios
-        .post('/api/admin/TurnOffBidProcessingMode')
+        .post('/api/admin/TurnOffActionProcessingMode')
         .then(response => {
           this.isBusy = false;
-          this.jobSuccess = 'Bid Processing Mode OFF';
+          this.jobSuccess = 'Action Processing Mode OFF';
         })
         .catch(returnedError => {
           this.isBusy = false;

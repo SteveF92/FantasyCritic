@@ -234,7 +234,7 @@ namespace FantasyCritic.Web.Controllers.API
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
 
-            var bidResults = await _fantasyCriticService.GetBidProcessingDryRun(systemWideValues, currentYear.Year);
+            var bidResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year);
             IEnumerable<LeagueAction> failingBids = bidResults.LeagueActions.Where(x => x.IsFailed);
             var failingBidGames = failingBids.Select(x => x.MasterGameName).Distinct();
 
@@ -264,9 +264,9 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> ProcessPickups() 
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (!systemWideSettings.BidProcessingMode)
+            if (!systemWideSettings.ActionProcessingMode)
             {
-                return BadRequest("Turn on bid processing mode first.");
+                return BadRequest("Turn on action processing mode first.");
             }
 
             var today = _clock.GetCurrentInstant().ToEasternDate();
@@ -309,16 +309,16 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> TurnOnBidProcessingMode()
+        public async Task<IActionResult> TurnOnActionProcessingMode()
         {
-            await _interLeagueService.SetBidProcessingMode(true);
+            await _interLeagueService.SetActionProcessingMode(true);
             return Ok();
         }
 
         [HttpPost]
-        public async Task<IActionResult> TurnOffBidProcessingMode()
+        public async Task<IActionResult> TurnOffActionProcessingMode()
         {
-            await _interLeagueService.SetBidProcessingMode(false);
+            await _interLeagueService.SetActionProcessingMode(false);
             return Ok();
         }
 

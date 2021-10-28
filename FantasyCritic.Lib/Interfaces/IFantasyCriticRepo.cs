@@ -106,7 +106,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<SystemWideValues> GetSystemWideValues();
         Task<SystemWideSettings> GetSystemWideSettings();
         Task<SiteCounts> GetSiteCounts();
-        Task SetBidProcessingMode(bool modeOn);
+        Task SetActionProcessingMode(bool modeOn);
 
         Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction);
         Task DeletePublisher(Publisher publisher);
@@ -115,7 +115,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task DeleteLeagueActions(Publisher publisher);
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
         
-        Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
+        Task SaveProcessedBidResults(ActionProcessingResults actionProcessingResults);
         Task UpdateSystemWideValues(SystemWideValues systemWideValues);
         Task ConvertToTags(IReadOnlyDictionary<LeagueYear, IReadOnlyList<MasterGameTag>> tagsToAddByLeagueYear);
         Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage domainMessage);

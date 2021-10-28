@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class BidProcessingResults
+    public class ActionProcessingResults
     {
-        public BidProcessingResults(IEnumerable<PickupBid> successBids, IEnumerable<PickupBid> failedBids, IEnumerable<LeagueAction> leagueActions,
+        public ActionProcessingResults(IEnumerable<PickupBid> successBids, IEnumerable<PickupBid> failedBids, IEnumerable<LeagueAction> leagueActions,
             IEnumerable<Publisher> updatedPublishers, IEnumerable<PublisherGame> publisherGames)
         {
             SuccessBids = successBids;
@@ -24,9 +24,9 @@ namespace FantasyCritic.Lib.Domain
         public IEnumerable<Publisher> UpdatedPublishers { get; }
         public IEnumerable<PublisherGame> PublisherGames { get; }
 
-        public BidProcessingResults Combine(BidProcessingResults subProcessingResults)
+        public ActionProcessingResults Combine(ActionProcessingResults subProcessingResults)
         {
-            return new BidProcessingResults(SuccessBids.Concat(subProcessingResults.SuccessBids),
+            return new ActionProcessingResults(SuccessBids.Concat(subProcessingResults.SuccessBids),
                 FailedBids.Concat(subProcessingResults.FailedBids),
                 LeagueActions.Concat(subProcessingResults.LeagueActions),
                 subProcessingResults.UpdatedPublishers,
