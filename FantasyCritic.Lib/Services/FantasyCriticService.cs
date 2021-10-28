@@ -225,25 +225,6 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.SaveProcessedBidResults(results);
         }
 
-        public async Task<DropProcessingResults> GetDropProcessingDryRun(int year)
-        {
-            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
-            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-
-            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> onlyLeaguesWithDrops = leaguesAndDropRequests.Where(x => x.Value.Any()).ToDictionary(x => x.Key, y => y.Value);
-            var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithDrops.ContainsKey(x.LeagueYear));
-            DropProcessingResults results = _actionProcessingService.ProcessDropsIteration(onlyLeaguesWithDrops, publishersInLeagues, _clock, supportedYears);
-
-            return results;
-        }
-
-        public async Task ProcessDrops(int year)
-        {
-            var results = await GetDropProcessingDryRun(year);
-            await _fantasyCriticRepo.SaveProcessedDropResults(results);
-        }
-
         public Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
         {
             return _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague);

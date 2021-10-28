@@ -116,7 +116,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
         
         Task SaveProcessedBidResults(BidProcessingResults bidProcessingResults);
-        Task SaveProcessedDropResults(DropProcessingResults dropProcessingResults);
         Task UpdateSystemWideValues(SystemWideValues systemWideValues);
         Task ConvertToTags(IReadOnlyDictionary<LeagueYear, IReadOnlyList<MasterGameTag>> tagsToAddByLeagueYear);
         Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage domainMessage);

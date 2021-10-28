@@ -1809,24 +1809,6 @@ namespace FantasyCritic.MySQL
             }   
         }
 
-        public async Task SaveProcessedDropResults(DropProcessingResults dropProcessingResults)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                using (var transaction = await connection.BeginTransactionAsync())
-                {
-                    await MarkDropStatus(dropProcessingResults.SuccessDrops, true, connection, transaction);
-                    await MarkDropStatus(dropProcessingResults.FailedDrops, false, connection, transaction);
-                    await AddLeagueActions(dropProcessingResults.LeagueActions, connection, transaction);
-                    await UpdatePublisherBudgetsAndDroppedGames(dropProcessingResults.PublishersToUpdate, connection, transaction);
-                    await DeletePublisherGames(dropProcessingResults.PublisherGames, connection, transaction);
-
-                    await transaction.CommitAsync();
-                }
-            }
-        }
-
         public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
         {
             string deleteSQL = "delete from tbl_caching_systemwidevalues;";

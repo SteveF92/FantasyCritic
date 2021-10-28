@@ -488,11 +488,6 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task SaveProcessedDropResults(DropProcessingResults dropProcessingResults)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task UpdateSystemWideValues(SystemWideValues systemWideValues)
         {
             throw new NotImplementedException();

@@ -238,10 +238,6 @@ namespace FantasyCritic.Web.Controllers.API
             IEnumerable<LeagueAction> failingBids = bidResults.LeagueActions.Where(x => x.IsFailed);
             var failingBidGames = failingBids.Select(x => x.MasterGameName).Distinct();
 
-            var dropResults = await _fantasyCriticService.GetDropProcessingDryRun(currentYear.Year);
-            IEnumerable<LeagueAction> failingDrops = dropResults.LeagueActions.Where(x => x.IsFailed);
-            var failingDropGames = failingDrops.Select(x => x.MasterGameName).Distinct();
-
             List<MasterGameViewModel> pickupGames = new List<MasterGameViewModel>();
             List<MasterGameViewModel> bidGames = new List<MasterGameViewModel>();
             var currentDate = _clock.GetToday();
@@ -252,10 +248,10 @@ namespace FantasyCritic.Web.Controllers.API
                 var bidVMs = distinctBids.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingBidGames.Contains(x.MasterGame.GameName)));
                 pickupGames.AddRange(bidVMs);
 
-                var allDrops = await _gameAcquisitionService.GetActiveDropRequests(supportedYear);
-                var distinctDrops = allDrops.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
-                var dropVMs = distinctDrops.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingDropGames.Contains(x.MasterGame.GameName)));
-                bidGames.AddRange(dropVMs);
+                //var allDrops = await _gameAcquisitionService.GetActiveDropRequests(supportedYear);
+                //var distinctDrops = allDrops.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
+                //var dropVMs = distinctDrops.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingDropGames.Contains(x.MasterGame.GameName)));
+                //bidGames.AddRange(dropVMs);
             }
 
             pickupGames = pickupGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
@@ -289,35 +285,6 @@ namespace FantasyCritic.Web.Controllers.API
                 }
 
                 await _fantasyCriticService.ProcessPickups(systemWideValues, supportedYear.Year);
-            }
-
-            return Ok();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ProcessDropRequests()
-        {
-            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (!systemWideSettings.BidProcessingMode)
-            {
-                return BadRequest("Turn on bid processing mode first.");
-            }
-
-            var today = _clock.GetCurrentInstant().ToEasternDate();
-            if (today.DayOfWeek != IsoDayOfWeek.Saturday && today.DayOfWeek != IsoDayOfWeek.Sunday)
-            {
-                return BadRequest($"You probably didn't mean to process drops on a {today.DayOfWeek}");
-            }
-
-            var supportedYears = await _interLeagueService.GetSupportedYears();
-            foreach (var supportedYear in supportedYears)
-            {
-                if (supportedYear.Finished || !supportedYear.OpenForPlay)
-                {
-                    continue;
-                }
-
-                await _fantasyCriticService.ProcessDrops(supportedYear.Year);
             }
 
             return Ok();
