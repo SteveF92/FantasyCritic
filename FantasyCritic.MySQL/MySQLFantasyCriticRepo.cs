@@ -246,8 +246,13 @@ namespace FantasyCritic.MySQL
                 foreach (var bidEntity in bidEntities)
                 {
                     var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
+                    Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
+                    if (bidEntity.ConditionalDropMasterGameID.HasValue)
+                    {
+                        conditionalDropPublisherGame = await GetPublisherGame(bidEntity.ConditionalDropMasterGameID.Value);
+                    }
 
-                    PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, leagueYear);
+                    PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
                     domainBids.Add(domain);
                 }
 
@@ -289,8 +294,13 @@ namespace FantasyCritic.MySQL
                     var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
                     var publisher = publisherDictionary[bidEntity.PublisherID];
                     var leagueYear = leagueDictionary[publisher.LeagueYear.League.LeagueID].Single(x => x.Year == year);
+                    Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
+                    if (bidEntity.ConditionalDropMasterGameID.HasValue)
+                    {
+                        conditionalDropPublisherGame = await GetPublisherGame(bidEntity.ConditionalDropMasterGameID.Value);
+                    }
 
-                    PickupBid domainPickup = bidEntity.ToDomain(publisher, masterGame.Value, leagueYear);
+                    PickupBid domainPickup = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
                     pickupBidsByLeagueYear[leagueYear].Add(domainPickup);
                 }
 
@@ -553,8 +563,13 @@ namespace FantasyCritic.MySQL
                 var publisher = await GetPublisher(bidEntity.PublisherID);
                 var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
                 var leagueYear = publisher.Value.LeagueYear;
+                Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
+                if (bidEntity.ConditionalDropMasterGameID.HasValue)
+                {
+                    conditionalDropPublisherGame = await GetPublisherGame(bidEntity.ConditionalDropMasterGameID.Value);
+                }
 
-                PickupBid domain = bidEntity.ToDomain(publisher.Value, masterGame.Value, leagueYear);
+                PickupBid domain = bidEntity.ToDomain(publisher.Value, masterGame.Value, conditionalDropPublisherGame, leagueYear);
                 return domain;
             }
         }

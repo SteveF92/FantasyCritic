@@ -328,7 +328,8 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
-        public async Task<ClaimResult> MakePickupBid(Publisher publisher, MasterGame masterGame, uint bidAmount, LeagueOptions leagueOptions)
+        public async Task<ClaimResult> MakePickupBid(Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame, 
+            uint bidAmount, LeagueOptions leagueOptions)
         {
             if (bidAmount < leagueOptions.MinimumBidAmount)
             {
@@ -363,7 +364,7 @@ namespace FantasyCritic.Lib.Services
 
             var nextPriority = pickupBids.Count + 1;
 
-            PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
+            PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
             await _fantasyCriticRepo.CreatePickupBid(currentBid);
 
             return claimResult;

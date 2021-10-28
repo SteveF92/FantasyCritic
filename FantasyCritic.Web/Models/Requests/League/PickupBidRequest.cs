@@ -9,6 +9,7 @@ namespace FantasyCritic.Web.Models.Requests.League
         public Guid PublisherID { get; set; }
         [Required]
         public Guid MasterGameID { get; set; }
+        public Guid? ConditionalDropPublisherGameID { get; set; }
         [Required]
         public uint BidAmount { get; set; }
     }

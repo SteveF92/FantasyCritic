@@ -103,9 +103,11 @@ namespace FantasyCritic.Lib.Domain
             return options.StandardGames - PublisherGames.Count(x => !x.CounterPick);
         }
 
-        public Maybe<PublisherGame> GetPublisherGame(MasterGame masterGame)
+        public Maybe<PublisherGame> GetPublisherGame(MasterGame masterGame) => GetPublisherGame(masterGame.MasterGameID);
+
+        public Maybe<PublisherGame> GetPublisherGame(Guid masterGameID)
         {
-            return PublisherGames.SingleOrDefault(x => x.MasterGame.HasValue && x.MasterGame.Value.MasterGame.MasterGameID == masterGame.MasterGameID);
+            return PublisherGames.SingleOrDefault(x => x.MasterGame.HasValue && x.MasterGame.Value.MasterGame.MasterGameID == masterGameID);
         }
 
         public HashSet<MasterGame> MyMasterGames => PublisherGames

@@ -658,8 +658,14 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest("That master game does not exist.");
             }
+
+            Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
+            if (request.ConditionalDropPublisherGameID.HasValue)
+            {
+                conditionalDropPublisherGame = publisher.Value.GetPublisherGame(request.ConditionalDropPublisherGameID.Value);
+            }
             
-            ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, request.BidAmount, leagueYear.Value.Options);
+            ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, conditionalDropPublisherGame, request.BidAmount, leagueYear.Value.Options);
             var viewModel = new PickupBidResultViewModel(bidResult);
 
             return Ok(viewModel);
