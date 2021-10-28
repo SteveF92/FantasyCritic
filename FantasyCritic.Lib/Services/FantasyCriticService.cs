@@ -214,7 +214,7 @@ namespace FantasyCritic.Lib.Services
 
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> onlyLeaguesWithBids = leaguesAndBids.Where(x => x.Value.Any()).ToDictionary(x => x.Key, y => y.Value);
             var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithBids.ContainsKey(x.LeagueYear));
-            ActionProcessingResults results = _actionProcessingService.ProcessPickupsIteration(systemWideValues, onlyLeaguesWithBids, publishersInLeagues, _clock, supportedYears);
+            ActionProcessingResults results = _actionProcessingService.ProcessActionsIteration(systemWideValues, onlyLeaguesWithBids, publishersInLeagues, _clock, supportedYears);
 
             return results;
         }

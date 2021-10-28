@@ -22,7 +22,7 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public ActionProcessingResults ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
+        public ActionProcessingResults ProcessActionsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
             IEnumerable<Publisher> currentPublisherStates, IClock clock, IEnumerable<SupportedYear> supportedYears)
         {
             if (!allActiveBids.Any())
@@ -40,7 +40,7 @@ namespace FantasyCritic.Lib.Services
                     continue;
                 }
 
-                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, currentPublisherStates, systemWideValues, supportedYears);
+                var processedBidsForLeagueYear = ProcessActionsForLeagueYear(leagueYear.Key, leagueYear.Value, currentPublisherStates, systemWideValues, supportedYears);
                 processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
             }
 
@@ -50,7 +50,7 @@ namespace FantasyCritic.Lib.Services
             if (remainingBids.Any())
             {
                 Dictionary<LeagueYear, IReadOnlyList<PickupBid>> remainingBidDictionary = remainingBids.GroupBy(x => x.LeagueYear).ToDictionary(x => x.Key, y => (IReadOnlyList<PickupBid>)y.ToList());
-                var subProcessingResults = ProcessPickupsIteration(systemWideValues, remainingBidDictionary, actionProcessingResults.UpdatedPublishers, clock, supportedYears);
+                var subProcessingResults = ProcessActionsIteration(systemWideValues, remainingBidDictionary, actionProcessingResults.UpdatedPublishers, clock, supportedYears);
                 ActionProcessingResults combinedResults = actionProcessingResults.Combine(subProcessingResults);
                 return combinedResults;
             }
@@ -58,7 +58,7 @@ namespace FantasyCritic.Lib.Services
             return actionProcessingResults;
         }
 
-        private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague,
+        private ProcessedBidSet ProcessActionsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague,
             IEnumerable<Publisher> currentPublisherStates, SystemWideValues systemWideValues, IEnumerable<SupportedYear> supportedYears)
         {
             List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
