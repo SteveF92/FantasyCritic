@@ -34,7 +34,6 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly AdminService _adminService;
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly InterLeagueService _interLeagueService;
-        private readonly IOpenCriticService _openCriticService;
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private readonly GameAcquisitionService _gameAcquisitionService;
@@ -47,7 +46,6 @@ namespace FantasyCritic.Web.Controllers.API
         {
             _adminService = adminService;
             _fantasyCriticService = fantasyCriticService;
-            _openCriticService = openCriticService;
             _clock = clock;
             _interLeagueService = interLeagueService;
             _logger = logger;
