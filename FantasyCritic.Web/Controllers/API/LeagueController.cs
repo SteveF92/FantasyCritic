@@ -725,7 +725,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var bids = await _gameAcquisitionService.GetActiveAcquistitionBids(publisher.Value);
+            var bids = await _gameAcquisitionService.GetActiveAcquisitionBids(publisher.Value);
 
             var currentDate = _clock.GetToday();
             var viewModels = bids.Select(x => new PickupBidViewModel(x, currentDate)).OrderBy(x => x.Priority);
@@ -747,7 +747,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var activeBids = await _gameAcquisitionService.GetActiveAcquistitionBids(publisher.Value);
+            var activeBids = await _gameAcquisitionService.GetActiveAcquisitionBids(publisher.Value);
 
             if (activeBids.Count != request.BidPriorities.Count)
             {

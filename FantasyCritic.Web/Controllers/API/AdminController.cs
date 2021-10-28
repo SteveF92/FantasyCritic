@@ -243,7 +243,7 @@ namespace FantasyCritic.Web.Controllers.API
             var currentDate = _clock.GetToday();
             foreach (var supportedYear in supportedYears)
             {
-                var allBids = await _gameAcquisitionService.GetActiveAcquistitionBids(supportedYear);
+                var allBids = await _gameAcquisitionService.GetActiveAcquisitionBids(supportedYear);
                 var distinctBids = allBids.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
                 var bidVMs = distinctBids.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingBidGames.Contains(x.MasterGame.GameName)));
                 pickupGames.AddRange(bidVMs);

@@ -458,12 +458,12 @@ namespace FantasyCritic.Lib.Services
             return dropResult;
         }
 
-        public Task<IReadOnlyList<PickupBid>> GetActiveAcquistitionBids(Publisher publisher)
+        public Task<IReadOnlyList<PickupBid>> GetActiveAcquisitionBids(Publisher publisher)
         {
             return _fantasyCriticRepo.GetActivePickupBids(publisher);
         }
 
-        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActiveAcquistitionBids(SupportedYear supportedYear)
+        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActiveAcquisitionBids(SupportedYear supportedYear)
         {
             return _fantasyCriticRepo.GetActivePickupBids(supportedYear.Year);
         }
