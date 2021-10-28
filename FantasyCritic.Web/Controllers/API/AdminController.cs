@@ -234,29 +234,29 @@ namespace FantasyCritic.Web.Controllers.API
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
 
-            var bidResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year);
-            IEnumerable<LeagueAction> failingBids = bidResults.LeagueActions.Where(x => x.IsFailed);
-            var failingBidGames = failingBids.Select(x => x.MasterGameName).Distinct();
+            var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year);
+            IEnumerable<LeagueAction> failingActions = actionResults.LeagueActions.Where(x => x.IsFailed);
+            var failingActionGames = failingActions.Select(x => x.MasterGameName).Distinct();
 
             List<MasterGameViewModel> pickupGames = new List<MasterGameViewModel>();
-            List<MasterGameViewModel> bidGames = new List<MasterGameViewModel>();
+            List<MasterGameViewModel> dropGames = new List<MasterGameViewModel>();
             var currentDate = _clock.GetToday();
             foreach (var supportedYear in supportedYears)
             {
                 var allBids = await _gameAcquisitionService.GetActiveAcquisitionBids(supportedYear);
                 var distinctBids = allBids.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
-                var bidVMs = distinctBids.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingBidGames.Contains(x.MasterGame.GameName)));
+                var bidVMs = distinctBids.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingActionGames.Contains(x.MasterGame.GameName)));
                 pickupGames.AddRange(bidVMs);
 
-                //var allDrops = await _gameAcquisitionService.GetActiveDropRequests(supportedYear);
-                //var distinctDrops = allDrops.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
-                //var dropVMs = distinctDrops.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingDropGames.Contains(x.MasterGame.GameName)));
-                //bidGames.AddRange(dropVMs);
+                var allDrops = await _gameAcquisitionService.GetActiveDropRequests(supportedYear);
+                var distinctDrops = allDrops.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
+                var dropVMs = distinctDrops.Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingActionGames.Contains(x.MasterGame.GameName)));
+                dropGames.AddRange(dropVMs);
             }
 
             pickupGames = pickupGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
-            bidGames = bidGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
-            ActionedGameSet fullSet = new ActionedGameSet(pickupGames, bidGames);
+            dropGames = dropGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
+            ActionedGameSet fullSet = new ActionedGameSet(pickupGames, dropGames);
             return Ok(fullSet);
         }
 
