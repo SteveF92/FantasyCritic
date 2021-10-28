@@ -483,7 +483,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task SaveProcessedBidResults(ActionProcessingResults actionProcessingResults)
+        public Task SaveProcessedActionResults(ActionProcessingResults actionProcessingResults)
         {
             throw new NotImplementedException();
         }

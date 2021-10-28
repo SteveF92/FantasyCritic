@@ -261,7 +261,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessPickups() 
+        public async Task<IActionResult> ProcessActions() 
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
             if (!systemWideSettings.ActionProcessingMode)
@@ -284,7 +284,7 @@ namespace FantasyCritic.Web.Controllers.API
                     continue;
                 }
 
-                await _fantasyCriticService.ProcessPickups(systemWideValues, supportedYear.Year);
+                await _fantasyCriticService.ProcessActions(systemWideValues, supportedYear.Year);
             }
 
             return Ok();

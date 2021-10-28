@@ -1791,7 +1791,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task SaveProcessedBidResults(ActionProcessingResults actionProcessingResults)
+        public async Task SaveProcessedActionResults(ActionProcessingResults actionProcessingResults)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -1802,7 +1802,7 @@ namespace FantasyCritic.MySQL
                     await MarkBidStatus(actionProcessingResults.FailedBids, false, connection, transaction);
                     await AddLeagueActions(actionProcessingResults.LeagueActions, connection, transaction);
                     await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.UpdatedPublishers, connection, transaction);
-                    await AddPublisherGames(actionProcessingResults.PublisherGames, connection, transaction);
+                    await AddPublisherGames(actionProcessingResults.AddedPublisherGames, connection, transaction);
 
                     await transaction.CommitAsync();
                 }

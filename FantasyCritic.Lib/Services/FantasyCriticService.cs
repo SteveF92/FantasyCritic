@@ -219,10 +219,10 @@ namespace FantasyCritic.Lib.Services
             return results;
         }
 
-        public async Task ProcessPickups(SystemWideValues systemWideValues, int year)
+        public async Task ProcessActions(SystemWideValues systemWideValues, int year)
         {
             var results = await GetActionProcessingDryRun(systemWideValues, year);
-            await _fantasyCriticRepo.SaveProcessedBidResults(results);
+            await _fantasyCriticRepo.SaveProcessedActionResults(results);
         }
 
         public Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
