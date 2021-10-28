@@ -2082,33 +2082,6 @@ namespace FantasyCritic.MySQL
             return domains;
         }
 
-        public async Task ConvertToTags(IReadOnlyDictionary<LeagueYear, IReadOnlyList<MasterGameTag>> tagsToAddByLeagueYear)
-        {
-            List<LeagueYearTagEntity> entities = new List<LeagueYearTagEntity>();
-            foreach (var leagueYear in tagsToAddByLeagueYear)
-            {
-                foreach (var tag in leagueYear.Value)
-                {
-                    LeagueYearTagEntity entity = new LeagueYearTagEntity(leagueYear.Key.League, leagueYear.Key.Year,
-                        new LeagueTagStatus(tag, TagStatus.Banned));
-                    entities.Add(entity);
-                }
-            }
-
-            var deleteTagsSQL = "delete from tbl_league_yearusestag;";
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                using (var transaction = await connection.BeginTransactionAsync())
-                {
-                    await connection.ExecuteAsync(deleteTagsSQL, transaction);
-                    await connection.BulkInsertAsync<LeagueYearTagEntity>(entities, "tbl_league_yearusestag", 500, transaction);
-                    await transaction.CommitAsync();
-                }
-            }
-        }
-
         public async Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage message)
         {
             var entity = new ManagerMessageEntity(leagueYear, message);
