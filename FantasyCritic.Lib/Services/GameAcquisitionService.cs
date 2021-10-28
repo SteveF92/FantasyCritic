@@ -362,6 +362,15 @@ namespace FantasyCritic.Lib.Services
                 return claimResult;
             }
 
+            if (conditionalDropPublisherGame.HasValue)
+            {
+                var dropResult = await MakeDropRequest(publisher, conditionalDropPublisherGame.Value, true);
+                if (dropResult.Result.IsFailure)
+                {
+                    return new ClaimResult(dropResult.Result.Error);
+                }
+            }
+
             var nextPriority = pickupBids.Count + 1;
 
             PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
@@ -422,7 +431,7 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.RemoveQueuedGame(queuedGame);
         }
 
-        public async Task<DropResult> MakeDropRequest(Publisher publisher, PublisherGame publisherGame)
+        public async Task<DropResult> MakeDropRequest(Publisher publisher, PublisherGame publisherGame, bool justCheck)
         {
             if (publisherGame.CounterPick)
             {
@@ -453,7 +462,10 @@ namespace FantasyCritic.Lib.Services
                 return dropResult;
             }
 
-            await _fantasyCriticRepo.CreateDropRequest(dropRequest);
+            if (!justCheck)
+            {
+                await _fantasyCriticRepo.CreateDropRequest(dropRequest);
+            }
 
             return dropResult;
         }

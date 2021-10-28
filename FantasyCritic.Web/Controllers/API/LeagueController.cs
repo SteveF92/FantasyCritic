@@ -1100,7 +1100,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That game does not exist for that publisher.");
             }
 
-            DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(publisher.Value, publisherGame);
+            DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(publisher.Value, publisherGame, false);
             var viewModel = new DropGameResultViewModel(dropResult);
 
             return Ok(viewModel);
