@@ -218,7 +218,7 @@ namespace FantasyCritic.Lib.Services
 
             IReadOnlyDictionary<LeagueYear, GameActionSet> onlyLeaguesWithActions = leagueActionSets.Where(x => x.Value.Any()).ToDictionary(x => x.Key, y => y.Value);
             var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithActions.ContainsKey(x.LeagueYear));
-            ActionProcessingResults results = _actionProcessingService.ProcessActionsIteration(systemWideValues, leagueActionSets, publishersInLeagues, _clock, supportedYears);
+            ActionProcessingResults results = _actionProcessingService.ProcessActionsIteration(systemWideValues, leagueActionSets, publishersInLeagues.Select(x => x.GetActionStatus()), _clock, supportedYears);
             return results;
         }
 

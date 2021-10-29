@@ -40,6 +40,8 @@ namespace FantasyCritic.Lib.Domain
         public int WillReleaseGamesDropped { get; private set; }
         public bool AutoDraft { get; }
 
+        public PublisherActionStatus GetActionStatus() => new PublisherActionStatus(PublisherID, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped);
+
         public decimal? AverageCriticScore
         {
             get

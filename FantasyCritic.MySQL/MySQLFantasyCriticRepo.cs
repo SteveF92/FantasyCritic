@@ -14,6 +14,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
 using MoreLinq;
 using MySqlConnector;
@@ -1934,9 +1935,7 @@ namespace FantasyCritic.MySQL
                     dropRequestsByLeagueYear[leagueYear].Add(domainDrop);
                 }
 
-                IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> finalDictionary = dropRequestsByLeagueYear.ToDictionary(x => x.Key, y => (IReadOnlyList<DropRequest>)y.Value);
-
-                return finalDictionary;
+                return dropRequestsByLeagueYear.SealDictionary();
             }
         }
 
@@ -1952,11 +1951,11 @@ namespace FantasyCritic.MySQL
             return connection.ExecuteAsync("update tbl_league_droprequest SET Successful = @Successful where DropRequestID = @DropRequestID;", entities, transaction);
         }
 
-        private Task UpdatePublisherBudgetsAndDroppedGames(IEnumerable<Publisher> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)
+        private Task UpdatePublisherBudgetsAndDroppedGames(IEnumerable<PublisherActionStatus> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)
         {
             string sql = "update tbl_league_publisher SET Budget = @Budget, FreeGamesDropped = @FreeGamesDropped, " +
                          "WillNotReleaseGamesDropped = @WillNotReleaseGamesDropped, WillReleaseGamesDropped = @WillReleaseGamesDropped where PublisherID = @PublisherID;";
-            var entities = updatedPublishers.Select(x => new PublisherEntity(x));
+            var entities = updatedPublishers.Select(x => new PublisherActionStatusEntity(x));
             return connection.ExecuteAsync(sql, entities, transaction);
         }
 
