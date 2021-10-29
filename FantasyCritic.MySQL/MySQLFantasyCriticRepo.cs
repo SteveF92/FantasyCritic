@@ -1800,9 +1800,15 @@ namespace FantasyCritic.MySQL
                 {
                     await MarkBidStatus(actionProcessingResults.SuccessBids, true, connection, transaction);
                     await MarkBidStatus(actionProcessingResults.FailedBids, false, connection, transaction);
+
+                    await MarkDropStatus(actionProcessingResults.SuccessDrops, true, connection, transaction);
+                    await MarkDropStatus(actionProcessingResults.FailedDrops, false, connection, transaction);
+
                     await AddLeagueActions(actionProcessingResults.LeagueActions, connection, transaction);
                     await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.UpdatedPublishers, connection, transaction);
+
                     await AddPublisherGames(actionProcessingResults.AddedPublisherGames, connection, transaction);
+                    await DeletePublisherGames(actionProcessingResults.RemovedPublisherGames, connection, transaction);
 
                     await transaction.CommitAsync();
                 }

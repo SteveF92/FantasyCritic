@@ -11,6 +11,7 @@ using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
+using FantasyCritic.Lib.Utilities;
 using Microsoft.AspNetCore.Identity;
 using MoreLinq;
 using NodaTime;
@@ -208,14 +209,16 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<ActionProcessingResults> GetActionProcessingDryRun(SystemWideValues systemWideValues, int year)
         {
-            IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
-            IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> onlyLeaguesWithBids = leaguesAndBids.Where(x => x.Value.Any()).ToDictionary(x => x.Key, y => y.Value);
-            var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithBids.ContainsKey(x.LeagueYear));
-            ActionProcessingResults results = _actionProcessingService.ProcessActionsIteration(systemWideValues, onlyLeaguesWithBids, publishersInLeagues, _clock, supportedYears);
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year);
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
+            IReadOnlyDictionary<LeagueYear, GameActionSet> leagueActionSets = ListFunctions.CombineDictionaries(leaguesAndBids, leaguesAndDropRequests, (bids, drops) => new GameActionSet(bids, drops));
 
+            IReadOnlyDictionary<LeagueYear, GameActionSet> onlyLeaguesWithActions = leagueActionSets.Where(x => x.Value.Any()).ToDictionary(x => x.Key, y => y.Value);
+            var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithActions.ContainsKey(x.LeagueYear));
+            ActionProcessingResults results = _actionProcessingService.ProcessActionsIteration(systemWideValues, leagueActionSets, publishersInLeagues, _clock, supportedYears);
             return results;
         }
 

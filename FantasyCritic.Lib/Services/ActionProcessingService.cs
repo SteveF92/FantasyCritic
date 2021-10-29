@@ -22,12 +22,11 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public ActionProcessingResults ProcessActionsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
-            IEnumerable<Publisher> currentPublisherStates, IClock clock, IEnumerable<SupportedYear> supportedYears)
+        public ActionProcessingResults ProcessActionsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, GameActionSet> allActiveActions, IEnumerable<Publisher> currentPublisherStates, IClock clock, IEnumerable<SupportedYear> supportedYears)
         {
-            if (!allActiveBids.Any())
+            if (allActiveActions.All(x => !x.Value.Any()))
             {
-                return new ActionProcessingResults(new List<PickupBid>(), new List<PickupBid>(), new List<LeagueAction>(), currentPublisherStates, new List<PublisherGame>());
+                return ActionProcessingResults.GetEmptyResultsSet(currentPublisherStates);
             }
 
             IEnumerable<PickupBid> flatAllBids = allActiveBids.SelectMany(x => x.Value);

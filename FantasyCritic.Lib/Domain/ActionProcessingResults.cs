@@ -8,29 +8,33 @@ namespace FantasyCritic.Lib.Domain
 {
     public class ActionProcessingResults
     {
-        public ActionProcessingResults(IEnumerable<PickupBid> successBids, IEnumerable<PickupBid> failedBids, IEnumerable<LeagueAction> leagueActions,
-            IEnumerable<Publisher> updatedPublishers, IEnumerable<PublisherGame> addedPublisherGames)
+        public ActionProcessingResults(IEnumerable<PickupBid> successBids, IEnumerable<PickupBid> failedBids,
+            IEnumerable<DropRequest> successDrops, IEnumerable<DropRequest> failedDrops, IEnumerable<LeagueAction> leagueActions,
+            IEnumerable<Publisher> updatedPublishers, IEnumerable<PublisherGame> addedPublisherGames, IEnumerable<PublisherGame> removedPublisherGames)
         {
-            SuccessBids = successBids;
-            FailedBids = failedBids;
-            LeagueActions = leagueActions;
-            UpdatedPublishers = updatedPublishers;
-            AddedPublisherGames = addedPublisherGames;
+            SuccessBids = successBids.ToList();
+            FailedBids = failedBids.ToList();
+            SuccessDrops = successDrops.ToList();
+            FailedDrops = failedDrops.ToList();
+            LeagueActions = leagueActions.ToList();
+            UpdatedPublishers = updatedPublishers.ToList();
+            AddedPublisherGames = addedPublisherGames.ToList();
+            RemovedPublisherGames = removedPublisherGames.ToList();
         }
 
-        public IEnumerable<PickupBid> SuccessBids { get; }
-        public IEnumerable<PickupBid> FailedBids { get; }
-        public IEnumerable<LeagueAction> LeagueActions { get; }
-        public IEnumerable<Publisher> UpdatedPublishers { get; }
-        public IEnumerable<PublisherGame> AddedPublisherGames { get; }
+        public IReadOnlyList<PickupBid> SuccessBids { get; }
+        public IReadOnlyList<PickupBid> FailedBids { get; }
+        public IReadOnlyList<DropRequest> SuccessDrops { get; }
+        public IReadOnlyList<DropRequest> FailedDrops { get; }
+        public IReadOnlyList<LeagueAction> LeagueActions { get; }
+        public IReadOnlyList<Publisher> UpdatedPublishers { get; }
+        public IReadOnlyList<PublisherGame> AddedPublisherGames { get; }
+        public IReadOnlyList<PublisherGame> RemovedPublisherGames { get; }
 
-        public ActionProcessingResults Combine(ActionProcessingResults subProcessingResults)
+        public static ActionProcessingResults GetEmptyResultsSet(IEnumerable<Publisher> publisherStates)
         {
-            return new ActionProcessingResults(SuccessBids.Concat(subProcessingResults.SuccessBids),
-                FailedBids.Concat(subProcessingResults.FailedBids),
-                LeagueActions.Concat(subProcessingResults.LeagueActions),
-                subProcessingResults.UpdatedPublishers,
-                AddedPublisherGames.Concat(subProcessingResults.AddedPublisherGames));
+            return new ActionProcessingResults(new List<PickupBid>(), new List<PickupBid>(), new List<DropRequest>(),
+                new List<DropRequest>(), new List<LeagueAction>(), publisherStates, new List<PublisherGame>(), new List<PublisherGame>());
         }
     }
 }
