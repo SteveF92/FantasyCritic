@@ -35,10 +35,30 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         }
 
         public static ActionProcessingResults GetResultsSetFromDropResults(IEnumerable<DropRequest> successDrops, IEnumerable<DropRequest> failedDrops,
-            IEnumerable<LeagueAction> leagueActions, IEnumerable<Publisher> publishersToUpdate, IEnumerable<PublisherGame> droppedPublisherGames)
+            IEnumerable<LeagueAction> leagueActions, IEnumerable<Publisher> updatedPublishers, IEnumerable<PublisherGame> droppedPublisherGames)
         {
             return new ActionProcessingResults(new List<PickupBid>(), new List<PickupBid>(), successDrops,
-                failedDrops, leagueActions, publishersToUpdate, new List<PublisherGame>(), droppedPublisherGames);
+                failedDrops, leagueActions, updatedPublishers, new List<PublisherGame>(), droppedPublisherGames);
+        }
+
+        public static ActionProcessingResults GetResultsSetFromBidResults(IEnumerable<PickupBid> successBids, IEnumerable<PickupBid> simpleFailedBids,
+            IEnumerable<LeagueAction> leagueActions, IEnumerable<Publisher> updatedPublishers, IEnumerable<PublisherGame> gamesToAdd, IEnumerable<PublisherGame> droppedPublisherGames)
+        {
+            return new ActionProcessingResults(successBids, simpleFailedBids, new List<DropRequest>(),
+                new List<DropRequest>(), leagueActions, updatedPublishers, gamesToAdd, droppedPublisherGames);
+        }
+
+        public ActionProcessingResults Combine(ActionProcessingResults subProcessingResults)
+        {
+            return new ActionProcessingResults(
+                SuccessBids.Concat(subProcessingResults.SuccessBids),
+                FailedBids.Concat(subProcessingResults.FailedBids), 
+                SuccessDrops.Concat(subProcessingResults.SuccessDrops), 
+                FailedDrops.Concat(subProcessingResults.FailedDrops), 
+                LeagueActions.Concat(subProcessingResults.LeagueActions),
+                subProcessingResults.UpdatedPublishers, 
+                AddedPublisherGames.Concat(AddedPublisherGames), 
+                RemovedPublisherGames.Concat(RemovedPublisherGames));
         }
     }
 }
