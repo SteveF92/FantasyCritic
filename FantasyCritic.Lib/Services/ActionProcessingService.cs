@@ -31,7 +31,6 @@ namespace FantasyCritic.Lib.Services
                 return ActionProcessingResults.GetEmptyResultsSet(currentPublisherStates);
             }
 
-            //Do standard drops
             ActionProcessingResults dropResults = ProcessDrops(allActiveDrops, currentPublisherStates, clock);
             if (!allActiveBids.Any())
             {
@@ -102,7 +101,6 @@ namespace FantasyCritic.Lib.Services
             }
 
             ActionProcessingResults newResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, currentPublisherStates, clock);
-
             var remainingBids = flatAllBids.Except(processedBids.ProcessedBids);
             if (remainingBids.Any())
             {
@@ -116,13 +114,14 @@ namespace FantasyCritic.Lib.Services
         }
 
         private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IEnumerable<PickupBid> activeBidsForLeague,
-            IEnumerable<Publisher> currentPublisherStates, SystemWideValues systemWideValues)
+            IReadOnlyList<Publisher> currentPublisherStates, SystemWideValues systemWideValues)
         {
             List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
             List<PickupBid> insufficientFundsBids = new List<PickupBid>();
             List<PickupBid> belowMinimumBids = new List<PickupBid>();
             List<KeyValuePair<PickupBid, string>> invalidGameBids = new List<KeyValuePair<PickupBid, string>>();
 
+            List<PickupBid> processedBids = new List<PickupBid>();
             foreach (var activeBid in activeBidsForLeague)
             {
                 Publisher publisher = currentPublisherStates.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
@@ -131,7 +130,15 @@ namespace FantasyCritic.Lib.Services
                 var publishersForLeagueAndYear = currentPublisherStates.Where(x => x.LeagueYear.League.LeagueID == leagueYear.League.LeagueID && x.LeagueYear.Year == leagueYear.Year);
                 var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, false);
 
-                if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames))
+                var hasValidConditionalDrop = false;
+                if (activeBid.ConditionalDropPublisherGame.HasValue)
+                {
+                    var otherPublishersInLeague = publishersForLeagueAndYear.Except(new List<Publisher>() { publisher });
+                    var dropResult = _gameAcquisitionService.CanCoditionallyDropGame(activeBid, leagueYear, publisher, otherPublishersInLeague);
+                    activeBid.ConditionalDropShouldSucceed = dropResult.Result.IsSuccess;
+                }
+
+                if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames) && !hasValidConditionalDrop)
                 {
                     noSpaceLeftBids.Add(activeBid);
                     continue;
@@ -154,7 +161,7 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            var validBids = activeBidsForLeague
+            var validBids = processedBids
                 .Except(noSpaceLeftBids)
                 .Except(insufficientFundsBids)
                 .Except(belowMinimumBids)
@@ -251,7 +258,7 @@ namespace FantasyCritic.Lib.Services
 
             var simpleFailedBids = failedBids.Select(x => x.PickupBid);
 
-            var conditionalDroppedGames = successBids.Where(x => x.ConditionalDropPublisherGame.HasValue).Select(x => x.ConditionalDropPublisherGame.Value);
+            var conditionalDroppedGames = successBids.Where(x => x.ConditionalDropShouldSucceed).Select(x => x.ConditionalDropPublisherGame.Value);
             ActionProcessingResults bidProcessingResults = ActionProcessingResults.GetResultsSetFromBidResults(successBids, simpleFailedBids, leagueActions, updatedPublishers, gamesToAdd, conditionalDroppedGames);
             return bidProcessingResults;
         }

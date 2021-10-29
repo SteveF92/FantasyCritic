@@ -30,6 +30,8 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public Instant Timestamp { get; }
         public bool? Successful { get; }
 
+        public bool ConditionalDropShouldSucceed { get; set; }
+
         public bool Equals(PickupBid other)
         {
             if (ReferenceEquals(null, other)) return false;

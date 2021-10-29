@@ -151,6 +151,46 @@ namespace FantasyCritic.Lib.Services
             return new DropResult(dropResult, !gameWillRelease);
         }
 
+        public DropResult CanCoditionallyDropGame(PickupBid request, LeagueYear leagueYear, Publisher publisher, IEnumerable<Publisher> otherPublishers)
+        {
+            List<ClaimError> dropErrors = new List<ClaimError>();
+
+            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, publisher);
+            dropErrors.AddRange(basicErrors);
+
+            var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, true, null);
+            dropErrors.AddRange(masterGameErrors);
+
+            //Drop limits
+            var publisherGame = publisher.GetPublisherGame(request.MasterGame);
+            if (publisherGame.HasNoValue)
+            {
+                return new DropResult(Result.Failure("Cannot drop a game that you do not have"), false);
+            }
+            bool gameWillRelease = publisherGame.Value.WillRelease();
+            if (dropErrors.Any())
+            {
+                return new DropResult(Result.Failure("Game is no longer eligible for dropping."), !gameWillRelease);
+            }
+            bool gameWasDrafted = publisherGame.Value.OverallDraftPosition.HasValue;
+            if (!gameWasDrafted && leagueYear.Options.DropOnlyDraftGames)
+            {
+                return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."), false);
+            }
+
+            bool gameWasCounterPicked = otherPublishers
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.CounterPick)
+                .ContainsGame(request.MasterGame);
+            if (gameWasCounterPicked && leagueYear.Options.CounterPicksBlockDrops)
+            {
+                return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."), false);
+            }
+
+            var dropResult = publisher.CanDropGame(gameWillRelease);
+            return new DropResult(dropResult, !gameWillRelease);
+        }
+
         public async Task<ClaimResult> CanAssociateGame(AssociateGameDomainRequest request)
         {
             List<ClaimError> associationErrors = new List<ClaimError>();

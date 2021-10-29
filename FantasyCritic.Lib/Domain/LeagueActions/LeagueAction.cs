@@ -100,7 +100,15 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             Timestamp = timestamp;
             Publisher = action.Publisher;
             ActionType = "Pickup Successful";
-            Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}";
+            if (action.ConditionalDropPublisherGame.HasValue)
+            {
+                Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Dropped game '{action.ConditionalDropPublisherGame.Value.GameName}' to make room.";
+            }
+            else
+            {
+                Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}";
+            }
+
             ManagerAction = false;
         }
 
