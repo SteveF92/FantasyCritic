@@ -210,8 +210,6 @@ namespace FantasyCritic.Lib.Services
         public async Task<ActionProcessingResults> GetActionProcessingDryRun(SystemWideValues systemWideValues, int year)
         {
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(year);
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
 
@@ -221,7 +219,7 @@ namespace FantasyCritic.Lib.Services
                 .Distinct().Select(x => x.Key).ToHashSet();
 
             var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithActions.Contains(x.LeagueYear.Key));
-            ActionProcessingResults results = _actionProcessingService.ProcessActionsIteration(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, _clock, supportedYears);
+            ActionProcessingResults results = _actionProcessingService.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, _clock);
             return results;
         }
 

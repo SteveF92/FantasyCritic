@@ -23,8 +23,8 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public ActionProcessingResults ProcessActionsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids, 
-            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> currentPublisherStates, IClock clock, IEnumerable<SupportedYear> supportedYears)
+        public ActionProcessingResults ProcessActions(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids, 
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> currentPublisherStates, IClock clock)
         {
             if (!allActiveBids.Any() && !allActiveDrops.Any())
             {
@@ -32,7 +32,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             //Do standard drops
-            ActionProcessingResults currentResults = ProcessDrops(allActiveDrops, currentPublisherStates, clock, supportedYears);
+            ActionProcessingResults currentResults = ProcessDrops(allActiveDrops, currentPublisherStates, clock);
             if (!allActiveBids.Any())
             {
                 return currentResults;
@@ -42,7 +42,7 @@ namespace FantasyCritic.Lib.Services
         }
 
         private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, 
-            IEnumerable<Publisher> currentPublisherStates, IClock clock, IEnumerable<SupportedYear> supportedYears)
+            IEnumerable<Publisher> currentPublisherStates, IClock clock)
         {
             List<Publisher> updatedPublisherStates = currentPublisherStates.ToList();
             List<PublisherGame> gamesToDelete = new List<PublisherGame>();
@@ -58,7 +58,7 @@ namespace FantasyCritic.Lib.Services
                     var publishersInLeague = updatedPublisherStates.Where(x => x.LeagueYear.Equals(affectedPublisher.LeagueYear));
                     var otherPublishersInLeague = publishersInLeague.Except(new List<Publisher>() { affectedPublisher });
 
-                    var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, supportedYears, leagueYearGroup.Key, affectedPublisher, otherPublishersInLeague);
+                    var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, leagueYearGroup.Key, affectedPublisher, otherPublishersInLeague);
                     if (dropResult.Result.IsSuccess)
                     {
                         successDrops.Add(dropRequest);

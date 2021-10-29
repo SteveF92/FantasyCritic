@@ -30,12 +30,11 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public ClaimResult CanClaimGame(ClaimGameDomainRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear, 
-            IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime, bool allowIfFull)
+        public ClaimResult CanClaimGame(ClaimGameDomainRequest request, LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime, bool allowIfFull)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
-            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, request.Publisher, supportedYears);
+            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, request.Publisher);
             claimErrors.AddRange(basicErrors);
 
             LeagueOptions yearOptions = leagueYear.Options;
@@ -112,11 +111,11 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
-        public DropResult CanDropGame(DropRequest request, IEnumerable<SupportedYear> supportedYears, LeagueYear leagueYear, Publisher publisher, IEnumerable<Publisher> otherPublishers)
+        public DropResult CanDropGame(DropRequest request, LeagueYear leagueYear, Publisher publisher, IEnumerable<Publisher> otherPublishers)
         {
             List<ClaimError> dropErrors = new List<ClaimError>();
 
-            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, publisher, supportedYears);
+            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, publisher);
             dropErrors.AddRange(basicErrors);
 
             var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, true, null);
@@ -157,7 +156,7 @@ namespace FantasyCritic.Lib.Services
             List<ClaimError> associationErrors = new List<ClaimError>();
             var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
 
-            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, request.Publisher, supportedYears);
+            var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, request.Publisher);
             associationErrors.AddRange(basicErrors);
 
             var leagueYear = request.Publisher.LeagueYear;
@@ -199,7 +198,7 @@ namespace FantasyCritic.Lib.Services
             return result;
         }
 
-        private IReadOnlyList<ClaimError> GetBasicErrors(League league, Publisher publisher, IEnumerable<SupportedYear> supportedYears)
+        private IReadOnlyList<ClaimError> GetBasicErrors(League league, Publisher publisher)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
@@ -294,10 +293,9 @@ namespace FantasyCritic.Lib.Services
             PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
                 masterGameYear, request.DraftPosition, request.OverallDraftPosition, false);
 
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
             LeagueYear leagueYear = request.Publisher.LeagueYear;
 
-            ClaimResult claimResult = CanClaimGame(request, supportedYears, leagueYear, publishersForYear, null, false);
+            ClaimResult claimResult = CanClaimGame(request, leagueYear, publishersForYear, null, false);
 
             if (!claimResult.Success)
             {
@@ -350,14 +348,12 @@ namespace FantasyCritic.Lib.Services
             }
 
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, masterGame, null, null);
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-
             var leagueYear = publisher.LeagueYear;
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
 
             Instant nextBidTime = GetNextBidTime();
 
-            var claimResult = CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear, nextBidTime, true);
+            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, nextBidTime, true);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -409,12 +405,10 @@ namespace FantasyCritic.Lib.Services
             }
 
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, masterGame, null, null);
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-
             var leagueYear = publisher.LeagueYear;
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
 
-            var claimResult = CanClaimGame(claimRequest, supportedYears, leagueYear, publishersForYear, null, true);
+            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, null, true);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -453,11 +447,10 @@ namespace FantasyCritic.Lib.Services
             }
 
             DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, publisher.LeagueYear, masterGame, _clock.GetCurrentInstant(), null);
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
             var publishersInLeague = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
             var otherPublishers = publishersInLeague.Except(new List<Publisher>(){publisher});
 
-            var dropResult = CanDropGame(dropRequest, supportedYears, publisher.LeagueYear, publisher, otherPublishers);
+            var dropResult = CanDropGame(dropRequest, publisher.LeagueYear, publisher, otherPublishers);
             if (dropResult.Result.IsFailure)
             {
                 return dropResult;
