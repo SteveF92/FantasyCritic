@@ -1,5 +1,6 @@
 using System;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.LeagueActions;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
