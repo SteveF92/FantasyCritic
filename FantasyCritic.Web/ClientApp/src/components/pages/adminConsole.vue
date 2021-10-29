@@ -26,8 +26,7 @@
         <b-button variant="info" :to="{ name: 'currentActionedGames' }">Current Actioned Games</b-button>
         <b-button variant="warning" v-on:click="turnOnActionProcessing">Turn on action processing mode</b-button>
         <b-button variant="info" v-on:click="turnOffActionProcessing">Turn off action processing mode</b-button>
-        <b-button variant="danger" v-on:click="processBids">Process Bids</b-button>
-        <b-button variant="danger" v-on:click="processDrops">Process Drops</b-button>
+        <b-button variant="danger" v-on:click="processActions">Process Actions</b-button>
       </div>
 
       <h2>Other</h2>
@@ -110,26 +109,13 @@ export default {
           this.errorInfo = returnedError.response.data;
         });
     },
-    processBids() {
+    processActions() {
       this.isBusy = true;
       axios
-        .post('/api/admin/ProcessPickups')
+        .post('/api/admin/ProcessActions')
         .then(response => {
           this.isBusy = false;
-          this.jobSuccess = 'Process Bids';
-        })
-        .catch(returnedError => {
-          this.isBusy = false;
-          this.errorInfo = returnedError.response.data;
-        });
-    },
-    processDrops() {
-      this.isBusy = true;
-      axios
-        .post('/api/admin/ProcessDropRequests')
-        .then(response => {
-          this.isBusy = false;
-          this.jobSuccess = 'Process Drops';
+          this.jobSuccess = 'Process Actions';
         })
         .catch(returnedError => {
           this.isBusy = false;
