@@ -14,7 +14,6 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Utilities;
 using Microsoft.AspNetCore.Identity;
-using MoreLinq;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Services
@@ -215,11 +214,14 @@ namespace FantasyCritic.Lib.Services
 
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year);
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year);
-            IReadOnlyDictionary<LeagueYear, GameActionSet> leagueActionSets = ListFunctions.CombineDictionaries(leaguesAndBids, leaguesAndDropRequests, (bids, drops) => new GameActionSet(bids, drops));
 
-            IReadOnlyDictionary<LeagueYear, GameActionSet> onlyLeaguesWithActions = leagueActionSets.Where(x => x.Value.Any()).ToDictionary(x => x.Key, y => y.Value);
-            var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithActions.ContainsKey(x.LeagueYear));
-            ActionProcessingResults results = _actionProcessingService.ProcessActionsIteration(systemWideValues, leagueActionSets, publishersInLeagues, _clock, supportedYears);
+            var onlyLeaguesWithActions = leaguesAndBids
+                .Where(x => x.Value.Any()).Select(x => x.Key)
+                .Concat(leaguesAndDropRequests.Where(x => x.Value.Any()).Select(x => x.Key))
+                .Distinct().Select(x => x.Key).ToHashSet();
+
+            var publishersInLeagues = allPublishers.Where(x => onlyLeaguesWithActions.Contains(x.LeagueYear.Key));
+            ActionProcessingResults results = _actionProcessingService.ProcessActionsIteration(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, _clock, supportedYears);
             return results;
         }
 

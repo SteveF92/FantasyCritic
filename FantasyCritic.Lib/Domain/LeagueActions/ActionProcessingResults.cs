@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
 {
     public class ActionProcessingResults
     {
-        public ActionProcessingResults(IEnumerable<PickupBid> successBids, IEnumerable<PickupBid> failedBids,
+        private ActionProcessingResults(IEnumerable<PickupBid> successBids, IEnumerable<PickupBid> failedBids,
             IEnumerable<DropRequest> successDrops, IEnumerable<DropRequest> failedDrops, IEnumerable<LeagueAction> leagueActions,
             IEnumerable<Publisher> updatedPublishers, IEnumerable<PublisherGame> addedPublisherGames, IEnumerable<PublisherGame> removedPublisherGames)
         {
@@ -32,6 +32,13 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         {
             return new ActionProcessingResults(new List<PickupBid>(), new List<PickupBid>(), new List<DropRequest>(),
                 new List<DropRequest>(), new List<LeagueAction>(), publisherStates, new List<PublisherGame>(), new List<PublisherGame>());
+        }
+
+        public static ActionProcessingResults GetResultsSetFromDropResults(IEnumerable<DropRequest> successDrops, IEnumerable<DropRequest> failedDrops,
+            IEnumerable<LeagueAction> leagueActions, IEnumerable<Publisher> publishersToUpdate, IEnumerable<PublisherGame> droppedPublisherGames)
+        {
+            return new ActionProcessingResults(new List<PickupBid>(), new List<PickupBid>(), successDrops,
+                failedDrops, leagueActions, publishersToUpdate, new List<PublisherGame>(), droppedPublisherGames);
         }
     }
 }

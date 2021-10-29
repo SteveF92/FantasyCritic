@@ -23,20 +23,26 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public ActionProcessingResults ProcessActionsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, GameActionSet> allActiveActions, IEnumerable<Publisher> currentPublisherStates, IClock clock, IEnumerable<SupportedYear> supportedYears)
+        public ActionProcessingResults ProcessActionsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids, 
+            IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> currentPublisherStates, IClock clock, IEnumerable<SupportedYear> supportedYears)
         {
-            if (allActiveActions.All(x => !x.Value.Any()))
+            if (!allActiveBids.Any() && !allActiveDrops.Any())
             {
                 return ActionProcessingResults.GetEmptyResultsSet(currentPublisherStates);
             }
 
             //Do standard drops
+            ActionProcessingResults currentResults = ProcessDrops(allActiveDrops, currentPublisherStates, clock, supportedYears);
+            if (!allActiveBids.Any())
+            {
+                return currentResults;
+            }
 
-            return ActionProcessingResults.GetEmptyResultsSet(currentPublisherStates);
+            return currentResults;
         }
 
-        private DropProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, IEnumerable<Publisher> currentPublisherStates,
-            IClock clock, IReadOnlyList<SupportedYear> supportedYears)
+        private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, 
+            IEnumerable<Publisher> currentPublisherStates, IClock clock, IEnumerable<SupportedYear> supportedYears)
         {
             List<Publisher> updatedPublisherStates = currentPublisherStates.ToList();
             List<PublisherGame> gamesToDelete = new List<PublisherGame>();
@@ -72,7 +78,7 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            DropProcessingResults dropProcessingResults = new DropProcessingResults(successDrops, failedDrops, leagueActions, updatedPublisherStates, gamesToDelete);
+            ActionProcessingResults dropProcessingResults = ActionProcessingResults.GetResultsSetFromDropResults(successDrops, failedDrops, leagueActions, updatedPublisherStates, gamesToDelete);
             return dropProcessingResults;
         }
     }
