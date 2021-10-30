@@ -1,4 +1,5 @@
-﻿using FantasyCritic.Lib.Domain.Requests;
+﻿using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
@@ -102,7 +103,14 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             ActionType = "Pickup Successful";
             if (action.ConditionalDropPublisherGame.HasValue)
             {
-                Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Dropped game '{action.ConditionalDropPublisherGame.Value.GameName}' to make room.";
+                if (action.ConditionalDropResult.Result.IsSuccess)
+                {
+                    Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Dropped game '{action.ConditionalDropPublisherGame.Value.GameName}' conditionally.";
+                }
+                else
+                {
+                    Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Attempted to drop game '{action.ConditionalDropPublisherGame.Value.GameName}' conditionally but cannot because: {action.ConditionalDropResult.Result.Error}.";
+                }
             }
             else
             {

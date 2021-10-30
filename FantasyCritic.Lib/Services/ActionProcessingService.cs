@@ -134,8 +134,7 @@ namespace FantasyCritic.Lib.Services
                 if (activeBid.ConditionalDropPublisherGame.HasValue)
                 {
                     var otherPublishersInLeague = publishersForLeagueAndYear.Except(new List<Publisher>() { publisher });
-                    var dropResult = _gameAcquisitionService.CanCoditionallyDropGame(activeBid, leagueYear, publisher, otherPublishersInLeague);
-                    activeBid.ConditionalDropShouldSucceed = dropResult.Result.IsSuccess;
+                    activeBid.ConditionalDropResult = _gameAcquisitionService.CanCoditionallyDropGame(activeBid, leagueYear, publisher, otherPublishersInLeague);
                 }
 
                 if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames) && !hasValidConditionalDrop)
@@ -258,7 +257,15 @@ namespace FantasyCritic.Lib.Services
 
             var simpleFailedBids = failedBids.Select(x => x.PickupBid);
 
-            var conditionalDroppedGames = successBids.Where(x => x.ConditionalDropShouldSucceed).Select(x => x.ConditionalDropPublisherGame.Value);
+            List<PublisherGame> conditionalDroppedGames = new List<PublisherGame>();
+            var successfulConditionalDrops = successBids.Where(x => x.ConditionalDropResult.Result.IsSuccess);
+            foreach (var successfulConditionalDrop in successfulConditionalDrops)
+            {
+                var affectedPublisher = updatedPublishers.Single(x => x.PublisherID == successfulConditionalDrop.Publisher.PublisherID);
+                affectedPublisher.DropGame(successfulConditionalDrop.ConditionalDropPublisherGame.Value.WillRelease());
+                conditionalDroppedGames.Add(successfulConditionalDrop.ConditionalDropPublisherGame.Value);
+            }
+
             ActionProcessingResults bidProcessingResults = ActionProcessingResults.GetResultsSetFromBidResults(successBids, simpleFailedBids, leagueActions, updatedPublishers, gamesToAdd, conditionalDroppedGames);
             return bidProcessingResults;
         }

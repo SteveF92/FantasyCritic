@@ -1,5 +1,6 @@
 ﻿using System;
 using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain.Results;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions
@@ -30,7 +31,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public Instant Timestamp { get; }
         public bool? Successful { get; }
 
-        public bool ConditionalDropShouldSucceed { get; set; }
+        public DropResult ConditionalDropResult { get; set; }
 
         public bool Equals(PickupBid other)
         {
