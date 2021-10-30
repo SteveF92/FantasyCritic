@@ -68,7 +68,7 @@ namespace FantasyCritic.Lib.Services
                         var publisherGame = dropRequest.Publisher.GetPublisherGame(dropRequest.MasterGame);
                         gamesToDelete.Add(publisherGame.Value);
                         LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, clock.GetCurrentInstant());
-                        affectedPublisher.DropGame(publisherGame.Value.WillRelease());
+                        affectedPublisher.DropGame(publisherGame.Value);
 
                         leagueActions.Add(leagueAction);
                     }
@@ -131,7 +131,9 @@ namespace FantasyCritic.Lib.Services
 
                 var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, false, false, false, activeBid.MasterGame, null, null);
                 var publishersForLeagueAndYear = currentPublisherStates.Where(x => x.LeagueYear.League.LeagueID == leagueYear.League.LeagueID && x.LeagueYear.Year == leagueYear.Year);
-                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, false);
+
+                var allowIfFull = activeBid.ConditionalDropPublisherGame.HasValue && activeBid.ConditionalDropResult.Result.IsSuccess;
+                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, allowIfFull);
 
                 var hasValidConditionalDrop = false;
                 if (activeBid.ConditionalDropPublisherGame.HasValue)
@@ -266,7 +268,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var successfulConditionalDrop in successfulConditionalDrops)
             {
                 var affectedPublisher = publisherDictionary[successfulConditionalDrop.Publisher.PublisherID];
-                affectedPublisher.DropGame(successfulConditionalDrop.ConditionalDropPublisherGame.Value.WillRelease());
+                affectedPublisher.DropGame(successfulConditionalDrop.ConditionalDropPublisherGame.Value);
                 conditionalDroppedGames.Add(successfulConditionalDrop.ConditionalDropPublisherGame.Value);
             }
 

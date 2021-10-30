@@ -170,19 +170,21 @@ namespace FantasyCritic.Lib.Domain
             return Result.Failure("Publisher cannot drop any more 'Will Not Release' games");
         }
 
-        public void DropGame(bool willRelease)
+        public void DropGame(PublisherGame publisherGame)
         {
             var leagueOptions = LeagueYear.Options;
-            if (willRelease)
+            if (publisherGame.WillRelease())
             {
                 if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > WillReleaseGamesDropped)
                 {
                     WillReleaseGamesDropped++;
+                    PublisherGames = PublisherGames.Where(x => x.PublisherGameID != publisherGame.PublisherGameID).ToList();
                     return;
                 }
                 if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
                 {
                     FreeGamesDropped++;
+                    PublisherGames = PublisherGames.Where(x => x.PublisherGameID != publisherGame.PublisherGameID).ToList();
                     return;
                 }
                 throw new Exception("Publisher cannot drop any more 'Will Release' games");
@@ -191,11 +193,13 @@ namespace FantasyCritic.Lib.Domain
             if (leagueOptions.WillNotReleaseDroppableGames == -1 || leagueOptions.WillNotReleaseDroppableGames > WillNotReleaseGamesDropped)
             {
                 WillNotReleaseGamesDropped++;
+                PublisherGames = PublisherGames.Where(x => x.PublisherGameID != publisherGame.PublisherGameID).ToList();
                 return;
             }
             if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
             {
                 FreeGamesDropped++;
+                PublisherGames = PublisherGames.Where(x => x.PublisherGameID != publisherGame.PublisherGameID).ToList();
                 return;
             }
             throw new Exception("Publisher cannot drop any more 'Will Not Release' games");
