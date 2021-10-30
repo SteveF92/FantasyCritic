@@ -36,9 +36,14 @@ namespace FantasyCritic.BetaSync
             _betaBucket = ConfigurationManager.AppSettings["betaBucket"];
             _productionReadOnlyConnectionString = ConfigurationManager.AppSettings["productionConnectionString"];
             _betaConnectionString = ConfigurationManager.AppSettings["betaConnectionString"];
+            var productionRDSName = ConfigurationManager.AppSettings["productionRDSName"];
+            var betaRDSName = ConfigurationManager.AppSettings["betaRDSName"];
 
             _clock = SystemClock.Instance;
             DapperNodaTimeSetup.Register();
+
+            RDSRefresher rdsRefresher = new RDSRefresher(productionRDSName, betaRDSName);
+            await rdsRefresher.CopySourceToDestination();
 
             MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(_productionReadOnlyConnectionString, _clock);
             MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);

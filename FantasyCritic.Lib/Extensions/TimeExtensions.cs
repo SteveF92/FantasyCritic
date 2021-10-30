@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,11 @@ namespace FantasyCritic.Lib.Extensions
             return instant
                 .InZone(EasternTimeZone)
                 .LocalDateTime.Date;
+        }
+
+        public static string ToISOString(this LocalDate date)
+        {
+            return date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         }
 
         public static readonly DateTimeZone EasternTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
