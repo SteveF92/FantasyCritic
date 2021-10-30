@@ -14,6 +14,11 @@ namespace FantasyCritic.Lib.Utilities
             return source.ToDictionary(x => x.Key, y => (IReadOnlyList<TSource>)y.Value);
         }
 
+        public static IReadOnlyDictionary<TKey, IReadOnlyList<TSource>> GroupToDictionary<TKey, TSource>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+        {
+            return source.GroupBy(keySelector).ToDictionary(x => x.Key, y => (IReadOnlyList<TSource>)y.ToList());
+        }
+
         public static IReadOnlyDictionary<TKey, TCombinedValue> CombineDictionaries<TKey, TValue1, TValue2, TCombinedValue>(
                 IReadOnlyDictionary<TKey, IReadOnlyList<TValue1>> dictionaryOne,
                 IReadOnlyDictionary<TKey, IReadOnlyList<TValue2>> dictionaryTwo,

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MoreLinq.Extensions;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions
@@ -51,14 +52,14 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public ActionProcessingResults Combine(ActionProcessingResults subProcessingResults)
         {
             return new ActionProcessingResults(
-                SuccessBids.Concat(subProcessingResults.SuccessBids),
-                FailedBids.Concat(subProcessingResults.FailedBids), 
-                SuccessDrops.Concat(subProcessingResults.SuccessDrops), 
-                FailedDrops.Concat(subProcessingResults.FailedDrops), 
-                LeagueActions.Concat(subProcessingResults.LeagueActions),
+                SuccessBids.Concat(subProcessingResults.SuccessBids).DistinctBy(x => x.BidID),
+                FailedBids.Concat(subProcessingResults.FailedBids).DistinctBy(x => x.BidID), 
+                SuccessDrops.Concat(subProcessingResults.SuccessDrops).DistinctBy(x => x.DropRequestID), 
+                FailedDrops.Concat(subProcessingResults.FailedDrops).DistinctBy(x => x.DropRequestID), 
+                LeagueActions.Concat(subProcessingResults.LeagueActions).DistinctBy(x => x.ActionInternalID),
                 subProcessingResults.UpdatedPublishers, 
-                AddedPublisherGames.Concat(AddedPublisherGames), 
-                RemovedPublisherGames.Concat(RemovedPublisherGames));
+                AddedPublisherGames.Concat(subProcessingResults.AddedPublisherGames).DistinctBy(x => x.PublisherGameID), 
+                RemovedPublisherGames.Concat(subProcessingResults.RemovedPublisherGames).DistinctBy(x => x.PublisherGameID));
         }
     }
 }

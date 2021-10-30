@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Utilities;
@@ -16,6 +17,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             ActionType = actionType;
             Description = description;
             ManagerAction = managerAction;
+            ActionInternalID = Guid.NewGuid();
         }
 
         public LeagueAction(ClaimGameDomainRequest action, Instant timestamp, bool managerAction, bool draft, bool autoDraft)
@@ -66,6 +68,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             }
 
             ManagerAction = managerAction;
+            ActionInternalID = Guid.NewGuid();
         }
 
         public LeagueAction(AssociateGameDomainRequest action, Instant timestamp)
@@ -76,6 +79,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             Description =
                 $"Associated publisher game '{action.PublisherGame.GameName}' with master game '{action.MasterGame.GameName}'";
             ManagerAction = true;
+            ActionInternalID = Guid.NewGuid();
         }
 
         public LeagueAction(RemoveGameDomainRequest action, Instant timestamp)
@@ -85,6 +89,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             ActionType = "Publisher Game Removed";
             Description = $"Removed game: '{action.PublisherGame.GameName}'";
             ManagerAction = true;
+            ActionInternalID = Guid.NewGuid();
         }
 
         public LeagueAction(EditPublisherRequest editValues, Instant timestamp)
@@ -94,6 +99,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             ActionType = "Publisher Edited";
             Description = editValues.GetActionString();
             ManagerAction = true;
+            ActionInternalID = Guid.NewGuid();
         }
 
         public LeagueAction(PickupBid action, Instant timestamp)
@@ -118,6 +124,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             }
 
             ManagerAction = false;
+            ActionInternalID = Guid.NewGuid();
         }
 
         public LeagueAction(FailedPickupBid action, Instant timestamp)
@@ -127,6 +134,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             ActionType = "Pickup Failed";
             Description = $"Tried to acquire game '{action.PickupBid.MasterGame.GameName}' with a bid of ${action.PickupBid.BidAmount}. Failure reason: {action.FailureReason}";
             ManagerAction = false;
+            ActionInternalID = Guid.NewGuid();
         }
 
         public LeagueAction(DropRequest action, DropResult result, Instant timestamp)
@@ -145,6 +153,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             }
             
             ManagerAction = false;
+            ActionInternalID = Guid.NewGuid();
         }
 
         public Publisher Publisher { get; }
@@ -152,6 +161,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public string ActionType { get; }
         public string Description { get; }
         public bool ManagerAction { get; }
+        public Guid ActionInternalID { get; }
 
         public bool IsFailed => Description.Contains("Game is no longer eligible");
 
