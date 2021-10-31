@@ -15,6 +15,7 @@
           <th scope="col" class="game-column">Game</th>
           <th scope="col">Bid Amount</th>
           <th scope="col">Priority</th>
+          <th scope="col">Conditional Drop</th>
           <th scope="col" v-show="!settingPriority">Cancel</th>
         </tr>
       </thead>
@@ -24,6 +25,8 @@
           <td>{{bid.masterGame.gameName}}</td>
           <td>{{bid.bidAmount | money}}</td>
           <td>{{bid.priority}}</td>
+          <td v-if="bid.conditionalDropPublisherGame">{{bid.conditionalDropPublisherGame.gameName}}</td>
+          <td v-else>None</td>
         </tr>
       </draggable>
       <tbody v-if="!settingPriority">
@@ -31,6 +34,8 @@
           <td>{{bid.masterGame.gameName}}</td>
           <td>{{bid.bidAmount | money}}</td>
           <td>{{bid.priority}}</td>
+          <td v-if="bid.conditionalDropPublisherGame">{{bid.conditionalDropPublisherGame.gameName}}</td>
+          <td v-else>None</td>
           <td class="select-cell">
             <b-button variant="danger" size="sm" v-on:click="cancelBid(bid)">Cancel</b-button>
           </td>

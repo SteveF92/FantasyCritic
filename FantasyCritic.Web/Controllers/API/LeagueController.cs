@@ -727,9 +727,10 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var bids = await _gameAcquisitionService.GetActiveAcquisitionBids(publisher.Value);
+            SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
 
             var currentDate = _clock.GetToday();
-            var viewModels = bids.Select(x => new PickupBidViewModel(x, currentDate)).OrderBy(x => x.Priority);
+            var viewModels = bids.Select(x => new PickupBidViewModel(x, currentDate, publisher.Value.LeagueYear.Options.ScoringSystem, systemWideValues)).OrderBy(x => x.Priority);
             return Ok(viewModels);
         }
 

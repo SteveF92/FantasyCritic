@@ -1,13 +1,15 @@
 using System;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {
     public class PickupBidViewModel
     {
-        public PickupBidViewModel(PickupBid pickupBid, LocalDate currentDate)
+        public PickupBidViewModel(PickupBid pickupBid, LocalDate currentDate, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
         {
             BidID = pickupBid.BidID;
             BidAmount = pickupBid.BidAmount;
@@ -15,6 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             Timestamp = pickupBid.Timestamp.ToDateTimeUtc();
             Successful = pickupBid.Successful;
             MasterGame = new MasterGameViewModel(pickupBid.MasterGame, currentDate);
+            ConditionalDropPublisherGame = pickupBid.ConditionalDropPublisherGame.Unwrap(x => new PublisherGameViewModel(x, currentDate, scoringSystem, systemWideValues));
         }
 
         public Guid BidID { get; }
@@ -23,5 +26,6 @@ namespace FantasyCritic.Web.Models.Responses
         public DateTime Timestamp { get; }
         public bool? Successful { get; }
         public MasterGameViewModel MasterGame { get; }
+        public PublisherGameViewModel ConditionalDropPublisherGame { get; }
     }
 }
