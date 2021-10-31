@@ -663,7 +663,7 @@ namespace FantasyCritic.Web.Controllers.API
             Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
             if (request.ConditionalDropPublisherGameID.HasValue)
             {
-                conditionalDropPublisherGame = publisher.Value.GetPublisherGame(request.ConditionalDropPublisherGameID.Value);
+                conditionalDropPublisherGame = publisher.Value.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGameID.Value);
             }
             
             ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, conditionalDropPublisherGame, request.BidAmount, leagueYear.Value.Options);

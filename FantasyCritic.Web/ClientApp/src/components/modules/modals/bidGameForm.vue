@@ -10,7 +10,7 @@
     </p>
 
     <div class="alert alert-warning" v-show="publisherSlotsAreFilled">Warning! You have already filled all of your game slots.
-    You can still make bids, but you must drop a game before bids are processed, or the bid will not succeed.</div>
+    You can still make bids, but you must drop a game first. You can use the conditional drop feature for this.</div>
 
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <label for="bidGameName" class="control-label">Game Name</label>
@@ -49,6 +49,14 @@
               <span class="text-danger">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
+          <div class="form-group">
+            <label for="conditionalDrop" class="control-label">Conditional Drop</label>
+            <b-form-select v-model="conditionalDrop">
+              <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame">
+                {{ publisherGame.gameName }}
+              </option>
+            </b-form-select>
+          </div>
           <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || invalid">Place Bid</b-button>
           <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
             <h3 class="alert-heading">Error!</h3>
@@ -75,6 +83,7 @@ export default {
       bidMasterGame: null,
       bidAmount: 0,
       bidResult: null,
+      conditionalDrop: null,
       possibleMasterGames: [],
       errorInfo: '',
       showingTopAvailable: false,
@@ -95,9 +104,12 @@ export default {
       let standardGameSlots = this.leagueYear.standardGames;
       let userStandardGames = _.filter(userGames, { 'counterPick': false });
       return userStandardGames.length >= standardGameSlots;
+    },
+    droppableGames() {
+      return _.filter(this.publisher.games, { 'counterPick': false });
     }
   },
-  props: ['leagueYear'],
+  props: ['leagueYear', 'publisher'],
   methods: {
     searchGame() {
       this.clearDataExceptSearch();
@@ -134,6 +146,10 @@ export default {
         bidAmount: this.bidAmount
       };
 
+      if (this.conditionalDrop) {
+        request.conditionalDropPublisherGameID = this.conditionalDrop.publisherGameID;
+      }
+
       axios
         .post('/api/league/MakePickupBid', request)
         .then(response => {
@@ -165,6 +181,7 @@ export default {
       this.searched = false;
       this.showingTopAvailable = false;
       this.isBusy = false;
+      this.conditionalDrop = false;
     },
     clearData() {
       this.clearDataExceptSearch();

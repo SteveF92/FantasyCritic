@@ -149,7 +149,7 @@
         <playerDraftGameForm :userPublisher="leagueYear.userPublisher" :isManager="league.isManager" :year="leagueYear.year" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
         <playerDraftCounterPickForm :userPublisher="leagueYear.userPublisher" :availableCounterPicks="leagueYear.availableCounterPicks" v-on:counterPickDrafted="counterPickDrafted"></playerDraftCounterPickForm>
 
-        <bidGameForm :leagueYear="leagueYear" v-on:gameBid="gameBid"></bidGameForm>
+        <bidGameForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:gameBid="gameBid"></bidGameForm>
         <currentBidsForm :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
 
         <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
