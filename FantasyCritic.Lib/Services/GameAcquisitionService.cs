@@ -151,7 +151,7 @@ namespace FantasyCritic.Lib.Services
             return new DropResult(dropResult, !gameWillRelease);
         }
 
-        public DropResult CanCoditionallyDropGame(PickupBid request, LeagueYear leagueYear, Publisher publisher, IEnumerable<Publisher> otherPublishers)
+        public DropResult CanConditionallyDropGame(PickupBid request, LeagueYear leagueYear, Publisher publisher, IEnumerable<Publisher> otherPublishers)
         {
             List<ClaimError> dropErrors = new List<ClaimError>();
 
@@ -162,7 +162,7 @@ namespace FantasyCritic.Lib.Services
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
-            var publisherGame = publisher.GetPublisherGame(request.MasterGame);
+            var publisherGame = publisher.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGame.Value.PublisherGameID);
             if (publisherGame.HasNoValue)
             {
                 return new DropResult(Result.Failure("Cannot drop a game that you do not have"), false);

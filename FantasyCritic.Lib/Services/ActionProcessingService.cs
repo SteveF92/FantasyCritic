@@ -132,15 +132,16 @@ namespace FantasyCritic.Lib.Services
                 var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, false, false, false, activeBid.MasterGame, null, null);
                 var publishersForLeagueAndYear = currentPublisherStates.Where(x => x.LeagueYear.League.LeagueID == leagueYear.League.LeagueID && x.LeagueYear.Year == leagueYear.Year);
 
-                var allowIfFull = activeBid.ConditionalDropPublisherGame.HasValue && activeBid.ConditionalDropResult.Result.IsSuccess;
-                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, allowIfFull);
-
                 var hasValidConditionalDrop = false;
                 if (activeBid.ConditionalDropPublisherGame.HasValue)
                 {
                     var otherPublishersInLeague = publishersForLeagueAndYear.Except(new List<Publisher>() { publisher });
-                    activeBid.ConditionalDropResult = _gameAcquisitionService.CanCoditionallyDropGame(activeBid, leagueYear, publisher, otherPublishersInLeague);
+                    activeBid.ConditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, leagueYear, publisher, otherPublishersInLeague);
+                    hasValidConditionalDrop = activeBid.ConditionalDropResult.Result.IsSuccess;
                 }
+
+                var allowIfFull = activeBid.ConditionalDropPublisherGame.HasValue && activeBid.ConditionalDropResult.Result.IsSuccess;
+                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, allowIfFull);
 
                 if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames) && !hasValidConditionalDrop)
                 {
