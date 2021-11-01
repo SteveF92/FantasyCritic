@@ -211,8 +211,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_league_pickupbid(BidID,PublisherID,MasterGameID,ConditionalDropPublisherGameID,Timestamp,Priority,BidAmount,Successful) VALUES " +
-                    "(@BidID,@PublisherID,@MasterGameID,@ConditionalDropPublisherGameID,@Timestamp,@Priority,@BidAmount,@Successful);",
+                    "insert into tbl_league_pickupbid(BidID,PublisherID,MasterGameID,ConditionalDropMasterGameID,Timestamp,Priority,BidAmount,Successful) VALUES " +
+                    "(@BidID,@PublisherID,@MasterGameID,@ConditionalDropMasterGameID,@Timestamp,@Priority,@BidAmount,@Successful);",
                     entity);
             }
         }
