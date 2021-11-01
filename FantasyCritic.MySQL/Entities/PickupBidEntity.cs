@@ -22,7 +22,7 @@ namespace FantasyCritic.MySQL.Entities
             BidID = domain.BidID;
             PublisherID = domain.Publisher.PublisherID;
             MasterGameID = domain.MasterGame.MasterGameID;
-            ConditionalDropPublisherGameID = domain.ConditionalDropPublisherGame.Unwrap(x => (Guid?) x.PublisherGameID);
+            ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.Unwrap(x => x.MasterGame.Value.MasterGame.MasterGameID as Guid?);
             Timestamp = domain.Timestamp;
             Priority = domain.Priority;
             BidAmount = domain.BidAmount;
@@ -34,7 +34,7 @@ namespace FantasyCritic.MySQL.Entities
             BidID = domain.BidID;
             PublisherID = domain.Publisher.PublisherID;
             MasterGameID = domain.MasterGame.MasterGameID;
-            ConditionalDropPublisherGameID = domain.ConditionalDropPublisherGame.Unwrap(x => (Guid?) x.PublisherGameID);
+            ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.Unwrap(x => x.MasterGame.Value.MasterGame.MasterGameID as Guid?);
             Timestamp = domain.Timestamp;
             Priority = domain.Priority;
             BidAmount = domain.BidAmount;
@@ -44,7 +44,7 @@ namespace FantasyCritic.MySQL.Entities
         public Guid BidID { get; set; }
         public Guid PublisherID { get; set; }
         public Guid MasterGameID { get; set; }
-        public Guid? ConditionalDropPublisherGameID { get; set; }
+        public Guid? ConditionalDropMasterGameID { get; set; }
         public Instant Timestamp { get; set; }
         public int Priority { get; set; }
         public uint BidAmount { get; set; }

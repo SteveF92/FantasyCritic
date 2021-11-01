@@ -249,9 +249,9 @@ namespace FantasyCritic.MySQL
                 {
                     var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
                     Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
-                    if (bidEntity.ConditionalDropPublisherGameID.HasValue)
+                    if (bidEntity.ConditionalDropMasterGameID.HasValue)
                     {
-                        conditionalDropPublisherGame = await GetPublisherGame(bidEntity.ConditionalDropPublisherGameID.Value);
+                        conditionalDropPublisherGame = await GetPublisherGame(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value);
                     }
 
                     PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
@@ -297,9 +297,9 @@ namespace FantasyCritic.MySQL
                     var publisher = publisherDictionary[bidEntity.PublisherID];
                     var leagueYear = leagueDictionary[publisher.LeagueYear.League.LeagueID].Single(x => x.Year == year);
                     Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
-                    if (bidEntity.ConditionalDropPublisherGameID.HasValue)
+                    if (bidEntity.ConditionalDropMasterGameID.HasValue)
                     {
-                        conditionalDropPublisherGame = await GetPublisherGame(bidEntity.ConditionalDropPublisherGameID.Value);
+                        conditionalDropPublisherGame = await GetPublisherGame(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value);
                     }
 
                     PickupBid domainPickup = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
@@ -566,9 +566,9 @@ namespace FantasyCritic.MySQL
                 var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
                 var leagueYear = publisher.Value.LeagueYear;
                 Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
-                if (bidEntity.ConditionalDropPublisherGameID.HasValue)
+                if (bidEntity.ConditionalDropMasterGameID.HasValue)
                 {
-                    conditionalDropPublisherGame = await GetPublisherGame(bidEntity.ConditionalDropPublisherGameID.Value);
+                    conditionalDropPublisherGame = await GetPublisherGame(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value);
                 }
 
                 PickupBid domain = bidEntity.ToDomain(publisher.Value, masterGame.Value, conditionalDropPublisherGame, leagueYear);
@@ -1276,6 +1276,45 @@ namespace FantasyCritic.MySQL
                     "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
                     "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
                     "where tbl_league_publishergame.PublisherGameID = @publisherGameID and IsDeleted = 0;",
+                    query);
+
+                if (gameEntity is null)
+                {
+                    return Maybe<PublisherGame>.None;
+                }
+
+                var publisher = await GetPublisher(gameEntity.PublisherID);
+                if (publisher.HasNoValue)
+                {
+                    throw new Exception($"Publisher cannot be found: {gameEntity.PublisherID}");
+                }
+
+                Maybe<MasterGameYear> masterGame = null;
+                if (gameEntity.MasterGameID.HasValue)
+                {
+                    masterGame = await _masterGameRepo.GetMasterGameYear(gameEntity.MasterGameID.Value, publisher.Value.LeagueYear.Year);
+                }
+
+                PublisherGame publisherGame = gameEntity.ToDomain(masterGame);
+                return publisherGame;
+            }
+        }
+
+        public async Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherID, Guid masterGameID)
+        {
+            var query = new
+            {
+                publisherID,
+                masterGameID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                PublisherGameEntity gameEntity = await connection.QueryFirstOrDefaultAsync<PublisherGameEntity>(
+                    "select tbl_league_publishergame.* from tbl_league_publishergame " +
+                    "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                    "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                    "where tbl_league_publisher.PublisherID = @publisherID and tbl_league_publishergame.MasterGameID = @masterGameID and IsDeleted = 0;",
                     query);
 
                 if (gameEntity is null)
