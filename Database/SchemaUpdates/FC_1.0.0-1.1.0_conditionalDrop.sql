@@ -1,5 +1,5 @@
 ALTER TABLE `tbl_league_pickupbid`
-	ADD COLUMN `ConditionalDropMasterGameID` CHAR(36) NOT NULL AFTER `MasterGameID`,
+	ADD COLUMN `ConditionalDropMasterGameID` CHAR(36) NULL AFTER `MasterGameID`,
 	ADD CONSTRAINT `FK_tbl_league_pickupbid_tbl_mastergame` FOREIGN KEY (`ConditionalDropMasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 DROP VIEW IF EXISTS `vw_league_pickupbid`;
