@@ -188,7 +188,22 @@ namespace FantasyCritic.Lib.Services
             var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value));
             var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget."));
             var belowMinimumBidFailures = belowMinimumBids.Select(x => new FailedPickupBid(x, "Bid is below the minimum bid amount."));
-            var noSpaceLeftBidFailures = noSpaceLeftBids.Select(x => new FailedPickupBid(x, "No roster spots available."));
+            List<FailedPickupBid> noSpaceLeftBidFailures = new List<FailedPickupBid>();
+            foreach (var noSpaceLeftBid in noSpaceLeftBids)
+            {
+                FailedPickupBid failedBid;
+                if (noSpaceLeftBid.ConditionalDropPublisherGame.HasValue && noSpaceLeftBid.ConditionalDropResult.Result.IsFailure)
+                {
+                    failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available. Attempted to conditionally drop game: " +
+                                                                    $"{noSpaceLeftBid.ConditionalDropPublisherGame.Value.GameName} but failed because: {noSpaceLeftBid.ConditionalDropResult.Result.Error}");
+                }
+                else
+                {
+                    failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available.");
+                }
+                noSpaceLeftBidFailures.Add(failedBid);
+            }
+
             var failedBids = losingBids
                 .Concat(insufficientFundsBidFailures)
                 .Concat(belowMinimumBidFailures)

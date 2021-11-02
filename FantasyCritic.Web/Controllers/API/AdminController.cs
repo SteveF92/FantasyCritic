@@ -41,9 +41,8 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly FantasyCriticUserManager _userManager;
         private readonly IEmailSender _emailSender;
 
-        public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IOpenCriticService openCriticService,
-            IClock clock, InterLeagueService interLeagueService, ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService,
-            FantasyCriticUserManager userManager, IEmailSender emailSender)
+        public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
+            ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager, IEmailSender emailSender)
         {
             _adminService = adminService;
             _fantasyCriticService = fantasyCriticService;
@@ -271,7 +270,12 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var today = _clock.GetCurrentInstant().ToEasternDate();
-            if (today.DayOfWeek != IsoDayOfWeek.Saturday && today.DayOfWeek != IsoDayOfWeek.Sunday)
+            var acceptableDays = new List<IsoDayOfWeek>
+            {
+                IsoDayOfWeek.Saturday,
+                IsoDayOfWeek.Sunday
+            };
+            if (!acceptableDays.Contains(today.DayOfWeek))
             {
                 return BadRequest($"You probably didn't mean to process pickups on a {today.DayOfWeek}");
             }
