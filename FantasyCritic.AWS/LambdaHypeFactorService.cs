@@ -35,8 +35,10 @@ namespace FantasyCritic.AWS
 
         public async Task<HypeConstants> GetHypeConstants(IEnumerable<MasterGameYear> allMasterGameYears)
         {
-            var dataStream = CreateDataStream(allMasterGameYears);
-            await UploadMasterGameYearStats(dataStream);
+            string fileName = "LiveData.csv";
+            File.Delete(fileName);
+            CreateCSVFile(allMasterGameYears, fileName);
+            await UploadMasterGameYearStats(fileName);
 
             var requestParams = new
             {
@@ -69,20 +71,19 @@ namespace FantasyCritic.AWS
             return entity.ToDomain();
         }
 
-        private MemoryStream CreateDataStream(IEnumerable<MasterGameYear> allMasterGameYears)
+        private void CreateCSVFile(IEnumerable<MasterGameYear> allMasterGameYears, string fileName)
         {
             IEnumerable<MasterGameYearScriptInput> outputModels = allMasterGameYears.Select(x => new MasterGameYearScriptInput(x));
-            var memoryStream = new MemoryStream();
-            var writer = new StreamWriter(memoryStream);
-            var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-            csv.WriteRecords(outputModels);
-
-            return memoryStream;
+            using (var fileStream = File.OpenWrite(fileName))
+            using (var streamWriter = new StreamWriter(fileStream))
+            using (var csv = new CsvWriter(streamWriter, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(outputModels);
+            }
         }
 
-        private async Task UploadMasterGameYearStats(MemoryStream stream)
+        private async Task UploadMasterGameYearStats(string fileName)
         {
-            stream.Position = 0;
             using (IAmazonS3 s3Client = new AmazonS3Client(RegionEndpoint.GetBySystemName(_region)))
             using (TransferUtility transferUtility = new TransferUtility(s3Client))
             {
@@ -90,7 +91,7 @@ namespace FantasyCritic.AWS
                 {
                     BucketName = _bucket,
                     Key = "HypeFactor/LiveData.csv",
-                    InputStream = stream
+                    FilePath = fileName
                 };
                 await transferUtility.UploadAsync(fileTransferUtilityRequest);
             }
