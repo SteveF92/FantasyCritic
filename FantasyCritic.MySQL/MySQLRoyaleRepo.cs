@@ -249,11 +249,17 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task SellGame(RoyalePublisherGame publisherGame)
+        public async Task SellGame(RoyalePublisherGame publisherGame, bool fullRefund)
         {
+            var refund = publisherGame.AmountSpent;
+            if (!fullRefund)
+            {
+                refund /= 2;
+            }
+
             string gameRemoveSQL = "DELETE FROM tbl_royale_publishergame WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
             string budgetIncreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget + @amountGained WHERE PublisherID = @publisherID";
-            var amountGained = (publisherGame.AmountSpent / 2) + publisherGame.AdvertisingMoney;
+            var amountGained = refund + publisherGame.AdvertisingMoney;
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Royale;
 using NodaTime;
 
@@ -10,14 +11,15 @@ namespace FantasyCritic.Web.Models.Responses.Royale
 {
     public class RoyalePublisherViewModel
     {
-        public RoyalePublisherViewModel(RoyalePublisher domain, LocalDate currentDate, int? ranking, IEnumerable<RoyaleYearQuarter> quartersWon)
+        public RoyalePublisherViewModel(RoyalePublisher domain, LocalDate currentDate, int? ranking, IEnumerable<RoyaleYearQuarter> quartersWon,
+            IEnumerable<MasterGameTag> allMasterGameTags)
         {
             PublisherID = domain.PublisherID;
             YearQuarter = new RoyaleYearQuarterViewModel(domain.YearQuarter);
             PlayerName = domain.User.DisplayName;
             UserID = domain.User.UserID;
             PublisherName = domain.PublisherName;
-            PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, currentDate)).ToList();
+            PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, currentDate, allMasterGameTags)).ToList();
             Budget = domain.Budget;
             TotalFantasyPoints = domain.GetTotalFantasyPoints();
             if (TotalFantasyPoints > 0)

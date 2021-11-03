@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Royale
@@ -26,13 +31,97 @@ namespace FantasyCritic.Lib.Royale
         public decimal AmountSpent { get; }
         public decimal AdvertisingMoney { get; }
         public decimal? FantasyPoints { get; }
-        
-        public decimal? CalculateFantasyPoints(LocalDate currentDate)
+
+        public bool CalculateIsCurrentlyIneligible(IEnumerable<MasterGameTag> allMasterGameTags)
+        {
+            var royaleTags = LeagueTagExtensions.GetRoyaleEligibilitySettings(allMasterGameTags);
+            var customCodeTags = royaleTags.Where(x => x.Tag.HasCustomCode).ToList();
+            var nonCustomCodeTags = royaleTags.Except(customCodeTags).ToList();
+
+            var masterGame = MasterGame.MasterGame;
+            var bannedTags = nonCustomCodeTags.Where(x => x.Status == TagStatus.Banned).Select(x => x.Tag);
+            var requiredTags = nonCustomCodeTags.Where(x => x.Status == TagStatus.Required).Select(x => x.Tag);
+
+            var bannedTagsIntersection = masterGame.Tags.Intersect(bannedTags);
+            var missingRequiredTags = requiredTags.Except(masterGame.Tags);
+
+            if (bannedTagsIntersection.Any() || missingRequiredTags.Any())
+            {
+                return true;
+            }
+
+            var masterGameCustomCodeTags = masterGame.Tags.Where(x => x.HasCustomCode).ToList();
+            if (!masterGameCustomCodeTags.Any())
+            {
+                return false;
+            }
+
+            var dateGameWasAcquired = Timestamp.InZone(TimeExtensions.EasternTimeZone).Date;
+            if (masterGame.EarlyAccessReleaseDate.HasValue)
+            {
+                var plannedForEarlyAccessTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "PlannedForEarlyAccess");
+                if (plannedForEarlyAccessTag is not null)
+                {
+                    if (plannedForEarlyAccessTag.Status == TagStatus.Banned)
+                    {
+                        return true;
+                    }
+                }
+
+                var currentlyInEarlyAccessTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "CurrentlyInEarlyAccess");
+                if (currentlyInEarlyAccessTag is not null)
+                {
+                    if (currentlyInEarlyAccessTag.Status == TagStatus.Banned)
+                    {
+                        var pickedUpBeforeInEarlyAccess = dateGameWasAcquired < masterGame.EarlyAccessReleaseDate.Value;
+                        if (!pickedUpBeforeInEarlyAccess)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            if (masterGame.InternationalReleaseDate.HasValue)
+            {
+                var willReleaseInternationallyFirstTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "WillReleaseInternationallyFirst");
+                if (willReleaseInternationallyFirstTag is not null)
+                {
+                    if (willReleaseInternationallyFirstTag.Status == TagStatus.Banned)
+                    {
+                        return true;
+                    }
+                }
+
+                var releasedInternationallyTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "ReleasedInternationally");
+                if (releasedInternationallyTag is not null)
+                {
+                    if (releasedInternationallyTag.Status == TagStatus.Banned)
+                    {
+                        var pickedUpBeforeReleasedInternationally = dateGameWasAcquired < masterGame.InternationalReleaseDate.Value;
+                        if (!pickedUpBeforeReleasedInternationally)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public decimal? CalculateFantasyPoints(LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags)
         {
             if (!MasterGame.MasterGame.IsReleased(currentDate))
             {
                 return 0m;
             }
+
+            if (CalculateIsCurrentlyIneligible(allMasterGameTags))
+            {
+                return 0m;
+            }
+
             var basePoints = MasterGame.CalculateFantasyPoints(ScoringSystem.GetDefaultScoringSystem(YearQuarter.YearQuarter.Year), false, currentDate, true);
             if (!basePoints.HasValue)
             {
@@ -45,8 +134,13 @@ namespace FantasyCritic.Lib.Royale
             return modifiedPoints;
         }
 
-        public bool IsLocked(LocalDate currentDate)
+        public bool IsLocked(LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags)
         {
+            if (CalculateIsCurrentlyIneligible(allMasterGameTags))
+            {
+                return false;
+            }
+
             if (MasterGame.MasterGame.IsReleased(currentDate))
             {
                 return true;

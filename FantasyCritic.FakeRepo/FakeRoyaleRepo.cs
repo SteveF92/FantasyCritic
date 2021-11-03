@@ -70,7 +70,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task SellGame(RoyalePublisherGame publisherGame)
+        public Task SellGame(RoyalePublisherGame publisherGame, bool fullRefund)
         {
             throw new NotImplementedException();
         }

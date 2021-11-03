@@ -15,7 +15,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters();
         Task<Maybe<RoyalePublisher>> GetPublisher(Guid publisherID);
         Task PurchaseGame(RoyalePublisherGame game);
-        Task SellGame(RoyalePublisherGame publisherGame);
+        Task SellGame(RoyalePublisherGame publisherGame, bool fullRefund);
         Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney);
         Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter);
         Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores);

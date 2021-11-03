@@ -38,9 +38,16 @@
       <div class="alert alert-danger" v-if="errorInfo">{{errorInfo}}</div>
 
       <h1>Games</h1>
-      <b-table striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" v-if="publisher.publisherGames.length !== 0">
+      <b-table striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" v-if="publisher.publisherGames.length !== 0" :tbody-tr-class="publisherGameRowClass">
         <template v-slot:cell(masterGame)="data">
-          <masterGamePopover :masterGame="data.item.masterGame"> </masterGamePopover>
+          <span class="master-game-popover">
+            <masterGamePopover :masterGame="data.item.masterGame" :currentlyIneligible="data.item.currentlyIneligible"> </masterGamePopover>
+          </span>
+          
+          <span v-if="data.item.currentlyIneligible" class="game-ineligible">
+            Ineligible
+            <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="inEligibleText" />
+          </span>
         </template>
         <template v-slot:cell(masterGame.maximumReleaseDate)="data">
           {{getReleaseDate(data.item.masterGame)}}
@@ -149,6 +156,18 @@ export default {
         conditionalFields = conditionalFields.concat(this.userPublisherFields);
       }
       return this.gameFields.concat(conditionalFields);
+    },
+    inEligibleText() {
+      return {
+        html: true,
+        title: () => {
+          return "What does this mean?";
+        },
+        content: () => {
+          return 'This game\'s status has changed since you purchased it, and it is currently ineligible based on the royale rules. Any points the game receives will NOT count. <br/> <br/>' +
+            'You can drop the game for a full refund.';
+        }
+      }
     }
   },
   methods: {
@@ -234,6 +253,14 @@ export default {
     },
     openCriticLink(game) {
       return 'https://opencritic.com/game/' + game.openCriticID + '/a';
+    },
+    publisherGameRowClass(item, type) {
+      if (!item || type !== 'row') {
+        return;
+      }
+      if (item.currentlyIneligible) {
+        return 'table-warning';
+      }
     }
   },
   mounted() {
@@ -278,5 +305,16 @@ export default {
 
   .won-quarters-list{
       list-style: none;
+  }
+
+  .game-ineligible {
+    float: right;
+    color: white;
+    font-style: italic;
+    padding-left: 5px;
+  }
+
+  .master-game-popover {
+    float: left;
   }
 </style>

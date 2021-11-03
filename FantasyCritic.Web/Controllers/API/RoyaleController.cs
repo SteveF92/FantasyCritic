@@ -143,7 +143,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.Value.User);
             var currentDate = _clock.GetToday();
-            var viewModel = new RoyalePublisherViewModel(publisher.Value, currentDate, null, quartersWon);
+            var masterGameTags = await _interLeagueService.GetMasterGameTags();
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, currentDate, null, quartersWon, masterGameTags);
             return Ok(viewModel);
         }
 
@@ -159,7 +160,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.Value.User);
             var currentDate = _clock.GetToday();
-            var viewModel = new RoyalePublisherViewModel(publisher.Value, currentDate, null, quartersWon);
+            var masterGameTags = await _interLeagueService.GetMasterGameTags();
+            var viewModel = new RoyalePublisherViewModel(publisher.Value, currentDate, null, quartersWon, masterGameTags);
             return Ok(viewModel);
         }
 
@@ -171,6 +173,7 @@ namespace FantasyCritic.Web.Controllers.API
             var publishersToShow = publishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
             int ranking = 1;
             List<RoyalePublisherViewModel> viewModels = new List<RoyalePublisherViewModel>();
+            var masterGameTags = await _interLeagueService.GetMasterGameTags();
             IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> previousWinners = await _royaleService.GetRoyaleWinners();
             foreach (var publisher in publishersToShow)
             {
@@ -188,7 +191,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
 
                 var currentDate = _clock.GetToday();
-                var vm = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters);
+                var vm = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters, masterGameTags);
                 viewModels.Add(vm);
             }
 
