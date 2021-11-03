@@ -22,6 +22,11 @@ namespace FantasyCritic.Web.Models.Responses.Royale
             AdvertisingMoney = domain.AdvertisingMoney;
             FantasyPoints = domain.FantasyPoints;
             CurrentlyIneligible = domain.CalculateIsCurrentlyIneligible(allMasterGameTags);
+            RefundAmount = AmountSpent;
+            if (!CurrentlyIneligible)
+            {
+                RefundAmount /= 2;
+            }
         }
 
         public Guid PublisherID { get; }
@@ -33,5 +38,6 @@ namespace FantasyCritic.Web.Models.Responses.Royale
         public decimal AdvertisingMoney { get; }
         public decimal? FantasyPoints { get; }
         public bool CurrentlyIneligible { get; }
+        public decimal RefundAmount { get; }
     }
 }

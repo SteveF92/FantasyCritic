@@ -43,7 +43,7 @@
           <span class="master-game-popover">
             <masterGamePopover :masterGame="data.item.masterGame" :currentlyIneligible="data.item.currentlyIneligible"> </masterGamePopover>
           </span>
-          
+
           <span v-if="data.item.currentlyIneligible" class="game-ineligible">
             Ineligible
             <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="inEligibleText" />
@@ -69,7 +69,7 @@
           {{ data.item.timestamp | date }}
         </template>
         <template v-slot:cell(sellGame)="data">
-          <b-button block variant="danger" v-if="!data.item.locked" v-on:click="setGameToSell(data.item)">Sell</b-button>
+          <b-button block variant="danger" v-if="!data.item.locked" v-on:click="setGameToSell(data.item)" v-b-modal="'sellRoyaleGameModal'">Sell</b-button>
         </template>
       </b-table>
       <div v-else class="alert alert-info">
@@ -82,13 +82,7 @@
       </div>
     </div>
 
-    <b-modal id="sellRoyaleGameModal" ref="sellRoyaleGameModalRef" title="Sell Game" @ok="sellGame">
-      <div v-if="gameToModify">
-        <p>Are you sure you want to sell <strong>{{gameToModify.masterGame.gameName}}</strong>?</p>
-        <p>You will get back half the money you bought it for, and any advertising money currently assigned to it.</p>
-        <p>Money to recieve: <strong>{{gameToModify.amountSpent / 2 + gameToModify.advertisingMoney | money}}</strong></p>
-      </div>
-    </b-modal>
+    <sellRoyaleGameModal v-if="gameToModify" :publisherGame="gameToModify" v-on:sellGame="sellGame"></sellRoyaleGameModal>
 
     <b-modal id="setAdvertisingMoneyModal" ref="setAdvertisingMoneyModalRef" title="Set Advertising Budget" @ok="setBudget">
       <div v-if="gameToModify">
@@ -115,6 +109,7 @@ import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import RoyalePurchaseGameForm from '@/components/modules/modals/royalePurchaseGameForm';
 import RoyaleChangePublisherNameForm from '@/components/modules/modals/royaleChangePublisherNameForm';
+import SellRoyaleGameModal from '@/components/modules/modals/sellRoyaleGameModal';
 
 export default {
   props: ['publisherid'],
@@ -141,7 +136,8 @@ export default {
   components: {
     RoyaleChangePublisherNameForm,
     RoyalePurchaseGameForm,
-    MasterGamePopover
+    MasterGamePopover,
+    SellRoyaleGameModal
   },
   computed: {
     isAuth() {
@@ -211,7 +207,7 @@ export default {
         .post('/api/royale/SellGame', request)
         .then(response => {
           this.fetchPublisher();
-          let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.amountSpent / 2);
+          let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
           let toast = this.$toasted.show(message, {
             theme: 'primary',
             position: 'top-right',
