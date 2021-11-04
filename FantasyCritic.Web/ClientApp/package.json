@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "client": "vue-cli-service serve --mode client",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "check": "vue-cli-service lint --no-fix"
   },
   "dependencies": {
     "@aspnet/signalr": "^1.1.4",
