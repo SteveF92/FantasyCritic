@@ -25,6 +25,7 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Statistics;
 using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
+using FantasyCritic.Web.Data;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -33,6 +34,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using NodaTime;
@@ -52,10 +54,6 @@ namespace FantasyCritic.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            int validMinutes = Convert.ToInt32(Configuration["Tokens:ValidMinutes"]);
-            var keyString = Configuration["Tokens:Key"];
-            var issuer = Configuration["Tokens:Issuer"];
-            var audience = Configuration["Tokens:Audience"];
             IClock clock = NodaTime.SystemClock.Instance;
             var rdsInstanceName = Configuration["AWS:rdsInstanceName"];
             var awsRegion = Configuration["AWS:region"];
@@ -63,13 +61,11 @@ namespace FantasyCritic.Web
             var mailgunAPIKey = Configuration["Mailgun:apiKey"];
 
             // Add application services.
-
-            var tokenService = new TokenService(keyString, issuer, audience, validMinutes);
-
             services.AddHttpClient();
 
             //MySQL Repos
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            
             var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
@@ -97,7 +93,6 @@ namespace FantasyCritic.Web
 
             services.AddTransient<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games"));
             services.AddTransient<ISMSSender, SMSSender>();
-            services.AddTransient<ITokenService>(factory => tokenService);
             services.AddTransient<IClock>(factory => clock);
             services.AddHttpClient<IOpenCriticService, OpenCriticService>();
 
@@ -116,55 +111,29 @@ namespace FantasyCritic.Web
                 args.SetObserved();
             });
 
-            services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-            })
-                .AddDefaultTokenProviders();
+            var serverVersion = new MySqlServerVersion(new Version(8, 0, 20));
 
-            services.ConfigureApplicationCookie(opt =>
-            {
-                opt.ExpireTimeSpan = TimeSpan.FromMinutes(validMinutes);
-                opt.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, opt.Events.OnRedirectToAccessDenied);
-                opt.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, opt.Events.OnRedirectToLogin);
-            });
+            services.AddDbContext<ApplicationDbContext>(
+                dbContextOptions => dbContextOptions
+                    .UseMySql(connectionString, serverVersion)
+                    // The following three options help with debugging, but should
+                    // be changed or removed for production.
+                    .LogTo(Console.WriteLine, LogLevel.Information)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors()
+            );
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(cfg =>
-                {
-                    cfg.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidIssuer = issuer,
-                        ValidAudience = audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString))
-                    };
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
-                    // We have to hook the OnMessageReceived event in order to
-                    // allow the JWT authentication handler to read the access
-                    // token from the query string when a WebSocket or 
-                    // Server-Sent Events request comes in.
-                    cfg.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            var accessToken = context.Request.Query["access_token"];
+            services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddDefaultUI()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
-                            // If the request is for our hub...
-                            var path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/updatehub")))
-                            {
-                                // Read the token out of the query string
-                                context.Token = accessToken;
-                            }
-                            return Task.CompletedTask;
-                        }
-                    };
-                });
+            services.AddIdentityServer()
+                .AddApiAuthorization<FantasyCriticUser, ApplicationDbContext>();
+
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
 
             services.AddHsts(options =>
             {
@@ -179,11 +148,13 @@ namespace FantasyCritic.Web
                 options.HttpsPort = 443;
             });
 
-            services.AddControllers()
+            services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
                 });
+
+            services.AddRazorPages();
 
             services.AddSignalR();
 
@@ -240,7 +211,9 @@ namespace FantasyCritic.Web
             }
 
             app.UseRouting();
+
             app.UseAuthentication();
+            app.UseIdentityServer();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -249,16 +222,7 @@ namespace FantasyCritic.Web
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
 
-                // Add MapRazorPages if the app uses Razor Pages. Since Endpoint Routing includes support for many frameworks, adding Razor Pages is now opt -in.
-                // endpoints.MapRazorPages();
-            });
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
-
+                endpoints.MapRazorPages();
                 endpoints.MapHub<UpdateHub>("/updatehub");
             });
 
@@ -290,18 +254,6 @@ namespace FantasyCritic.Web
                     spa.Options.SourcePath = "dist";
                 }
             });
-        }
-
-        private static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector)
-        {
-            return context => {
-                if (!context.Request.Path.StartsWithSegments("/api"))
-                {
-                    return existingRedirector(context);
-                }
-                context.Response.StatusCode = (int)statusCode;
-                return Task.CompletedTask;
-            };
         }
     }
 }

@@ -6,7 +6,7 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Identity
 {
-    public class FantasyCriticUser : IdentityUser<Guid>
+    public class FantasyCriticUser : IdentityUser
     {
         public FantasyCriticUser()
         {
@@ -16,7 +16,7 @@ namespace FantasyCritic.Lib.Identity
         public FantasyCriticUser(Guid userID, string displayName, int displayNumber, string emailAddress, string normalizedEmailAddress, 
             bool emailConfirmed, string securityStamp, string passwordHash, Instant lastChangedCredentials, bool isDeleted)
         {
-            base.Id = userID;
+            base.Id = userID.ToString();
             UserName = displayName;
             DisplayNumber = displayNumber;
             Email = emailAddress;
@@ -28,6 +28,7 @@ namespace FantasyCritic.Lib.Identity
             IsDeleted = isDeleted;
         }
 
+        public new Guid Id => Guid.Parse(base.Id);
         public int DisplayNumber { get; set; }
         public DateTime LastChangedCredentials { get; set; }
         public bool IsDeleted { get; set; }
