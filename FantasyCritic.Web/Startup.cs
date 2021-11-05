@@ -113,7 +113,8 @@ namespace FantasyCritic.Web
 
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
                     options.SignIn.RequireConfirmedAccount = true)
-                .AddDefaultUI();
+                .AddDefaultUI()
+                .AddDefaultTokenProviders();
 
             services.AddIdentityServer()
                 .AddApiAuthorization<FantasyCriticUser, ApplicationDbContext>();

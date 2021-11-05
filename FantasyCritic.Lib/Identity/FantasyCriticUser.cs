@@ -40,7 +40,9 @@ namespace FantasyCritic.Lib.Identity
 
         public Instant GetLastChangedCredentials()
         {
-            return Instant.FromDateTimeUtc(LastChangedCredentials);
+            var localDateTime = LocalDateTime.FromDateTime(LastChangedCredentials);
+            var instant = localDateTime.InUtc().ToInstant();
+            return instant;
         }
 
         public IReadOnlyList<Claim> GetUserClaims(IEnumerable<string> roles)
