@@ -61,6 +61,7 @@ namespace FantasyCritic.Web
 
             // Add application services.
             services.AddHttpClient();
+            services.AddTransient<IClock>(factory => clock);
 
             //MySQL Repos
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
@@ -93,7 +94,6 @@ namespace FantasyCritic.Web
 
             services.AddTransient<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games"));
             services.AddTransient<ISMSSender, SMSSender>();
-            services.AddTransient<IClock>(factory => clock);
             services.AddHttpClient<IOpenCriticService, OpenCriticService>();
 
             services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
@@ -114,6 +114,8 @@ namespace FantasyCritic.Web
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
                     options.SignIn.RequireConfirmedAccount = true)
                 .AddDefaultUI()
+                .AddUserManager<FantasyCriticUserManager>()
+                .AddRoleManager<FantasyCriticRoleManager>()
                 .AddDefaultTokenProviders();
 
             services.AddIdentityServer()
