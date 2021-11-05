@@ -72,7 +72,7 @@ namespace FantasyCritic.Web.Models.Responses
                 {
                     if (accessingUser.HasValue)
                     {
-                        if (userIsManager || string.Equals(invitedPlayer.EmailAddress, accessingUser.Value.EmailAddress, StringComparison.OrdinalIgnoreCase))
+                        if (userIsManager || string.Equals(invitedPlayer.EmailAddress, accessingUser.Value.Email, StringComparison.OrdinalIgnoreCase))
                         {
                             playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.EmailAddress));
                         }

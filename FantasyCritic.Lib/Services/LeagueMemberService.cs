@@ -172,7 +172,7 @@ namespace FantasyCritic.Lib.Services
                 return Result.Failure("User is already in league.");
             }
 
-            var invite = await GetMatchingInvite(league, inviteUser.EmailAddress);
+            var invite = await GetMatchingInvite(league, inviteUser.Email);
             if (invite.HasNoValue)
             {
                 return Result.Failure("User is not invited to this league.");

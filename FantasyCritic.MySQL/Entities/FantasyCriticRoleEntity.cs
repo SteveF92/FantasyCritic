@@ -15,7 +15,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public FantasyCriticRoleEntity(FantasyCriticRole role)
         {
-            RoleID = role.RoleID;
+            RoleID = role.Id;
             Name = role.Name;
             NormalizedName = role.NormalizedName;
         }

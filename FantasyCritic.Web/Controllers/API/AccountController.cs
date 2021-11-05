@@ -263,7 +263,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user.NormalizedEmailAddress, model.Password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(user.NormalizedEmail, model.Password, false, false);
             if (!result.Succeeded)
             {
                 return BadRequest();

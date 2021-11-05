@@ -342,7 +342,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest(userInviteResult.Error);
             }
 
-            await _emailSender.SendLeagueInviteEmail(inviteUser.EmailAddress, league.Value, baseURL);
+            await _emailSender.SendLeagueInviteEmail(inviteUser.Email, league.Value, baseURL);
             return Ok();
         }
 

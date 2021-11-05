@@ -20,8 +20,8 @@ namespace FantasyCritic.MySQL.Entities
             UserID = user.UserID;
             DisplayName = user.DisplayName;
             DisplayNumber = user.DisplayNumber;
-            EmailAddress = user.EmailAddress;
-            NormalizedEmailAddress = user.NormalizedEmailAddress;
+            EmailAddress = user.Email;
+            NormalizedEmailAddress = user.NormalizedEmail;
             EmailConfirmed = user.EmailConfirmed;
             SecurityStamp = user.SecurityStamp;
             PasswordHash = user.PasswordHash;

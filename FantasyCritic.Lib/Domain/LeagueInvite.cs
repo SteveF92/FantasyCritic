@@ -22,7 +22,7 @@ namespace FantasyCritic.Lib.Domain
         {
             InviteID = inviteID;
             League = league;
-            EmailAddress = user.EmailAddress;
+            EmailAddress = user.Email;
             User = user;
         }
 

@@ -30,8 +30,6 @@ namespace FantasyCritic.Lib.Identity
 
         public Guid UserID => Id;
         public string DisplayName => UserName;
-        public string EmailAddress => Email;
-        public string NormalizedEmailAddress => NormalizedEmail;
 
         public int DisplayNumber { get; set; }
         public DateTime LastChangedCredentials { get; set; }
@@ -51,7 +49,7 @@ namespace FantasyCritic.Lib.Identity
         {
             var usersClaims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, NormalizedEmailAddress),
+                new Claim(ClaimTypes.Name, NormalizedEmail),
                 new Claim(ClaimTypes.NameIdentifier, UserID.ToString()),
             };
 

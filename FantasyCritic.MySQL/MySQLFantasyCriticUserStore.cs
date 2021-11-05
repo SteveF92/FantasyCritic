@@ -165,7 +165,7 @@ namespace FantasyCritic.MySQL
 
         public Task<string> GetEmailAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.EmailAddress);
+            return Task.FromResult(user.Email);
         }
 
         public Task<bool> GetEmailConfirmedAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -175,12 +175,12 @@ namespace FantasyCritic.MySQL
 
         public Task<string> GetNormalizedEmailAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.NormalizedEmailAddress);
+            return Task.FromResult(user.NormalizedEmail);
         }
 
         public Task<string> GetNormalizedUserNameAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.NormalizedEmailAddress);
+            return Task.FromResult(user.NormalizedUserName);
         }
 
         public Task<string> GetPasswordHashAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -195,7 +195,7 @@ namespace FantasyCritic.MySQL
 
         public Task<string> GetUserNameAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.NormalizedEmailAddress);
+            return Task.FromResult(user.UserName);
         }
 
         public Task<bool> HasPasswordAsync(FantasyCriticUser user, CancellationToken cancellationToken)

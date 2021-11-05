@@ -172,10 +172,10 @@ namespace FantasyCritic.Web.Controllers.API
             if (currentUser != null)
             {
                 userIsInLeague = playersInLeague.Any(x => x.User.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
                 isManager = (league.Value.LeagueManager.UserID == currentUser.UserID);
                 userIsFollowingLeague = leagueFollowers.Any(x => x.UserID == currentUser.UserID);
-                leagueInvite = inviteesToLeague.GetMatchingInvite(currentUser.EmailAddress);
+                leagueInvite = inviteesToLeague.GetMatchingInvite(currentUser.Email);
             }
 
             bool inviteCodeIsValid = false;
@@ -221,7 +221,7 @@ namespace FantasyCritic.Web.Controllers.API
             if (currentUser != null)
             {
                 userIsInLeague = activeUsers.Any(x => x.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
                 isManager = (leagueYear.Value.League.LeagueManager.UserID == currentUser.UserID);
             }
 
@@ -310,7 +310,7 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
                 userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
             }
 
             if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
@@ -349,7 +349,7 @@ namespace FantasyCritic.Web.Controllers.API
             if (currentUser != null)
             {
                 userIsInLeague = playersInLeague.Any(x => x.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
             }
 
             if (!userIsInLeague && !publisher.Value.LeagueYear.League.PublicLeague)
@@ -399,7 +399,7 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
                 userIsInLeague = usersInLeague.Any(x => x.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
             }
 
             if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
@@ -597,7 +597,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (!string.Equals(invite.Value.EmailAddress, currentUser.EmailAddress, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(invite.Value.EmailAddress, currentUser.Email, StringComparison.OrdinalIgnoreCase))
             {
                 return Forbid();
             }
@@ -972,7 +972,7 @@ namespace FantasyCritic.Web.Controllers.API
             if (currentUser != null)
             {
                 userIsInLeague = activeUsers.Any(x => x.UserID == currentUser.UserID);
-                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.EmailAddress);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
             }
 
             if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)

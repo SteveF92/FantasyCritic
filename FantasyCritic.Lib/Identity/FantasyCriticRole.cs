@@ -15,7 +15,5 @@ namespace FantasyCritic.Lib.Identity
             Name = name;
             NormalizedName = normalizedName;
         }
-
-        public int RoleID => Id;
     }
 }

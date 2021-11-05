@@ -902,7 +902,7 @@ namespace FantasyCritic.MySQL
         {
             var query = new
             {
-                email = currentUser.EmailAddress,
+                email = currentUser.Email,
                 userID = currentUser.UserID
             };
 

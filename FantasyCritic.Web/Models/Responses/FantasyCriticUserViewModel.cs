@@ -12,7 +12,7 @@ namespace FantasyCritic.Web.Models.Responses
             UserID = user.UserID;
             DisplayName = user.DisplayName;
             DisplayNumber = user.DisplayNumber;
-            EmailAddress = user.EmailAddress;
+            EmailAddress = user.Email;
             Roles = roles;
             EmailConfirmed = user.EmailConfirmed;
         }

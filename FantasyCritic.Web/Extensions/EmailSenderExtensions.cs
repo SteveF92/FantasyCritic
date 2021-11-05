@@ -30,7 +30,7 @@ namespace FantasyCritic.Web.Extensions
 
         public static async Task SendConfirmationEmail(this IEmailSender emailSender, FantasyCriticUser user, string confirmCode, string baseURL)
         {
-            string emailAddress = user.EmailAddress;
+            string emailAddress = user.Email;
             string emailSubject = "FantasyCritic - Confirm your email address.";
             ConfirmEmailModel model = new ConfirmEmailModel(user, confirmCode, baseURL);
 
@@ -41,7 +41,7 @@ namespace FantasyCritic.Web.Extensions
 
         public static async Task SendForgotPasswordEmail(this IEmailSender emailSender, FantasyCriticUser user, string resetCode, string baseURL)
         {
-            string emailAddress = user.EmailAddress;
+            string emailAddress = user.Email;
             string emailSubject = "FantasyCritic - Reset Your Password.";
 
             PasswordResetModel model = new PasswordResetModel(user, resetCode, baseURL);
@@ -52,7 +52,7 @@ namespace FantasyCritic.Web.Extensions
 
         public static async Task SendChangeEmail(this IEmailSender emailSender, FantasyCriticUser user, string newEmailAddress, string changeCode, string baseURL)
         {
-            string emailAddress = user.EmailAddress;
+            string emailAddress = user.Email;
             string emailSubject = "FantasyCritic - Change Your Email.";
 
             ChangeEmailModel model = new ChangeEmailModel(user, newEmailAddress, changeCode, baseURL);
