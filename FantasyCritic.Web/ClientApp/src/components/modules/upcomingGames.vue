@@ -46,10 +46,10 @@ export default {
         { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
       ],
       userUpcomingGamesFields: [
-        { key: 'league', label: 'League', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'league', label: 'League', sortable: true, thClass: ['bg-primary'] },
       ],
       leagueUpcomingGamesFields: [
-        { key: 'publisher', label: 'Publisher', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'publisher', label: 'Publisher', sortable: true, thClass: ['bg-primary'] },
       ],
     };
   },
