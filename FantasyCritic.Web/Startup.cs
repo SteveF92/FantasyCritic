@@ -69,12 +69,13 @@ namespace FantasyCritic.Web
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
             services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
+            services.AddScoped<IUserStore<FantasyCriticUser>, MySQLFantasyCriticUserStore>(factory => userStore);
+            services.AddScoped<IRoleStore<FantasyCriticRole>, MySQLFantasyCriticRoleStore>(factory => roleStore);
+
             services.AddScoped<IMasterGameRepo>(factory => new MySQLMasterGameRepo(connectionString, userStore));
             services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore)));
             services.AddScoped<IRoyaleRepo>(factory => new MySQLRoyaleRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore),
                 new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore))));
-            services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
-            services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
             services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
             services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
@@ -110,23 +111,9 @@ namespace FantasyCritic.Web
                 args.SetObserved();
             });
 
-            var serverVersion = new MySqlServerVersion(new Version(8, 0, 20));
-
-            services.AddDbContext<ApplicationDbContext>(
-                dbContextOptions => dbContextOptions
-                    .UseMySql(connectionString, serverVersion)
-                    // The following three options help with debugging, but should
-                    // be changed or removed for production.
-                    .LogTo(Console.WriteLine, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                    .EnableDetailedErrors()
-            );
-
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
-            services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddDefaultUI()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
+                    options.SignIn.RequireConfirmedAccount = true)
+                .AddDefaultUI();
 
             services.AddIdentityServer()
                 .AddApiAuthorization<FantasyCriticUser, ApplicationDbContext>();
