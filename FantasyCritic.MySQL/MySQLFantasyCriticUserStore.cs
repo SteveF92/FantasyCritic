@@ -425,7 +425,7 @@ namespace FantasyCritic.MySQL
         public async Task<int> GetOpenDisplayNumber(string displayName)
         {
             var allUsers = await GetAllUsers();
-            var usersWithMatchingDisplayNames = allUsers.Where(x => string.Equals(x.DisplayName, displayName, StringComparison.OrdinalIgnoreCase));
+            var usersWithMatchingDisplayNames = allUsers.Where(x => string.Equals(x.UserName, displayName, StringComparison.OrdinalIgnoreCase));
             var existingDisplayNumbers = usersWithMatchingDisplayNames.Select(x => x.DisplayNumber).ToList();
 
             Random randomGenerator = new Random();

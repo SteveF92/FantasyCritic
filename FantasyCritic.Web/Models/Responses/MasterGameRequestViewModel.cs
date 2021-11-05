@@ -9,7 +9,7 @@ namespace FantasyCritic.Web.Models.Responses
         public MasterGameRequestViewModel(MasterGameRequest domain, LocalDate currentDate)
         {
             RequestID = domain.RequestID;
-            RequesterDisplayName = domain.User.DisplayName;
+            RequesterDisplayName = domain.User.UserName;
             GameName = domain.GameName;
             ReleaseDate = domain.ReleaseDate;
             EstimatedReleaseDate = domain.EstimatedReleaseDate;

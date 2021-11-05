@@ -16,7 +16,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale
         {
             PublisherID = domain.PublisherID;
             YearQuarter = new RoyaleYearQuarterViewModel(domain.YearQuarter);
-            PlayerName = domain.User.DisplayName;
+            PlayerName = domain.User.UserName;
             UserID = domain.User.UserID;
             PublisherName = domain.PublisherName;
             PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, currentDate, allMasterGameTags)).ToList();

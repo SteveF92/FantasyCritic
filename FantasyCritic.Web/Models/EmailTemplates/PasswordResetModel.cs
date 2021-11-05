@@ -13,7 +13,7 @@ namespace FantasyCritic.Web.Models.EmailTemplates
     {
         public PasswordResetModel(FantasyCriticUser user, string resetCode, string baseURL)
         {
-            DisplayName = user.DisplayName;
+            DisplayName = user.UserName;
             Link = $"{baseURL}/resetPassword?Code={UrlEncoder.Default.Encode(resetCode)}";
         }
 

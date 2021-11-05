@@ -13,7 +13,7 @@ namespace FantasyCritic.Web.Models.EmailTemplates
     {
         public ChangeEmailModel(FantasyCriticUser user, string newEmailAddress, string changeCode, string baseURL)
         {
-            DisplayName = user.DisplayName;
+            DisplayName = user.UserName;
             Link = $"{baseURL}/changeEmail?NewEmailAddress={UrlEncoder.Default.Encode(newEmailAddress)}&Code={UrlEncoder.Default.Encode(changeCode)}";
         }
 

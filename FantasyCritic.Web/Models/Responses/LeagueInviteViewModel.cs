@@ -35,7 +35,7 @@ namespace FantasyCritic.Web.Models.Responses
 
         public static LeagueInviteViewModel CreateWithDisplayName(LeagueInvite invite, FantasyCriticUser user)
         {
-            return new LeagueInviteViewModel(invite.InviteID, invite.League, user.DisplayName);
+            return new LeagueInviteViewModel(invite.InviteID, invite.League, user.UserName);
         }
     }
 }

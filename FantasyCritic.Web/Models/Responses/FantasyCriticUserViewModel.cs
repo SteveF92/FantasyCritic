@@ -10,7 +10,7 @@ namespace FantasyCritic.Web.Models.Responses
         public FantasyCriticUserViewModel(FantasyCriticUser user, IEnumerable<string> roles)
         {
             UserID = user.UserID;
-            DisplayName = user.DisplayName;
+            DisplayName = user.UserName;
             DisplayNumber = user.DisplayNumber;
             EmailAddress = user.Email;
             Roles = roles;

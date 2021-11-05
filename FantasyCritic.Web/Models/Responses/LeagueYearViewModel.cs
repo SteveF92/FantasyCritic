@@ -66,7 +66,7 @@ namespace FantasyCritic.Web.Models.Responses
 
                 if (invitedPlayer.User.HasValue)
                 {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.User.Value.DisplayName));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.User.Value.UserName));
                 }
                 else
                 {

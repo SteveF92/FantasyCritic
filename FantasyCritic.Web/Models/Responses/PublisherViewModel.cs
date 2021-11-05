@@ -24,7 +24,7 @@ namespace FantasyCritic.Web.Models.Responses
             LeagueID = publisher.LeagueYear.League.LeagueID;
             PublisherName = publisher.PublisherName;
             LeagueName = publisher.LeagueYear.League.LeagueName;
-            PlayerName = publisher.User.DisplayName;
+            PlayerName = publisher.User.UserName;
             Year = publisher.LeagueYear.Year;
             DraftPosition = publisher.DraftPosition;
             AutoDraft = publisher.AutoDraft;

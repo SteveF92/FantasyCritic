@@ -29,7 +29,6 @@ namespace FantasyCritic.Lib.Identity
         }
 
         public Guid UserID => Id;
-        public string DisplayName => UserName;
 
         public int DisplayNumber { get; set; }
         public DateTime LastChangedCredentials { get; set; }
