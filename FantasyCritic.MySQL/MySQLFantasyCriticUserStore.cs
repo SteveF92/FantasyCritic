@@ -9,6 +9,7 @@ using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
 using System;
 using System.Linq;
+using FantasyCritic.Lib.Identity;
 using NodaTime;
 
 namespace FantasyCritic.MySQL

@@ -6,6 +6,7 @@ using System.Net.Cache;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Extensions;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Transactions;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Web.Models.Responses
 {

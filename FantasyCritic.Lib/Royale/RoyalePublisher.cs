@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FantasyCritic.Lib.Identity;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Royale

@@ -7,6 +7,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;

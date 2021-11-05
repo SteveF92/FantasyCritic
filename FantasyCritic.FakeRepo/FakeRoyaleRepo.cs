@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.FakeRepo

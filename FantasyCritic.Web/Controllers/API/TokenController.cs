@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;

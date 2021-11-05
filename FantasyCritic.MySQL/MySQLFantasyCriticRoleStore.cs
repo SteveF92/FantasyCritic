@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
 

@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using NodaTime;
 using static MoreLinq.Extensions.MaxByExtension;

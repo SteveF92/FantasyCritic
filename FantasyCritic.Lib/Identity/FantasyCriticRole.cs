@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-
-namespace FantasyCritic.Lib.Domain
+﻿namespace FantasyCritic.Lib.Identity
 {
     public class FantasyCriticRole
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Requests
 {

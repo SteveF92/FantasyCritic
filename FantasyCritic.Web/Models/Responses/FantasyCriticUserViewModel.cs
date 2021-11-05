@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Web.Models.Responses
 {

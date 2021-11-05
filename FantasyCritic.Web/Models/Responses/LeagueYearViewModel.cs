@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Models.RoundTrip;
 using NodaTime;
 

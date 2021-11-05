@@ -14,6 +14,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Royale;

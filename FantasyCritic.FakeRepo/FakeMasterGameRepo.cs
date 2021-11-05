@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.FakeRepo.Factories;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using NodaTime;

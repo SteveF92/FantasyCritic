@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.MySQL.Entities
 {

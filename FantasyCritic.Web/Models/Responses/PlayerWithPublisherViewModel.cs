@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Identity;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses

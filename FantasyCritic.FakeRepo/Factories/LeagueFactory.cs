@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Identity;
 using NodaTime;
 
 namespace FantasyCritic.FakeRepo.Factories

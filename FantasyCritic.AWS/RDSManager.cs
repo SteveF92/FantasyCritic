@@ -1,19 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.RDS;
 using Amazon.RDS.Model;
-using Amazon.Runtime;
-using Amazon.Runtime.Internal.Auth;
-using NodaTime;
-using FantasyCritic.Lib.Interfaces;
-using System.Globalization;
-using System.Linq;
-using System.Collections.Generic;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
+using NodaTime;
 
-namespace FantasyCritic.RDS
+namespace FantasyCritic.AWS
 {
     public class RDSManager : IRDSManager
     {

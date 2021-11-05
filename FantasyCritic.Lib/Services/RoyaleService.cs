@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 using MoreLinq;
 using NLog.Targets.Wrappers;

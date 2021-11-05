@@ -4,7 +4,7 @@ using System;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 
-namespace CommandLine
+namespace FantasyCritic.Web
 {
     public static class Arguments
     {

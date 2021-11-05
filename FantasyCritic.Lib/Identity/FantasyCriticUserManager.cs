@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FantasyCritic.Lib.Services
+namespace FantasyCritic.Lib.Identity
 {
     public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
     {

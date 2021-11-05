@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Identity;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain

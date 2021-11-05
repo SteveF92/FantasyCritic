@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Extensions;
 using NodaTime;
 

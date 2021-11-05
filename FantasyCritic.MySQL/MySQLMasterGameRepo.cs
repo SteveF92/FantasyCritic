@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Dapper;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.MySQL.Entities;

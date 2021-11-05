@@ -16,6 +16,7 @@ using System.Text;
 using Dapper.NodaTime;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Scheduling;
@@ -24,7 +25,6 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Statistics;
 using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
-using FantasyCritic.RDS;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -199,7 +199,7 @@ namespace FantasyCritic.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            _ = CommandLine.Arguments.TryGetOptions(System.Environment.GetCommandLineArgs(), false, out string mode, out ushort port, out bool https);
+            _ = Arguments.TryGetOptions(System.Environment.GetCommandLineArgs(), false, out string mode, out ushort port, out bool https);
 
             if (env.IsDevelopment())
             {

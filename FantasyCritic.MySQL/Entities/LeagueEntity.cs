@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.MySQL.Entities
 {

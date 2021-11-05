@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.Entities;
 using MoreLinq;

@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Extensions;
 using NodaTime;

@@ -12,6 +12,7 @@ using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Hubs;

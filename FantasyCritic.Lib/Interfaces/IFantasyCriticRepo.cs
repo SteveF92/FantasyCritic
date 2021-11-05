@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.OpenCritic;
 using NodaTime;
 

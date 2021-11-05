@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using NodaTime;
-
-namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.Identity
 {
     public class FantasyCriticUserRemovable
     {
