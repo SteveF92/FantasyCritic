@@ -15,12 +15,10 @@ namespace FantasyCritic.FakeRepo
 {
     public class FakeMasterGameRepo : IMasterGameRepo
     {
-        private readonly FakeFantasyCriticUserStore _userStore;
         private readonly List<MasterGame> _masterGames;
 
-        public FakeMasterGameRepo(FakeFantasyCriticUserStore userStore)
+        public FakeMasterGameRepo()
         {
-            _userStore = userStore;
             _masterGames = MasterGameFactory.GetMasterGames();
         }
 

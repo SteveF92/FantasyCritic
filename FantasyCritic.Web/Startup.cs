@@ -15,7 +15,6 @@ using System.Net;
 using System.Text;
 using Dapper.NodaTime;
 using FantasyCritic.AWS;
-using FantasyCritic.FakeRepo;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -43,7 +42,6 @@ namespace FantasyCritic.Web
 {
     public class Startup
     {
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -70,7 +68,6 @@ namespace FantasyCritic.Web
 
             services.AddHttpClient();
 
-            //Repository Setup. Uncomment either the MySQL section OR the fake repo section. Not both.
             //MySQL Repos
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
             var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
@@ -83,17 +80,6 @@ namespace FantasyCritic.Web
                 new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore))));
             services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
             services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
-
-            //Fake Repos (for testing without a database)
-            //var userStore = new FakeFantasyCriticUserStore(clock);
-            //var roleStore = new FakeFantasyCriticRoleStore();
-            //services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
-            //services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
-            //services.AddScoped<IMasterGameRepo>(factory => new FakeMasterGameRepo(userStore));
-            //services.AddScoped<IFantasyCriticRepo>(factory => new FakeFantasyCriticRepo(userStore, new FakeMasterGameRepo(userStore)));
-            //services.AddScoped<IRoyaleRepo>(factory => new FakeRoyaleRepo(userStore, new FakeMasterGameRepo(userStore)));
-            //services.AddScoped<IUserStore<FantasyCriticUser>>(factory => userStore);
-            //services.AddScoped<IRoleStore<FantasyCriticRole>>(factory => roleStore);
 
             services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
             services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));

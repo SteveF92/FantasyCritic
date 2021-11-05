@@ -19,7 +19,7 @@ namespace FantasyCritic.Test
     {
         private static async Task<IReadOnlyList<MasterGame>> SearchGames(string searchString)
         {
-            var fakeRepo = new FakeMasterGameRepo(new FakeFantasyCriticUserStore(FakeClock.FromUtc(2019, 1, 1)));
+            var fakeRepo = new FakeMasterGameRepo();
             var masterGames = await fakeRepo.GetMasterGames();
             var searchResults = MasterGameSearching.SearchMasterGames(searchString, masterGames);
             return searchResults;

@@ -15,7 +15,6 @@ namespace FantasyCritic.FakeRepo
 {
     public class FakeFantasyCriticRepo : IFantasyCriticRepo
     {
-        private readonly FakeFantasyCriticUserStore _userStore;
         private readonly FakeMasterGameRepo _fakeMasterGameRepo;
         private readonly List<League> _leagues;
         private readonly List<LeagueYear> _leagueYears;
@@ -23,9 +22,8 @@ namespace FantasyCritic.FakeRepo
         private readonly List<Publisher> _publishers;
         private readonly List<PublisherGame> _publisherGames;
 
-        public FakeFantasyCriticRepo(FakeFantasyCriticUserStore userStore, FakeMasterGameRepo fakeMasterGameRepo)
+        public FakeFantasyCriticRepo(FakeMasterGameRepo fakeMasterGameRepo)
         {
-            _userStore = userStore;
             _fakeMasterGameRepo = fakeMasterGameRepo;
             _leagues = LeagueFactory.GetLeagues();
             _leagueYears = LeagueFactory.GetLeagueYears();
