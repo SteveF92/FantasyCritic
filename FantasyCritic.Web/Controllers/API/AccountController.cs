@@ -286,7 +286,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            user.DisplayName = request.NewDisplayName;
+            user.UserName = request.NewDisplayName;
             user.DisplayNumber = await _userManager.GetOpenDisplayNumber(user.DisplayName);
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)

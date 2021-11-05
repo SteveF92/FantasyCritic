@@ -217,7 +217,7 @@ namespace FantasyCritic.MySQL
 
         public Task SetEmailAsync(FantasyCriticUser user, string email, CancellationToken cancellationToken)
         {
-            user.EmailAddress = email;
+            user.Email = email;
             return Task.CompletedTask;
         }
 
@@ -229,13 +229,13 @@ namespace FantasyCritic.MySQL
 
         public Task SetNormalizedEmailAsync(FantasyCriticUser user, string normalizedEmail, CancellationToken cancellationToken)
         {
-            user.NormalizedEmailAddress = normalizedEmail;
+            user.NormalizedEmail = normalizedEmail;
             return Task.CompletedTask;
         }
 
         public Task SetNormalizedUserNameAsync(FantasyCriticUser user, string normalizedName, CancellationToken cancellationToken)
         {
-            user.NormalizedEmailAddress = normalizedName;
+            user.NormalizedUserName = normalizedName;
             return Task.CompletedTask;
         }
 
@@ -247,7 +247,7 @@ namespace FantasyCritic.MySQL
 
         public Task SetUserNameAsync(FantasyCriticUser user, string userName, CancellationToken cancellationToken)
         {
-            user.EmailAddress = userName;
+            user.UserName = userName;
             return Task.CompletedTask;
         }
         

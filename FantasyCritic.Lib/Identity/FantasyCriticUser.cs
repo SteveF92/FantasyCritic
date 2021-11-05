@@ -1,41 +1,50 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Identity
 {
-    public class FantasyCriticUser : IEquatable<FantasyCriticUser>
+    public class FantasyCriticUser : IdentityUser<Guid>
     {
+        public FantasyCriticUser()
+        {
+
+        }
+
         public FantasyCriticUser(Guid userID, string displayName, int displayNumber, string emailAddress, string normalizedEmailAddress, 
             bool emailConfirmed, string securityStamp, string passwordHash, Instant lastChangedCredentials, bool isDeleted)
         {
-            UserID = userID;
-            DisplayName = displayName;
+            Id = userID;
+            UserName = displayName;
             DisplayNumber = displayNumber;
-            EmailAddress = emailAddress;
-            NormalizedEmailAddress = normalizedEmailAddress;
+            Email = emailAddress;
+            NormalizedEmail = normalizedEmailAddress;
             EmailConfirmed = emailConfirmed;
             SecurityStamp = securityStamp;
             PasswordHash = passwordHash;
-            LastChangedCredentials = lastChangedCredentials;
+            LastChangedCredentials = lastChangedCredentials.ToDateTimeUtc();
             IsDeleted = isDeleted;
         }
 
-        public Guid UserID { get; set; }
-        public string DisplayName { get; set; }
+        public Guid UserID => Id;
+        public string DisplayName => UserName;
+        public string EmailAddress => Email;
+        public string NormalizedEmailAddress => NormalizedEmail;
+
         public int DisplayNumber { get; set; }
-        public string EmailAddress { get; set; }
-        public string NormalizedEmailAddress { get; set; }
-        public bool EmailConfirmed { get; set; }
-        public string SecurityStamp { get; set; }
-        public string PasswordHash { get; set; }
-        public Instant LastChangedCredentials { get; set; }
+        public DateTime LastChangedCredentials { get; set; }
         public bool IsDeleted { get; set; }
 
         public void UpdateLastUsedCredentials(Instant currentInstant)
         {
-            LastChangedCredentials = currentInstant;
+            LastChangedCredentials = currentInstant.ToDateTimeUtc();
+        }
+
+        public Instant GetLastChangedCredentials()
+        {
+            return Instant.FromDateTimeUtc(LastChangedCredentials);
         }
 
         public IReadOnlyList<Claim> GetUserClaims(IEnumerable<string> roles)
@@ -52,26 +61,6 @@ namespace FantasyCritic.Lib.Identity
             }
 
             return usersClaims;
-        }
-
-        public bool Equals(FantasyCriticUser other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return UserID.Equals(other.UserID);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((FantasyCriticUser) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return UserID.GetHashCode();
         }
     }
 }

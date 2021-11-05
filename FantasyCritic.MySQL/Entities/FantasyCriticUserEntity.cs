@@ -25,7 +25,7 @@ namespace FantasyCritic.MySQL.Entities
             EmailConfirmed = user.EmailConfirmed;
             SecurityStamp = user.SecurityStamp;
             PasswordHash = user.PasswordHash;
-            LastChangedCredentials = user.LastChangedCredentials;
+            LastChangedCredentials = user.GetLastChangedCredentials();
             IsDeleted = user.IsDeleted;
         }
 

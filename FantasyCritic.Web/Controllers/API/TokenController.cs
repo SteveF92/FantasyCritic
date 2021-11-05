@@ -57,7 +57,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             Instant issuedTime = Instant.FromUnixTimeSeconds(Convert.ToInt64(issuedTimeString));
-            if (issuedTime < user.LastChangedCredentials)
+            if (issuedTime < user.GetLastChangedCredentials())
             {
                 return StatusCode(401);
             }
