@@ -144,7 +144,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var domainRequest = maybeRequest.Value;
-            if (domainRequest.User.UserID != currentUser.UserID)
+            if (domainRequest.User.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -171,7 +171,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var domainRequest = maybeRequest.Value;
-            if (domainRequest.User.UserID != currentUser.UserID)
+            if (domainRequest.User.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -198,7 +198,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var domainRequest = maybeRequest.Value;
-            if (domainRequest.User.UserID != currentUser.UserID)
+            if (domainRequest.User.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -225,7 +225,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var domainRequest = maybeRequest.Value;
-            if (domainRequest.User.UserID != currentUser.UserID)
+            if (domainRequest.User.Id != currentUser.Id)
             {
                 return Forbid();
             }

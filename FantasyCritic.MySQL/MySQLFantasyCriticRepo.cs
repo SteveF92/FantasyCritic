@@ -73,7 +73,7 @@ namespace FantasyCritic.MySQL
                 var allUsers = await _userStore.GetAllUsers();
                 foreach (var leagueEntity in leagueEntities)
                 {
-                    FantasyCriticUser manager = allUsers.Single(x => x.UserID == leagueEntity.LeagueManager);
+                    FantasyCriticUser manager = allUsers.Single(x => x.Id == leagueEntity.LeagueManager);
                     IEnumerable<int> years = yearEntities.Where(x => x.LeagueID == leagueEntity.LeagueID).Select(x => x.Year);
                     League league = leagueEntity.ToDomain(manager, years);
                     leagues.Add(league);
@@ -668,7 +668,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var results = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    "select tbl_user.* from tbl_user join tbl_league_hasuser on (tbl_user.UserID = tbl_league_hasuser.UserID) where tbl_league_hasuser.LeagueID = @leagueID;",
+                    "select tbl_user.* from tbl_user join tbl_league_hasuser on (tbl_user.Id = tbl_league_hasuser.Id) where tbl_league_hasuser.LeagueID = @leagueID;",
                     query);
 
                 var users = results.Select(x => x.ToDomain()).ToList();
@@ -687,7 +687,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var results = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    "select tbl_user.* from tbl_user join tbl_league_activeplayer on (tbl_user.UserID = tbl_league_activeplayer.UserID) " +
+                    "select tbl_user.* from tbl_user join tbl_league_activeplayer on (tbl_user.Id = tbl_league_activeplayer.Id) " +
                     "where tbl_league_activeplayer.LeagueID = @leagueID AND year = @year;",
                     query);
 
@@ -698,11 +698,11 @@ namespace FantasyCritic.MySQL
 
         public async Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)
         {
-            string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
+            string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,Id) VALUES (@leagueID,@year,@userID);";
             var insertObjects = mostRecentActivePlayers.Select(x => new
             {
                 leagueID = league.LeagueID,
-                userID = x.UserID,
+                userID = x.Id,
                 year
             });
 
@@ -715,8 +715,8 @@ namespace FantasyCritic.MySQL
 
         public async Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange)
         {
-            string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Year = @year and UserID = @userID;";
-            string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
+            string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Year = @year and Id = @userID;";
+            string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,Id) VALUES (@leagueID,@year,@userID);";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -728,7 +728,7 @@ namespace FantasyCritic.MySQL
                         var paramsObject = new
                         {
                             leagueID = leagueYear.League.LeagueID,
-                            userID = userToChange.Key.UserID,
+                            userID = userToChange.Key.Id,
                             leagueYear.Year
                         };
 
@@ -757,7 +757,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var results = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    "select tbl_user.* from tbl_user join tbl_user_followingleague on (tbl_user.UserID = tbl_user_followingleague.UserID) where tbl_user_followingleague.LeagueID = @leagueID;",
+                    "select tbl_user.* from tbl_user join tbl_user_followingleague on (tbl_user.Id = tbl_user_followingleague.Id) where tbl_user_followingleague.LeagueID = @leagueID;",
                     query);
 
                 var users = results.Select(x => x.ToDomain()).ToList();
@@ -772,10 +772,10 @@ namespace FantasyCritic.MySQL
             {
                 var queryObject = new
                 {
-                    userID = user.UserID,
+                    userID = user.Id,
                 };
 
-                var sql = "select vw_league.*, tbl_league_hasuser.Archived from vw_league join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;";
+                var sql = "select vw_league.*, tbl_league_hasuser.Archived from vw_league join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.Id = @userID and IsDeleted = 0;";
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(sql, queryObject);
             }
 
@@ -794,12 +794,12 @@ namespace FantasyCritic.MySQL
                 var queryObject = new
                 {
                     year,
-                    userID = user.UserID
+                    userID = user.Id
                 };
 
                 string sql = "select tbl_league_year.* from tbl_league_year " +
                              "join tbl_league_hasuser on (tbl_league_hasuser.LeagueID = tbl_league_year.LeagueID) " +
-                             "where tbl_league_year.Year = @year and tbl_league_hasuser.UserID = @userID";
+                             "where tbl_league_year.Year = @year and tbl_league_hasuser.Id = @userID";
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>(sql, queryObject);
                 List<LeagueYear> leagueYears = new List<LeagueYear>();
                 IReadOnlyList<League> leagues = await GetAllLeagues();
@@ -834,14 +834,14 @@ namespace FantasyCritic.MySQL
         {
             var query = new
             {
-                userID = currentUser.UserID
+                userID = currentUser.Id
             };
 
             IEnumerable<LeagueEntity> leagueEntities;
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var sql = "select vw_league.* from vw_league join tbl_user_followingleague on (vw_league.LeagueID = tbl_user_followingleague.LeagueID) " +
-                          "where tbl_user_followingleague.UserID = @userID and IsDeleted = 0;";
+                          "where tbl_user_followingleague.Id = @userID and IsDeleted = 0;";
                 leagueEntities = await connection.QueryAsync<LeagueEntity>(
                     sql,
                     query);
@@ -856,13 +856,13 @@ namespace FantasyCritic.MySQL
             var userAddObject = new
             {
                 leagueID = league.LeagueID,
-                userID = user.UserID
+                userID = user.Id
             };
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_user_followingleague(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject);
+                    "insert into tbl_user_followingleague(LeagueID,Id) VALUES (@leagueID,@userID);", userAddObject);
             }
         }
 
@@ -871,13 +871,13 @@ namespace FantasyCritic.MySQL
             var deleteObject = new
             {
                 leagueID = league.LeagueID,
-                userID = user.UserID
+                userID = user.Id
             };
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "delete from tbl_user_followingleague where LeagueID = @leagueID and UserID = @userID;",
+                    "delete from tbl_user_followingleague where LeagueID = @leagueID and Id = @userID;",
                     deleteObject);
             }
         }
@@ -903,14 +903,14 @@ namespace FantasyCritic.MySQL
             var query = new
             {
                 email = currentUser.Email,
-                userID = currentUser.UserID
+                userID = currentUser.Id
             };
 
             IEnumerable<LeagueInviteEntity> inviteEntities;
             using (var connection = new MySqlConnection(_connectionString))
             {
                 inviteEntities = await connection.QueryAsync<LeagueInviteEntity>(
-                    "select * from tbl_league_invite where tbl_league_invite.EmailAddress = @email OR tbl_league_invite.UserID = @userID;",
+                    "select * from tbl_league_invite where tbl_league_invite.EmailAddress = @email OR tbl_league_invite.Id = @userID;",
                     query);
             }
 
@@ -925,7 +925,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_league_invite(InviteID,LeagueID,EmailAddress,UserID) VALUES (@inviteID, @leagueID, @emailAddress, @userID);",
+                    "insert into tbl_league_invite(InviteID,LeagueID,EmailAddress,Id) VALUES (@inviteID, @leagueID, @emailAddress, @userID);",
                     entity);
             }
         }
@@ -1025,8 +1025,8 @@ namespace FantasyCritic.MySQL
 
         public async Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
         {
-            string updateSQL = "update tbl_league_hasuser SET Archived = @archive WHERE LeagueID = @leagueID AND UserID = @userID;";
-            var parameters = new { leagueID = league.LeagueID, userID = user.UserID, archive };
+            string updateSQL = "update tbl_league_hasuser SET Archived = @archive WHERE LeagueID = @leagueID AND Id = @userID;";
+            var parameters = new { leagueID = league.LeagueID, userID = user.Id, archive };
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -1072,13 +1072,13 @@ namespace FantasyCritic.MySQL
 
         public async Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
         {
-            string deleteUserSQL = "delete from tbl_league_hasuser where LeagueID = @leagueID and UserID = @userID;";
-            string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and UserID = @userID;";
+            string deleteUserSQL = "delete from tbl_league_hasuser where LeagueID = @leagueID and Id = @userID;";
+            string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Id = @userID;";
 
             var userDeleteObject = new
             {
                 leagueID = league.LeagueID,
-                userID = removeUser.UserID
+                userID = removeUser.Id
             };
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -1100,7 +1100,7 @@ namespace FantasyCritic.MySQL
             var transferObject = new
             {
                 leagueID = league.LeagueID,
-                newManagerUserID = newManager.UserID
+                newManagerUserID = newManager.Id
             };
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -1117,8 +1117,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_league_publisher(PublisherID,PublisherName,LeagueID,Year,UserID,DraftPosition,Budget,FreeGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped) VALUES " +
-                    "(@PublisherID,@PublisherName,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped);",
+                    "insert into tbl_league_publisher(PublisherID,PublisherName,LeagueID,Year,Id,DraftPosition,Budget,FreeGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped) VALUES " +
+                    "(@PublisherID,@PublisherName,@LeagueID,@Year,@Id,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped);",
                     entity);
             }
         }
@@ -1152,7 +1152,7 @@ namespace FantasyCritic.MySQL
             foreach (var entity in publisherEntities)
             {
                 var gamesForPublisher = domainGames.Where(x => x.PublisherID == entity.PublisherID);
-                var user = usersInLeague.Single(x => x.UserID == entity.UserID);
+                var user = usersInLeague.Single(x => x.Id == entity.UserID);
                 var domainPublisher = entity.ToDomain(leagueYear, user, gamesForPublisher);
                 domainPublishers.Add(domainPublisher);
             }
@@ -1168,7 +1168,7 @@ namespace FantasyCritic.MySQL
             };
 
             var allUsers = await _userStore.GetAllUsers();
-            var usersDictionary = allUsers.ToDictionary(x => x.UserID, y => y);
+            var usersDictionary = allUsers.ToDictionary(x => x.Id, y => y);
             IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
             var leaguesDictionary = allLeagueYears.ToDictionary(x => x.League.LeagueID, y => y);
 
@@ -1346,13 +1346,13 @@ namespace FantasyCritic.MySQL
             {
                 leagueID = leagueYear.League.LeagueID,
                 year = leagueYear.Year,
-                userID = user.UserID
+                userID = user.Id
             };
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 PublisherEntity publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEntity>(
-                    "select * from tbl_league_publisher where tbl_league_publisher.LeagueID = @leagueID and tbl_league_publisher.Year = @year and tbl_league_publisher.UserID = @userID;",
+                    "select * from tbl_league_publisher where tbl_league_publisher.LeagueID = @leagueID and tbl_league_publisher.Year = @year and tbl_league_publisher.Id = @userID;",
                     query);
 
                 if (publisherEntity == null)
@@ -2032,7 +2032,7 @@ namespace FantasyCritic.MySQL
             var userAddObject = new
             {
                 leagueID = league.LeagueID,
-                userID = inviteUser.UserID,
+                userID = inviteUser.Id,
             };
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -2040,16 +2040,16 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject, transaction);
+                    await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,Id) VALUES (@leagueID,@userID);", userAddObject, transaction);
                     if (mostRecentYearNotStarted)
                     {
                         var userActiveObject = new
                         {
                             leagueID = league.LeagueID,
-                            userID = inviteUser.UserID,
+                            userID = inviteUser.Id,
                             activeYear = mostRecentYear.Value.Year
                         };
-                        await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);
+                        await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,Id) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);
                     }
                     await transaction.CommitAsync();
                 }
@@ -2187,7 +2187,7 @@ namespace FantasyCritic.MySQL
         public async Task<Result> DismissManagerMessage(Guid messageId, Guid userId)
         {
             string sql = "INSERT IGNORE INTO `tbl_league_managermessagedismissal` " +
-                         "(`MessageID`, `UserID`) VALUES(@messageId, @userID);";
+                         "(`MessageID`, `Id`) VALUES(@messageId, @userID);";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var rowsAdded = await connection.ExecuteAsync(sql, new { messageId, userId });

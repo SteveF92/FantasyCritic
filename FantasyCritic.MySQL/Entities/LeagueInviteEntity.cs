@@ -24,7 +24,7 @@ namespace FantasyCritic.MySQL.Entities
 
             if (domain.User.HasValue)
             {
-                UserID = domain.User.Value.UserID;
+                UserID = domain.User.Value.Id;
             }
         }
 

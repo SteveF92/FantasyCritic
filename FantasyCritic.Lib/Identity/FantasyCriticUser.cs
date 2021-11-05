@@ -16,7 +16,7 @@ namespace FantasyCritic.Lib.Identity
         public FantasyCriticUser(Guid userID, string displayName, int displayNumber, string emailAddress, string normalizedEmailAddress, 
             bool emailConfirmed, string securityStamp, string passwordHash, Instant lastChangedCredentials, bool isDeleted)
         {
-            Id = userID;
+            base.Id = userID;
             UserName = displayName;
             DisplayNumber = displayNumber;
             Email = emailAddress;
@@ -27,8 +27,6 @@ namespace FantasyCritic.Lib.Identity
             LastChangedCredentials = lastChangedCredentials.ToDateTimeUtc();
             IsDeleted = isDeleted;
         }
-
-        public Guid UserID => Id;
 
         public int DisplayNumber { get; set; }
         public DateTime LastChangedCredentials { get; set; }
@@ -49,7 +47,7 @@ namespace FantasyCritic.Lib.Identity
             var usersClaims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, NormalizedEmail),
-                new Claim(ClaimTypes.NameIdentifier, UserID.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, Id.ToString()),
             };
 
             foreach (var role in roles)

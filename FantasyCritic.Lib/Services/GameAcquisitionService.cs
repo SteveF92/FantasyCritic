@@ -44,7 +44,7 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.AddRange(masterGameErrors);
             }
 
-            IReadOnlyList<Publisher> otherPublishers = publishersInLeague.Where(x => x.User.UserID != request.Publisher.User.UserID).ToList();
+            IReadOnlyList<Publisher> otherPublishers = publishersInLeague.Where(x => x.User.Id != request.Publisher.User.Id).ToList();
 
             IReadOnlyList<PublisherGame> gamesForYear = publishersInLeague.SelectMany(x => x.PublisherGames).ToList();
             IReadOnlyList<PublisherGame> standardGamesForYear = gamesForYear.Where(x => !x.CounterPick).ToList();
@@ -205,7 +205,7 @@ namespace FantasyCritic.Lib.Services
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.LeagueYear);
             IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.LeagueYear.Year == leagueYear.Year).ToList();
-            IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.UserID != request.Publisher.User.UserID).ToList();
+            IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.Id != request.Publisher.User.Id).ToList();
 
             IReadOnlyList<PublisherGame> gamesForYear = publishersForYear.SelectMany(x => x.PublisherGames).ToList();
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();

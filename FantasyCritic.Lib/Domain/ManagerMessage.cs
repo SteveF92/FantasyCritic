@@ -33,7 +33,7 @@ namespace FantasyCritic.Lib.Domain
                 return false;
             }
 
-            return DismissedByUserIDs.Contains(accessingUser.Value.UserID);
+            return DismissedByUserIDs.Contains(accessingUser.Value.Id);
         }
     }
 }

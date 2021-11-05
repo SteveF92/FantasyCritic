@@ -31,7 +31,7 @@ namespace FantasyCritic.Web.Models.Responses
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
-            UserIsActive = activeUsers.Any(x => x.UserID == accessingUser.Unwrap(y => y.UserID));
+            UserIsActive = activeUsers.Any(x => x.Id == accessingUser.Unwrap(y => y.Id));
             Publishers = publishers
                 .OrderBy(x => x.DraftPosition)
                 .Select(x => new PublisherViewModel(x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished))
@@ -46,7 +46,7 @@ namespace FantasyCritic.Web.Models.Responses
             bool allPublishersMade = true;
             foreach (var user in activeUsers)
             {
-                var publisher = publishers.SingleOrDefault(x => x.User.UserID == user.UserID);
+                var publisher = publishers.SingleOrDefault(x => x.User.Id == user.Id);
                 if (publisher is null)
                 {
                     playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, false));
@@ -54,7 +54,7 @@ namespace FantasyCritic.Web.Models.Responses
                 }
                 else
                 {
-                    bool isPreviousYearWinner = previousYearWinner.HasValue && previousYearWinner.Value.UserID == user.UserID;
+                    bool isPreviousYearWinner = previousYearWinner.HasValue && previousYearWinner.Value.Id == user.Id;
                     playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, options, systemWideValues,
                         userIsInLeague, userIsInvitedToLeague, supportedYear, false, isPreviousYearWinner));
                 }

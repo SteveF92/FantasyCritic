@@ -34,7 +34,7 @@ namespace FantasyCritic.BetaSync
             {
                 var fakedEmailAddress = Guid.NewGuid() + "@example.com";
                 var fakedNormalizedEmailAddress = fakedEmailAddress.ToUpper();
-                string sql = $"UPDATE tbl_user SET EmailAddress = '{fakedEmailAddress}', NormalizedEmailAddress = '{fakedNormalizedEmailAddress}', PasswordHash = '', IsDeleted = 1 WHERE UserID = '{nonBetaUser.UserID}';";
+                string sql = $"UPDATE tbl_user SET EmailAddress = '{fakedEmailAddress}', NormalizedEmailAddress = '{fakedNormalizedEmailAddress}', PasswordHash = '', IsDeleted = 1 WHERE Id = '{nonBetaUser.Id}';";
                 updateStatements.Add(sql);
             }
 

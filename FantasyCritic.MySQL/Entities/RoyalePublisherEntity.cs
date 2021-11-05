@@ -19,7 +19,7 @@ namespace FantasyCritic.MySQL.Entities
         public RoyalePublisherEntity(RoyalePublisher domainRoyalePublisher)
         {
             PublisherID = domainRoyalePublisher.PublisherID;
-            UserID = domainRoyalePublisher.User.UserID;
+            UserID = domainRoyalePublisher.User.Id;
             Year = domainRoyalePublisher.YearQuarter.YearQuarter.Year;
             Quarter = domainRoyalePublisher.YearQuarter.YearQuarter.Quarter;
             PublisherName = domainRoyalePublisher.PublisherName;

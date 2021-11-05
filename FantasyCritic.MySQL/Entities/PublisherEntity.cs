@@ -21,7 +21,7 @@ namespace FantasyCritic.MySQL.Entities
             PublisherName = publisher.PublisherName;
             LeagueID = publisher.LeagueYear.League.LeagueID;
             Year = publisher.LeagueYear.Year;
-            UserID = publisher.User.UserID;
+            UserID = publisher.User.Id;
             DraftPosition = publisher.DraftPosition;
             FreeGamesDropped = publisher.FreeGamesDropped;
             WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;

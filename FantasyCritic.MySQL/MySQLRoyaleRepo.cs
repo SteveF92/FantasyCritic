@@ -38,8 +38,8 @@ namespace FantasyCritic.MySQL
         public async Task CreatePublisher(RoyalePublisher publisher)
         {
             RoyalePublisherEntity entity = new RoyalePublisherEntity(publisher);
-            string sql = "insert into tbl_royale_publisher (PublisherID,UserID,Year,Quarter,PublisherName,Budget) " +
-                         "VALUES (@PublisherID,@UserID,@Year,@Quarter,@PublisherName,@Budget)";
+            string sql = "insert into tbl_royale_publisher (PublisherID,Id,Year,Quarter,PublisherName,Budget) " +
+                         "VALUES (@PublisherID,@Id,@Year,@Quarter,@PublisherName,@Budget)";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql, entity);
@@ -61,13 +61,13 @@ namespace FantasyCritic.MySQL
 
         public async Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
         {
-            string sql = "select * from tbl_royale_publisher where UserID = @userID and Year = @year and Quarter = @quarter;";
+            string sql = "select * from tbl_royale_publisher where Id = @userID and Year = @year and Quarter = @quarter;";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(sql,
                     new
                     {
-                        userID = user.UserID,
+                        userID = user.Id,
                         year = yearQuarter.YearQuarter.Year,
                         quarter = yearQuarter.YearQuarter.Quarter
                     });
@@ -125,7 +125,7 @@ namespace FantasyCritic.MySQL
                 List<RoyalePublisher> domainPublishers = new List<RoyalePublisher>();
                 foreach (var entity in entities)
                 {
-                    var user = users.SingleOrDefault(x => x.UserID == entity.UserID);
+                    var user = users.SingleOrDefault(x => x.Id == entity.UserID);
                     if (user is null)
                     {
                         continue;

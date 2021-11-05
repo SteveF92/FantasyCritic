@@ -29,13 +29,13 @@ namespace FantasyCritic.Lib.Services
         public async Task<bool> UserIsInLeague(League league, FantasyCriticUser user)
         {
             var playersInLeague = await GetUsersInLeague(league);
-            return playersInLeague.Any(x => x.UserID == user.UserID);
+            return playersInLeague.Any(x => x.Id == user.Id);
         }
 
         public async Task<bool> UserIsActiveInLeagueYear(League league, int year, FantasyCriticUser user)
         {
             var activePlayers = await GetActivePlayersForLeagueYear(league, year);
-            return activePlayers.Any(x => x.UserID == user.UserID);
+            return activePlayers.Any(x => x.Id == user.Id);
         }
 
         public async Task<Result> SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> userActiveStatus)
@@ -46,19 +46,19 @@ namespace FantasyCritic.Lib.Services
             Dictionary<FantasyCriticUser, bool> usersToChange = new Dictionary<FantasyCriticUser, bool>();
             foreach (var userToChange in userActiveStatus)
             {
-                bool userIsCurrentlyActive = currentlyActivePlayers.Any(x => x.UserID == userToChange.Key.UserID);
+                bool userIsCurrentlyActive = currentlyActivePlayers.Any(x => x.Id == userToChange.Key.Id);
                 if (userIsCurrentlyActive == userToChange.Value)
                 {
                     //Nothing to change
                     continue;
                 }
 
-                if (leagueYear.League.LeagueManager.UserID == userToChange.Key.UserID)
+                if (leagueYear.League.LeagueManager.Id == userToChange.Key.Id)
                 {
                     return Result.Failure("Can't change the league manager's active status.");
                 }
 
-                bool userIsInLeague = playersInLeague.Any(x => x.UserID == userToChange.Key.UserID);
+                bool userIsInLeague = playersInLeague.Any(x => x.Id == userToChange.Key.Id);
                 if (!userIsInLeague)
                 {
                     return Result.Failure("That user is not in that league.");
@@ -232,7 +232,7 @@ namespace FantasyCritic.Lib.Services
             {
                 var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
                 var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.Value);
-                var deletePublisher = allPublishers.SingleOrDefault(x => x.User.UserID == removeUser.UserID);
+                var deletePublisher = allPublishers.SingleOrDefault(x => x.User.Id == removeUser.Id);
                 if (deletePublisher != null)
                 {
                     await _fantasyCriticRepo.FullyRemovePublisher(deletePublisher, allPublishers);

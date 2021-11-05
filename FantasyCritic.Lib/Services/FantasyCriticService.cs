@@ -352,7 +352,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
-            var managerPublisher = allPublishers.Single(x => x.User.UserID == leagueYear.League.LeagueManager.UserID);
+            var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.League.LeagueManager.Id);
 
             string description;
             if (!eligible.HasValue)

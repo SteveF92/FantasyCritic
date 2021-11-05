@@ -17,7 +17,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public FantasyCriticUserEntity(FantasyCriticUser user)
         {
-            UserID = user.UserID;
+            UserID = user.Id;
             DisplayName = user.UserName;
             DisplayNumber = user.DisplayNumber;
             EmailAddress = user.Email;

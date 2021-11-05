@@ -127,7 +127,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -156,7 +156,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -217,7 +217,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -269,7 +269,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -303,7 +303,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -362,7 +362,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -394,7 +394,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -427,7 +427,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -455,7 +455,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (invite.Value.League.LeagueManager.UserID != currentUser.UserID)
+            if (invite.Value.League.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -480,12 +480,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
 
-            if (league.Value.LeagueManager.UserID == request.UserID)
+            if (league.Value.LeagueManager.Id == request.UserID)
             {
                 return BadRequest("Can't remove the league manager.");
             }
@@ -497,7 +497,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var playersInLeague = await _leagueMemberService.GetUsersInLeague(league.Value);
-            bool userIsInLeague = playersInLeague.Any(x => x.UserID == removeUser.UserID);
+            bool userIsInLeague = playersInLeague.Any(x => x.Id == removeUser.Id);
             if (!userIsInLeague)
             {
                 return BadRequest("That user is not in that league.");
@@ -524,7 +524,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -567,7 +567,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -609,7 +609,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -636,7 +636,7 @@ namespace FantasyCritic.Web.Controllers.API
                     return BadRequest();
                 }
 
-                var publisherForUser = publishers.SingleOrDefault(x => x.User.UserID == domainUser.UserID);
+                var publisherForUser = publishers.SingleOrDefault(x => x.User.Id == domainUser.Id);
                 if (publisherForUser != null && !userKeyValue.Value)
                 {
                     return BadRequest("You must remove a player's publisher before you can set them as inactive.");
@@ -670,7 +670,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -741,12 +741,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't manually manage games until you draft.");
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
 
-            var claimUser = await _userManager.FindByIdAsync(publisher.Value.User.UserID.ToString());
+            var claimUser = await _userManager.FindByIdAsync(publisher.Value.User.Id.ToString());
             if (claimUser == null)
             {
                 return BadRequest();
@@ -806,12 +806,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You cannot manually associate games until you draft.");
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
 
-            var claimUser = await _userManager.FindByIdAsync(publisher.Value.User.UserID.ToString());
+            var claimUser = await _userManager.FindByIdAsync(publisher.Value.User.Id.ToString());
             if (claimUser == null)
             {
                 return BadRequest();
@@ -867,7 +867,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -950,7 +950,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -995,7 +995,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1043,7 +1043,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1101,7 +1101,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1145,7 +1145,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1213,7 +1213,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1296,7 +1296,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1344,7 +1344,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1395,7 +1395,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1472,7 +1472,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1511,7 +1511,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
@@ -1543,7 +1543,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.UserID != currentUser.UserID)
+            if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }

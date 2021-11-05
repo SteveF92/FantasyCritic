@@ -20,7 +20,7 @@ namespace FantasyCritic.MySQL.Entities
         public MasterGameRequestEntity(MasterGameRequest domain)
         {
             RequestID = domain.RequestID;
-            UserID = domain.User.UserID;
+            UserID = domain.User.Id;
             RequestTimestamp = domain.RequestTimestamp;
             RequestNote = domain.RequestNote;
 

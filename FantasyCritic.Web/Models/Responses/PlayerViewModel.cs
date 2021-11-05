@@ -13,7 +13,7 @@ namespace FantasyCritic.Web.Models.Responses
             Removable = removable;
             LeagueID = league.LeagueID.ToString();
             LeagueName = league.LeagueName;
-            UserID = user.UserID.ToString();
+            UserID = user.Id.ToString();
             DisplayName = user.UserName;
         }
 

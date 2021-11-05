@@ -86,7 +86,7 @@ namespace FantasyCritic.Web.Controllers.API
             string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
             await _emailSender.SendConfirmationEmail(user, code, baseURL);
 
-            return Created("", user.UserID.ToString());
+            return Created("", user.Id.ToString());
         }
 
         [HttpPost]
