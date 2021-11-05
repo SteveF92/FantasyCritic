@@ -2,7 +2,7 @@
 
 namespace FantasyCritic.Lib.Identity
 {
-    public class FantasyCriticRole : IdentityRole<int>
+    public class FantasyCriticRole : IdentityRole
     {
         public FantasyCriticRole()
         {
@@ -11,9 +11,11 @@ namespace FantasyCritic.Lib.Identity
 
         public FantasyCriticRole(int roleID, string name, string normalizedName)
         {
-            Id = roleID;
+            base.Id = roleID.ToString();
             Name = name;
             NormalizedName = normalizedName;
         }
+
+        public new int Id => int.Parse(base.Id);
     }
 }
