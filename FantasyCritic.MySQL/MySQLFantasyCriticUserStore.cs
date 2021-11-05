@@ -34,8 +34,8 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbl_user(Id,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed,IsDeleted) VALUES " +
-                    "(@Id,@DisplayName,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed,@IsDeleted)",
+                    "insert into tbl_user(UserID,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed,IsDeleted) VALUES " +
+                    "(@UserID,@DisplayName,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed,@IsDeleted)",
                     entity);
             }
 
@@ -49,7 +49,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                await connection.ExecuteAsync($"delete from tbl_user where Id = @{nameof(FantasyCriticUserEntity.UserID)}", new
+                await connection.ExecuteAsync($"delete from tbl_user where UserID = @{nameof(FantasyCriticUserEntity.UserID)}", new
                     {
                         UserID = user.Id
                     });
@@ -75,7 +75,7 @@ namespace FantasyCritic.MySQL
                          $"EmailConfirmed = @{nameof(FantasyCriticUserEntity.EmailConfirmed)}, " +
                          $"LastChangedCredentials = @{nameof(FantasyCriticUserEntity.LastChangedCredentials)}, " +
                          $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)} " +
-                         $"WHERE Id = @{nameof(FantasyCriticUserEntity.UserID)}";
+                         $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -117,7 +117,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
 
                 var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    @"select * from tbl_user WHERE Id = @userID",
+                    @"select * from tbl_user WHERE UserID = @userID",
                     new { userID = parseduserid });
                 var entity = userResult.SingleOrDefault();
                 return entity?.ToDomain();
@@ -261,8 +261,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                var roleResults = await connection.QueryAsync<string>(@"select tbl_user_role.Name from tbl_user join tbl_user_hasrole on (tbl_user.Id = tbl_user_hasrole.Id) " +
-                    "join tbl_user_role on (tbl_user_hasrole.RoleID = tbl_user_role.RoleID) WHERE tbl_user.Id = @userID", new { userID = user.Id });
+                var roleResults = await connection.QueryAsync<string>(@"select tbl_user_role.Name from tbl_user join tbl_user_hasrole on (tbl_user.UserID = tbl_user_hasrole.UserID) " +
+                    "join tbl_user_role on (tbl_user_hasrole.RoleID = tbl_user_role.RoleID) WHERE tbl_user.UserID = @userID", new { userID = user.Id });
                 var roleStrings = roleResults.ToList();
                 return roleStrings;
             }
@@ -275,7 +275,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-                var userResults = await connection.QueryAsync<Guid>(@"select tbl_user.Id from tbl_user join tbl_user_hasrole on (tbl_user.Id = tbl_user_hasrole.Id) " +
+                var userResults = await connection.QueryAsync<Guid>(@"select tbl_user.UserID from tbl_user join tbl_user_hasrole on (tbl_user.UserID = tbl_user_hasrole.UserID) " +
                     "join tbl_user_role on (tbl_user_hasrole.RoleID = tbl_user_role.RoleID) WHERE tbl_user_role.Name = @roleName", new { roleName });
 
                 List<FantasyCriticUser> users = new List<FantasyCriticUser>();
@@ -299,7 +299,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
                 var roleID = await connection.QueryAsync<int>(retrieveSQL, new { Name = roleName });
 
-                string insertSQL = "insert into tbl_user_hasrole (Id, RoleID) VALUES (@Id, @RoleID)";
+                string insertSQL = "insert into tbl_user_hasrole (UserID, RoleID) VALUES (@UserID, @RoleID)";
                 await connection.ExecuteAsync(insertSQL, new { UserID = user.Id, RoleID = roleID });
             }
         }
@@ -322,7 +322,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
                 var roleID = await connection.QueryAsync<int>(retrieveSQL, new { Name = roleName });
 
-                string deleteSQL = "delete from tbl_user_hasrole where Id = @Id and RoleID = @RoleID)";
+                string deleteSQL = "delete from tbl_user_hasrole where UserID = @UserID and RoleID = @RoleID)";
                 await connection.ExecuteAsync(deleteSQL, new { UserID = user.Id, RoleID = roleID });
             }
         }
@@ -332,7 +332,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                IEnumerable<string> refreshTokens = await connection.QueryAsync<string>("select RefreshToken from tbl_user_refreshtoken where Id = @Id;", new
+                IEnumerable<string> refreshTokens = await connection.QueryAsync<string>("select RefreshToken from tbl_user_refreshtoken where UserID = @UserID;", new
                     {
                         UserID = user.Id
                     });
@@ -346,7 +346,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync("insert into tbl_user_refreshtoken(Id,RefreshToken) VALUES (@Id, @refreshToken);", new { UserID = user.Id, refreshToken });
+                await connection.ExecuteAsync("insert into tbl_user_refreshtoken(UserID,RefreshToken) VALUES (@UserID, @refreshToken);", new { UserID = user.Id, refreshToken });
             }
         }
 
@@ -355,7 +355,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where Id = @Id and RefreshToken = @refreshToken;", new { UserID = user.Id, refreshToken });
+                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID and RefreshToken = @refreshToken;", new { UserID = user.Id, refreshToken });
             }
         }
 
@@ -364,10 +364,10 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where Id = @Id;", new
- {
-     UserID = user.Id
- });
+                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID;", new
+                {
+                    UserID = user.Id
+                });
             }
         }
 
@@ -378,14 +378,14 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                IEnumerable<DateTime> tokenTimestamps = await connection.QueryAsync<DateTime>("select CreatedTimestamp from tbl_user_refreshtoken where Id = @Id;", new
-                    {
-                        UserID = user.Id
-                    });
+                IEnumerable<DateTime> tokenTimestamps = await connection.QueryAsync<DateTime>("select CreatedTimestamp from tbl_user_refreshtoken where UserID = @UserID;", new
+                {
+                    UserID = user.Id
+                });
                 var tokensToKeep = tokenTimestamps.OrderByDescending(x => x).Take(minimumKeep);
                 var oldEnoughTokens = tokenTimestamps.Where(x => x < cutoff);
                 var tokensToDelete = oldEnoughTokens.Except(tokensToKeep);
-                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where Id = @Id and CreatedTimestamp in @tokensToDelete", new { UserID = user.Id, tokensToDelete });
+                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID and CreatedTimestamp in @tokensToDelete", new { UserID = user.Id, tokensToDelete });
             }
         }
 
@@ -393,16 +393,16 @@ namespace FantasyCritic.MySQL
         {
             string deleteRoyaleGames = "delete tbl_royale_publishergame from tbl_royale_publishergame " +
                                        "join tbl_royale_publisher on tbl_royale_publisher.PublisherID = tbl_royale_publishergame.PublisherID " +
-                                       "where Id = @userID;";
+                                       "where UserID = @userID;";
             string deleteRoyalePublishers = "delete tbl_royale_publisher from tbl_royale_publisher " +
-                                            "where Id = @userID;";
+                                            "where UserID = @userID;";
             string updatePublisherNames = "UPDATE tbl_league_publisher SET PublisherName = '<Deleted>' WHERE Id = @userID;";
             string deleteUnprocessedDrops = "DELETE tbl_league_pickupbid FROM tbl_league_pickupbid " +
                                             "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_pickupbid.PublisherID " +
-                                            "WHERE Id = @userID AND Successful IS null;";
+                                            "WHERE UserID = @userID AND Successful IS null;";
             string deleteUnprocessedBids = "DELETE tbl_league_droprequest FROM tbl_league_droprequest " +
                                            "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_droprequest.PublisherID " +
-                                           "WHERE Id = @userID AND Successful IS null;";
+                                           "WHERE UserID = @userID AND Successful IS null;";
             string updateUserAccount = "UPDATE tbl_user SET " +
                                        "DisplayName = '<Deleted>', " +
                                        "EmailAddress = @fakeEmailAddress, " +
@@ -410,7 +410,7 @@ namespace FantasyCritic.MySQL
                                        "PasswordHash = '', " +
                                        "SecurityStamp = '', " +
                                        "IsDeleted = 1 " +
-                                       "WHERE Id = @userID;";
+                                       "WHERE UserID = @userID;";
 
             var deleteObject = new
             {
