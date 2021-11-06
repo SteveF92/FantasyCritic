@@ -141,7 +141,7 @@ export default {
   },
   computed: {
     isAuth() {
-      return this.$store.getters.tokenIsCurrent();
+      return this.$store.getters.isAuthenticated;
     },
     userIsPublisher() {
       return this.isAuth && (this.publisher.userID === this.$store.getters.userInfo.userID);

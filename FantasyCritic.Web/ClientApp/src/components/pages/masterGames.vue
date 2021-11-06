@@ -60,7 +60,7 @@ export default {
   },
   computed: {
     isAuth() {
-      return this.$store.getters.tokenIsCurrent();
+      return this.$store.getters.isAuthenticated;
     },
     gamesToShow() {
       if (!this.unreleasedOnly) {

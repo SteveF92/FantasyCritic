@@ -75,7 +75,7 @@ export default {
       return false;
     },
     isAuth() {
-      return this.$store.getters.tokenIsCurrent();
+      return this.$store.getters.isAuthenticated;
     }
   },
   methods: {

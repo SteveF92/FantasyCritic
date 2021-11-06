@@ -3,21 +3,28 @@ import axios from 'axios';
 
 export default {
   state: {
-    tags: null
+    tags: null,
+    isBusy: false
   },
   getters: {
-    allTags: (state) => state.tags
+    allTags: (state) => state.tags,
+    masterGamesIsBusy: (state) => state.isBusy
   },
   actions: {
     getAllTags(context) {
-      return new Promise(function (resolve, reject) {
+      context.commit('setBusy', true);
+      return new Promise(function(resolve, reject) {
         axios
           .get('/api/Game/GetMasterGameTags')
           .then(response => {
             context.commit('setTags', response.data);
+            context.commit('setBusy', false);
             resolve();
           })
-          .catch(() => reject());
+          .catch(() => {
+            context.commit('setBusy', false);
+            reject();
+          });
       });
     }
   },
@@ -27,6 +34,9 @@ export default {
     },
     clearTags(state) {
       state.tags = null;
+    },
+    setBusy(state, isBusyFlag) {
+      state.isBusy = isBusyFlag;
     }
   }
 };

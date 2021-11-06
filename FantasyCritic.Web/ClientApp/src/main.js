@@ -78,47 +78,6 @@ Vue.component('font-awesome-layers', FontAwesomeLayers);
 Vue.component('font-awesome-layers-text', FontAwesomeLayersText);
 sync(store, router);
 
-axios.interceptors.response.use(function (response) {
-  return response;
-}, function (error) {
-  const originalRequest = error.config;
-  if (error.code !== 'ECONNABORTED' && error.response.status === 401) {
-    if (!originalRequest._retry) {
-      originalRequest._retry = true;
-      var oldToken = localStorage.getItem('jwt_token');
-      var refreshToken = localStorage.getItem('refresh_token');
-      if (oldToken && refreshToken) {
-        var refreshRequest = {
-          token: oldToken,
-          refreshToken: refreshToken
-        };
-        return axios.post('/api/token/refresh', refreshRequest)
-          .then((res) => {
-            store.commit('setTokenInfo', res.data);
-            store.commit('setRefreshToken', res.data.refreshToken);
-            var newBearer = 'Bearer ' + res.data.token;
-            originalRequest.headers.Authorization = newBearer;
-            return axios(originalRequest);
-          })
-          .catch((error) => {
-            store.commit('clearUserAndToken');
-            router.push({ name: 'login' });
-            return Promise.reject(error);
-          });
-      } else {
-        store.commit('clearUserAndToken');
-        router.push({ name: 'login' });
-        return Promise.reject(error);
-      }
-    } else {
-      store.commit('clearUserAndToken');
-      router.push({ name: 'login' });
-      return Promise.reject(error);
-    }
-  }
-  return Promise.reject(error);
-});
-
 import './registerServiceWorker';
 Vue.config.productionTip = false;
 

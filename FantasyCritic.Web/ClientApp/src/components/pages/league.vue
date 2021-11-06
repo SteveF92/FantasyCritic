@@ -230,7 +230,7 @@ export default {
       return false;
     },
     isAuth() {
-      return this.$store.getters.tokenIsCurrent();
+      return this.$store.getters.isAuthenticated;
     },
     topPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {

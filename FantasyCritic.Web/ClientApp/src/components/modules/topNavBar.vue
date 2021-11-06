@@ -63,7 +63,7 @@
                 <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="topnav-icon discord-icon" />
               </a>
             </li>
-            <slot v-if="!storeIsBusy">
+            <slot v-if="!authIsBusy">
               <slot v-if="isAuth && hasUserInfo">
                 <li v-if="displayName" class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
@@ -104,7 +104,7 @@ import axios from 'axios';
 export default {
   computed: {
     isAuth() {
-      return this.$store.getters.tokenIsCurrent();
+      return this.$store.getters.isAuthenticated;
     },
     hasUserInfo() {
       return this.$store.getters.userInfo;
@@ -112,8 +112,8 @@ export default {
     displayName() {
       return this.$store.getters.userInfo.displayName;
     },
-    storeIsBusy() {
-      return this.$store.getters.storeIsBusy;
+    authIsBusy() {
+      return this.$store.getters.authIsBusy;
     },
     activeRoyaleYear() {
       if (!this.activeRoyaleYearQuarter) {

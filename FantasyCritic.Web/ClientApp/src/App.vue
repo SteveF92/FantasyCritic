@@ -27,9 +27,7 @@ export default {
     FooterModule
   },
   mounted() {
-    if (this.$store.getters.tokenIsCurrent()) {
-      this.$store.dispatch('getUserInfo');
-    }
+    this.$store.dispatch('getUserInfo');
   }
 };
 </script>

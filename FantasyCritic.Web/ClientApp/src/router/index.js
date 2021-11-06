@@ -22,7 +22,7 @@ router.beforeEach(function (toRoute, fromRoute, next) {
   var getPrereqs = function () {
     var prereqs = [];
     prereqs.push(new Promise(function (resolve, reject) {
-      if (!store.getters.allTags) {
+      if (!store.getters.allTags && !store.getters.masterGamesIsBusy) {
         store.dispatch("getAllTags")
           .then(() => {
             resolve();
@@ -37,21 +37,8 @@ router.beforeEach(function (toRoute, fromRoute, next) {
 
   Promise.all(getPrereqs());
 
-  //Attempt to get local token if we don't have it in memory
-  if (!store.getters.tokenIsCurrent()) {
-    var token = localStorage.getItem('jwt_token');
-    if (token) {
-      var expiration = localStorage.getItem('jwt_expiration');
-      var tokenInfo = {
-        'token': token,
-        'expiration': expiration
-      };
-      store.commit('setTokenInfo', tokenInfo);
-    }
-  }
-
   //If we are current, we're good to go
-  if (store.getters.tokenIsCurrent()) {
+  if (store.getters.isAuthenticated) {
     if (toRoute.meta.publicOnly) {
       next({ path: '/home' });
       return;
@@ -60,46 +47,13 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     return;
   }
 
-  //If not current and not public, attempt refresh token.
-  var oldToken = localStorage.getItem('jwt_token');
-  var refreshToken = localStorage.getItem('refresh_token');
-  if (oldToken && refreshToken) {
-    var refreshRequest = {
-      token: oldToken,
-      refreshToken: refreshToken
-    };
-
-    store.dispatch('refreshToken', refreshRequest)
-      .then(() => {
-        if (store.getters.tokenIsCurrent()) {
-          if (toRoute.meta.publicOnly) {
-            next({ path: '/home' });
-            return;
-          }
-          next();
-          return;
-        } else {
-          store.commit('setRedirect', toRoute.path);
-          next({ name: 'login' });
-          return;
-        }
-      })
-      .catch(() => {
-        console.log('Router error');
-        store.commit('clearUserAndToken');
-        next({ name: 'login' });
-        return;
-      });
-  } else {
-    if (toRoute.meta.isPublic) {
-      next();
-      return;
-    } else {
-      store.commit('clearUserAndToken');
-      next({ name: 'login' });
-      return;
-    }
+  if (toRoute.meta.isPublic) {
+    next();
+    return;
   }
+
+  next('/Identity/Account/Login');
+  return;
 });
 
 export default router;
