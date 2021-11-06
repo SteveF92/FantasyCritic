@@ -453,9 +453,8 @@ export default {
         });
     },
     async startHubConnection() {
-      let token = this.$store.getters.token;
       let hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl('/updatehub', { accessTokenFactory: () => token })
+        .withUrl('/updatehub')
         .configureLogging(signalR.LogLevel.Error)
         .build();
 
