@@ -1,7 +1,5 @@
 import Welcome from '@/components/pages/welcome';
 import Home from '@/components/pages/home';
-import Login from '@/components/pages/login';
-import Register from '@/components/pages/register';
 import About from '@/components/pages/about';
 import HowToPlay from '@/components/pages/howToPlay';
 import Faq from '@/components/pages/faq';
@@ -45,16 +43,6 @@ export const routes = [
     }
   },
   {
-    path: '/login',
-    component: Login,
-    name: 'login',
-    meta: {
-      title: 'Login',
-      isPublic: true,
-      publicOnly: true
-    }
-  },
-  {
     path: '/home',
     component: Home,
     name: 'home',
@@ -89,16 +77,6 @@ export const routes = [
     meta: {
       title: 'Change Email',
       isPublic: false
-    }
-  },
-  {
-    path: '/register',
-    component: Register,
-    name: 'register',
-    meta: {
-      title: 'Register',
-      isPublic: true,
-      publicOnly: true
     }
   },
   {

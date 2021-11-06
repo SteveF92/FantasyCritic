@@ -16,8 +16,11 @@
         </div>
         <div class="col-md-6 col-sm-12 registration-area">
           <div class="registration-box shadowed">
-            <h2>Sign up for free</h2>
-            <registerForm></registerForm>
+            <h2>Registration is free!</h2>
+            <b-button variant="primary" href="/Identity/Account/Register" class="nav-link">
+              <span>Sign up</span>
+              <font-awesome-icon class="full-nav" icon="user-plus" />
+            </b-button>
           </div>
         </div>
       </div>
@@ -182,13 +185,11 @@
 import Vue from 'vue';
 import axios from 'axios';
 import SiteCounts from '@/components/modules/siteCounts';
-import RegisterForm from '@/components/modules/registerForm';
 import HomeFaq from '@/components/modules/homeFAQ';
 import Tweets from '@/components/modules/tweets';
 
 export default {
   components: {
-    RegisterForm,
     HomeFaq,
     Tweets,
     SiteCounts
