@@ -71,7 +71,7 @@
                     <span class="caret"></span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
-                    <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
+                    <a href="/Identity/Account/Manage" class="dropdown-item">Manage Account</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="/Identity/Account/Logout">Log off</a>
                   </div>
