@@ -20,6 +20,7 @@ using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -368,9 +369,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
-            await _emailSender.SendConfirmationEmail(user, code, baseURL);
+            var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
+            await _emailSender.SendConfirmationEmail(user, confirmLink);
 
             return Ok();
         }

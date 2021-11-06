@@ -29,11 +29,11 @@ namespace FantasyCritic.Web.Extensions
             return htmlResult;
         }
 
-        public static async Task SendConfirmationEmail(this IEmailSender emailSender, FantasyCriticUser user, string confirmCode, string baseURL)
+        public static async Task SendConfirmationEmail(this IEmailSender emailSender, FantasyCriticUser user, string link)
         {
             string emailAddress = user.Email;
             string emailSubject = "FantasyCritic - Confirm your email address.";
-            ConfirmEmailModel model = new ConfirmEmailModel(user, confirmCode, baseURL);
+            ConfirmEmailModel model = new ConfirmEmailModel(user, link);
 
             var htmlResult = await GetHTMLString("ConfirmEmail.cshtml", model);
 
