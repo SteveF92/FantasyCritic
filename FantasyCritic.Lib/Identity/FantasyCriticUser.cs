@@ -6,7 +6,7 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Identity
 {
-    public class FantasyCriticUser : IdentityUser
+    public class FantasyCriticUser : IdentityUser, IEquatable<FantasyCriticUser>
     {
         public FantasyCriticUser()
         {
@@ -45,20 +45,24 @@ namespace FantasyCritic.Lib.Identity
             return instant;
         }
 
-        public IReadOnlyList<Claim> GetUserClaims(IEnumerable<string> roles)
+        public bool Equals(FantasyCriticUser other)
         {
-            var usersClaims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, NormalizedEmail),
-                new Claim(ClaimTypes.NameIdentifier, Id.ToString()),
-            };
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id.Equals(other.Id);
+        }
 
-            foreach (var role in roles)
-            {
-                usersClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((FantasyCriticUser) obj);
+        }
 
-            return usersClaims;
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
     }
 }
