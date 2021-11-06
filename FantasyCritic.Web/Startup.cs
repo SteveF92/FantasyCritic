@@ -32,6 +32,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -92,16 +93,14 @@ namespace FantasyCritic.Web
             services.AddScoped<FantasyCriticService>();
             services.AddScoped<RoyaleService>();
 
-            services.AddTransient<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games"));
-            services.AddTransient<ISMSSender, SMSSender>();
-            services.AddHttpClient<IOpenCriticService, OpenCriticService>();
+            services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games"));
+            services.AddScoped<AdminService>();
 
+            services.AddHttpClient<IOpenCriticService, OpenCriticService>();
             services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
             {
                 client.BaseAddress = new Uri("https://api.opencritic.com/api/");
             });
-
-            services.AddScoped<AdminService>();
 
             //Add scheduled tasks & scheduler
             services.AddSingleton<IScheduledTask, RefreshDataTask>();

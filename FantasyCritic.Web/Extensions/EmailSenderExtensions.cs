@@ -11,6 +11,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Web.Models.EmailTemplates;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using RazorLight;
 
 namespace FantasyCritic.Web.Extensions
