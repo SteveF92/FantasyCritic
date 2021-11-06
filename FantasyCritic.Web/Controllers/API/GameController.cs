@@ -23,13 +23,14 @@ using NodaTime;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    public class GameController : ControllerBase
+    public class GameController : FantasyCriticController
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly InterLeagueService _interLeagueService;
         private readonly IClock _clock;
 
         public GameController(FantasyCriticUserManager userManager, InterLeagueService interLeagueService, IClock clock)
+            : base(userManager)
         {
             _userManager = userManager;
             _interLeagueService = interLeagueService;
@@ -88,10 +89,15 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> CreateMasterGameRequest([FromBody] MasterGameRequestRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -105,15 +111,20 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> CreateMasterGameChangeRequest([FromBody] MasterGameChangeRequestRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
             if (masterGame.HasNoValue)
@@ -130,12 +141,17 @@ namespace FantasyCritic.Web.Controllers.API
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteMasterGameRequest([FromBody] MasterGameRequestDeletionRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             Maybe<MasterGameRequest> maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
             if (maybeRequest.HasNoValue)
@@ -154,15 +170,20 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> DeleteMasterGameChangeRequest([FromBody] MasterGameChangeRequestDeletionRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             Maybe<MasterGameChangeRequest> maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
             if (maybeRequest.HasNoValue)
@@ -181,15 +202,20 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> DismissMasterGameRequest([FromBody] MasterGameRequestDismissRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             Maybe<MasterGameRequest> maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
             if (maybeRequest.HasNoValue)
@@ -208,15 +234,20 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> DismissMasterGameChangeRequest([FromBody] MasterGameChangeRequestDismissRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             Maybe<MasterGameChangeRequest> maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
             if (maybeRequest.HasNoValue)
@@ -234,10 +265,15 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<ActionResult<List<MasterGameRequestViewModel>>> MyMasterGameRequests()
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetMasterGameRequestsForUser(currentUser);
 
@@ -246,10 +282,15 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<ActionResult<List<MasterGameChangeRequestViewModel>>> MyMasterGameChangeRequests()
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetMasterGameChangeRequestsForUser(currentUser);
 

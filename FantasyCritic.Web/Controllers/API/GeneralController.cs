@@ -23,7 +23,6 @@ using NodaTime;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GeneralController : ControllerBase
     {
         private readonly FantasyCriticService _fantasyCriticService;

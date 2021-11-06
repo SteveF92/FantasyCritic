@@ -32,8 +32,8 @@ using NodaTime;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public class AdminController : ControllerBase
+    [Authorize(Roles = "Admin")]
+    public class AdminController : FantasyCriticController
     {
         private readonly AdminService _adminService;
         private readonly FantasyCriticService _fantasyCriticService;
@@ -46,6 +46,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
             ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager, IEmailSender emailSender)
+        : base(userManager)
         {
             _adminService = adminService;
             _fantasyCriticService = fantasyCriticService;

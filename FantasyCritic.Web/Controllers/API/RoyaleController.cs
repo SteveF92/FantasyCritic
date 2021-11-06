@@ -26,8 +26,8 @@ using MoreLinq;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class RoyaleController : ControllerBase
+    [Authorize]
+    public class RoyaleController : FantasyCriticController
     {
         private readonly IClock _clock;
         private readonly ILogger<RoyaleController> _logger;
@@ -36,7 +36,8 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly InterLeagueService _interLeagueService;
         private static readonly SemaphoreSlim _royaleSemaphore = new SemaphoreSlim(1, 1);
 
-        public RoyaleController(IClock clock, ILogger<RoyaleController> logger, FantasyCriticUserManager userManager, RoyaleService royaleService, InterLeagueService interLeagueService)
+        public RoyaleController(IClock clock, ILogger<RoyaleController> logger, FantasyCriticUserManager userManager,
+            RoyaleService royaleService, InterLeagueService interLeagueService) : base(userManager)
         {
             _clock = clock;
             _logger = logger;
@@ -78,11 +79,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> CreateRoyalePublisher([FromBody] CreateRoyalePublisherRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser is null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
             IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
             var selectedQuarter = supportedQuarters.Single(x => x.YearQuarter.Year == request.Year && x.YearQuarter.Quarter == request.Quarter);
@@ -104,11 +106,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> ChangePublisherName([FromBody] ChangeRoyalePublisherNameRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser is null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
             Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)
@@ -129,7 +132,13 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpGet("{year}/{quarter}")]
         public async Task<IActionResult> GetUserRoyalePublisher(int year, int quarter)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
             var yearQuarter = await _royaleService.GetYearQuarter(year, quarter);
             if (yearQuarter.HasNoValue)
             {
@@ -202,12 +211,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
         {
-            
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser is null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
             Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)
@@ -242,11 +251,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> SellGame([FromBody] SellRoyaleGameRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser is null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
             Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)
@@ -285,11 +295,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> SetAdvertisingMoney([FromBody] SetAdvertisingMoneyRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser is null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
             Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)

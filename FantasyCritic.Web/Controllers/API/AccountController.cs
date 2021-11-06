@@ -26,8 +26,8 @@ using NodaTime;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AccountController : ControllerBase
+    [Authorize]
+    public class AccountController : FantasyCriticController
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticRoleManager _roleManager;
@@ -36,7 +36,8 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly IClock _clock;
 
         public AccountController(FantasyCriticUserManager userManager, FantasyCriticRoleManager roleManager,
-            IEmailSender emailSender, ILogger<AccountController> logger, IClock clock)
+            IEmailSender emailSender, ILogger<AccountController> logger, IClock clock) :
+            base(userManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -47,9 +48,14 @@ namespace FantasyCritic.Web.Controllers.API
 
         public async Task<ActionResult> CurrentUser()
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            var roles = await _userManager.GetRolesAsync(currentUser);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
+            var roles = await _userManager.GetRolesAsync(currentUser);
             FantasyCriticUserViewModel vm = new FantasyCriticUserViewModel(currentUser, roles);
             return Ok(vm);
         }
@@ -62,15 +68,16 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (user == null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
-            user.UserName = request.NewDisplayName;
-            user.DisplayNumber = await _userManager.GetOpenDisplayNumber(user.UserName);
-            var result = await _userManager.UpdateAsync(user);
+            currentUser.UserName = request.NewDisplayName;
+            currentUser.DisplayNumber = await _userManager.GetOpenDisplayNumber(currentUser.UserName);
+            var result = await _userManager.UpdateAsync(currentUser);
             if (!result.Succeeded)
             {
                 return BadRequest();
@@ -82,13 +89,14 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> DeleteAccount()
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (user == null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
-            await _userManager.DeleteUserAccount(user);
+            await _userManager.DeleteUserAccount(currentUser);
 
             return Ok();
         }

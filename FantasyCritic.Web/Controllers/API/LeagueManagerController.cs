@@ -34,8 +34,8 @@ using NodaTime;
 namespace FantasyCritic.Web.Controllers.API
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class LeagueManagerController : ControllerBase
+    [Authorize]
+    public class LeagueManagerController : FantasyCriticController
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly FantasyCriticService _fantasyCriticService;
@@ -50,7 +50,7 @@ namespace FantasyCritic.Web.Controllers.API
 
         public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
             LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext,
-            IEmailSender emailSender, GameAcquisitionService gameAcquisitionService)
+            IEmailSender emailSender, GameAcquisitionService gameAcquisitionService) : base(userManager)
         {
             _userManager = userManager;
             _fantasyCriticService = fantasyCriticService;
@@ -67,11 +67,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> CreateLeague([FromBody] CreateLeagueRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser == null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -111,11 +112,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpGet("{id}")]
         public async Task<IActionResult> AvailableYears(Guid id)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser == null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -150,7 +152,13 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> AddNewLeagueYear([FromBody] NewLeagueYearRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
             var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
             if (league.HasNoValue)
             {
@@ -201,11 +209,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> ChangeLeagueOptions([FromBody] ChangeLeagueOptionsRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser == null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -236,11 +245,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> EditLeagueYearSettings([FromBody] LeagueYearSettingsViewModel request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (currentUser == null)
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
             {
-                return BadRequest();
+                return BadRequest(currentUserResult.Error);
             }
+            var currentUser = currentUserResult.Value;
 
             if (request.Tags.Required.Any())
             {
@@ -291,7 +301,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> InvitePlayer([FromBody] CreateInviteRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -350,7 +365,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> CreateInviteLink([FromBody] CreateInviteLinkRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -382,7 +402,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> DeleteInviteLink([FromBody] DeleteInviteLinkRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -415,7 +440,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpGet("{leagueID}")]
         public async Task<IActionResult> InviteLinks(Guid leagueID)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -443,7 +473,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RescindInvite([FromBody] DeleteInviteRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -468,7 +503,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RemovePlayer([FromBody] PlayerRemoveRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -512,7 +552,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> EditPublisher([FromBody] PublisherEditRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -555,7 +600,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RemovePublisher([FromBody] PublisherRemoveRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -597,7 +647,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> SetPlayerActiveStatus([FromBody] LeaguePlayerActiveRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -658,7 +713,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> SetAutoDraft([FromBody] ManagerSetAutoDraftRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -706,7 +766,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> ManagerClaimGame([FromBody] ClaimGameRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -771,7 +836,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> ManagerAssociateGame([FromBody] AssociateGameRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -843,7 +913,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RemovePublisherGame([FromBody] GameRemoveRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -932,7 +1007,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -982,7 +1062,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             var publisher = await _publisherService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)
@@ -1031,7 +1116,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> StartDraft([FromBody] StartDraftRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -1089,7 +1179,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> ResetDraft([FromBody] ResetDraftRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -1133,7 +1228,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> SetDraftOrder([FromBody] DraftOrderRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -1195,7 +1295,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> ManagerDraftGame([FromBody] ManagerDraftGameRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -1284,7 +1389,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> SetDraftPause([FromBody] DraftPauseRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -1332,7 +1442,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> UndoLastDraftAction([FromBody] UndoLastDraftActionRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -1383,7 +1498,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -1460,7 +1580,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> PromoteNewLeagueManager([FromBody] PromoteNewLeagueManagerRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -1493,7 +1618,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> PostNewManagerMessage([FromBody] PostNewManagerMessageRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
@@ -1525,7 +1655,12 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> DeleteManagerMessage([FromBody] DeleteManagerMessageRequest request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
 
             if (!ModelState.IsValid)
             {
