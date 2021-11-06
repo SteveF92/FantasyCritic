@@ -47,13 +47,32 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     return;
   }
 
-  if (toRoute.meta.isPublic) {
-    next();
-    return;
-  }
-
-  next('/Identity/Account/Login');
-  return;
+  store.dispatch('getUserInfo')
+    .then(() => {
+      if (store.getters.isAuthenticated) {
+        if (toRoute.meta.publicOnly) {
+          next({ path: '/home' });
+          return;
+        } else {
+          next();
+          return;
+        }
+      } else {
+        if (toRoute.meta.isPublic) {
+          next();
+          return;
+        } else {
+          next('/Identity/Account/Login');
+          return;
+        }
+      }
+    })
+    .catch(() => {
+      console.log('Router error');
+      store.commit('clearUserInfo');
+      next('/Identity/Account/Login');
+      return;
+    });
 });
 
 export default router;
