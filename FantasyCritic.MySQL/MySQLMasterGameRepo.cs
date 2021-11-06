@@ -274,9 +274,9 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_mastergame_request(RequestID,Id,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,ReleaseDate,EstimatedReleaseDate," +
+                    "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,ReleaseDate,EstimatedReleaseDate," +
                     "Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
-                    "(@RequestID,@Id,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@ReleaseDate,@EstimatedReleaseDate," +
+                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@ReleaseDate,@EstimatedReleaseDate," +
                     "@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
                     entity);
             }
@@ -289,8 +289,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_mastergame_changerequest(RequestID,Id,RequestTimestamp,RequestNote,MasterGameID,OpenCriticID,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
-                    "(@RequestID,@Id,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@Answered,@ResponseTimestamp,@ResponseNote,@Hidden);",
+                    "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,OpenCriticID,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
+                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@Answered,@ResponseTimestamp,@ResponseNote,@Hidden);",
                     entity);
             }
         }
@@ -373,7 +373,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
         {
-            var sql = "select * from tbl_mastergame_request where Id = @userID and Hidden = 0";
+            var sql = "select * from tbl_mastergame_request where UserID = @userID and Hidden = 0";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -384,7 +384,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<MasterGameChangeRequest>> GetMasterGameChangeRequestsForUser(FantasyCriticUser user)
         {
-            var sql = "select * from tbl_mastergame_changerequest where Id = @userID and Hidden = 0";
+            var sql = "select * from tbl_mastergame_changerequest where UserID = @userID and Hidden = 0";
 
             using (var connection = new MySqlConnection(_connectionString))
             {

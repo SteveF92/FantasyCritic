@@ -396,7 +396,7 @@ namespace FantasyCritic.MySQL
                                        "where UserID = @userID;";
             string deleteRoyalePublishers = "delete tbl_royale_publisher from tbl_royale_publisher " +
                                             "where UserID = @userID;";
-            string updatePublisherNames = "UPDATE tbl_league_publisher SET PublisherName = '<Deleted>' WHERE Id = @userID;";
+            string updatePublisherNames = "UPDATE tbl_league_publisher SET PublisherName = '<Deleted>' WHERE UserID = @userID;";
             string deleteUnprocessedDrops = "DELETE tbl_league_pickupbid FROM tbl_league_pickupbid " +
                                             "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_pickupbid.PublisherID " +
                                             "WHERE UserID = @userID AND Successful IS null;";
