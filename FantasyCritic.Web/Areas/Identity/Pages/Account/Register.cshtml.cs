@@ -23,12 +23,12 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<FantasyCriticUser> _signInManager;
-        private readonly UserManager<FantasyCriticUser> _userManager;
+        private readonly FantasyCriticUserManager _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<FantasyCriticUser> userManager,
+            FantasyCriticUserManager userManager,
             SignInManager<FantasyCriticUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
@@ -48,6 +48,9 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            [Required, MinLength(1), MaxLength(30)]
+            public string DisplayName { get; set; }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
@@ -77,7 +80,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(Input.Email);
+                var user = new FantasyCriticUser { UserName = Input.DisplayName, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
