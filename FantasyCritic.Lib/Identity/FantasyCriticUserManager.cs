@@ -34,29 +34,9 @@ namespace FantasyCritic.Lib.Identity
             return createdUser;
         }
 
-        public Task<IReadOnlyList<string>> GetRefreshTokens(FantasyCriticUser user)
+        public Task<int> GetOpenDisplayNumber(string displayName)
         {
-            return _userStore.GetRefreshTokens(user);
-        }
-
-        public Task AddRefreshToken(FantasyCriticUser user, string refreshToken)
-        {
-            return _userStore.AddRefreshToken(user, refreshToken);
-        }
-
-        public Task RemoveRefreshToken(FantasyCriticUser user, string refreshToken)
-        {
-            return _userStore.RemoveRefreshToken(user, refreshToken);
-        }
-
-        public Task RemoveAllRefreshTokens(FantasyCriticUser user)
-        {
-            return _userStore.RemoveAllRefreshTokens(user);
-        }
-
-        public Task ClearOldRefreshTokens(FantasyCriticUser user)
-        {
-            return _userStore.ClearOldRefreshTokens(user);
+            return _userStore.GetOpenDisplayNumber(displayName);
         }
 
         public Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
