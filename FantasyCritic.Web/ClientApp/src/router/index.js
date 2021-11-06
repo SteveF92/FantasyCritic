@@ -62,7 +62,8 @@ router.beforeEach(function (toRoute, fromRoute, next) {
           next();
           return;
         } else {
-          next('/Identity/Account/Login');
+          store.commit('clearUserInfo');
+          window.location.href = '/Identity/Account/Login';
           return;
         }
       }
@@ -70,7 +71,7 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     .catch(() => {
       console.log('Router error');
       store.commit('clearUserInfo');
-      next('/Identity/Account/Login');
+      window.location.href = '/Identity/Account/Login';
       return;
     });
 });
