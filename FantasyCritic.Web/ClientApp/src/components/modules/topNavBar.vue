@@ -73,19 +73,19 @@
                   <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
                     <router-link :to="{ name: 'manageUser' }" class="dropdown-item">Manage Account</router-link>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" v-on:click="logout()">Log off</a>
+                    <a class="dropdown-item" href="/Identity/Account/Logout">Log off</a>
                   </div>
                 </li>
               </slot>
               <slot v-else>
                 <li class="nav-item top-nav-button">
-                  <b-button variant="info" :to="{ name: 'login' }" class="nav-link">
+                  <b-button variant="info" href="/Identity/Account/Login" class="nav-link">
                     <span>Log In</span>
                     <font-awesome-icon class="full-nav" icon="sign-in-alt" />
                   </b-button>
                 </li>
                 <li class="nav-item">
-                  <b-button variant="primary" :to="{ name: 'register' }" class="nav-link">
+                  <b-button variant="primary" href="/Identity/Account/Register" class="nav-link">
                     <span>Sign Up</span>
                     <font-awesome-icon class="full-nav" icon="user-plus" />
                   </b-button>
