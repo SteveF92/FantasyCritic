@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using NodaTime;
 
-namespace FantasyCritic.MySQL.Entities
+namespace FantasyCritic.MySQL.Entities.Identity
 {
     internal class FantasyCriticUserEntity
     {
@@ -25,6 +21,8 @@ namespace FantasyCritic.MySQL.Entities
             EmailConfirmed = user.EmailConfirmed;
             SecurityStamp = user.SecurityStamp;
             PasswordHash = user.PasswordHash;
+            TwoFactorEnabled = user.TwoFactorEnabled;
+            AuthenticatorKey = user.AuthenticatorKey;
             LastChangedCredentials = user.GetLastChangedCredentials();
             IsDeleted = user.IsDeleted;
         }
@@ -37,13 +35,15 @@ namespace FantasyCritic.MySQL.Entities
         public bool EmailConfirmed { get; set; }
         public string SecurityStamp { get; set; }
         public string PasswordHash { get; set; }
+        public bool TwoFactorEnabled { get; set; }
+        public string AuthenticatorKey { get; set; }
         public Instant LastChangedCredentials { get; set; }
         public bool IsDeleted { get; set; }
 
         public FantasyCriticUser ToDomain()
         {
             FantasyCriticUser domain = new FantasyCriticUser(UserID, DisplayName, DisplayNumber, EmailAddress, NormalizedEmailAddress, EmailConfirmed, 
-                SecurityStamp, PasswordHash, LastChangedCredentials, IsDeleted);
+                SecurityStamp, PasswordHash, TwoFactorEnabled, AuthenticatorKey, LastChangedCredentials, IsDeleted);
             return domain;
         }
     }

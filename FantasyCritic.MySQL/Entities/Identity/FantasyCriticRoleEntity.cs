@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Identity;
+﻿using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.MySQL.Entities
+namespace FantasyCritic.MySQL.Entities.Identity
 {
     internal class FantasyCriticRoleEntity
     {

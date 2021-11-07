@@ -14,7 +14,7 @@ namespace FantasyCritic.Lib.Identity
         }
 
         public FantasyCriticUser(Guid userID, string displayName, int displayNumber, string emailAddress, string normalizedEmailAddress, 
-            bool emailConfirmed, string securityStamp, string passwordHash, Instant lastChangedCredentials, bool isDeleted)
+            bool emailConfirmed, string securityStamp, string passwordHash, bool twoFactorEnabled, string authenticatorKey, Instant lastChangedCredentials, bool isDeleted)
         {
             base.Id = userID.ToString();
             UserName = displayName;
@@ -24,6 +24,8 @@ namespace FantasyCritic.Lib.Identity
             EmailConfirmed = emailConfirmed;
             SecurityStamp = securityStamp;
             PasswordHash = passwordHash;
+            TwoFactorEnabled = twoFactorEnabled;
+            AuthenticatorKey = authenticatorKey;
             LastChangedCredentials = lastChangedCredentials.ToDateTimeUtc();
             IsDeleted = isDeleted;
         }
@@ -32,6 +34,7 @@ namespace FantasyCritic.Lib.Identity
         public int DisplayNumber { get; set; }
         public DateTime LastChangedCredentials { get; set; }
         public bool IsDeleted { get; set; }
+        public string AuthenticatorKey { get; set; }
 
         public void UpdateLastUsedCredentials(Instant currentInstant)
         {

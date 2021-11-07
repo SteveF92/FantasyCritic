@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Dapper;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.MySQL.Entities.Identity;
 using MySqlConnector;
 
 namespace FantasyCritic.MySQL

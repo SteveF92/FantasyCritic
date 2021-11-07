@@ -10,6 +10,7 @@ using MySqlConnector;
 using System;
 using System.Linq;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.MySQL.Entities.Identity;
 using NodaTime;
 
 namespace FantasyCritic.MySQL
@@ -34,8 +35,10 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbl_user(UserID,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp,LastChangedCredentials,EmailConfirmed,IsDeleted) VALUES " +
-                    "(@UserID,@DisplayName,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp,@LastChangedCredentials,@EmailConfirmed,@IsDeleted)",
+                    "insert into tbl_user(UserID,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp," +
+                    "TwoFactorEnabled,AuthenticatorKey,LastChangedCredentials,EmailConfirmed,IsDeleted) VALUES " +
+                    "(@UserID,@DisplayName,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp," +
+                    "@TwoFactorEnabled,@AuthenticatorKey,@LastChangedCredentials,@EmailConfirmed,@IsDeleted)",
                     entity);
             }
 
@@ -74,6 +77,8 @@ namespace FantasyCritic.MySQL
                          $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +
                          $"EmailConfirmed = @{nameof(FantasyCriticUserEntity.EmailConfirmed)}, " +
                          $"LastChangedCredentials = @{nameof(FantasyCriticUserEntity.LastChangedCredentials)}, " +
+                         $"TwoFactorEnabled = @{nameof(FantasyCriticUserEntity.TwoFactorEnabled)}, " +
+                         $"AuthenticatorKey = @{nameof(FantasyCriticUserEntity.AuthenticatorKey)}, " +
                          $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)} " +
                          $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
 
@@ -448,6 +453,78 @@ namespace FantasyCritic.MySQL
                 {
                     return randomNumber;
                 }
+            }
+        }
+
+        public Task SetAuthenticatorKeyAsync(FantasyCriticUser user, string key, CancellationToken cancellationToken)
+        {
+            user.AuthenticatorKey = key;
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetAuthenticatorKeyAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.AuthenticatorKey);
+        }
+
+        public Task SetTwoFactorEnabledAsync(FantasyCriticUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            user.TwoFactorEnabled = enabled;
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> GetTwoFactorEnabledAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.TwoFactorEnabled);
+        }
+
+        public async Task ReplaceCodesAsync(FantasyCriticUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
+        {
+            List<RecoveryCodeEntity> codeEntities = recoveryCodes.Select(x => new RecoveryCodeEntity(user.Id, x)).ToList();
+
+            var paramsObject = new
+            {
+                userID = user.Id
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync(cancellationToken);
+                using (var transaction = await connection.BeginTransactionAsync(cancellationToken))
+                {
+                    await connection.ExecuteAsync("DELETE FROM tbl_user_recoverycode WHERE UserID = @userID;", paramsObject, transaction);
+                    await connection.BulkInsertAsync(codeEntities, "tbl_user_recoverycode", 500, transaction);
+
+                    await transaction.CommitAsync(cancellationToken);
+                }
+            }
+        }
+
+        public async Task<bool> RedeemCodeAsync(FantasyCriticUser user, string code, CancellationToken cancellationToken)
+        {
+            var sql = "DELETE from tbl_user_recoverycode where UserID = @UserID and Code = @RecoveryCode";
+
+            RecoveryCodeEntity entity = new RecoveryCodeEntity(user.Id, code);
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                int count = await connection.ExecuteAsync(sql, entity);
+                return count == 1;
+            }
+        }
+
+        public async Task<int> CountCodesAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+        {
+            var sql = "select count(*) from tbl_user_recoverycode where UserID = @userID";
+
+            var queryObject = new
+            {
+                userID = user.Id
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                int count = await connection.QuerySingleAsync<int>(sql, queryObject);
+                return count;
             }
         }
 

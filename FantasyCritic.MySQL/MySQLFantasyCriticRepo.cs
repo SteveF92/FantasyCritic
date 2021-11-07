@@ -18,6 +18,7 @@ using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.MySQL.Entities.Identity;
 using MoreLinq;
 using MySqlConnector;
 using NLog;

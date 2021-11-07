@@ -29,7 +29,7 @@ namespace FantasyCritic.Lib.Identity
             int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
             var now = _clock.GetCurrentInstant();
             var fullUser = new FantasyCriticUser(user.Id, user.UserName, openUserNumber, user.Email,
-                user.NormalizedEmail, user.EmailConfirmed, user.SecurityStamp, user.PasswordHash, now, false);
+                user.NormalizedEmail, user.EmailConfirmed, user.SecurityStamp, user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
             var createdUser = await base.CreateAsync(fullUser, password);
             return createdUser;
         }
