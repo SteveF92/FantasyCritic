@@ -4,16 +4,11 @@ import About from '@/components/pages/about';
 import HowToPlay from '@/components/pages/howToPlay';
 import Faq from '@/components/pages/faq';
 import Contact from '@/components/pages/contact';
-import ManageUser from '@/components/pages/manageUser';
 import CreateLeague from '@/components/pages/createLeague';
 import League from '@/components/pages/league';
 import EditLeague from '@/components/pages/editLeague';
 import Publisher from '@/components/pages/publisher';
 import MasterGame from '@/components/pages/masterGame';
-import ConfirmEmail from '@/components/pages/confirmEmail';
-import ForgotPassword from '@/components/pages/forgotPassword';
-import ResetPassword from '@/components/pages/resetPassword';
-import ChangeEmail from '@/components/pages/changeEmail';
 import MasterGames from '@/components/pages/masterGames';
 import PublicLeagues from '@/components/pages/publicLeagues';
 import LeagueHistory from '@/components/pages/leagueHistory';
@@ -48,35 +43,6 @@ export const routes = [
     name: 'home',
     meta: {
       title: 'Home'
-    }
-  },
-  {
-    path: '/forgotPassword',
-    component: ForgotPassword,
-    name: 'forgotPassword',
-    meta: {
-      title: 'Forgot Password',
-      isPublic: true,
-      publicOnly: true
-    }
-  },
-  {
-    path: '/resetPassword',
-    component: ResetPassword,
-    name: 'resetPassword',
-    meta: {
-      title: 'Reset Password',
-      isPublic: true,
-      publicOnly: true
-    }
-  },
-  {
-    path: '/changeEmail',
-    component: ChangeEmail,
-    name: 'changeEmail',
-    meta: {
-      title: 'Change Email',
-      isPublic: false
     }
   },
   {
@@ -146,23 +112,6 @@ export const routes = [
     name: 'publicLeagues',
     meta: {
       title: 'Public Leagues',
-      isPublic: true
-    }
-  },
-  {
-    path: '/manageUser',
-    component: ManageUser,
-    name: 'manageUser',
-    meta: {
-      title: 'Manage User'
-    }
-  },
-  {
-    path: '/confirmEmail',
-    component: ConfirmEmail,
-    name: 'confirmEmail',
-    meta: {
-      title: 'Confirm Email',
       isPublic: true
     }
   },
