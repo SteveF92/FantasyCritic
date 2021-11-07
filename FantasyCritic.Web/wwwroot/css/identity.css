@@ -1,0 +1,35 @@
+.main-navbar {
+    padding: 0;
+    margin: 0;
+}
+
+.logo-link {
+    padding-bottom: 4px;
+}
+
+.full-logo {
+    height: 47px;
+    margin-left: 16px;
+}
+
+a, .nav-link {
+    color: #D6993A;
+}
+
+.btn-primary {
+    background-color: #D6993A;
+}
+
+.alert-danger, btn-danger {
+    background-color: #AA1E1E;
+}
+
+body {
+    background-color: black;
+    color: white;
+    background-image: url("/img/bg-geo-texture.png");
+    background-repeat: repeat;
+    min-width: 250px;
+    width: auto !important;
+    width: 250px;
+}
