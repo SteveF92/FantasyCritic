@@ -18,10 +18,15 @@ a, .nav-link {
 
 .btn-primary {
     background-color: #D6993A;
+    border: none;
 }
 
 .alert-danger, btn-danger {
     background-color: #AA1E1E;
+}
+
+.form-control:disabled {
+    color: #dddddd;
 }
 
 body {
