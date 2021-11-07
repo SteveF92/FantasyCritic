@@ -59,46 +59,5 @@ namespace FantasyCritic.Web.Controllers.API
             FantasyCriticUserViewModel vm = new FantasyCriticUserViewModel(currentUser, roles);
             return Ok(vm);
         }
-
-        [HttpPost]
-        public async Task<IActionResult> ChangeDisplayName([FromBody] ChangeDisplayNameRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            var currentUserResult = await GetCurrentUser();
-            if (currentUserResult.IsFailure)
-            {
-                return BadRequest(currentUserResult.Error);
-            }
-            var currentUser = currentUserResult.Value;
-
-            currentUser.UserName = request.NewDisplayName;
-            currentUser.DisplayNumber = await _userManager.GetOpenDisplayNumber(currentUser.UserName);
-            var result = await _userManager.UpdateAsync(currentUser);
-            if (!result.Succeeded)
-            {
-                return BadRequest();
-            }
-
-            return Ok();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DeleteAccount()
-        {
-            var currentUserResult = await GetCurrentUser();
-            if (currentUserResult.IsFailure)
-            {
-                return BadRequest(currentUserResult.Error);
-            }
-            var currentUser = currentUserResult.Value;
-
-            await _userManager.DeleteUserAccount(currentUser);
-
-            return Ok();
-        }
     }
 }

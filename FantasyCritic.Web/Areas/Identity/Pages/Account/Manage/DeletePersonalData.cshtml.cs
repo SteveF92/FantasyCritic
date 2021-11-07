@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Identity;
@@ -11,12 +11,12 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
 {
     public class DeletePersonalDataModel : PageModel
     {
-        private readonly UserManager<FantasyCriticUser> _userManager;
+        private readonly FantasyCriticUserManager _userManager;
         private readonly SignInManager<FantasyCriticUser> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
 
         public DeletePersonalDataModel(
-            UserManager<FantasyCriticUser> userManager,
+            FantasyCriticUserManager userManager,
             SignInManager<FantasyCriticUser> signInManager,
             ILogger<DeletePersonalDataModel> logger)
         {
@@ -67,16 +67,10 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var result = await _userManager.DeleteAsync(user);
-            var userId = await _userManager.GetUserIdAsync(user);
-            if (!result.Succeeded)
-            {
-                throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
-            }
-
+            await _userManager.DeleteUserAccount(user);
             await _signInManager.SignOutAsync();
 
-            _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
+            _logger.LogInformation("User with ID '{UserId}' deleted themselves.", user.Id);
 
             return Redirect("~/");
         }
