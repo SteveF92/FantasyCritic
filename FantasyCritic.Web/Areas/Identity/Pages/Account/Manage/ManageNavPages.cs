@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,10 +14,6 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
 
         public static string ChangePassword => "ChangePassword";
 
-        public static string DownloadPersonalData => "DownloadPersonalData";
-
-        public static string DeletePersonalData => "DeletePersonalData";
-
         public static string ExternalLogins => "ExternalLogins";
 
         public static string PersonalData => "PersonalData";
@@ -29,10 +25,6 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
         public static string EmailNavClass(ViewContext viewContext) => PageNavClass(viewContext, Email);
 
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
-
-        public static string DownloadPersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, DownloadPersonalData);
-
-        public static string DeletePersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, DeletePersonalData);
 
         public static string ExternalLoginsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ExternalLogins);
 

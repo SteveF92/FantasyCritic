@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model EnableAuthenticatorModel
 @{
     ViewData["Title"] = "Configure authenticator app";
@@ -49,5 +49,8 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script type="text/javascript" src="~/lib/qrcorejs/qrcode.js"></script>
+    <script type="text/javascript" src="~/js/qr.js"></script>
 }

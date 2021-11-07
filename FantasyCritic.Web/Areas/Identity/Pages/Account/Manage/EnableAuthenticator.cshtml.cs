@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
@@ -149,7 +149,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
         {
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("FantasyCritic.Web"),
+                _urlEncoder.Encode("Fantasy Critic"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }
