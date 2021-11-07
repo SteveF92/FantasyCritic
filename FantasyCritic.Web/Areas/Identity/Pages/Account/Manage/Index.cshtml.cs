@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -23,7 +23,10 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
         }
 
-        public string Username { get; set; }
+        [Display(Name = "Display Name")]
+        public string DisplayName { get; set; }
+        [Display(Name = "Display Number")]
+        public int DisplayNumber { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -33,16 +36,10 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            [Display(Name = "Display Name")]
+            public string DisplayName { get; set; }
         }
 
-        private async Task LoadAsync(FantasyCriticUser user)
-        {
-            var userName = await _userManager.GetUserNameAsync(user);
-            Username = userName;
-        }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -52,7 +49,8 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            await LoadAsync(user);
+            DisplayName = user.UserName;
+            DisplayNumber = user.DisplayNumber;
             return Page();
         }
 
@@ -66,8 +64,19 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
 
             if (!ModelState.IsValid)
             {
-                await LoadAsync(user);
+                DisplayName = user.UserName;
+                DisplayNumber = user.DisplayNumber;
                 return Page();
+            }
+
+            if (Input.DisplayName != user.UserName)
+            {
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.DisplayName);
+                if (!setUserNameResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to change user name.";
+                    return RedirectToPage();
+                }
             }
 
             await _signInManager.RefreshSignInAsync(user);
