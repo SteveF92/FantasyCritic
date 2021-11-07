@@ -14,16 +14,13 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-white border-bottom box-shadow mb-3 main-navbar">
+        <nav class="navbar navbar-expand bg-white border-bottom box-shadow mb-3 main-navbar">
             <a class="navbar-brand logo-link" href="~/">
                 <img class="full-logo" src="/img/horizontal-logo.svg" />
+                <img class="minimal-logo" src="/img/minimal-logo.svg" />
             </a>
             <div class="container">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="navbar-collapse collapse d-inline-flex flex-row-reverse">
                     @{
                         var result = Engine.FindView(ViewContext, "_LoginPartial", isMainPage: false);
                     }

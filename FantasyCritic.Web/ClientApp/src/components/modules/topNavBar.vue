@@ -204,7 +204,7 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 380px) {
+  @media only screen and (max-width: 400px) {
     .optional-link {
       display: none;
     }
