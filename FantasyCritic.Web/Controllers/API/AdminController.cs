@@ -273,13 +273,14 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Turn on action processing mode first.");
             }
 
+            var isBeta = Request.Host.Value.ToLower().Contains("beta");
             var today = _clock.GetCurrentInstant().ToEasternDate();
             var acceptableDays = new List<IsoDayOfWeek>
             {
                 IsoDayOfWeek.Saturday,
                 IsoDayOfWeek.Sunday
             };
-            if (!acceptableDays.Contains(today.DayOfWeek))
+            if (!acceptableDays.Contains(today.DayOfWeek) && !isBeta)
             {
                 return BadRequest($"You probably didn't mean to process pickups on a {today.DayOfWeek}");
             }
