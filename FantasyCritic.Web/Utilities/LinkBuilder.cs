@@ -19,7 +19,7 @@ namespace FantasyCritic.Web.Utilities
         {
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
             var encodedCode = UrlEncoder.Default.Encode(code);
-            var link = $"{request.Scheme}://{request.Host.Value}/Identity/Account/ConfirmEmail?userID={user.Id}&code={encodedCode}";
+            var link = $"{request.Scheme}://{request.Host.Value}/Identity/Account/ConfirmEmail?userId={user.Id}&code={encodedCode}";
             return link;
         }
 
@@ -27,7 +27,7 @@ namespace FantasyCritic.Web.Utilities
         {
             var code = await userManager.GeneratePasswordResetTokenAsync(user);
             var encodedCode = UrlEncoder.Default.Encode(code);
-            var link = $"{request.Scheme}://{request.Host.Value}/Identity/Account/ResetPassword?&code={encodedCode}";
+            var link = $"{request.Scheme}://{request.Host.Value}/Identity/Account/ResetPassword?code={encodedCode}";
             return link;
         }
 
@@ -35,7 +35,8 @@ namespace FantasyCritic.Web.Utilities
         {
             var code = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
             var encodedCode = UrlEncoder.Default.Encode(code);
-            var link = $"{request.Scheme}://{request.Host.Value}/Identity/Account/ConfirmEmailChange?userID={user.Id}&email={newEmail}&code={encodedCode}";
+            var encodedNewEmail = UrlEncoder.Default.Encode(newEmail);
+            var link = $"{request.Scheme}://{request.Host.Value}/Identity/Account/ConfirmEmailChange?userId={user.Id}&email={encodedNewEmail}&code={encodedCode}";
             return link;
         }
     }

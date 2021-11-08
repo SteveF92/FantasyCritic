@@ -93,7 +93,7 @@ namespace FantasyCritic.Web
             services.AddScoped<FantasyCriticService>();
             services.AddScoped<RoyaleService>();
 
-            services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games"));
+            services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
             services.AddScoped<AdminService>();
 
             services.AddHttpClient<IOpenCriticService, OpenCriticService>();
