@@ -40,23 +40,23 @@ namespace FantasyCritic.Web.Extensions
             await emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
         }
 
-        public static async Task SendForgotPasswordEmail(this IEmailSender emailSender, FantasyCriticUser user, string resetCode, string baseURL)
+        public static async Task SendForgotPasswordEmail(this IEmailSender emailSender, FantasyCriticUser user, string link)
         {
             string emailAddress = user.Email;
             string emailSubject = "FantasyCritic - Reset Your Password.";
 
-            PasswordResetModel model = new PasswordResetModel(user, resetCode, baseURL);
+            PasswordResetModel model = new PasswordResetModel(user, link);
             var htmlResult = await GetHTMLString("PasswordReset.cshtml", model);
 
             await emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
         }
 
-        public static async Task SendChangeEmail(this IEmailSender emailSender, FantasyCriticUser user, string newEmailAddress, string changeCode, string baseURL)
+        public static async Task SendChangeEmail(this IEmailSender emailSender, FantasyCriticUser user, string link)
         {
             string emailAddress = user.Email;
             string emailSubject = "FantasyCritic - Change Your Email.";
 
-            ChangeEmailModel model = new ChangeEmailModel(user, newEmailAddress, changeCode, baseURL);
+            ChangeEmailModel model = new ChangeEmailModel(user, link);
             var htmlResult = await GetHTMLString("ChangeEmail.cshtml", model);
 
             await emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);

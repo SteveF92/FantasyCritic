@@ -11,10 +11,10 @@ namespace FantasyCritic.Web.Models.EmailTemplates
 {
     public class ChangeEmailModel
     {
-        public ChangeEmailModel(FantasyCriticUser user, string newEmailAddress, string changeCode, string baseURL)
+        public ChangeEmailModel(FantasyCriticUser user, string link)
         {
             DisplayName = user.UserName;
-            Link = $"{baseURL}/changeEmail?NewEmailAddress={UrlEncoder.Default.Encode(newEmailAddress)}&Code={UrlEncoder.Default.Encode(changeCode)}";
+            Link = link;
         }
 
         public string DisplayName { get; }

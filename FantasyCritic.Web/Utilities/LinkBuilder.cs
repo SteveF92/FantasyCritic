@@ -22,5 +22,21 @@ namespace FantasyCritic.Web.Utilities
             var link = $"{request.Scheme}://{request.Host.Value}/Identity/Account/ConfirmEmail?userID={user.Id}&code={encodedCode}";
             return link;
         }
+
+        public static async Task<string> GetForgotPasswordLink(UserManager<FantasyCriticUser> userManager, FantasyCriticUser user, HttpRequest request)
+        {
+            var code = await userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedCode = UrlEncoder.Default.Encode(code);
+            var link = $"{request.Scheme}://{request.Host.Value}/Identity/Account/ResetPassword?&code={encodedCode}";
+            return link;
+        }
+
+        public static async Task<string> GetChangeEmailLink(UserManager<FantasyCriticUser> userManager, FantasyCriticUser user, string newEmail, HttpRequest request)
+        {
+            var code = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+            var encodedCode = UrlEncoder.Default.Encode(code);
+            var link = $"{request.Scheme}://{request.Host.Value}/Identity/Account/ConfirmEmailChange?userID={user.Id}&email={newEmail}&code={encodedCode}";
+            return link;
+        }
     }
 }
