@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.90" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Dapper-NodaTime" Version="0.1.0" />
     <PackageReference Include="Faithlife.Utility.Dapper" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="5.0.10" />
-    <PackageReference Include="MySqlConnector" Version="1.3.11" />
-    <PackageReference Include="NLog" Version="4.7.10" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="5.0.12" />
+    <PackageReference Include="MySqlConnector" Version="1.3.14" />
+    <PackageReference Include="NLog" Version="4.7.12" />
   </ItemGroup>
 
   <ItemGroup>
