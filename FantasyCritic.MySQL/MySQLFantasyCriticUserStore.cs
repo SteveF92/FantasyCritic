@@ -480,6 +480,8 @@ namespace FantasyCritic.MySQL
 
         public async Task ReplaceCodesAsync(FantasyCriticUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             List<RecoveryCodeEntity> codeEntities = recoveryCodes.Select(x => new RecoveryCodeEntity(user.Id, x)).ToList();
 
             var paramsObject = new
@@ -502,6 +504,8 @@ namespace FantasyCritic.MySQL
 
         public async Task<bool> RedeemCodeAsync(FantasyCriticUser user, string code, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var sql = "DELETE from tbl_user_recoverycode where UserID = @UserID and Code = @RecoveryCode";
 
             RecoveryCodeEntity entity = new RecoveryCodeEntity(user.Id, code);
@@ -514,6 +518,8 @@ namespace FantasyCritic.MySQL
 
         public async Task<int> CountCodesAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var sql = "select count(*) from tbl_user_recoverycode where UserID = @userID";
 
             var queryObject = new
@@ -525,6 +531,87 @@ namespace FantasyCritic.MySQL
             {
                 int count = await connection.QuerySingleAsync<int>(sql, queryObject);
                 return count;
+            }
+        }
+
+        public async Task AddLoginAsync(FantasyCriticUser user, UserLoginInfo login, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            ExternalLoginEntity entity = new ExternalLoginEntity()
+            {
+                UserID = user.Id,
+                LoginProvider = login.LoginProvider,
+                ProviderKey = login.ProviderKey,
+                ProviderDisplayName = login.ProviderDisplayName,
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync(cancellationToken);
+                string insertSQL = "insert into tbl_user_externallogin (LoginProvider,ProviderKey,UserID,ProviderDisplayName) " +
+                                   "VALUES (@LoginProvider,@ProviderKey,@UserID,@ProviderDisplayName);";
+                await connection.ExecuteAsync(insertSQL, entity);
+            }
+        }
+
+        public async Task RemoveLoginAsync(FantasyCriticUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var sql = "DELETE from tbl_user_externallogin where LoginProvider = @LoginProvider and ProviderKey = @ProviderKey and UserID = @UserID;";
+
+            var deleteObject = new
+            {
+                LoginProvider = loginProvider,
+                ProviderKey = providerKey,
+                UserID = user.Id
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, deleteObject);
+            }
+        }
+
+        public async Task<IList<UserLoginInfo>> GetLoginsAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            string sql = "select * from tbl_user_externallogin WHERE UserID = @userID;";
+            var queryObject = new
+            {
+                userID = user.Id
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var externalLogins = await connection.QueryAsync<ExternalLoginEntity>(sql, queryObject);
+                List<UserLoginInfo> logins = externalLogins.Select(x => new UserLoginInfo(x.LoginProvider, x.ProviderKey, x.ProviderDisplayName)).ToList();
+                return logins;
+            }
+        }
+
+        public async Task<FantasyCriticUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            string sql = "select tbl_user.* from tbl_user JOIN tbl_user_externallogin " +
+                         "ON tbl_user.UserID = tbl_user_externallogin.UserID " +
+                         "WHERE LoginProvider = @loginProvider AND ProviderKey = @providerKey";
+
+            var queryObject = new
+            {
+                loginProvider,
+                providerKey
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync(cancellationToken);
+
+                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(sql, queryObject);
+                var entity = userResult.SingleOrDefault();
+                return entity?.ToDomain();
             }
         }
 
