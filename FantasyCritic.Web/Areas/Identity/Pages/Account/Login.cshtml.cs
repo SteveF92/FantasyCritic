@@ -68,6 +68,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ExternalLogins = ExternalLogins.Where(x => x.Name != "Patreon").ToList();
 
             ReturnUrl = returnUrl;
         }
@@ -77,6 +78,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/home");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ExternalLogins = ExternalLogins.Where(x => x.Name != "Patreon").ToList();
         
             if (ModelState.IsValid)
             {
