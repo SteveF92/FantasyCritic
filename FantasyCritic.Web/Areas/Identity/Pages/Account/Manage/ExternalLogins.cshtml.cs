@@ -29,6 +29,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
         public AuthenticationScheme MicrosoftLogin { get; set; }
         public AuthenticationScheme TwitchLogin { get; set; }
         public AuthenticationScheme PatreonLogin { get; set; }
+        public AuthenticationScheme DiscordLogin { get; set; }
 
         public bool ShowRemoveButton { get; set; }
 
@@ -51,6 +52,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
             MicrosoftLogin = possibleOtherLogins.SingleOrDefault(x => x.Name == "Microsoft");
             TwitchLogin = possibleOtherLogins.SingleOrDefault(x => x.Name == "Twitch");
             PatreonLogin = possibleOtherLogins.SingleOrDefault(x => x.Name == "Patreon");
+            DiscordLogin = possibleOtherLogins.SingleOrDefault(x => x.Name == "Discord");
 
             ShowRemoveButton = user.PasswordHash != null || CurrentLogins.Count > 1;
             return Page();

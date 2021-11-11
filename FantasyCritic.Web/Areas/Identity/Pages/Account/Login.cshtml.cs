@@ -37,6 +37,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
         public AuthenticationScheme GoogleLogin { get; set; }
         public AuthenticationScheme MicrosoftLogin { get; set; }
         public AuthenticationScheme TwitchLogin { get; set; }
+        public AuthenticationScheme DiscordLogin { get; set; }
 
         public string ReturnUrl { get; set; }
 
@@ -73,6 +74,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
             GoogleLogin = externalLogins.SingleOrDefault(x => x.Name == "Google");
             MicrosoftLogin = externalLogins.SingleOrDefault(x => x.Name == "Microsoft");
             TwitchLogin = externalLogins.SingleOrDefault(x => x.Name == "Twitch");
+            DiscordLogin = externalLogins.SingleOrDefault(x => x.Name == "Discord");
 
             ReturnUrl = returnUrl;
         }
@@ -85,6 +87,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
             GoogleLogin = externalLogins.SingleOrDefault(x => x.Name == "Google");
             MicrosoftLogin = externalLogins.SingleOrDefault(x => x.Name == "Microsoft");
             TwitchLogin = externalLogins.SingleOrDefault(x => x.Name == "Twitch");
+            DiscordLogin = externalLogins.SingleOrDefault(x => x.Name == "Discord");
 
             if (ModelState.IsValid)
             {

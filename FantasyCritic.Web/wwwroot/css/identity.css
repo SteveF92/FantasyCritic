@@ -89,6 +89,10 @@ body {
     background-color: #FF424D;
 }
 
+.login-button-discord {
+    background-color: #5865F2;
+}
+
 .brand-logo {
     padding: 5px;
     margin-right: 3px;

@@ -143,6 +143,11 @@ namespace FantasyCritic.Web
                     options.ClientId = Configuration["Authentication:Patreon:ClientId"];
                     options.ClientSecret = Configuration["Authentication:Patreon:ClientSecret"];
                 })
+                .AddDiscord(options =>
+                {
+                    options.ClientId = Configuration["Authentication:Discord:ClientId"];
+                    options.ClientSecret = Configuration["Authentication:Discord:ClientSecret"];
+                })
                 .AddIdentityServerJwt();
 
             services.AddHsts(options =>

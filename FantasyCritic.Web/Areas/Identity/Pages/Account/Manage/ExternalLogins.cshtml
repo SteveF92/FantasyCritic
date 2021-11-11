@@ -46,7 +46,7 @@
                 <div>
                     <button type="submit" id="@($"link-login-button-{Model.GoogleLogin.Name}")" class="btn login-button login-button-google"
                             name="provider" value="@Model.GoogleLogin.Name" title="Log in using your @Model.GoogleLogin.DisplayName account">
-                        <img src="/img/google.svg" class="brand-logo google-logo"/>
+                        <img src="/img/google.svg" class="brand-logo google-logo" />
                         Link Google Account
                     </button>
                 </div>
@@ -78,6 +78,16 @@
                             name="provider" value="@Model.PatreonLogin.Name" title="Log in using your @Model.PatreonLogin.DisplayName account">
                         <img src="/img/patreon.png" class="brand-logo patreon-logo" />
                         Link Patreon Account
+                    </button>
+                </div>
+            }
+            @if (Model.DiscordLogin is not null)
+            {
+                <div>
+                    <button type="submit" id="@($"link-login-button-{Model.DiscordLogin.Name}")" class="btn login-button login-button-discord"
+                            name="provider" value="@Model.DiscordLogin.Name" title="Log in using your @Model.DiscordLogin.DisplayName account">
+                        <img src="/img/discord.svg" class="brand-logo patreon-logo" />
+                        Link Discord Account
                     </button>
                 </div>
             }
