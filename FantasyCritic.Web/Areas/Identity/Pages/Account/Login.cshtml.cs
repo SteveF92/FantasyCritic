@@ -34,7 +34,9 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
+        public AuthenticationScheme GoogleLogin { get; set; }
+        public AuthenticationScheme MicrosoftLogin { get; set; }
+        public AuthenticationScheme TwitchLogin { get; set; }
 
         public string ReturnUrl { get; set; }
 
@@ -67,8 +69,10 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            ExternalLogins = ExternalLogins.Where(x => x.Name != "Patreon").ToList();
+            var externalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            GoogleLogin = externalLogins.SingleOrDefault(x => x.Name == "Google");
+            MicrosoftLogin = externalLogins.SingleOrDefault(x => x.Name == "Microsoft");
+            TwitchLogin = externalLogins.SingleOrDefault(x => x.Name == "Twitch");
 
             ReturnUrl = returnUrl;
         }
@@ -77,9 +81,11 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/home");
 
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            ExternalLogins = ExternalLogins.Where(x => x.Name != "Patreon").ToList();
-        
+            var externalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            GoogleLogin = externalLogins.SingleOrDefault(x => x.Name == "Google");
+            MicrosoftLogin = externalLogins.SingleOrDefault(x => x.Name == "Microsoft");
+            TwitchLogin = externalLogins.SingleOrDefault(x => x.Name == "Twitch");
+
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout

@@ -25,7 +25,10 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
 
         public IList<UserLoginInfo> CurrentLogins { get; set; }
 
-        public IList<AuthenticationScheme> OtherLogins { get; set; }
+        public AuthenticationScheme GoogleLogin { get; set; }
+        public AuthenticationScheme MicrosoftLogin { get; set; }
+        public AuthenticationScheme TwitchLogin { get; set; }
+        public AuthenticationScheme PatreonLogin { get; set; }
 
         public bool ShowRemoveButton { get; set; }
 
@@ -41,9 +44,14 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
             }
 
             CurrentLogins = await _userManager.GetLoginsAsync(user);
-            OtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
+            var possibleOtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
                 .Where(auth => CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
                 .ToList();
+            GoogleLogin = possibleOtherLogins.SingleOrDefault(x => x.Name == "Google");
+            MicrosoftLogin = possibleOtherLogins.SingleOrDefault(x => x.Name == "Microsoft");
+            TwitchLogin = possibleOtherLogins.SingleOrDefault(x => x.Name == "Twitch");
+            PatreonLogin = possibleOtherLogins.SingleOrDefault(x => x.Name == "Patreon");
+
             ShowRemoveButton = user.PasswordHash != null || CurrentLogins.Count > 1;
             return Page();
         }

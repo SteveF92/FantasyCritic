@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model ExternalLoginsModel
 @{
     ViewData["Title"] = "Manage your external logins";
@@ -36,18 +36,39 @@
         </tbody>
     </table>
 }
-@if (Model.OtherLogins?.Count > 0)
-{
-    <h4>Add another service to log in.</h4>
-    <hr />
-    <form id="link-login-form" asp-page-handler="LinkLogin" method="post" class="form-horizontal">
-        <div id="socialLoginList">
-            <p>
-                @foreach (var provider in Model.OtherLogins)
-                {
-                    <button id="@($"link-login-button-{provider.Name}")" type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                }
-            </p>
-        </div>
-    </form>
-}
+<h4>Add another service to log in.</h4>
+<hr />
+<form id="link-login-form" asp-page-handler="LinkLogin" method="post" class="form-horizontal">
+    <div id="socialLoginList">
+        <p>
+            @if (Model.GoogleLogin is not null)
+            {
+                <button id="@($"link-login-button-{Model.GoogleLogin.Name}")" type="submit" class="btn btn-primary" name="provider"
+                        value="@Model.GoogleLogin.Name" title="Log in using your @Model.GoogleLogin.DisplayName account">
+                    @Model.GoogleLogin.DisplayName
+                </button>
+            }
+            @if (Model.MicrosoftLogin is not null)
+            {
+                <button id="@($"link-login-button-{Model.MicrosoftLogin.Name}")" type="submit" class="btn btn-primary" name="provider"
+                        value="@Model.MicrosoftLogin.Name" title="Log in using your @Model.MicrosoftLogin.DisplayName account">
+                    @Model.MicrosoftLogin.DisplayName
+                </button>
+            }
+            @if (Model.TwitchLogin is not null)
+            {
+                <button id="@($"link-login-button-{Model.TwitchLogin.Name}")" type="submit" class="btn btn-primary" name="provider"
+                        value="@Model.TwitchLogin.Name" title="Log in using your @Model.TwitchLogin.DisplayName account">
+                    @Model.TwitchLogin.DisplayName
+                </button>
+            }
+            @if (Model.PatreonLogin is not null)
+            {
+                <button id="@($"link-login-button-{Model.PatreonLogin.Name}")" type="submit" class="btn btn-primary" name="provider"
+                        value="@Model.PatreonLogin.Name" title="Log in using your @Model.PatreonLogin.DisplayName account">
+                    @Model.PatreonLogin.DisplayName
+                </button>
+            }
+        </p>
+    </div>
+</form>
