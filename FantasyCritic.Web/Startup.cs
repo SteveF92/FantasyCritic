@@ -138,6 +138,11 @@ namespace FantasyCritic.Web
                     options.ClientId = Configuration["Authentication:Twitch:ClientId"];
                     options.ClientSecret = Configuration["Authentication:Twitch:ClientSecret"];
                 })
+                .AddPatreon(options =>
+                {
+                    options.ClientId = Configuration["Authentication:Patreon:ClientId"];
+                    options.ClientSecret = Configuration["Authentication:Patreon:ClientSecret"];
+                })
                 .AddIdentityServerJwt();
 
             services.AddHsts(options =>
