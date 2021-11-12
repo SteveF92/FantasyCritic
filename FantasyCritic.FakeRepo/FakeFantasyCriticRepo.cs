@@ -399,6 +399,16 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task<IReadOnlyList<MasterGameTag>> GetOverridenTags(LeagueYear leagueYear, MasterGame masterGame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<SystemWideValues> GetSystemWideValues()
         {
             return Task.FromResult(new SystemWideValues(7m, -1m));

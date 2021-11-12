@@ -1666,6 +1666,16 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public Task<IReadOnlyList<MasterGameTag>> GetOverridenTags(LeagueYear leagueYear, MasterGame masterGame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
+        {
+            throw new NotImplementedException();
+        }
+
         private async Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, MySqlConnection connection, MySqlTransaction transaction)
         {
             string sql = "delete from tbl_league_eligibilityoverride where LeagueID = @leagueID and Year = @year and MasterGameID = @masterGameID;";

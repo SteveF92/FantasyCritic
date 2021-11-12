@@ -8,29 +8,12 @@ namespace FantasyCritic.Lib.Extensions
 {
     public static class ListExtensions
     {
-        public static IEnumerable<IEnumerable<T>> SplitList<T>(this IEnumerable<T> originalEnumerable, int batchSize)
+        public static bool SequencesContainSameElements<T>(IEnumerable<T> sequenceOne, IEnumerable<T> sequenceTwo)
+            where T : IEquatable<T>
         {
-            var list = new List<List<T>>();
-
-            List<T> originalList = originalEnumerable.ToList();
-
-            for (int i = 0; i < originalList.Count; i += batchSize)
-            {
-                list.Add(originalList.GetRange(i, Math.Min(batchSize, originalList.Count - i)));
-            }
-
-            return list;
-        }
-
-        public static List<List<T>> SplitList<T>(this List<T> originalList, int batchSize)
-        {
-            var list = new List<List<T>>();
-            for (int i = 0; i < originalList.Count; i += batchSize)
-            {
-                list.Add(originalList.GetRange(i, Math.Min(batchSize, originalList.Count - i)));
-            }
-
-            return list;
+            var set1 = new HashSet<T>(sequenceOne);
+            var set2 = new HashSet<T>(sequenceTwo);
+            return set1.SetEquals(set2);
         }
     }
 }

@@ -104,6 +104,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year);
         Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame);
         Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible);
+        Task<IReadOnlyList<MasterGameTag>> GetOverridenTags(LeagueYear leagueYear, MasterGame masterGame);
+        Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags);
 
         Task<SystemWideValues> GetSystemWideValues();
         Task<SystemWideSettings> GetSystemWideSettings();

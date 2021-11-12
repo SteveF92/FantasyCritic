@@ -1535,7 +1535,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             if (masterGame.Value.ReleaseDate.HasValue && masterGame.Value.ReleaseDate.Value.Year < leagueYear.Value.Year)
             {
-                return BadRequest("You can't change the override setting of a game that game out in a previous year.");
+                return BadRequest("You can't change the override setting of a game that came out in a previous year.");
             }
 
             bool alreadyEligible = !leagueYear.Value.Options.LeagueTags.GameIsEligible(masterGame.Value).Any();
@@ -1567,6 +1567,80 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             await _fantasyCriticService.SetEligibilityOverride(leagueYear.Value, masterGame.Value, request.Eligible);
+            var refreshedLeagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (refreshedLeagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+            await _fantasyCriticService.UpdatePublisherGameCalculatedStats(refreshedLeagueYear.Value);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetGameTagOverride([FromBody] TagOverrideRequest request)
+        {
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.ActionProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.Id != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+            if (masterGame.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (masterGame.Value.ReleaseDate.HasValue && masterGame.Value.ReleaseDate.Value.Year < leagueYear.Value.Year)
+            {
+                return BadRequest("You can't override the tags of a game that came out in a previous year.");
+            }
+
+            IReadOnlyList<MasterGameTag> currentOverrideTags = await _fantasyCriticService.GetOverridenTags(leagueYear.Value, masterGame.Value);
+
+            var allTags = await _interLeagueService.GetMasterGameTags();
+            var requestedTags = allTags.Where(x => request.Tags.Contains(x.Name)).ToList();
+            if (ListExtensions.SequencesContainSameElements(masterGame.Value.Tags, requestedTags))
+            {
+                return BadRequest("That game already has those exact tags.");
+            }
+
+            if (ListExtensions.SequencesContainSameElements(currentOverrideTags, requestedTags))
+            {
+                return BadRequest("That game is already overriden to have those exact tags.");
+            }
+
+            await _fantasyCriticService.SetTagOverride(leagueYear.Value, masterGame.Value, requestedTags);
             var refreshedLeagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
             if (refreshedLeagueYear.HasNoValue)
             {

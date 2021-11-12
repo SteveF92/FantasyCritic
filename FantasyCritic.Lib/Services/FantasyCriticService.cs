@@ -372,6 +372,32 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.AddLeagueAction(eligibilityAction);
         }
 
+        public Task<IReadOnlyList<MasterGameTag>> GetOverridenTags(LeagueYear leagueYear, MasterGame masterGame)
+        {
+            return _fantasyCriticRepo.GetOverridenTags(leagueYear, masterGame);
+        }
+
+        public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
+        {
+            await _fantasyCriticRepo.SetTagOverride(leagueYear, masterGame, requestedTags);
+            var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+            var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.League.LeagueManager.Id);
+
+            if (requestedTags.Any())
+            {
+                var tagNames = string.Join(", ", requestedTags.Select(x => x.ReadableName));
+                string description = $"{masterGame.GameName}'s tags were set to: '{tagNames}'.";
+                LeagueAction tagAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Tags Overriden", description, true);
+                await _fantasyCriticRepo.AddLeagueAction(tagAction);
+            }
+            else
+            {
+                string description = $"{masterGame.GameName}'s tags were reset to default.";
+                LeagueAction tagAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Tags Override Cleared", description, true);
+                await _fantasyCriticRepo.AddLeagueAction(tagAction);
+            }
+        }
+
         public async Task PostNewManagerMessage(LeagueYear leagueYear, string message, bool isPublic)
         {
             var domainMessage = new ManagerMessage(Guid.NewGuid(), message, isPublic, _clock.GetCurrentInstant(), new List<Guid>());
