@@ -374,7 +374,7 @@ namespace FantasyCritic.Lib.Services
 
         public Task<IReadOnlyList<MasterGameTag>> GetOverridenTags(LeagueYear leagueYear, MasterGame masterGame)
         {
-            return _fantasyCriticRepo.GetOverridenTags(leagueYear, masterGame);
+            return _fantasyCriticRepo.GetOverriddenTags(leagueYear, masterGame);
         }
 
         public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)

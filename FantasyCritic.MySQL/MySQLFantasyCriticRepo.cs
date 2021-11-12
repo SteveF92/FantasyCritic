@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
@@ -1666,14 +1667,54 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task<IReadOnlyList<MasterGameTag>> GetOverridenTags(LeagueYear leagueYear, MasterGame masterGame)
+        public async Task<IReadOnlyList<MasterGameTag>> GetOverriddenTags(LeagueYear leagueYear, MasterGame masterGame)
         {
-            throw new NotImplementedException();
+            string sql = "select tbl_mastergame_tag.* from tbl_league_tagoverride " +
+                         "JOIN tbl_mastergame_tag ON tbl_league_tagoverride.TagName = tbl_mastergame_tag.Name " +
+                         "WHERE LeagueID = @leagueID AND Year = @year AND MasterGameID = @masterGameID;";
+            var queryObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year,
+                masterGameID = masterGame.MasterGameID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<MasterGameTagEntity> entities = await connection.QueryAsync<MasterGameTagEntity>(sql, queryObject);
+                return entities.Select(x => x.ToDomain()).ToList();
+            }
         }
 
-        public Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
+        public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
         {
-            throw new NotImplementedException();
+            string deleteSQL = "DELETE from tbl_league_tagoverride where LeagueID = @leagueID AND Year = @year AND MasterGameID = @masterGameID;";
+
+            var deleteObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year,
+                masterGameID = masterGame.MasterGameID
+            };
+
+            var insertEntities = requestedTags.Select(x => new LeagueTagOverride()
+            {
+                LeagueID = leagueYear.League.LeagueID,
+                Year = leagueYear.Year,
+                MasterGameID = masterGame.MasterGameID,
+                TagName = x.Name
+            });
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(deleteSQL, deleteObject, transaction);
+                    await connection.BulkInsertAsync(insertEntities, "tbl_league_tagoverride", 500, transaction);
+                    await transaction.CommitAsync();
+                }
+            }
         }
 
         private async Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, MySqlConnection connection, MySqlTransaction transaction)
