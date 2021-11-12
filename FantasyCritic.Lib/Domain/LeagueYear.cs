@@ -13,8 +13,10 @@ namespace FantasyCritic.Lib.Domain
     public class LeagueYear : IEquatable<LeagueYear>
     {
         private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverridesDictionary;
+        private readonly ILookup<MasterGame, TagOverride> _tagOverridesDictionary;
 
-        public LeagueYear(League league, int year, LeagueOptions options, PlayStatus playStatus, IEnumerable<EligibilityOverride> eligibilityOverrides, Instant? draftStartedTimestamp)
+        public LeagueYear(League league, int year, LeagueOptions options, PlayStatus playStatus, 
+            IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides, Instant? draftStartedTimestamp)
         {
             League = league;
             Year = year;
@@ -22,6 +24,8 @@ namespace FantasyCritic.Lib.Domain
             PlayStatus = playStatus;
             EligibilityOverrides = eligibilityOverrides.ToList();
             _eligibilityOverridesDictionary = EligibilityOverrides.ToDictionary(x => x.MasterGame);
+            TagOverrides = tagOverrides.ToList();
+            _tagOverridesDictionary = TagOverrides.ToLookup(x => x.MasterGame);
             DraftStartedTimestamp = draftStartedTimestamp;
         }
 
@@ -30,6 +34,7 @@ namespace FantasyCritic.Lib.Domain
         public LeagueOptions Options { get; }
         public PlayStatus PlayStatus { get; }
         public IReadOnlyList<EligibilityOverride> EligibilityOverrides { get; }
+        public IReadOnlyList<TagOverride> TagOverrides { get; }
         public Instant? DraftStartedTimestamp { get; }
 
         public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);

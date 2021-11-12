@@ -1626,7 +1626,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't override the tags of a game that came out in a previous year.");
             }
 
-            IReadOnlyList<MasterGameTag> currentOverrideTags = await _fantasyCriticService.GetOverridenTags(leagueYear.Value, masterGame.Value);
+            IReadOnlyList<MasterGameTag> currentOverrideTags = await _fantasyCriticService.GetTagOverridesForGame(league.Value, leagueYear.Value.Year, masterGame.Value);
 
             var allTags = await _interLeagueService.GetMasterGameTags();
             var requestedTags = allTags.Where(x => request.Tags.Contains(x.Name)).ToList();

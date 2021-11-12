@@ -21,6 +21,9 @@
           <li class="fake-link action" v-b-modal="'eligibilityOverridesModal'">
             See Eligibility Overrides
           </li>
+          <li class="fake-link action" v-b-modal="'tagOverridesModal'">
+            See Tag Overrides
+          </li>
         </ul>
       </div>
       <div v-if="leagueYear.userPublisher">
@@ -123,7 +126,10 @@
               <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit Game Settings</router-link>
             </li>
             <li class="fake-link action" v-b-modal="'manageEligibilityOverridesModal'">
-              Manually Set Game Eligibility
+              Override Game Eligibility
+            </li>
+            <li class="fake-link action" v-b-modal="'manageTagOverridesModal'">
+              Override Game Tags
             </li>
             <li class="fake-link action" v-b-modal="'changeLeagueOptionsForm'">
               Change League Options
@@ -144,6 +150,7 @@
     <div>
       <leagueOptionsModal :league="league" :leagueYear="leagueYear"></leagueOptionsModal>
       <eligibilityOverridesModal :eligibilityOverrides="leagueYear.eligibilityOverrides"></eligibilityOverridesModal>
+      <tagOverridesModal :tagOverrides="leagueYear.tagOverrides"></tagOverridesModal>
 
       <div v-if="leagueYear.userPublisher">
         <playerDraftGameForm :userPublisher="leagueYear.userPublisher" :isManager="league.isManager" :year="leagueYear.year" v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
@@ -178,6 +185,7 @@
         <manuallySetWillNotReleaseForm :leagueYear="leagueYear" v-on:gameWillNotReleaseSet="gameWillNotReleaseSet"></manuallySetWillNotReleaseForm>
         <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
         <manageEligibilityOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameEligibilitySet" v-on:gameEligiblityReset="gameEligiblityReset"></manageEligibilityOverridesModal>
+        <manageTagOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameTagsSet" v-on:gameTagsReset="gameTagsReset"></manageTagOverridesModal>
         <removePlayerModal v-on:playerRemoved="playerRemoved" v-on:publisherRemoved="publisherRemoved" :league="league" :leagueYear="leagueYear"></removePlayerModal>
         <transferManagerModal v-on:managerTransferred="managerTransferred" :league="league"></transferManagerModal>
         <managerMessageModal v-on:managerMessagePosted="managerMessagePosted" :league="league" :leagueYear="leagueYear"></managerMessageModal>
@@ -196,6 +204,7 @@ import CurrentDropsForm from '@/components/modules/modals/currentDropsForm';
 import GameQueueForm from '@/components/modules/modals/gameQueueForm';
 
 import EligibilityOverridesModal from '@/components/modules/modals/eligibilityOverridesModal';
+import TagOverridesModal from '@/components/modules/modals/tagOverridesModal';
 import ChangePublisherNameForm from '@/components/modules/modals/changePublisherNameForm';
 import PlayerDraftGameForm from '@/components/modules/modals/playerDraftGameForm';
 import PlayerDraftCounterPickForm from '@/components/modules/modals/playerDraftCounterPickForm';
@@ -220,6 +229,7 @@ import ManagerDraftCounterPickForm from '@/components/modules/modals/managerDraf
 import AddNewLeagueYearForm from '@/components/modules/modals/addNewLeagueYearForm';
 import LeagueOptionsModal from '@/components/modules/modals/leagueOptionsModal';
 import ManageEligibilityOverridesModal from '@/components/modules/modals/manageEligibilityOverridesModal';
+import ManageTagOverridesModal from '@/components/modules/modals/manageTagOverridesModal';
 import RemovePlayerModal from '@/components/modules/modals/removePlayerModal';
 import ManagerMessageModal from '@/components/modules/modals/managerMessageModal';
 import TransferManagerModal from '@/components/modules/modals/transferManagerModal';
@@ -238,6 +248,7 @@ export default {
     DropGameForm,
     CurrentDropsForm,
     EligibilityOverridesModal,
+    TagOverridesModal,
     ChangePublisherNameForm,
     PlayerDraftGameForm,
     PlayerDraftCounterPickForm,
@@ -261,6 +272,7 @@ export default {
     AddNewLeagueYearForm,
     LeagueOptionsModal,
     ManageEligibilityOverridesModal,
+    ManageTagOverridesModal,
     RemovePlayerModal,
     ManagerMessageModal,
     TransferManagerModal
@@ -498,6 +510,22 @@ export default {
     gameEligiblityReset(gameInfo) {
       let actionInfo = {
         message: gameInfo.gameName + '\'s eligibility was reset to normal.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameTagsSet(gameInfo) {
+      let message = message = gameInfo.gameName + ' had it\'s tags overriden.';
+      let actionInfo = {
+        message: message,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    gameTagsReset(gameInfo) {
+      let message = message = gameInfo.gameName + ' had it\'s tags reset.';
+      let actionInfo = {
+        message: message,
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);

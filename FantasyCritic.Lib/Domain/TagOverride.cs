@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class TagOverride
+    public class EligibilityOverride
     {
-        public TagOverride(MasterGame masterGame, IEnumerable<MasterGameTag> tags)
+        public EligibilityOverride(MasterGame masterGame, bool eligible)
         {
             MasterGame = masterGame;
-            Tags = tags.ToList();
+            Eligible = eligible;
         }
 
         public MasterGame MasterGame { get; }
-        public IReadOnlyList<MasterGameTag> Tags { get; }
+        public bool Eligible { get; }
     }
 }

@@ -127,8 +127,9 @@ namespace FantasyCritic.Lib.Services
             }
 
             var eligibilityOverrides = await GetEligibilityOverrides(league, parameters.Year);
+            var tagOverrides = await GetTagOverrides(league, parameters.Year);
 
-            LeagueYear newLeagueYear = new LeagueYear(league, parameters.Year, options, leagueYear.Value.PlayStatus, eligibilityOverrides, leagueYear.Value.DraftStartedTimestamp);
+            LeagueYear newLeagueYear = new LeagueYear(league, parameters.Year, options, leagueYear.Value.PlayStatus, eligibilityOverrides, tagOverrides, leagueYear.Value.DraftStartedTimestamp);
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear);
 
             return Result.Success();
@@ -372,9 +373,14 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.AddLeagueAction(eligibilityAction);
         }
 
-        public Task<IReadOnlyList<MasterGameTag>> GetOverridenTags(LeagueYear leagueYear, MasterGame masterGame)
+        public Task<IReadOnlyList<TagOverride>> GetTagOverrides(League league, int year)
         {
-            return _fantasyCriticRepo.GetOverriddenTags(leagueYear, masterGame);
+            return _fantasyCriticRepo.GetTagOverrides(league, year);
+        }
+
+        public Task<IReadOnlyList<MasterGameTag>> GetTagOverridesForGame(League league, int year, MasterGame masterGame)
+        {
+            return _fantasyCriticRepo.GetTagOverridesForGame(league, year, masterGame);
         }
 
         public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)

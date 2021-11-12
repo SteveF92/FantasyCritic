@@ -105,8 +105,9 @@ namespace FantasyCritic.MySQL
                 }
 
                 var eligibilityOverrides = await GetEligibilityOverrides(requestLeague, requestYear);
+                var tagOverrides = await GetTagOverrides(requestLeague, requestYear);
                 var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
-                LeagueYear year = yearEntity.ToDomain(requestLeague, eligibilityOverrides, domainLeagueTags);
+                LeagueYear year = yearEntity.ToDomain(requestLeague, eligibilityOverrides, tagOverrides, domainLeagueTags);
                 return year;
             }
         }
@@ -129,6 +130,7 @@ namespace FantasyCritic.MySQL
                 IReadOnlyList<League> leagues = await GetAllLeagues();
                 Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
                 var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
+                var allTagOverrides = await GetAllTagOverrides(year);
 
                 foreach (var entity in yearEntities)
                 {
@@ -139,14 +141,20 @@ namespace FantasyCritic.MySQL
                         continue;
                     }
 
-                    bool hasOverrides = allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides);
-                    if (!hasOverrides)
+                    bool hasEligibilityOverrides = allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides);
+                    if (!hasEligibilityOverrides)
                     {
                         eligibilityOverrides = new List<EligibilityOverride>();
                     }
 
+                    bool hasTagOverrides = allTagOverrides.TryGetValue(entity.LeagueID, out var tagOverrides);
+                    if (!hasTagOverrides)
+                    {
+                        tagOverrides = new List<TagOverride>();
+                    }
+
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityOverrides, domainLeagueTags);
+                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityOverrides, tagOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -807,6 +815,7 @@ namespace FantasyCritic.MySQL
                 IReadOnlyList<League> leagues = await GetAllLeagues();
                 Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
                 var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
+                var allTagOverrides = await GetAllTagOverrides(year);
 
                 foreach (var entity in yearEntities)
                 {
@@ -817,14 +826,20 @@ namespace FantasyCritic.MySQL
                         continue;
                     }
 
-                    bool hasOverrides = allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides);
-                    if (!hasOverrides)
+                    bool hasEligibilityOverrides = allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides);
+                    if (!hasEligibilityOverrides)
                     {
                         eligibilityOverrides = new List<EligibilityOverride>();
                     }
 
+                    bool hasTagOverrides = allTagOverrides.TryGetValue(entity.LeagueID, out var tagOverrides);
+                    if (!hasTagOverrides)
+                    {
+                        tagOverrides = new List<TagOverride>();
+                    }
+
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityOverrides, domainLeagueTags);
+                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityOverrides, tagOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -1629,6 +1644,11 @@ namespace FantasyCritic.MySQL
             return dictionary;
         }
 
+        private async Task<IReadOnlyDictionary<Guid, IReadOnlyList<TagOverride>>> GetAllTagOverrides(int year)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -1667,15 +1687,53 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<MasterGameTag>> GetOverriddenTags(LeagueYear leagueYear, MasterGame masterGame)
+        public async Task<IReadOnlyList<TagOverride>> GetTagOverrides(League league, int year)
+        {
+            string sql = "select tbl_league_tagoverride.* from tbl_league_tagoverride " +
+                         "JOIN tbl_mastergame_tag ON tbl_league_tagoverride.TagName = tbl_mastergame_tag.Name " +
+                         "WHERE LeagueID = @leagueID AND Year = @year;";
+            var queryObject = new
+            {
+                leagueID = league.LeagueID,
+                year
+            };
+
+            var allTags = await _masterGameRepo.GetMasterGameTags();
+            var allMasterGames = await _masterGameRepo.GetMasterGames();
+            var tagDictionary = allTags.ToDictionary(x => x.Name);
+            var masterGameDictionary = allMasterGames.ToDictionary(x => x.MasterGameID);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<TagOverrideEntity> entities = await connection.QueryAsync<TagOverrideEntity>(sql, queryObject);
+                List<TagOverride> domains = new List<TagOverride>();
+                var entitiesByMasterGameID = entities.GroupBy(x => x.MasterGameID);
+                foreach (var entitySet in entitiesByMasterGameID)
+                {
+                    var masterGame = masterGameDictionary[entitySet.Key];
+                    List<MasterGameTag> tagsForMasterGame = new List<MasterGameTag>();
+                    foreach (var entity in entitySet)
+                    {
+                        var fullTag = tagDictionary[entity.TagName];
+                        tagsForMasterGame.Add(fullTag);
+                    }
+
+                    domains.Add(new TagOverride(masterGame, tagsForMasterGame));
+                }
+
+                return domains;
+            }
+        }
+
+        public async Task<IReadOnlyList<MasterGameTag>> GetTagOverridesForGame(League league, int year, MasterGame masterGame)
         {
             string sql = "select tbl_mastergame_tag.* from tbl_league_tagoverride " +
                          "JOIN tbl_mastergame_tag ON tbl_league_tagoverride.TagName = tbl_mastergame_tag.Name " +
                          "WHERE LeagueID = @leagueID AND Year = @year AND MasterGameID = @masterGameID;";
             var queryObject = new
             {
-                leagueID = leagueYear.League.LeagueID,
-                year = leagueYear.Year,
+                leagueID = league.LeagueID,
+                year,
                 masterGameID = masterGame.MasterGameID
             };
 
@@ -1697,7 +1755,7 @@ namespace FantasyCritic.MySQL
                 masterGameID = masterGame.MasterGameID
             };
 
-            var insertEntities = requestedTags.Select(x => new LeagueTagOverride()
+            var insertEntities = requestedTags.Select(x => new TagOverrideEntity()
             {
                 LeagueID = leagueYear.League.LeagueID,
                 Year = leagueYear.Year,
