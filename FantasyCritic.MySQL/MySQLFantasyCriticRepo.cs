@@ -1639,14 +1639,55 @@ namespace FantasyCritic.MySQL
                 domainObjects.Add(new Tuple<Guid, EligibilityOverride>(result.LeagueID, domain));
             }
 
-            var dictionary = domainObjects.GroupBy(x => x.Item1).ToDictionary(x => x.Key, y => (IReadOnlyList<EligibilityOverride>)y.Select(z => z.Item2).ToList());
-
+            var dictionary = domainObjects
+                .GroupBy(x => x.Item1)
+                .ToDictionary(x => x.Key, y => (IReadOnlyList<EligibilityOverride>)y.Select(z => z.Item2).ToList());
             return dictionary;
         }
 
         private async Task<IReadOnlyDictionary<Guid, IReadOnlyList<TagOverride>>> GetAllTagOverrides(int year)
         {
-            throw new NotImplementedException();
+            string sql = "select tbl_league_tagoverride.* from tbl_league_tagoverride " +
+                         "join tbl_league on (tbl_league.LeagueID = tbl_league_tagoverride.LeagueID) " +
+                         "where Year = @year and IsDeleted = 0;";
+            var queryObject = new
+            {
+                year
+            };
+
+            IEnumerable<TagOverrideEntity> results;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                results = await connection.QueryAsync<TagOverrideEntity>(sql, queryObject);
+            }
+
+            var allTags = await _masterGameRepo.GetMasterGameTags();
+            var tagDictionary = allTags.ToDictionary(x => x.Name);
+
+            List<Tuple<Guid, TagOverride>> domainObjects = new List<Tuple<Guid, TagOverride>>();
+
+            var groupedResults = results.GroupBy(x => (x.LeagueID, x.Year, x.MasterGameID));
+            foreach (var resultGroup in groupedResults)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGame(resultGroup.Key.MasterGameID);
+                if (masterGame.HasNoValue)
+                {
+                    throw new Exception($"Cannot find game {masterGame.Value.MasterGameID} for eligibility override. This should not happen.");
+                }
+
+                List<MasterGameTag> tagsForGroup = new List<MasterGameTag>();
+                foreach (var result in resultGroup)
+                {
+                    var fullTag = tagDictionary[result.TagName];
+                    tagsForGroup.Add(fullTag);
+                }
+
+                TagOverride domain = new TagOverride(masterGame.Value, tagsForGroup);
+                domainObjects.Add(new Tuple<Guid, TagOverride>(resultGroup.Key.LeagueID, domain));
+            }
+            
+            var dictionary = domainObjects.GroupBy(x => x.Item1).ToDictionary(x => x.Key, y => (IReadOnlyList<TagOverride>)y.Select(z => z.Item2).ToList());
+            return dictionary;
         }
 
         public async Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame)
