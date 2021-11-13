@@ -1769,7 +1769,10 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync(deleteSQL, deleteObject, transaction);
-                    await connection.BulkInsertAsync(insertEntities, "tbl_league_tagoverride", 500, transaction);
+                    if (insertEntities.Any())
+                    {
+                        await connection.BulkInsertAsync(insertEntities, "tbl_league_tagoverride", 500, transaction);
+                    }
                     await transaction.CommitAsync();
                 }
             }

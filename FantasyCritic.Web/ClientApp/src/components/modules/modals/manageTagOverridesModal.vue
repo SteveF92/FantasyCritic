@@ -1,20 +1,24 @@
 <template>
-  <b-modal id="manageEligibilityOverridesModal" ref="eligibilityOverridesModalRef" title="Manage Eligibility Overrides" @hidden="clearData" hide-footer>
-    <div v-if="leagueYear.eligibilityOverrides.length > 0">
+  <b-modal id="manageTagOverridesModal" ref="tagOverridesModalRef" title="Manage Tag Overrides" @hidden="clearData" hide-footer>
+    <div v-if="leagueYear.tagOverrides.length > 0">
       <table class="table table-bordered table-striped">
         <thead>
           <tr class="bg-primary">
             <th scope="col" class="game-column">Game</th>
-            <th scope="col">Eligible?</th>
+            <th scope="col">Tags</th>
             <th scope="col">Reset?</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="eligibilityOverride in leagueYear.eligibilityOverrides">
-            <td>{{eligibilityOverride.masterGame.gameName}}</td>
-            <td>{{eligibilityOverride.eligible | yesNo}}</td>
+          <tr v-for="tagOverride in leagueYear.tagOverrides">
+            <td>{{tagOverride.masterGame.gameName}}</td>
+            <td>
+              <span v-for="(tag, index) in tagOverride.tags">
+                <masterGameTagBadge :tagName="tagOverride.tags[index]"></masterGameTagBadge>
+              </span>
+            </td>
             <td class="select-cell">
-              <b-button variant="danger" v-on:click="resetEligibility(eligibilityOverride)">Reset</b-button>
+              <b-button variant="danger" v-on:click="resetTags(tagOverride)">Reset</b-button>
             </td>
           </tr>
         </tbody>
@@ -35,10 +39,10 @@
         <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{overrideMasterGame.gameName}}</label>
       </div>
     </form>
-    <div class="eligibility-set-buttons" v-if="overrideMasterGame">
+    <!--<div class="eligibility-set-buttons" v-if="overrideMasterGame">
       <b-button variant="danger" size="sm" v-on:click="setEligibility(overrideMasterGame, false)">Ban Game</b-button>
       <b-button variant="success" size="sm" v-on:click="setEligibility(overrideMasterGame, true)">Allow Game</b-button>
-    </div>
+    </div>-->
     <br />
     <div v-if="errorInfo" class="alert alert-danger">
       <h3 class="alert-heading">Error!</h3>
@@ -50,6 +54,8 @@
 <script>
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
+import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
+
 export default {
   data() {
     return {
@@ -60,7 +66,8 @@ export default {
     };
   },
   components: {
-    PossibleMasterGamesTable
+    PossibleMasterGamesTable,
+    MasterGameTagBadge
   },
   computed: {
     formIsValid() {
@@ -69,20 +76,20 @@ export default {
   },
   props: ['leagueYear'],
   methods: {
-    resetEligibility(eligibilityOverride) {
+    resetTags(tagOverride) {
       var model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
-        masterGameID: eligibilityOverride.masterGame.masterGameID,
-        eligible: null
+        masterGameID: tagOverride.masterGame.masterGameID,
+        tags: []
       };
       axios
-        .post('/api/leagueManager/SetGameEligibilityOverride', model)
+        .post('/api/leagueManager/SetGameTagOverride', model)
         .then(response => {
           var gameInfo = {
-            gameName: eligibilityOverride.masterGame.gameName
+            gameName: tagOverride.masterGame.gameName
           };
-          this.$emit('gameEligiblityReset', gameInfo);
+          this.$emit('gameTagsReset', gameInfo);
         })
         .catch(response => {
           this.errorInfo = response.response.data;
@@ -100,19 +107,18 @@ export default {
 
         });
     },
-    setEligibility(masterGame, eligible) {
+    setTags(masterGame, tags) {
       var model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         masterGameID: masterGame.masterGameID,
-        eligible: eligible
+        tags: tags
       };
       axios
-        .post('/api/leagueManager/SetGameEligibilityOverride', model)
+        .post('/api/leagueManager/SetGameTagOverride', model)
         .then(response => {
           var gameInfo = {
-            gameName: masterGame.gameName,
-            eligible
+            gameName: masterGame.gameName
           };
           this.$emit('gameEligibilitySet', gameInfo);
           this.clearData();
