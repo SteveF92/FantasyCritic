@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="manageEligibilityOverridesModal" ref="eligibilityOverridesModalRef" title="Manage Eligibility Overrides" @hidden="clearData" hide-footer>
+  <b-modal id="manageEligibilityOverridesModal" ref="eligibilityOverridesModalRef" size="lg" title="Manage Eligibility Overrides" @hidden="clearData" hide-footer>
     <div v-if="leagueYear.eligibilityOverrides.length > 0">
       <table class="table table-bordered table-striped">
         <thead>
