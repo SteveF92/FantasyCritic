@@ -1672,7 +1672,7 @@ namespace FantasyCritic.MySQL
                 var masterGame = await _masterGameRepo.GetMasterGame(resultGroup.Key.MasterGameID);
                 if (masterGame.HasNoValue)
                 {
-                    throw new Exception($"Cannot find game {masterGame.Value.MasterGameID} for eligibility override. This should not happen.");
+                    throw new Exception($"Cannot find game {masterGame.Value.MasterGameID} for tag override. This should not happen.");
                 }
 
                 List<MasterGameTag> tagsForGroup = new List<MasterGameTag>();

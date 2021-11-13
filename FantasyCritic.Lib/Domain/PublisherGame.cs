@@ -93,7 +93,7 @@ namespace FantasyCritic.Lib.Domain
             return MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
         }
 
-        public bool CalculateIsCurrentlyIneligible(LeagueOptions options, bool? overridenEligibility)
+        public bool CalculateIsCurrentlyIneligible(LeagueOptions options, bool? overridenEligibility, IReadOnlyList<MasterGameTag> overriddenTags)
         {
             if (overridenEligibility.HasValue)
             {
@@ -113,15 +113,21 @@ namespace FantasyCritic.Lib.Domain
             var bannedTags = nonCustomCodeTags.Where(x => x.Status == TagStatus.Banned).Select(x => x.Tag);
             var requiredTags = nonCustomCodeTags.Where(x => x.Status == TagStatus.Required).Select(x => x.Tag);
 
-            var bannedTagsIntersection = masterGame.Tags.Intersect(bannedTags);
-            var missingRequiredTags = requiredTags.Except(masterGame.Tags);
+            var tagsToUse = masterGame.Tags;
+            if (overriddenTags.Any())
+            {
+                tagsToUse = overriddenTags.ToList();
+            }
+
+            var bannedTagsIntersection = tagsToUse.Intersect(bannedTags);
+            var missingRequiredTags = requiredTags.Except(tagsToUse);
 
             if (bannedTagsIntersection.Any() || missingRequiredTags.Any())
             {
                 return true;
             }
 
-            var masterGameCustomCodeTags = masterGame.Tags.Where(x => x.HasCustomCode).ToList();
+            var masterGameCustomCodeTags = tagsToUse.Where(x => x.HasCustomCode).ToList();
             if (!masterGameCustomCodeTags.Any())
             {
                 return false;

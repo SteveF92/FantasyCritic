@@ -363,7 +363,7 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGames = masterGames
                     .Where(x => x.WillReleaseInQuarter(yearQuarter.Value.YearQuarter))
                     .Where(x => !x.MasterGame.IsReleased(currentDate))
-                    .Where(x => !LeagueTagExtensions.GetRoyaleEligibilitySettings(masterGameTags).GameIsEligible(x.MasterGame).Any())
+                    .Where(x => !LeagueTagExtensions.GameIsRoyaleEligible(masterGameTags, x.MasterGame).Any())
                     .Take(1000)
                     .ToList();
             }

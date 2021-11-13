@@ -12,7 +12,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale
         {
             MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
             WillReleaseInQuarter = masterGame.WillReleaseInQuarter(yearQuarter.YearQuarter);
-            IsEligible = !LeagueTagExtensions.GetRoyaleEligibilitySettings(masterGameTags).GameIsEligible(masterGame.MasterGame).Any();
+            IsEligible = !LeagueTagExtensions.GameIsRoyaleEligible(masterGameTags, masterGame.MasterGame).Any();
             AlreadyOwned = alreadyOwned;
             Cost = masterGame.GetRoyaleGameCost();
         }

@@ -27,5 +27,11 @@ namespace FantasyCritic.Lib.Domain
                 $"BaseScore= {BaseScore}  StandardGameConstant= {StandardGameConstant}  CounterPickConstant= {CounterPickConstant}  " +
                 $"HypeFactorConstant= {HypeFactorConstant}";
         }
+
+        public static HypeConstants GetReasonableDefaults()
+        {
+            //These were the correct values on 2021-11-13 and are likely good enough.
+            return new HypeConstants(72.20342723922732, -1.9925384952602971, -3.303780811503217, -3.303780811503217);
+        }
     }
 }

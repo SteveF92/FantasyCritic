@@ -161,6 +161,7 @@ namespace FantasyCritic.Lib.Services
 
             await UpdateSystemWideValues();
             var hypeConstants = await GetHypeConstants();
+            //var hypeConstants = HypeConstants.GetReasonableDefaults();
             await UpdateGameStats(hypeConstants);
             _logger.Info("Done refreshing caches");
         }

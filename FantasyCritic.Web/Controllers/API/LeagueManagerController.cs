@@ -1538,7 +1538,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't change the override setting of a game that came out in a previous year.");
             }
 
-            bool alreadyEligible = !leagueYear.Value.Options.LeagueTags.GameIsEligible(masterGame.Value).Any();
+            var overriddenTags = await _fantasyCriticService.GetTagOverridesForGame(league.Value, leagueYear.Value.Year, masterGame.Value);
+            bool alreadyEligible = !leagueYear.Value.Options.LeagueTags.GameIsEligible(masterGame.Value, overriddenTags).Any();
             bool isAllowing = request.Eligible.HasValue && request.Eligible.Value;
             bool isBanning = request.Eligible.HasValue && !request.Eligible.Value;
 
