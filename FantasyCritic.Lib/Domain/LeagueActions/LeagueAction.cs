@@ -111,11 +111,11 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             {
                 if (action.ConditionalDropResult.Result.IsSuccess)
                 {
-                    Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Dropped game '{action.ConditionalDropPublisherGame.Value.GameName}' conditionally.";
+                    Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Dropped game '{action.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName}' conditionally.";
                 }
                 else
                 {
-                    Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Attempted to drop game '{action.ConditionalDropPublisherGame.Value.GameName}' conditionally but cannot because: {action.ConditionalDropResult.Result.Error}.";
+                    Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Attempted to drop game '{action.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName}' conditionally but cannot because: {action.ConditionalDropResult.Result.Error}.";
                 }
             }
             else
