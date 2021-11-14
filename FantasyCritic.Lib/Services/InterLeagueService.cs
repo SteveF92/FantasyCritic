@@ -54,12 +54,6 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetSupportedYears();
         }
 
-        public async Task<SupportedYear> GetCurrentYear()
-        {
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-            return supportedYears.Where(x => x.OpenForPlay).MinBy(x => x.Year).Single();
-        }
-
         public Task<IReadOnlyList<MasterGame>> GetMasterGames()
         {
             return _masterGameRepo.GetMasterGames();
