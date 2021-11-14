@@ -195,7 +195,7 @@ namespace FantasyCritic.Lib.Services
                 if (noSpaceLeftBid.ConditionalDropPublisherGame.HasValue && noSpaceLeftBid.ConditionalDropResult.Result.IsFailure)
                 {
                     failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available. Attempted to conditionally drop game: " +
-                                                                    $"{noSpaceLeftBid.ConditionalDropPublisherGame.Value.GameName} but failed because: {noSpaceLeftBid.ConditionalDropResult.Result.Error}");
+                                                                    $"{noSpaceLeftBid.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName} but failed because: {noSpaceLeftBid.ConditionalDropResult.Result.Error}");
                 }
                 else
                 {
