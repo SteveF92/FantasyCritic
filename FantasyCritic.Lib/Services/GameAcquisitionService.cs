@@ -125,17 +125,16 @@ namespace FantasyCritic.Lib.Services
             var publisherGame = publisher.GetPublisherGame(request.MasterGame);
             if (publisherGame.HasNoValue)
             {
-                return new DropResult(Result.Failure("Cannot drop a game that you do not have"), false);
+                return new DropResult(Result.Failure("Cannot drop a game that you do not have"));
             }
-            bool gameWillRelease = publisherGame.Value.WillRelease();
             if (dropErrors.Any())
             {
-                return new DropResult(Result.Failure("Game is no longer eligible for dropping."), !gameWillRelease);
+                return new DropResult(Result.Failure("Game is no longer eligible for dropping."));
             }
             bool gameWasDrafted = publisherGame.Value.OverallDraftPosition.HasValue;
             if (!gameWasDrafted && leagueYear.Options.DropOnlyDraftGames)
             {
-                return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."), false);
+                return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."));
             }
 
             bool gameWasCounterPicked = otherPublishers
@@ -144,11 +143,12 @@ namespace FantasyCritic.Lib.Services
                 .ContainsGame(request.MasterGame);
             if (gameWasCounterPicked && leagueYear.Options.CounterPicksBlockDrops)
             {
-                return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."), false);
+                return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
             }
 
+            bool gameWillRelease = publisherGame.Value.WillRelease();
             var dropResult = publisher.CanDropGame(gameWillRelease);
-            return new DropResult(dropResult, !gameWillRelease);
+            return new DropResult(dropResult);
         }
 
         public DropResult CanConditionallyDropGame(PickupBid request, LeagueYear leagueYear, Publisher publisher, IEnumerable<Publisher> otherPublishers)
@@ -165,17 +165,16 @@ namespace FantasyCritic.Lib.Services
             var publisherGame = publisher.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGame.Value.PublisherGameID);
             if (publisherGame.HasNoValue)
             {
-                return new DropResult(Result.Failure("Cannot drop a game that you do not have"), false);
+                return new DropResult(Result.Failure("Cannot drop a game that you do not have"));
             }
-            bool gameWillRelease = publisherGame.Value.WillRelease();
             if (dropErrors.Any())
             {
-                return new DropResult(Result.Failure("Game is no longer eligible for dropping."), !gameWillRelease);
+                return new DropResult(Result.Failure("Game is no longer eligible for dropping."));
             }
             bool gameWasDrafted = publisherGame.Value.OverallDraftPosition.HasValue;
             if (!gameWasDrafted && leagueYear.Options.DropOnlyDraftGames)
             {
-                return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."), false);
+                return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."));
             }
 
             bool gameWasCounterPicked = otherPublishers
@@ -184,11 +183,12 @@ namespace FantasyCritic.Lib.Services
                 .ContainsGame(request.MasterGame);
             if (gameWasCounterPicked && leagueYear.Options.CounterPicksBlockDrops)
             {
-                return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."), false);
+                return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
             }
 
+            bool gameWillRelease = publisherGame.Value.WillRelease();
             var dropResult = publisher.CanDropGame(gameWillRelease);
-            return new DropResult(dropResult, !gameWillRelease);
+            return new DropResult(dropResult);
         }
 
         public async Task<ClaimResult> CanAssociateGame(AssociateGameDomainRequest request)
@@ -471,12 +471,12 @@ namespace FantasyCritic.Lib.Services
         {
             if (publisherGame.CounterPick)
             {
-                return new DropResult(Result.Failure("You can't drop a counterpick."), false);
+                return new DropResult(Result.Failure("You can't drop a counterpick."));
             }
 
             if (publisherGame.MasterGame.HasNoValue)
             {
-                return new DropResult(Result.Failure("You can't drop a game that is not linked to a master game. Please see the FAQ section on dropping games."), false);
+                return new DropResult(Result.Failure("You can't drop a game that is not linked to a master game. Please see the FAQ section on dropping games."));
             }
 
             MasterGame masterGame = publisherGame.MasterGame.Value.MasterGame;
@@ -484,7 +484,7 @@ namespace FantasyCritic.Lib.Services
             bool alreadyDropping = dropRequests.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
             if (alreadyDropping)
             {
-                return new DropResult(Result.Failure("You cannot have two active drop requests for the same game."), false);
+                return new DropResult(Result.Failure("You cannot have two active drop requests for the same game."));
             }
 
             DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, publisher.LeagueYear, masterGame, _clock.GetCurrentInstant(), null);

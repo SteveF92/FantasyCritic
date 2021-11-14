@@ -6,13 +6,11 @@ namespace FantasyCritic.Lib.Domain.Results
 {
     public class DropResult
     {
-        public DropResult(Result result, bool willNotRelease)
+        public DropResult(Result result)
         {
             Result = result;
-            WillNotRelease = willNotRelease;
         }
 
         public Result Result { get; }
-        public bool WillNotRelease { get; }
     }
 }
