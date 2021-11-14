@@ -158,7 +158,7 @@ namespace FantasyCritic.Lib.Services
             var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, publisher);
             dropErrors.AddRange(basicErrors);
 
-            var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, true, null);
+            var masterGameErrors = GetMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame, leagueYear.Year, false, true, null);
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
@@ -180,7 +180,7 @@ namespace FantasyCritic.Lib.Services
             bool gameWasCounterPicked = otherPublishers
                 .SelectMany(x => x.PublisherGames)
                 .Where(x => x.CounterPick)
-                .ContainsGame(request.MasterGame);
+                .ContainsGame(request.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame);
             if (gameWasCounterPicked && leagueYear.Options.CounterPicksBlockDrops)
             {
                 return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
