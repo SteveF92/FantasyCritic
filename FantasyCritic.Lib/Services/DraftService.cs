@@ -322,7 +322,7 @@ namespace FantasyCritic.Lib.Services
                 return DraftPhase.StandardGames;
             }
 
-            int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
+            int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicksToDraft * publishers.Count;
             int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
             if (counterPicksDrafted < numberOfCounterPicksToDraft)
             {
@@ -378,7 +378,7 @@ namespace FantasyCritic.Lib.Services
                 return false;
             }
 
-            int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicks * publishers.Count;
+            int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicksToDraft * publishers.Count;
             int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
             counterPicksDrafted += counterpicksAdded;
 

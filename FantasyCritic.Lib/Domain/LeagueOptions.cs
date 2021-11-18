@@ -93,14 +93,14 @@ namespace FantasyCritic.Lib.Domain
                 return Result.Failure("Can't draft more than the total number of standard games.");
             }
 
-            if (CounterPicks > GamesToDraft)
-            {
-                return Result.Failure("Can't have more counter picks than drafted games.");
-            }
-
             if (CounterPicksToDraft > CounterPicks)
             {
                 return Result.Failure("Can't draft more counter picks than the total number of counter picks.");
+            }
+
+            if (CounterPicksToDraft > GamesToDraft)
+            {
+                return Result.Failure("Can't have more drafted counter picks than drafted games.");
             }
 
             var bannedTagNames = LeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag.Name).ToHashSet();
