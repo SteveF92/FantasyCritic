@@ -26,6 +26,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
             StandardGames = leagueYear.Options.StandardGames;
             GamesToDraft = leagueYear.Options.GamesToDraft;
             CounterPicks = leagueYear.Options.CounterPicks;
+            CounterPicksToDraft = leagueYear.Options.CounterPicksToDraft;
 
             FreeDroppableGames = leagueYear.Options.FreeDroppableGames;
             if (leagueYear.Options.FreeDroppableGames == -1)
@@ -83,8 +84,11 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Range(1, 50)]
         public int GamesToDraft { get; set; }
         [Required]
-        [Range(0, 20)]
+        [Range(0, 5)]
         public int CounterPicks { get; set; }
+        [Required]
+        [Range(0, 5)]
+        public int CounterPicksToDraft { get; set; }
 
         [Required]
         [Range(0, 100)]
@@ -144,7 +148,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
 
             var leagueTags = Tags.ToDomain(tagDictionary);
 
-            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks,
+            EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
                 leagueTags, draftSystem, pickupSystem, scoringSystem, PublicLeague);
             return parameters;

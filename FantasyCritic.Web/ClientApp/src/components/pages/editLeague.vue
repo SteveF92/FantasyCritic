@@ -47,7 +47,8 @@ export default {
       let valid = this.leagueYearSettings &&
           this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 &&
           this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 50 &&
-          this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
+          this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20 &&
+          this.leagueYearSettings.counterPicksToDraft >= 0 && this.leagueYearSettings.counterPicksToDraft <= 20;
       return valid;
     },
     activePlayersInLeague() {
@@ -94,6 +95,11 @@ export default {
     },
     catchHandler(returnedError) {
       this.errorInfo = returnedError.response.data;
+      window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
     }
   },
   mounted() {

@@ -67,7 +67,7 @@
       </div>
 
       <div class="form-group">
-        <label for="counterPicks" class="control-label">Number of Counter Picks</label>
+        <label for="counterPicks" class="control-label">Total Number of Counter Picks</label>
         <p>
           Counter picks are essentially bets against a game. For more details,
           <a href="/faq#scoring" target="_blank">
@@ -76,7 +76,23 @@
         </p>
 
         <ValidationProvider rules="required|max_value:5|integer" v-slot="{ errors }">
-          <input v-model="local.counterPicks" @input="update('counterPicks', $event.target.value)" id="counterPicks" name="Number of Counterpicks" type="text" class="form-control input" />
+          <input v-model="local.counterPicks" @input="update('counterPicks', $event.target.value)" id="counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
+          <span class="text-danger">{{ errors[0] }}</span>
+        </ValidationProvider>
+      </div>
+
+      <div class="form-group">
+        <label for="counterPicksToDraft" class="control-label">Number of Counter Picks to Draft</label>
+        <p>
+          This is the number of games that will be chosen by each player at the draft.
+          If this number is lower than the "Total Number of Counter Picks", the remainder will be
+          <a href="/faq#bidding-system" target="_blank">
+            Pickup Counter picks.
+          </a>
+        </p>
+
+        <ValidationProvider rules="required|min_value:1|max_value:5|integer" v-slot="{ errors }">
+          <input v-model="local.counterPicksToDraft" @input="update('counterPicksToDraft', $event.target.value)" id="counterPicksToDraft" name="Counter picks to Draft" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
@@ -302,25 +318,31 @@ export default {
       }
 
       let averageSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / 6);
+      let averageSizeLeagueCounterPicks = Math.floor(averageSizeLeagueStandardGames / 6);
       let averageSizeLeagueGamesToDraft = Math.floor(averageSizeLeagueStandardGames * draftGameRatio);
-      let averageSizeLeagueCounterPicks = Math.floor(averageSizeLeagueGamesToDraft / 4);
+      let averageSizeLeagueCounterPicksToDraft = Math.floor(averageSizeLeagueCounterPicks * draftGameRatio);
 
       let thisSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / this.intendedNumberOfPlayers);
+      let thisSizeLeagueCounterPicks = Math.floor(thisSizeLeagueStandardGames / 6);
       let thisSizeLeagueGamesToDraft = Math.floor(thisSizeLeagueStandardGames * draftGameRatio);
-      let thisSizeLeagueCounterPicks = Math.floor(thisSizeLeagueGamesToDraft / 4);
+      let thisSizeLeagueCounterPicksToDraft = Math.floor(thisSizeLeagueCounterPicks * draftGameRatio);
 
       this.value.standardGames = Math.floor((averageSizeLeagueStandardGames + thisSizeLeagueStandardGames) / 2);
-      this.value.gamesToDraft = Math.floor((averageSizeLeagueGamesToDraft + thisSizeLeagueGamesToDraft) / 2);
       this.value.counterPicks = Math.floor((averageSizeLeagueCounterPicks + thisSizeLeagueCounterPicks) / 2);
+      this.value.gamesToDraft = Math.floor((averageSizeLeagueGamesToDraft + thisSizeLeagueGamesToDraft) / 2);
+      this.value.counterPicksToDraft = Math.floor((averageSizeLeagueCounterPicksToDraft + thisSizeLeagueCounterPicksToDraft) / 2);
 
-      if (this.value.counterPicks === 0) {
+      if (this.value.counterPicks === 0 || this.value.counterPicksToDraft === 0) {
         this.value.counterPicks = 1;
+        this.value.counterPicksToDraft = 1;
       }
 
       if (this.gameMode === 'Beginner') {
         this.value.counterPicks = 0;
+        this.value.counterPicksToDraft = 0;
       }
 
+      this.value.minimumBidAmount = 0;
       this.value.freeDroppableGames = 0;
       this.value.willNotReleaseDroppableGames = 0;
       this.value.willReleaseDroppableGames = 1;

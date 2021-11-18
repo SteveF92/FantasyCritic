@@ -21,8 +21,11 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Range(1, 50)]
         public int GamesToDraft { get; set; }
         [Required]
-        [Range(0,20)]
+        [Range(0,5)]
         public int CounterPicks { get; set; }
+        [Required]
+        [Range(0, 5)]
+        public int CounterPicksToDraft { get; set; }
 
         [Required]
         [Range(0, 100)]
@@ -86,7 +89,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
 
             var leagueTags = Tags.ToDomain(tagDictionary);
 
-            LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks,
+            LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
                 InitialYear, leagueTags, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;

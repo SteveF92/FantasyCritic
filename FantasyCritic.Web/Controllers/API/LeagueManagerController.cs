@@ -84,6 +84,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Impressive API usage, but required tags are not ready for prime time yet.");
             }
 
+            if (request.InitialYear < 2022 && request.CounterPicks != request.CounterPicksToDraft)
+            {
+                return BadRequest("Pickup counter picks are not supported until 2022.");
+            }
+
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.InitialYear);
             if (selectedSupportedYear is null)
@@ -283,6 +288,11 @@ namespace FantasyCritic.Web.Controllers.API
             if (league.Value.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
+            }
+
+            if (leagueYear.Value.Year < 2022 && request.CounterPicks != request.CounterPicksToDraft)
+            {
+                return BadRequest("Pickup counter picks are not supported until 2022.");
             }
 
             var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();

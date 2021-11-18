@@ -12,12 +12,13 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
-        public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
+        public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
             bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
             CounterPicks = counterPicks;
+            CounterPicksToDraft = counterPicksToDraft;
             FreeDroppableGames = freeDroppableGames;
             WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
             WillReleaseDroppableGames = willReleaseDroppableGames;
@@ -36,6 +37,7 @@ namespace FantasyCritic.Lib.Domain
             StandardGames = parameters.StandardGames;
             GamesToDraft = parameters.GamesToDraft;
             CounterPicks = parameters.CounterPicks;
+            CounterPicksToDraft = parameters.CounterPicksToDraft;
             FreeDroppableGames = parameters.FreeDroppableGames;
             WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
             WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
@@ -54,6 +56,7 @@ namespace FantasyCritic.Lib.Domain
             StandardGames = parameters.StandardGames;
             GamesToDraft = parameters.GamesToDraft;
             CounterPicks = parameters.CounterPicks;
+            CounterPicksToDraft = parameters.CounterPicksToDraft;
             FreeDroppableGames = parameters.FreeDroppableGames;
             WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
             WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
@@ -70,6 +73,7 @@ namespace FantasyCritic.Lib.Domain
         public int StandardGames { get; }
         public int GamesToDraft { get; }
         public int CounterPicks { get; }
+        public int CounterPicksToDraft { get; }
         public int FreeDroppableGames { get; }
         public int WillNotReleaseDroppableGames { get; }
         public int WillReleaseDroppableGames { get; }
@@ -92,6 +96,11 @@ namespace FantasyCritic.Lib.Domain
             if (CounterPicks > GamesToDraft)
             {
                 return Result.Failure("Can't have more counter picks than drafted games.");
+            }
+
+            if (CounterPicksToDraft > CounterPicks)
+            {
+                return Result.Failure("Can't draft more counter picks than the total number of counter picks.");
             }
 
             var bannedTagNames = LeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag.Name).ToHashSet();

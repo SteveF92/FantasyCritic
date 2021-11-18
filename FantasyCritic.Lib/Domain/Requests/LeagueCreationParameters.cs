@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain.Requests
 {
     public class LeagueCreationParameters
     {
-        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, 
+        public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
             int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount,
             int initialYear, IEnumerable<LeagueTagStatus> leagueTags, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague, bool testLeague)
         {
@@ -17,6 +17,7 @@ namespace FantasyCritic.Lib.Domain.Requests
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
             CounterPicks = counterPicks;
+            CounterPicksToDraft = counterPicksToDraft;
             FreeDroppableGames = freeDroppableGames;
             WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
             WillReleaseDroppableGames = willReleaseDroppableGames;
@@ -37,6 +38,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public int StandardGames { get; }
         public int GamesToDraft { get; }
         public int CounterPicks { get; }
+        public int CounterPicksToDraft { get; }
         public int FreeDroppableGames { get; }
         public int WillNotReleaseDroppableGames { get; }
         public int WillReleaseDroppableGames { get; }

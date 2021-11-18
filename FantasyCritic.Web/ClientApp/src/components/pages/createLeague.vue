@@ -125,6 +125,7 @@ export default {
         standardGames: this.leagueYearSettings.standardGames,
         gamesToDraft: this.leagueYearSettings.gamesToDraft,
         counterPicks: this.leagueYearSettings.counterPicks,
+        counterPicksToDraft: this.leagueYearSettings.counterPicksToDraft,
         freeDroppableGames: this.leagueYearSettings.freeDroppableGames,
         willNotReleaseDroppableGames: this.leagueYearSettings.willNotReleaseDroppableGames,
         willReleaseDroppableGames: this.leagueYearSettings.willReleaseDroppableGames,
@@ -149,7 +150,11 @@ export default {
         })
         .catch(error => {
           this.errorInfo = error.response.data;
-          window.scrollTo(0, 0);
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+          });
         });
     }
   },
@@ -159,6 +164,7 @@ export default {
       standardGames: '',
       gamesToDraft: '',
       counterPicks: '',
+      counterPicksToDraft: '',
       initialYear: '',
       tags: {
         required: [],

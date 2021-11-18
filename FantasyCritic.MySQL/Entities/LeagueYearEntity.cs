@@ -25,6 +25,7 @@ namespace FantasyCritic.MySQL.Entities
             StandardGames = options.StandardGames;
             GamesToDraft = options.GamesToDraft;
             CounterPicks = options.CounterPicks;
+            CounterPicksToDraft = options.CounterPicksToDraft;
             FreeDroppableGames = options.FreeDroppableGames;
             WillNotReleaseDroppableGames = options.WillNotReleaseDroppableGames;
             WillReleaseDroppableGames = options.WillReleaseDroppableGames;
@@ -43,6 +44,7 @@ namespace FantasyCritic.MySQL.Entities
         public int StandardGames { get; set; }
         public int GamesToDraft { get; set; }
         public int CounterPicks { get; set; }
+        public int CounterPicksToDraft { get; set; }
         public int FreeDroppableGames { get; set; }
         public int WillNotReleaseDroppableGames { get; set; }
         public int WillReleaseDroppableGames { get; set; }
@@ -62,7 +64,7 @@ namespace FantasyCritic.MySQL.Entities
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
-            LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
+            LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
                 DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, draftSystem, pickupSystem, scoringSystem, league.PublicLeague);
 
             return new LeagueYear(league, Year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides, tagOverrides, DraftStartedTimestamp);
