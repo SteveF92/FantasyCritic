@@ -30,6 +30,11 @@
         <div v-show="!leagueYear.supportedYear.finished">
           <h4>Player Actions</h4>
           <ul class="actions-list">
+            <li class="action">
+              <router-link :to="{ name: 'publisher', params: { publisherid: leagueYear.userPublisher.publisherID }}">
+                My Publisher Details
+              </router-link>
+            </li>            
             <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
               Draft Game
             </li>
