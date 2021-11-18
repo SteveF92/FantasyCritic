@@ -14,7 +14,7 @@
         <playerGameRow v-for="game in standardGames" :game="game" :yearFinished="yearFinished" v-bind:key="game.publisherGameID"></playerGameRow>
         <blankPlayerGameRow v-for="blankSpace in standardFiller" v-bind:key="blankSpace"></blankPlayerGameRow>
         <playerGameRow v-for="game in counterPicks" :game="game" v-bind:key="game.publisherGameID"></playerGameRow>
-        <blankPlayerGameRow v-for="blankSpace in counterPickFiller" v-bind:key="blankSpace"></blankPlayerGameRow>
+        <blankPlayerGameRow v-for="blankSpace in counterPickFiller" v-bind:key="'CP'+ blankSpace" :counterPick="true"></blankPlayerGameRow>
         <tr>
           <td id="total-description">
             <span id="total-description-text">
