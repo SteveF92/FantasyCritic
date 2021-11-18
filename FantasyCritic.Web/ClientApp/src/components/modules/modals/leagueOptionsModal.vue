@@ -16,8 +16,12 @@
             <td>{{leagueYearOptions.standardGames - leagueYearOptions.gamesToDraft}}</td>
           </tr>
           <tr>
-            <th class="bg-primary">Counter Picks</th>
+            <th class="bg-primary">Total Counter Picks</th>
             <td>{{leagueYearOptions.counterPicks}}</td>
+          </tr>
+          <tr>
+            <th class="bg-primary">Counter Picks to Draft</th>
+            <td>{{leagueYearOptions.counterPicksToDraft}}</td>
           </tr>
           <tr>
             <th class="bg-primary">Minimum Bid Amount</th>
