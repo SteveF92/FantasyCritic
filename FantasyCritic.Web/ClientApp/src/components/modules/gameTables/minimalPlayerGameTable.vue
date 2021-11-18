@@ -22,9 +22,9 @@
       </thead>
       <tbody v-if="tableIsValid">
           <minimalPlayerGameRow v-for="game in standardGames" :game="game" :yearFinished="yearFinished" v-bind:key="game.publisherGameID"></minimalPlayerGameRow>
-          <minimalBlankPlayerGameRow v-for="blankSpace in standardFiller" v-bind:key="blankSpace"></minimalBlankPlayerGameRow>
+          <minimalBlankPlayerGameRow v-for="blankSpace in standardFiller" v-bind:key="'G'+ blankSpace" :yearFinished="yearFinished"></minimalBlankPlayerGameRow>
           <minimalPlayerGameRow v-for="game in counterPicks" :game="game" :yearFinished="yearFinished" v-bind:key="game.publisherGameID"></minimalPlayerGameRow>
-          <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller" v-bind:key="'CP'+ blankSpace" :counterPick="true"></minimalBlankPlayerGameRow>
+          <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller" v-bind:key="'CP'+ blankSpace" :counterPick="true" :yearFinished="yearFinished"></minimalBlankPlayerGameRow>
           <tr class="minimal-game-row">
             <td id="total-description">
               <span id="total-description-text" v-if="!advancedProjections">

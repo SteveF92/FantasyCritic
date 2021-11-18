@@ -1,13 +1,36 @@
 <template>
-  <tr v-bind:class="{ 'counter-pick-row': counterPick }">
-    <td class="game-column"></td>
-    <td class="score-column"></td>
-    <td class="score-column"></td>
+  <tr class="minimal-game-row" v-bind:class="{ 'counter-pick-row': counterPick }">
+    <td class="game-column">
+      <span v-if="counterPick" class="empty-counterpick-warning">
+        Warning!
+        <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="emptyCounterpickText" />
+      </span>
+    </td>
+    <td class="score-column">
+      <template v-if="counterPick && yearFinished">-15</template>
+    </td>
+    <td class="score-column">
+      <template v-if="counterPick && yearFinished">-15</template>
+    </td>
   </tr>
 </template>
 <script>
   export default {
-    props: ['counterPick']
+    props: ['counterPick', 'yearFinished'],
+    computed: {
+      emptyCounterpickText() {
+        return {
+          html: true,
+          title: () => {
+            return "Warning!";
+          },
+          content: () => {
+            return 'If you do not fill this slot by the end of the year, it will count as -15 points. <br/> <br/>' +
+              'See the FAQ for a full explanation.';
+          }
+        }
+      }
+    }
   };
 </script>
 
@@ -16,7 +39,18 @@
     height: 40px;
   }
 
+  .minimal-game-row td {
+    font-size: 10pt;
+  }
+
   .counter-pick-row td {
     background-color: #AA1E1E !important;
+  }
+
+  .empty-counterpick-warning {
+    float: right;
+    color: #B1B1B1;
+    font-style: italic;
+    padding-left: 5px;
   }
 </style>
