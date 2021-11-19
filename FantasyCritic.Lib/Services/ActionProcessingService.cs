@@ -129,7 +129,7 @@ namespace FantasyCritic.Lib.Services
             {
                 Publisher publisher = currentPublisherStates.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
 
-                var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, false, false, false, activeBid.MasterGame, null, null);
+                var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, activeBid.CounterPick, false, false, activeBid.MasterGame, null, null);
                 var publishersForLeagueAndYear = currentPublisherStates.Where(x => x.LeagueYear.League.LeagueID == leagueYear.League.LeagueID && x.LeagueYear.Year == leagueYear.Year);
 
                 var hasValidConditionalDrop = false;
@@ -143,11 +143,23 @@ namespace FantasyCritic.Lib.Services
                 var allowIfFull = activeBid.ConditionalDropPublisherGame.HasValue && activeBid.ConditionalDropResult.Result.IsSuccess;
                 var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, allowIfFull);
 
-                if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames) && !hasValidConditionalDrop)
+                if (!activeBid.CounterPick)
                 {
-                    noSpaceLeftBids.Add(activeBid);
-                    continue;
+                    if (!publisher.HasRemainingGameSpot(leagueYear.Options.StandardGames) && !hasValidConditionalDrop)
+                    {
+                        noSpaceLeftBids.Add(activeBid);
+                        continue;
+                    }
                 }
+                else
+                {
+                    if (!publisher.HasRemainingCounterPickSpot(leagueYear.Options.CounterPicks))
+                    {
+                        noSpaceLeftBids.Add(activeBid);
+                        continue;
+                    }
+                }
+                
 
                 if (!claimResult.Success)
                 {
@@ -262,7 +274,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var successBid in successBids)
             {
                 PublisherGame newPublisherGame = new PublisherGame(successBid.Publisher.PublisherID, Guid.NewGuid(), successBid.MasterGame.GameName, clock.GetCurrentInstant(),
-                    false, null, false, null, new MasterGameYear(successBid.MasterGame, successBid.Publisher.LeagueYear.Year), null, null, false);
+                    successBid.CounterPick, null, false, null, new MasterGameYear(successBid.MasterGame, successBid.Publisher.LeagueYear.Year), null, null, false);
                 gamesToAdd.Add(newPublisherGame);
                 var affectedPublisher = publisherDictionary[successBid.Publisher.PublisherID];
                 affectedPublisher.AcquireGame(newPublisherGame, successBid.BidAmount);

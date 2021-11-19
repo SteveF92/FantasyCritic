@@ -111,6 +111,16 @@ namespace FantasyCritic.Lib.Domain
             return false;
         }
 
+        public bool HasRemainingCounterPickSpot(int totalCounterPickSpots)
+        {
+            if (totalCounterPickSpots > PublisherGames.Count(x => x.CounterPick))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public int GetAvailableSlots(LeagueOptions options, bool yearFinished)
         {
             if (yearFinished)
