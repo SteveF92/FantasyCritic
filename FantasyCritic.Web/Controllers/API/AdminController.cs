@@ -23,6 +23,7 @@ using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -43,9 +44,11 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly GameAcquisitionService _gameAcquisitionService;
         private readonly FantasyCriticUserManager _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
-            ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager, IEmailSender emailSender)
+            ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager, IEmailSender emailSender,
+            IWebHostEnvironment webHostEnvironment)
         : base(userManager)
         {
             _adminService = adminService;
@@ -56,6 +59,7 @@ namespace FantasyCritic.Web.Controllers.API
             _gameAcquisitionService = gameAcquisitionService;
             _userManager = userManager;
             _emailSender = emailSender;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpPost]
@@ -273,14 +277,14 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Turn on action processing mode first.");
             }
 
-            var isBeta = Request.Host.Value.ToLower().Contains("beta");
+            var isProduction = string.Equals(_webHostEnvironment.EnvironmentName, "PRODUCTION", StringComparison.OrdinalIgnoreCase);
             var today = _clock.GetCurrentInstant().ToEasternDate();
             var acceptableDays = new List<IsoDayOfWeek>
             {
                 IsoDayOfWeek.Saturday,
                 IsoDayOfWeek.Sunday
             };
-            if (!acceptableDays.Contains(today.DayOfWeek) && !isBeta)
+            if (!acceptableDays.Contains(today.DayOfWeek) && isProduction)
             {
                 return BadRequest($"You probably didn't mean to process pickups on a {today.DayOfWeek}");
             }
