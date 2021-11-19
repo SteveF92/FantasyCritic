@@ -29,6 +29,13 @@ namespace FantasyCritic.Lib.Services
         public ActionProcessingResults ProcessActions(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids, 
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> currentPublisherStates, IClock clock)
         {
+            var flatBids = allActiveBids.SelectMany(x => x.Value);
+            var invalidBids = flatBids.Where(x => x.CounterPick && x.ConditionalDropPublisherGame.HasValue);
+            if (invalidBids.Any())
+            {
+                throw new Exception("There are counter pick bids with conditional drops.");
+            }
+
             if (!allActiveBids.Any() && !allActiveDrops.Any())
             {
                 return ActionProcessingResults.GetEmptyResultsSet(currentPublisherStates);
