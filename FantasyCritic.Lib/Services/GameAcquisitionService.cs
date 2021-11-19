@@ -38,7 +38,7 @@ namespace FantasyCritic.Lib.Services
             claimErrors.AddRange(basicErrors);
 
             LeagueOptions yearOptions = leagueYear.Options;
-            if (request.MasterGame.HasValue && !request.CounterPick)
+            if (request.MasterGame.HasValue)
             {
                 var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, request.CounterPick, false, nextBidTime);
                 claimErrors.AddRange(masterGameErrors);
@@ -98,7 +98,7 @@ namespace FantasyCritic.Lib.Services
 
                 if (!otherPlayerHasDraftGame)
                 {
-                    claimErrors.Add(new ClaimError("Cannot counterPick a game that no other player is publishing.", false));
+                    claimErrors.Add(new ClaimError("Cannot counter pick a game that no other player is publishing.", false));
                 }
             }
 
@@ -261,7 +261,7 @@ namespace FantasyCritic.Lib.Services
             List<ClaimError> claimErrors = new List<ClaimError>();
 
             var overriddenEligibility = leagueYear.GetOverriddenEligibility(masterGame);
-            if (!dropping)
+            if (!dropping && !counterPick)
             {
                 if (overriddenEligibility.HasValue)
                 {
@@ -308,7 +308,7 @@ namespace FantasyCritic.Lib.Services
 
             if (!dropping)
             {
-                if (!released && masterGame.MinimumReleaseDate.Year > year && !counterPick && !manuallyEligible)
+                if (!released && masterGame.MinimumReleaseDate.Year > year && !manuallyEligible)
                 {
                     claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
                 }
