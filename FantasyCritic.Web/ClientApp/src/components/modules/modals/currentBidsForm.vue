@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="currentBidsForm" ref="currentBidsFormRef" title="My Current Bids" @hidden="clearData">
+  <b-modal id="currentBidsForm" ref="currentBidsFormRef" size="lg" title="My Current Bids" @hidden="clearData">
     <label v-show="settingPriority">
       Drag and drop to change order.
     </label>
@@ -16,6 +16,7 @@
           <th scope="col">Bid Amount</th>
           <th scope="col">Priority</th>
           <th scope="col">Conditional Drop</th>
+          <th scope="col">Counter Pick Bid?</th>
           <th scope="col" v-show="!settingPriority">Cancel</th>
         </tr>
       </thead>
@@ -36,6 +37,7 @@
           <td>{{bid.priority}}</td>
           <td v-if="bid.conditionalDropPublisherGame">{{bid.conditionalDropPublisherGame.gameName}}</td>
           <td v-else>None</td>
+          <td>{{bid.counterPick | yesNo}}</td>
           <td class="select-cell">
             <b-button variant="danger" size="sm" v-on:click="cancelBid(bid)">Cancel</b-button>
           </td>

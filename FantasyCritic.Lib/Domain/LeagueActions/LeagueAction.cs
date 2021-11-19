@@ -76,8 +76,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             Timestamp = timestamp;
             Publisher = action.Publisher;
             ActionType = "Publisher Game Associated";
-            Description =
-                $"Associated publisher game '{action.PublisherGame.GameName}' with master game '{action.MasterGame.GameName}'";
+            Description = $"Associated publisher game '{action.PublisherGame.GameName}' with master game '{action.MasterGame.GameName}'";
             ManagerAction = true;
             ActionInternalID = Guid.NewGuid();
         }
@@ -106,21 +105,30 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         {
             Timestamp = timestamp;
             Publisher = action.Publisher;
-            ActionType = "Pickup Successful";
-            if (action.ConditionalDropPublisherGame.HasValue)
+            
+            if (!action.CounterPick)
             {
-                if (action.ConditionalDropResult.Result.IsSuccess)
+                ActionType = "Pickup Successful";
+                if (action.ConditionalDropPublisherGame.HasValue)
                 {
-                    Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Dropped game '{action.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName}' conditionally.";
+                    if (action.ConditionalDropResult.Result.IsSuccess)
+                    {
+                        Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Dropped game '{action.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName}' conditionally.";
+                    }
+                    else
+                    {
+                        Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Attempted to drop game '{action.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName}' conditionally but cannot because: {action.ConditionalDropResult.Result.Error}.";
+                    }
                 }
                 else
                 {
-                    Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}. Attempted to drop game '{action.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName}' conditionally but cannot because: {action.ConditionalDropResult.Result.Error}.";
+                    Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}";
                 }
             }
             else
             {
-                Description = $"Acquired game '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}";
+                ActionType = "Counter Pick Pickup Successful";
+                Description = $"Acquired counter pick '{action.MasterGame.GameName}' with a bid of ${action.BidAmount}";
             }
 
             ManagerAction = false;
@@ -131,8 +139,16 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         {
             Timestamp = timestamp;
             Publisher = action.PickupBid.Publisher;
-            ActionType = "Pickup Failed";
-            Description = $"Tried to acquire game '{action.PickupBid.MasterGame.GameName}' with a bid of ${action.PickupBid.BidAmount}. Failure reason: {action.FailureReason}";
+            if (!action.PickupBid.CounterPick)
+            {
+                ActionType = "Pickup Failed";
+                Description = $"Tried to acquire game '{action.PickupBid.MasterGame.GameName}' with a bid of ${action.PickupBid.BidAmount}. Failure reason: {action.FailureReason}";
+            }
+            else
+            {
+                ActionType = "Counter Pick Pickup Failed";
+                Description = $"Tried to acquire counter pick '{action.PickupBid.MasterGame.GameName}' with a bid of ${action.PickupBid.BidAmount}. Failure reason: {action.FailureReason}";
+            }
             ManagerAction = false;
             ActionInternalID = Guid.NewGuid();
         }

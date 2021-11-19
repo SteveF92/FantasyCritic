@@ -17,7 +17,8 @@ namespace FantasyCritic.Web.Models.Responses
             Timestamp = pickupBid.Timestamp.ToDateTimeUtc();
             Successful = pickupBid.Successful;
             MasterGame = new MasterGameViewModel(pickupBid.MasterGame, currentDate);
-            ConditionalDropPublisherGame = pickupBid.ConditionalDropPublisherGame.Unwrap(x => new PublisherGameViewModel(x, currentDate, scoringSystem, systemWideValues));
+            ConditionalDropPublisherGame = pickupBid.ConditionalDropPublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, scoringSystem, systemWideValues));
+            CounterPick = pickupBid.CounterPick;
         }
 
         public Guid BidID { get; }
@@ -27,5 +28,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool? Successful { get; }
         public MasterGameViewModel MasterGame { get; }
         public PublisherGameViewModel ConditionalDropPublisherGame { get; }
+        public bool CounterPick { get; }
     }
 }
