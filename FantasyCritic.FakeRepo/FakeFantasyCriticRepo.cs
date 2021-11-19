@@ -263,6 +263,11 @@ namespace FantasyCritic.FakeRepo
             });
         }
 
+        public Task<SupportedYear> GetSupportedYear(int year)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
         {
             var leagueYears = _leagueYears

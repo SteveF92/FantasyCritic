@@ -64,6 +64,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame);
 
         Task<IReadOnlyList<SupportedYear>> GetSupportedYears();
+        Task<SupportedYear> GetSupportedYear(int year);
 
         Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year);
 

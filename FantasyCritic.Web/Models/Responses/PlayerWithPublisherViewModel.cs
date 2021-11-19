@@ -30,8 +30,8 @@ namespace FantasyCritic.Web.Models.Responses
             User = new PlayerViewModel(leagueYear.League, user, removable);
             Publisher = new PublisherViewModel(publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
-            SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, true, currentDate);
-            AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, supportedYear.Finished, false, currentDate);
+            SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, true, currentDate);
+            AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, false, currentDate);
             PreviousYearWinner = previousYearWinner;
         }
 

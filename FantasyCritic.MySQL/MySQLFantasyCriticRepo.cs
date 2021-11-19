@@ -107,7 +107,8 @@ namespace FantasyCritic.MySQL
                 var eligibilityOverrides = await GetEligibilityOverrides(requestLeague, requestYear);
                 var tagOverrides = await GetTagOverrides(requestLeague, requestYear);
                 var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
-                LeagueYear year = yearEntity.ToDomain(requestLeague, eligibilityOverrides, tagOverrides, domainLeagueTags);
+                var supportedYear = await GetSupportedYear(requestYear);
+                LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags);
                 return year;
             }
         }
@@ -154,7 +155,8 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityOverrides, tagOverrides, domainLeagueTags);
+                    var supportedYear = await GetSupportedYear(year);
+                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -839,7 +841,8 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, eligibilityOverrides, tagOverrides, domainLeagueTags);
+                    var supportedYear = await GetSupportedYear(year);
+                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -1442,7 +1445,6 @@ namespace FantasyCritic.MySQL
                     await transaction.CommitAsync();
                 }
             }
-            
         }
 
         public async Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
@@ -1452,6 +1454,13 @@ namespace FantasyCritic.MySQL
                 var results = await connection.QueryAsync<SupportedYearEntity>("select * from tbl_meta_supportedyear;");
                 return results.Select(x => x.ToDomain()).ToList();
             }
+        }
+
+        public async Task<SupportedYear> GetSupportedYear(int year)
+        {
+            var supportedYears = await GetSupportedYears();
+            var supportedYear = supportedYears.Single(x => x.Year == year);
+            return supportedYear;
         }
 
         private async Task<IReadOnlyList<League>> ConvertLeagueEntitiesToDomain(IEnumerable<LeagueEntity> leagueEntities)

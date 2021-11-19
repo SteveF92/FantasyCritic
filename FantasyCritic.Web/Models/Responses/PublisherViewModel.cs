@@ -35,7 +35,7 @@ namespace FantasyCritic.Web.Models.Responses
 
             AverageCriticScore = publisher.AverageCriticScore;
             TotalFantasyPoints = publisher.TotalFantasyPoints;
-            TotalProjectedPoints = publisher.GetProjectedFantasyPoints(publisher.LeagueYear.Options, systemWideValues, yearFinished, false, currentDate);
+            TotalProjectedPoints = publisher.GetProjectedFantasyPoints(publisher.LeagueYear.Options, systemWideValues, false, currentDate);
             Budget = publisher.Budget;
 
             if (nextDraftPublisher.HasValue && nextDraftPublisher.Value.PublisherID == publisher.PublisherID)

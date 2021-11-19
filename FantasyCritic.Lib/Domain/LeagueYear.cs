@@ -16,12 +16,12 @@ namespace FantasyCritic.Lib.Domain
         private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverridesDictionary;
         private readonly IReadOnlyDictionary<MasterGame, TagOverride> _tagOverridesDictionary;
 
-        public LeagueYear(League league, int year, LeagueOptions options, PlayStatus playStatus, 
+        public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus, 
             IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides, 
             Instant? draftStartedTimestamp)
         {
             League = league;
-            Year = year;
+            SupportedYear = year;
             Options = options;
             PlayStatus = playStatus;
             EligibilityOverrides = eligibilityOverrides.ToList();
@@ -32,7 +32,8 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public League League { get; }
-        public int Year { get; }
+        public SupportedYear SupportedYear { get; }
+        public int Year => SupportedYear.Year;
         public LeagueOptions Options { get; }
         public PlayStatus PlayStatus { get; }
         public IReadOnlyList<EligibilityOverride> EligibilityOverrides { get; }

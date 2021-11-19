@@ -67,22 +67,38 @@ namespace FantasyCritic.Lib.Domain
         {
             get
             {
+                var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints();
                 var score = PublisherGames.Sum(x => x.FantasyPoints);
                 if (!score.HasValue)
                 {
-                    return 0m;
+                    return emptyCounterPickSlotPoints;
                 }
 
-                return score.Value;
+                return score.Value + emptyCounterPickSlotPoints;
             }
         }
 
-        public decimal GetProjectedFantasyPoints(LeagueOptions options, SystemWideValues systemWideValues, bool yearFinished, bool simpleProjections, LocalDate currentDate)
+        public decimal GetProjectedFantasyPoints(LeagueOptions options, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
         {
+            var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints();
             var currentGamesScore =  PublisherGames.Sum(x => x.GetProjectedOrRealFantasyPoints(options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
-            var availableSlots = GetAvailableSlots(options, yearFinished);
+            var availableSlots = GetAvailableSlots(options, LeagueYear.SupportedYear.Finished);
             var emptySlotsScore = availableSlots * systemWideValues.AverageStandardGamePoints;
-            return currentGamesScore + emptySlotsScore;
+            return currentGamesScore + emptySlotsScore + emptyCounterPickSlotPoints;
+        }
+
+        public decimal GetEmptyCounterPickSlotPoints()
+        {
+            if (!LeagueYear.SupportedYear.Finished)
+            {
+                return 0m;
+            }
+
+            var expectedNumberOfCounterPicks = LeagueYear.Options.CounterPicks;
+            var numberCounterpicks = PublisherGames.Count(x => x.CounterPick);
+            var emptySlots = expectedNumberOfCounterPicks - numberCounterpicks;
+            var points = emptySlots * -15m;
+            return points;
         }
 
         public bool HasRemainingGameSpot(int totalSpots)

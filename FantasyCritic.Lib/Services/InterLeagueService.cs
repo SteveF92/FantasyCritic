@@ -54,6 +54,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetSupportedYears();
         }
 
+        public Task<SupportedYear> GetSupportedYear(int year)
+        {
+            return _fantasyCriticRepo.GetSupportedYear(year);
+        }
+
         public Task<IReadOnlyList<MasterGame>> GetMasterGames()
         {
             return _masterGameRepo.GetMasterGames();
