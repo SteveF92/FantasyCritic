@@ -1,0 +1,93 @@
+<template>
+  <div>
+    <div class="col-md-10 offset-md-1 col-sm-12">
+      <h1>Action Processing Dry Run Results</h1>
+
+      <div v-if="dryRunResults && dryRunResults.length === 0" class="alert alert-info">No actioned games.</div>
+      <div v-if="dryRunResults && dryRunResults.length !== 0">
+
+        <h2>Drops</h2>
+        <div class="row">
+          <masterGamesTable :masterGames="dryRunResults.dropActions"></masterGamesTable>
+        </div>
+        <hr />
+
+        <h2>Pickups</h2>
+        <div class="row">
+          <masterGamesTable :masterGames="dryRunResults.pickupActions"></masterGamesTable>
+        </div>
+        <hr />
+
+        <h2>Actions</h2>
+        <div class="row">
+          <div class="history-table">
+            <b-table :sort-by.sync="sortBy"
+                     :sort-desc.sync="sortDesc"
+                     :items="dryRunResults.leagueActions"
+                     :fields="actionFields"
+                     bordered
+                     striped
+                     responsive>
+              <template v-slot:cell(timestamp)="data">
+                {{data.item.timestamp | dateTime}}
+              </template>
+              <template v-slot:cell(managerAction)="data">
+                {{data.item.managerAction | yesNo}}
+              </template>
+            </b-table>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="spinner">
+        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import axios from 'axios';
+import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
+
+export default {
+  data() {
+    return {
+      dryRunResults: null,
+      actionFields: [
+        { key: 'leagueName', label: 'League Name', sortable: true, thClass: 'bg-primary' },
+        { key: 'publisherName', label: 'Publisher Name', sortable: true, thClass: 'bg-primary' },
+        { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
+        { key: 'actionType', label: 'Action Type', thClass: 'bg-primary' },
+        { key: 'description', label: 'Description', thClass: 'bg-primary' },
+        { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' },
+      ],
+      sortBy: 'timestamp',
+      sortDesc: true
+    };
+  },
+  components: {
+    MasterGamesTable
+  },
+  methods: {
+    fetchActionedGames() {
+      axios
+        .get('/api/admin/ActionProcessingDryRun')
+        .then(response => {
+          this.dryRunResults = response.data;
+        })
+        .catch(response => {
+
+        });
+    }
+  },
+  mounted() {
+    this.fetchActionedGames();
+  }
+};
+</script>
+<style scoped>
+  .spinner {
+    display: flex;
+    justify-content: space-around;
+  }
+</style>

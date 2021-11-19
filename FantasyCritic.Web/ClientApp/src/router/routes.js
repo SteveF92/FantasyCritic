@@ -18,7 +18,7 @@ import MasterGameChangeRequest from '@/components/pages/masterGameChangeRequest'
 import ActiveMasterGameRequests from '@/components/pages/activeMasterGameRequests';
 import ActiveMasterGameChangeRequests from '@/components/pages/activeMasterGameChangeRequests';
 import MasterGameCreator from '@/components/pages/masterGameCreator';
-import CurrentActionedGames from '@/components/pages/currentActionedGames';
+import ActionProcessingDryRunResults from '@/components/pages/actionProcessingDryRunResults';
 import CriticsRoyale from '@/components/pages/criticsRoyale';
 import RoyalePublisher from '@/components/pages/royalePublisher';
 import NotFound from '@/components/pages/notFound';
@@ -239,11 +239,11 @@ export const routes = [
     }
   },
   {
-    path: '/currentActionedGames',
-    component: CurrentActionedGames,
-    name: 'currentActionedGames',
+    path: '/actionProcessingDryRunResults',
+    component: ActionProcessingDryRunResults,
+    name: 'actionProcessingDryRunResults',
     meta: {
-      title: 'Current Actioned Games',
+      title: 'Action Processing Dry Run Results',
       isPublic: false,
       adminOnly: true
     }

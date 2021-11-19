@@ -23,7 +23,7 @@
 
       <h2>Bids</h2>
       <div>
-        <b-button variant="info" :to="{ name: 'currentActionedGames' }">Current Actioned Games</b-button>
+        <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Action Processing Dry Run</b-button>
         <b-button variant="warning" v-on:click="turnOnActionProcessing">Turn on action processing mode</b-button>
         <b-button variant="info" v-on:click="turnOffActionProcessing">Turn off action processing mode</b-button>
         <b-button variant="danger" v-on:click="processActions">Process Actions</b-button>

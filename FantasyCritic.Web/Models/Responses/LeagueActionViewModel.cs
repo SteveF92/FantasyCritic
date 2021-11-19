@@ -13,6 +13,7 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public LeagueActionViewModel(LeagueAction leagueAction, IClock clock)
         {
+            LeagueName = leagueAction.Publisher.LeagueYear.League.LeagueName;
             PublisherName = leagueAction.Publisher.PublisherName;
             Timestamp = leagueAction.Timestamp.ToDateTimeUtc();
             ActionType = leagueAction.ActionType;
@@ -20,6 +21,7 @@ namespace FantasyCritic.Web.Models.Responses
             ManagerAction = leagueAction.ManagerAction;
         }
 
+        public string LeagueName { get; }
         public string PublisherName { get; }
         public DateTime Timestamp { get; }
         public string ActionType { get; }
