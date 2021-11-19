@@ -17,6 +17,7 @@ using NodaTime;
 using FantasyCritic.AWS;
 using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
+using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.BetaSync
 {
@@ -92,8 +93,16 @@ namespace FantasyCritic.BetaSync
             RoyaleService royaleService = null;
             IHypeFactorService hypeFactorService = new LambdaHypeFactorService(_awsRegion, _betaBucket);
 
+            AdminServiceConfiguration configuration = new AdminServiceConfiguration(true);
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var realHypeConstantsEnvironments = new List<string>(){ "STAGING", "PRODUCTION" };
+            if (realHypeConstantsEnvironments.Contains(environment?.ToUpper()))
+            {
+                configuration = new AdminServiceConfiguration(false);
+            }
+
             return new AdminService(fantasyCriticService, fantasyCriticRepo, masterGameRepo, interLeagueService,
-                openCriticService, _clock, rdsManager, royaleService, hypeFactorService);
+                openCriticService, _clock, rdsManager, royaleService, hypeFactorService, configuration);
         }
     }
 }

@@ -33,10 +33,11 @@ namespace FantasyCritic.Lib.Services
         private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
         private readonly IClock _clock;
+        private readonly AdminServiceConfiguration _configuration;
 
         public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
             InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, IRDSManager rdsManager,
-            RoyaleService royaleService, IHypeFactorService hypeFactorService)
+            RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration)
         {
             _fantasyCriticService = fantasyCriticService;
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -47,6 +48,7 @@ namespace FantasyCritic.Lib.Services
             _rdsManager = rdsManager;
             _royaleService = royaleService;
             _hypeFactorService = hypeFactorService;
+            _configuration = configuration;
         }
 
         public async Task FullDataRefresh()
@@ -160,8 +162,16 @@ namespace FantasyCritic.Lib.Services
             await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
             await UpdateSystemWideValues();
-            var hypeConstants = await GetHypeConstants();
-            //var hypeConstants = HypeConstants.GetReasonableDefaults();
+            HypeConstants hypeConstants;
+            if (_configuration.DefaultHypeConstants)
+            {
+                _logger.Info("Using default hype constants");
+                hypeConstants = HypeConstants.GetReasonableDefaults();
+            }
+            else
+            {
+                hypeConstants = await GetHypeConstants();
+            }
             await UpdateGameStats(hypeConstants);
             _logger.Info("Done refreshing caches");
         }

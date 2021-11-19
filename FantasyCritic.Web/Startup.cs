@@ -44,9 +44,12 @@ namespace FantasyCritic.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _env;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -66,7 +69,7 @@ namespace FantasyCritic.Web
 
             //MySQL Repos
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            
+
             var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
@@ -94,6 +97,13 @@ namespace FantasyCritic.Web
             services.AddScoped<RoyaleService>();
 
             services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
+
+            AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
+            if (_env.IsProduction() || _env.IsStaging())
+            {
+                adminServiceConfiguration = new AdminServiceConfiguration(false);
+            }
+            services.AddScoped<AdminServiceConfiguration>(_ => adminServiceConfiguration);
             services.AddScoped<AdminService>();
 
             services.AddHttpClient<IOpenCriticService, OpenCriticService>();
