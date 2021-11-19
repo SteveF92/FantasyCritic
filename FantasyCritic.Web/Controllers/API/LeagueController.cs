@@ -1185,6 +1185,34 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
+        public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> PossibleCounterPicks(int year, Guid leagueID)
+        {
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
+            if (userPublisher is null)
+            {
+                return BadRequest();
+            }
+
+            var currentDate = _clock.GetToday();
+            var topAvailableGames = _gameSearchingService.GetPossibleCounterPicks(userPublisher, publishersInLeague, year);
+            var viewModels = topAvailableGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).ToList();
+            return viewModels;
+        }
+
         [HttpPost]
         public async Task<IActionResult> MakeDropRequest([FromBody] DropGameRequestRequest request)
         {

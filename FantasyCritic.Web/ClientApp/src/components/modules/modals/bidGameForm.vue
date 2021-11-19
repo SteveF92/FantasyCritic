@@ -22,11 +22,13 @@
       </div>
 
       <b-button v-show="!showingTopAvailable || bidMasterGame" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+      <b-button v-show="!showingTopAvailable || bidMasterGame" variant="secondary" v-on:click="getPossibleCounterPicks" class="show-top-button">Show Available Counter Picks</b-button>
 
       <div v-if="!bidMasterGame">
-        <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
-        <h3 class="text-black" v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames"
+        <h3 class="text-black" v-show="counterPicking">Available Counter Picks</h3>
+        <h3 class="text-black" v-show="!counterPicking && showingTopAvailable">Top Available Games</h3>
+        <h3 class="text-black" v-show="!counterPicking && !showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames" :counterPicking="counterPicking"
                                   v-on:input="newGameSelected"></possibleMasterGamesTable>
       </div>
 
@@ -49,7 +51,7 @@
               <span class="text-danger">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
-          <div class="form-group">
+          <div class="form-group" v-if="!counterPicking">
             <label for="conditionalDrop" class="control-label">Conditional Drop</label>
             <b-form-select v-model="conditionalDrop">
               <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame">
@@ -57,7 +59,7 @@
               </option>
             </b-form-select>
           </div>
-          <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || invalid">Place Bid</b-button>
+          <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || invalid">{{bidButtonText}}</b-button>
           <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
             <h3 class="alert-heading">Error!</h3>
             <ul>
@@ -85,6 +87,7 @@ export default {
       bidResult: null,
       conditionalDrop: null,
       possibleMasterGames: [],
+      counterPicking: false,
       errorInfo: '',
       showingTopAvailable: false,
       searched: false,
@@ -107,6 +110,13 @@ export default {
     },
     droppableGames() {
       return _.filter(this.publisher.games, { 'counterPick': false });
+    },
+    bidButtonText() {
+      if (!this.counterPicking) {
+        return 'Place Bid';
+      } else {
+        return 'Place Counter Pick Bid';
+      }
     }
   },
   props: ['leagueYear', 'publisher'],
@@ -139,11 +149,27 @@ export default {
           this.isBusy = false;
         });
     },
+    getPossibleCounterPicks() {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      axios
+        .get('/api/league/PossibleCounterPicks?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
+        .then(response => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.showingTopAvailable = true;
+          this.counterPicking = true;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
     bidGame() {
       var request = {
         publisherID: this.leagueYear.userPublisher.publisherID,
         masterGameID: this.bidMasterGame.masterGameID,
-        bidAmount: this.bidAmount
+        bidAmount: this.bidAmount,
+        counterPick: this.counterPicking
       };
 
       if (this.conditionalDrop) {
@@ -163,11 +189,7 @@ export default {
             bidAmount: this.bidAmount
           };
           this.$emit('gameBid', bidInfo);
-          this.bidResult = null;
-          this.bidGameName = '';
-          this.bidMasterGame = null;
-          this.bidAmount = 0;
-          this.possibleMasterGames = [];
+          this.clearData();
         })
         .catch(response => {
           this.errorInfo = response.response.data;
@@ -182,6 +204,7 @@ export default {
       this.showingTopAvailable = false;
       this.isBusy = false;
       this.conditionalDrop = false;
+      this.counterPicking = false;
     },
     clearData() {
       this.clearDataExceptSearch();

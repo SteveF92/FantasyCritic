@@ -41,7 +41,7 @@ export default {
       lastPopoverShown: null,
       perPage: 10,
       currentPage: 1,
-      gameFields: [
+      gameFieldsInternal: [
         { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
@@ -56,7 +56,7 @@ export default {
     StatusBadge,
     MasterGamePopover
   },
-  props: ['possibleGames', 'value'],
+  props: ['possibleGames', 'counterPicking', 'value'],
   computed: {
     rows() {
       return this.possibleGames.length;
@@ -67,6 +67,13 @@ export default {
         return [];
       }
       return gameRows;
+    },
+    gameFields() {
+      if (!this.counterPicking) {
+        return this.gameFieldsInternal;
+      } else {
+        return this.gameFieldsInternal.filter(item => item.key !== 'masterGame.status');
+      }
     }
   },
   methods: {

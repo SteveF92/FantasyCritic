@@ -23,7 +23,6 @@ namespace FantasyCritic.Web.Models.Responses
             IsAvailable = masterGame.IsAvailable;
         }
 
-
         public MasterGameYearViewModel MasterGame { get; }
         public bool Taken { get; }
         public bool AlreadyOwned { get; }

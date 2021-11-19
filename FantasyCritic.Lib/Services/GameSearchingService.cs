@@ -80,6 +80,45 @@ namespace FantasyCritic.Lib.Services
             return possibleMasterGames;
         }
 
+        public IReadOnlyList<PossibleMasterGameYear> GetPossibleCounterPicks(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
+        {
+            HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => !x.CounterPick && x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .ToHashSet();
+
+            HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
+
+            List<MasterGameYear> existingCounterPicks = publishersInLeagueForYear
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.CounterPick && x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value)
+                .ToList();
+            IEnumerable<Publisher> otherPublishersInLeague = publishersInLeagueForYear.Except(new List<Publisher>() { currentPublisher });
+            List<MasterGameYear> existingStandardGamesForOtherPlayers = otherPublishersInLeague
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => !x.CounterPick)
+                .Select(x => x.MasterGame.Value)
+                .ToList();
+
+            var availableCounterPicks = existingStandardGamesForOtherPlayers
+                .Except(existingCounterPicks);
+
+            List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
+            foreach (var masterGame in availableCounterPicks)
+            {
+                var eligibilityOverride = currentPublisher.LeagueYear.GetOverriddenEligibility(masterGame);
+                var overriddenTags = currentPublisher.LeagueYear.GetOverriddenTags(masterGame);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
+                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.LeagueTags, eligibilityOverride, overriddenTags);
+
+                possibleMasterGames.Add(possibleMasterGame);
+            }
+
+            return possibleMasterGames;
+        }
+
         public async Task<IReadOnlyList<PossibleMasterGameYear>> GetQueuedPossibleGames(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, 
             IEnumerable<QueuedGame> queuedGames)
         {
