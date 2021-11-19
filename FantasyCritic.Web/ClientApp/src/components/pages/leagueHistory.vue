@@ -54,7 +54,7 @@ export default {
       actionFields: [
         { key: 'publisherName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
-        { key: 'actionType', label: 'Action Type', thClass: 'bg-primary' },
+        { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
         { key: 'description', label: 'Description', thClass: 'bg-primary' },
         { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' },
       ],
