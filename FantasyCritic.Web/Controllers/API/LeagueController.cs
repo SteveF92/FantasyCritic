@@ -755,7 +755,7 @@ namespace FantasyCritic.Web.Controllers.API
                 conditionalDropPublisherGame = publisher.Value.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGameID.Value);
             }
             
-            ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, conditionalDropPublisherGame, request.BidAmount, leagueYear.Value.Options);
+            ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, conditionalDropPublisherGame, request.Counterpick, request.BidAmount, leagueYear.Value.Options);
             var viewModel = new PickupBidResultViewModel(bidResult);
 
             return Ok(viewModel);

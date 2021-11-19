@@ -22,7 +22,8 @@ namespace FantasyCritic.MySQL.Entities
             BidID = domain.BidID;
             PublisherID = domain.Publisher.PublisherID;
             MasterGameID = domain.MasterGame.MasterGameID;
-            ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.Unwrap(x => x.MasterGame.Value.MasterGame.MasterGameID as Guid?);
+            ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.GetValueOrDefault(x => x.MasterGame.Value.MasterGame.MasterGameID);
+            Counterpick = domain.CounterPick;
             Timestamp = domain.Timestamp;
             Priority = domain.Priority;
             BidAmount = domain.BidAmount;
@@ -34,7 +35,8 @@ namespace FantasyCritic.MySQL.Entities
             BidID = domain.BidID;
             PublisherID = domain.Publisher.PublisherID;
             MasterGameID = domain.MasterGame.MasterGameID;
-            ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.Unwrap(x => x.MasterGame.Value.MasterGame.MasterGameID as Guid?);
+            ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.GetValueOrDefault(x => x.MasterGame.Value.MasterGame.MasterGameID);
+            Counterpick = domain.CounterPick;
             Timestamp = domain.Timestamp;
             Priority = domain.Priority;
             BidAmount = domain.BidAmount;
@@ -45,6 +47,7 @@ namespace FantasyCritic.MySQL.Entities
         public Guid PublisherID { get; set; }
         public Guid MasterGameID { get; set; }
         public Guid? ConditionalDropMasterGameID { get; set; }
+        public bool Counterpick { get; set; }
         public Instant Timestamp { get; set; }
         public int Priority { get; set; }
         public uint BidAmount { get; set; }
@@ -52,7 +55,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame, LeagueYear leagueYear)
         {
-            return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, BidAmount, Priority, Timestamp, Successful);
+            return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, Counterpick, BidAmount, Priority, Timestamp, Successful);
         }
     }
 }

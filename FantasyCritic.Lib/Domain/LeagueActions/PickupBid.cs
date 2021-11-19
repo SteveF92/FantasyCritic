@@ -8,13 +8,14 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
     public class PickupBid : IEquatable<PickupBid>
     {
         public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame,
-            uint bidAmount, int priority, Instant timestamp, bool? successful)
+            bool counterPick, uint bidAmount, int priority, Instant timestamp, bool? successful)
         {
             BidID = bidID;
             Publisher = publisher;
             LeagueYear = leagueYear;
             MasterGame = masterGame;
             ConditionalDropPublisherGame = conditionalDropPublisherGame;
+            CounterPick = counterPick;
             BidAmount = bidAmount;
             Priority = priority;
             Timestamp = timestamp;
@@ -26,6 +27,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public LeagueYear LeagueYear { get; }
         public MasterGame MasterGame { get; }
         public Maybe<PublisherGame> ConditionalDropPublisherGame { get; }
+        public bool CounterPick { get; }
         public uint BidAmount { get; }
         public int Priority { get; }
         public Instant Timestamp { get; }
@@ -55,7 +57,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
 
         public override string ToString()
         {
-            return $"{Publisher.PublisherName}|{MasterGame.GameName}|{BidAmount}|{Priority}|{Successful}";
+            return $"{Publisher.PublisherName}|{MasterGame.GameName}|{CounterPick}|{BidAmount}|{Priority}|{Successful}";
         }
     }
 }

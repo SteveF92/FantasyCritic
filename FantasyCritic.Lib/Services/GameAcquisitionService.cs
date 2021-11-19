@@ -369,7 +369,7 @@ namespace FantasyCritic.Lib.Services
         }
 
         public async Task<ClaimResult> MakePickupBid(Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame, 
-            uint bidAmount, LeagueOptions leagueOptions)
+            bool counterPick, uint bidAmount, LeagueOptions leagueOptions)
         {
             if (bidAmount < leagueOptions.MinimumBidAmount)
             {
@@ -388,7 +388,7 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) });
             }
 
-            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, masterGame, null, null);
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, counterPick, false, false, masterGame, null, null);
             var leagueYear = publisher.LeagueYear;
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
 
@@ -402,6 +402,11 @@ namespace FantasyCritic.Lib.Services
 
             if (conditionalDropPublisherGame.HasValue)
             {
+                if (counterPick)
+                {
+                    return new ClaimResult("Cannot make a counterpick bid with a conditional drop.");
+                }
+
                 var dropResult = await MakeDropRequest(publisher, conditionalDropPublisherGame.Value, true);
                 if (dropResult.Result.IsFailure)
                 {
@@ -411,7 +416,8 @@ namespace FantasyCritic.Lib.Services
 
             var nextPriority = pickupBids.Count + 1;
 
-            PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
+            PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, 
+                bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
             await _fantasyCriticRepo.CreatePickupBid(currentBid);
 
             return claimResult;
