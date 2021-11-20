@@ -66,7 +66,6 @@ namespace FantasyCritic.MySQL
             cancellationToken.ThrowIfCancellationRequested();
             user.SecurityStamp = Guid.NewGuid().ToString();
             user.UpdateLastUsedCredentials(_clock.GetCurrentInstant());
-            await RemoveAllRefreshTokens(user);
 
             //Not updating password or email confirmed as that breaks password change. Use the SetPasswordHash.
             FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);
@@ -329,68 +328,6 @@ namespace FantasyCritic.MySQL
 
                 string deleteSQL = "delete from tbl_user_hasrole where UserID = @UserID and RoleID = @RoleID)";
                 await connection.ExecuteAsync(deleteSQL, new { UserID = user.Id, RoleID = roleID });
-            }
-        }
-
-        public async Task<IReadOnlyList<string>> GetRefreshTokens(FantasyCriticUser user)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                IEnumerable<string> refreshTokens = await connection.QueryAsync<string>("select RefreshToken from tbl_user_refreshtoken where UserID = @UserID;", new
-                    {
-                        UserID = user.Id
-                    });
-
-                return refreshTokens.ToList();
-            }
-        }
-
-        public async Task AddRefreshToken(FantasyCriticUser user, string refreshToken)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync("insert into tbl_user_refreshtoken(UserID,RefreshToken) VALUES (@UserID, @refreshToken);", new { UserID = user.Id, refreshToken });
-            }
-        }
-
-        public async Task RemoveRefreshToken(FantasyCriticUser user, string refreshToken)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID and RefreshToken = @refreshToken;", new { UserID = user.Id, refreshToken });
-            }
-        }
-
-        public async Task RemoveAllRefreshTokens(FantasyCriticUser user)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID;", new
-                {
-                    UserID = user.Id
-                });
-            }
-        }
-
-        public async Task ClearOldRefreshTokens(FantasyCriticUser user)
-        {
-            DateTime cutoff = _clock.GetCurrentInstant().ToDateTimeUtc().AddDays(-7);
-            int minimumKeep = 5;
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                IEnumerable<DateTime> tokenTimestamps = await connection.QueryAsync<DateTime>("select CreatedTimestamp from tbl_user_refreshtoken where UserID = @UserID;", new
-                {
-                    UserID = user.Id
-                });
-                var tokensToKeep = tokenTimestamps.OrderByDescending(x => x).Take(minimumKeep);
-                var oldEnoughTokens = tokenTimestamps.Where(x => x < cutoff);
-                var tokensToDelete = oldEnoughTokens.Except(tokensToKeep);
-                await connection.ExecuteAsync("delete from tbl_user_refreshtoken where UserID = @UserID and CreatedTimestamp in @tokensToDelete", new { UserID = user.Id, tokensToDelete });
             }
         }
 

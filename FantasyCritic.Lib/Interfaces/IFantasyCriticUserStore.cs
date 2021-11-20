@@ -14,11 +14,6 @@ namespace FantasyCritic.Lib.Interfaces
         IUserAuthenticatorKeyStore<FantasyCriticUser>, IUserTwoFactorStore<FantasyCriticUser>, IUserTwoFactorRecoveryCodeStore<FantasyCriticUser>,
         IUserLoginStore<FantasyCriticUser>
     {
-        Task<IReadOnlyList<string>> GetRefreshTokens(FantasyCriticUser user);
-        Task AddRefreshToken(FantasyCriticUser user, string refreshToken);
-        Task RemoveRefreshToken(FantasyCriticUser user, string refreshToken);
-        Task RemoveAllRefreshTokens(FantasyCriticUser user);
-        Task ClearOldRefreshTokens(FantasyCriticUser user);
         Task DeleteUserAccount(FantasyCriticUser user);
     }
 }
