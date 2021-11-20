@@ -1,1 +1,1 @@
-DROP TABLE tbl_user_refresh_token;
+DROP TABLE tbl_user_refreshtoken;
