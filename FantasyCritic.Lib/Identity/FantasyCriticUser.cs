@@ -26,25 +26,18 @@ namespace FantasyCritic.Lib.Identity
             PasswordHash = passwordHash;
             TwoFactorEnabled = twoFactorEnabled;
             AuthenticatorKey = authenticatorKey;
-            LastChangedCredentials = lastChangedCredentials.ToDateTimeUtc();
+            LastChangedCredentials = lastChangedCredentials;
             IsDeleted = isDeleted;
         }
 
         public int DisplayNumber { get; set; }
-        public DateTime LastChangedCredentials { get; set; }
+        public Instant LastChangedCredentials { get; set; }
         public bool IsDeleted { get; set; }
         public string AuthenticatorKey { get; set; }
 
         public void UpdateLastUsedCredentials(Instant currentInstant)
         {
-            LastChangedCredentials = currentInstant.ToDateTimeUtc();
-        }
-
-        public Instant GetLastChangedCredentials()
-        {
-            var localDateTime = LocalDateTime.FromDateTime(LastChangedCredentials);
-            var instant = localDateTime.InUtc().ToInstant();
-            return instant;
+            LastChangedCredentials = currentInstant;
         }
 
         public bool Equals(FantasyCriticUser other)

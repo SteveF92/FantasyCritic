@@ -23,7 +23,7 @@ namespace FantasyCritic.MySQL.Entities.Identity
             PasswordHash = user.PasswordHash;
             TwoFactorEnabled = user.TwoFactorEnabled;
             AuthenticatorKey = user.AuthenticatorKey;
-            LastChangedCredentials = user.GetLastChangedCredentials();
+            LastChangedCredentials = user.LastChangedCredentials;
             IsDeleted = user.IsDeleted;
         }
 
