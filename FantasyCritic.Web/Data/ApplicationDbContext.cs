@@ -10,7 +10,7 @@ using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Web.Data
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<FantasyCriticUser>
+    public class ApplicationDbContext : ApiAuthorizationDbContext<FantasyCriticUser, FantasyCriticRole, Guid>
     {
         public ApplicationDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {

@@ -1,21 +1,20 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Lib.Identity
 {
-    public class FantasyCriticRole : IdentityRole
+    public class FantasyCriticRole : IdentityRole<Guid>
     {
         public FantasyCriticRole()
         {
 
         }
 
-        public FantasyCriticRole(int roleID, string name, string normalizedName)
+        public FantasyCriticRole(Guid roleID, string name, string normalizedName)
         {
-            base.Id = roleID.ToString();
+            Id = roleID;
             Name = name;
             NormalizedName = normalizedName;
         }
-
-        public new int Id => int.Parse(base.Id);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.MySQL.Entities.Identity
 {
@@ -11,7 +12,7 @@ namespace FantasyCritic.MySQL.Entities.Identity
 
         public FantasyCriticRoleEntity(FantasyCriticRole role)
         {
-            RoleID = role.Id;
+            RoleID = role.Id.ToInt();
             Name = role.Name;
             NormalizedName = role.NormalizedName;
         }
@@ -23,7 +24,7 @@ namespace FantasyCritic.MySQL.Entities.Identity
 
         public FantasyCriticRole ToDomain()
         {
-            FantasyCriticRole domain = new FantasyCriticRole(RoleID, Name, NormalizedName);
+            FantasyCriticRole domain = new FantasyCriticRole(RoleID.ToGuid(), Name, NormalizedName);
             return domain;
         }
     }
