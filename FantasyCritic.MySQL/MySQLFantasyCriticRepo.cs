@@ -71,12 +71,13 @@ namespace FantasyCritic.MySQL
                 var leagueEntities = await connection.QueryAsync<LeagueEntity>("select * from vw_league where IsDeleted = 0");
 
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year");
+                var leagueYearLookup = yearEntities.ToLookup(x => x.LeagueID);
                 List<League> leagues = new List<League>();
                 var allUsers = await _userStore.GetAllUsers();
                 foreach (var leagueEntity in leagueEntities)
                 {
                     FantasyCriticUser manager = allUsers.Single(x => x.Id == leagueEntity.LeagueManager);
-                    IEnumerable<int> years = yearEntities.Where(x => x.LeagueID == leagueEntity.LeagueID).Select(x => x.Year);
+                    IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
                     League league = leagueEntity.ToDomain(manager, years);
                     leagues.Add(league);
                 }
@@ -118,6 +119,11 @@ namespace FantasyCritic.MySQL
             var allLeagueTags = await GetLeagueYearTagEntities(year);
             var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
             var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+            var supportedYear = await GetSupportedYear(year);
+            var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
+            var allTagOverrides = await GetAllTagOverrides(year);
+            IReadOnlyList<League> leagues = await GetAllLeagues();
+            Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -128,11 +134,7 @@ namespace FantasyCritic.MySQL
 
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year where Year = @year", queryObject);
                 List<LeagueYear> leagueYears = new List<LeagueYear>();
-                IReadOnlyList<League> leagues = await GetAllLeagues();
-                Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
-                var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
-                var allTagOverrides = await GetAllTagOverrides(year);
-
+                
                 foreach (var entity in yearEntities)
                 {
                     var success = leaguesDictionary.TryGetValue(entity.LeagueID, out League league);
@@ -155,7 +157,6 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    var supportedYear = await GetSupportedYear(year);
                     LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
@@ -298,6 +299,11 @@ namespace FantasyCritic.MySQL
                 sql = "select * from vw_league_pickupbid where Year = @year and Successful is NOT NULL and IsDeleted = 0";
             }
 
+            var publisherGameDictionary = publishers
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.MasterGame.HasValue)
+                .ToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, new { year });
@@ -312,7 +318,7 @@ namespace FantasyCritic.MySQL
                     Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
                     if (bidEntity.ConditionalDropMasterGameID.HasValue)
                     {
-                        conditionalDropPublisherGame = await GetPublisherGame(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value);
+                        conditionalDropPublisherGame = publisherGameDictionary[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)];
                     }
 
                     PickupBid domainPickup = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);

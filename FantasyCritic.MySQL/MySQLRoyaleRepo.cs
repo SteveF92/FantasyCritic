@@ -107,8 +107,6 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)
         {
-            string sql = "select * from tbl_royale_publisher where Year = @year and Quarter = @quarter";
-
             var yearQuarter = await GetYearQuarter(year, quarter);
             if (yearQuarter.HasNoValue)
             {
@@ -117,7 +115,9 @@ namespace FantasyCritic.MySQL
 
             var users = await _userStore.GetAllUsers();
             var publisherGames = await GetAllPublisherGames(yearQuarter.Value);
+            var publisherGameLookup = publisherGames.ToLookup(x => x.PublisherID);
 
+            string sql = "select * from tbl_royale_publisher where Year = @year and Quarter = @quarter";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var entities = await connection.QueryAsync<RoyalePublisherEntity>(sql, new {year, quarter} );
@@ -131,7 +131,7 @@ namespace FantasyCritic.MySQL
                         continue;
                     }
 
-                    var gamesForPublisher = publisherGames.Where(x => x.PublisherID == entity.PublisherID);
+                    var gamesForPublisher = publisherGameLookup[entity.PublisherID];
 
                     var domain = entity.ToDomain(yearQuarter.Value, user, gamesForPublisher);
                     domainPublishers.Add(domain);
