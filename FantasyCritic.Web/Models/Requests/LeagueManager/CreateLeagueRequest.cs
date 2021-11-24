@@ -56,8 +56,6 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         public string PickupSystem { get; set; }
         [Required]
-        public string ScoringSystem { get; set; }
-        [Required]
         public bool PublicLeague { get; set; }
         [Required]
         public bool TestLeague { get; set; }

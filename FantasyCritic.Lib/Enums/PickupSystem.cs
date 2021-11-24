@@ -7,7 +7,8 @@ namespace FantasyCritic.Lib.Enums
     public class PickupSystem : TypeSafeEnum<PickupSystem>
     {
         // Define values here.
-        public static readonly PickupSystem Budget = new PickupSystem("Budget");
+        public static readonly PickupSystem SecretBidding = new PickupSystem("SecretBidding");
+        public static readonly PickupSystem SemiPublicBidding = new PickupSystem("SemiPublicBidding");
 
         // Constructor is private: values are defined within this class only!
         private PickupSystem(string value)
