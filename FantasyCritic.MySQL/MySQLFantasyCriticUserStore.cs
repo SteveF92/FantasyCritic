@@ -145,10 +145,25 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
         {
+            string sql = "select * from tbl_user";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    @"select * from tbl_user");
+                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(sql);
+                var results = userResult.Select(x => x.ToDomain()).ToList();
+                return results;
+            }
+        }
+
+        public async Task<IReadOnlyList<FantasyCriticUser>> GetUsers(IEnumerable<Guid> userIDs)
+        {
+            string sql = "select * from tbl_user WHERE UserID IN @userIDs";
+            var queryObject = new
+            {
+                userIDs
+            };
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(sql, queryObject);
                 var results = userResult.Select(x => x.ToDomain()).ToList();
                 return results;
             }

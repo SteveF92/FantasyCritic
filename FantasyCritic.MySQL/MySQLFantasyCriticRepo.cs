@@ -74,9 +74,10 @@ namespace FantasyCritic.MySQL
                 var leagueYearLookup = yearEntities.ToLookup(x => x.LeagueID);
                 List<League> leagues = new List<League>();
                 var allUsers = await _userStore.GetAllUsers();
+                var userDictionary = allUsers.ToDictionary(x => x.Id);
                 foreach (var leagueEntity in leagueEntities)
                 {
-                    FantasyCriticUser manager = allUsers.Single(x => x.Id == leagueEntity.LeagueManager);
+                    FantasyCriticUser manager = userDictionary[leagueEntity.LeagueManager];
                     IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
                     League league = leagueEntity.ToDomain(manager, years);
                     leagues.Add(league);
@@ -806,6 +807,9 @@ namespace FantasyCritic.MySQL
             var allLeagueTags = await GetLeagueYearTagEntities(year);
             var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
             var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+            var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
+            var allTagOverrides = await GetAllTagOverrides(year);
+            var supportedYear = await GetSupportedYear(year);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -822,8 +826,6 @@ namespace FantasyCritic.MySQL
                 List<LeagueYear> leagueYears = new List<LeagueYear>();
                 IReadOnlyList<League> leagues = await GetAllLeagues();
                 Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
-                var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
-                var allTagOverrides = await GetAllTagOverrides(year);
 
                 foreach (var entity in yearEntities)
                 {
@@ -847,7 +849,6 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    var supportedYear = await GetSupportedYear(year);
                     LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags);
                     leagueYears.Add(leagueYear);
                 }
@@ -1471,21 +1472,25 @@ namespace FantasyCritic.MySQL
 
         private async Task<IReadOnlyList<League>> ConvertLeagueEntitiesToDomain(IEnumerable<LeagueEntity> leagueEntities)
         {
+            var relevantUserIDs = leagueEntities.Select(x => x.LeagueManager).Distinct();
+            var relevantUsers = await _userStore.GetUsers(relevantUserIDs);
+            var userDictionary = relevantUsers.ToDictionary(x => x.Id);
+
+            string sql = "select * from tbl_league_year where LeagueID in @leagueIDs";
+            var queryObject = new
+            {
+                leagueIDs = leagueEntities.Select(x => x.LeagueID)
+            };
             using (var connection = new MySqlConnection(_connectionString))
             {
                 List<League> leagues = new List<League>();
+                IEnumerable<LeagueYearEntity> allLeagueYears = await connection.QueryAsync<LeagueYearEntity>(sql, queryObject);
+                var leagueYearLookup = allLeagueYears.ToLookup(x => x.LeagueID);
+
                 foreach (var leagueEntity in leagueEntities)
                 {
-                    FantasyCriticUser manager = await _userStore.FindByIdAsync(leagueEntity.LeagueManager.ToString(),
-                        CancellationToken.None);
-
-                    IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>(
-                        "select * from tbl_league_year where LeagueID = @leagueID", new
-                        {
-                            leagueID = leagueEntity.LeagueID
-                        });
-
-                    IEnumerable<int> years = yearEntities.Select(x => x.Year);
+                    FantasyCriticUser manager = userDictionary[leagueEntity.LeagueManager];
+                    IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
                     League league = leagueEntity.ToDomain(manager, years);
                     leagues.Add(league);
                 }
