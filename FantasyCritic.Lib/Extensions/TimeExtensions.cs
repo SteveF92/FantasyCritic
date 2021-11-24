@@ -30,5 +30,8 @@ namespace FantasyCritic.Lib.Extensions
         }
 
         public static readonly DateTimeZone EasternTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
+        public static readonly IsoDayOfWeek PublicBiddingRevealDay = IsoDayOfWeek.Thursday;
+        public static readonly LocalTime PublicBiddingRevealTime = new LocalTime(20, 0);
+        public static readonly LocalTime ActionProcessingTime = new LocalTime(20, 0);
     }
 }

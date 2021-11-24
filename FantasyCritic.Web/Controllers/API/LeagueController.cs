@@ -314,6 +314,8 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
+            var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear.Value);
+
             var currentDate = _clock.GetToday();
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, currentDate,
                 leagueYear.Value.PlayStatus, startDraftResult, activeUsers, nextDraftPublisher, draftPhase, availableCounterPicks,

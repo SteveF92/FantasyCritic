@@ -254,11 +254,20 @@ namespace FantasyCritic.MySQL
         public async Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher)
         {
             var leagueYear = publisher.LeagueYear;
+            var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear);
+            var publisherGameDictionary = publishersInLeague
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.MasterGame.HasValue)
+                .ToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
+
+            string sql = "select * from vw_league_pickupbid where PublisherID = @publisherID and Successful is NULL";
+            var queryObject = new
+            {
+                publisherID = publisher.PublisherID
+            };
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var bidEntities = await connection.QueryAsync<PickupBidEntity>("select * from tbl_league_pickupbid where PublisherID = @publisherID and Successful is NULL",
-                    new { publisherID = publisher.PublisherID });
-
+                var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, queryObject);
                 List<PickupBid> domainBids = new List<PickupBid>();
                 foreach (var bidEntity in bidEntities)
                 {
@@ -266,9 +275,46 @@ namespace FantasyCritic.MySQL
                     Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
                     if (bidEntity.ConditionalDropMasterGameID.HasValue)
                     {
-                        conditionalDropPublisherGame = await GetPublisherGame(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value);
+                        conditionalDropPublisherGame = publisherGameDictionary[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)];
                     }
 
+                    PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
+                    domainBids.Add(domain);
+                }
+
+                return domainBids;
+            }
+        }
+
+        public async Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear)
+        {
+            var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear);
+            var publisherDictionary = publishersInLeague.ToDictionary(x => x.PublisherID);
+            var publisherGameDictionary = publishersInLeague
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.MasterGame.HasValue)
+                .ToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
+
+            string sql = "select * from vw_league_pickupbid where LeagueID = @leagueID and Year = @year and Successful is NULL";
+            var queryObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year,
+            };
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, queryObject);
+                List<PickupBid> domainBids = new List<PickupBid>();
+                foreach (var bidEntity in bidEntities)
+                {
+                    var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
+                    Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
+                    if (bidEntity.ConditionalDropMasterGameID.HasValue)
+                    {
+                        conditionalDropPublisherGame = publisherGameDictionary[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)];
+                    }
+
+                    var publisher = publisherDictionary[bidEntity.PublisherID];
                     PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
                     domainBids.Add(domain);
                 }
@@ -327,7 +373,6 @@ namespace FantasyCritic.MySQL
                 }
 
                 IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> finalDictionary = pickupBidsByLeagueYear.ToDictionary(x => x.Key, y => (IReadOnlyList<PickupBid>)y.Value);
-
                 return finalDictionary;
             }
         }

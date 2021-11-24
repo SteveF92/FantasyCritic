@@ -76,6 +76,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task CreatePickupBid(PickupBid currentBid);
         Task RemovePickupBid(PickupBid bid);
         Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
+        Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear);
         Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year);
         Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year);
         Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);

@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
@@ -438,7 +439,7 @@ namespace FantasyCritic.Lib.Services
                 nextBidDate = currentDate.Next(IsoDayOfWeek.Saturday);
             }
 
-            LocalDateTime dateTime = nextBidDate + new LocalTime(20, 0);
+            LocalDateTime dateTime = nextBidDate + TimeExtensions.ActionProcessingTime;
             return dateTime.InZoneStrictly(nyc).ToInstant();
         }
 
@@ -561,6 +562,60 @@ namespace FantasyCritic.Lib.Services
 
             await _fantasyCriticRepo.RemoveDropRequest(dropRequest);
             return Result.Success();
+        }
+
+        public async Task<IReadOnlyList<MasterGameYear>> GetPublicBiddingGames(LeagueYear leagueYear)
+        {
+            var isInPublicWindow = IsInPublicBiddingWindow(leagueYear);
+            if (!isInPublicWindow)
+            {
+                return new List<MasterGameYear>();
+            }
+
+            var activeBidsForLeague = await _fantasyCriticRepo.GetActivePickupBids(leagueYear);
+            var masterGames = activeBidsForLeague.Select(x => x.MasterGame).Distinct();
+            List<MasterGameYear> masterGameYears = new List<MasterGameYear>();
+            foreach (var masterGame in masterGames)
+            {
+                var masterGameYear = await _masterGameRepo.GetMasterGameYear(masterGame.MasterGameID, leagueYear.Year);
+                masterGameYears.Add(masterGameYear.Value);
+            }
+
+            return masterGameYears;
+        }
+
+        public bool IsInPublicBiddingWindow(LeagueYear leagueYear)
+        {
+            if (!leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBidding))
+            {
+                return false;
+            }
+
+            var currentTime = _clock.GetCurrentInstant();
+            var currentDate = currentTime.ToEasternDate();
+            if (currentDate.DayOfWeek < TimeExtensions.PublicBiddingRevealDay)
+            {
+                return false;
+            }
+
+            var nycTime = currentTime.InZone(TimeExtensions.EasternTimeZone);
+            var localTime = nycTime.LocalDateTime.TimeOfDay;
+            if (localTime < TimeExtensions.PublicBiddingRevealTime)
+            {
+                return false;
+            }
+
+            if (currentDate.DayOfWeek == IsoDayOfWeek.Saturday && localTime > TimeExtensions.ActionProcessingTime)
+            {
+                return false;
+            }
+
+            if (currentDate.DayOfWeek > IsoDayOfWeek.Saturday)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
