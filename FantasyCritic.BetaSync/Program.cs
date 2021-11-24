@@ -21,7 +21,7 @@ using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.BetaSync
 {
-    class Program
+    public static class Program
     {
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 

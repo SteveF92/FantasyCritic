@@ -31,7 +31,7 @@ namespace FantasyCritic.Web.Models.Responses
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
-            UserIsActive = activeUsers.Any(x => x.Id == accessingUser.Unwrap(y => y.Id));
+            UserIsActive = activeUsers.Any(x => x.Id == accessingUser.GetValueOrDefault(y => y.Id));
             Publishers = publishers
                 .OrderBy(x => x.DraftPosition)
                 .Select(x => new PublisherViewModel(x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished))
