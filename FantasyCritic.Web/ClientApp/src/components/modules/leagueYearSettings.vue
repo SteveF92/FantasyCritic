@@ -107,9 +107,20 @@
       </div>
 
       <hr />
+      <h3>Bidding Settings</h3>
+      <div class="alert alert-info">
+        New for 2022, you can choose the new "public bidding" system. This feature can help balance leagues where some players are more engaged/invested than others.
+        You can read more about it on the <a href="/faq#bidding-system" target="_blank" class="text-secondary">FAQ page</a>.
+        <br />
+        If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding".
+      </div>
+      <label for="pickupSystem" class="control-label">Bidding System</label>
+      <b-form-select v-model="local.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
+
+      <hr />
       <h3>Game Dropping Settings</h3>
       <div class="alert alert-info">
-        If you like, players can now choose to drop a game before it releases. This setting allows you to choose how many such games can be dropped, if any.
+        If you like, you can allow players to drop a game before it releases. These settings allow you to choose how many such games can be dropped, if any.
         You can customize how many games are droppable after the game is confirmed to be delayed, as well as how many are droppable that are still scheduled to release.
         <br />
         You can also use the "Any Unreleased" setting, which applies to all unreleased games, delayed or not.

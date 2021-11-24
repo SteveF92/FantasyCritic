@@ -139,7 +139,7 @@ export default {
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,
         draftSystem: 'Flexible',
-        pickupSystem: 'Budget',
+        pickupSystem: this.leagueYearSettings.pickupSystem,
         scoringSystem: 'Diminishing'
       };
 
