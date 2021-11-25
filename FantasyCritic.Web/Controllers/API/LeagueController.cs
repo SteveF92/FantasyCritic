@@ -751,6 +751,12 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That master game does not exist.");
             }
 
+            var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear.Value);
+            if (publicBiddingGames.HasValue && !publicBiddingGames.Value.Select(x => x.MasterGame).Contains(masterGame.Value))
+            {
+                return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
+            }
+
             Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
             if (request.ConditionalDropPublisherGameID.HasValue)
             {
@@ -797,6 +803,12 @@ namespace FantasyCritic.Web.Controllers.API
             if (!userIsInLeague || !userIsPublisher)
             {
                 return Forbid();
+            }
+
+            bool publicWindow = _gameAcquisitionService.IsInPublicBiddingWindow(publisher.LeagueYear);
+            if (publicWindow)
+            {
+                return BadRequest("Can't cancel a bid when in the public bidding window.");
             }
 
             PickupBid bid = maybeBid.Value;

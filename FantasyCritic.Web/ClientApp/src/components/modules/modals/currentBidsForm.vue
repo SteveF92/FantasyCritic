@@ -1,5 +1,8 @@
 <template>
   <b-modal id="currentBidsForm" ref="currentBidsFormRef" size="lg" title="My Current Bids" @hidden="clearData">
+    <div class="alert alert-danger" v-show="errorInfo" role="alert">
+      {{errorInfo}}
+    </div>
     <label v-show="settingPriority">
       Drag and drop to change order.
     </label>
@@ -63,7 +66,8 @@ export default {
   data() {
     return {
       desiredBidPriorities: [],
-      settingPriority: false
+      settingPriority: false,
+      errorInfo: null
     };
   },
   methods: {
@@ -99,7 +103,7 @@ export default {
           this.$emit('bidCanceled', bidInfo);
         })
         .catch(response => {
-
+          this.errorInfo = response.response.data;
         });
     },
     clearData() {
