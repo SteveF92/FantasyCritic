@@ -166,6 +166,10 @@
                 <h2>Upcoming Games</h2>
                 <upcomingGames :upcomingGames="upcomingGames" mode="league" />
               </div>
+              <div v-if="leagueYear.publicBiddingGames">
+                <h2>This week's bids</h2>
+                <activeBids :games="leagueYear.publicBiddingGames" />
+              </div>
               <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
             </div>
           </div>
@@ -189,6 +193,7 @@ import LeagueActions from '@/components/modules/leagueActions';
 import CreatePublisherForm from '@/components/modules/modals/createPublisherForm';
 import StartDraftModal from '@/components/modules/modals/startDraftModal';
 import UpcomingGames from '@/components/modules/upcomingGames';
+import ActiveBids from '@/components/modules/activeBids';
 
 export default {
   data() {
@@ -212,7 +217,8 @@ export default {
     CreatePublisherForm,
     StartDraftModal,
     LeagueActions,
-    UpcomingGames
+    UpcomingGames,
+    ActiveBids
   },
   computed: {
     nextPublisherUp() {

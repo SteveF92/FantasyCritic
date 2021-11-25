@@ -564,12 +564,12 @@ namespace FantasyCritic.Lib.Services
             return Result.Success();
         }
 
-        public async Task<IReadOnlyList<MasterGameYear>> GetPublicBiddingGames(LeagueYear leagueYear)
+        public async Task<Maybe<IReadOnlyList<MasterGameYear>>> GetPublicBiddingGames(LeagueYear leagueYear)
         {
             var isInPublicWindow = IsInPublicBiddingWindow(leagueYear);
             if (!isInPublicWindow)
             {
-                return new List<MasterGameYear>();
+                return Maybe<IReadOnlyList<MasterGameYear>>.None;
             }
 
             var activeBidsForLeague = await _fantasyCriticRepo.GetActivePickupBids(leagueYear);
