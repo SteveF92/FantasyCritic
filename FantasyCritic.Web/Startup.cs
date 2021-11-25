@@ -128,7 +128,14 @@ namespace FantasyCritic.Web
                 .AddDefaultTokenProviders();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<FantasyCriticUser, ApplicationDbContext>();
+                .AddApiAuthorization<FantasyCriticUser, ApplicationDbContext>(options =>
+                    {
+                        options.Clients.AddRange(
+                            Configuration.GetSection("IdentityServer:NonProfileClients")
+                                .Get<IdentityServer4.Models.Client[]>()
+                        );
+                    }
+                );
 
             services.AddAuthentication()
                 .AddGoogle(options =>
