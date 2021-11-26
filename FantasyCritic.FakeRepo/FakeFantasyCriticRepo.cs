@@ -538,6 +538,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
         {
             throw new NotImplementedException();

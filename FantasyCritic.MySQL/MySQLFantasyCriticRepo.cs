@@ -205,9 +205,9 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("update tbl_league_publishergame SET ManualCriticScore = @manualCriticScore where PublisherGameID = @publisherGameID;", 
-                    new { publisherGameID = publisherGame.PublisherGameID, manualCriticScore });
-            }
+            await connection.ExecuteAsync("update tbl_league_publishergame SET ManualCriticScore = @manualCriticScore where PublisherGameID = @publisherGameID;", 
+                new { publisherGameID = publisherGame.PublisherGameID, manualCriticScore });
+        }
         }
 
         public async Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease)
@@ -232,6 +232,17 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount)
+        {
+            var entity = new PickupBidEntity(bid, conditionalDropPublisherGame, bidAmount);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("UPDATE tbl_league_pickupbid SET ConditionalDropMasterGameID = @ConditionalDropMasterGameID, " +
+                                              "BidAmount = @BidAmount WHERE BidID = @BidID;", entity);
+            }
+        }
+
         public async Task RemovePickupBid(PickupBid pickupBid)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -239,14 +250,12 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    {
-                        await connection.ExecuteAsync("delete from tbl_league_pickupbid where BidID = @BidID",
+                    await connection.ExecuteAsync("delete from tbl_league_pickupbid where BidID = @BidID",
                             new {pickupBid.BidID}, transaction);
-                        await connection.ExecuteAsync(
-                            "update tbl_league_pickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority",
-                            new {publisherID = pickupBid.Publisher.PublisherID, oldPriority = pickupBid.Priority}, transaction);
-                        await transaction.CommitAsync();
-                    }
+                    await connection.ExecuteAsync(
+                        "update tbl_league_pickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority",
+                        new {publisherID = pickupBid.Publisher.PublisherID, oldPriority = pickupBid.Priority}, transaction);
+                    await transaction.CommitAsync();
                 }
             }
         }

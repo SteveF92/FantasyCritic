@@ -542,6 +542,42 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetDropRequest(dropRequest);
         }
 
+        public async Task<ClaimResult> EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount)
+        {
+            if (bid.Successful != null)
+            {
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("Bid has already been processed", false) });
+            }
+
+            if (bidAmount < bid.Publisher.LeagueYear.Options.MinimumBidAmount)
+            {
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("That bid does not meet the league's minimum bid.", false) });
+            }
+
+            if (bidAmount > bid.Publisher.Budget)
+            {
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("You do not have enough budget to make that bid.", false) });
+            }
+
+            if (conditionalDropPublisherGame.HasValue)
+            {
+                if (bid.CounterPick)
+                {
+                    return new ClaimResult("Cannot make a counterpick bid with a conditional drop.");
+                }
+
+                var dropResult = await MakeDropRequest(bid.Publisher, conditionalDropPublisherGame.Value, true);
+                if (dropResult.Result.IsFailure)
+                {
+                    return new ClaimResult(dropResult.Result.Error);
+                }
+            }
+
+            await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount);
+            return new ClaimResult(new List<ClaimError>());
+        }
+
+
         public async Task<Result> RemovePickupBid(PickupBid bid)
         {
             if (bid.Successful != null)

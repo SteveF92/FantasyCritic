@@ -770,6 +770,54 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> EditPickupBid([FromBody] PickupBidEditRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.ActionProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var maybeBid = await _gameAcquisitionService.GetPickupBid(request.BidID);
+            if (maybeBid.HasNoValue)
+            {
+                return BadRequest("That bid does not exist.");
+            }
+
+            var publisher = maybeBid.Value.Publisher;
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.LeagueYear.League, currentUser);
+            bool userIsPublisher = (currentUser.Id == publisher.User.Id);
+            if (!userIsInLeague || !userIsPublisher)
+            {
+                return Forbid();
+            }
+
+            Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
+            if (request.ConditionalDropPublisherGameID.HasValue)
+            {
+                conditionalDropPublisherGame = publisher.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGameID.Value);
+            }
+
+            ClaimResult bidResult = await _gameAcquisitionService.EditPickupBid(maybeBid.Value, conditionalDropPublisherGame, request.BidAmount);
+            var viewModel = new PickupBidResultViewModel(bidResult);
+
+            return Ok(viewModel);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DeletePickupBid([FromBody] PickupBidDeleteRequest request)
         {
             if (!ModelState.IsValid)

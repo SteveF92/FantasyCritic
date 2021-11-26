@@ -43,6 +43,19 @@ namespace FantasyCritic.MySQL.Entities
             Successful = successful;
         }
 
+        public PickupBidEntity(PickupBid domain, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount) : this(domain)
+        {
+            BidID = domain.BidID;
+            PublisherID = domain.Publisher.PublisherID;
+            MasterGameID = domain.MasterGame.MasterGameID;
+            ConditionalDropMasterGameID = conditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.Value.MasterGame.MasterGameID);
+            Counterpick = domain.CounterPick;
+            Timestamp = domain.Timestamp;
+            Priority = domain.Priority;
+            BidAmount = bidAmount;
+            Successful = domain.Successful;
+        }
+
         public Guid BidID { get; set; }
         public Guid PublisherID { get; set; }
         public Guid MasterGameID { get; set; }
