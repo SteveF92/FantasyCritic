@@ -26,8 +26,8 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Statistics;
 using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
-using FantasyCritic.Web.Data;
 using FantasyCritic.Web.Hubs;
+using FantasyCritic.Web.Identity;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -130,16 +130,24 @@ namespace FantasyCritic.Web
                 .AddRoleManager<FantasyCriticRoleManager>()
                 .AddDefaultTokenProviders();
 
-            services.AddIdentityServer()
+            var builder = services.AddIdentityServer(options =>
+                {
+                    options.Events.RaiseErrorEvents = true;
+                    options.Events.RaiseInformationEvents = true;
+                    options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseSuccessEvents = true;
+                    options.EmitStaticAudienceClaim = true;
+                })
                 .AddPersistedGrantStore<MySQLPersistedGrantStore>()
-                .AddApiAuthorization<FantasyCriticUser, ApplicationDbContext>(options =>
-                    {
-                        options.Clients.AddRange(
-                            Configuration.GetSection("IdentityServer:NonProfileClients")
-                                .Get<IdentityServer4.Models.Client[]>()
-                        );
-                    }
-                );
+                .AddInMemoryIdentityResources(IdentityConfig.IdentityResources)
+                .AddInMemoryApiScopes(IdentityConfig.ApiScopes)
+                .AddInMemoryClients(IdentityConfig.Clients)
+                .AddAspNetIdentity<FantasyCriticUser>();
+
+            if (_env.IsDevelopment())
+            {
+                builder.AddDeveloperSigningCredential();
+            }
 
             services.AddAuthentication()
                 .AddGoogle(options =>
