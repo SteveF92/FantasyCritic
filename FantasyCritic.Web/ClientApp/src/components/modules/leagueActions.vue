@@ -162,7 +162,7 @@
         <playerDraftCounterPickForm :userPublisher="leagueYear.userPublisher" :availableCounterPicks="leagueYear.availableCounterPicks" v-on:counterPickDrafted="counterPickDrafted"></playerDraftCounterPickForm>
 
         <bidGameForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:gameBid="gameBid"></bidGameForm>
-        <currentBidsForm :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
+        <currentBidsForm :leagueYear="leagueYear" :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidEdited="bidEdited" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
 
         <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
         <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
@@ -293,6 +293,13 @@ export default {
     bidCanceled(bidInfo) {
       let actionInfo = {
         message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    bidEdited(bidInfo) {
+      let actionInfo = {
+        message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.',
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
