@@ -1,0 +1,14 @@
+CREATE TABLE `tbl_user_persistedgrant` (
+	`Key` VARCHAR(255) NOT NULL,
+	`Type` VARCHAR(255) NOT NULL,
+	`SubjectId` VARCHAR(255) NOT NULL,
+	`ClientId` VARCHAR(255) NOT NULL,
+	`CreationTime` DATETIME NOT NULL,
+	`ConsumedTime` DATETIME NULL DEFAULT NULL,
+	`Expiration` DATETIME NULL DEFAULT NULL,
+	`Data` VARCHAR(255) NOT NULL,
+	`Description` VARCHAR(255) NOT NULL,
+	`SessionId` VARCHAR(255) NOT NULL
+)
+ENGINE=InnoDB
+;

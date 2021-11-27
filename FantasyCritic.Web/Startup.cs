@@ -15,6 +15,7 @@ using System.Net;
 using System.Text;
 using Dapper.NodaTime;
 using FantasyCritic.AWS;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -27,6 +28,7 @@ using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Data;
 using FantasyCritic.Web.Hubs;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -74,6 +76,7 @@ namespace FantasyCritic.Web
             var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
             services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
             services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
+            services.AddScoped<RepositoryConfiguration>(factory => new RepositoryConfiguration(connectionString, clock));
             services.AddScoped<IUserStore<FantasyCriticUser>, MySQLFantasyCriticUserStore>(factory => userStore);
             services.AddScoped<IRoleStore<FantasyCriticRole>, MySQLFantasyCriticRoleStore>(factory => roleStore);
 
@@ -128,6 +131,7 @@ namespace FantasyCritic.Web
                 .AddDefaultTokenProviders();
 
             services.AddIdentityServer()
+                .AddPersistedGrantStore<MySQLPersistedGrantStore>()
                 .AddApiAuthorization<FantasyCriticUser, ApplicationDbContext>(options =>
                     {
                         options.Clients.AddRange(

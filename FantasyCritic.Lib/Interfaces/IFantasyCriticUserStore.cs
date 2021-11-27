@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Lib.Interfaces
