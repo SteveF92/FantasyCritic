@@ -157,7 +157,13 @@ namespace FantasyCritic.Web
                 builder.AddSigningCredential($"CN={identityConfig.KeyName}");
             }
 
-            services.AddAuthentication()
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
+                    options.Cookie.Name = "FantasyCriticCookie";
+                    options.LoginPath = "/Identity/Account/Login";
+                    options.LogoutPath = "/Identity/Account/Logout";
+                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                    options.SlidingExpiration = true; // the cookie would be re-issued on any request half way through the ExpireTimeSpan
+                })
                 .AddGoogle(options =>
                 {
                     options.ClientId = Configuration["Authentication:Google:ClientId"];
