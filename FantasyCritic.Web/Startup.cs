@@ -30,6 +30,7 @@ using FantasyCritic.MySQL;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Identity;
 using IdentityServer4.Configuration;
+using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -66,7 +67,7 @@ namespace FantasyCritic.Web
             var awsRegion = Configuration["AWS:region"];
             var awsBucket = Configuration["AWS:bucket"];
             var mailgunAPIKey = Configuration["Mailgun:apiKey"];
-            var identityConfig = new IdentityConfig(Configuration["IdentityServer:MainSecret"], Configuration["IdentityServer:FCBotSecret"], Configuration["IdentityServer:CertificateKey"]);
+            var identityConfig = new IdentityConfig(Configuration["IdentityServer:MainSecret"], Configuration["IdentityServer:FCBotSecret"]);
 
             // Add application services.
             services.AddHttpClient();
@@ -150,11 +151,6 @@ namespace FantasyCritic.Web
             if (_env.IsDevelopment())
             {
                 builder.AddDeveloperSigningCredential();
-            }
-            else
-            {
-                builder.AddValidationKey(identityConfig.KeyName);
-                builder.AddSigningCredential(identityConfig.KeyName);
             }
 
             services.AddAuthentication()

@@ -11,7 +11,7 @@ namespace FantasyCritic.Web.Identity
 {
     public class IdentityConfig
     {
-        public IdentityConfig(string mainSecret, string fcBotSecret, string keyName)
+        public IdentityConfig(string mainSecret, string fcBotSecret)
         {
             Clients = new Client[]
             {
@@ -38,8 +38,6 @@ namespace FantasyCritic.Web.Identity
                     AccessTokenLifetime = 604800
                 }
             };
-
-            KeyName = keyName;
         }
 
         public static IEnumerable<IdentityResource> IdentityResources =>
@@ -56,6 +54,5 @@ namespace FantasyCritic.Web.Identity
             };
 
         public IReadOnlyList<Client> Clients { get; }
-        public string KeyName { get; }
     }
 }
