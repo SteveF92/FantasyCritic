@@ -26,7 +26,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                string sql = "select * from tbl_user_persistedgrant where Key = @key";
+                string sql = "select * from tbl_user_persistedgrant where `Key` = @key";
                 var result = await connection.QueryFirstOrDefaultAsync<PersistedGrantEntity>(sql, new
                 {
                     key
@@ -50,13 +50,14 @@ namespace FantasyCritic.MySQL
 
         public async Task RemoveAsync(string key)
         {
+            var parametersObject = new
+            {
+                key
+            };
             using (var connection = new MySqlConnection(_connectionString))
             {
-                string sql = "delete from tbl_user_persistedgrant where Key = @key";
-                await connection.ExecuteAsync(sql, new
-                {
-                    key
-                });
+                string sql = "delete from tbl_user_persistedgrant where `Key` = @key;";
+                await connection.ExecuteAsync(sql, parametersObject);
             }
         }
 
@@ -76,7 +77,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await RemoveAsync(grant.Key);
-                string sql = "insert into tbl_user_persistedgrant(Key,Type,SubjectId,ClientId,CreationTime,ConsumedTime,Expiration,Data,Description,SessionId) values " +
+                string sql = "insert into tbl_user_persistedgrant(`Key`,Type,SubjectId,ClientId,CreationTime,ConsumedTime,Expiration,Data,Description,SessionId) values " +
                              "(@Key,@Type,@SubjectId,@ClientId,@CreationTime,@ConsumedTime,@Expiration,@Data,@Description,@SessionId)";
                 await connection.ExecuteAsync(sql, entity);
             }
