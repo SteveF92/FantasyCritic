@@ -1,58 +1,61 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using IdentityServer4;
 using IdentityServer4.Models;
 
 namespace FantasyCritic.Web.Identity
 {
-    public static class IdentityConfig
+    public class IdentityConfig
     {
+        public IdentityConfig(string mainSecret, string fcBotSecret, string keyName)
+        {
+            Clients = new Client[]
+            {
+                // interactive ASP.NET Core MVC client
+                new Client
+                {
+                    ClientId = "mvc",
+                    ClientSecrets = { new Secret(mainSecret.Sha256()) },
+                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedScopes = { "FantasyCritic.WebAPI" }
+                },
+                new Client
+                {
+                    ClientId = "fcbot",
+                    ClientName = "Fantasy Critic Discord Bot",
+                    ClientUri = "https://fantasy-critic-bot.herokuapp.com/",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = false,
+                    AllowAccessTokensViaBrowser = true,
+                    ClientSecrets = { new Secret(fcBotSecret.Sha256()) },
+                    RedirectUris = {"http://localhost:6501/auth/fc"},
+                    AllowOfflineAccess = true,
+                    AllowedScopes = { "FantasyCritic.WebAPI" },
+                    AccessTokenLifetime = 604800
+                }
+            };
+
+            KeyName = keyName;
+        }
+
         public static IEnumerable<IdentityResource> IdentityResources =>
-            new IdentityResource[]
+            new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
-            new ApiScope[]
+            new List<ApiScope>
             {
-                new ApiScope("scope1"),
-                new ApiScope("scope2"),
+                new ApiScope("FantasyCritic.WebAPI", "Fantasy Critic API")
             };
 
-        public static IEnumerable<Client> Clients =>
-            new Client[]
-            {
-                // m2m client credentials flow client
-                new Client
-                {
-                    ClientId = "m2m.client",
-                    ClientName = "Client Credentials Client",
-
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
-
-                    AllowedScopes = { "scope1" }
-                },
-
-                // interactive client using code flow + pkce
-                new Client
-                {
-                    ClientId = "interactive",
-                    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
-
-                    AllowedGrantTypes = GrantTypes.Code,
-
-                    RedirectUris = { "https://localhost:44300/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:44300/signout-oidc",
-                    PostLogoutRedirectUris = { "https://localhost:44300/signout-callback-oidc" },
-
-                    AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "scope2" }
-                },
-            };
+        public IReadOnlyList<Client> Clients { get; }
+        public string KeyName { get; }
     }
 }

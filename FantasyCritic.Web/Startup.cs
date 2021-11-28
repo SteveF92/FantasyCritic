@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using VueCliMiddleware;
 using Microsoft.AspNetCore.SpaServices;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Dapper.NodaTime;
 using FantasyCritic.AWS;
@@ -28,6 +29,7 @@ using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Identity;
+using IdentityServer4.Configuration;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -64,6 +66,7 @@ namespace FantasyCritic.Web
             var awsRegion = Configuration["AWS:region"];
             var awsBucket = Configuration["AWS:bucket"];
             var mailgunAPIKey = Configuration["Mailgun:apiKey"];
+            var identityConfig = new IdentityConfig(Configuration["IdentityServer:MainSecret"], Configuration["IdentityServer:FCBotSecret"], Configuration["IdentityServer:CertificateKey"]);
 
             // Add application services.
             services.AddHttpClient();
@@ -141,12 +144,17 @@ namespace FantasyCritic.Web
                 .AddPersistedGrantStore<MySQLPersistedGrantStore>()
                 .AddInMemoryIdentityResources(IdentityConfig.IdentityResources)
                 .AddInMemoryApiScopes(IdentityConfig.ApiScopes)
-                .AddInMemoryClients(IdentityConfig.Clients)
+                .AddInMemoryClients(identityConfig.Clients)
                 .AddAspNetIdentity<FantasyCriticUser>();
 
             if (_env.IsDevelopment())
             {
                 builder.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                builder.AddValidationKey(identityConfig.KeyName);
+                builder.AddSigningCredential(identityConfig.KeyName);
             }
 
             services.AddAuthentication()
