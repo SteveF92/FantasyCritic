@@ -6,9 +6,10 @@ CREATE TABLE `tbl_user_persistedgrant` (
 	`CreationTime` DATETIME NOT NULL,
 	`ConsumedTime` DATETIME NULL DEFAULT NULL,
 	`Expiration` DATETIME NULL DEFAULT NULL,
-	`Data` VARCHAR(255) NOT NULL,
-	`Description` VARCHAR(255) NOT NULL,
-	`SessionId` VARCHAR(255) NOT NULL
+	`Data` TEXT NOT NULL,
+	`Description` TEXT NULL DEFAULT NULL,
+	`SessionId` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`Key`) USING BTREE
 )
 ENGINE=InnoDB
 ;
