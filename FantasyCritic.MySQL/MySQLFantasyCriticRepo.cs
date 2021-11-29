@@ -671,6 +671,8 @@ namespace FantasyCritic.MySQL
             LeagueEntity entity = new LeagueEntity(league);
             LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear, options, PlayStatus.NotStartedDraft);
             var tagEntities = options.LeagueTags.Select(x => new LeagueYearTagEntity(league, initialYear, x));
+            List<SpecialGameSlotEntity> slotEntities = options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
+                    new SpecialGameSlotEntity(Guid.NewGuid(), league, initialYear, slot.SpecialSlotPosition, tag)).ToList();
 
             string createLeagueSQL =
                 "insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague) VALUES " +
@@ -690,6 +692,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(createLeagueSQL, entity, transaction);
                     await connection.ExecuteAsync(createLeagueYearSQL, leagueYearEntity, transaction);
                     await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
+                    await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
 
                     await transaction.CommitAsync();
                 }
@@ -700,6 +703,7 @@ namespace FantasyCritic.MySQL
 
         public async Task EditLeagueYear(LeagueYear leagueYear)
         {
+            //TODO Here use the slot code from above
             LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.PlayStatus);
             var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
 
