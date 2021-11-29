@@ -90,6 +90,7 @@ namespace FantasyCritic.MySQL
         public async Task<Maybe<LeagueYear>> GetLeagueYear(League requestLeague, int requestYear)
         {
             var leagueTags = await GetLeagueYearTagEntities(requestLeague.LeagueID, requestYear);
+            var specialGameSlots = await GetSpecialGameSlotEntities(requestLeague.LeagueID, requestYear);
             var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -109,8 +110,10 @@ namespace FantasyCritic.MySQL
                 var eligibilityOverrides = await GetEligibilityOverrides(requestLeague, requestYear);
                 var tagOverrides = await GetTagOverrides(requestLeague, requestYear);
                 var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
+                var domainSpecialGameSlots = ConvertSpecialGameSlotEntities(specialGameSlots, tagDictionary);
+                var specialGameSlotsForLeagueYear = domainSpecialGameSlots[new LeagueYearKey(requestLeague.LeagueID, requestYear)];
                 var supportedYear = await GetSupportedYear(requestYear);
-                LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, SpecialGameSlot.DefaultSpecialGameSlots);
+                LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
                 return year;
             }
         }
@@ -118,8 +121,10 @@ namespace FantasyCritic.MySQL
         public async Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
         {
             var allLeagueTags = await GetLeagueYearTagEntities(year);
+            var allSpecialGameSlots = await GetSpecialGameSlotEntities(year);
             var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
             var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+            var domainSpecialGameSlots = ConvertSpecialGameSlotEntities(allSpecialGameSlots, tagDictionary);
             var supportedYear = await GetSupportedYear(year);
             var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
             var allTagOverrides = await GetAllTagOverrides(year);
@@ -158,7 +163,8 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, SpecialGameSlot.DefaultSpecialGameSlots);
+                    var specialGameSlotsForLeagueYear = domainSpecialGameSlots[new LeagueYearKey(entity.LeagueID, entity.Year)];
+                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -859,8 +865,10 @@ namespace FantasyCritic.MySQL
         public async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year)
         {
             var allLeagueTags = await GetLeagueYearTagEntities(year);
+            var allSpecialGameSlots = await GetSpecialGameSlotEntities(year);
             var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
             var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+            var domainSpecialGameSlots = ConvertSpecialGameSlotEntities(allSpecialGameSlots, tagDictionary);
             var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
             var allTagOverrides = await GetAllTagOverrides(year);
             var supportedYear = await GetSupportedYear(year);
@@ -903,7 +911,8 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, SpecialGameSlot.DefaultSpecialGameSlots);
+                    var specialGameSlotsForLeagueYear = domainSpecialGameSlots[new LeagueYearKey(entity.LeagueID, entity.Year)];
+                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -2350,10 +2359,52 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        private async Task<IReadOnlyList<SpecialGameSlotEntity>> GetSpecialGameSlotEntities(int year)
+        {
+            var sql = "select * from tbl_league_specialgameslot where Year = @year;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<SpecialGameSlotEntity> entities = await connection.QueryAsync<SpecialGameSlotEntity>(sql, new { year });
+                return entities.ToList();
+            }
+        }
+
+        private async Task<IReadOnlyList<SpecialGameSlotEntity>> GetSpecialGameSlotEntities(Guid leagueID, int year)
+        {
+            var sql = "select * from tbl_league_specialgameslot where LeagueID = @leagueID AND Year = @year;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<SpecialGameSlotEntity> entities = await connection.QueryAsync<SpecialGameSlotEntity>(sql, new { leagueID, year });
+                return entities.ToList();
+            }
+        }
+
         private static IReadOnlyList<LeagueTagStatus> ConvertLeagueTagEntities(IEnumerable<LeagueYearTagEntity> leagueTags, IReadOnlyDictionary<string, MasterGameTag> tagOptions)
         {
             var domains = leagueTags.Select(x => x.ToDomain(tagOptions[x.Tag])).ToList();
             return domains;
+        }
+
+        private static IReadOnlyDictionary<LeagueYearKey, IReadOnlyList<SpecialGameSlot>> ConvertSpecialGameSlotEntities(IEnumerable<SpecialGameSlotEntity> specialGameSlotEntities, IReadOnlyDictionary<string, MasterGameTag> tagOptions)
+        {
+            Dictionary<LeagueYearKey, List<SpecialGameSlot>> fullDomains = new Dictionary<LeagueYearKey, List<SpecialGameSlot>>();
+            var groupByLeagueYearKey = specialGameSlotEntities.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
+            foreach (var leagueYearGroup in groupByLeagueYearKey)
+            {
+                List<SpecialGameSlot> domainsForLeagueYear = new List<SpecialGameSlot>();
+                var groupByPosition = leagueYearGroup.GroupBy(x => x.SpecialSlotPosition);
+                foreach (var positionGroup in groupByPosition)
+                {
+                    var tags = positionGroup.Select(x => tagOptions[x.Tag]);
+                    domainsForLeagueYear.Add(new SpecialGameSlot(positionGroup.Key, tags));
+                }
+
+                fullDomains[leagueYearGroup.Key] = domainsForLeagueYear;
+            }
+            
+            return fullDomains.SealDictionary();
         }
 
         public async Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage message)

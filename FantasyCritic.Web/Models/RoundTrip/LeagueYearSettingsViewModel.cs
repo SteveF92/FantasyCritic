@@ -123,6 +123,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
 
         [Required]
         public LeagueTagOptionsViewModel Tags { get; set; }
+        [Required]
+        public List<SpecialGameSlotViewModel> SpecialGameSlots { get; set; }
 
         public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
         {
@@ -147,10 +149,11 @@ namespace FantasyCritic.Web.Models.RoundTrip
             }
 
             var leagueTags = Tags.ToDomain(tagDictionary);
+            var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-                leagueTags, SpecialGameSlot.DefaultSpecialGameSlots, draftSystem, pickupSystem, scoringSystem, PublicLeague);
+                leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, PublicLeague);
             return parameters;
         }
     }

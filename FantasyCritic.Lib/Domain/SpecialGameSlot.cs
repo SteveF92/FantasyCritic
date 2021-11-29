@@ -16,8 +16,5 @@ namespace FantasyCritic.Lib.Domain
 
         public int SpecialSlotPosition { get; init; }
         public IReadOnlyList<MasterGameTag> Tags { get; }
-
-        //TODO Eliminate
-        public static IReadOnlyList<SpecialGameSlot> DefaultSpecialGameSlots = new List<SpecialGameSlot>();
     }
 }

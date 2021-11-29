@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
@@ -62,6 +63,8 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
 
         [Required]
         public LeagueTagOptionsViewModel Tags { get; set; }
+        [Required]
+        public List<SpecialGameSlotViewModel> SpecialGameSlots { get; set; }
 
         public LeagueCreationParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
         {
@@ -86,10 +89,11 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             }
 
             var leagueTags = Tags.ToDomain(tagDictionary);
+            var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-                InitialYear, leagueTags, SpecialGameSlot.DefaultSpecialGameSlots, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
+                InitialYear, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }
     }
