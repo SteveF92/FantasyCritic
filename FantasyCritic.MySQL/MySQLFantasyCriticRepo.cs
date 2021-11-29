@@ -92,6 +92,9 @@ namespace FantasyCritic.MySQL
             var leagueTags = await GetLeagueYearTagEntities(requestLeague.LeagueID, requestYear);
             var specialGameSlots = await GetSpecialGameSlotEntities(requestLeague.LeagueID, requestYear);
             var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+            var eligibilityOverrides = await GetEligibilityOverrides(requestLeague, requestYear);
+            var tagOverrides = await GetTagOverrides(requestLeague, requestYear);
+            var supportedYear = await GetSupportedYear(requestYear);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -107,12 +110,14 @@ namespace FantasyCritic.MySQL
                     return Maybe<LeagueYear>.None;
                 }
 
-                var eligibilityOverrides = await GetEligibilityOverrides(requestLeague, requestYear);
-                var tagOverrides = await GetTagOverrides(requestLeague, requestYear);
                 var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
                 var domainSpecialGameSlots = ConvertSpecialGameSlotEntities(specialGameSlots, tagDictionary);
-                var specialGameSlotsForLeagueYear = domainSpecialGameSlots[new LeagueYearKey(requestLeague.LeagueID, requestYear)];
-                var supportedYear = await GetSupportedYear(requestYear);
+                bool hasSpecialRosterSlots = domainSpecialGameSlots.TryGetValue(new LeagueYearKey(requestLeague.LeagueID, requestYear), out var specialGameSlotsForLeagueYear);
+                if (!hasSpecialRosterSlots)
+                {
+                    specialGameSlotsForLeagueYear = new List<SpecialGameSlot>();
+                }
+
                 LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
                 return year;
             }
@@ -163,7 +168,12 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    var specialGameSlotsForLeagueYear = domainSpecialGameSlots[new LeagueYearKey(entity.LeagueID, entity.Year)];
+                    bool hasSpecialRosterSlots = domainSpecialGameSlots.TryGetValue(new LeagueYearKey(entity.LeagueID, entity.Year), out var specialGameSlotsForLeagueYear);
+                    if (!hasSpecialRosterSlots)
+                    {
+                        specialGameSlotsForLeagueYear = new List<SpecialGameSlot>();
+                    }
+
                     LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
                     leagueYears.Add(leagueYear);
                 }
@@ -911,7 +921,12 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    var specialGameSlotsForLeagueYear = domainSpecialGameSlots[new LeagueYearKey(entity.LeagueID, entity.Year)];
+                    bool hasSpecialRosterSlots = domainSpecialGameSlots.TryGetValue(new LeagueYearKey(entity.LeagueID, entity.Year), out var specialGameSlotsForLeagueYear);
+                    if (!hasSpecialRosterSlots)
+                    {
+                        specialGameSlotsForLeagueYear = new List<SpecialGameSlot>();
+                    }
+
                     LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
                     leagueYears.Add(leagueYear);
                 }

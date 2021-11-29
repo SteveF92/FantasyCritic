@@ -14,7 +14,7 @@ namespace FantasyCritic.Lib.Domain
             Tags = tags.ToList();
         }
 
-        public int SpecialSlotPosition { get; init; }
+        public int SpecialSlotPosition { get; }
         public IReadOnlyList<MasterGameTag> Tags { get; }
     }
 }
