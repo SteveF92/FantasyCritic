@@ -18,10 +18,10 @@
         <span v-show="!yearFinished">Will not Release</span>
         <span v-show="yearFinished">Did not Release</span>
       </span>
-      <span v-if="game.released && game.linked && !game.criticScore" class="game-status">
+      <span v-if="game.released && game.linked && !game.criticScore && !yearFinished" class="game-status">
         <span>Needs more reviews</span>
       </span>
-      <span v-if="game.manualWillNotRelease && game.linked" class="game-status">
+      <span v-if="game.manualWillNotRelease && game.linked && !yearFinished" class="game-status">
         Will not Release (League Override)
       </span>
       <span v-if="game.manualCriticScore && game.linked" class="game-status">
