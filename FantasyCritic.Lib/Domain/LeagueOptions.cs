@@ -13,7 +13,8 @@ namespace FantasyCritic.Lib.Domain
     public class LeagueOptions
     {
         public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
-            bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
+            bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, 
+            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
         {
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
@@ -26,6 +27,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicksBlockDrops = counterPicksBlockDrops;
             MinimumBidAmount = minimumBidAmount;
             LeagueTags = leagueTags.ToList();
+            SpecialGameSlots = specialGameSlots.ToList();
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
@@ -45,6 +47,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
             MinimumBidAmount = parameters.MinimumBidAmount;
             LeagueTags = parameters.LeagueTags;
+            SpecialGameSlots = parameters.SpecialGameSlots;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
@@ -64,6 +67,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
             MinimumBidAmount = parameters.MinimumBidAmount;
             LeagueTags = parameters.LeagueTags;
+            SpecialGameSlots = parameters.SpecialGameSlots;
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
@@ -81,6 +85,7 @@ namespace FantasyCritic.Lib.Domain
         public bool CounterPicksBlockDrops { get; }
         public int MinimumBidAmount { get; }
         public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
+        public IReadOnlyList<SpecialGameSlot> SpecialGameSlots { get; }
         public DraftSystem DraftSystem { get; }
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }

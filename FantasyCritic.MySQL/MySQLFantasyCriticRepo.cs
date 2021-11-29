@@ -110,7 +110,7 @@ namespace FantasyCritic.MySQL
                 var tagOverrides = await GetTagOverrides(requestLeague, requestYear);
                 var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
                 var supportedYear = await GetSupportedYear(requestYear);
-                LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags);
+                LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, SpecialGameSlot.DefaultSpecialGameSlots);
                 return year;
             }
         }
@@ -158,7 +158,7 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags);
+                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, SpecialGameSlot.DefaultSpecialGameSlots);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -903,7 +903,7 @@ namespace FantasyCritic.MySQL
                     }
 
                     var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags);
+                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, SpecialGameSlot.DefaultSpecialGameSlots);
                     leagueYears.Add(leagueYear);
                 }
 

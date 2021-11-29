@@ -89,7 +89,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-                InitialYear, leagueTags, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
+                InitialYear, leagueTags, SpecialGameSlot.DefaultSpecialGameSlots, draftSystem, pickupSystem, scoringSystem, PublicLeague, TestLeague);
             return parameters;
         }
     }

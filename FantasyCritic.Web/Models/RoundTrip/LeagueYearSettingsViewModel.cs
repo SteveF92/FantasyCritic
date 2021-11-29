@@ -150,7 +150,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-                leagueTags, draftSystem, pickupSystem, scoringSystem, PublicLeague);
+                leagueTags, SpecialGameSlot.DefaultSpecialGameSlots, draftSystem, pickupSystem, scoringSystem, PublicLeague);
             return parameters;
         }
     }
