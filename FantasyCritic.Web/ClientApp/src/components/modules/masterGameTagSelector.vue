@@ -1,6 +1,6 @@
 <template>
   <div>
-    <multiselect v-if="tagOptions" v-model="value" tag-placeholder="Add this as new tag"
+    <multiselect v-if="tagOptions" v-model="internalValue" tag-placeholder="Add this as new tag"
                  placeholder="Search or add a tag" label="readableName"
                  track-by="name" :options="tagOptions" :multiple="true"
                  @input="handleInput">
@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-
+      internalValue: []
     }
   },
   computed: {
@@ -32,8 +32,19 @@ export default {
     },
   },
   methods: {
-    handleInput (e) {
-      this.$emit('input', this.value);
+    handleInput(e) {
+      this.$emit('input', this.internalValue);
+    },
+    updateInternal() {
+      this.internalValue = _.cloneDeep(this.value);
+    }
+  },
+  mounted() {
+    this.updateInternal();
+  },
+  watch: {
+    value() {
+      this.updateInternal();
     }
   }
 }
