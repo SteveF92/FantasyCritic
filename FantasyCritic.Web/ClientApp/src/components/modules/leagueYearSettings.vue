@@ -206,6 +206,17 @@
         All games have a number of tags associated with them. If you place a tag in the "Banned" column, any game with that tag will not be selectable.
       </div>
       <leagueTagSelector v-model="local.tags"></leagueTagSelector>
+
+      <hr />
+      <h3>Special Game Slots</h3>
+      <div class="alert alert-info">
+        New for 2022, you can now choose to have certain slots in every player's lineup require certain tags, overriding the rules chosen above.
+        <br />
+        You can read more in the <a href="/faq#drafting" target="_blank" class="text-secondary">FAQ.</a>, but for example,
+        you can choose to ban 'Yearly Installments' above, but here, specify that one slot <em>must</em> be a yearly installment.
+        Then, every player must have exactly one 'Yearly Installment'.
+      </div>
+      <specialGameSlotSelector v-model="local.specialGameSlots"></specialGameSlotSelector>
     </div>
   </div>
 </template>
@@ -215,6 +226,7 @@ import Popper from 'vue-popperjs';
 import 'vue-slider-component/theme/antd.css';
 import { cloneDeep, tap, set } from 'lodash';
 import LeagueTagSelector from '@/components/modules/leagueTagSelector';
+import SpecialGameSlotSelector from '@/components/modules/specialGameSlotSelector';
 
 export default {
   props: ['year', 'possibleLeagueOptions', 'editMode', 'value', 'currentNumberOfPlayers', 'freshSettings'],
@@ -288,7 +300,8 @@ export default {
   components: {
     vueSlider,
     'popper': Popper,
-    LeagueTagSelector
+    LeagueTagSelector,
+    SpecialGameSlotSelector
   },
   computed: {
     local() {
