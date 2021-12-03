@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-for="specialGameSlot in internalValue" class="special-game-slot">
-      <h4>Slot {{specialGameSlot.specialSlotPosition}}</h4>
+      <h4>Special Slot {{specialGameSlot.specialSlotPosition}}</h4>
       <masterGameTagSelector v-model="specialGameSlot.requiredTags" @input="handleInput"></masterGameTagSelector>
     </div>
   </div>

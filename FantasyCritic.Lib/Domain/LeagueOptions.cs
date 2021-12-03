@@ -27,7 +27,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicksBlockDrops = counterPicksBlockDrops;
             MinimumBidAmount = minimumBidAmount;
             LeagueTags = leagueTags.ToList();
-            SpecialGameSlots = specialGameSlots.ToList();
+            SpecialGameSlots = specialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
@@ -47,7 +47,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
             MinimumBidAmount = parameters.MinimumBidAmount;
             LeagueTags = parameters.LeagueTags;
-            SpecialGameSlots = parameters.SpecialGameSlots;
+            SpecialGameSlots = parameters.SpecialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
@@ -67,7 +67,7 @@ namespace FantasyCritic.Lib.Domain
             CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
             MinimumBidAmount = parameters.MinimumBidAmount;
             LeagueTags = parameters.LeagueTags;
-            SpecialGameSlots = parameters.SpecialGameSlots;
+            SpecialGameSlots = parameters.SpecialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
             DraftSystem = parameters.DraftSystem;
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
