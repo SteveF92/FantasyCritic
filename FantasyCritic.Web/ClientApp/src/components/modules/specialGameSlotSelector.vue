@@ -1,78 +1,83 @@
 <template>
   <div>
-    <ul>
-      <li v-for="specialGameSlot in value">
-        {{specialGameSlot.specialSlotPosition}}
-        <ul>
-          <li v-for="requiredTag in specialGameSlot.requiredTags">
-            {{requiredTag}}
-          </li>
-        </ul>
-      </li>
-    </ul>
+    <div v-for="specialGameSlot in internalValue" class="special-game-slot">
+      <h4>Slot {{specialGameSlot.specialSlotPosition}}</h4>
+      <masterGameTagSelector v-model="specialGameSlot.requiredTags" @input="handleInput"></masterGameTagSelector>
+    </div>
   </div>
 </template>
 
 <script>
   import draggable from 'vuedraggable';
-  import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
+  import MasterGameTagSelector from '@/components/modules/masterGameTagSelector';
 
   export default {
     props: ['value'],
     components: {
       draggable,
-      MasterGameTagBadge
+      MasterGameTagSelector
     },
     data() {
       return {
+        internalValue: []
+      }
+    },
+    methods: {
+      handleInput(e) {
+        let returnValue = [];
+        this.internalValue.forEach(singleValue => {
+          let newReturnItem = {
+            specialSlotPosition: singleValue.specialSlotPosition,
+            requiredTags: singleValue.requiredTags.map(v => v.name)
+          };
+          returnValue.push(newReturnItem);
+        });
 
+        this.$emit('input', returnValue);
+      },
+      getTags(tagNames) {
+        let allTags = this.$store.getters.allTags;
+        let matchingTags = [];
+        tagNames.forEach(tagName => {
+          let match = _.filter(allTags, { 'name': tagName });
+          matchingTags.push(match[0]);
+        });
+
+        return matchingTags;
+      },
+      updateInternal() {
+        this.internalValue = [];
+
+        this.value.forEach(singleValue => {
+          let newInternalItem = {
+            specialSlotPosition: singleValue.specialSlotPosition,
+            requiredTags: this.getTags(singleValue.requiredTags)
+          };
+          this.internalValue.push(newInternalItem);
+        });
       }
     },
     computed: {
       tagOptions() {
         return this.$store.getters.allTags;
       }
+    },
+    mounted() {
+      this.updateInternal();
+    },
+    watch: {
+      value() {
+        this.updateInternal();
+      }
     }
   }
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-<style>
-  .reset-button-flex {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-
-  .tag-flex-container {
-    display: flex;
-  }
-
-  .tag-flex-drag {
-    flex-grow: 1;
-    margin: 3px;
-  }
-
-  .tag-drag-list {
+<style scoped>
+  .special-game-slot {
     background: #404040;
     border-radius: 10px;
-    padding: 5px;
-  }
-
-  .tag-drag-item {
-    margin: 10px;
-    position: relative;
-    display: block;
-    padding: 10px 15px;
-    margin-bottom: -1px;
-    background-color: #5B6977 !important;
-    border: 1px solid #ddd;
-  }
-
-  .tag-header {
-    padding-left: 10px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #D6993A
+    padding: 10px;
+    margin-bottom: 15px;
   }
 </style>
