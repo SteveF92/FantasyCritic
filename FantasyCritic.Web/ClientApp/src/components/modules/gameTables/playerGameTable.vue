@@ -11,10 +11,7 @@
         </tr>
       </thead>
       <tbody>
-        <playerGameRow v-for="game in standardGames" :game="game" :yearFinished="yearFinished" v-bind:key="game.publisherGameID"></playerGameRow>
-        <blankPlayerGameRow v-for="blankSpace in standardFiller" v-bind:key="'G'+ blankSpace" :yearFinished="yearFinished"></blankPlayerGameRow>
-        <playerGameRow v-for="game in counterPicks" :game="game" v-bind:key="game.publisherGameID"></playerGameRow>
-        <blankPlayerGameRow v-for="blankSpace in counterPickFiller" v-bind:key="'CP'+ blankSpace" :counterPick="true" :yearFinished="yearFinished"></blankPlayerGameRow>
+        <playerGameSlotRow v-for="gameSlot in publisher.gameSlots" :gameSlot="gameSlot" :yearFinished="yearFinished" v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
         <tr>
           <td id="total-description">
             <span id="total-description-text">
@@ -31,14 +28,11 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
-import PlayerGameRow from '@/components/modules/gameTables/playerGameRow';
-import BlankPlayerGameRow from '@/components/modules/gameTables/blankPlayerGameRow';
+import PlayerGameSlotRow from '@/components/modules/gameTables/playerGameSlotRow';
 
 export default {
   components: {
-    PlayerGameRow,
-    BlankPlayerGameRow
+    PlayerGameSlotRow
   },
   props: ['publisher', 'options', 'yearFinished'],
   computed: {

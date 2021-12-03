@@ -138,6 +138,7 @@ namespace FantasyCritic.Lib.Domain
             Dictionary<int, SpecialGameSlot> specialSlotDictionary = LeagueYear.Options.SpecialGameSlots
                     .ToDictionary(specialGameSlot => LeagueYear.Options.StandardGames - LeagueYear.Options.SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
 
+            int overallSlotNumber = 0;
             var standardGamesBySlot = PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
             for (int standardGameIndex = 0; standardGameIndex < LeagueYear.Options.StandardGames; standardGameIndex++)
             {
@@ -151,7 +152,8 @@ namespace FantasyCritic.Lib.Domain
                 {
                     specialSlot = foundSlot;
                 }
-                publisherSlots.Add(new PublisherSlot(false, specialSlot, standardGame));
+                publisherSlots.Add(new PublisherSlot(standardGameIndex, overallSlotNumber, false, specialSlot, standardGame));
+                overallSlotNumber++;
             }
 
             var counterPicksBySlot = PublisherGames.Where(x => x.CounterPick).ToDictionary(x => x.SlotNumber);
@@ -163,7 +165,8 @@ namespace FantasyCritic.Lib.Domain
                     counterPick = foundGame;
                 }
 
-                publisherSlots.Add(new PublisherSlot(true, Maybe<SpecialGameSlot>.None, counterPick));
+                publisherSlots.Add(new PublisherSlot(counterPickIndex, overallSlotNumber, true, Maybe<SpecialGameSlot>.None, counterPick));
+                overallSlotNumber++;
             }
 
             return publisherSlots;

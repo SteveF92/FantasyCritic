@@ -33,7 +33,7 @@ namespace FantasyCritic.Web.Models.Responses
                 .Select(x => new PublisherGameViewModel(x, currentDate, publisher.LeagueYear.Options.ScoringSystem, systemWideValues))
                 .ToList();
 
-            Slots = publisher.GetPublisherSlots()
+            GameSlots = publisher.GetPublisherSlots()
                 .Select(x => new PublisherSlotViewModel(x, currentDate, publisher.LeagueYear.Options.ScoringSystem, systemWideValues))
                 .ToList();
 
@@ -84,7 +84,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int DraftPosition { get; }
         public bool AutoDraft { get; }
         public IReadOnlyList<PublisherGameViewModel> Games { get; }
-        public IReadOnlyList<PublisherSlotViewModel> Slots { get; }
+        public IReadOnlyList<PublisherSlotViewModel> GameSlots { get; }
         public decimal? AverageCriticScore { get; }
         public decimal TotalFantasyPoints { get; }
         public decimal TotalProjectedPoints { get; }

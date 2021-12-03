@@ -15,11 +15,15 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public PublisherSlotViewModel(PublisherSlot domain, LocalDate currentDate, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
         {
+            SlotNumber = domain.SlotNumber;
+            OverallSlotNumber = domain.OverallSlotNumber;
             CounterPick = domain.CounterPick;
             SpecialSlot = domain.SpecialGameSlot.GetValueOrDefault(x => new SpecialGameSlotViewModel(x));
             PublisherGame = domain.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, scoringSystem, systemWideValues));
         }
 
+        public int SlotNumber { get; }
+        public int OverallSlotNumber { get; }
         public bool CounterPick { get; }
         public SpecialGameSlotViewModel SpecialSlot { get; }
         public PublisherGameViewModel PublisherGame { get; }
