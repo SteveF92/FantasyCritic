@@ -9,7 +9,7 @@
       </div>
 
       <div v-if="possibleLeagueOptions && leagueYearSettings && leagueYear">
-        <div class="text-well">
+        <div class="text-well league-options">
           <leagueYearSettings :year="year" :possibleLeagueOptions="possibleLeagueOptions" :editMode="true" :currentNumberOfPlayers="activePlayersInLeague"
                               :freshSettings="freshSettings" v-model="leagueYearSettings"></leagueYearSettings>
         </div>
@@ -110,3 +110,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+  .league-options{
+    margin-bottom: 10px;
+  }
+</style>
