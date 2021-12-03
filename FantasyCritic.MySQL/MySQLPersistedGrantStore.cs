@@ -31,7 +31,7 @@ namespace FantasyCritic.MySQL
                 {
                     key
                 });
-                var model = result.ToDomain();
+                var model = result?.ToDomain();
                 return model;
             }
         }
