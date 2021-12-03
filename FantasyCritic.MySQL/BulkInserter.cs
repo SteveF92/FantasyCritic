@@ -15,6 +15,11 @@ namespace FantasyCritic.MySQL
     {
         public static Task BulkInsertAsync<TInsertType>(this DbConnection conn, IEnumerable<TInsertType> objects, string tableName, int batchSize = 0, DbTransaction transaction = null, IEnumerable<string> excludedFields = null)
         {
+            if (!objects.Any())
+            {
+                return Task.CompletedTask;
+            }
+
             List<TInsertType> objectList = objects.ToList();
             Type objectType = objectList.First().GetType();
             bool allSameType = objectList.All(x => x.GetType() == objectType);
