@@ -13,8 +13,8 @@ CREATE TABLE `tbl_league_specialgameslot` (
 	`SpecialSlotPosition` INT(10) NOT NULL,
 	`Tag` VARCHAR(255) NULL DEFAULT NULL,
 	PRIMARY KEY (`SpecialSlotID`) USING BTREE,
-	UNIQUE INDEX `PositionUnique` (`LeagueID`, `Year`, `SpecialSlotPosition`) USING BTREE,
 	INDEX `FK_tbl_league_gameslotusestag_tbl_mastergame_tag` (`Tag`) USING BTREE,
+	INDEX `FK_tbl_league_specialgameslot_tbl_league_year` (`LeagueID`, `Year`) USING BTREE,
 	CONSTRAINT `FK_tbl_league_gameslotusestag_tbl_mastergame_tag` FOREIGN KEY (`Tag`) REFERENCES `fantasycritic`.`tbl_mastergame_tag` (`Name`) ON UPDATE NO ACTION ON DELETE NO ACTION,
 	CONSTRAINT `FK_tbl_league_specialgameslot_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `fantasycritic`.`tbl_league_year` (`LeagueID`, `Year`) ON UPDATE NO ACTION ON DELETE NO ACTION
 )

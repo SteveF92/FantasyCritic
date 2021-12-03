@@ -69,6 +69,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
                 Banned = bannedTags,
                 Required = requiredTags
             };
+
+            SpecialGameSlots = leagueYear.Options.SpecialGameSlots.Select(x => new SpecialGameSlotViewModel(x)).ToList();
         }
 
         [Required]
