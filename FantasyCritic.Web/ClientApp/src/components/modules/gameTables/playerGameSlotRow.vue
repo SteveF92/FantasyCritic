@@ -1,6 +1,7 @@
 <template>
   <tr v-bind:class="{ 'table-danger': gameSlot.counterPick, 'table-warning': game && game.currentlyIneligible }">
     <template v-if="game">
+      <td><specialSlotIndicator :specialSlot="gameSlot.specialSlot"></specialSlotIndicator></td>
       <td>
         <span class="master-game-popover">
           <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="game.currentlyIneligible"></masterGamePopover>
@@ -40,6 +41,7 @@
       <td>{{game.fantasyPoints | score(2)}}</td>
     </template>
     <template v-else>
+      <td><specialSlotIndicator :specialSlot="gameSlot.specialSlot"></specialSlotIndicator></td>
       <td>
         <span v-if="gameSlot.counterPick" class="empty-counterpick-warning">
           Warning!
@@ -62,10 +64,12 @@
 <script>
 import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
+import SpecialSlotIndicator from '@/components/modules/gameTables/specialSlotIndicator';
 
 export default {
   components: {
-    MasterGamePopover
+    MasterGamePopover,
+    SpecialSlotIndicator
   },
   props: ['gameSlot', 'yearFinished'],
     computed: {

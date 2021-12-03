@@ -3,6 +3,7 @@
     <table class="table table-bordered table-striped table-sm player-full-table">
       <thead>
         <tr class="bg-primary">
+          <th scope="col">Slot Type</th>
           <th scope="col">Game Name</th>
           <th scope="col">Release Date</th>
           <th scope="col">Date Acquired</th>
@@ -18,6 +19,7 @@
               Total Fantasy Points
             </span>
           </td>
+          <td></td>
           <td></td>
           <td></td>
           <td id="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</td>

@@ -78,7 +78,7 @@
       },
       addSlot() {
         let newItem = {
-          specialSlotPosition: this.internalValue.length + 1,
+          specialSlotPosition: this.internalValue.length,
           requiredTags: []
         };
         this.internalValue.push(newItem);
