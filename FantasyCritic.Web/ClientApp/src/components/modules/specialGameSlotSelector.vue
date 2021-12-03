@@ -1,8 +1,21 @@
 <template>
   <div>
+    <div class="alert alert-info">
+      If you choose more than one tag for a single slot, then a game only needs to have at least ONE of those tags, not all of them.
+      You can use this to say "this game must be a remake or a remaster", for example.
+    </div>
+    <div v-show="showNoTagsWarning" class="alert alert-warning">
+      All of your special game slots should have at least one tag listed.
+    </div>
     <div v-for="specialGameSlot in internalValue" class="special-game-slot">
-      <h4>Special Slot {{specialGameSlot.specialSlotPosition}}</h4>
+      <div class="special-slot-header">
+        <h4>Special Slot {{specialGameSlot.specialSlotPosition}}</h4>
+        <b-button variant="danger" size="sm" v-on:click="removeSlot(specialGameSlot)">Remove</b-button>
+      </div>
       <masterGameTagSelector v-model="specialGameSlot.requiredTags" @input="handleInput"></masterGameTagSelector>
+    </div>
+    <div class="add-slot-button-row">
+      <b-button variant="primary" v-on:click="addSlot" class="add-slot-button">Add Special Slot</b-button>
     </div>
   </div>
 </template>
@@ -22,8 +35,16 @@
         internalValue: []
       }
     },
+    computed: {
+      tagOptions() {
+        return this.$store.getters.allTags;
+      },
+      showNoTagsWarning() {
+        return _.some(this.internalValue, x => x.requiredTags.length === 0);
+      }
+    },
     methods: {
-      handleInput(e) {
+      handleInput() {
         let returnValue = [];
         this.internalValue.forEach(singleValue => {
           let newReturnItem = {
@@ -45,6 +66,24 @@
 
         return matchingTags;
       },
+      removeSlot(specialSlot) {
+        this.internalValue = _.filter(this.internalValue, x => x.specialSlotPosition !== specialSlot.specialSlotPosition);
+
+        let slotNumber = 1;
+        this.internalValue.forEach(singleValue => {
+          singleValue.specialSlotPosition = slotNumber;
+          slotNumber++;
+        });
+        this.handleInput();
+      },
+      addSlot() {
+        let newItem = {
+          specialSlotPosition: this.internalValue.length + 1,
+          requiredTags: []
+        };
+        this.internalValue.push(newItem);
+        this.handleInput();
+      },
       updateInternal() {
         this.internalValue = [];
 
@@ -55,11 +94,6 @@
           };
           this.internalValue.push(newInternalItem);
         });
-      }
-    },
-    computed: {
-      tagOptions() {
-        return this.$store.getters.allTags;
       }
     },
     mounted() {
@@ -79,5 +113,15 @@
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 15px;
+  }
+  .special-slot-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  .add-slot-button-row{
+      display: flex;
+      flex-direction: row-reverse;
   }
 </style>
