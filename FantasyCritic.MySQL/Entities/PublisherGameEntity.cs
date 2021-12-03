@@ -27,6 +27,7 @@ namespace FantasyCritic.MySQL.Entities
             ManualWillNotRelease = publisherGame.ManualWillNotRelease;
             FantasyPoints = publisherGame.FantasyPoints;
 
+            SlotNumber = publisherGame.SlotNumber;
             DraftPosition = publisherGame.DraftPosition;
             OverallDraftPosition = publisherGame.OverallDraftPosition;
             if (publisherGame.MasterGame.HasValue)
@@ -46,6 +47,7 @@ namespace FantasyCritic.MySQL.Entities
         public bool ManualWillNotRelease { get; set; }
         public decimal? FantasyPoints { get; set; }
         public Guid? MasterGameID { get; set; }
+        public int SlotNumber { get; set; }
         public int? DraftPosition { get; set; }
         public int? OverallDraftPosition { get; set; }
         public bool CurrentlyIneligible { get; set; }
@@ -53,7 +55,7 @@ namespace FantasyCritic.MySQL.Entities
         public PublisherGame ToDomain(Maybe<MasterGameYear> masterGame)
         {
             PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick, 
-                ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, DraftPosition, OverallDraftPosition,
+                ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, SlotNumber, DraftPosition, OverallDraftPosition,
                 CurrentlyIneligible);
             return domain;
         }

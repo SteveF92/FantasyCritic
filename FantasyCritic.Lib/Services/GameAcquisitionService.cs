@@ -332,8 +332,9 @@ namespace FantasyCritic.Lib.Services
                 masterGameYear = new MasterGameYear(request.MasterGame.Value, request.Publisher.LeagueYear.Year);
             }
 
+            int nextSlotNumber = request.Publisher.GetNextSlotNumber(request.CounterPick);
             PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-                masterGameYear, request.DraftPosition, request.OverallDraftPosition, false);
+                masterGameYear, nextSlotNumber, request.DraftPosition, request.OverallDraftPosition, false);
 
             LeagueYear leagueYear = request.Publisher.LeagueYear;
 

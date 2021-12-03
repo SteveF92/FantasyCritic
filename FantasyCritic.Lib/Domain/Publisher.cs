@@ -131,6 +131,44 @@ namespace FantasyCritic.Lib.Domain
             return options.StandardGames - PublisherGames.Count(x => !x.CounterPick);
         }
 
+        public int GetNextSlotNumber(bool counterPick) => PublisherGames.Count(x => x.CounterPick == counterPick);
+        public IReadOnlyList<PublisherSlot> GetPublisherSlots()
+        {
+            List<PublisherSlot> publisherSlots = new List<PublisherSlot>();
+            Dictionary<int, SpecialGameSlot> specialSlotDictionary = LeagueYear.Options.SpecialGameSlots
+                    .ToDictionary(specialGameSlot => LeagueYear.Options.StandardGames - LeagueYear.Options.SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
+
+            var standardGamesBySlot = PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
+            for (int standardGameIndex = 0; standardGameIndex < LeagueYear.Options.StandardGames; standardGameIndex++)
+            {
+                Maybe<PublisherGame> standardGame = Maybe<PublisherGame>.None;
+                Maybe<SpecialGameSlot> specialSlot = Maybe<SpecialGameSlot>.None;
+                if (standardGamesBySlot.TryGetValue(standardGameIndex, out var foundGame))
+                {
+                    standardGame = foundGame;
+                }
+                if (specialSlotDictionary.TryGetValue(standardGameIndex, out var foundSlot))
+                {
+                    specialSlot = foundSlot;
+                }
+                publisherSlots.Add(new PublisherSlot(false, specialSlot, standardGame));
+            }
+
+            var counterPicksBySlot = PublisherGames.Where(x => x.CounterPick).ToDictionary(x => x.SlotNumber);
+            for (int counterPickIndex = 0; counterPickIndex < LeagueYear.Options.CounterPicks; counterPickIndex++)
+            {
+                Maybe<PublisherGame> counterPick = Maybe<PublisherGame>.None;
+                if (counterPicksBySlot.TryGetValue(counterPickIndex, out var foundGame))
+                {
+                    counterPick = foundGame;
+                }
+
+                publisherSlots.Add(new PublisherSlot(true, Maybe<SpecialGameSlot>.None, counterPick));
+            }
+
+            return publisherSlots;
+        }
+
         public Maybe<PublisherGame> GetPublisherGame(MasterGame masterGame) => GetPublisherGameByMasterGameID(masterGame.MasterGameID);
 
         public Maybe<PublisherGame> GetPublisherGameByMasterGameID(Guid masterGameID)

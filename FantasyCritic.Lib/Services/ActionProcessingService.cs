@@ -280,8 +280,9 @@ namespace FantasyCritic.Lib.Services
             List<LeagueAction> leagueActions = new List<LeagueAction>();
             foreach (var successBid in successBids)
             {
+                int nextSlotNumber = successBid.Publisher.GetNextSlotNumber(successBid.CounterPick);
                 PublisherGame newPublisherGame = new PublisherGame(successBid.Publisher.PublisherID, Guid.NewGuid(), successBid.MasterGame.GameName, clock.GetCurrentInstant(),
-                    successBid.CounterPick, null, false, null, new MasterGameYear(successBid.MasterGame, successBid.Publisher.LeagueYear.Year), null, null, false);
+                    successBid.CounterPick, null, false, null, new MasterGameYear(successBid.MasterGame, successBid.Publisher.LeagueYear.Year), nextSlotNumber, null, null, false);
                 gamesToAdd.Add(newPublisherGame);
                 var affectedPublisher = publisherDictionary[successBid.Publisher.PublisherID];
                 affectedPublisher.AcquireGame(newPublisherGame, successBid.BidAmount);
