@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using VueCliMiddleware;
@@ -196,7 +197,8 @@ namespace FantasyCritic.Web
                 })
                 .AddIdentityServerJwt();
 
-            services.AddDataProtection();
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(@"C:\FantasyCritic\Keys\"));
 
             services.AddHsts(options =>
             {
