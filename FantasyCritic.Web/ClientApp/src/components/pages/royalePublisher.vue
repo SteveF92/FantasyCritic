@@ -39,7 +39,7 @@
 
       <h1>Games</h1>
       <b-table striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" v-if="publisher.publisherGames.length !== 0" :tbody-tr-class="publisherGameRowClass">
-        <template v-slot:cell(masterGame)="data">
+        <template v-slot:cell(masterGame.gameName)="data">
           <span class="master-game-popover">
             <masterGamePopover :masterGame="data.item.masterGame" :currentlyIneligible="data.item.currentlyIneligible"> </masterGamePopover>
           </span>
@@ -59,7 +59,7 @@
           {{ data.item.advertisingMoney | money }}
           <b-button variant="info" size="sm" v-if="userIsPublisher && !data.item.locked" v-on:click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
-        <template v-slot:cell(criticScore)="data">
+        <template v-slot:cell(masterGame.criticScore)="data">
           {{ data.item.masterGame.criticScore | score(2) }}
         </template>
         <template v-slot:cell(fantasyPoints)="data">
@@ -120,11 +120,11 @@ export default {
       gameToModify: null,
       advertisingBudgetToSet: 0,
       gameFields: [
-        { key: 'masterGame', label: 'Game', thClass: 'bg-primary', sortable: true },
+        { key: 'masterGame.gameName', label: 'Game', thClass: 'bg-primary', sortable: true },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary', sortable: true },
         { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true },
-        { key: 'criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true },
+        { key: 'masterGame.criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true },
         { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
         { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
       ],
