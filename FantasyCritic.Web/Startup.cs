@@ -35,6 +35,7 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -194,6 +195,8 @@ namespace FantasyCritic.Web
                     options.ClientSecret = Configuration["Authentication:Discord:ClientSecret"];
                 })
                 .AddIdentityServerJwt();
+
+            services.AddDataProtection();
 
             services.AddHsts(options =>
             {
