@@ -11,8 +11,24 @@ namespace FantasyCritic.Web.Identity
 {
     public class IdentityConfig
     {
-        public IdentityConfig(string mainSecret, string fcBotSecret, string keyName)
+        public IdentityConfig(string mainSecret, string fcBotSecret, string keyName, bool isProd)
         {
+            string fcBotClientUri = "https://fcbot-dev.herokuapp.com/";
+            List<string> fcBotRedirectUris = new List<string>()
+            {
+                "http://localhost:6501/auth/fc",
+                "https://fcbot-dev.herokuapp.com/auth/fc"
+            };
+
+            if (isProd)
+            {
+                fcBotClientUri = "https://fantasy-critic-bot.herokuapp.com/";
+                fcBotRedirectUris = new List<string>()
+                {
+                    "https://fantasy-critc-bot.herokuapp.com/auth/fc"
+                };
+            }
+
             Clients = new Client[]
             {
                 // interactive ASP.NET Core MVC client
@@ -27,15 +43,16 @@ namespace FantasyCritic.Web.Identity
                 {
                     ClientId = "fcbot",
                     ClientName = "Fantasy Critic Discord Bot",
-                    ClientUri = "https://fantasy-critic-bot.herokuapp.com/",
+                    ClientUri = fcBotClientUri,
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = false,
                     AllowAccessTokensViaBrowser = true,
                     ClientSecrets = { new Secret(fcBotSecret.Sha256()) },
-                    RedirectUris = {"http://localhost:6501/auth/fc"},
+                    RedirectUris = fcBotRedirectUris,
                     AllowOfflineAccess = true,
                     AllowedScopes = { "FantasyCritic.WebAPI" },
-                    AccessTokenLifetime = 604800
+                    AccessTokenLifetime = 604800,
+                    RequireConsent = true
                 }
             };
 

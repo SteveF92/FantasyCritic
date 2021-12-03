@@ -67,7 +67,9 @@ namespace FantasyCritic.Web
             var awsRegion = Configuration["AWS:region"];
             var awsBucket = Configuration["AWS:bucket"];
             var mailgunAPIKey = Configuration["Mailgun:apiKey"];
-            var identityConfig = new IdentityConfig(Configuration["IdentityServer:MainSecret"], Configuration["IdentityServer:FCBotSecret"], Configuration["IdentityServer:CertificateKey"]);
+
+            var identityConfig = new IdentityConfig(Configuration["IdentityServer:MainSecret"],
+                Configuration["IdentityServer:FCBotSecret"], Configuration["IdentityServer:CertificateKey"], _env.IsProduction());
 
             // Add application services.
             services.AddHttpClient();
