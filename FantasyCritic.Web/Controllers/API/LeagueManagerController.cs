@@ -23,6 +23,7 @@ using FantasyCritic.Web.Models.Requests.LeagueManager;
 using FantasyCritic.Web.Models.Requests.Shared;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.RoundTrip;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -304,6 +305,16 @@ namespace FantasyCritic.Web.Controllers.API
                 {
                     return BadRequest("Special Game Slots are not supported until 2022.");
                 }
+            }
+
+            if (request.SpecialGameSlots.Count > request.StandardGames)
+            {
+                return BadRequest("You cannot have more special game slots than the number of games per player.");
+            }
+
+            if (request.SpecialGameSlots.Any(x => !x.RequiredTags.Any()))
+            {
+                return BadRequest("All of your special slots must list at least one tag.");
             }
 
             var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
