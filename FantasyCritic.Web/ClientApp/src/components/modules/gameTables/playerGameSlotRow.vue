@@ -62,12 +62,12 @@
 <script>
 import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
-import SpecialSlotIndicator from '@/components/modules/gameTables/specialSlotIndicator';
+import SlotTypeBadge from '@/components/modules/gameTables/slotTypeBadge';
 
 export default {
   components: {
     MasterGamePopover,
-    SpecialSlotIndicator
+    SlotTypeBadge
   },
   props: ['gameSlot', 'yearFinished'],
     computed: {
