@@ -2,14 +2,24 @@
   <span>
     <span v-if="gameSlot.specialSlot">
       <template v-if="gameSlot.specialSlot.requiredTags.length === 1">
-        <masterGameTagBadge :tagName="gameSlot.specialSlot.requiredTags[0]" short="true"></masterGameTagBadge>
+        <masterGameTagBadge :tagName="gameSlot.specialSlot.requiredTags[0]" short="true" class="flex-real-badge"></masterGameTagBadge>
       </template>
       <template v-else>
-        <span class="badge badge-pill tag-badge" v-bind:style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)"
+        <span class="badge tag-badge flex-badge" v-bind:style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)"
               v-b-popover.hover="getFlexText(gameSlot.specialSlot.requiredTags)">
-          Flex
+          FLX
         </span>
       </template>
+    </span>
+    <span v-if="!gameSlot.specialSlot && !gameSlot.counterPick">
+      <span class="badge tag-badge regular-slot-badge flex-badge" v-b-popover.hover="regularText">
+        REG
+      </span>
+    </span>
+    <span v-if="!gameSlot.specialSlot && gameSlot.counterPick">
+      <span class="badge tag-badge counter-pick-badge flex-badge" v-b-popover.hover="counterPickText">
+        CP
+      </span>
     </span>
   </span>
 </template>
@@ -20,6 +30,30 @@ export default {
   props: ['gameSlot'],
   components: {
     MasterGameTagBadge
+  },
+  computed: {
+    regularText() {
+      return {
+        html: true,
+        title: () => {
+          return "Regular Slot";
+        },
+        content: () => {
+          return 'This slot has no special requirements, so it follows the normal eligibility rules for the league.';
+        }
+      }
+    },
+    counterPickText() {
+      return {
+        html: true,
+        title: () => {
+          return "Counter Pick";
+        },
+        content: () => {
+          return 'This slot is for counter picks, which are bets against a game. See the FAQ for more details.';
+        }
+      }
+    }
   },
   methods: {
     getTag(tagName) {
@@ -67,28 +101,31 @@ export default {
     color: black;
   }
 
-  .tag-badge {
-    font-size: 13px;
-    margin: 3px;
+  .flex-real-badge {
+    margin-right: 5px;
   }
 
-  .open-badge {
+  .flex-badge {
+    margin-right: 8px;
+  }
+
+  .regular-slot-badge {
     color: #fff;
     text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
     background-image: linear-gradient(
       135deg, 
-      orange 0%,
-      orange 25%,
-      skyblue 25%,
-      skyblue 50%,
-      green 50%,
-      green 75%,
-      firebrick 75%,
-      firebrick 100%);
+      #0039A6 0%,
+      #0039A6 25%,
+      #00933C 25%,
+      #00933C 50%,
+      #FCCC0A 50%,
+      #FCCC0A 75%,
+      #FF6319 75%,
+      #FF6319 100%);
   }
 
-  .counter-pick-badge{
-    background-color: #f55442;
+  .counter-pick-badge {
+    background-color: #AA1E1E;
     color: white;
   }
 </style>

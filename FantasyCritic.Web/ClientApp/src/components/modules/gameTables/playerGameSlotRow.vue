@@ -1,5 +1,5 @@
 <template>
-  <tr v-bind:class="{ 'table-danger': gameSlot.counterPick, 'table-warning': game && game.currentlyIneligible }">
+  <tr v-bind:class="{ 'table-warning': game && game.currentlyIneligible }">
     <template v-if="game">
       <td>
         <span class="game-name-column">
@@ -7,10 +7,6 @@
           <span class="master-game-popover">
             <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="game.currentlyIneligible"></masterGamePopover>
             <span v-if="!game.linked">{{game.gameName}}</span>
-          </span>
-
-          <span v-if="game.counterPick" class="game-status">
-            (Counter-Pick)
           </span>
 
           <span v-if="!game.linked" class="game-status">
