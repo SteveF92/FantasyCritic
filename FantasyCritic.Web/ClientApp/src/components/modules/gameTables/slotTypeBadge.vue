@@ -2,55 +2,30 @@
   <span>
     <span v-if="gameSlot.specialSlot">
       <template v-if="gameSlot.specialSlot.requiredTags.length === 1">
-        <span class="badge badge-pill tag-badge" v-bind:style="getBadgeColor(gameSlot.specialSlot.requiredTags[0]) ">
-          {{getTag(gameSlot.specialSlot.requiredTags[0]).shortName}}
-        </span>
+        <masterGameTagBadge :tagName="gameSlot.specialSlot.requiredTags[0]" short="true"></masterGameTagBadge>
       </template>
       <template v-else>
-        <span class="badge badge-pill tag-badge" v-bind:style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)">
+        <span class="badge badge-pill tag-badge" v-bind:style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)"
+              v-b-popover.hover="getFlexText(gameSlot.specialSlot.requiredTags)">
           Flex
         </span>
       </template>
     </span>
-    <span v-if="!gameSlot.specialSlot && !gameSlot.counterPick">
-      <span class="badge badge-pill tag-badge open-badge">
-        Open
-      </span>
-    </span>
-    <span v-if="!gameSlot.specialSlot && gameSlot.counterPick">
-      <span class="badge badge-pill tag-badge counter-pick-badge">
-        CP
-      </span>
-    </span>
   </span>
 </template>
 <script>
+import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
+
 export default {
   props: ['gameSlot'],
+  components: {
+    MasterGameTagBadge
+  },
   methods: {
     getTag(tagName) {
       let allTags = this.$store.getters.allTags;
       let singleTag = _.filter(allTags, { 'name': tagName });
       return singleTag[0];
-    },
-    getBadgeColor(tagName) {
-      let fontColor = 'white';
-      let tag = this.getTag(tagName);
-      var rgb = parseInt(tag.badgeColor, 16);   // convert rrggbb to decimal
-      var r = (rgb >> 16) & 0xff;  // extract red
-      var g = (rgb >> 8) & 0xff;  // extract green
-      var b = (rgb >> 0) & 0xff;  // extract blue
-
-      var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
-
-      if (luma > 165) {
-        fontColor = 'black';
-      }
-
-      return {
-        backgroundColor: '#' + tag.badgeColor,
-        color: fontColor
-      }
     },
     getMultiBadgeColor(tagNames) {
       let colorString = '';
@@ -69,6 +44,19 @@ export default {
         backgroundImage: backGroundString,
         color: 'white',
         'text-shadow': '1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000'
+      }
+    },
+    getFlexText(requiredTags) {
+      let tagElements = requiredTags.map(x => `<li>${this.getTag(x).readableName}</li>`);
+      let joinedTagElements = tagElements.join('');
+      return {
+        html: true,
+        title: () => {
+          return "Flex Slot";
+        },
+        content: () => {
+          return `<p>A game in this slot must have at least one of these tags:</p><ul>${joinedTagElements}</ul>`;
+        }
       }
     }
   }

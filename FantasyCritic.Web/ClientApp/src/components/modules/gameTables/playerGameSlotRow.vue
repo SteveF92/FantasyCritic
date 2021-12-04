@@ -3,6 +3,7 @@
     <template v-if="game">
       <td>
         <span class="game-name-column">
+          <slotTypeBadge :gameSlot="gameSlot"></slotTypeBadge>
           <span class="master-game-popover">
             <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="game.currentlyIneligible"></masterGamePopover>
             <span v-if="!game.linked">{{game.gameName}}</span>
@@ -29,7 +30,7 @@
           <span v-if="game.manualCriticScore && game.linked" class="game-status">
             Manually Scored
           </span>
-          <span v-if="game.currentlyIneligible" class="game-ineligible">
+          <span v-if="game.currentlyIneligible" class="game-status">
             Ineligible
             <font-awesome-icon color="white" size="md" icon="info-circle" v-b-popover.hover="inEligibleText" />
           </span>
@@ -43,7 +44,8 @@
     </template>
     <template v-else>
       <td>
-        <span class="blank-game-name-column">
+        <span class="game-name-column">
+          <slotTypeBadge :gameSlot="gameSlot"></slotTypeBadge>
           <span v-if="gameSlot.counterPick" class="game-status">
             Warning!
             <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="emptyCounterpickText" />
@@ -74,7 +76,7 @@ export default {
     SlotTypeBadge
   },
   props: ['gameSlot', 'yearFinished'],
-    computed: {
+  computed: {
     game(){
       return this.gameSlot.publisherGame;
     },
@@ -124,26 +126,14 @@ export default {
   }
 
   .game-name-column {
-      display: flex;
-      justify-content: space-between;
-  }
-
-  .blank-game-name-column {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: space-between;
+      display: inline-flex;
+      width: 100%;
   }
 
   .game-status {
     color: #B1B1B1;
     font-style: italic;
-    margin-left: 3px;
-  }
-
-  .game-ineligible {
-    color: white;
-    font-style: italic;
-    padding-left: 5px;
+    margin-left: auto;
   }
 
   .master-game-popover {
