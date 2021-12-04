@@ -204,26 +204,35 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<Result> RemovePublisherGame(Guid publisherGameID)
+        public async Task<Result> RemovePublisherGame(PublisherGame publisherGame)
         {
+            string sql = "delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var removed = await connection.ExecuteAsync("delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;", new { publisherGameID });
-                if (removed == 1)
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
                 {
+                    var removed = await connection.ExecuteAsync(sql, new { publisherGameID = publisherGame.PublisherGameID }, transaction);
+                    if (removed != 1)
+                    {
+                        await transaction.RollbackAsync();
+                        return Result.Failure("Removing game failed.");
+                    }
+
+                    await MakePublisherGameSlotsConsistent(publisherGame.PublisherID, connection, transaction);
                     return Result.Success();
                 }
-                return Result.Failure("Removing game failed.");
             }
         }
 
         public async Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)
         {
+            string sql = "update tbl_league_publishergame SET ManualCriticScore = @manualCriticScore where PublisherGameID = @publisherGameID;";
+            var updateObject = new { publisherGameID = publisherGame.PublisherGameID, manualCriticScore };
             using (var connection = new MySqlConnection(_connectionString))
             {
-            await connection.ExecuteAsync("update tbl_league_publishergame SET ManualCriticScore = @manualCriticScore where PublisherGameID = @publisherGameID;", 
-                new { publisherGameID = publisherGame.PublisherGameID, manualCriticScore });
-        }
+                await connection.ExecuteAsync(sql, updateObject);
+            }
         }
 
         public async Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease)
@@ -1315,6 +1324,50 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        private async Task<IReadOnlyList<Publisher>> GetPublishers(IEnumerable<Guid> publisherIDs)
+        {
+            var query = new
+            {
+                publisherIDs
+            };
+
+            var allUsers = await _userStore.GetAllUsers();
+            var usersDictionary = allUsers.ToDictionary(x => x.Id, y => y);
+            
+            string sql = "select tbl_league_publisher.* from tbl_league_publisher " +
+                         "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                         "where tbl_league_publisher.PublisherID = @publisherIDs and tbl_league.IsDeleted = 0;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var allPublisherEntities = await connection.QueryAsync<PublisherEntity>(sql, query);
+                List<Publisher> publishers = new List<Publisher>();
+                var publisherEntitiesByYear = allPublisherEntities.GroupBy(x => x.Year);
+                foreach (var publisherYearGroup in publisherEntitiesByYear)
+                {
+                    IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(publisherYearGroup.Key);
+                    var leaguesDictionary = allLeagueYears.ToDictionary(x => x.League.LeagueID, y => y);
+                    IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(publisherYearGroup.Key);
+                    Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherYearGroup.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
+                    foreach (var game in allDomainGames)
+                    {
+                        domainGamesDictionary[game.PublisherID].Add(game);
+                    }
+
+                    foreach (var entity in publisherYearGroup)
+                    {
+                        var user = usersDictionary[entity.UserID];
+                        var leagueYear = leaguesDictionary[entity.LeagueID];
+                        var domainGames = domainGamesDictionary[entity.PublisherID];
+                        var domainPublisher = entity.ToDomain(leagueYear, user, domainGames);
+                        publishers.Add(domainPublisher);
+                    }
+                }
+
+                return publishers;
+            }
+        }
+
         private async Task<IReadOnlyList<PublisherGame>> GetAllPublisherGamesForYear(int year)
         {
             var query = new
@@ -1484,13 +1537,48 @@ namespace FantasyCritic.MySQL
         {
             PublisherGameEntity entity = new PublisherGameEntity(publisherGame);
 
+            string sql =
+                "insert into tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
+                "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,DraftPosition,OverallDraftPosition,CurrentlyIneligible) VALUES " +
+                "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
+                "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@DraftPosition,@OverallDraftPosition,@CurrentlyIneligible);";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(
-                    "insert into tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore,ManualWillNotRelease,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition) VALUES " +
-                    "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore,@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition);",
-                    entity);
+                await connection.ExecuteAsync(sql, entity);
             }
+        }
+
+        private Task MakePublisherGameSlotsConsistent(Guid publisherID, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, connection, transaction);
+        }
+
+        private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            var publishers = await GetPublishers(publisherIDs);
+            var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
+            foreach (var publisher in publishers)
+            {
+                var standardGames = publisher.PublisherGames.Where(x => !x.CounterPick).OrderBy(x => x.SlotNumber);
+                int slotNumber = 0;
+                foreach (var standardGame in standardGames)
+                {
+                    updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, slotNumber));
+                    slotNumber++;
+                }
+
+                slotNumber = 0;
+                var counterPicks = publisher.PublisherGames.Where(x => x.CounterPick).OrderBy(x => x.SlotNumber);
+                foreach (var counterPick in counterPicks)
+                {
+                    updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, slotNumber));
+                    slotNumber++;
+                }
+            }
+            
+
+            string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
+            await connection.ExecuteAsync(sql, updateEntities, transaction);
         }
 
         public async Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame)
@@ -2113,6 +2201,9 @@ namespace FantasyCritic.MySQL
                     await AddPublisherGames(actionProcessingResults.AddedPublisherGames, connection, transaction);
                     await DeletePublisherGames(actionProcessingResults.RemovedPublisherGames, connection, transaction);
 
+                    var allPublisherIDsToAdjust = actionProcessingResults.SuccessDrops.Select(x => x.Publisher.PublisherID);
+                    await MakePublisherGameSlotsConsistent(allPublisherIDsToAdjust, connection, transaction);
+
                     await transaction.CommitAsync();
                 }
             }   
@@ -2271,13 +2362,13 @@ namespace FantasyCritic.MySQL
 
         private Task AddPublisherGames(IEnumerable<PublisherGame> publisherGames, MySqlConnection connection, MySqlTransaction transaction)
         {
-            var entities = publisherGames.Select(x => new PublisherGameEntity(x));
-            return connection.ExecuteAsync(
+            string sql =
                 "insert into tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
                 "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,DraftPosition,OverallDraftPosition,CurrentlyIneligible) VALUES " +
                 "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-                "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@DraftPosition,@OverallDraftPosition,@CurrentlyIneligible);",
-                entities, transaction);
+                "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@DraftPosition,@OverallDraftPosition,@CurrentlyIneligible);";
+            var entities = publisherGames.Select(x => new PublisherGameEntity(x));
+            return connection.ExecuteAsync(sql, entities, transaction);
         }
 
         private Task DeletePublisherGames(IEnumerable<PublisherGame> publisherGames, MySqlConnection connection, MySqlTransaction transaction)

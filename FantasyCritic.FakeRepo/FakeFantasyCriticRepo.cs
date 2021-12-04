@@ -281,7 +281,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task<Result> RemovePublisherGame(Guid publisherGameID)
+        public Task<Result> RemovePublisherGame(PublisherGame publisherGame)
         {
             throw new NotImplementedException();
         }

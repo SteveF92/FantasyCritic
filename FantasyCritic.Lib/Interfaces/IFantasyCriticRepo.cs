@@ -69,7 +69,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year);
 
         Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats);
-        Task<Result> RemovePublisherGame(Guid publisherGameID);
+        Task<Result> RemovePublisherGame(PublisherGame publisherGame);
         Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
         Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease);
 

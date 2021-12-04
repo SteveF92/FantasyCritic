@@ -79,7 +79,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> RemovePublisherGame(Publisher publisher, PublisherGame publisherGame)
         {
-            var result = await _fantasyCriticRepo.RemovePublisherGame(publisherGame.PublisherGameID);
+            var result = await _fantasyCriticRepo.RemovePublisherGame(publisherGame);
             if (result.IsSuccess)
             {
                 RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisher, publisherGame);

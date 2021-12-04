@@ -44,7 +44,7 @@ namespace FantasyCritic.DatabaseUtility
             MySQLMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
             MySQLFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
 
-            var updateEntities = new List<PublisherGameUpdateEntity>();
+            var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
@@ -55,13 +55,13 @@ namespace FantasyCritic.DatabaseUtility
                     for (var index = 0; index < orderedStandardGames.Count; index++)
                     {
                         var standardGame = orderedStandardGames[index];
-                        updateEntities.Add(new PublisherGameUpdateEntity(standardGame.PublisherGameID, index));
+                        updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, index));
                     }
                     var orderedCounterPickGames = publisher.PublisherGames.Where(x => x.CounterPick).OrderBy(x => x.Timestamp).ToList();
                     for (var index = 0; index < orderedCounterPickGames.Count; index++)
                     {
                         var counterPick = orderedCounterPickGames[index];
-                        updateEntities.Add(new PublisherGameUpdateEntity(counterPick.PublisherGameID, index));
+                        updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, index));
                     }
                 }
             }
