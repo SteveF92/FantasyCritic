@@ -219,7 +219,8 @@ namespace FantasyCritic.MySQL
                         return Result.Failure("Removing game failed.");
                     }
 
-                    await MakePublisherGameSlotsConsistent(publisherGame.PublisherID, connection, transaction);
+                    await MakePublisherGameSlotsConsistent(publisherGame.PublisherID, publisherGame.PublisherGameID, connection, transaction);
+                    await transaction.CommitAsync();
                     return Result.Success();
                 }
             }
@@ -1351,6 +1352,10 @@ namespace FantasyCritic.MySQL
                     Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherYearGroup.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
                     foreach (var game in allDomainGames)
                     {
+                        if (!domainGamesDictionary.ContainsKey(game.PublisherID))
+                        {
+                            domainGamesDictionary[game.PublisherID] = new List<PublisherGame>();
+                        }
                         domainGamesDictionary[game.PublisherID].Add(game);
                     }
 
@@ -1548,18 +1553,23 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        private Task MakePublisherGameSlotsConsistent(Guid publisherID, MySqlConnection connection, MySqlTransaction transaction)
+        private Task MakePublisherGameSlotsConsistent(Guid publisherID, Guid removedPublisherGameID, MySqlConnection connection, MySqlTransaction transaction)
         {
-            return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, connection, transaction);
+            return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, new List<Guid>() { removedPublisherGameID }, connection, transaction);
         }
 
-        private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, MySqlConnection connection, MySqlTransaction transaction)
+        private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, IEnumerable<Guid> removedPublisherGameIDs, 
+            MySqlConnection connection, MySqlTransaction transaction)
         {
+            var removedPublisherGameIDsHashSet = Enumerable.ToHashSet(removedPublisherGameIDs);
             var publishers = await GetPublishers(publisherIDs);
             var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
             foreach (var publisher in publishers)
             {
-                var standardGames = publisher.PublisherGames.Where(x => !x.CounterPick).OrderBy(x => x.SlotNumber);
+                var standardGames = publisher.PublisherGames
+                    .Where(x => !x.CounterPick)
+                    .Where(x => !removedPublisherGameIDsHashSet.Contains(x.PublisherGameID))
+                    .OrderBy(x => x.SlotNumber);
                 int slotNumber = 0;
                 foreach (var standardGame in standardGames)
                 {
@@ -1568,7 +1578,10 @@ namespace FantasyCritic.MySQL
                 }
 
                 slotNumber = 0;
-                var counterPicks = publisher.PublisherGames.Where(x => x.CounterPick).OrderBy(x => x.SlotNumber);
+                var counterPicks = publisher.PublisherGames
+                    .Where(x => x.CounterPick)
+                    .Where(x => !removedPublisherGameIDsHashSet.Contains(x.PublisherGameID))
+                    .OrderBy(x => x.SlotNumber);
                 foreach (var counterPick in counterPicks)
                 {
                     updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, slotNumber));
@@ -1576,7 +1589,6 @@ namespace FantasyCritic.MySQL
                 }
             }
             
-
             string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
             await connection.ExecuteAsync(sql, updateEntities, transaction);
         }
@@ -2202,11 +2214,12 @@ namespace FantasyCritic.MySQL
                     await DeletePublisherGames(actionProcessingResults.RemovedPublisherGames, connection, transaction);
 
                     var allPublisherIDsToAdjust = actionProcessingResults.SuccessDrops.Select(x => x.Publisher.PublisherID);
-                    await MakePublisherGameSlotsConsistent(allPublisherIDsToAdjust, connection, transaction);
+                    var removedPublisherGameIDs = actionProcessingResults.RemovedPublisherGames.Select(x => x.PublisherGameID);
+                    await MakePublisherGameSlotsConsistent(allPublisherIDsToAdjust, removedPublisherGameIDs, connection, transaction);
 
                     await transaction.CommitAsync();
                 }
-            }   
+            }
         }
 
         public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
