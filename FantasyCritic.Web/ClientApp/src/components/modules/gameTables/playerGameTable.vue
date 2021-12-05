@@ -11,7 +11,9 @@
         </tr>
       </thead>
       <tbody>
-        <playerGameSlotRow v-for="gameSlot in publisher.gameSlots" :gameSlot="gameSlot" :yearFinished="yearFinished" v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
+        <playerGameSlotRow v-for="gameSlot in publisher.gameSlots"
+                           :gameSlot="gameSlot" :yearFinished="leagueYear.supportedYear.finished" :showSlotTypes="leagueYear.hasSpecialSlots"
+                           v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
         <tr>
           <td id="total-description">
             <span id="total-description-text">
@@ -34,15 +36,7 @@ export default {
   components: {
     PlayerGameSlotRow
   },
-  props: ['publisher', 'leagueYear'],
-  computed: {
-    yearFinished() {
-      return this.leagueYear.supportedYear.finished;
-    },
-    showSlotTypes() {
-      return this.leagueYear.hasSpecialSlots;
-    }
-  }
+  props: ['publisher', 'leagueYear']
 };
 </script>
 <style scoped>

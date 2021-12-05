@@ -3,7 +3,7 @@
     <template v-if="game">
       <td>
         <span class="game-name-column">
-          <slotTypeBadge :gameSlot="gameSlot"></slotTypeBadge>
+          <slotTypeBadge v-if="showSlotTypes || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
           <span class="master-game-popover">
             <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="game.currentlyIneligible"></masterGamePopover>
             <span v-if="!game.linked">{{game.gameName}}</span>
@@ -41,7 +41,7 @@
     <template v-else>
       <td>
         <span class="game-name-column">
-          <slotTypeBadge :gameSlot="gameSlot"></slotTypeBadge>
+          <slotTypeBadge v-if="showSlotTypes" :gameSlot="gameSlot"></slotTypeBadge>
           <span v-if="gameSlot.counterPick" class="game-status">
             Warning!
             <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="emptyCounterpickText" />
@@ -71,7 +71,7 @@ export default {
     MasterGamePopover,
     SlotTypeBadge
   },
-  props: ['gameSlot', 'yearFinished'],
+  props: ['gameSlot', 'yearFinished', 'showSlotTypes'],
   computed: {
     game(){
       return this.gameSlot.publisherGame;

@@ -110,18 +110,9 @@ export default {
   }
 
   .regular-slot-badge {
-    color: #fff;
+    color: #ffffff;
     text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
-    background-image: linear-gradient(
-      135deg, 
-      #0039A6 0%,
-      #0039A6 25%,
-      #00933C 25%,
-      #00933C 50%,
-      #FCCC0A 50%,
-      #FCCC0A 75%,
-      #FF6319 75%,
-      #FF6319 100%);
+    background-color: #cccccc;
   }
 
   .counter-pick-badge {
