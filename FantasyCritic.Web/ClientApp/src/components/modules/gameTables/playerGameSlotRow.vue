@@ -108,7 +108,7 @@ export default {
           return "Warning!";
         },
         content: () => {
-          return 'If you do not fill this gameSlot by the end of the year, it will count as -15 points. <br/> <br/>' +
+          return 'If you do not fill this slot by the end of the year, it will count as -15 points. <br/> <br/>' +
             'See the FAQ for a full explanation.';
         }
       }
