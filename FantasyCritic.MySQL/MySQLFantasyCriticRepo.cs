@@ -1563,8 +1563,9 @@ namespace FantasyCritic.MySQL
         {
             var removedPublisherGameIDsHashSet = Enumerable.ToHashSet(removedPublisherGameIDs);
             var publishers = await GetPublishers(publisherIDs);
+            var publishersToAdjust = publishers.Where(x => !x.LeagueYear.HasSpecialSlots()).ToList();
             var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
-            foreach (var publisher in publishers)
+            foreach (var publisher in publishersToAdjust)
             {
                 var standardGames = publisher.PublisherGames
                     .Where(x => !x.CounterPick)
