@@ -20,7 +20,7 @@
         <li>Will Not Release Games Dropped: {{getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames)}}</li>
         <li>"Any Unreleased" Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
       </ul>
-      <playerGameTable v-if="leagueYear" :publisher="publisher" :options="options" :yearFinished="leagueYear.supportedYear.finished"></playerGameTable>
+      <playerGameTable v-if="leagueYear" :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
     </div>
   </div>
 </template>
@@ -42,16 +42,6 @@ export default {
     PlayerGameTable
   },
   props: ['publisherid'],
-  computed: {
-    options() {
-      var options = {
-        standardGameSlots: this.leagueYear.standardGames,
-        counterPickSlots: this.leagueYear.counterPicks
-      };
-
-      return options;
-    }
-  },
   methods: {
     fetchPublisher() {
       axios

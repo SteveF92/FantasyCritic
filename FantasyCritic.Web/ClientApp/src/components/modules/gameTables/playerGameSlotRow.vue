@@ -28,7 +28,7 @@
           </span>
           <span v-if="game.currentlyIneligible" class="game-status">
             Ineligible
-            <font-awesome-icon color="white" size="md" icon="info-circle" v-b-popover.hover="inEligibleText" />
+            <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="inEligibleText" />
           </span>
         </span>
       </td>

@@ -33,6 +33,7 @@ namespace FantasyCritic.Web.Models.Responses
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
             UserIsActive = activeUsers.Any(x => x.Id == accessingUser.GetValueOrDefault(y => y.Id));
+            HasSpecialSlots = leagueYear.Options.HasSpecialSlots();
             Publishers = publishers
                 .OrderBy(x => x.DraftPosition)
                 .Select(x => new PublisherViewModel(x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished))
@@ -130,6 +131,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string ScoringSystem { get; }
         public bool UnlinkedGameExists { get; }
         public bool UserIsActive { get; }
+        public bool HasSpecialSlots { get; }
         public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
         public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }

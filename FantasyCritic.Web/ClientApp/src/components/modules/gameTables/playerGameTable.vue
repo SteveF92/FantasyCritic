@@ -34,23 +34,13 @@ export default {
   components: {
     PlayerGameSlotRow
   },
-  props: ['publisher', 'options', 'yearFinished'],
+  props: ['publisher', 'leagueYear'],
   computed: {
-    standardGames() {
-      return _.filter(this.publisher.games, { 'counterPick': false });
+    yearFinished() {
+      return this.leagueYear.supportedYear.finished;
     },
-    counterPicks() {
-      return _.filter(this.publisher.games, { 'counterPick': true });
-    },
-    standardFiller() {
-      var numberStandardGames = this.standardGames.length;
-      var openSlots = this.options.standardGameSlots - numberStandardGames;
-      return openSlots;
-    },
-    counterPickFiller() {
-      var numberCounterPicked = this.counterPicks.length;
-      var openSlots = this.options.counterPickSlots - numberCounterPicked;
-      return openSlots;
+    showSlotTypes() {
+      return this.leagueYear.hasSpecialSlots;
     }
   }
 };

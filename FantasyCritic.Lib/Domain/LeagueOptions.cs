@@ -91,6 +91,8 @@ namespace FantasyCritic.Lib.Domain
         public ScoringSystem ScoringSystem { get; }
         public bool PublicLeague { get; }
 
+        public bool HasSpecialSlots() => SpecialGameSlots.Any();
+
         public Result Validate()
         {
             if (GamesToDraft > StandardGames)
