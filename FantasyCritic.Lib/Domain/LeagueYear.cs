@@ -72,6 +72,8 @@ namespace FantasyCritic.Lib.Domain
         public IReadOnlyList<MasterGameTag> GetOverriddenTags(Maybe<MasterGameYear> masterGameYear) => 
             masterGameYear.HasNoValue ? new List<MasterGameTag>() : GetOverriddenTags(masterGameYear.Value.MasterGame);
 
+        public bool HasSpecialSlots() => Options.SpecialGameSlots.Any();
+
         public bool GameIsEligible(MasterGame masterGame)
         {
             bool found = _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);

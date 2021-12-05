@@ -67,7 +67,7 @@ namespace FantasyCritic.Lib.Domain
         {
             get
             {
-                var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints();
+                var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints() ?? 0m;
                 var score = PublisherGames.Sum(x => x.FantasyPoints);
                 if (!score.HasValue)
                 {
@@ -80,58 +80,56 @@ namespace FantasyCritic.Lib.Domain
 
         public decimal GetProjectedFantasyPoints(LeagueOptions options, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
         {
-            var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints();
             var currentGamesScore =  PublisherGames.Sum(x => x.GetProjectedOrRealFantasyPoints(options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
-            var availableSlots = GetAvailableSlots(options, LeagueYear.SupportedYear.Finished);
-            var emptySlotsScore = availableSlots * systemWideValues.AverageStandardGamePoints;
-            return currentGamesScore + emptySlotsScore + emptyCounterPickSlotPoints;
+
+            var availableStandardSlots = GetNumberAvailableSlots(false, LeagueYear.SupportedYear.Finished);
+            var emptyStandardSlotsScore = availableStandardSlots * systemWideValues.AverageStandardGamePoints;
+
+            var availableCounterPickSlots = GetNumberAvailableSlots(true, LeagueYear.SupportedYear.Finished);
+            var projectedEmptyCounterPickScore = availableCounterPickSlots * systemWideValues.AverageCounterPickPoints;
+            var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints() ?? projectedEmptyCounterPickScore;
+
+            return currentGamesScore + emptyStandardSlotsScore + emptyCounterPickSlotPoints;
         }
 
-        public decimal GetEmptyCounterPickSlotPoints()
+        private decimal? GetEmptyCounterPickSlotPoints()
         {
             if (!LeagueYear.SupportedYear.Finished)
             {
-                return 0m;
+                return null;
             }
 
             var expectedNumberOfCounterPicks = LeagueYear.Options.CounterPicks;
-            var numberCounterpicks = PublisherGames.Count(x => x.CounterPick);
-            var emptySlots = expectedNumberOfCounterPicks - numberCounterpicks;
+            var numberCounterPicks = PublisherGames.Count(x => x.CounterPick);
+            var emptySlots = expectedNumberOfCounterPicks - numberCounterPicks;
             var points = emptySlots * -15m;
             return points;
         }
 
-        public bool HasRemainingGameSpot(int totalSpots)
-        {
-            if (totalSpots > PublisherGames.Count(x => !x.CounterPick))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool HasRemainingCounterPickSpot(int totalCounterPickSpots)
-        {
-            if (totalCounterPickSpots > PublisherGames.Count(x => x.CounterPick))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public int GetAvailableSlots(LeagueOptions options, bool yearFinished)
+        public int GetNumberAvailableSlots(bool counterPick, bool yearFinished)
         {
             if (yearFinished)
             {
                 return 0;
             }
 
-            return options.StandardGames - PublisherGames.Count(x => !x.CounterPick);
+            var numberSlots = counterPick ? LeagueYear.Options.CounterPicks : LeagueYear.Options.StandardGames;
+            var games = PublisherGames.Where(x => x.CounterPick == counterPick);
+            var numberAvailableSlots = numberSlots - games.Count();
+            return numberAvailableSlots;
         }
 
-        public int GetNextSlotNumber(bool counterPick) => PublisherGames.Count(x => x.CounterPick == counterPick);
+        public int? GetIdealSlot(bool counterPick)
+        {
+            var numberSlots = counterPick ? LeagueYear.Options.CounterPicks : LeagueYear.Options.StandardGames;
+            var games = PublisherGames.Where(x => x.CounterPick == counterPick);
+            var possibleSlots = Enumerable.Range(0, numberSlots - 1);
+            var slotsTaken = games.Select(x => x.SlotNumber);
+            var emptySlots = possibleSlots.Except(slotsTaken).OrderBy(x => x);
+            var firstEmptySlot = emptySlots.FirstOrDefault();
+            return firstEmptySlot;
+        }
+
         public IReadOnlyList<PublisherSlot> GetPublisherSlots()
         {
             List<PublisherSlot> publisherSlots = new List<PublisherSlot>();
