@@ -48,7 +48,6 @@ namespace FantasyCritic.Web.Models.Responses
 
             WillRelease = publisherGame.WillRelease();
             ManualWillNotRelease = publisherGame.ManualWillNotRelease;
-            CurrentlyIneligible = publisherGame.CurrentlyIneligible;
             OverallDraftPosition = publisherGame.OverallDraftPosition;
             SlotNumber = publisherGame.SlotNumber;
         }
@@ -72,6 +71,5 @@ namespace FantasyCritic.Web.Models.Responses
         public bool WillRelease { get; }
         public bool ManualCriticScore { get; }
         public bool ManualWillNotRelease { get; }
-        public bool CurrentlyIneligible { get; }
     }
 }

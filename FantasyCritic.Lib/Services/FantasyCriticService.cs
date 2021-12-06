@@ -164,10 +164,7 @@ namespace FantasyCritic.Lib.Services
                 {
                     var leagueYear = leagueYearDictionary[key];
                     decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, currentDate);
-                    bool? overridenEligibility = leagueYear.GetOverriddenEligibility(publisherGame.MasterGame);
-                    var tagOverrides = leagueYear.GetOverriddenTags(publisherGame.MasterGame);
-                    bool currentlyIneligible = publisherGame.CalculateIsCurrentlyIneligible(leagueYear.Options, overridenEligibility, tagOverrides);
-                    var stats = new PublisherGameCalculatedStats(fantasyPoints, currentlyIneligible);
+                    var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     calculatedStats.Add(publisherGame.PublisherGameID, stats);
                 }
             }
@@ -186,10 +183,7 @@ namespace FantasyCritic.Lib.Services
                 foreach (var publisherGame in publisher.PublisherGames)
                 {
                     decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, currentDate);
-                    bool? overridenEligibility = leagueYear.GetOverriddenEligibility(publisherGame.MasterGame);
-                    var tagOverrides = leagueYear.GetOverriddenTags(publisherGame.MasterGame);
-                    bool currentlyIneligible = publisherGame.CalculateIsCurrentlyIneligible(leagueYear.Options, overridenEligibility, tagOverrides);
-                    var stats = new PublisherGameCalculatedStats(fantasyPoints, currentlyIneligible);
+                    var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     calculatedStats.Add(publisherGame.PublisherGameID, stats);
                 }
             }

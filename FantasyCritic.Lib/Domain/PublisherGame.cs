@@ -14,7 +14,7 @@ namespace FantasyCritic.Lib.Domain
     public class PublisherGame
     {
         public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
-            decimal? fantasyPoints, Maybe<MasterGameYear> masterGame, int slotNumber, int? draftPosition, int? overallDraftPosition, bool currentlyIneligible)
+            decimal? fantasyPoints, Maybe<MasterGameYear> masterGame, int slotNumber, int? draftPosition, int? overallDraftPosition)
         {
             PublisherID = publisherID;
             PublisherGameID = publisherGameID;
@@ -28,7 +28,6 @@ namespace FantasyCritic.Lib.Domain
             SlotNumber = slotNumber;
             DraftPosition = draftPosition;
             OverallDraftPosition = overallDraftPosition;
-            CurrentlyIneligible = currentlyIneligible;
         }
 
         public Guid PublisherID { get; }
@@ -43,7 +42,6 @@ namespace FantasyCritic.Lib.Domain
         public int SlotNumber { get; }
         public int? DraftPosition { get; }
         public int? OverallDraftPosition { get; }
-        public bool CurrentlyIneligible { get; }
 
         public bool WillRelease()
         {
@@ -107,7 +105,7 @@ namespace FantasyCritic.Lib.Domain
                 return false;
             }
 
-            var leagueTags = options.LeagueTags;
+            var leagueTags = options.GetTagsForSlot(SlotNumber);
             var customCodeTags = leagueTags.Where(x => x.Tag.HasCustomCode).ToList();
             var nonCustomCodeTags = leagueTags.Except(customCodeTags).ToList();
 
@@ -122,9 +120,11 @@ namespace FantasyCritic.Lib.Domain
             }
 
             var bannedTagsIntersection = tagsToUse.Intersect(bannedTags);
-            var missingRequiredTags = requiredTags.Except(tagsToUse);
+            var requiredTagsIntersection = tagsToUse.Intersect(requiredTags);
+            bool hasBannedTags = bannedTagsIntersection.Any();
+            bool hasNoRequiredTags = requiredTags.Any() && !requiredTagsIntersection.Any();
 
-            if (bannedTagsIntersection.Any() || missingRequiredTags.Any())
+            if (hasBannedTags || hasNoRequiredTags)
             {
                 return true;
             }

@@ -12,6 +12,8 @@ namespace FantasyCritic.Lib.Domain
 {
     public class LeagueOptions
     {
+        private readonly Dictionary<int, SpecialGameSlot> _specialSlotDictionary;
+
         public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
             bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, 
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, bool publicLeague)
@@ -32,6 +34,8 @@ namespace FantasyCritic.Lib.Domain
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
             PublicLeague = publicLeague;
+
+            _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
         }
 
         public LeagueOptions(LeagueCreationParameters parameters)
@@ -52,6 +56,8 @@ namespace FantasyCritic.Lib.Domain
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
             PublicLeague = parameters.PublicLeague;
+
+            _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
         }
 
         public LeagueOptions(EditLeagueYearParameters parameters)
@@ -72,6 +78,8 @@ namespace FantasyCritic.Lib.Domain
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
             PublicLeague = parameters.PublicLeague;
+
+            _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
         }
 
         public int StandardGames { get; }
@@ -92,6 +100,29 @@ namespace FantasyCritic.Lib.Domain
         public bool PublicLeague { get; }
 
         public bool HasSpecialSlots() => SpecialGameSlots.Any();
+
+        public IReadOnlyList<LeagueTagStatus> GetTagsForSlot(int slotNumber)
+        {
+            var specialGameSlot = GetSpecialGameSlotByOverallSlotNumber(slotNumber);
+            if (specialGameSlot.HasNoValue)
+            {
+                return LeagueTags;
+            }
+
+            var specialSlotRequiredTags = specialGameSlot.Value.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required)).ToList();
+            return specialSlotRequiredTags;
+        }
+
+        public Maybe<SpecialGameSlot> GetSpecialGameSlotByOverallSlotNumber(int slotNumber)
+        {
+            var hasSpecialSlot = _specialSlotDictionary.TryGetValue(slotNumber, out var specialSlot);
+            if (!hasSpecialSlot)
+            {
+                return Maybe<SpecialGameSlot>.None;
+            }
+
+            return specialSlot;
+        }
 
         public Result Validate()
         {

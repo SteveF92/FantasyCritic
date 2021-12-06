@@ -74,6 +74,7 @@ export default {
       let tempSlot = _.cloneDeep(moveIntoSlot);
       moveIntoSlot.publisherGame = _.cloneDeep(state.heldSlot.publisherGame);
       state.heldSlot.publisherGame = _.cloneDeep(tempSlot.publisherGame);
+      state.heldSlot.gameMeetsSlotCriteria = true;
       state.heldSlot = null;
     },
     setDesiredPositions(state) {

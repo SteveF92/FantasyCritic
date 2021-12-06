@@ -13,13 +13,15 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherSlotViewModel
     {
-        public PublisherSlotViewModel(PublisherSlot domain, LocalDate currentDate, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
+        public PublisherSlotViewModel(Publisher publisher, PublisherSlot slot, LocalDate currentDate, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
         {
-            SlotNumber = domain.SlotNumber;
-            OverallSlotNumber = domain.OverallSlotNumber;
-            CounterPick = domain.CounterPick;
-            SpecialSlot = domain.SpecialGameSlot.GetValueOrDefault(x => new SpecialGameSlotViewModel(x));
-            PublisherGame = domain.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, scoringSystem, systemWideValues));
+            SlotNumber = slot.SlotNumber;
+            OverallSlotNumber = slot.OverallSlotNumber;
+            CounterPick = slot.CounterPick;
+            SpecialSlot = slot.SpecialGameSlot.GetValueOrDefault(x => new SpecialGameSlotViewModel(x));
+            PublisherGame = slot.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, scoringSystem, systemWideValues));
+
+            GameMeetsSlotCriteria = publisher.SlotHasEligibleGame(slot);
         }
 
         public int SlotNumber { get; }
@@ -27,5 +29,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool CounterPick { get; }
         public SpecialGameSlotViewModel SpecialSlot { get; }
         public PublisherGameViewModel PublisherGame { get; }
+        public bool GameMeetsSlotCriteria { get; }
     }
 }

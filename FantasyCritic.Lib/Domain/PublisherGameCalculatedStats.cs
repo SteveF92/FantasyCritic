@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public record PublisherGameCalculatedStats(decimal? FantasyPoints, bool CurrentlyIneligible);
+    public record PublisherGameCalculatedStats(decimal? FantasyPoints);
 }

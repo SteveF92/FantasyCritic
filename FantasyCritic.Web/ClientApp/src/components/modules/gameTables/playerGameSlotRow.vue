@@ -1,13 +1,13 @@
 <template>
-  <tr v-bind:class="{ 'table-warning': game && game.currentlyIneligible }">
+  <tr v-bind:class="{ 'table-warning': gameSlot && !gameSlot.gameMeetsSlotCriteria }">
     <template v-if="game">
       <td>
         <span class="game-name-column">
           <b-button variant="danger" class="move-button" v-show="moveMode && !holdingGame && !gameSlot.counterPick" v-on:click="holdGame">Move</b-button>
           <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
-          <slotTypeBadge v-if="showSlotTypes || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
+          <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
           <span class="master-game-popover">
-            <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="game.currentlyIneligible"></masterGamePopover>
+            <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
             <span v-if="!game.linked">{{game.gameName}}</span>
           </span>
 
@@ -28,7 +28,7 @@
           <span v-if="game.manualCriticScore && game.linked" class="game-status">
             Manually Scored
           </span>
-          <span v-if="game.currentlyIneligible" class="game-status">
+          <span v-if="!gameSlot.gameMeetsSlotCriteria" class="game-status">
             Ineligible
             <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="inEligibleText" />
           </span>
@@ -44,7 +44,7 @@
       <td>
         <span class="game-name-column">
           <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
-          <slotTypeBadge v-if="showSlotTypes" :gameSlot="gameSlot"></slotTypeBadge>
+          <slotTypeBadge v-if="hasSpecialSlots" :gameSlot="gameSlot"></slotTypeBadge>
           <span v-if="gameSlot.counterPick" class="game-status">
             Warning!
             <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="emptyCounterpickText" />
@@ -74,7 +74,7 @@ export default {
     MasterGamePopover,
     SlotTypeBadge
   },
-  props: ['gameSlot', 'yearFinished', 'showSlotTypes'],
+  props: ['gameSlot', 'yearFinished', 'hasSpecialSlots'],
   computed: {
     game(){
       return this.gameSlot.publisherGame;
@@ -103,10 +103,15 @@ export default {
           return "What does this mean?";
         },
         content: () => {
-          return 'This game is currently ineligible based on your league rules. Until you take action, any points the game recieved still count. <br/> <br/>' +
-            'The intention is for the league to discuss what should happen. If you manually mark the game as eligible or change your ' +
-            'league rules, this will disappear. <br/> <br/>' +
-            'You could also choose to remove the game. The manager can use "Remove Publisher Game" to do that.';
+          if (this.hasSpecialSlots) {
+            return 'This game is not eligible for this slot. Until you take action, the points the game recieved will not count. <br/> <br/>' +
+              'You can either move this game for a different slot, or, if your league disagrees with this the tags this game has, you can override the tags for this game.';
+          } else {
+            return 'This game is currently ineligible based on your league rules. Until you take action, the points the game recieved will not count. <br/> <br/>' +
+              'The intention is for the league to discuss what should happen. If you manually mark the game as eligible or change your ' +
+              'league rules, this will disappear. <br/> <br/>' +
+              'You could also choose to remove the game. The manager can use "Remove Publisher Game" to do that.';
+          }
         }
       }
     },

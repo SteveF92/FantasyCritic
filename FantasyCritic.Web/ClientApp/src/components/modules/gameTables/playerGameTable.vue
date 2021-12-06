@@ -12,7 +12,7 @@
       </thead>
       <tbody>
         <playerGameSlotRow v-for="gameSlot in storedGameSlots"
-                           :gameSlot="gameSlot" :yearFinished="leagueYear.supportedYear.finished" :showSlotTypes="leagueYear.hasSpecialSlots"
+                           :gameSlot="gameSlot" :yearFinished="leagueYear.supportedYear.finished" :hasSpecialSlots="leagueYear.hasSpecialSlots"
                            v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
         <tr>
           <td id="total-description">

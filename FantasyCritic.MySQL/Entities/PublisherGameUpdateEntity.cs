@@ -13,11 +13,9 @@ namespace FantasyCritic.MySQL.Entities
         {
             PublisherGameID = keyValuePair.Key;
             FantasyPoints = keyValuePair.Value.FantasyPoints;
-            CurrentlyIneligible = keyValuePair.Value.CurrentlyIneligible;
         }
 
         public Guid PublisherGameID { get; }
         public decimal? FantasyPoints { get; }
-        public bool CurrentlyIneligible { get; }
     }
 }

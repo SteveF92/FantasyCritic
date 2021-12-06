@@ -133,23 +133,18 @@ namespace FantasyCritic.Lib.Domain
         public IReadOnlyList<PublisherSlot> GetPublisherSlots()
         {
             List<PublisherSlot> publisherSlots = new List<PublisherSlot>();
-            Dictionary<int, SpecialGameSlot> specialSlotDictionary = LeagueYear.Options.SpecialGameSlots
-                    .ToDictionary(specialGameSlot => LeagueYear.Options.StandardGames - LeagueYear.Options.SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
 
             int overallSlotNumber = 0;
             var standardGamesBySlot = PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
             for (int standardGameIndex = 0; standardGameIndex < LeagueYear.Options.StandardGames; standardGameIndex++)
             {
                 Maybe<PublisherGame> standardGame = Maybe<PublisherGame>.None;
-                Maybe<SpecialGameSlot> specialSlot = Maybe<SpecialGameSlot>.None;
                 if (standardGamesBySlot.TryGetValue(standardGameIndex, out var foundGame))
                 {
                     standardGame = foundGame;
                 }
-                if (specialSlotDictionary.TryGetValue(standardGameIndex, out var foundSlot))
-                {
-                    specialSlot = foundSlot;
-                }
+                Maybe<SpecialGameSlot> specialSlot = LeagueYear.Options.GetSpecialGameSlotByOverallSlotNumber(standardGameIndex);
+
                 publisherSlots.Add(new PublisherSlot(standardGameIndex, overallSlotNumber, false, specialSlot, standardGame));
                 overallSlotNumber++;
             }
@@ -168,6 +163,23 @@ namespace FantasyCritic.Lib.Domain
             }
 
             return publisherSlots;
+        }
+
+        public bool SlotHasEligibleGame(PublisherSlot slot)
+        {
+            if (slot.CounterPick)
+            {
+                return true;
+            }
+            if (slot.PublisherGame.HasNoValue)
+            {
+                return true;
+            }
+
+            bool? overridenEligibility = LeagueYear.GetOverriddenEligibility(slot.PublisherGame.Value.MasterGame);
+            var tagOverrides = LeagueYear.GetOverriddenTags(slot.PublisherGame.Value.MasterGame);
+            var isIneligible = slot.PublisherGame.Value.CalculateIsCurrentlyIneligible(LeagueYear.Options, overridenEligibility, tagOverrides);
+            return !isIneligible;
         }
 
         public Maybe<PublisherGame> GetPublisherGame(MasterGame masterGame) => GetPublisherGameByMasterGameID(masterGame.MasterGameID);

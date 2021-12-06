@@ -339,7 +339,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-                masterGameYear, idealSlot.Value, request.DraftPosition, request.OverallDraftPosition, false);
+                masterGameYear, idealSlot.Value, request.DraftPosition, request.OverallDraftPosition);
 
             LeagueYear leagueYear = request.Publisher.LeagueYear;
 
