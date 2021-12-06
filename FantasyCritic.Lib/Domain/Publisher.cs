@@ -178,8 +178,8 @@ namespace FantasyCritic.Lib.Domain
 
             bool? overridenEligibility = LeagueYear.GetOverriddenEligibility(slot.PublisherGame.Value.MasterGame);
             var tagOverrides = LeagueYear.GetOverriddenTags(slot.PublisherGame.Value.MasterGame);
-            var isIneligible = slot.PublisherGame.Value.CalculateIsCurrentlyIneligible(LeagueYear.Options, overridenEligibility, tagOverrides);
-            return !isIneligible;
+            var eligible = slot.PublisherGame.Value.CalculateIsCurrentlyEligible(LeagueYear.Options, overridenEligibility, tagOverrides);
+            return eligible;
         }
 
         public Maybe<PublisherGame> GetPublisherGame(MasterGame masterGame) => GetPublisherGameByMasterGameID(masterGame.MasterGameID);

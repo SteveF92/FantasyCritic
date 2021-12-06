@@ -93,16 +93,28 @@ namespace FantasyCritic.Lib.Domain
             return MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
         }
 
-        public bool CalculateIsCurrentlyIneligible(LeagueOptions options, bool? overridenEligibility, IReadOnlyList<MasterGameTag> overriddenTags)
+        public bool CalculateIsCurrentlyEligible(LeagueOptions options, bool? overridenEligibility, IReadOnlyList<MasterGameTag> overriddenTags)
         {
-            if (overridenEligibility.HasValue)
+            var specialSlot = options.GetSpecialGameSlotByOverallSlotNumber(SlotNumber);
+            if (specialSlot.HasNoValue)
             {
-                return !overridenEligibility.Value;
+                if (overridenEligibility.HasValue)
+                {
+                    return overridenEligibility.Value;
+                }
             }
-
+            else
+            {
+                var gameIsBanned = overridenEligibility.HasValue && !overridenEligibility.Value;
+                if (gameIsBanned)
+                {
+                    return false;
+                }
+            }
+            
             if (MasterGame.HasNoValue)
             {
-                return false;
+                return true;
             }
 
             var leagueTags = options.GetTagsForSlot(SlotNumber);
@@ -126,13 +138,13 @@ namespace FantasyCritic.Lib.Domain
 
             if (hasBannedTags || hasNoRequiredTags)
             {
-                return true;
+                return false;
             }
 
             var masterGameCustomCodeTags = tagsToUse.Where(x => x.HasCustomCode).ToList();
             if (!masterGameCustomCodeTags.Any())
             {
-                return false;
+                return true;
             }
 
             var dateGameWasAcquired = Timestamp.InZone(TimeExtensions.EasternTimeZone).Date;
@@ -143,7 +155,7 @@ namespace FantasyCritic.Lib.Domain
                 {
                     if (plannedForEarlyAccessTag.Status == TagStatus.Banned)
                     {
-                        return true;
+                        return false;
                     }
                 }
 
@@ -155,7 +167,7 @@ namespace FantasyCritic.Lib.Domain
                         var pickedUpBeforeInEarlyAccess = dateGameWasAcquired < masterGame.EarlyAccessReleaseDate.Value;
                         if (!pickedUpBeforeInEarlyAccess)
                         {
-                            return true;
+                            return false;
                         }
                     }
                 }
@@ -168,7 +180,7 @@ namespace FantasyCritic.Lib.Domain
                 {
                     if (willReleaseInternationallyFirstTag.Status == TagStatus.Banned)
                     {
-                        return true;
+                        return false;
                     }
                 }
 
@@ -180,13 +192,13 @@ namespace FantasyCritic.Lib.Domain
                         var pickedUpBeforeReleasedInternationally = dateGameWasAcquired < masterGame.InternationalReleaseDate.Value;
                         if (!pickedUpBeforeReleasedInternationally)
                         {
-                            return true;
+                            return false;
                         }
                     }
                 }
             }
 
-            return false;
+            return true;
         }
 
         public override string ToString() => GameName;
