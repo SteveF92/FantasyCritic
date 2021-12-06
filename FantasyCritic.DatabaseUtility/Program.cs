@@ -48,7 +48,7 @@ namespace FantasyCritic.DatabaseUtility
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
-                var allPublishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year);
+                var allPublishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, true);
                 foreach (var publisher in allPublishers)
                 {
                     var orderedStandardGames = publisher.PublisherGames.Where(x => !x.CounterPick).OrderBy(x => x.Timestamp).ToList();

@@ -20,11 +20,11 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
-using MoreLinq;
 using MySqlConnector;
 using NLog;
 using NLog.Targets.Wrappers;
 using NodaTime;
+using static MoreLinq.Extensions.BatchExtension;
 
 namespace FantasyCritic.MySQL
 {
@@ -64,11 +64,17 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<League>> GetAllLeagues()
+        public async Task<IReadOnlyList<League>> GetAllLeagues(bool includeDeleted = false)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var leagueEntities = await connection.QueryAsync<LeagueEntity>("select * from vw_league where IsDeleted = 0");
+                string sql = "select * from vw_league where IsDeleted = 0;";
+                if (includeDeleted)
+                {
+                    sql = "select * from vw_league;";
+                }
+
+                var leagueEntities = await connection.QueryAsync<LeagueEntity>(sql);
 
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year");
                 var leagueYearLookup = yearEntities.ToLookup(x => x.LeagueID);
@@ -123,7 +129,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
+        public async Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year, bool includeDeleted = false)
         {
             var allLeagueTags = await GetLeagueYearTagEntities(year);
             var allSpecialGameSlots = await GetSpecialGameSlotEntities(year);
@@ -133,7 +139,7 @@ namespace FantasyCritic.MySQL
             var supportedYear = await GetSupportedYear(year);
             var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
             var allTagOverrides = await GetAllTagOverrides(year);
-            IReadOnlyList<League> leagues = await GetAllLeagues();
+            IReadOnlyList<League> leagues = await GetAllLeagues(includeDeleted);
             Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -1284,7 +1290,7 @@ namespace FantasyCritic.MySQL
             return domainPublishers;
         }
 
-        public async Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year)
+        public async Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, bool includeDeleted = false)
         {
             var query = new
             {
@@ -1293,18 +1299,25 @@ namespace FantasyCritic.MySQL
 
             var allUsers = await _userStore.GetAllUsers();
             var usersDictionary = allUsers.ToDictionary(x => x.Id, y => y);
-            IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
+            IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year, includeDeleted);
             var leaguesDictionary = allLeagueYears.ToDictionary(x => x.League.LeagueID, y => y);
 
             string sql = "select tbl_league_publisher.* from tbl_league_publisher " +
                          "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
                          "where tbl_league_publisher.Year = @year and tbl_league.IsDeleted = 0;";
 
+            if (includeDeleted)
+            {
+                sql = "select tbl_league_publisher.* from tbl_league_publisher " +
+                      "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                      "where tbl_league_publisher.Year = @year;";
+            }
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var publisherEntities = await connection.QueryAsync<PublisherEntity>(sql, query);
 
-                IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(year);
+                IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(year, includeDeleted);
                 Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherEntities.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
                 foreach (var game in allDomainGames)
                 {
@@ -1373,7 +1386,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        private async Task<IReadOnlyList<PublisherGame>> GetAllPublisherGamesForYear(int year)
+        private async Task<IReadOnlyList<PublisherGame>> GetAllPublisherGamesForYear(int year, bool includeDeleted = false)
         {
             var query = new
             {
@@ -1384,6 +1397,14 @@ namespace FantasyCritic.MySQL
                     "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
                     "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
                     "where tbl_league_publisher.Year = @year and IsDeleted = 0;";
+
+            if (includeDeleted)
+            {
+                sql = "select tbl_league_publishergame.* from tbl_league_publishergame " +
+                      "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                      "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                      "where tbl_league_publisher.Year = @year;";
+            }
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -1561,23 +1582,29 @@ namespace FantasyCritic.MySQL
         private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, IEnumerable<Guid> removedPublisherGameIDs, 
             MySqlConnection connection, MySqlTransaction transaction)
         {
-            var removedPublisherGameIDsHashSet = Enumerable.ToHashSet(removedPublisherGameIDs);
+            var removedPublisherGameIDsHashSet = removedPublisherGameIDs.ToHashSet();
             var publishers = await GetPublishers(publisherIDs);
-            var publishersToAdjust = publishers.Where(x => !x.LeagueYear.Options.HasSpecialSlots()).ToList();
-            var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
-            foreach (var publisher in publishersToAdjust)
-            {
-                var standardGames = publisher.PublisherGames
-                    .Where(x => !x.CounterPick)
-                    .Where(x => !removedPublisherGameIDsHashSet.Contains(x.PublisherGameID))
-                    .OrderBy(x => x.SlotNumber);
-                int slotNumber = 0;
-                foreach (var standardGame in standardGames)
-                {
-                    updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, slotNumber));
-                    slotNumber++;
-                }
+            var specialSlotPublisherIDs = publishers.Where(x => x.LeagueYear.Options.HasSpecialSlots())
+                .Select(x => x.PublisherID).ToHashSet();
 
+            var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
+            foreach (var publisher in publishers)
+            {
+                int slotNumber = 0;
+                if (!specialSlotPublisherIDs.Contains(publisher.PublisherID))
+                {
+                    var standardGames = publisher.PublisherGames
+                        .Where(x => !x.CounterPick)
+                        .Where(x => !removedPublisherGameIDsHashSet.Contains(x.PublisherGameID))
+                        .OrderBy(x => x.SlotNumber);
+                    foreach (var standardGame in standardGames)
+                    {
+                        updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, slotNumber));
+                        slotNumber++;
+                    }
+                }
+                
+                //Counter Picks don't have special slots, so they should always be consistent.
                 slotNumber = 0;
                 var counterPicks = publisher.PublisherGames
                     .Where(x => x.CounterPick)

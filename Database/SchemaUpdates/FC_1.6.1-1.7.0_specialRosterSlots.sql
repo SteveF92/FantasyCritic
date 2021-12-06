@@ -1,11 +1,6 @@
 ALTER TABLE `tbl_league_publishergame`
 	ADD COLUMN `SlotNumber` INT NOT NULL AFTER `CurrentlyIneligible`;
 
--- Run the Utility now
-
-ALTER TABLE `tbl_league_publishergame`
-	ADD UNIQUE INDEX `UNQ_Slot` (`PublisherID`, `CounterPick`, `SlotNumber`);
-
 CREATE TABLE `tbl_league_specialgameslot` (
 	`SpecialSlotID` CHAR(36) NOT NULL,
 	`LeagueID` CHAR(36) NOT NULL,
@@ -21,3 +16,9 @@ CREATE TABLE `tbl_league_specialgameslot` (
 ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC
 ;
+
+-- Run the Utility now, then run the statement below
+
+-- ALTER TABLE `tbl_league_publishergame`
+--	ADD UNIQUE INDEX `UNQ_Slot` (`PublisherID`, `CounterPick`, `SlotNumber`);
+

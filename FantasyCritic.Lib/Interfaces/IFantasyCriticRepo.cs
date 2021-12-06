@@ -22,7 +22,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddNewLeagueYear(League league, int year, LeagueOptions options);
         Task EditLeagueYear(LeagueYear leagueYear);
 
-        Task<IReadOnlyList<League>> GetAllLeagues();
+        Task<IReadOnlyList<League>> GetAllLeagues(bool includeDeleted = false);
         Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
         Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year);
         Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
@@ -58,7 +58,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task CreatePublisher(Publisher publisher);
         Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear);
         Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> usersInLeague);
-        Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year);
+        Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, bool includeDeleted = false);
         Task AddPublisherGame(PublisherGame publisherGame);
         Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
         Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame);
@@ -68,7 +68,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<SupportedYear>> GetSupportedYears();
         Task<SupportedYear> GetSupportedYear(int year);
 
-        Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year);
+        Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year, bool includeDeleted = false);
 
         Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats);
         Task<Result> RemovePublisherGame(PublisherGame publisherGame);

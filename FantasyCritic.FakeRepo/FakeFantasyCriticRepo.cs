@@ -58,7 +58,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyList<League>> GetAllLeagues()
+        public Task<IReadOnlyList<League>> GetAllLeagues(bool includeDeleted = false)
         {
             return Task.FromResult<IReadOnlyList<League>>(_leagues);
         }
@@ -232,7 +232,7 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult<IReadOnlyList<Publisher>>(publishers);
         }
 
-        public Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year)
+        public Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, bool includeDeleted = false)
         {
             var publishers = _publishers
                 .Where(x => x.LeagueYear.Year == year)
@@ -273,7 +273,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
+        public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year, bool includeDeleted = false)
         {
             var leagueYears = _leagueYears
                 .Where(x => x.Year == year)
