@@ -44,7 +44,27 @@ namespace FantasyCritic.Lib.Domain
 
         public string GetGroupName => $"{League.LeagueID}|{Year}";
 
-        public bool? GetOverriddenEligibility(MasterGame masterGame)
+        public MasterGameEligibilityFactors GetEligibilityFactorsForMasterGame(MasterGame masterGame)
+        {
+            bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
+            IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
+            return new MasterGameEligibilityFactors(Options, Maybe<PublisherSlot>.None, masterGame, eligibilityOverride, tagOverrides);
+        }
+
+        public MasterGameEligibilityFactors GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
+        {
+            if (publisherSlot.PublisherGame.HasNoValue || publisherSlot.PublisherGame.Value.MasterGame.HasNoValue)
+            {
+                return new MasterGameEligibilityFactors(Options, publisherSlot, Maybe<MasterGame>.None, null, new List<MasterGameTag>());
+            }
+
+            var masterGame = publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame;
+            bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
+            IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
+            return new MasterGameEligibilityFactors(Options, publisherSlot, masterGame, eligibilityOverride, tagOverrides);
+        }
+
+        private bool? GetOverriddenEligibility(MasterGame masterGame)
         {
             bool found = _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);
             if (!found)
@@ -55,10 +75,7 @@ namespace FantasyCritic.Lib.Domain
             return eligibilityOverride.Eligible;
         }
 
-        public bool? GetOverriddenEligibility(Maybe<MasterGameYear> masterGameYear) => 
-            masterGameYear.HasNoValue ? null : GetOverriddenEligibility(masterGameYear.Value.MasterGame);
-
-        public IReadOnlyList<MasterGameTag> GetOverriddenTags(MasterGame masterGame)
+        private IReadOnlyList<MasterGameTag> GetOverriddenTags(MasterGame masterGame)
         {
             bool found = _tagOverridesDictionary.TryGetValue(masterGame, out var tagOverride);
             if (!found)
@@ -67,23 +84,6 @@ namespace FantasyCritic.Lib.Domain
             }
 
             return tagOverride.Tags;
-        }
-
-        public IReadOnlyList<MasterGameTag> GetOverriddenTags(Maybe<MasterGameYear> masterGameYear) => 
-            masterGameYear.HasNoValue ? new List<MasterGameTag>() : GetOverriddenTags(masterGameYear.Value.MasterGame);
-
-        public bool GameIsEligible(MasterGame masterGame)
-        {
-            bool found = _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);
-            if (found)
-            {
-                return eligibilityOverride.Eligible;
-            }
-
-            var overriddenTags = GetOverriddenTags(masterGame);
-
-            var claimErrors = Options.LeagueTags.GameIsEligible(masterGame, overriddenTags);
-            return !claimErrors.Any();
         }
 
         public bool Equals(LeagueYear other)

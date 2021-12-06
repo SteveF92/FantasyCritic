@@ -35,7 +35,7 @@ namespace FantasyCritic.Web.Models.Responses
                 .ToList();
 
             GameSlots = publisher.GetPublisherSlots()
-                .Select(x => new PublisherSlotViewModel(x, currentDate, publisher.LeagueYear, systemWideValues))
+                .Select(x => new PublisherSlotViewModel(x, currentDate, publisher.LeagueYear.GetEligibilityFactorsForSlot(x), systemWideValues))
                 .ToList();
 
             AverageCriticScore = publisher.AverageCriticScore;

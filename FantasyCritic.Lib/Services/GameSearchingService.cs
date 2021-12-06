@@ -38,10 +38,8 @@ namespace FantasyCritic.Lib.Services
 
             foreach (var masterGame in matchingMasterGames)
             {
-                var eligibilityOverride = currentPublisher.LeagueYear.GetOverriddenEligibility(masterGame);
-                var overriddenTags = currentPublisher.LeagueYear.GetOverriddenTags(masterGame);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
-                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.LeagueTags, eligibilityOverride, overriddenTags);
+                var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, eligibilityFactors);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
@@ -64,10 +62,8 @@ namespace FantasyCritic.Lib.Services
             List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
             foreach (var masterGame in matchingMasterGames)
             {
-                var eligibilityOverride = currentPublisher.LeagueYear.GetOverriddenEligibility(masterGame);
-                var overriddenTags = currentPublisher.LeagueYear.GetOverriddenTags(masterGame);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
-                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.LeagueTags, eligibilityOverride, overriddenTags);
+                var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, eligibilityFactors);
 
                 if (!possibleMasterGame.IsAvailable)
                 {
@@ -108,10 +104,8 @@ namespace FantasyCritic.Lib.Services
             List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
             foreach (var masterGame in availableCounterPicks)
             {
-                var eligibilityOverride = currentPublisher.LeagueYear.GetOverriddenEligibility(masterGame);
-                var overriddenTags = currentPublisher.LeagueYear.GetOverriddenTags(masterGame);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames,
-                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.LeagueTags, eligibilityOverride, overriddenTags);
+                var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, eligibilityFactors);
 
                 possibleMasterGames.Add(possibleMasterGame);
             }
@@ -139,11 +133,8 @@ namespace FantasyCritic.Lib.Services
             {
                 var masterGame = masterGameYearDictionary[queuedGame.MasterGame.MasterGameID];
 
-                var eligibilityOverride = currentPublisher.LeagueYear.GetOverriddenEligibility(masterGame);
-                var overriddenTags = currentPublisher.LeagueYear.GetOverriddenTags(masterGame);
-
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, 
-                    myPublisherMasterGames, currentPublisher.LeagueYear.Options.LeagueTags, eligibilityOverride, overriddenTags);
+                var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, eligibilityFactors);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
@@ -151,15 +142,9 @@ namespace FantasyCritic.Lib.Services
         }
 
         public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherStandardMasterGames, 
-            HashSet<MasterGame> myPublisherMasterGames, IEnumerable<LeagueTagStatus> leagueTags, 
-            bool? eligibilityOverride, IEnumerable<MasterGameTag> overridenTags)
+            HashSet<MasterGame> myPublisherMasterGames, MasterGameEligibilityFactors eligibilityFactors)
         {
-            var eligibilityErrors = leagueTags.GameIsEligible(masterGame.MasterGame, overridenTags);
-            bool isEligible = !eligibilityErrors.Any();
-            if (eligibilityOverride.HasValue)
-            {
-                isEligible = eligibilityOverride.Value;
-            }
+            bool isEligible = eligibilityFactors.IsEligible();
             bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
             bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
             var currentDate = _clock.GetToday();

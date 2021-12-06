@@ -261,12 +261,12 @@ namespace FantasyCritic.Lib.Services
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
-            var overriddenEligibility = leagueYear.GetOverriddenEligibility(masterGame);
+            var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame);
             if (!dropping && !counterPick)
             {
-                if (overriddenEligibility.HasValue)
+                if (eligibilityFactors.OverridenEligibility.HasValue)
                 {
-                    if (!overriddenEligibility.Value)
+                    if (!eligibilityFactors.OverridenEligibility.Value)
                     {
                         claimErrors.Add(new ClaimError("That game has been specifically banned by your league.", false));
                     }
@@ -274,14 +274,13 @@ namespace FantasyCritic.Lib.Services
                 else
                 {
                     //Normal eligibility (not manually set)
-                    var overriddenTags = leagueYear.GetOverriddenTags(masterGame);
-                    var eligibilityErrors = leagueYear.Options.LeagueTags.GameIsEligible(masterGame, overriddenTags);
+                    var eligibilityErrors = eligibilityFactors.GetErrors();
                     claimErrors.AddRange(eligibilityErrors);
                 }
             }
 
             var currentDate = _clock.GetToday();
-            bool manuallyEligible = overriddenEligibility.HasValue && overriddenEligibility.Value;
+            bool manuallyEligible = eligibilityFactors.OverridenEligibility.HasValue && eligibilityFactors.OverridenEligibility.Value;
             bool released = masterGame.IsReleased(currentDate);
             if (released)
             {

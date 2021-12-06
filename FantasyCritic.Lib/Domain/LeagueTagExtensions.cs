@@ -16,10 +16,10 @@ namespace FantasyCritic.Lib.Domain
         public static IReadOnlyList<ClaimError> GameIsRoyaleEligible(IEnumerable<MasterGameTag> allMasterGameTags, MasterGame masterGame)
         {
             return GetRoyaleEligibilitySettings(allMasterGameTags)
-                .GameIsEligible(masterGame, new List<MasterGameTag>());
+                .GameHasValidTags(masterGame, new List<MasterGameTag>());
         }
 
-        public static IReadOnlyList<ClaimError> GameIsEligible(this IEnumerable<LeagueTagStatus> leagueTags, MasterGame masterGame, 
+        public static IReadOnlyList<ClaimError> GameHasValidTags(this IEnumerable<LeagueTagStatus> slotTags, MasterGame masterGame, 
            IEnumerable<MasterGameTag> overriddenTags)
         {
             var tagsToUse = masterGame.Tags;
@@ -28,17 +28,21 @@ namespace FantasyCritic.Lib.Domain
                 tagsToUse = overriddenTags.ToList();
             }
 
-            var bannedTags = leagueTags.Where(x => x.Status == TagStatus.Banned).Select(x => x.Tag);
-            var requiredTags = leagueTags.Where(x => x.Status == TagStatus.Required).Select(x => x.Tag);
+            var bannedTags = slotTags.Where(x => x.Status == TagStatus.Banned).Select(x => x.Tag);
+            var requiredTags = slotTags.Where(x => x.Status == TagStatus.Required).Select(x => x.Tag);
 
             var bannedTagsIntersection = tagsToUse.Intersect(bannedTags);
-            var missingRequiredTags = requiredTags.Except(tagsToUse);
+            var requiredTagsIntersection = tagsToUse.Intersect(requiredTags);
 
-            var bannedClaimErrors = bannedTagsIntersection.Select(x => new ClaimError($"That game is not eligible because the {x.ReadableName} tag has been banned.", true));
-            var requiredClaimErrors = missingRequiredTags.Select(x => new ClaimError($"That game is not eligible because it does not have the required {x.ReadableName} tag.", true));
+            bool hasNoRequiredTags = requiredTags.Any() && !requiredTagsIntersection.Any();
 
-            var allErrors = bannedClaimErrors.Concat(requiredClaimErrors).ToList();
-            return allErrors;
+            List<ClaimError> claimErrors = bannedTagsIntersection.Select(x => new ClaimError($"That game is not eligible because the {x.ReadableName} tag has been banned.", true)).ToList();
+            if (hasNoRequiredTags)
+            {
+                claimErrors.Add(new ClaimError($"That game is not eligible because it does not have any of the following required tags: ({string.Join(",", requiredTags.Select(x => x.ReadableName))})", true));
+            }
+
+            return claimErrors;
         }
 
         public static IReadOnlyList<LeagueTagStatus> GetRoyaleEligibilitySettings(IEnumerable<MasterGameTag> allMasterGameTags)

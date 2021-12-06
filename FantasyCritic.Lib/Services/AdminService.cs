@@ -364,7 +364,7 @@ namespace FantasyCritic.Lib.Services
                     var publisherGamesForMasterGame = publisherGamesByMasterGame[masterGame.MasterGameID];
                     var leaguesWithGame = standardGamesByLeague.Count(x => x.Value.Contains(masterGame));
                     var leaguesWithCounterPickGame = counterPicksByLeague.Count(x => x.Value.Contains(masterGame));
-                    List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligible(masterGame)).ToList();
+                    List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => !x.GetEligibilityFactorsForMasterGame(masterGame).IsEligible()).ToList();
 
                     List<LeagueYear> timeAdjustedLeagues;
                     var scoreOrReleaseTime = masterGame.FirstCriticScoreTimestamp ?? masterGame.ReleaseDate?.AtStartOfDayInZone(TimeExtensions.EasternTimeZone).ToInstant();

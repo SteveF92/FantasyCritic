@@ -37,7 +37,7 @@ namespace FantasyCritic.Test
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(standardScoring, fakeToday);
 
             Assert.AreEqual(14.8095m, fantasyPoints);
         }

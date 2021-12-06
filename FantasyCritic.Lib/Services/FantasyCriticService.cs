@@ -159,7 +159,7 @@ namespace FantasyCritic.Lib.Services
                 var slots = publisher.GetPublisherSlots();
                 foreach (var publisherSlot in slots)
                 {
-                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(publisher.LeagueYear, currentDate);
+                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(publisher.LeagueYear.GetEligibilityFactorsForSlot(publisherSlot), currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     calculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
                 }
@@ -179,7 +179,7 @@ namespace FantasyCritic.Lib.Services
                 var slots = publisher.GetPublisherSlots();
                 foreach (var publisherSlot in slots)
                 {
-                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(publisher.LeagueYear, currentDate);
+                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(publisher.LeagueYear.GetEligibilityFactorsForSlot(publisherSlot), currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     calculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
                 }
