@@ -128,7 +128,7 @@ export default {
       this.$store.commit('holdGame', this.gameSlot);
     },
     placeGame() {
-      this.$store.commit('setDesiredPosition', this.gameSlot);
+      this.$store.dispatch('moveGame', this.gameSlot);
     }
   }
 };

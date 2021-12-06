@@ -57,7 +57,7 @@ export default {
         .then(response => {
           this.publisher = response.data;
           this.fetchLeagueYear();
-          this.$store.commit('initializeGameSlots', this.publisher.gameSlots);
+          this.$store.dispatch('initialize', this.publisher.gameSlots);
         })
         .catch(returnedError => (this.error = returnedError));
     },

@@ -12,20 +12,20 @@ export default {
     desiredPositions: (state) => state.desiredPositions,
     holdingGame: (state) => !!state.heldSlot
   },
+  actions: {
+    initialize(context, initialGameSlots) {
+      context.commit('initializeInternal', initialGameSlots);
+      context.commit('setDesiredPositions');
+    },
+    moveGame(context, moveIntoSlot) {
+      context.commit('moveGameInternal', moveIntoSlot);
+      context.commit('setDesiredPositions');
+    }
+  },
   mutations: {
-    initializeGameSlots(state, initialGameSlots) {
+    initializeInternal(state, initialGameSlots) {
       state.cleanGameSlots = _.cloneDeep(initialGameSlots);
       state.editableGameSlots = _.cloneDeep(initialGameSlots);
-
-      let standardSlotsOnly = state.editableGameSlots.filter(x => !x.counterPick);
-      state.desiredPositions = {};
-      standardSlotsOnly.forEach(slot => {
-        if (slot.publisherGame) {
-          state.desiredPositions[slot.slotNumber] = slot.publisherGame.gameName;
-        } else {
-          state.desiredPositions[slot.slotNumber] = null;
-        }
-      });
     },
     enterMoveMode(state) {
       state.moveMode = true;
@@ -39,13 +39,13 @@ export default {
     holdGame(state, holdSlot) {
       state.heldSlot = holdSlot;
     },
-    setDesiredPosition(state, moveIntoSlot) {
+    moveGameInternal(state, moveIntoSlot) {
       let tempSlot = _.cloneDeep(moveIntoSlot);
       moveIntoSlot.publisherGame = _.cloneDeep(state.heldSlot.publisherGame);
       state.heldSlot.publisherGame = _.cloneDeep(tempSlot.publisherGame);
-
       state.heldSlot = null;
-
+    },
+    setDesiredPositions(state) {
       let standardSlotsOnly = state.editableGameSlots.filter(x => !x.counterPick);
       state.desiredPositions = {};
       standardSlotsOnly.forEach(slot => {
