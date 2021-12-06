@@ -11,7 +11,7 @@
         </tr>
       </thead>
       <tbody>
-        <playerGameSlotRow v-for="gameSlot in publisher.gameSlots"
+        <playerGameSlotRow v-for="gameSlot in storedGameSlots"
                            :gameSlot="gameSlot" :yearFinished="leagueYear.supportedYear.finished" :showSlotTypes="leagueYear.hasSpecialSlots"
                            v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
         <tr>
@@ -37,7 +37,11 @@ export default {
     PlayerGameSlotRow
   },
   props: ['publisher', 'leagueYear'],
-
+  computed: {
+    storedGameSlots() {
+      return this.$store.getters.gameSlots;
+    }
+  }
 };
 </script>
 <style scoped>

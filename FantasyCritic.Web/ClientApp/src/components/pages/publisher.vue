@@ -47,7 +47,7 @@ export default {
   props: ['publisherid'],
   computed: {
     moveMode() {
-      return !!this.$store.getters.desiredPositions;
+      return this.$store.getters.moveMode;
     }
   },
   methods: {
@@ -57,6 +57,7 @@ export default {
         .then(response => {
           this.publisher = response.data;
           this.fetchLeagueYear();
+          this.$store.commit('initializeGameSlots', this.publisher.gameSlots);
         })
         .catch(returnedError => (this.error = returnedError));
     },
@@ -78,13 +79,13 @@ export default {
       return dropped + '/' + droppable;
     },
     enterMoveMode() {
-      this.$store.commit('initializeDesiredPositions', this.publisher.games);
+      this.$store.commit('enterMoveMode');
     },
     cancelMoveMode() {
-      this.$store.commit('clearDesiredPositions');
+      this.$store.commit('cancelMoveMode');
     },
     confirmPositions() {
-      this.$store.commit('clearDesiredPositions');
+      this.$store.commit('cancelMoveMode');
     }
   },
   mounted() {

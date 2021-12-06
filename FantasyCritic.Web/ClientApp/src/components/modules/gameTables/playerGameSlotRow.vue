@@ -91,10 +91,10 @@ export default {
       return type + ' on ' + date;
     },
     moveMode() {
-      return !!this.$store.getters.desiredPositions;
+      return this.$store.getters.moveMode;
     },
     holdingGame() {
-      return !!this.$store.getters.heldGame;
+      return this.$store.getters.holdingGame;
     },
     inEligibleText() {
       return {
@@ -125,10 +125,10 @@ export default {
   },
   methods:{
     holdGame() {
-      this.$store.commit('holdGame', this.game.publisherGameID);
+      this.$store.commit('holdGame', this.gameSlot);
     },
     placeGame() {
-      this.$store.commit('setDesiredPosition', this.gameSlot.slotNumber);
+      this.$store.commit('setDesiredPosition', this.gameSlot);
     }
   }
 };
