@@ -13,15 +13,17 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherSlotViewModel
     {
-        public PublisherSlotViewModel(Publisher publisher, PublisherSlot slot, LocalDate currentDate, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
+        public PublisherSlotViewModel(PublisherSlot slot, LocalDate currentDate, LeagueYear leagueYear, SystemWideValues systemWideValues)
         {
             SlotNumber = slot.SlotNumber;
             OverallSlotNumber = slot.OverallSlotNumber;
             CounterPick = slot.CounterPick;
             SpecialSlot = slot.SpecialGameSlot.GetValueOrDefault(x => new SpecialGameSlotViewModel(x));
-            PublisherGame = slot.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, scoringSystem, systemWideValues));
+            PublisherGame = slot.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, leagueYear.Options.ScoringSystem, systemWideValues));
+            SimpleProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(leagueYear, systemWideValues, true, currentDate);
+            AdvancedProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(leagueYear, systemWideValues, false, currentDate);
 
-            GameMeetsSlotCriteria = publisher.SlotHasEligibleGame(slot);
+            GameMeetsSlotCriteria = slot.SlotHasEligibleGame(leagueYear);
         }
 
         public int SlotNumber { get; }
@@ -30,5 +32,8 @@ namespace FantasyCritic.Web.Models.Responses
         public SpecialGameSlotViewModel SpecialSlot { get; }
         public PublisherGameViewModel PublisherGame { get; }
         public bool GameMeetsSlotCriteria { get; }
+
+        public decimal SimpleProjectedFantasyPoints { get; }
+        public decimal AdvancedProjectedFantasyPoints { get; }
     }
 }

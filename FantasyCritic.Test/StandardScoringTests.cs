@@ -35,6 +35,7 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
 
             decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeToday);
 

@@ -57,7 +57,7 @@ namespace FantasyCritic.Web.Models.Responses
                 else
                 {
                     bool isPreviousYearWinner = previousYearWinner.HasValue && previousYearWinner.Value.Id == user.Id;
-                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, options, systemWideValues,
+                    playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
                         userIsInLeague, userIsInvitedToLeague, supportedYear, false, isPreviousYearWinner));
                 }
             }

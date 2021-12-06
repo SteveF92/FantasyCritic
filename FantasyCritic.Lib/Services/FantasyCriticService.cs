@@ -151,21 +151,17 @@ namespace FantasyCritic.Lib.Services
         public async Task UpdateLeaguePointsAndStatuses(int year)
         {
             Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
-
-            IReadOnlyList<LeagueYear> activeLeagueYears = await GetLeagueYears(year);
-            Dictionary<LeagueYearKey, LeagueYear> leagueYearDictionary = activeLeagueYears.ToDictionary(x => x.Key, y => y);
             IReadOnlyList<Publisher> allPublishersForYear = await _fantasyCriticRepo.GetAllPublishersForYear(year);
 
             var currentDate = _clock.GetToday();
             foreach (var publisher in allPublishersForYear)
             {
-                var key = new LeagueYearKey(publisher.LeagueYear.League.LeagueID, publisher.LeagueYear.Year);
-                foreach (var publisherGame in publisher.PublisherGames)
+                var slots = publisher.GetPublisherSlots();
+                foreach (var publisherSlot in slots)
                 {
-                    var leagueYear = leagueYearDictionary[key];
-                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, currentDate);
+                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(publisher.LeagueYear, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
-                    calculatedStats.Add(publisherGame.PublisherGameID, stats);
+                    calculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
                 }
             }
 
@@ -180,11 +176,12 @@ namespace FantasyCritic.Lib.Services
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
             foreach (var publisher in publishersInLeague)
             {
-                foreach (var publisherGame in publisher.PublisherGames)
+                var slots = publisher.GetPublisherSlots();
+                foreach (var publisherSlot in slots)
                 {
-                    decimal? fantasyPoints = publisherGame.CalculateFantasyPoints(leagueYear.Options.ScoringSystem, currentDate);
+                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(publisher.LeagueYear, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
-                    calculatedStats.Add(publisherGame.PublisherGameID, stats);
+                    calculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
                 }
             }
 

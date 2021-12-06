@@ -35,12 +35,12 @@ namespace FantasyCritic.Web.Models.Responses
                 .ToList();
 
             GameSlots = publisher.GetPublisherSlots()
-                .Select(x => new PublisherSlotViewModel(publisher, x, currentDate, publisher.LeagueYear.Options.ScoringSystem, systemWideValues))
+                .Select(x => new PublisherSlotViewModel(x, currentDate, publisher.LeagueYear, systemWideValues))
                 .ToList();
 
             AverageCriticScore = publisher.AverageCriticScore;
             TotalFantasyPoints = publisher.TotalFantasyPoints;
-            TotalProjectedPoints = publisher.GetProjectedFantasyPoints(publisher.LeagueYear.Options, systemWideValues, false, currentDate);
+            TotalProjectedPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate);
             Budget = publisher.Budget;
 
             if (nextDraftPublisher.HasValue && nextDraftPublisher.Value.PublisherID == publisher.PublisherID)

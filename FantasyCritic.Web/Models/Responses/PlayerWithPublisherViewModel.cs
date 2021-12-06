@@ -24,14 +24,14 @@ namespace FantasyCritic.Web.Models.Responses
         }
 
         public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, LocalDate currentDate,
-            LeagueOptions options, SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague,
+            SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague,
             SupportedYear supportedYear, bool removable, bool previousYearWinner)
         {
             User = new PlayerViewModel(leagueYear.League, user, removable);
             Publisher = new PublisherViewModel(publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
-            SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, true, currentDate);
-            AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(options, systemWideValues, false, currentDate);
+            SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, true, currentDate);
+            AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate);
             PreviousYearWinner = previousYearWinner;
         }
 

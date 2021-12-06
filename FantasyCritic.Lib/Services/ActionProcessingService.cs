@@ -187,7 +187,7 @@ namespace FantasyCritic.Lib.Services
                 validPickupBids.Add(new ValidPickupBid(activeBid, availableSlot.Value));
             }
 
-            var winnableBids = GetWinnableBids(validPickupBids, leagueYear.Options, systemWideValues);
+            var winnableBids = GetWinnableBids(validPickupBids, systemWideValues);
             var winningBids = GetWinningBids(winnableBids);
 
             var takenGames = winningBids.Select(x => x.PickupBid.MasterGame);
@@ -229,7 +229,7 @@ namespace FantasyCritic.Lib.Services
             return processedSet;
         }
 
-        private IReadOnlyList<ValidPickupBid> GetWinnableBids(IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear, LeagueOptions options, SystemWideValues systemWideValues)
+        private IReadOnlyList<ValidPickupBid> GetWinnableBids(IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear, SystemWideValues systemWideValues)
         {
             List<ValidPickupBid> winnableBids = new List<ValidPickupBid>();
 
@@ -246,7 +246,7 @@ namespace FantasyCritic.Lib.Services
                 else
                 {
                     var bestBids = gameGroup.MaxBy(x => x.PickupBid.BidAmount);
-                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(options, systemWideValues, false, currentDate));
+                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate));
                     bestBid = bestBidsByProjectedScore.OrderBy(x => x.PickupBid.Timestamp).ThenByDescending(x => x.PickupBid.Publisher.DraftPosition).First();
                 }
 

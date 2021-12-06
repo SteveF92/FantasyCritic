@@ -78,9 +78,10 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        public decimal GetProjectedFantasyPoints(LeagueOptions options, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
+        public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
         {
-            var currentGamesScore =  PublisherGames.Sum(x => x.GetProjectedOrRealFantasyPoints(options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
+            var currentGamesScore = GetPublisherSlots()
+                .Sum(x => x.GetProjectedOrRealFantasyPoints(LeagueYear, systemWideValues, simpleProjections, currentDate));
 
             var availableStandardSlots = GetNumberAvailableSlots(false, LeagueYear.SupportedYear.Finished);
             var emptyStandardSlotsScore = availableStandardSlots * systemWideValues.AverageStandardGamePoints;
@@ -163,23 +164,6 @@ namespace FantasyCritic.Lib.Domain
             }
 
             return publisherSlots;
-        }
-
-        public bool SlotHasEligibleGame(PublisherSlot slot)
-        {
-            if (slot.CounterPick)
-            {
-                return true;
-            }
-            if (slot.PublisherGame.HasNoValue)
-            {
-                return true;
-            }
-
-            bool? overridenEligibility = LeagueYear.GetOverriddenEligibility(slot.PublisherGame.Value.MasterGame);
-            var tagOverrides = LeagueYear.GetOverriddenTags(slot.PublisherGame.Value.MasterGame);
-            var eligible = slot.PublisherGame.Value.CalculateIsCurrentlyEligible(LeagueYear.Options, overridenEligibility, tagOverrides);
-            return eligible;
         }
 
         public Maybe<PublisherGame> GetPublisherGame(MasterGame masterGame) => GetPublisherGameByMasterGameID(masterGame.MasterGameID);
