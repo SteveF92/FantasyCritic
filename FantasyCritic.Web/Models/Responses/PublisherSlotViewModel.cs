@@ -19,9 +19,12 @@ namespace FantasyCritic.Web.Models.Responses
             OverallSlotNumber = slot.OverallSlotNumber;
             CounterPick = slot.CounterPick;
             SpecialSlot = slot.SpecialGameSlot.GetValueOrDefault(x => new SpecialGameSlotViewModel(x));
-            PublisherGame = slot.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(slot, x, leagueYear, currentDate, systemWideValues));
+            PublisherGame = slot.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate));
 
             GameMeetsSlotCriteria = slot.SlotHasEligibleGame(leagueYear);
+
+            SimpleProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(leagueYear, systemWideValues, true, currentDate);
+            AdvancedProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(leagueYear, systemWideValues, false, currentDate);
         }
 
         public int SlotNumber { get; }
@@ -30,5 +33,8 @@ namespace FantasyCritic.Web.Models.Responses
         public SpecialGameSlotViewModel SpecialSlot { get; }
         public PublisherGameViewModel PublisherGame { get; }
         public bool GameMeetsSlotCriteria { get; }
+
+        public decimal? SimpleProjectedFantasyPoints { get; }
+        public decimal? AdvancedProjectedFantasyPoints { get; }
     }
 }

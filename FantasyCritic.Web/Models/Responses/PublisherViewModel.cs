@@ -29,20 +29,14 @@ namespace FantasyCritic.Web.Models.Responses
             Year = publisher.LeagueYear.Year;
             DraftPosition = publisher.DraftPosition;
             AutoDraft = publisher.AutoDraft;
-
-            var domainGameSlots = publisher.GetPublisherSlots();
-            GameSlots = domainGameSlots
-                .Select(x => new PublisherSlotViewModel(x, currentDate, publisher.LeagueYear, systemWideValues))
+            Games = publisher.PublisherGames
+                .OrderBy(x => x.Timestamp)
+                .Select(x => new PublisherGameViewModel(x, currentDate))
                 .ToList();
 
-            var gameSlotsWithGames = domainGameSlots.Where(x => x.PublisherGame.HasValue);
-            var gameVMs = new List<PublisherGameViewModel>();
-            foreach (var slot in gameSlotsWithGames)
-            {
-                gameVMs.Add(new PublisherGameViewModel(slot, slot.PublisherGame.Value, publisher.LeagueYear, currentDate, systemWideValues));
-            }
-
-            Games = gameVMs;
+            GameSlots = publisher.GetPublisherSlots()
+                .Select(x => new PublisherSlotViewModel(x, currentDate, publisher.LeagueYear, systemWideValues))
+                .ToList();
 
             AverageCriticScore = publisher.AverageCriticScore;
             TotalFantasyPoints = publisher.TotalFantasyPoints;
