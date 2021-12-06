@@ -318,8 +318,8 @@ namespace FantasyCritic.Web.Controllers.API
 
             var currentDate = _clock.GetToday();
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, currentDate,
-                leagueYear.Value.PlayStatus, startDraftResult, activeUsers, nextDraftPublisher, draftPhase, availableCounterPicks,
-                leagueYear.Value.Options, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager,
+                startDraftResult, activeUsers, nextDraftPublisher, draftPhase, availableCounterPicks,
+                systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager,
                 currentUser, managerMessages, previousYearWinner, publicBiddingGames);
             return Ok(leagueViewModel);
         }

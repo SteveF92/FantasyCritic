@@ -16,8 +16,8 @@ namespace FantasyCritic.Web.Models.Responses
     public class LeagueYearViewModel
     {
         public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Maybe<Publisher> userPublisher,
-            LocalDate currentDate, PlayStatus playStatus, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
-            DraftPhase draftPhase, IEnumerable<PublisherGame> availableCounterPicks, LeagueOptions options, SystemWideValues systemWideValues,
+            LocalDate currentDate, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
+            DraftPhase draftPhase, IEnumerable<PublisherGame> availableCounterPicks, SystemWideValues systemWideValues,
             IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
             Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner,
             Maybe<IReadOnlyList<MasterGameYear>> publicBiddingGames)
@@ -101,9 +101,9 @@ namespace FantasyCritic.Web.Models.Responses
                 Players = playerVMs;
             }
 
-            PlayStatus = new PlayStatusViewModel(playStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
+            PlayStatus = new PlayStatusViewModel(leagueYear.PlayStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
             AvailableCounterPicks = availableCounterPicks
-                .Select(x => new PublisherGameViewModel(x, currentDate, leagueYear.Options.ScoringSystem, systemWideValues))
+                .Select(x => new PublisherGameViewModel(x, currentDate))
                 .OrderBy(x => x.GameName).ToList();
             EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
             TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();
