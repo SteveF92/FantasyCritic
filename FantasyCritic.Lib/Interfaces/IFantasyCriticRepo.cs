@@ -62,6 +62,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddPublisherGame(PublisherGame publisherGame);
         Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
         Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame);
+        Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates);
+
 
         Task<IReadOnlyList<SupportedYear>> GetSupportedYears();
         Task<SupportedYear> GetSupportedYear(int year);

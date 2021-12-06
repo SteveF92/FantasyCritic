@@ -255,6 +255,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
             return Task.FromResult<IReadOnlyList<SupportedYear>> (new List<SupportedYear>()

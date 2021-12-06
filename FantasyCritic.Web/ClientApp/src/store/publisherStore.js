@@ -35,7 +35,7 @@ export default {
         axios.post("/api/League/ReorderPublisherGames", request)
           .then((res) => {
             if (res.status === 200) {
-              context.commit("cancelMoveMode");
+              context.commit("completeMoveMode");
               resolve();
             }
           })
@@ -61,6 +61,11 @@ export default {
       state.desiredPositions = null;
       state.heldSlot = null;
       state.editableGameSlots = _.cloneDeep(state.cleanGameSlots);
+    },
+    completeMoveMode(state) {
+      state.moveMode = false;
+      state.desiredPositions = null;
+      state.heldSlot = null;
     },
     holdGame(state, holdSlot) {
       state.heldSlot = holdSlot;

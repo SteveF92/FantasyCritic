@@ -22,6 +22,7 @@ namespace FantasyCritic.Web.Models.Responses
         {
             PublisherID = publisher.PublisherID;
             LeagueID = publisher.LeagueYear.League.LeagueID;
+            UserID = publisher.User.Id;
             PublisherName = publisher.PublisherName;
             LeagueName = publisher.LeagueYear.League.LeagueName;
             PlayerName = publisher.User.UserName;
@@ -77,6 +78,7 @@ namespace FantasyCritic.Web.Models.Responses
 
         public Guid PublisherID { get; }
         public Guid LeagueID { get; }
+        public Guid UserID { get; }
         public string PublisherName { get; }
         public string LeagueName { get; }
         public string PlayerName { get; }

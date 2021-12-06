@@ -20,7 +20,7 @@
         <li>Will Not Release Games Dropped: {{getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames)}}</li>
         <li>"Any Unreleased" Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
       </ul>
-      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
+      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
       <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
       <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
       <playerGameTable v-if="leagueYear" :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
@@ -48,6 +48,9 @@ export default {
   computed: {
     moveMode() {
       return this.$store.getters.moveMode;
+    },
+    userIsPublisher() {
+      return this.publisher.userID === this.$store.getters.userInfo.userID;
     }
   },
   methods: {
@@ -85,7 +88,9 @@ export default {
       this.$store.commit('cancelMoveMode');
     },
     confirmPositions() {
-      this.$store.dispatch('confirmPositions');
+      this.$store.dispatch("confirmPositions").then(() => {
+        this.fetchPublisher();
+      });
     }
   },
   mounted() {

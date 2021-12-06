@@ -1639,6 +1639,65 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> ReorderPublisherGames([FromBody] ReorderPublisherGamesRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.ActionProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.LeagueYear.League.LeagueID, publisher.Value.LeagueYear.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+            if (!leagueYear.Value.PlayStatus.DraftFinished)
+            {
+                return BadRequest("Draft has not finished for that year.");
+            }
+
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == publisher.Value.LeagueYear.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            if (supportedYear.Finished)
+            {
+                return BadRequest("That year is already finished");
+            }
+
+            if (supportedYear.Year < 2022)
+            {
+                return BadRequest("This feature is not supported before 2022");
+            }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
+            bool userIsPublisher = (currentUser.Id == publisher.Value.User.Id);
+            if (!userIsInLeague || !userIsPublisher)
+            {
+                return Forbid();
+            }
+
+            await _publisherService.ReorderPublisherGames(publisher.Value, request.SlotStates);
+
             return Ok();
         }
 

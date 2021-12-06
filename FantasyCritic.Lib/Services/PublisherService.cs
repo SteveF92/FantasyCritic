@@ -169,5 +169,10 @@ namespace FantasyCritic.Lib.Services
             var queuedGames = await _fantasyCriticRepo.GetQueuedGames(publisher);
             return queuedGames.OrderBy(x => x.Rank).ToList();
         }
+
+        public Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
+        {
+            return _fantasyCriticRepo.ReorderPublisherGames(publisher, slotStates);
+        }
     }
 }

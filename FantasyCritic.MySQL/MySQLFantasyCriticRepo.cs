@@ -1594,6 +1594,21 @@ namespace FantasyCritic.MySQL
             await connection.ExecuteAsync(sql, updateEntities, transaction);
         }
 
+        public async Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
+        {
+            var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
+            foreach (var slotState in slotStates)
+            {
+                updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(slotState.Value, slotState.Key));
+            }
+
+            string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, updateEntities);
+            }
+        }
+
         public async Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame)
         {
             using (var connection = new MySqlConnection(_connectionString))

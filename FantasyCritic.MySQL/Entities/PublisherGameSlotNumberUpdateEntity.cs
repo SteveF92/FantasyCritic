@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.MySQL.Entities
 {
-    public record PublisherGameSlotNumberUpdateEntity(Guid PublisherGameID, int SlotNumber);
+    public record PublisherGameSlotNumberUpdateEntity(Guid? PublisherGameID, int SlotNumber);
 }
