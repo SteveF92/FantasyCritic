@@ -57,7 +57,7 @@ export default {
         .then(response => {
           this.publisher = response.data;
           this.fetchLeagueYear();
-          this.$store.dispatch('initialize', this.publisher.gameSlots);
+          this.$store.dispatch('initialize', this.publisher);
         })
         .catch(returnedError => (this.error = returnedError));
     },
@@ -85,7 +85,7 @@ export default {
       this.$store.commit('cancelMoveMode');
     },
     confirmPositions() {
-      this.$store.commit('cancelMoveMode');
+      this.$store.dispatch('confirmPositions');
     }
   },
   mounted() {

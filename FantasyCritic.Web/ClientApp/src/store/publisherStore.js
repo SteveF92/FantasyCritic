@@ -1,5 +1,8 @@
+import axios from "axios";
+
 export default {
   state: {
+    publisherID: null,
     cleanGameSlots: null,
     editableGameSlots: null,
     desiredPositions: null,
@@ -7,22 +10,45 @@ export default {
     heldSlot: null
   },
   getters: {
+    publisherID: (state) => state.publisherID,
     gameSlots: (state) => state.editableGameSlots,
     moveMode: (state) => state.moveMode,
     desiredPositions: (state) => state.desiredPositions,
     holdingGame: (state) => !!state.heldSlot
   },
   actions: {
-    initialize(context, initialGameSlots) {
-      context.commit('initializeInternal', initialGameSlots);
+    initialize(context, publisher) {
+      context.commit('setPublisherID', publisher.publisherID);
+      context.commit('initializeInternal', publisher.gameSlots);
       context.commit('setDesiredPositions');
     },
     moveGame(context, moveIntoSlot) {
       context.commit('moveGameInternal', moveIntoSlot);
       context.commit('setDesiredPositions');
+    },
+    confirmPositions(context) {
+      return new Promise(function (resolve, reject) {
+        let request = {
+          publisherID: context.getters.publisherID,
+          slotStates: context.getters.desiredPositions
+        };
+        axios.post("/api/League/ReorderPublisherGames", request)
+          .then((res) => {
+            if (res.status === 200) {
+              context.commit("cancelMoveMode");
+              resolve();
+            }
+          })
+          .catch(error => {
+            reject();
+          });
+      });
     }
   },
   mutations: {
+    setPublisherID(state, publisherID) {
+      state.publisherID = publisherID;
+    },
     initializeInternal(state, initialGameSlots) {
       state.cleanGameSlots = _.cloneDeep(initialGameSlots);
       state.editableGameSlots = _.cloneDeep(initialGameSlots);

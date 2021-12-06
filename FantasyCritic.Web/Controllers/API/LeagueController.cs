@@ -1637,6 +1637,12 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> ReorderPublisherGames([FromBody] ReorderPublisherGamesRequest request)
+        {
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> SetArchiveStatus([FromBody] SetArchiveStatusRequest request)
         {
             var currentUserResult = await GetCurrentUser();
