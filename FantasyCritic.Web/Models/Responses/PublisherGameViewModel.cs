@@ -50,6 +50,7 @@ namespace FantasyCritic.Web.Models.Responses
             ManualWillNotRelease = publisherGame.ManualWillNotRelease;
             CurrentlyIneligible = publisherGame.CurrentlyIneligible;
             OverallDraftPosition = publisherGame.OverallDraftPosition;
+            SlotNumber = publisherGame.SlotNumber;
         }
 
         public Guid PublisherGameID { get; }
@@ -64,6 +65,7 @@ namespace FantasyCritic.Web.Models.Responses
         public decimal AdvancedProjectedFantasyPoints { get; }
         public MasterGameYearViewModel MasterGame { get; }
         public int? OverallDraftPosition { get; }
+        public int SlotNumber { get; }
 
         public bool Linked { get; }
         public bool Released { get; }

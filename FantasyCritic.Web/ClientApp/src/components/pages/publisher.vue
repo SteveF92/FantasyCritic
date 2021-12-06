@@ -1,5 +1,5 @@
 <template>
-  <div v-if="publisher">
+  <div v-if="publisher && leagueYear">
     <div class="col-md-10 offset-md-1 col-sm-12">
       <div class="publisher-name">
         <h1>{{publisher.publisherName}}</h1>
@@ -20,7 +20,10 @@
         <li>Will Not Release Games Dropped: {{getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames)}}</li>
         <li>"Any Unreleased" Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
       </ul>
-      <playerGameTable v-if="leagueYear" :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
+      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && !desiredPositions" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
+      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && desiredPositions" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
+      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && desiredPositions" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
+      <playerGameTable v-if="leagueYear" :publisher="publisher" :leagueYear="leagueYear" :desiredPositions="desiredPositions"></playerGameTable>
     </div>
   </div>
 </template>
@@ -36,6 +39,7 @@ export default {
       errorInfo: '',
       publisher: null,
       leagueYear: null,
+      desiredPositions: null
     };
   },
   components: {
@@ -68,6 +72,16 @@ export default {
         return dropped + '/' + '\u221E';
       }
       return dropped + '/' + droppable;
+    },
+    enterMoveMode() {
+      let standardGames = this.publisher.games.filter(x => !x.counterPick);
+      this.desiredPositions = Object.fromEntries(standardGames.map(x => [x.publisherGameID, x.slotNumber]));
+    },
+    cancelMoveMode() {
+      this.desiredPositions = null;
+    },
+    confirmPositions() {
+      this.desiredPositions = null;
     }
   },
   mounted() {
@@ -85,5 +99,10 @@ export default {
     display: block;
     max-width: 100%;
     word-wrap: break-word;
+  }
+
+  .mode-mode-button{
+      float: right;
+      margin-bottom: 10px;
   }
 </style>
