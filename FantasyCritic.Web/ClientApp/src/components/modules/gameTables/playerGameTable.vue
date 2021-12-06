@@ -36,7 +36,8 @@ export default {
   components: {
     PlayerGameSlotRow
   },
-  props: ['publisher', 'leagueYear']
+  props: ['publisher', 'leagueYear'],
+
 };
 </script>
 <style scoped>

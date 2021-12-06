@@ -3,6 +3,8 @@
     <template v-if="game">
       <td>
         <span class="game-name-column">
+          <b-button variant="danger" class="move-button" v-show="moveMode && !holdingGame && !gameSlot.counterPick" v-on:click="holdGame">Move</b-button>
+          <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
           <slotTypeBadge v-if="showSlotTypes || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
           <span class="master-game-popover">
             <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="game.currentlyIneligible"></masterGamePopover>
@@ -41,6 +43,7 @@
     <template v-else>
       <td>
         <span class="game-name-column">
+          <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
           <slotTypeBadge v-if="showSlotTypes" :gameSlot="gameSlot"></slotTypeBadge>
           <span v-if="gameSlot.counterPick" class="game-status">
             Warning!
@@ -87,6 +90,12 @@ export default {
       let date = moment(this.game.timestamp).format('MMMM Do, YYYY');
       return type + ' on ' + date;
     },
+    moveMode() {
+      return !!this.$store.getters.desiredPositions;
+    },
+    holdingGame() {
+      return !!this.$store.getters.heldGame;
+    },
     inEligibleText() {
       return {
         html: true,
@@ -113,6 +122,14 @@ export default {
         }
       }
     }
+  },
+  methods:{
+    holdGame() {
+      this.$store.commit('holdGame', this.game.publisherGameID);
+    },
+    placeGame() {
+      this.$store.commit('setDesiredPosition', this.gameSlot.slotNumber);
+    }
   }
 };
 </script>
@@ -132,7 +149,12 @@ export default {
     margin-left: auto;
   }
 
-  .master-game-popover {
-
+  .move-button {
+    font-size: 12px;
+    padding: 3px;
+    height: 25px;
+    border-radius: 4px;
+    color: #ffffff;
+    text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
   }
 </style>

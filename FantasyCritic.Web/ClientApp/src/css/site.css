@@ -89,6 +89,10 @@ div.alert {
     text-decoration: underline !important;
 }
 
+.fake-button {
+    cursor: pointer !important;
+}
+
 .toasted.primary.default {
     background: #3AACD6;
     color: white;

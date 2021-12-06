@@ -20,10 +20,10 @@
         <li>Will Not Release Games Dropped: {{getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames)}}</li>
         <li>"Any Unreleased" Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
       </ul>
-      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && !desiredPositions" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
-      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && desiredPositions" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
-      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && desiredPositions" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
-      <playerGameTable v-if="leagueYear" :publisher="publisher" :leagueYear="leagueYear" :desiredPositions="desiredPositions"></playerGameTable>
+      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
+      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
+      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
+      <playerGameTable v-if="leagueYear" :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
     </div>
   </div>
 </template>
@@ -38,14 +38,18 @@ export default {
     return {
       errorInfo: '',
       publisher: null,
-      leagueYear: null,
-      desiredPositions: null
+      leagueYear: null
     };
   },
   components: {
     PlayerGameTable
   },
   props: ['publisherid'],
+  computed: {
+    moveMode() {
+      return !!this.$store.getters.desiredPositions;
+    }
+  },
   methods: {
     fetchPublisher() {
       axios
@@ -74,14 +78,13 @@ export default {
       return dropped + '/' + droppable;
     },
     enterMoveMode() {
-      let standardGames = this.publisher.games.filter(x => !x.counterPick);
-      this.desiredPositions = Object.fromEntries(standardGames.map(x => [x.publisherGameID, x.slotNumber]));
+      this.$store.commit('initializeDesiredPositions', this.publisher.games);
     },
     cancelMoveMode() {
-      this.desiredPositions = null;
+      this.$store.commit('clearDesiredPositions');
     },
     confirmPositions() {
-      this.desiredPositions = null;
+      this.$store.commit('clearDesiredPositions');
     }
   },
   mounted() {
