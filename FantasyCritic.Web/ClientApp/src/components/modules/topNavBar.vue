@@ -46,7 +46,7 @@
             </li>
           </ul>
         </div>
-        <div class="my-2 my-lg-0">
+        <div class="my-2 my-lg-0" v-if="!authIsBusy">
           <ul class="navbar-nav">
             <li class="nav-item">
               <a class="nav-link top-nav-link brand-nav" href="https://twitter.com/fantasy_critic" target="_blank">
@@ -63,35 +63,33 @@
                 <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="topnav-icon discord-icon" />
               </a>
             </li>
-            <slot v-if="!authIsBusy">
-              <slot v-if="isAuth && hasUserInfo">
-                <li v-if="displayName" class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                    {{displayName}}
-                    <span class="caret"></span>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
-                    <a href="/Identity/Account/Manage" class="dropdown-item">Manage Account</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/Identity/Account/Logout">Log off</a>
-                  </div>
-                </li>
-              </slot>
-              <slot v-else>
-                <li class="nav-item top-nav-button">
-                  <b-button variant="info" href="/Identity/Account/Login" class="nav-link">
-                    <span>Log In</span>
-                    <font-awesome-icon class="full-nav" icon="sign-in-alt" />
-                  </b-button>
-                </li>
-                <li class="nav-item">
-                  <b-button variant="primary" href="/Identity/Account/Register" class="nav-link">
-                    <span>Sign Up</span>
-                    <font-awesome-icon class="full-nav" icon="user-plus" />
-                  </b-button>
-                </li>
-              </slot>
-            </slot>
+            <template v-if="isAuth && hasUserInfo">
+              <li v-if="displayName" class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                  {{displayName}}
+                  <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
+                  <a href="/Identity/Account/Manage" class="dropdown-item">Manage Account</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="/Identity/Account/Logout">Log off</a>
+                </div>
+              </li>
+            </template>
+            <template v-else>
+              <li class="nav-item top-nav-button">
+                <b-button variant="info" href="/Identity/Account/Login" class="nav-link">
+                  <span>Log In</span>
+                  <font-awesome-icon class="full-nav" icon="sign-in-alt" />
+                </b-button>
+              </li>
+              <li class="nav-item">
+                <b-button variant="primary" href="/Identity/Account/Register" class="nav-link">
+                  <span>Sign Up</span>
+                  <font-awesome-icon class="full-nav" icon="user-plus" />
+                </b-button>
+              </li>
+            </template>
           </ul>
         </div>
       </nav>
