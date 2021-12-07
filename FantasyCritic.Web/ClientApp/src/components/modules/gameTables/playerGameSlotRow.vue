@@ -34,9 +34,11 @@
           </span>
         </span>
       </td>
-      <td v-if="game.releaseDate">{{releaseDate}}</td>
-      <td v-else>{{game.estimatedReleaseDate}} (Estimated)</td>
-      <td>{{acquireDate}}</td>
+      <template v-if="!minimal">
+        <td v-if="game.releaseDate">{{releaseDate}}</td>
+        <td v-else>{{game.estimatedReleaseDate}} (Estimated)</td>
+        <td>{{acquireDate}}</td>
+      </template>
       <td>{{game.criticScore | score(2)}}</td>
       <td>{{game.fantasyPoints | score(2)}}</td>
     </template>
@@ -51,11 +53,13 @@
           </span>
         </span>
       </td>
-      <td></td>
-      <td></td>
+      <template v-if="!minimal">
+        <td></td>
+        <td></td>
+      </template>
       <td>
       <template v-if="gameSlot.counterPick && yearFinished">
-        -15
+        --
       </template></td>
       <td>
       <template v-if="gameSlot.counterPick && yearFinished">
@@ -74,7 +78,7 @@ export default {
     MasterGamePopover,
     SlotTypeBadge
   },
-  props: ['gameSlot', 'yearFinished', 'hasSpecialSlots'],
+  props: ['minimal','gameSlot', 'yearFinished', 'hasSpecialSlots'],
   computed: {
     game(){
       return this.gameSlot.publisherGame;

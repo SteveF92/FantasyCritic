@@ -3,7 +3,7 @@
     <div class="row league-summary">
       <div class="col-xl-6 col-lg-12" v-for="publisher in publishers">
         <a :name="publisher.publisherID"/>
-        <minimalPlayerGameTable :publisher="publisher" :options="options" :yearFinished="leagueYear.supportedYear.finished"></minimalPlayerGameTable>
+        <minimalPlayerGameTable :publisher="publisher" :leagueYear="leagueYear"></minimalPlayerGameTable>
       </div>
     </div>
   </div>

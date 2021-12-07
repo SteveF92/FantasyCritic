@@ -43,7 +43,12 @@ namespace FantasyCritic.Lib.Domain
 
         public decimal GetProjectedOrRealFantasyPoints(MasterGameEligibilityFactors eligibilityFactors, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
         {
-            if (PublisherGame.HasNoValue || PublisherGame.Value.MasterGame.HasNoValue)
+            if (PublisherGame.HasNoValue)
+            {
+                return systemWideValues.GetAveragePoints(CounterPick);
+            }
+
+            if (PublisherGame.Value.MasterGame.HasNoValue)
             {
                 if (PublisherGame.Value.ManualCriticScore.HasValue)
                 {

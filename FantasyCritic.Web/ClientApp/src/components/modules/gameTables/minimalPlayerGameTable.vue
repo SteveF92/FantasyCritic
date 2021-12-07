@@ -20,11 +20,11 @@
           <th scope="col" class="score-column">Points</th>
         </tr>
       </thead>
-      <tbody v-if="tableIsValid">
-          <minimalPlayerGameRow v-for="game in standardGames" :game="game" :yearFinished="yearFinished" v-bind:key="game.publisherGameID"></minimalPlayerGameRow>
-          <minimalBlankPlayerGameRow v-for="blankSpace in standardFiller" v-bind:key="'G'+ blankSpace" :yearFinished="yearFinished"></minimalBlankPlayerGameRow>
-          <minimalPlayerGameRow v-for="game in counterPicks" :game="game" :yearFinished="yearFinished" v-bind:key="game.publisherGameID"></minimalPlayerGameRow>
-          <minimalBlankPlayerGameRow v-for="blankSpace in counterPickFiller" v-bind:key="'CP'+ blankSpace" :counterPick="true" :yearFinished="yearFinished"></minimalBlankPlayerGameRow>
+      <tbody>
+        <playerGameSlotRow v-for="gameSlot in publisher.gameSlots" :minimal="true"
+                           :gameSlot="gameSlot" :yearFinished="leagueYear.supportedYear.finished" 
+                           :hasSpecialSlots="leagueYear.hasSpecialSlots" :userIsPublisher="userIsPublisher"
+                           v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
           <tr class="minimal-game-row">
             <td id="total-description">
               <span id="total-description-text" v-if="!advancedProjections">
@@ -42,59 +42,24 @@
             </template>
           </tr>
       </tbody>
-      <tbody v-if="!tableIsValid">
-        <tr>
-          <td scope="col" colspan="4">
-            <div class="alert alert-danger">
-              Something has gone wrong with this publisher! There are probably duplicated games that the league manager can remove using the "Remove Publisher Game" action. If that doesn't work,
-              <router-link :to="{ name: 'contact'}">contact</router-link> me.
-            </div>
-          </td>
-        </tr>
-      </tbody>
     </table>
-
   </div>
 
 </template>
 <script>
-import Vue from 'vue';
-import MinimalPlayerGameRow from '@/components/modules/gameTables/minimalPlayerGameRow';
-import MinimalBlankPlayerGameRow from '@/components/modules/gameTables/minimalBlankPlayerGameRow';
+import PlayerGameSlotRow from '@/components/modules/gameTables/playerGameSlotRow';
 
 export default {
   components: {
-    MinimalPlayerGameRow,
-    MinimalBlankPlayerGameRow
+    PlayerGameSlotRow
   },
-  props: ['publisher', 'options', 'yearFinished'],
+  props: ['publisher', 'leagueYear'],
   computed: {
-    games() {
-      return this.publisher.games;
+    advancedProjections() {
+      return this.$store.getters.advancedProjections;
     },
-    standardGames() {
-      return _.filter(this.games, { 'counterPick': false });
-    },
-    counterPicks() {
-      return _.filter(this.games, { 'counterPick': true });
-    },
-    standardFiller() {
-      var numberStandardGames = this.standardGames.length;
-      var openSlots = this.options.standardGameSlots - numberStandardGames;
-      return openSlots;
-    },
-    counterPickFiller() {
-      var numberCounterPicked = this.counterPicks.length;
-      var openSlots = this.options.counterPickSlots - numberCounterPicked;
-      return openSlots;
-    },
-    tableIsValid() {
-      return (this.standardGames.length <= this.options.standardGameSlots) && (this.counterPicks.length <= this.options.counterPickSlots);
-    },
-    advancedProjections: {
-      get() {
-        return this.$store.getters.advancedProjections;
-      }
+    userIsPublisher() {
+      return this.publisher.userID === this.$store.getters.userInfo.userID;
     }
   }
 };
