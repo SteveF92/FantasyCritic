@@ -89,7 +89,7 @@ namespace FantasyCritic.Web.Controllers.API
             
             var openYearInts = openYears.Select(x => x.Year);
             LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYearInts, DraftSystem.GetAllPossibleValues(),
-                PickupSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues());
+                PickupSystem.GetAllPossibleValues(), ScoringSystem.GetAllPossibleValues(), TradingSystem.GetAllPossibleValues());
 
             return Ok(viewModel);
         }

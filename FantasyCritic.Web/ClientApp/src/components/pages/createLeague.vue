@@ -147,6 +147,7 @@ export default {
         testLeague: this.testLeague,
         draftSystem: 'Flexible',
         pickupSystem: this.leagueYearSettings.pickupSystem,
+        tradingSystem: this.leagueYearSettings.tradingSystem,
         scoringSystem: 'Diminishing'
       };
 
@@ -173,6 +174,8 @@ export default {
       counterPicks: '',
       counterPicksToDraft: '',
       initialYear: '',
+      pickupSystem: 'SecretBidding',
+      tradingSystem: 'Standard',
       tags: {
         required: [],
         banned: [

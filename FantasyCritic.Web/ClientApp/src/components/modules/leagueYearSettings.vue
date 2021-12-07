@@ -112,10 +112,20 @@
         New for 2022, you can choose the new "public bidding" system. This feature can help balance leagues where some players are more engaged/invested than others.
         You can read more about it on the <a href="/faq#bidding-system" target="_blank" class="text-secondary">FAQ page</a>.
         <br />
-        If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding".
+        If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding" option.
       </div>
       <label for="pickupSystem" class="control-label">Bidding System</label>
       <b-form-select v-model="local.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
+
+      <hr />
+      <h3>Trade Settings</h3>
+      <div class="alert alert-info">
+        New for 2022, you can allow players in your leagues to trade games with each other. Note: This feature is NOT complete yet, but will be complete sometime in January 2022.
+        <br />
+        Right now, this doesn't do anything, but if you turn trades on, they will be enabled once the feature is added.
+      </div>
+      <label for="tradingSystem" class="control-label">Trading System</label>
+      <b-form-select v-model="local.tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
 
       <hr />
       <h3>Game Dropping Settings</h3>

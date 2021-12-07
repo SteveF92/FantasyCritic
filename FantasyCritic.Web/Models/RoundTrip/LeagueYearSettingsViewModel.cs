@@ -53,6 +53,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
+            TradingSystem = leagueYear.Options.TradingSystem.Value;
 
             var bannedTags = leagueYear.Options.LeagueTags
                 .Where(x => x.Status == TagStatus.Banned)
@@ -121,6 +122,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
         [Required]
         public string ScoringSystem { get; set; }
         [Required]
+        public string TradingSystem { get; set; }
+        [Required]
         public bool PublicLeague { get; set; }
 
         [Required]
@@ -132,6 +135,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
         {
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
+            TradingSystem tradingSystem = Lib.Enums.TradingSystem.FromValue(TradingSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             int freeDroppableGames = FreeDroppableGames;
@@ -155,7 +159,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-                leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, PublicLeague);
+                leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, PublicLeague);
             return parameters;
         }
     }
