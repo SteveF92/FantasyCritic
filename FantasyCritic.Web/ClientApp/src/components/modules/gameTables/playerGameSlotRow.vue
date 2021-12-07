@@ -1,5 +1,5 @@
 <template>
-  <tr v-bind:class="{ 'table-warning': gameSlot && !gameSlot.gameMeetsSlotCriteria }">
+  <tr v-bind:class="{ 'table-warning': gameSlot && !gameSlot.gameMeetsSlotCriteria, 'minimal-game-row': minimal }">
     <template v-if="game">
       <td>
         <span class="game-name-column">
@@ -38,9 +38,13 @@
         <td v-if="game.releaseDate">{{releaseDate}}</td>
         <td v-else>{{game.estimatedReleaseDate}} (Estimated)</td>
         <td>{{acquireDate}}</td>
+        <td class="score-column">{{game.criticScore | score(2)}}</td>
+        <td class="score-column">{{game.fantasyPoints | score(2)}}</td>
       </template>
-      <td>{{game.criticScore | score(2)}}</td>
-      <td>{{game.fantasyPoints | score(2)}}</td>
+      <template v-else>
+        <td class="score-column">{{game.criticScore | score }}</td>
+        <td class="score-column">{{game.fantasyPoints | score }}</td>
+      </template>
     </template>
     <template v-else>
       <td>
@@ -57,14 +61,8 @@
         <td></td>
         <td></td>
       </template>
-      <td>
-      <template v-if="gameSlot.counterPick && yearFinished">
-        --
-      </template></td>
-      <td>
-      <template v-if="gameSlot.counterPick && yearFinished">
-        -15
-      </template></td>
+      <td class="score-column"></td>
+      <td class="score-column">{{emptySlotScore}}</td>
     </template>
   </tr>
 </template>
@@ -99,6 +97,13 @@ export default {
     },
     holdingGame() {
       return this.$store.getters.holdingGame;
+    },
+    emptySlotScore() {
+      if (this.gameSlot.counterPick && this.yearFinished) {
+        return '-15';
+      }
+
+      return '';
     },
     inEligibleText() {
       return {
@@ -145,6 +150,14 @@ export default {
 <style scoped>
   tr {
     height: 40px;
+  }
+
+  .minimal-game-row {
+    height: 35px;
+  }
+
+  .minimal-game-row td {
+    font-size: 10pt;
   }
 
   .game-name-column {
