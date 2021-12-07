@@ -23,8 +23,6 @@ namespace FantasyCritic.DatabaseUtility
 {
     class Program
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
         private static string _connectionString;
         private static IClock _clock;
 
@@ -81,7 +79,7 @@ namespace FantasyCritic.DatabaseUtility
                 {
                     for (var index = 0; index < batches.Count; index++)
                     {
-                        _logger.Info($"Running publisher game update batch {index + 1}/{batches.Count}");
+                        Console.WriteLine($"Running publisher game update batch {index + 1}/{batches.Count}");
                         var batch = batches[index];
                         var joinedSQL = string.Join('\n', batch);
                         await connection.ExecuteAsync(joinedSQL, transaction: transaction);
