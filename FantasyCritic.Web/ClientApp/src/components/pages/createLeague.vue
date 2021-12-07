@@ -176,6 +176,7 @@ export default {
       initialYear: '',
       pickupSystem: 'SecretBidding',
       tradingSystem: 'Standard',
+      specialGameSlots: [],
       tags: {
         required: [],
         banned: [
