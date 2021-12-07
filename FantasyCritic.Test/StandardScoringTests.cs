@@ -18,7 +18,15 @@ namespace FantasyCritic.Test
     [TestFixture]
     public class StandardScoringTests
     {
-        private static readonly SystemWideValues SystemWideValues = new SystemWideValues(10, -5);
+        private static MasterGameEligibilityFactors GetEligibilityFactors(MasterGame masterGame)
+        {
+            LeagueOptions leagueOptions = new LeagueOptions(1, 1, 0, 0, 0, 0, 0, false, false, 0,
+                new List<LeagueTagStatus>(), new List<SpecialGameSlot>(), DraftSystem.Flexible,
+                PickupSystem.SecretBidding, ScoringSystem.GetScoringSystem("Standard"), false);
+            return new MasterGameEligibilityFactors(leagueOptions, Maybe<PublisherSlot>.None, masterGame, null,
+                new List<MasterGameTag>());
+        }
+
 
         [Test]
         public void BasicScoreTest()
@@ -27,7 +35,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", 
                 new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, new LocalDate(2018, 7, 13),
@@ -36,8 +43,9 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(standardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(14.8095m, fantasyPoints);
         }
@@ -49,7 +57,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, new LocalDate(2018, 7, 13),
@@ -57,8 +64,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(13.8095m, fantasyPoints);
         }
@@ -70,7 +79,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
@@ -78,8 +86,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(29.625m, fantasyPoints);
         }
@@ -91,7 +101,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
@@ -99,8 +108,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(-4.1441m, fantasyPoints);
         }
@@ -112,7 +123,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem StandardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
@@ -120,8 +130,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(StandardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(-14.1441m, fantasyPoints);
         }
@@ -133,7 +145,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem StandardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
@@ -141,8 +152,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(StandardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(-24.1441m, fantasyPoints);
         }
@@ -154,7 +167,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem StandardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
@@ -162,8 +174,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(StandardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(-34.1441m, fantasyPoints);
         }
@@ -175,7 +189,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem StandardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
@@ -183,8 +196,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(StandardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(-44.1441m, fantasyPoints);
         }
@@ -196,7 +211,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem StandardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
@@ -204,8 +218,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(StandardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(-54.1441m, fantasyPoints);
         }
@@ -217,7 +233,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem StandardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
@@ -225,8 +240,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(StandardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(-64.1441m, fantasyPoints);
         }
@@ -238,7 +255,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 10, 20), new LocalDate(2018, 10, 20), null, null, new LocalDate(2018, 10, 20),
@@ -246,8 +262,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(null, fantasyPoints);
         }
@@ -259,7 +277,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2019, 10, 20), new LocalDate(2019, 10, 20), null, null, new LocalDate(2019, 10, 20),
@@ -267,8 +284,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(0m, fantasyPoints);
         }
@@ -280,7 +299,6 @@ namespace FantasyCritic.Test
             Instant nowTime = InstantPattern.ExtendedIso.Parse("2018-08-02T12:34:24Z").GetValueOrThrow();
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
-            ScoringSystem standardScoring = ScoringSystem.GetScoringSystem("Standard");
 
             MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, new LocalDate(2018, 4, 20),
@@ -288,8 +306,10 @@ namespace FantasyCritic.Test
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
+            PublisherSlot testSlot = new PublisherSlot(1, 1, true, Maybe<SpecialGameSlot>.None, testGame);
+            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
-            decimal? fantasyPoints = testGame.CalculateFantasyPoints(standardScoring, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
             Assert.AreEqual(4.1441m, fantasyPoints);
         }
