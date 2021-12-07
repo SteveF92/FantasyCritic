@@ -15,24 +15,16 @@ namespace FantasyCritic.Lib.Domain
     {
         public static IReadOnlyList<ClaimError> GameIsRoyaleEligible(IEnumerable<MasterGameTag> allMasterGameTags, MasterGame masterGame)
         {
-            return GetRoyaleEligibilitySettings(allMasterGameTags)
-                .GameHasValidTags(masterGame, new List<MasterGameTag>());
+            return GetRoyaleEligibilitySettings(allMasterGameTags).GameHasValidTags(masterGame.Tags);
         }
 
-        public static IReadOnlyList<ClaimError> GameHasValidTags(this IEnumerable<LeagueTagStatus> slotTags, MasterGame masterGame, 
-           IEnumerable<MasterGameTag> overriddenTags)
+        public static IReadOnlyList<ClaimError> GameHasValidTags(this IEnumerable<LeagueTagStatus> slotTags, IEnumerable<MasterGameTag> masterGameTags)
         {
-            var tagsToUse = masterGame.Tags;
-            if (overriddenTags.Any())
-            {
-                tagsToUse = overriddenTags.ToList();
-            }
+            var bannedTags = slotTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag);
+            var requiredTags = slotTags.Where(x => x.Status.Equals(TagStatus.Required)).Select(x => x.Tag);
 
-            var bannedTags = slotTags.Where(x => x.Status == TagStatus.Banned).Select(x => x.Tag);
-            var requiredTags = slotTags.Where(x => x.Status == TagStatus.Required).Select(x => x.Tag);
-
-            var bannedTagsIntersection = tagsToUse.Intersect(bannedTags);
-            var requiredTagsIntersection = tagsToUse.Intersect(requiredTags);
+            var bannedTagsIntersection = masterGameTags.Intersect(bannedTags);
+            var requiredTagsIntersection = masterGameTags.Intersect(requiredTags);
 
             bool hasNoRequiredTags = requiredTags.Any() && !requiredTagsIntersection.Any();
 

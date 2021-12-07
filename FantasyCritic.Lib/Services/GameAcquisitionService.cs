@@ -259,26 +259,9 @@ namespace FantasyCritic.Lib.Services
 
         private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool counterPick, bool dropping, Instant? nextBidTime)
         {
-            List<ClaimError> claimErrors = new List<ClaimError>();
-
             var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame);
-            if (!dropping && !counterPick)
-            {
-                if (eligibilityFactors.OverridenEligibility.HasValue)
-                {
-                    if (!eligibilityFactors.OverridenEligibility.Value)
-                    {
-                        claimErrors.Add(new ClaimError("That game has been specifically banned by your league.", false));
-                    }
-                }
-                else
-                {
-                    //Normal eligibility (not manually set)
-                    var eligibilityErrors = eligibilityFactors.GetErrors();
-                    claimErrors.AddRange(eligibilityErrors);
-                }
-            }
-
+            List<ClaimError> claimErrors = eligibilityFactors.GetErrors(counterPick, dropping).ToList();
+            
             var currentDate = _clock.GetToday();
             bool manuallyEligible = eligibilityFactors.OverridenEligibility.HasValue && eligibilityFactors.OverridenEligibility.Value;
             bool released = masterGame.IsReleased(currentDate);

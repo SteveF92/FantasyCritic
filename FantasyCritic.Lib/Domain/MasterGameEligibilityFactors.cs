@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Lib.Domain
 {
@@ -25,16 +26,40 @@ namespace FantasyCritic.Lib.Domain
         public bool? OverridenEligibility { get; }
         public IReadOnlyList<MasterGameTag> TagOverrides { get; }
 
-        public IReadOnlyList<ClaimError> GetErrors()
+        public IReadOnlyList<ClaimError> GetErrors(bool counterPicking = false, bool dropping = false)
         {
-            throw new NotImplementedException();
-            //if (OverridenEligibility.HasValue && OverridenEligibility.Value)
-            //{
-            //    return true;
-            //}
+            List<ClaimError> claimErrors = new List<ClaimError>();
+            if (counterPicking || dropping)
+            {
+                return claimErrors;
+            }
 
-            //var claimErrors = Options.LeagueTags.GameHasValidTags(masterGame, overriddenTags);
-            //return !claimErrors.Any();
+            if (MasterGame.HasNoValue)
+            {
+                return claimErrors;
+            }
+
+            if (OverridenEligibility.HasValue && !OverridenEligibility.Value)
+            {
+                claimErrors.Add(new ClaimError("That game has been specifically banned by your league.", false));
+                return claimErrors;
+            }
+
+            var masterGameTagsToUse = MasterGame.Value.Tags;
+            if (TagOverrides.Any())
+            {
+                masterGameTagsToUse = TagOverrides;
+            }
+
+            var slotTagsToUse = Options.LeagueTags;
+            if (PublisherSlot.HasValue && PublisherSlot.Value.SpecialGameSlot.HasValue)
+            {
+                slotTagsToUse = PublisherSlot.Value.SpecialGameSlot.Value.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required)).ToList();
+            }
+
+            var tagErrors = slotTagsToUse.GameHasValidTags(masterGameTagsToUse);
+            claimErrors.AddRange(tagErrors);
+            return claimErrors;
         }
 
         public bool IsEligible() => !GetErrors().Any();
