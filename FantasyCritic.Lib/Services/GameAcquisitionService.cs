@@ -45,14 +45,16 @@ namespace FantasyCritic.Lib.Services
             }
 
             IReadOnlyList<Publisher> otherPublishers = publishersInLeague.Where(x => x.User.Id != request.Publisher.User.Id).ToList();
-
-            IReadOnlyList<PublisherGame> gamesForYear = publishersInLeague.SelectMany(x => x.PublisherGames).ToList();
-            IReadOnlyList<PublisherGame> standardGamesForYear = gamesForYear.Where(x => !x.CounterPick).ToList();
             IReadOnlyList<PublisherGame> thisPlayersGames = request.Publisher.PublisherGames;
             IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
 
-            bool gameAlreadyClaimed = standardGamesForYear.ContainsGame(request);
-            bool thisPlayerAlreadyHas = thisPlayersGames.ContainsGame(request);
+            var thisPlayerStandardGames = thisPlayersGames.Where(x => !x.CounterPick).ToList();
+            var thisPlayerCounterPicks = thisPlayersGames.Where(x => x.CounterPick).ToList();
+            var otherPlayerStandardGames = otherPlayersGames.Where(x => !x.CounterPick).ToList();
+            var otherPlayerCounterPicks = otherPlayersGames.Where(x => x.CounterPick).ToList();
+
+            bool gameAlreadyClaimed = otherPlayerStandardGames.ContainsGame(request);
+            bool thisPlayerAlreadyHas = thisPlayerStandardGames.ContainsGame(request);
 
             if (!request.CounterPick)
             {
@@ -69,18 +71,18 @@ namespace FantasyCritic.Lib.Services
 
             if (request.CounterPick)
             {
-                bool otherPlayerHasCounterPick = otherPlayersGames.Where(x => x.CounterPick).ContainsGame(request);
+                bool otherPlayerHasCounterPick = otherPlayerCounterPicks.ContainsGame(request);
                 if (otherPlayerHasCounterPick)
                 {
-                    claimErrors.Add(new ClaimError("Cannot counter-pick a game that someone else has already counter-picked.", false));
+                    claimErrors.Add(new ClaimError("Cannot counter-pick a game that someone else has already counter picked.", false));
                 }
-                bool thisPlayerHasCounterPick = thisPlayersGames.Where(x => x.CounterPick).ContainsGame(request);
+                bool thisPlayerHasCounterPick = thisPlayerCounterPicks.ContainsGame(request);
                 if (thisPlayerHasCounterPick)
                 {
-                    claimErrors.Add(new ClaimError("You already have that counter-pick.", false));
+                    claimErrors.Add(new ClaimError("You already have that counter pick.", false));
                 }
 
-                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick).ContainsGame(request);
+                bool otherPlayerHasDraftGame = otherPlayerStandardGames.ContainsGame(request);
                 if (!otherPlayerHasDraftGame)
                 {
                     claimErrors.Add(new ClaimError("Cannot counter pick a game that no other player is publishing.", false));
