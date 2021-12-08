@@ -34,7 +34,7 @@ namespace FantasyCritic.Lib.Services
         public static bool GameIsEligibleInLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
         {
             var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors);
-            return leagueYearClaimErrors.Any();
+            return !leagueYearClaimErrors.Any();
         }
 
         public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick, int? validDropSlot)
@@ -151,10 +151,7 @@ namespace FantasyCritic.Lib.Services
             if (publisherSlot.SpecialGameSlot.HasNoValue)
             {
                 var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags);
-                if (!baseEligibilityResult.Any())
-                {
-                    return baseEligibilityResult;
-                }
+                return baseEligibilityResult;
             }
 
             //This is a special slot

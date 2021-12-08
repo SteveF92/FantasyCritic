@@ -177,7 +177,8 @@ namespace FantasyCritic.Lib.Services
             foreach (var publisher in publishersInLeague)
             {
                 var slots = publisher.GetPublisherSlots();
-                foreach (var publisherSlot in slots)
+                var slotsThatHaveGames = slots.Where(x => x.PublisherGame.HasValue).ToList();
+                foreach (var publisherSlot in slotsThatHaveGames)
                 {
                     decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(publisherSlot.SlotIsValid(publisher.LeagueYear), publisher.LeagueYear.Options.ScoringSystem, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
