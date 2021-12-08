@@ -68,7 +68,7 @@ namespace FantasyCritic.Lib.Domain
         public bool GameIsEligibleInAnySlot(MasterGame masterGame)
         {
             var eligibilityFactors = GetEligibilityFactorsForMasterGame(masterGame);
-            return SlotEligibilityService.GameIsEligibleInLeagueYear(this, eligibilityFactors);
+            return SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);
         }
 
         private bool? GetOverriddenEligibility(MasterGame masterGame)

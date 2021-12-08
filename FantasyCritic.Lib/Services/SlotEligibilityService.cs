@@ -13,12 +13,26 @@ namespace FantasyCritic.Lib.Services
     {
         public static bool SlotIsCurrentlyValid(PublisherSlot publisherSlot, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors)
         {
-            throw new NotImplementedException();
+            if (eligibilityFactors.HasNoValue)
+            {
+                //This is an unlinked master game
+                return true;
+            }
+
+            var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors.Value);
+            if (leagueYearClaimErrors.Any())
+            {
+                //This game is not eligible in this league at all
+                return false;
+            }
+
+            var slotClaimErrors = GetClaimErrorsForSlot(publisherSlot, eligibilityFactors.Value);
+            return slotClaimErrors.Any();
         }
 
-        public static bool GameIsEligibleInLeagueYear(LeagueYear leagueYear, MasterGameWithEligibilityFactors eligibilityFactors)
+        public static bool GameIsEligibleInLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
         {
-            var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(leagueYear, eligibilityFactors);
+            var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors);
             return leagueYearClaimErrors.Any();
         }
 
@@ -43,7 +57,7 @@ namespace FantasyCritic.Lib.Services
                 return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError("User's game spaces are filled.", false, true) });
             }
 
-            var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(publisher.LeagueYear, eligibilityFactors.Value);
+            var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors.Value);
             if (leagueYearClaimErrors.Any())
             {
                 return new PublisherSlotAcquisitionResult(leagueYearClaimErrors);
@@ -63,7 +77,7 @@ namespace FantasyCritic.Lib.Services
             //At this point, the game is eligible in at least one currently open slot. Which one is best?
             foreach (var openSlot in openSlots)
             {
-                var claimErrorsForSlot = GetClaimErrorsForSlot(publisher.LeagueYear, openSlot, eligibilityFactors.Value);
+                var claimErrorsForSlot = GetClaimErrorsForSlot(openSlot, eligibilityFactors.Value);
                 if (!claimErrorsForSlot.Any())
                 {
                     return new PublisherSlotAcquisitionResult(openSlot.SlotNumber);
@@ -73,13 +87,15 @@ namespace FantasyCritic.Lib.Services
             throw new Exception($"Something went horribly wrong detecting eligibility for: {publisher.PublisherID} | {eligibilityFactors.Value.MasterGame.GameName}");
         }
 
-        private static IReadOnlyList<ClaimError> GetClaimErrorsForLeagueYear(LeagueYear leagueYear, MasterGameWithEligibilityFactors eligibilityFactors)
+        private static IReadOnlyList<ClaimError> GetClaimErrorsForLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
         {
+            //This function returns a list of errors if a game is not eligible in ANY slot
             throw new NotImplementedException();
         }
 
-        private static IReadOnlyList<ClaimError> GetClaimErrorsForSlot(LeagueYear leagueYear, PublisherSlot slot, MasterGameWithEligibilityFactors eligibilityFactors)
+        private static IReadOnlyList<ClaimError> GetClaimErrorsForSlot(PublisherSlot publisherSlot, MasterGameWithEligibilityFactors eligibilityFactors)
         {
+            //This function returns a list of errors if a game is not eligible in THIS slot
             throw new NotImplementedException();
         }
     }
