@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             var slotClaimErrors = GetClaimErrorsForSlot(publisherSlot, eligibilityFactors.Value);
-            return slotClaimErrors.Any();
+            return !slotClaimErrors.Any();
         }
 
         public static bool GameIsEligibleInLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
