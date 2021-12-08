@@ -23,5 +23,14 @@ namespace FantasyCritic.Lib.Domain
         public LeagueOptions Options { get; }
         public bool? OverridenEligibility { get; }
         public IReadOnlyList<MasterGameTag> TagOverrides { get; }
+
+        public bool GameIsSpecificallyAllowed => OverridenEligibility.HasValue && OverridenEligibility.Value;
+        public bool GameIsSpecificallyBanned => OverridenEligibility.HasValue && !OverridenEligibility.Value;
+
+        public IReadOnlyList<ClaimError> CheckGameAgainstTags(IEnumerable<LeagueTagStatus> leagueTags)
+        {
+            var tagsToUse = TagOverrides.Any() ? TagOverrides : MasterGame.Tags;
+            return leagueTags.GameHasValidTags(tagsToUse);
+        }
     }
 }

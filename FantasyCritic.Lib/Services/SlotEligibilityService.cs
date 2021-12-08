@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -103,13 +104,63 @@ namespace FantasyCritic.Lib.Services
         private static IReadOnlyList<ClaimError> GetClaimErrorsForLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
         {
             //This function returns a list of errors if a game is not eligible in ANY slot
-            throw new NotImplementedException();
+            if (eligibilityFactors.GameIsSpecificallyAllowed)
+            {
+                return new List<ClaimError>();
+            }
+
+            if (eligibilityFactors.GameIsSpecificallyBanned)
+            {
+                return new List<ClaimError>() { new ClaimError("That game has been specifically banned by your league.", false) };
+            }
+
+            var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags);
+            if (!baseEligibilityResult.Any())
+            {
+                return baseEligibilityResult;
+            }
+
+            var specialGameSlots = eligibilityFactors.Options.SpecialGameSlots;
+            foreach (var specialGameSlot in specialGameSlots)
+            {
+                var tagsForSlot = specialGameSlot.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
+                var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(tagsForSlot);
+                if (!specialEligibilityResult.Any())
+                {
+                    return specialEligibilityResult;
+                }
+            }
+
+            //In this case, the game did not match the base rules, nor any special slots, so the errors we return will be for the base rules.
+            return baseEligibilityResult;
         }
 
         private static IReadOnlyList<ClaimError> GetClaimErrorsForSlot(PublisherSlot publisherSlot, MasterGameWithEligibilityFactors eligibilityFactors)
         {
             //This function returns a list of errors if a game is not eligible in THIS slot
-            throw new NotImplementedException();
+            if (eligibilityFactors.GameIsSpecificallyAllowed)
+            {
+                return new List<ClaimError>();
+            }
+
+            if (eligibilityFactors.GameIsSpecificallyBanned)
+            {
+                return new List<ClaimError>() { new ClaimError("That game has been specifically banned by your league.", false) };
+            }
+
+            if (publisherSlot.SpecialGameSlot.HasNoValue)
+            {
+                var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags);
+                if (!baseEligibilityResult.Any())
+                {
+                    return baseEligibilityResult;
+                }
+            }
+
+            //This is a special slot
+            var tagsForSlot = publisherSlot.SpecialGameSlot.Value.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
+            var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(tagsForSlot);
+            return specialEligibilityResult;
         }
     }
 }

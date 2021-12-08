@@ -106,17 +106,6 @@ namespace FantasyCritic.Lib.Domain
 
         public bool HasSpecialSlots() => SpecialGameSlots.Any();
 
-        public IReadOnlyList<LeagueTagStatus> GetTagsForSlot(int slotNumber)
-        {
-            var specialGameSlot = GetSpecialGameSlotByOverallSlotNumber(slotNumber);
-            if (specialGameSlot.HasNoValue)
-            {
-                return LeagueTags;
-            }
-
-            return specialGameSlot.Value.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required)).ToList();
-        }
-
         public Maybe<SpecialGameSlot> GetSpecialGameSlotByOverallSlotNumber(int slotNumber)
         {
             var hasSpecialSlot = _specialSlotDictionary.TryGetValue(slotNumber, out var specialSlot);
