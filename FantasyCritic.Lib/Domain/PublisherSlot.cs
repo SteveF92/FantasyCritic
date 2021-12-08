@@ -29,7 +29,7 @@ namespace FantasyCritic.Lib.Domain
         public Maybe<SpecialGameSlot> SpecialGameSlot { get; }
         public Maybe<PublisherGame> PublisherGame { get; }
 
-        public decimal GetProjectedOrRealFantasyPoints(MasterGameWithEligibilityFactors eligibilityFactors, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
+        public decimal GetProjectedOrRealFantasyPoints(Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
         {
             if (PublisherGame.HasNoValue)
             {
@@ -46,7 +46,7 @@ namespace FantasyCritic.Lib.Domain
                 return systemWideValues.GetAveragePoints(CounterPick);
             }
 
-            decimal? fantasyPoints = CalculateFantasyPoints(eligibilityFactors, currentDate);
+            decimal? fantasyPoints = CalculateFantasyPoints(eligibilityFactors, scoringSystem, currentDate);
             if (fantasyPoints.HasValue)
             {
                 return fantasyPoints.Value;
@@ -57,10 +57,10 @@ namespace FantasyCritic.Lib.Domain
                 return PublisherGame.Value.MasterGame.Value.GetSimpleProjectedFantasyPoints(systemWideValues, CounterPick);
             }
 
-            return PublisherGame.Value.MasterGame.Value.GetProjectedOrRealFantasyPoints(eligibilityFactors.Options.ScoringSystem, CounterPick, currentDate);
+            return PublisherGame.Value.MasterGame.Value.GetProjectedOrRealFantasyPoints(scoringSystem, CounterPick, currentDate);
         }
 
-        public decimal? CalculateFantasyPoints(MasterGameWithEligibilityFactors eligibilityFactors, LocalDate currentDate)
+        public decimal? CalculateFantasyPoints(Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, ScoringSystem scoringSystem, LocalDate currentDate)
         {
             if (PublisherGame.HasNoValue)
             {
@@ -68,7 +68,7 @@ namespace FantasyCritic.Lib.Domain
             }
             if (PublisherGame.Value.ManualCriticScore.HasValue)
             {
-                return eligibilityFactors.Options.ScoringSystem.GetPointsForScore(PublisherGame.Value.ManualCriticScore.Value, CounterPick);
+                return scoringSystem.GetPointsForScore(PublisherGame.Value.ManualCriticScore.Value, CounterPick);
             }
             if (PublisherGame.Value.MasterGame.HasNoValue)
             {
@@ -81,7 +81,7 @@ namespace FantasyCritic.Lib.Domain
                 return 0m;
             }
 
-            return PublisherGame.Value.MasterGame.Value.CalculateFantasyPoints(eligibilityFactors.Options.ScoringSystem, CounterPick, currentDate, true);
+            return PublisherGame.Value.MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
         }
     }
 }

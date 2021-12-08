@@ -9,19 +9,19 @@ namespace FantasyCritic.Lib.Domain.Results
 {
     public class PublisherSlotAcquisitionResult
     {
-        public PublisherSlotAcquisitionResult(PublisherSlot publisherSlot)
+        public PublisherSlotAcquisitionResult(int slotNumber)
         {
-            PublisherSlot = publisherSlot;
+            SlotNumber = slotNumber;
             ClaimErrors = new List<ClaimError>();
         }
 
         public PublisherSlotAcquisitionResult(IEnumerable<ClaimError> claimErrors)
         {
-            PublisherSlot = Maybe<PublisherSlot>.None;
+            SlotNumber = null;
             ClaimErrors = claimErrors.ToList();
         }
 
-        public Maybe<PublisherSlot> PublisherSlot { get; }
+        public int? SlotNumber { get; }
         public IReadOnlyList<ClaimError> ClaimErrors { get; }
     }
 }

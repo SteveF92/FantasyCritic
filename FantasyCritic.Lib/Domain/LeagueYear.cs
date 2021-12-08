@@ -52,17 +52,17 @@ namespace FantasyCritic.Lib.Domain
             return new MasterGameWithEligibilityFactors(masterGame, Options, eligibilityOverride, tagOverrides);
         }
 
-        public MasterGameWithEligibilityFactors GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
+        public Maybe<MasterGameWithEligibilityFactors> GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
         {
             if (publisherSlot.PublisherGame.HasNoValue || publisherSlot.PublisherGame.Value.MasterGame.HasNoValue)
             {
-                return new MasterGameWithEligibilityFactors(Maybe<MasterGame>.None, Options, null, new List<MasterGameTag>());
+                return Maybe<MasterGameWithEligibilityFactors>.None;
             }
 
             var masterGame = publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame;
             bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
             IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
-            return new MasterGameWithEligibilityFactors(masterGame, Options, eligibilityOverride, tagOverrides);
+            return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame, Options, eligibilityOverride, tagOverrides);
         }
 
         public bool GameIsEligibleInAnySlot(MasterGame masterGame)

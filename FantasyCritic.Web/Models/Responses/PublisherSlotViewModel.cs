@@ -14,7 +14,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherSlotViewModel
     {
-        public PublisherSlotViewModel(PublisherSlot slot, LocalDate currentDate, MasterGameWithEligibilityFactors eligibilityFactors, SystemWideValues systemWideValues)
+        public PublisherSlotViewModel(PublisherSlot slot, LocalDate currentDate, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, SystemWideValues systemWideValues)
         {
             SlotNumber = slot.SlotNumber;
             OverallSlotNumber = slot.OverallSlotNumber;

@@ -151,30 +151,16 @@ namespace FantasyCritic.Lib.Services
                     }
                 }
 
-                int? validDropSlot = null;
-                if (activeBid.ConditionalDropPublisherGame.HasValue && activeBid.ConditionalDropResult.Result.IsSuccess)
+                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, validConditionalDropSlot);
+                if (claimResult.NoSpaceError)
                 {
-                    validDropSlot = activeBid.ConditionalDropPublisherGame.Value.SlotNumber;
-                }
-
-                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, validDropSlot);
-                if (!claimResult.Success)
-                {
-                    invalidGameBids.Add(new KeyValuePair<PickupBid, string>(activeBid, string.Join(" AND ", claimResult.Errors.Select(x => x.Error))));
+                    noSpaceLeftBids.Add(activeBid);
                     continue;
                 }
 
-                int? availableSlot = claimResult.IdealSlotNumber;
-                var hasAvailableSlot = claimResult.IdealSlotNumber.HasValue;
-                if (!hasAvailableSlot && !activeBid.CounterPick && validConditionalDropSlot.HasValue)
+                if (!claimResult.Success)
                 {
-                    hasAvailableSlot = true;
-                    availableSlot = validConditionalDropSlot.Value;
-                }
-
-                if (!hasAvailableSlot)
-                {
-                    noSpaceLeftBids.Add(activeBid);
+                    invalidGameBids.Add(new KeyValuePair<PickupBid, string>(activeBid, string.Join(" AND ", claimResult.Errors.Select(x => x.Error))));
                     continue;
                 }
 
@@ -188,7 +174,7 @@ namespace FantasyCritic.Lib.Services
                     belowMinimumBids.Add(activeBid);
                 }
 
-                validPickupBids.Add(new ValidPickupBid(activeBid, availableSlot.Value));
+                validPickupBids.Add(new ValidPickupBid(activeBid, claimResult.BestSlotNumber.Value));
             }
 
             var winnableBids = GetWinnableBids(validPickupBids, systemWideValues);

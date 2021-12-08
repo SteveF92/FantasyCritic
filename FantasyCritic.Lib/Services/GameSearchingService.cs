@@ -39,7 +39,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var masterGame in matchingMasterGames)
             {
                 var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, currentPublisher, eligibilityFactors);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, currentPublisher.LeagueYear, eligibilityFactors);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
@@ -63,7 +63,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var masterGame in matchingMasterGames)
             {
                 var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, currentPublisher, eligibilityFactors);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, currentPublisher.LeagueYear, eligibilityFactors);
 
                 if (!possibleMasterGame.IsAvailable)
                 {
@@ -105,7 +105,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var masterGame in availableCounterPicks)
             {
                 var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, currentPublisher, eligibilityFactors);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, currentPublisher.LeagueYear, eligibilityFactors);
 
                 possibleMasterGames.Add(possibleMasterGame);
             }
@@ -134,7 +134,7 @@ namespace FantasyCritic.Lib.Services
                 var masterGame = masterGameYearDictionary[queuedGame.MasterGame.MasterGameID];
 
                 var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, currentPublisher, eligibilityFactors);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames, currentPublisher.LeagueYear, eligibilityFactors);
                 possibleMasterGames.Add(possibleMasterGame);
             }
 
@@ -142,9 +142,9 @@ namespace FantasyCritic.Lib.Services
         }
 
         public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherStandardMasterGames, 
-            HashSet<MasterGame> myPublisherMasterGames, Publisher publisher, MasterGameWithEligibilityFactors eligibilityFactors)
+            HashSet<MasterGame> myPublisherMasterGames, LeagueYear leagueYear, MasterGameWithEligibilityFactors eligibilityFactors)
         {
-            bool isEligible = SlotEligibilityService.GameWouldBeEligibleInAnySlot(publisher, eligibilityFactors);
+            bool isEligible = SlotEligibilityService.GameIsEligibleInLeagueYear(leagueYear, eligibilityFactors);
             bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
             bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
             var currentDate = _clock.GetToday();

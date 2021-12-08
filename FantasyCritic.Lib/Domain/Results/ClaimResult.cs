@@ -5,34 +5,37 @@ namespace FantasyCritic.Lib.Domain.Results
 {
     public class ClaimResult
     {
-        public ClaimResult(int idealSlotNumber)
-        : this(new List<ClaimError>())
+        public ClaimResult(int bestSlotNumber)
+        : this(new List<ClaimError>(), bestSlotNumber)
         {
-            IdealSlotNumber = idealSlotNumber;
         }
 
-        public ClaimResult(string claimError)
-        : this(new ClaimError(claimError, false))
-        {
-
-        }
-
-        public ClaimResult(ClaimError error)
-        : this (new List<ClaimError>(){error})
+        public ClaimResult(string claimError, int? bestSlotNumber)
+        : this(new ClaimError(claimError, false), bestSlotNumber)
         {
 
         }
 
-        public ClaimResult(IEnumerable<ClaimError> errors)
+        public ClaimResult(ClaimError error, int? bestSlotNumber)
+        : this (new List<ClaimError>(){error}, bestSlotNumber)
         {
-            Success = !errors.Any();
+
+        }
+
+        public ClaimResult(IEnumerable<ClaimError> errors, int? bestSlotNumber)
+        {
+            Success = !errors.Any() && bestSlotNumber.HasValue;
+            BestSlotNumber = bestSlotNumber;
             Errors = errors.ToList();
             Overridable = errors.All(x => x.Overridable);
         }
 
         public bool Success { get; }
-        public int? IdealSlotNumber { get; }
+        public int? BestSlotNumber { get; }
         public IReadOnlyList<ClaimError> Errors { get; }
         public bool Overridable { get; }
+
+        public bool NoSpaceError => Errors.Any(x => NoSpaceError);
+
     }
 }

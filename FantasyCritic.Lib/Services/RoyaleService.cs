@@ -94,38 +94,38 @@ namespace FantasyCritic.Lib.Services
         {
             if (publisher.PublisherGames.Count >= MAX_GAMES)
             {
-                return new ClaimResult("Roster is full.");
+                return new ClaimResult("Roster is full.", null);
             }
             if (publisher.PublisherGames.Select(x => x.MasterGame).Contains(masterGame))
             {
-                return new ClaimResult("Publisher already has that game.");
+                return new ClaimResult("Publisher already has that game.", null);
             }
             if (!masterGame.WillReleaseInQuarter(publisher.YearQuarter.YearQuarter))
             {
-                return new ClaimResult("Game will not release this quarter.");
+                return new ClaimResult("Game will not release this quarter.", null);
             }
             var currentDate = _clock.GetToday();
             if (masterGame.MasterGame.IsReleased(currentDate))
             {
-                return new ClaimResult("Game has been released.");
+                return new ClaimResult("Game has been released.", null);
             }
             if (masterGame.MasterGame.CriticScore.HasValue)
             {
-                return new ClaimResult("Game has a score.");
+                return new ClaimResult("Game has a score.", null);
             }
 
             var masterGameTags = await _masterGameRepo.GetMasterGameTags();
             var eligibilityErrors = LeagueTagExtensions.GameIsRoyaleEligible(masterGameTags, masterGame.MasterGame);
             if (eligibilityErrors.Any())
             {
-                return new ClaimResult("Game is not eligible under Royale rules.");
+                return new ClaimResult("Game is not eligible under Royale rules.", null);
             }
 
             var currentBudget = publisher.Budget;
             var gameCost = masterGame.GetRoyaleGameCost();
             if (currentBudget < gameCost)
             {
-                return new ClaimResult("Not enough budget.");
+                return new ClaimResult("Not enough budget.", null);
             }
 
             RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, _clock.GetCurrentInstant(), gameCost, 0m, null);

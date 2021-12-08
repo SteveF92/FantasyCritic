@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGameWithEligibilityFactors
     {
-        public MasterGameWithEligibilityFactors(Maybe<MasterGame> masterGame, LeagueOptions options, bool? overridenEligibility, IReadOnlyList<MasterGameTag> tagOverrides)
+        public MasterGameWithEligibilityFactors(MasterGame masterGame, LeagueOptions options, bool? overridenEligibility, IReadOnlyList<MasterGameTag> tagOverrides)
         {
             MasterGame = masterGame;
             Options = options;
@@ -19,7 +19,7 @@ namespace FantasyCritic.Lib.Domain
             TagOverrides = tagOverrides;
         }
 
-        public Maybe<MasterGame> MasterGame { get; }
+        public MasterGame MasterGame { get; }
         public LeagueOptions Options { get; }
         public bool? OverridenEligibility { get; }
         public IReadOnlyList<MasterGameTag> TagOverrides { get; }

@@ -71,7 +71,7 @@ namespace FantasyCritic.Lib.Services
                 int userDraftGames = thisPlayersGames.Count(x => !x.CounterPick);
                 if (userDraftGames == leagueDraftGames && !validDropSlot.HasValue)
                 {
-                    claimErrors.Add(new ClaimError("User's game spaces are filled.", false));
+                    claimErrors.Add(new ClaimError("User's game spaces are filled.", true));
                 }
             }
 
@@ -94,7 +94,7 @@ namespace FantasyCritic.Lib.Services
                 int userCounterPicks = thisPlayersGames.Count(x => x.CounterPick);
                 if (userCounterPicks == leagueCounterPicks)
                 {
-                    claimErrors.Add(new ClaimError("User's counter pick spaces are filled.", false));
+                    claimErrors.Add(new ClaimError("User's counter pick spaces are filled.", true));
                 }
 
                 if (!otherPlayerHasDraftGame)
@@ -106,7 +106,7 @@ namespace FantasyCritic.Lib.Services
             var validBeforeSlots = !claimErrors.Any();
             if (!validBeforeSlots)
             {
-                return new ClaimResult(claimErrors);
+                return new ClaimResult(claimErrors, null);
             }
 
             Maybe<MasterGameWithEligibilityFactors> eligibilityFactors = Maybe<MasterGameWithEligibilityFactors>.None;
@@ -115,16 +115,17 @@ namespace FantasyCritic.Lib.Services
                 eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(request.MasterGame.Value);
             }
 
-            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(request.Publisher, eligibilityFactors, request.CounterPick);
-            if (slotResult.PublisherSlot.HasNoValue)
+            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(request.Publisher, eligibilityFactors, request.CounterPick, validDropSlot);
+            if (!slotResult.SlotNumber.HasValue)
             {
                 claimErrors.AddRange(slotResult.ClaimErrors);
+                return new ClaimResult(claimErrors, null);
             }
 
-            var result = new ClaimResult(claimErrors);
+            var result = new ClaimResult(claimErrors, slotResult.SlotNumber.Value);
             if (result.Overridable && request.ManagerOverride)
             {
-                return new ClaimResult(slotResult.PublisherSlot.Value.SlotNumber);
+                return new ClaimResult(slotResult.SlotNumber.Value);
             }
 
             return result;
@@ -246,7 +247,7 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            var result = new ClaimResult(associationErrors);
+            var result = new ClaimResult(associationErrors, request.PublisherGame.SlotNumber);
             if (result.Overridable && request.ManagerOverride)
             {
                 return new ClaimResult(request.PublisherGame.SlotNumber);
@@ -339,7 +340,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-                masterGameYear, claimResult.IdealSlotNumber.Value, request.DraftPosition, request.OverallDraftPosition);
+                masterGameYear, claimResult.BestSlotNumber.Value, request.DraftPosition, request.OverallDraftPosition);
 
             LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
             await _fantasyCriticRepo.AddLeagueAction(leagueAction);
@@ -371,19 +372,19 @@ namespace FantasyCritic.Lib.Services
         {
             if (bidAmount < leagueOptions.MinimumBidAmount)
             {
-                return new ClaimResult(new List<ClaimError>() { new ClaimError("That bid does not meet the league's minimum bid.", false) });
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("That bid does not meet the league's minimum bid.", false) }, null);
             }
 
             if (bidAmount > publisher.Budget)
             {
-                return new ClaimResult(new List<ClaimError>() { new ClaimError("You do not have enough budget to make that bid.", false) });
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("You do not have enough budget to make that bid.", false) }, null);
             }
 
             IReadOnlyList<PickupBid> pickupBids = await _fantasyCriticRepo.GetActivePickupBids(publisher);
             bool alreadyBidFor = pickupBids.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
             if (alreadyBidFor)
             {
-                return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) });
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) }, null);
             }
 
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, counterPick, false, false, masterGame, null, null);
@@ -397,13 +398,13 @@ namespace FantasyCritic.Lib.Services
             {
                 if (counterPick)
                 {
-                    return new ClaimResult("Cannot make a counterpick bid with a conditional drop.");
+                    return new ClaimResult("Cannot make a counter pick bid with a conditional drop.", null);
                 }
 
                 var dropResult = await MakeDropRequest(publisher, conditionalDropPublisherGame.Value, true);
                 if (dropResult.Result.IsFailure)
                 {
-                    return new ClaimResult(dropResult.Result.Error);
+                    return new ClaimResult(dropResult.Result.Error, null);
                 }
 
                 validDropSlot = conditionalDropPublisherGame.Value.SlotNumber;
@@ -448,7 +449,7 @@ namespace FantasyCritic.Lib.Services
             bool alreadyQueued = queuedGames.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
             if (alreadyQueued)
             {
-                return new ClaimResult(new List<ClaimError>() { new ClaimError("You already have that game queued.", false) });
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("You already have that game queued.", false) }, null);
             }
 
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, masterGame, null, null);
@@ -544,43 +545,46 @@ namespace FantasyCritic.Lib.Services
         {
             if (bid.Successful != null)
             {
-                return new ClaimResult(new List<ClaimError>() { new ClaimError("Bid has already been processed", false) });
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("Bid has already been processed", false) }, null);
             }
 
             if (bidAmount < bid.Publisher.LeagueYear.Options.MinimumBidAmount)
             {
-                return new ClaimResult(new List<ClaimError>() { new ClaimError("That bid does not meet the league's minimum bid.", false) });
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("That bid does not meet the league's minimum bid.", false) }, null);
             }
 
             if (bidAmount > bid.Publisher.Budget)
             {
-                return new ClaimResult(new List<ClaimError>() { new ClaimError("You do not have enough budget to make that bid.", false) });
+                return new ClaimResult(new List<ClaimError>() { new ClaimError("You do not have enough budget to make that bid.", false) }, null);
             }
 
+            int? validDropSlot = null;
             if (conditionalDropPublisherGame.HasValue)
             {
                 if (bid.CounterPick)
                 {
-                    return new ClaimResult("Cannot make a counterpick bid with a conditional drop.");
+                    return new ClaimResult("Cannot make a counterpick bid with a conditional drop.", null);
                 }
 
                 var dropResult = await MakeDropRequest(bid.Publisher, conditionalDropPublisherGame.Value, true);
                 if (dropResult.Result.IsFailure)
                 {
-                    return new ClaimResult(dropResult.Result.Error);
+                    return new ClaimResult(dropResult.Result.Error, null);
                 }
+
+                validDropSlot = conditionalDropPublisherGame.Value.SlotNumber;
             }
 
             await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount);
 
             MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame);
-            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(bid.Publisher, eligibilityFactors, bid.CounterPick);
-            if (slotResult.PublisherSlot.HasNoValue)
+            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(bid.Publisher, eligibilityFactors, bid.CounterPick, validDropSlot);
+            if (!slotResult.SlotNumber.HasValue)
             {
-                return new ClaimResult(slotResult.ClaimErrors);
+                return new ClaimResult(slotResult.ClaimErrors, null);
             }
 
-            return new ClaimResult(slotResult.PublisherSlot.Value.SlotNumber);
+            return new ClaimResult(slotResult.SlotNumber.Value);
         }
 
         public async Task<Result> RemovePickupBid(PickupBid bid)
