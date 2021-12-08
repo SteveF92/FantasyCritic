@@ -28,7 +28,11 @@
             <div>You as league manager can link this custom game with a "master game" later.</div>
           </div>
         </div>
-        <label v-if="claimMasterGame" for="claimMasterGame" class="control-label">Selected Game: {{claimMasterGame.gameName}}</label>
+
+        <div v-if="claimMasterGame">
+          <h3 for="claimMasterGame" class="selected-game text-black">Selected Game:</h3>
+          <masterGameSummary :masterGame="claimMasterGame"></masterGameSummary>
+        </div>
       </div>
     </form>
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
@@ -75,6 +79,8 @@
 import Vue from 'vue';
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
+import MasterGameSummary from '@/components/modules/masterGameSummary';
+
 export default {
   data() {
     return {
@@ -91,7 +97,8 @@ export default {
     };
   },
   components: {
-    PossibleMasterGamesTable
+    PossibleMasterGamesTable,
+    MasterGameSummary
   },
   computed: {
     formIsValid() {
