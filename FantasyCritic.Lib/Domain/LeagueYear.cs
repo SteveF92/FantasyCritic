@@ -45,24 +45,24 @@ namespace FantasyCritic.Lib.Domain
 
         public string GetGroupName => $"{League.LeagueID}|{Year}";
 
-        public MasterGameEligibilityFactors GetEligibilityFactorsForMasterGame(MasterGame masterGame)
+        public MasterGameWithEligibilityFactors GetEligibilityFactorsForMasterGame(MasterGame masterGame)
         {
             bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
             IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
-            return new MasterGameEligibilityFactors(Options, masterGame, eligibilityOverride, tagOverrides);
+            return new MasterGameWithEligibilityFactors(masterGame, Options, eligibilityOverride, tagOverrides);
         }
 
-        public MasterGameEligibilityFactors GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
+        public MasterGameWithEligibilityFactors GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
         {
             if (publisherSlot.PublisherGame.HasNoValue || publisherSlot.PublisherGame.Value.MasterGame.HasNoValue)
             {
-                return new MasterGameEligibilityFactors(Options, Maybe<MasterGame>.None, null, new List<MasterGameTag>());
+                return new MasterGameWithEligibilityFactors(Maybe<MasterGame>.None, Options, null, new List<MasterGameTag>());
             }
 
             var masterGame = publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame;
             bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
             IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
-            return new MasterGameEligibilityFactors(Options, masterGame, eligibilityOverride, tagOverrides);
+            return new MasterGameWithEligibilityFactors(masterGame, Options, eligibilityOverride, tagOverrides);
         }
 
         public bool GameIsEligibleInAnySlot(MasterGame masterGame)

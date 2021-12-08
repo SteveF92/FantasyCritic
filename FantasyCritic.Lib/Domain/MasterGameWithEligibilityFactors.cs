@@ -9,18 +9,18 @@ using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class MasterGameEligibilityFactors
+    public class MasterGameWithEligibilityFactors
     {
-        public MasterGameEligibilityFactors(LeagueOptions options, Maybe<MasterGame> masterGame, bool? overridenEligibility, IReadOnlyList<MasterGameTag> tagOverrides)
+        public MasterGameWithEligibilityFactors(Maybe<MasterGame> masterGame, LeagueOptions options, bool? overridenEligibility, IReadOnlyList<MasterGameTag> tagOverrides)
         {
-            Options = options;
             MasterGame = masterGame;
+            Options = options;
             OverridenEligibility = overridenEligibility;
             TagOverrides = tagOverrides;
         }
 
-        public LeagueOptions Options { get; }
         public Maybe<MasterGame> MasterGame { get; }
+        public LeagueOptions Options { get; }
         public bool? OverridenEligibility { get; }
         public IReadOnlyList<MasterGameTag> TagOverrides { get; }
     }

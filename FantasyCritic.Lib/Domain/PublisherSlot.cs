@@ -29,7 +29,7 @@ namespace FantasyCritic.Lib.Domain
         public Maybe<SpecialGameSlot> SpecialGameSlot { get; }
         public Maybe<PublisherGame> PublisherGame { get; }
 
-        public decimal GetProjectedOrRealFantasyPoints(MasterGameEligibilityFactors eligibilityFactors, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
+        public decimal GetProjectedOrRealFantasyPoints(MasterGameWithEligibilityFactors eligibilityFactors, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
         {
             if (PublisherGame.HasNoValue)
             {
@@ -60,7 +60,7 @@ namespace FantasyCritic.Lib.Domain
             return PublisherGame.Value.MasterGame.Value.GetProjectedOrRealFantasyPoints(eligibilityFactors.Options.ScoringSystem, CounterPick, currentDate);
         }
 
-        public decimal? CalculateFantasyPoints(MasterGameEligibilityFactors eligibilityFactors, LocalDate currentDate)
+        public decimal? CalculateFantasyPoints(MasterGameWithEligibilityFactors eligibilityFactors, LocalDate currentDate)
         {
             if (PublisherGame.HasNoValue)
             {

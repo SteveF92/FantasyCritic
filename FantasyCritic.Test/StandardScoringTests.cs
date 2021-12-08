@@ -18,14 +18,13 @@ namespace FantasyCritic.Test
     [TestFixture]
     public class StandardScoringTests
     {
-        private static MasterGameEligibilityFactors GetEligibilityFactors(MasterGame masterGame)
+        private static MasterGameWithEligibilityFactors GetEligibilityFactors(MasterGame masterGame)
         {
             LeagueOptions leagueOptions = new LeagueOptions(1, 1, 0, 0, 0, 0, 0, false, false, 0,
                 new List<LeagueTagStatus>(), new List<SpecialGameSlot>(), DraftSystem.Flexible,
                 PickupSystem.SecretBidding, ScoringSystem.GetScoringSystem("Standard"), TradingSystem.Standard, false);
-            return new MasterGameEligibilityFactors(leagueOptions, masterGame, null, new List<MasterGameTag>());
+            return new MasterGameWithEligibilityFactors(masterGame, leagueOptions, null, new List<MasterGameTag>());
         }
-
 
         [Test]
         public void BasicScoreTest()
@@ -42,7 +41,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -64,7 +63,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -86,7 +85,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -108,7 +107,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -130,7 +129,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -152,7 +151,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -174,7 +173,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -196,7 +195,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -218,7 +217,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -240,7 +239,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -262,7 +261,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -284,7 +283,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 
@@ -306,7 +305,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null,new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, true, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
 
             decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, fakeToday);
 

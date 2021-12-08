@@ -109,7 +109,7 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult(claimErrors);
             }
 
-            Maybe<MasterGameEligibilityFactors> eligibilityFactors = Maybe<MasterGameEligibilityFactors>.None;
+            Maybe<MasterGameWithEligibilityFactors> eligibilityFactors = Maybe<MasterGameWithEligibilityFactors>.None;
             if (request.MasterGame.HasValue)
             {
                 eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(request.MasterGame.Value);
@@ -281,7 +281,7 @@ namespace FantasyCritic.Lib.Services
 
         private IReadOnlyList<ClaimError> GetGenericSlotMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool dropping, Instant? nextBidTime)
         {
-            MasterGameEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame);
             List<ClaimError> claimErrors = new List<ClaimError>();
             
             var currentDate = _clock.GetToday();
@@ -579,7 +579,7 @@ namespace FantasyCritic.Lib.Services
 
             await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount);
 
-            MasterGameEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame);
+            MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame);
             var idealSlot = SlotEligibilityService.GetIdealSlotForGame(bid.Publisher, eligibilityFactors, bid.CounterPick);
             if (idealSlot.HasNoValue)
             {

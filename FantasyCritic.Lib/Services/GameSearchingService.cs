@@ -142,7 +142,7 @@ namespace FantasyCritic.Lib.Services
         }
 
         public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherStandardMasterGames, 
-            HashSet<MasterGame> myPublisherMasterGames, Publisher publisher, MasterGameEligibilityFactors eligibilityFactors)
+            HashSet<MasterGame> myPublisherMasterGames, Publisher publisher, MasterGameWithEligibilityFactors eligibilityFactors)
         {
             bool isEligible = SlotEligibilityService.GameWouldBeEligibleInAnySlot(publisher, eligibilityFactors);
             bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
