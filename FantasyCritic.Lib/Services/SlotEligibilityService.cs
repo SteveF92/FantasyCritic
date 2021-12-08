@@ -38,6 +38,12 @@ namespace FantasyCritic.Lib.Services
 
         public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick, int? validDropSlot)
         {
+            string filledSpacesText = "User's game spaces are filled.";
+            if (counterPick)
+            {
+                filledSpacesText = "User's counter pick spaces are filled.";
+            }
+
             var slots = publisher.GetPublisherSlots();
             var openSlots = slots.Where(x => x.CounterPick == counterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
             if (eligibilityFactors.HasNoValue)
@@ -54,12 +60,13 @@ namespace FantasyCritic.Lib.Services
                     return new PublisherSlotAcquisitionResult(validDropSlot.Value);
                 }
 
-                return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError("User's game spaces are filled.", false, true) });
+                return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
             }
 
             var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors.Value);
             if (leagueYearClaimErrors.Any())
             {
+                //This game is not eligible in this league at all
                 return new PublisherSlotAcquisitionResult(leagueYearClaimErrors);
             }
 
@@ -71,7 +78,7 @@ namespace FantasyCritic.Lib.Services
                     return new PublisherSlotAcquisitionResult(validDropSlot.Value);
                 }
 
-                return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError("User's game spaces are filled.", false, true) });
+                return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
             }
 
             //At this point, the game is eligible in at least one currently open slot. Which one is best?

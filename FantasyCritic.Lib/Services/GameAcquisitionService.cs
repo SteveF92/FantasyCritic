@@ -66,13 +66,6 @@ namespace FantasyCritic.Lib.Services
                 {
                     claimErrors.Add(new ClaimError("Cannot claim a game that you already have.", false));
                 }
-
-                int leagueDraftGames = yearOptions.StandardGames;
-                int userDraftGames = thisPlayersGames.Count(x => !x.CounterPick);
-                if (userDraftGames == leagueDraftGames && !validDropSlot.HasValue)
-                {
-                    claimErrors.Add(new ClaimError("User's game spaces are filled.", true));
-                }
             }
 
             if (request.CounterPick)
@@ -89,24 +82,10 @@ namespace FantasyCritic.Lib.Services
                 }
 
                 bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick).ContainsGame(request);
-
-                int leagueCounterPicks = yearOptions.CounterPicks;
-                int userCounterPicks = thisPlayersGames.Count(x => x.CounterPick);
-                if (userCounterPicks == leagueCounterPicks)
-                {
-                    claimErrors.Add(new ClaimError("User's counter pick spaces are filled.", true));
-                }
-
                 if (!otherPlayerHasDraftGame)
                 {
                     claimErrors.Add(new ClaimError("Cannot counter pick a game that no other player is publishing.", false));
                 }
-            }
-
-            var validBeforeSlots = !claimErrors.Any();
-            if (!validBeforeSlots)
-            {
-                return new ClaimResult(claimErrors, null);
             }
 
             Maybe<MasterGameWithEligibilityFactors> eligibilityFactors = Maybe<MasterGameWithEligibilityFactors>.None;
