@@ -151,11 +151,21 @@ namespace FantasyCritic.Lib.Services
                     }
                 }
 
-                var allowIfFull = activeBid.ConditionalDropPublisherGame.HasValue && activeBid.ConditionalDropResult.Result.IsSuccess;
-                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, allowIfFull);
+                int? validDropSlot = null;
+                if (activeBid.ConditionalDropPublisherGame.HasValue && activeBid.ConditionalDropResult.Result.IsSuccess)
+                {
+                    validDropSlot = activeBid.ConditionalDropPublisherGame.Value.SlotNumber;
+                }
 
-                var availableSlot = publisher.GetIdealSlot(activeBid.CounterPick);
-                var hasAvailableSlot = availableSlot.HasValue;
+                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, validDropSlot);
+                if (!claimResult.Success)
+                {
+                    invalidGameBids.Add(new KeyValuePair<PickupBid, string>(activeBid, string.Join(" AND ", claimResult.Errors.Select(x => x.Error))));
+                    continue;
+                }
+
+                int? availableSlot = claimResult.IdealSlotNumber;
+                var hasAvailableSlot = claimResult.IdealSlotNumber.HasValue;
                 if (!hasAvailableSlot && !activeBid.CounterPick && validConditionalDropSlot.HasValue)
                 {
                     hasAvailableSlot = true;
@@ -165,12 +175,6 @@ namespace FantasyCritic.Lib.Services
                 if (!hasAvailableSlot)
                 {
                     noSpaceLeftBids.Add(activeBid);
-                    continue;
-                }
-
-                if (!claimResult.Success)
-                {
-                    invalidGameBids.Add(new KeyValuePair<PickupBid, string>(activeBid, string.Join(" AND ", claimResult.Errors.Select(x => x.Error))));
                     continue;
                 }
 

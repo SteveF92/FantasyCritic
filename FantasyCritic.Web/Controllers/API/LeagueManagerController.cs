@@ -1571,7 +1571,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var eligibilityFactors = leagueYear.Value.GetEligibilityFactorsForMasterGame(masterGame.Value);
-            bool alreadyEligible = eligibilityFactors.IsEligible();
+            bool alreadyEligible = SlotEligibilityService.GameIsEligibleInLeagueYear(leagueYear.Value, eligibilityFactors);
             bool isAllowing = request.Eligible.HasValue && request.Eligible.Value;
             bool isBanning = request.Eligible.HasValue && !request.Eligible.Value;
 

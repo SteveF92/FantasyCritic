@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
@@ -48,20 +49,26 @@ namespace FantasyCritic.Lib.Domain
         {
             bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
             IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
-            return new MasterGameEligibilityFactors(Options, Maybe<PublisherSlot>.None, masterGame, eligibilityOverride, tagOverrides);
+            return new MasterGameEligibilityFactors(Options, masterGame, eligibilityOverride, tagOverrides);
         }
 
         public MasterGameEligibilityFactors GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
         {
             if (publisherSlot.PublisherGame.HasNoValue || publisherSlot.PublisherGame.Value.MasterGame.HasNoValue)
             {
-                return new MasterGameEligibilityFactors(Options, publisherSlot, Maybe<MasterGame>.None, null, new List<MasterGameTag>());
+                return new MasterGameEligibilityFactors(Options, Maybe<MasterGame>.None, null, new List<MasterGameTag>());
             }
 
             var masterGame = publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame;
             bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
             IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
-            return new MasterGameEligibilityFactors(Options, publisherSlot, masterGame, eligibilityOverride, tagOverrides);
+            return new MasterGameEligibilityFactors(Options, masterGame, eligibilityOverride, tagOverrides);
+        }
+
+        public bool GameIsEligibleInAnySlot(MasterGame masterGame)
+        {
+            var eligibilityFactors = GetEligibilityFactorsForMasterGame(masterGame);
+            return SlotEligibilityService.GameIsEligibleInLeagueYear(this, eligibilityFactors);
         }
 
         private bool? GetOverriddenEligibility(MasterGame masterGame)

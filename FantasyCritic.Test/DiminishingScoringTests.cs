@@ -23,8 +23,7 @@ namespace FantasyCritic.Test
             LeagueOptions leagueOptions = new LeagueOptions(1, 1, 0, 0, 0, 0, 0, false, false, 0,
                 new List<LeagueTagStatus>(), new List<SpecialGameSlot>(), DraftSystem.Flexible,
                 PickupSystem.SecretBidding, ScoringSystem.GetScoringSystem("Diminishing"), TradingSystem.Standard, false);
-            return new MasterGameEligibilityFactors(leagueOptions, Maybe<PublisherSlot>.None, masterGame, null,
-                new List<MasterGameTag>());
+            return new MasterGameEligibilityFactors(leagueOptions, masterGame, null, new List<MasterGameTag>());
         }
 
         [Test]

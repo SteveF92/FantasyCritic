@@ -120,17 +120,6 @@ namespace FantasyCritic.Lib.Domain
             return numberAvailableSlots;
         }
 
-        public int? GetIdealSlot(bool counterPick)
-        {
-            var numberSlots = counterPick ? LeagueYear.Options.CounterPicks : LeagueYear.Options.StandardGames;
-            var games = PublisherGames.Where(x => x.CounterPick == counterPick);
-            var possibleSlots = Enumerable.Range(0, numberSlots - 1);
-            var slotsTaken = games.Select(x => x.SlotNumber);
-            var emptySlots = possibleSlots.Except(slotsTaken).OrderBy(x => x);
-            var firstEmptySlot = emptySlots.FirstOrDefault();
-            return firstEmptySlot;
-        }
-
         public IReadOnlyList<PublisherSlot> GetPublisherSlots()
         {
             List<PublisherSlot> publisherSlots = new List<PublisherSlot>();

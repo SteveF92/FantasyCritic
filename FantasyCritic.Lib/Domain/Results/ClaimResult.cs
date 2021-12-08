@@ -5,10 +5,10 @@ namespace FantasyCritic.Lib.Domain.Results
 {
     public class ClaimResult
     {
-        public ClaimResult()
+        public ClaimResult(int idealSlotNumber)
         : this(new List<ClaimError>())
         {
-
+            IdealSlotNumber = idealSlotNumber;
         }
 
         public ClaimResult(string claimError)
@@ -31,6 +31,7 @@ namespace FantasyCritic.Lib.Domain.Results
         }
 
         public bool Success { get; }
+        public int? IdealSlotNumber { get; }
         public IReadOnlyList<ClaimError> Errors { get; }
         public bool Overridable { get; }
     }

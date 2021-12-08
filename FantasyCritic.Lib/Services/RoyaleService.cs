@@ -130,7 +130,8 @@ namespace FantasyCritic.Lib.Services
 
             RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, _clock.GetCurrentInstant(), gameCost, 0m, null);
             await _royaleRepo.PurchaseGame(game);
-            return new ClaimResult();
+            var nextSlot = publisher.PublisherGames.Count;
+            return new ClaimResult(nextSlot);
         }
 
         public async Task<Result> SellGame(RoyalePublisher publisher, RoyalePublisherGame publisherGame)

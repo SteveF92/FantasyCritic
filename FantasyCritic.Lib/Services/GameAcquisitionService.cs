@@ -31,7 +31,7 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public ClaimResult CanClaimGame(ClaimGameDomainRequest request, LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime, bool allowIfFull)
+        public ClaimResult CanClaimGame(ClaimGameDomainRequest request, LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime, int? validDropSlot)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
@@ -41,7 +41,7 @@ namespace FantasyCritic.Lib.Services
             LeagueOptions yearOptions = leagueYear.Options;
             if (request.MasterGame.HasValue)
             {
-                var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, request.CounterPick, false, nextBidTime);
+                var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, false, nextBidTime);
                 claimErrors.AddRange(masterGameErrors);
             }
 
@@ -69,7 +69,7 @@ namespace FantasyCritic.Lib.Services
 
                 int leagueDraftGames = yearOptions.StandardGames;
                 int userDraftGames = thisPlayersGames.Count(x => !x.CounterPick);
-                if (userDraftGames == leagueDraftGames && !allowIfFull)
+                if (userDraftGames == leagueDraftGames && !validDropSlot.HasValue)
                 {
                     claimErrors.Add(new ClaimError("User's game spaces are filled.", false));
                 }
@@ -103,10 +103,22 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
+            var validBeforeSlots = !claimErrors.Any();
+            if (!validBeforeSlots)
+            {
+                return new ClaimResult(claimErrors);
+            }
+
+            var idealSlot = SlotEligibilityService.GetIdealSlotForGame(request.Publisher.GetPublisherSlots(), request.MasterGame, request.CounterPick);
+            if (!idealSlot.HasValue)
+            {
+                claimErrors.Add(new ClaimError("That game is not eligible for any of your slots due to it's tags.", false));
+            }
+
             var result = new ClaimResult(claimErrors);
             if (result.Overridable && request.ManagerOverride)
             {
-                return new ClaimResult(new List<ClaimError>());
+                return new ClaimResult(idealSlot.Value.SlotNumber);
             }
 
             return result;
@@ -119,7 +131,7 @@ namespace FantasyCritic.Lib.Services
             var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, publisher);
             dropErrors.AddRange(basicErrors);
 
-            var masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, true, null);
+            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, true, null);
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
@@ -159,7 +171,7 @@ namespace FantasyCritic.Lib.Services
             var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, publisher);
             dropErrors.AddRange(basicErrors);
 
-            var masterGameErrors = GetMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame, leagueYear.Year, false, true, null);
+            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame, leagueYear.Year, true, null);
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
@@ -195,13 +207,11 @@ namespace FantasyCritic.Lib.Services
         public async Task<ClaimResult> CanAssociateGame(AssociateGameDomainRequest request)
         {
             List<ClaimError> associationErrors = new List<ClaimError>();
-            var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-
             var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, request.Publisher);
             associationErrors.AddRange(basicErrors);
 
             var leagueYear = request.Publisher.LeagueYear;
-            IReadOnlyList<ClaimError> masterGameErrors = GetMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, request.PublisherGame.CounterPick, false, null);
+            IReadOnlyList<ClaimError> masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, null);
             associationErrors.AddRange(masterGameErrors);
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.LeagueYear);
@@ -230,16 +240,22 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
+            var validBeforeSlots = !associationErrors.Any();
+            if (!validBeforeSlots)
+            {
+                return new ClaimResult(associationErrors);
+            }
+
             var result = new ClaimResult(associationErrors);
             if (result.Overridable && request.ManagerOverride)
             {
-                return new ClaimResult(new List<ClaimError>());
+                return new ClaimResult(request.PublisherGame.SlotNumber);
             }
 
             return result;
         }
 
-        private IReadOnlyList<ClaimError> GetBasicErrors(League league, Publisher publisher)
+        private static IReadOnlyList<ClaimError> GetBasicErrors(League league, Publisher publisher)
         {
             List<ClaimError> claimErrors = new List<ClaimError>();
 
@@ -257,10 +273,10 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        private IReadOnlyList<ClaimError> GetMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool counterPick, bool dropping, Instant? nextBidTime)
+        private IReadOnlyList<ClaimError> GetGenericSlotMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool dropping, Instant? nextBidTime)
         {
             var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame);
-            List<ClaimError> claimErrors = eligibilityFactors.GetErrors(counterPick, dropping).ToList();
+            List<ClaimError> claimErrors = new List<ClaimError>();
             
             var currentDate = _clock.GetToday();
             bool manuallyEligible = eligibilityFactors.OverridenEligibility.HasValue && eligibilityFactors.OverridenEligibility.Value;
@@ -314,23 +330,16 @@ namespace FantasyCritic.Lib.Services
                 masterGameYear = new MasterGameYear(request.MasterGame.Value, request.Publisher.LeagueYear.Year);
             }
 
-            int? idealSlot = request.Publisher.GetIdealSlot(request.CounterPick);
-            if (!idealSlot.HasValue)
-            {
-                return new ClaimResult("Player does not have a slot for that game.");
-            }
-
-            PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-                masterGameYear, idealSlot.Value, request.DraftPosition, request.OverallDraftPosition);
-
             LeagueYear leagueYear = request.Publisher.LeagueYear;
-
-            ClaimResult claimResult = CanClaimGame(request, leagueYear, publishersForYear, null, false);
-
+            ClaimResult claimResult = CanClaimGame(request, leagueYear, publishersForYear, null, null);
+            
             if (!claimResult.Success)
             {
                 return claimResult;
             }
+
+            PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
+                masterGameYear, claimResult.IdealSlotNumber.Value, request.DraftPosition, request.OverallDraftPosition);
 
             LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
             await _fantasyCriticRepo.AddLeagueAction(leagueAction);
@@ -383,12 +392,7 @@ namespace FantasyCritic.Lib.Services
 
             Instant nextBidTime = GetNextBidTime();
 
-            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, nextBidTime, true);
-            if (!claimResult.Success)
-            {
-                return claimResult;
-            }
-
+            int? validDropSlot = null;
             if (conditionalDropPublisherGame.HasValue)
             {
                 if (counterPick)
@@ -401,10 +405,17 @@ namespace FantasyCritic.Lib.Services
                 {
                     return new ClaimResult(dropResult.Result.Error);
                 }
+
+                validDropSlot = conditionalDropPublisherGame.Value.SlotNumber;
+            }
+
+            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, nextBidTime, validDropSlot);
+            if (!claimResult.Success)
+            {
+                return claimResult;
             }
 
             var nextPriority = pickupBids.Count + 1;
-
             PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, 
                 bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
             await _fantasyCriticRepo.CreatePickupBid(currentBid);
@@ -443,8 +454,7 @@ namespace FantasyCritic.Lib.Services
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, masterGame, null, null);
             var leagueYear = publisher.LeagueYear;
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
-
-            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, null, true);
+            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, null, null);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -562,9 +572,15 @@ namespace FantasyCritic.Lib.Services
             }
 
             await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount);
-            return new ClaimResult(new List<ClaimError>());
-        }
 
+            var idealSlot = SlotEligibilityService.GetIdealSlotForGame(bid.Publisher.GetPublisherSlots(), bid.MasterGame, bid.CounterPick);
+            if (idealSlot.HasNoValue)
+            {
+                return new ClaimResult("That game is not eligible for any of your slots due to it's tags.");
+            }
+
+            return new ClaimResult(idealSlot.Value.SlotNumber);
+        }
 
         public async Task<Result> RemovePickupBid(PickupBid bid)
         {

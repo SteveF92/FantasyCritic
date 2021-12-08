@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models.RoundTrip;
 using NodaTime;
 
@@ -21,7 +22,7 @@ namespace FantasyCritic.Web.Models.Responses
             SpecialSlot = slot.SpecialGameSlot.GetValueOrDefault(x => new SpecialGameSlotViewModel(x));
             PublisherGame = slot.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate));
 
-            GameMeetsSlotCriteria = slot.SlotHasEligibleGame(eligibilityFactors);
+            GameMeetsSlotCriteria = SlotEligibilityService.SlotIsCurrentlyValid(slot, eligibilityFactors);
 
             SimpleProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(eligibilityFactors, systemWideValues, true, currentDate);
             AdvancedProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(eligibilityFactors, systemWideValues, false, currentDate);

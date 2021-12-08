@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Services;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
@@ -26,20 +28,6 @@ namespace FantasyCritic.Lib.Domain
         public bool CounterPick { get; }
         public Maybe<SpecialGameSlot> SpecialGameSlot { get; }
         public Maybe<PublisherGame> PublisherGame { get; }
-
-        public bool SlotHasEligibleGame(MasterGameEligibilityFactors eligibilityFactors)
-        {
-            if (CounterPick)
-            {
-                return true;
-            }
-            if (PublisherGame.HasNoValue)
-            {
-                return true;
-            }
-
-            return CalculateGameIsCurrentlyEligible(eligibilityFactors.Options, eligibilityFactors.OverridenEligibility, eligibilityFactors.TagOverrides);
-        }
 
         public decimal GetProjectedOrRealFantasyPoints(MasterGameEligibilityFactors eligibilityFactors, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
         {
@@ -87,121 +75,13 @@ namespace FantasyCritic.Lib.Domain
                 return null;
             }
 
-            var eligible = SlotHasEligibleGame(eligibilityFactors);
+            var eligible = SlotEligibilityService.SlotIsCurrentlyValid(this, eligibilityFactors);
             if (!eligible)
             {
                 return 0m;
             }
 
             return PublisherGame.Value.MasterGame.Value.CalculateFantasyPoints(eligibilityFactors.Options.ScoringSystem, CounterPick, currentDate, true);
-        }
-
-        private bool CalculateGameIsCurrentlyEligible(LeagueOptions options, bool? overridenEligibility, IReadOnlyList<MasterGameTag> overriddenTags)
-        {
-            if (PublisherGame.HasNoValue || PublisherGame.Value.MasterGame.HasNoValue)
-            {
-                return true;
-            }
-
-            var specialSlot = options.GetSpecialGameSlotByOverallSlotNumber(SlotNumber);
-            if (specialSlot.HasNoValue)
-            {
-                if (overridenEligibility.HasValue)
-                {
-                    return overridenEligibility.Value;
-                }
-            }
-            else
-            {
-                var gameIsBanned = overridenEligibility.HasValue && !overridenEligibility.Value;
-                if (gameIsBanned)
-                {
-                    return false;
-                }
-            }
-
-            var leagueTags = options.GetTagsForSlot(SlotNumber);
-            var customCodeTags = leagueTags.Where(x => x.Tag.HasCustomCode).ToList();
-            var nonCustomCodeTags = leagueTags.Except(customCodeTags).ToList();
-
-            var masterGame = PublisherGame.Value.MasterGame.Value.MasterGame;
-            var bannedTags = nonCustomCodeTags.Where(x => x.Status == TagStatus.Banned).Select(x => x.Tag);
-            var requiredTags = nonCustomCodeTags.Where(x => x.Status == TagStatus.Required).Select(x => x.Tag);
-
-            var tagsToUse = masterGame.Tags;
-            if (overriddenTags.Any())
-            {
-                tagsToUse = overriddenTags.ToList();
-            }
-
-            var bannedTagsIntersection = tagsToUse.Intersect(bannedTags);
-            var requiredTagsIntersection = tagsToUse.Intersect(requiredTags);
-            bool hasBannedTags = bannedTagsIntersection.Any();
-            bool hasNoRequiredTags = requiredTags.Any() && !requiredTagsIntersection.Any();
-
-            if (hasBannedTags || hasNoRequiredTags)
-            {
-                return false;
-            }
-
-            var masterGameCustomCodeTags = tagsToUse.Where(x => x.HasCustomCode).ToList();
-            if (!masterGameCustomCodeTags.Any())
-            {
-                return true;
-            }
-
-            var dateGameWasAcquired = PublisherGame.Value.Timestamp.InZone(TimeExtensions.EasternTimeZone).Date;
-            if (masterGame.EarlyAccessReleaseDate.HasValue)
-            {
-                var plannedForEarlyAccessTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "PlannedForEarlyAccess");
-                if (plannedForEarlyAccessTag is not null)
-                {
-                    if (plannedForEarlyAccessTag.Status == TagStatus.Banned)
-                    {
-                        return false;
-                    }
-                }
-
-                var currentlyInEarlyAccessTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "CurrentlyInEarlyAccess");
-                if (currentlyInEarlyAccessTag is not null)
-                {
-                    if (currentlyInEarlyAccessTag.Status == TagStatus.Banned)
-                    {
-                        var pickedUpBeforeInEarlyAccess = dateGameWasAcquired < masterGame.EarlyAccessReleaseDate.Value;
-                        if (!pickedUpBeforeInEarlyAccess)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            if (masterGame.InternationalReleaseDate.HasValue)
-            {
-                var willReleaseInternationallyFirstTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "WillReleaseInternationallyFirst");
-                if (willReleaseInternationallyFirstTag is not null)
-                {
-                    if (willReleaseInternationallyFirstTag.Status == TagStatus.Banned)
-                    {
-                        return false;
-                    }
-                }
-
-                var releasedInternationallyTag = customCodeTags.SingleOrDefault(x => x.Tag.Name == "ReleasedInternationally");
-                if (releasedInternationallyTag is not null)
-                {
-                    if (releasedInternationallyTag.Status == TagStatus.Banned)
-                    {
-                        var pickedUpBeforeReleasedInternationally = dateGameWasAcquired < masterGame.InternationalReleaseDate.Value;
-                        if (!pickedUpBeforeReleasedInternationally)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            return true;
         }
     }
 }
