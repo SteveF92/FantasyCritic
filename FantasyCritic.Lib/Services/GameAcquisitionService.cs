@@ -115,16 +115,16 @@ namespace FantasyCritic.Lib.Services
                 eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(request.MasterGame.Value);
             }
 
-            var idealSlot = SlotEligibilityService.GetIdealSlotForGame(request.Publisher, eligibilityFactors, request.CounterPick);
-            if (!idealSlot.HasValue)
+            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(request.Publisher, eligibilityFactors, request.CounterPick);
+            if (slotResult.PublisherSlot.HasNoValue)
             {
-                claimErrors.Add(new ClaimError("That game is not eligible for any of your slots due to it's tags.", false));
+                claimErrors.AddRange(slotResult.ClaimErrors);
             }
 
             var result = new ClaimResult(claimErrors);
             if (result.Overridable && request.ManagerOverride)
             {
-                return new ClaimResult(idealSlot.Value.SlotNumber);
+                return new ClaimResult(slotResult.PublisherSlot.Value.SlotNumber);
             }
 
             return result;
@@ -244,12 +244,6 @@ namespace FantasyCritic.Lib.Services
                 {
                     associationErrors.Add(new ClaimError("Cannot counter pick a game that no other player is publishing.", false));
                 }
-            }
-
-            var validBeforeSlots = !associationErrors.Any();
-            if (!validBeforeSlots)
-            {
-                return new ClaimResult(associationErrors);
             }
 
             var result = new ClaimResult(associationErrors);
@@ -580,13 +574,13 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount);
 
             MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame);
-            var idealSlot = SlotEligibilityService.GetIdealSlotForGame(bid.Publisher, eligibilityFactors, bid.CounterPick);
-            if (idealSlot.HasNoValue)
+            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(bid.Publisher, eligibilityFactors, bid.CounterPick);
+            if (slotResult.PublisherSlot.HasNoValue)
             {
-                return new ClaimResult("That game is not eligible for any of your slots due to it's tags.");
+                return new ClaimResult(slotResult.ClaimErrors);
             }
 
-            return new ClaimResult(idealSlot.Value.SlotNumber);
+            return new ClaimResult(slotResult.PublisherSlot.Value.SlotNumber);
         }
 
         public async Task<Result> RemovePickupBid(PickupBid bid)

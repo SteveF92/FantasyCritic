@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Results;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -22,10 +23,10 @@ namespace FantasyCritic.Lib.Services
 
         public static bool GameWouldBeEligibleInAnySlot(Publisher publisher, MasterGameWithEligibilityFactors eligibilityFactors)
         {
-            return GetIdealSlotForGame(publisher, eligibilityFactors, false).HasValue;
+            throw new NotImplementedException();
         }
 
-        public static Maybe<PublisherSlot> GetIdealSlotForGame(Publisher publisher, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick)
+        public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick)
         {
             throw new NotImplementedException();
         }
