@@ -27,7 +27,7 @@
         <span v-else>Not linked to OpenCritic</span>
       </li>
     </ul>
-    <div v-if="masterGame.tags && masterGame.tags.length > 0">
+    <div v-if="masterGame.tags && masterGame.tags.length > 0" class="long-tag-list">
       <h4>Tags</h4>
       <span v-for="(tag, index) in masterGame.tags">
         <masterGameTagBadge :tagName="masterGame.tags[index]"></masterGameTagBadge>

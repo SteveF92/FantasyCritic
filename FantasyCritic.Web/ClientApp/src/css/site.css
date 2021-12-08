@@ -203,3 +203,7 @@ svg, img.critic-royale-nav {
     text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
     min-width: 50px;
 }
+
+.long-tag-list span {
+    margin-right: 1px;
+}

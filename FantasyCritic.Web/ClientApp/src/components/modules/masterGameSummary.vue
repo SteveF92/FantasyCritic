@@ -13,6 +13,14 @@
         <div class="col-lg-6 col-md-12">
           <div class="game-description">
             <h4 class="game-name">{{masterGame.gameName}}</h4>
+
+            <div v-if="masterGame.tags && masterGame.tags.length > 0" class="long-tag-list">
+              <strong>Tags: </strong>
+              <span v-for="(tag, index) in masterGame.tags">
+                <masterGameTagBadge :tagName="masterGame.tags[index]"></masterGameTagBadge>
+              </span>
+            </div>
+
             <div>
               <strong>Release Date: </strong>
               <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
@@ -64,6 +72,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import moment from 'moment';
+import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
 export default {
   data() {
@@ -72,6 +81,9 @@ export default {
     };
   },
   props: ['masterGame'],
+  components: {
+    MasterGameTagBadge
+  },
   computed: {
     boxartLink() {
       if (this.masterGame.boxartFileName) {
