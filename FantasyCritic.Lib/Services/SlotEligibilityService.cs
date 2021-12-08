@@ -75,7 +75,11 @@ namespace FantasyCritic.Lib.Services
             }
 
             //At this point, the game is eligible in at least one currently open slot. Which one is best?
-            foreach (var openSlot in openSlots)
+            //We want to check the special slots first, then the regular slots.
+            var openSpotsToCheckOrder = openSlots
+                .OrderByDescending(x => x.SpecialGameSlot.HasValue)
+                .ThenBy(x => x.SlotNumber).ToList();
+            foreach (var openSlot in openSpotsToCheckOrder)
             {
                 var claimErrorsForSlot = GetClaimErrorsForSlot(openSlot, eligibilityFactors.Value);
                 if (!claimErrorsForSlot.Any())
@@ -84,7 +88,9 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            throw new Exception($"Something went horribly wrong detecting eligibility for: {publisher.PublisherID} | {eligibilityFactors.Value.MasterGame.GameName}");
+            //This game isn't eligible in any slots, so we will just take the first open one.
+            var bestSlot = openSlots.First();
+            return new PublisherSlotAcquisitionResult(bestSlot.SlotNumber);
         }
 
         private static IReadOnlyList<ClaimError> GetClaimErrorsForLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
