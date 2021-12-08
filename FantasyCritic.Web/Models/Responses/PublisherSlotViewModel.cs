@@ -24,8 +24,8 @@ namespace FantasyCritic.Web.Models.Responses
 
             GameMeetsSlotCriteria = SlotEligibilityService.SlotIsCurrentlyValid(slot, eligibilityFactors);
 
-            SimpleProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(eligibilityFactors, scoringSystem, systemWideValues, true, currentDate);
-            AdvancedProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(eligibilityFactors, scoringSystem, systemWideValues, false, currentDate);
+            SimpleProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria, scoringSystem, systemWideValues, true, currentDate);
+            AdvancedProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria, scoringSystem, systemWideValues, false, currentDate);
         }
 
         public int SlotNumber { get; }

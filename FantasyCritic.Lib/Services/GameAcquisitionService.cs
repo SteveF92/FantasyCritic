@@ -38,7 +38,6 @@ namespace FantasyCritic.Lib.Services
             var basicErrors = GetBasicErrors(request.Publisher.LeagueYear.League, request.Publisher);
             claimErrors.AddRange(basicErrors);
 
-            LeagueOptions yearOptions = leagueYear.Options;
             if (request.MasterGame.HasValue)
             {
                 var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, false, nextBidTime);

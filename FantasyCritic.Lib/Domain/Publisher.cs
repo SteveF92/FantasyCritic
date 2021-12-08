@@ -7,6 +7,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Services;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
@@ -81,7 +82,7 @@ namespace FantasyCritic.Lib.Domain
         public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
         {
             var currentGamesScore = GetPublisherSlots()
-                .Sum(x => x.GetProjectedOrRealFantasyPoints(LeagueYear.GetEligibilityFactorsForSlot(x), LeagueYear.Options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
+                .Sum(x => x.GetProjectedOrRealFantasyPoints(x.SlotIsValid(LeagueYear), LeagueYear.Options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
 
             var availableStandardSlots = GetNumberAvailableSlots(false, LeagueYear.SupportedYear.Finished);
             var emptyStandardSlotsScore = availableStandardSlots * systemWideValues.AverageStandardGamePoints;

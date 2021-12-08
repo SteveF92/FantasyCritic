@@ -32,5 +32,7 @@ namespace FantasyCritic.Lib.Domain
             var tagsToUse = TagOverrides.Any() ? TagOverrides : MasterGame.Tags;
             return leagueTags.GameHasValidTags(tagsToUse);
         }
+
+        public override string ToString() => MasterGame.GameName;
     }
 }

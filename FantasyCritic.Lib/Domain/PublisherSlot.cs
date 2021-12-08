@@ -29,7 +29,18 @@ namespace FantasyCritic.Lib.Domain
         public Maybe<SpecialGameSlot> SpecialGameSlot { get; }
         public Maybe<PublisherGame> PublisherGame { get; }
 
-        public decimal GetProjectedOrRealFantasyPoints(Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
+        public bool SlotIsValid(LeagueYear leagueYear)
+        {
+            var eligibilityFactors = leagueYear.GetEligibilityFactorsForSlot(this);
+            if (eligibilityFactors.HasNoValue)
+            {
+                return true;
+            }
+
+            return SlotEligibilityService.SlotIsCurrentlyValid(this, eligibilityFactors.Value);
+        }
+
+        public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
         {
             if (PublisherGame.HasNoValue)
             {
@@ -46,7 +57,7 @@ namespace FantasyCritic.Lib.Domain
                 return systemWideValues.GetAveragePoints(CounterPick);
             }
 
-            decimal? fantasyPoints = CalculateFantasyPoints(eligibilityFactors, scoringSystem, currentDate);
+            decimal? fantasyPoints = CalculateFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);
             if (fantasyPoints.HasValue)
             {
                 return fantasyPoints.Value;
@@ -60,7 +71,7 @@ namespace FantasyCritic.Lib.Domain
             return PublisherGame.Value.MasterGame.Value.GetProjectedOrRealFantasyPoints(scoringSystem, CounterPick, currentDate);
         }
 
-        public decimal? CalculateFantasyPoints(Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, ScoringSystem scoringSystem, LocalDate currentDate)
+        public decimal? CalculateFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)
         {
             if (PublisherGame.HasNoValue)
             {
@@ -75,8 +86,7 @@ namespace FantasyCritic.Lib.Domain
                 return null;
             }
 
-            var eligible = SlotEligibilityService.SlotIsCurrentlyValid(this, eligibilityFactors);
-            if (!eligible)
+            if (!gameIsValidInSlot)
             {
                 return 0m;
             }
