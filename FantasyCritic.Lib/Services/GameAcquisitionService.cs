@@ -109,7 +109,13 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult(claimErrors);
             }
 
-            var idealSlot = SlotEligibilityService.GetIdealSlotForGame(request.Publisher.GetPublisherSlots(), request.MasterGame, request.CounterPick);
+            Maybe<MasterGameEligibilityFactors> eligibilityFactors = Maybe<MasterGameEligibilityFactors>.None;
+            if (request.MasterGame.HasValue)
+            {
+                eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(request.MasterGame.Value);
+            }
+
+            var idealSlot = SlotEligibilityService.GetIdealSlotForGame(request.Publisher, eligibilityFactors, request.CounterPick);
             if (!idealSlot.HasValue)
             {
                 claimErrors.Add(new ClaimError("That game is not eligible for any of your slots due to it's tags.", false));
@@ -275,7 +281,7 @@ namespace FantasyCritic.Lib.Services
 
         private IReadOnlyList<ClaimError> GetGenericSlotMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool dropping, Instant? nextBidTime)
         {
-            var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame);
+            MasterGameEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame);
             List<ClaimError> claimErrors = new List<ClaimError>();
             
             var currentDate = _clock.GetToday();
@@ -573,7 +579,8 @@ namespace FantasyCritic.Lib.Services
 
             await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount);
 
-            var idealSlot = SlotEligibilityService.GetIdealSlotForGame(bid.Publisher.GetPublisherSlots(), bid.MasterGame, bid.CounterPick);
+            MasterGameEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame);
+            var idealSlot = SlotEligibilityService.GetIdealSlotForGame(bid.Publisher, eligibilityFactors, bid.CounterPick);
             if (idealSlot.HasNoValue)
             {
                 return new ClaimResult("That game is not eligible for any of your slots due to it's tags.");

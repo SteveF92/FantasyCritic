@@ -22,10 +22,10 @@ namespace FantasyCritic.Lib.Services
 
         public static bool GameWouldBeEligibleInAnySlot(Publisher publisher, MasterGameEligibilityFactors masterGame)
         {
-            throw new NotImplementedException();
+            return GetIdealSlotForGame(publisher, masterGame, false).HasValue;
         }
 
-        public static Maybe<PublisherSlot> GetIdealSlotForGame(IEnumerable<PublisherSlot> currentSlots, Maybe<MasterGame> masterGame, bool counterPick)
+        public static Maybe<PublisherSlot> GetIdealSlotForGame(Publisher publisher, Maybe<MasterGameEligibilityFactors> masterGame, bool counterPick)
         {
             throw new NotImplementedException();
         }
