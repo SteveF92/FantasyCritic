@@ -26,6 +26,8 @@ namespace FantasyCritic.Lib.Domain
         public LocalDate StartDate { get; }
         public bool Finished { get; }
 
+        public static bool Year2022FeatureSupported(int year) => year >= 2022;
+
         public override string ToString()
         {
             return Year.ToString();

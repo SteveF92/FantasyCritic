@@ -1677,9 +1677,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("That year is already finished");
             }
 
-            if (supportedYear.Year < 2022)
+            if (!SupportedYear.Year2022FeatureSupported(supportedYear.Year))
             {
-                return BadRequest("This feature is not supported before 2022");
+                return BadRequest("This feature is not supported before 2022.");
             }
 
             var currentUserResult = await GetCurrentUser();

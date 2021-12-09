@@ -159,7 +159,12 @@ namespace FantasyCritic.Lib.Services
                 var slots = publisher.GetPublisherSlots();
                 foreach (var publisherSlot in slots)
                 {
-                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(publisherSlot.SlotIsValid(publisher.LeagueYear), publisher.LeagueYear.Options.ScoringSystem, currentDate);
+                    //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
+                    var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(year);
+                    var gameIsEligible = publisherSlot.SlotIsValid(publisher.LeagueYear);
+                    var pointsShouldCount = gameIsEligible || ineligiblePointsShouldCount;
+
+                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, publisher.LeagueYear.Options.ScoringSystem, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     calculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
                 }
@@ -180,7 +185,12 @@ namespace FantasyCritic.Lib.Services
                 var slotsThatHaveGames = slots.Where(x => x.PublisherGame.HasValue).ToList();
                 foreach (var publisherSlot in slotsThatHaveGames)
                 {
-                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(publisherSlot.SlotIsValid(publisher.LeagueYear), publisher.LeagueYear.Options.ScoringSystem, currentDate);
+                    //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
+                    var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
+                    var gameIsEligible = publisherSlot.SlotIsValid(publisher.LeagueYear);
+                    var pointsShouldCount = gameIsEligible || ineligiblePointsShouldCount;
+
+                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, publisher.LeagueYear.Options.ScoringSystem, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     calculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
                 }
