@@ -194,25 +194,37 @@ namespace FantasyCritic.Lib.Services
             associationErrors.AddRange(masterGameErrors);
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.LeagueYear);
-            IReadOnlyList<Publisher> publishersForYear = allPublishers.Where(x => x.LeagueYear.Year == leagueYear.Year).ToList();
-            IReadOnlyList<Publisher> otherPublishers = publishersForYear.Where(x => x.User.Id != request.Publisher.User.Id).ToList();
+            LeaguePublisherGameSet gameSet = new LeaguePublisherGameSet(request.Publisher.PublisherID, allPublishers);
 
-            IReadOnlyList<PublisherGame> gamesForYear = publishersForYear.SelectMany(x => x.PublisherGames).ToList();
-            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
-
-            bool gameAlreadyClaimed = gamesForYear.ContainsGame(request.MasterGame);
-
+            bool thisPlayerAlreadyHas = gameSet.ThisPlayerStandardGames.ContainsGame(request.MasterGame);
+            bool gameAlreadyClaimed = gameSet.OtherPlayerStandardGames.ContainsGame(request.MasterGame);
             if (!request.PublisherGame.CounterPick)
             {
                 if (gameAlreadyClaimed)
                 {
-                    associationErrors.Add(new ClaimError("Cannot select a game that someone already has.", false));
+                    associationErrors.Add(new ClaimError("Cannot claim a game that someone already has.", false));
+                }
+
+                if (thisPlayerAlreadyHas)
+                {
+                    associationErrors.Add(new ClaimError("Cannot claim a game that you already have.", false));
                 }
             }
 
             if (request.PublisherGame.CounterPick)
             {
-                bool otherPlayerHasDraftGame = otherPlayersGames.Where(x => !x.CounterPick).ContainsGame(request.MasterGame);
+                bool otherPlayerHasCounterPick = gameSet.OtherPlayerCounterPicks.ContainsGame(request.MasterGame);
+                if (otherPlayerHasCounterPick)
+                {
+                    associationErrors.Add(new ClaimError("Cannot counter-pick a game that someone else has already counter picked.", false));
+                }
+                bool thisPlayerHasCounterPick = gameSet.ThisPlayerCounterPicks.ContainsGame(request.MasterGame);
+                if (thisPlayerHasCounterPick)
+                {
+                    associationErrors.Add(new ClaimError("You already have that counter pick.", false));
+                }
+
+                bool otherPlayerHasDraftGame = gameSet.OtherPlayerStandardGames.ContainsGame(request.MasterGame);
                 if (!otherPlayerHasDraftGame)
                 {
                     associationErrors.Add(new ClaimError("Cannot counter pick a game that no other player is publishing.", false));
@@ -305,7 +317,6 @@ namespace FantasyCritic.Lib.Services
 
             LeagueYear leagueYear = request.Publisher.LeagueYear;
             ClaimResult claimResult = CanClaimGame(request, leagueYear, publishersForYear, null, null);
-            
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -316,7 +327,6 @@ namespace FantasyCritic.Lib.Services
 
             LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
             await _fantasyCriticRepo.AddLeagueAction(leagueAction);
-
             await _fantasyCriticRepo.AddPublisherGame(playerGame);
 
             return claimResult;
@@ -333,7 +343,6 @@ namespace FantasyCritic.Lib.Services
 
             LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant());
             await _fantasyCriticRepo.AddLeagueAction(leagueAction);
-
             await _fantasyCriticRepo.AssociatePublisherGame(request.Publisher, request.PublisherGame, request.MasterGame);
 
             return claimResult;
@@ -535,7 +544,7 @@ namespace FantasyCritic.Lib.Services
             {
                 if (bid.CounterPick)
                 {
-                    return new ClaimResult("Cannot make a counterpick bid with a conditional drop.", null);
+                    return new ClaimResult("Cannot make a counter pick bid with a conditional drop.", null);
                 }
 
                 var dropResult = await MakeDropRequest(bid.Publisher, conditionalDropPublisherGame.Value, true);
