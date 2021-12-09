@@ -18,13 +18,7 @@ namespace FantasyCritic.Test
     [TestFixture]
     public class DiminishingScoringTests
     {
-        private static MasterGameWithEligibilityFactors GetEligibilityFactors(MasterGame masterGame)
-        {
-            LeagueOptions leagueOptions = new LeagueOptions(1, 1, 0, 0, 0, 0, 0, false, false, 0,
-                new List<LeagueTagStatus>(), new List<SpecialGameSlot>(), DraftSystem.Flexible,
-                PickupSystem.SecretBidding, ScoringSystem.GetScoringSystem("Diminishing"), TradingSystem.Standard, false);
-            return new MasterGameWithEligibilityFactors(masterGame, leagueOptions, null, new List<MasterGameTag>());
-        }
+        private static readonly ScoringSystem _scoringSystem = ScoringSystem.GetScoringSystem("Diminishing");
 
         [Test]
         public void BasicScoreTest()
@@ -41,9 +35,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(14.8095m, fantasyPoints);
         }
@@ -63,9 +55,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(13.8095m, fantasyPoints);
         }
@@ -85,9 +75,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(29.625m, fantasyPoints);
         }
@@ -107,9 +95,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(-4.1441m, fantasyPoints);
         }
@@ -129,9 +115,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(-12.5m, fantasyPoints);
         }
@@ -151,9 +135,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(-16.25m, fantasyPoints);
         }
@@ -173,9 +155,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(-18.125m, fantasyPoints);
         }
@@ -195,9 +175,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(-19.0625m, fantasyPoints);
         }
@@ -217,9 +195,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(-19.53125m, fantasyPoints);
         }
@@ -239,9 +215,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(-19.765625m, fantasyPoints);
         }
@@ -261,9 +235,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(-19.84375m, fantasyPoints);
         }
@@ -283,9 +255,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(null, fantasyPoints);
         }
@@ -305,9 +275,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(0m, fantasyPoints);
         }
@@ -327,9 +295,7 @@ namespace FantasyCritic.Test
 
             PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null);
             PublisherSlot testSlot = new PublisherSlot(1, 1, true, Maybe<SpecialGameSlot>.None, testGame);
-            MasterGameWithEligibilityFactors eligibilityFactors = GetEligibilityFactors(masterGame);
-
-            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(eligibilityFactors, eligibilityFactors.Options.ScoringSystem, fakeToday);
+            decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
             Assert.AreEqual(4.1441m, fantasyPoints);
         }

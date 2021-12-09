@@ -21,6 +21,11 @@ namespace FantasyCritic.Lib.Domain
             CounterPick = counterPick;
             SpecialGameSlot = specialGameSlot;
             PublisherGame = publisherGame;
+
+            if (publisherGame.HasValue && publisherGame.Value.CounterPick != CounterPick)
+            {
+                throw new Exception($"Something has gone horribly wrong with publisher game: {publisherGame.Value.PublisherGameID}");
+            }
         }
 
         public int SlotNumber { get; }
