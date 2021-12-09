@@ -1,5 +1,8 @@
 <template>
   <b-modal id="manageTagOverridesModal" ref="tagOverridesModalRef" size="lg" title="Manage Tag Overrides" @hidden="clearData" hide-footer>
+    <div class="alert alert-info">
+      This option will allow you to override the tags of a game to whatever you want, if you disagree with how the site has classified something.
+    </div>
     <div v-if="leagueYear.tagOverrides.length > 0">
       <table class="table table-bordered table-striped">
         <thead>
