@@ -12,6 +12,7 @@ using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Services
@@ -44,18 +45,9 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.AddRange(masterGameErrors);
             }
 
-            IReadOnlyList<Publisher> otherPublishers = publishersInLeague.Where(x => x.User.Id != request.Publisher.User.Id).ToList();
-            IReadOnlyList<PublisherGame> thisPlayersGames = request.Publisher.PublisherGames;
-            IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).ToList();
-
-            var thisPlayerStandardGames = thisPlayersGames.Where(x => !x.CounterPick).ToList();
-            var thisPlayerCounterPicks = thisPlayersGames.Where(x => x.CounterPick).ToList();
-            var otherPlayerStandardGames = otherPlayersGames.Where(x => !x.CounterPick).ToList();
-            var otherPlayerCounterPicks = otherPlayersGames.Where(x => x.CounterPick).ToList();
-
-            bool gameAlreadyClaimed = otherPlayerStandardGames.ContainsGame(request);
-            bool thisPlayerAlreadyHas = thisPlayerStandardGames.ContainsGame(request);
-
+            LeaguePublisherGameSet gameSet = new LeaguePublisherGameSet(request.Publisher.PublisherID, publishersInLeague);
+            bool thisPlayerAlreadyHas = gameSet.ThisPlayerStandardGames.ContainsGame(request);
+            bool gameAlreadyClaimed = gameSet.OtherPlayerStandardGames.ContainsGame(request);
             if (!request.CounterPick)
             {
                 if (gameAlreadyClaimed)
@@ -71,18 +63,18 @@ namespace FantasyCritic.Lib.Services
 
             if (request.CounterPick)
             {
-                bool otherPlayerHasCounterPick = otherPlayerCounterPicks.ContainsGame(request);
+                bool otherPlayerHasCounterPick = gameSet.OtherPlayerCounterPicks.ContainsGame(request);
                 if (otherPlayerHasCounterPick)
                 {
                     claimErrors.Add(new ClaimError("Cannot counter-pick a game that someone else has already counter picked.", false));
                 }
-                bool thisPlayerHasCounterPick = thisPlayerCounterPicks.ContainsGame(request);
+                bool thisPlayerHasCounterPick = gameSet.ThisPlayerCounterPicks.ContainsGame(request);
                 if (thisPlayerHasCounterPick)
                 {
                     claimErrors.Add(new ClaimError("You already have that counter pick.", false));
                 }
 
-                bool otherPlayerHasDraftGame = otherPlayerStandardGames.ContainsGame(request);
+                bool otherPlayerHasDraftGame = gameSet.OtherPlayerStandardGames.ContainsGame(request);
                 if (!otherPlayerHasDraftGame)
                 {
                     claimErrors.Add(new ClaimError("Cannot counter pick a game that no other player is publishing.", false));
