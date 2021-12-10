@@ -296,6 +296,7 @@ namespace FantasyCritic.Lib.Services
             _logger.Info("Updating game stats.");
 
             var supportedYears = await _interLeagueService.GetSupportedYears();
+            var currentDate = _clock.GetToday();
             foreach (var supportedYear in supportedYears)
             {
                 if (supportedYear.Finished)
@@ -364,7 +365,7 @@ namespace FantasyCritic.Lib.Services
                     var publisherGamesForMasterGame = publisherGamesByMasterGame[masterGame.MasterGameID];
                     var leaguesWithGame = standardGamesByLeague.Count(x => x.Value.Contains(masterGame));
                     var leaguesWithCounterPickGame = counterPicksByLeague.Count(x => x.Value.Contains(masterGame));
-                    List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligibleInAnySlot(masterGame)).ToList();
+                    List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligibleInAnySlot(masterGame, currentDate)).ToList();
 
                     List<LeagueYear> timeAdjustedLeagues;
                     var scoreOrReleaseTime = masterGame.FirstCriticScoreTimestamp ?? masterGame.ReleaseDate?.AtStartOfDayInZone(TimeExtensions.EasternTimeZone).ToInstant();

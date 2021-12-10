@@ -242,7 +242,8 @@ namespace FantasyCritic.Web.Controllers.API
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
 
-            var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year);
+            var nextBidTime = _gameAcquisitionService.GetNextBidTime();
+            var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime);
             IEnumerable<LeagueAction> failingActions = actionResults.LeagueActions.Where(x => x.IsFailed);
             var failingActionGames = failingActions.Select(x => x.MasterGameName).Distinct();
 

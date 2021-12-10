@@ -1570,7 +1570,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("You can't change the override setting of a game that came out in a previous year.");
             }
 
-            var eligibilityFactors = leagueYear.Value.GetEligibilityFactorsForMasterGame(masterGame.Value);
+            var currentDate = _clock.GetToday();
+            var eligibilityFactors = leagueYear.Value.GetEligibilityFactorsForMasterGame(masterGame.Value, currentDate);
             bool alreadyEligible = SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);
             bool isAllowing = request.Eligible.HasValue && request.Eligible.Value;
             bool isBanning = request.Eligible.HasValue && !request.Eligible.Value;

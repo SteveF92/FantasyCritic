@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
@@ -45,11 +46,11 @@ namespace FantasyCritic.Lib.Domain
 
         public string GetGroupName => $"{League.LeagueID}|{Year}";
 
-        public MasterGameWithEligibilityFactors GetEligibilityFactorsForMasterGame(MasterGame masterGame)
+        public MasterGameWithEligibilityFactors GetEligibilityFactorsForMasterGame(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)
         {
             bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
             IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
-            return new MasterGameWithEligibilityFactors(masterGame, Options, eligibilityOverride, tagOverrides);
+            return new MasterGameWithEligibilityFactors(masterGame, Options, eligibilityOverride, tagOverrides, dateOfPotentialAcquisition);
         }
 
         public Maybe<MasterGameWithEligibilityFactors> GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
@@ -62,12 +63,13 @@ namespace FantasyCritic.Lib.Domain
             var masterGame = publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame;
             bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
             IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
-            return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame, Options, eligibilityOverride, tagOverrides);
+            var acquisitionDate = publisherSlot.PublisherGame.Value.Timestamp.ToEasternDate();
+            return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame, Options, eligibilityOverride, tagOverrides, acquisitionDate);
         }
 
-        public bool GameIsEligibleInAnySlot(MasterGame masterGame)
+        public bool GameIsEligibleInAnySlot(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)
         {
-            var eligibilityFactors = GetEligibilityFactorsForMasterGame(masterGame);
+            var eligibilityFactors = GetEligibilityFactorsForMasterGame(masterGame, dateOfPotentialAcquisition);
             return SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);
         }
 
