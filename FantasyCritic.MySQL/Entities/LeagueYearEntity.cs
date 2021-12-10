@@ -36,6 +36,7 @@ namespace FantasyCritic.MySQL.Entities
             DraftSystem = options.DraftSystem.Value;
             PickupSystem = options.PickupSystem.Value;
             ScoringSystem = options.ScoringSystem.Name;
+            TradingSystem = options.TradingSystem.Value;
             PlayStatus = playStatus.Value;
         }
 
