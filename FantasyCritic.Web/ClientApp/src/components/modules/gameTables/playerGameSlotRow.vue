@@ -3,34 +3,38 @@
     <template v-if="game">
       <td>
         <span class="game-name-column">
-          <b-button variant="danger" class="move-button" v-show="moveMode && !holdingGame && !gameSlot.counterPick" v-on:click="holdGame">Move</b-button>
-          <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
-          <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
-          <span class="master-game-popover">
-            <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
-            <span v-if="!game.linked">{{game.gameName}}</span>
+          <span class="game-name-side">
+            <b-button variant="danger" class="move-button" v-show="moveMode && !holdingGame && !gameSlot.counterPick" v-on:click="holdGame">Move</b-button>
+            <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
+            <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
+            <span class="master-game-popover">
+              <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
+              <span v-if="!game.linked">{{game.gameName}}</span>
+            </span>
           </span>
 
-          <span v-if="!game.linked" class="game-status">
-            Not linked to Master Game
-          </span>
+          <span class="game-info-side">
+            <span v-if="!game.linked" class="game-status">
+              Not linked to Master Game
+            </span>
 
-          <span v-if="!game.willRelease && game.linked && !game.manualWillNotRelease" class="game-status">
-            <span v-show="!yearFinished">Will not Release</span>
-            <span v-show="yearFinished">Did not Release</span>
-          </span>
-          <span v-if="game.released && game.linked && !game.criticScore && !yearFinished" class="game-status">
-            <span>Needs more reviews</span>
-          </span>
-          <span v-if="game.manualWillNotRelease && game.linked && !yearFinished" class="game-status">
-            Will not Release (League Override)
-          </span>
-          <span v-if="game.manualCriticScore && game.linked" class="game-status">
-            Manually Scored
-          </span>
-          <span v-if="!gameSlot.gameMeetsSlotCriteria" class="game-status">
-            Ineligible
-            <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="inEligibleText" />
+            <span v-if="!game.willRelease && game.linked && !game.manualWillNotRelease" class="game-status">
+              <span v-show="!yearFinished">Will not Release</span>
+              <span v-show="yearFinished">Did not Release</span>
+            </span>
+            <span v-if="game.released && game.linked && !game.criticScore && !yearFinished" class="game-status">
+              <span>Needs more reviews</span>
+            </span>
+            <span v-if="game.manualWillNotRelease && game.linked && !yearFinished" class="game-status">
+              Will not Release (League Override)
+            </span>
+            <span v-if="game.manualCriticScore && game.linked" class="game-status">
+              Manually Scored
+            </span>
+            <span v-if="!gameSlot.gameMeetsSlotCriteria" class="game-status">
+              Ineligible
+              <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="inEligibleText" />
+            </span>
           </span>
         </span>
       </td>
@@ -162,7 +166,12 @@ export default {
 
   .game-name-column {
       display: inline-flex;
+      justify-content: space-between;
       width: 100%;
+  }
+
+  .game-name-side {
+    display: inline-flex;
   }
 
   .game-status {
