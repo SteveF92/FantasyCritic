@@ -34,7 +34,7 @@ namespace FantasyCritic.Lib.Domain
         public IReadOnlyList<ClaimError> CheckGameAgainstTags(IEnumerable<LeagueTagStatus> leagueTags)
         {
             var tagsToUse = TagOverrides.Any() ? TagOverrides : MasterGame.Tags;
-            return leagueTags.GameHasValidTags(tagsToUse);
+            return leagueTags.GameHasValidTags(tagsToUse, DateAcquired);
         }
 
         public override string ToString() => MasterGame.GameName;

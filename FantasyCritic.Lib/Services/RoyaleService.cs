@@ -104,7 +104,9 @@ namespace FantasyCritic.Lib.Services
             {
                 return new ClaimResult("Game will not release this quarter.", null);
             }
-            var currentDate = _clock.GetToday();
+
+            var now = _clock.GetCurrentInstant();
+            var currentDate = now.ToEasternDate();
             if (masterGame.MasterGame.IsReleased(currentDate))
             {
                 return new ClaimResult("Game has been released.", null);
@@ -115,7 +117,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             var masterGameTags = await _masterGameRepo.GetMasterGameTags();
-            var eligibilityErrors = LeagueTagExtensions.GameIsRoyaleEligible(masterGameTags, masterGame.MasterGame);
+            var eligibilityErrors = LeagueTagExtensions.GameIsRoyaleEligible(masterGameTags, masterGame.MasterGame, currentDate);
             if (eligibilityErrors.Any())
             {
                 return new ClaimResult("Game is not eligible under Royale rules.", null);
@@ -128,7 +130,7 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult("Not enough budget.", null);
             }
 
-            RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, _clock.GetCurrentInstant(), gameCost, 0m, null);
+            RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
             await _royaleRepo.PurchaseGame(game);
             var nextSlot = publisher.PublisherGames.Count;
             return new ClaimResult(nextSlot);

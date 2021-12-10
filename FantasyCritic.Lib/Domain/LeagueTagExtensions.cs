@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Enums;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
     public static class LeagueTagExtensions
     {
-        public static IReadOnlyList<ClaimError> GameIsRoyaleEligible(IEnumerable<MasterGameTag> allMasterGameTags, MasterGame masterGame)
+        public static IReadOnlyList<ClaimError> GameIsRoyaleEligible(IEnumerable<MasterGameTag> allMasterGameTags, MasterGame masterGame, LocalDate dateOfAcquisition)
         {
-            return GetRoyaleEligibilitySettings(allMasterGameTags).GameHasValidTags(masterGame.Tags);
+            return GetRoyaleEligibilitySettings(allMasterGameTags).GameHasValidTags(masterGame.Tags, dateOfAcquisition);
         }
 
-        public static IReadOnlyList<ClaimError> GameHasValidTags(this IEnumerable<LeagueTagStatus> slotTags, IEnumerable<MasterGameTag> masterGameTags)
+        public static IReadOnlyList<ClaimError> GameHasValidTags(this IEnumerable<LeagueTagStatus> slotTags, IEnumerable<MasterGameTag> masterGameTags, LocalDate dateOfAcquisition)
         {
             var bannedTags = slotTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag);
             var requiredTags = slotTags.Where(x => x.Status.Equals(TagStatus.Required)).Select(x => x.Tag);
