@@ -22,6 +22,19 @@ namespace FantasyCritic.Web.Hubs
             _fantasyCriticService = fantasyCriticService;
         }
 
+        public override async Task OnConnectedAsync()
+        {
+            _logger.Error($"SignalR connected: {Context.ConnectionId}");
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception ex)
+        {
+            _logger.Error($"SignalR disconnected: {Context.ConnectionId}");
+            _logger.Error(ex);
+            await base.OnDisconnectedAsync(ex);
+        }
+
         public async Task Subscribe(string leagueID, string year)
         {
             try
