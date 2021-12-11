@@ -18,6 +18,7 @@ export default {
   },
   actions: {
     initialize(context, publisher) {
+      context.commit('cancelMoveMode');
       context.commit('setPublisherID', publisher.publisherID);
       context.commit('initializeInternal', publisher.gameSlots);
       context.commit('setDesiredPositions');

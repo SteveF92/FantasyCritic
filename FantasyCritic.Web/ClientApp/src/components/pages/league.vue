@@ -292,6 +292,7 @@ export default {
           if (this.leagueYear.userIsActive) {
             this.userShouldBeActive = true;
           }
+          this.$store.commit('cancelMoveMode');
         })
         .catch(returnedError => {
           this.errorInfo = 'Something went wrong with this league. Contact us on Twitter for support.';

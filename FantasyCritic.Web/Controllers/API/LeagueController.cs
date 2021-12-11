@@ -1656,6 +1656,14 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            var publisherGameIDsBeingEdited = request.SlotStates.Where(x => x.Value.HasValue).Select(x => x.Value.Value);
+            var publisherGameIDs = publisher.Value.PublisherGames.Select(x => x.PublisherGameID);
+            var gamesNotForPublisher = publisherGameIDsBeingEdited.Except(publisherGameIDs);
+            if (gamesNotForPublisher.Any())
+            {
+                return BadRequest();
+            }
+
             Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.LeagueYear.League.LeagueID, publisher.Value.LeagueYear.Year);
             if (leagueYear.HasNoValue)
             {
