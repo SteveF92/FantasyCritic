@@ -16,15 +16,19 @@ namespace FantasyCritic.Lib.Domain
     {
         public static IReadOnlyList<ClaimError> GameIsRoyaleEligible(IEnumerable<MasterGameTag> allMasterGameTags, MasterGame masterGame, LocalDate dateOfAcquisition)
         {
-            return GetRoyaleEligibilitySettings(allMasterGameTags).GameHasValidTags(masterGame, masterGame.Tags, dateOfAcquisition);
+            return GameHasValidTags(GetRoyaleEligibilitySettings(allMasterGameTags), new List<LeagueTagStatus>(),
+                masterGame, masterGame.Tags, dateOfAcquisition);
         }
 
-        public static IReadOnlyList<ClaimError> GameHasValidTags(this IEnumerable<LeagueTagStatus> slotTags, MasterGame masterGame, IEnumerable<MasterGameTag> masterGameTags, LocalDate dateOfAcquisition)
+        public static IReadOnlyList<ClaimError> GameHasValidTags(IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueTagStatus> slotSpecificTags, 
+            MasterGame masterGame, IEnumerable<MasterGameTag> masterGameTags, LocalDate dateOfAcquisition)
         {
+            var combinedLeagueTags = CombineTags(leagueTags, slotSpecificTags);
+
             var masterGameCustomCodeTags = masterGameTags.Where(x => x.HasCustomCode).ToList();
             var masterGameNonCustomCodeTags = masterGameTags.Except(masterGameCustomCodeTags).ToList();
-            var leagueCustomCodeTags = slotTags.Where(x => x.Tag.HasCustomCode).ToList();
-            var leagueNonCustomCodeTags = slotTags.Except(leagueCustomCodeTags).ToList();
+            var leagueCustomCodeTags = combinedLeagueTags.Where(x => x.Tag.HasCustomCode).ToList();
+            var leagueNonCustomCodeTags = combinedLeagueTags.Except(leagueCustomCodeTags).ToList();
 
             //Non custom code tags
             var bannedTags = leagueNonCustomCodeTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag).ToList();
@@ -109,6 +113,21 @@ namespace FantasyCritic.Lib.Domain
             }
 
             return claimErrors;
+        }
+
+        private static IReadOnlyList<LeagueTagStatus> CombineTags(IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueTagStatus> slotTags)
+        {
+            Dictionary<MasterGameTag, LeagueTagStatus> combinedLeagueTags = slotTags.ToDictionary(x => x.Tag);
+            foreach (var leagueTag in leagueTags)
+            {
+                bool isSlotTag = combinedLeagueTags.ContainsKey(leagueTag.Tag);
+                if (!isSlotTag)
+                {
+                    combinedLeagueTags.Add(leagueTag.Tag, leagueTag);
+                }
+            }
+
+            return combinedLeagueTags.Values.ToList();
         }
 
         public static IReadOnlyList<LeagueTagStatus> GetRoyaleEligibilitySettings(IEnumerable<MasterGameTag> allMasterGameTags)

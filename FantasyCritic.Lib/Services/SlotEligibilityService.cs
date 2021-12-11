@@ -107,7 +107,7 @@ namespace FantasyCritic.Lib.Services
                 return new List<ClaimError>() { new ClaimError("That game has been specifically banned by your league.", false) };
             }
 
-            var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags);
+            var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, new List<LeagueTagStatus>());
             if (!baseEligibilityResult.Any())
             {
                 return baseEligibilityResult;
@@ -117,7 +117,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var specialGameSlot in specialGameSlots)
             {
                 var tagsForSlot = specialGameSlot.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
-                var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(tagsForSlot);
+                var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, tagsForSlot);
                 if (!specialEligibilityResult.Any())
                 {
                     return specialEligibilityResult;
@@ -143,13 +143,13 @@ namespace FantasyCritic.Lib.Services
 
             if (publisherSlot.SpecialGameSlot.HasNoValue)
             {
-                var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags);
+                var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, new List<LeagueTagStatus>());
                 return baseEligibilityResult;
             }
 
             //This is a special slot
             var tagsForSlot = publisherSlot.SpecialGameSlot.Value.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
-            var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(tagsForSlot);
+            var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, tagsForSlot);
             return specialEligibilityResult;
         }
     }

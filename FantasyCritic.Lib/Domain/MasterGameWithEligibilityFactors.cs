@@ -31,10 +31,10 @@ namespace FantasyCritic.Lib.Domain
         public bool GameIsSpecificallyAllowed => OverridenEligibility.HasValue && OverridenEligibility.Value;
         public bool GameIsSpecificallyBanned => OverridenEligibility.HasValue && !OverridenEligibility.Value;
 
-        public IReadOnlyList<ClaimError> CheckGameAgainstTags(IEnumerable<LeagueTagStatus> leagueTags)
+        public IReadOnlyList<ClaimError> CheckGameAgainstTags(IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueTagStatus> slotTags)
         {
             var tagsToUse = TagOverrides.Any() ? TagOverrides : MasterGame.Tags;
-            return leagueTags.GameHasValidTags(MasterGame, tagsToUse, DateAcquired);
+            return LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, MasterGame, tagsToUse, DateAcquired);
         }
 
         public override string ToString() => MasterGame.GameName;
