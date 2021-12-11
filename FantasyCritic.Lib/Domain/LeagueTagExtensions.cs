@@ -47,60 +47,65 @@ namespace FantasyCritic.Lib.Domain
             }
 
             //Custom code tags
-            var gameIsPlannedForEarlyAccess = masterGameCustomCodeTags.Any(x => x.Name == "PlannedForEarlyAccess");
-            var gameIsInEarlyAccess = masterGameCustomCodeTags.Any(x => x.Name == "CurrentlyInEarlyAccess");
-            var plannedForEarlyAccessBanned = leagueCustomCodeTags.Any(x => x.Tag.Name == "PlannedForEarlyAccess" && x.Status.Equals(TagStatus.Banned));
-            var plannedForEarlyAccessRequired = leagueCustomCodeTags.Any(x => x.Tag.Name == "PlannedForEarlyAccess" && x.Status.Equals(TagStatus.Required));
-            var currentlyInEarlyAccessBanned = leagueCustomCodeTags.Any(x => x.Tag.Name == "CurrentlyInEarlyAccess" && x.Status.Equals(TagStatus.Banned));
-            var currentlyInEarlyAccessRequired = leagueCustomCodeTags.Any(x => x.Tag.Name == "CurrentlyInEarlyAccess" && x.Status.Equals(TagStatus.Required));
+            var masterGameCustomCodeTagsHashSet = masterGameCustomCodeTags.Select(x => x.Name).ToHashSet();
+            var leagueCustomCodeTagsDictionary = leagueCustomCodeTags.ToDictionary(x => x.Tag.Name);
 
-            if (plannedForEarlyAccessBanned && gameIsPlannedForEarlyAccess)
+            var gameIsPlannedForEarlyAccess = masterGameCustomCodeTagsHashSet.Contains("PlannedForEarlyAccess");
+            var gameIsInEarlyAccess = masterGameCustomCodeTagsHashSet.Contains("CurrentlyInEarlyAccess");
+            if (leagueCustomCodeTagsDictionary.TryGetValue("PlannedForEarlyAccess", out var plannedEarlyAccessTag))
             {
-                claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Planned For Early Access", true));
-            }
-            if (plannedForEarlyAccessRequired && (!gameIsPlannedForEarlyAccess || gameIsInEarlyAccess))
-            {
-                claimErrors.Add(new ClaimError("That game is not eligible because it is not planned for or in early access", true));
-            }
-            if (currentlyInEarlyAccessBanned && gameIsInEarlyAccess)
-            {
-                bool acquiredBeforeEarlyAccess = masterGame.EarlyAccessReleaseDate.HasValue && masterGame.EarlyAccessReleaseDate.Value > dateOfAcquisition;
-                if (!acquiredBeforeEarlyAccess)
+                if (plannedEarlyAccessTag.Status.Equals(TagStatus.Banned) && gameIsPlannedForEarlyAccess)
                 {
-                    claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Currently in Early Access", true));
+                    claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Planned For Early Access", true));
+                }
+                else if (plannedEarlyAccessTag.Status.Equals(TagStatus.Required) && (!gameIsPlannedForEarlyAccess || gameIsInEarlyAccess))
+                {
+                    claimErrors.Add(new ClaimError("That game is not eligible because it is not planned for or in early access", true));
                 }
             }
-            if (currentlyInEarlyAccessRequired && !gameIsInEarlyAccess)
+            if (leagueCustomCodeTagsDictionary.TryGetValue("CurrentlyInEarlyAccess", out var currentlyInEarlyAccessTags))
             {
-                claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Currently in Early Access", true));
-            }
-
-            var gameWillReleaseInternationallyFirst = masterGameCustomCodeTags.Any(x => x.Name == "WillReleaseInternationallyFirst");
-            var gameReleasedInternationallyFirst = masterGameCustomCodeTags.Any(x => x.Name == "ReleasedInternationally");
-            var willReleaseInternationallyFirstBanned = leagueCustomCodeTags.Any(x => x.Tag.Name == "WillReleaseInternationallyFirst" && x.Status.Equals(TagStatus.Banned));
-            var willReleaseInternationallyFirstRequired = leagueCustomCodeTags.Any(x => x.Tag.Name == "WillReleaseInternationallyFirst" && x.Status.Equals(TagStatus.Required));
-            var releasedInternationallyBanned = leagueCustomCodeTags.Any(x => x.Tag.Name == "ReleasedInternationally" && x.Status.Equals(TagStatus.Banned));
-            var releasedInternationallyRequired = leagueCustomCodeTags.Any(x => x.Tag.Name == "ReleasedInternationally" && x.Status.Equals(TagStatus.Required));
-
-            if (willReleaseInternationallyFirstBanned && gameWillReleaseInternationallyFirst)
-            {
-                claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Will Release Internationally First", true));
-            }
-            if (willReleaseInternationallyFirstRequired && (!gameWillReleaseInternationallyFirst || gameReleasedInternationallyFirst))
-            {
-                claimErrors.Add(new ClaimError("That game is not eligible because it will not or has not released internationally first", true));
-            }
-            if (releasedInternationallyBanned && gameReleasedInternationallyFirst)
-            {
-                bool acquiredBeforeEarlyAccess = masterGame.InternationalReleaseDate.HasValue && masterGame.InternationalReleaseDate.Value > dateOfAcquisition;
-                if (!acquiredBeforeEarlyAccess)
+                if (currentlyInEarlyAccessTags.Status.Equals(TagStatus.Banned) && gameIsInEarlyAccess)
                 {
-                    claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Released Internationally", true));
+                    bool acquiredBeforeEarlyAccess = masterGame.EarlyAccessReleaseDate.HasValue && masterGame.EarlyAccessReleaseDate.Value > dateOfAcquisition;
+                    if (!acquiredBeforeEarlyAccess)
+                    {
+                        claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Currently in Early Access", true));
+                    }
+                }
+                else if (currentlyInEarlyAccessTags.Status.Equals(TagStatus.Required) && !gameIsInEarlyAccess)
+                {
+                    claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Currently in Early Access", true));
                 }
             }
-            if (releasedInternationallyRequired && !gameReleasedInternationallyFirst)
+
+            var gameWillReleaseInternationallyFirst = masterGameCustomCodeTagsHashSet.Contains("WillReleaseInternationallyFirst");
+            var gameReleasedInternationallyFirst = masterGameCustomCodeTagsHashSet.Contains("ReleasedInternationally");
+            if (leagueCustomCodeTagsDictionary.TryGetValue("WillReleaseInternationallyFirst", out var willReleaseInternationallyFirstTag))
             {
-                claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Released Internationally", true));
+                if (willReleaseInternationallyFirstTag.Status.Equals(TagStatus.Banned) && gameWillReleaseInternationallyFirst)
+                {
+                    claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Will Release Internationally First", true));
+                }
+                else if (willReleaseInternationallyFirstTag.Status.Equals(TagStatus.Required) && (!gameWillReleaseInternationallyFirst || gameReleasedInternationallyFirst))
+                {
+                    claimErrors.Add(new ClaimError("That game is not eligible because it will not or has not released internationally first", true));
+                }
+            }
+            if (leagueCustomCodeTagsDictionary.TryGetValue("ReleasedInternationally", out var releasedInternationallyTag))
+            {
+                if (releasedInternationallyTag.Status.Equals(TagStatus.Banned) && gameReleasedInternationallyFirst)
+                {
+                    bool acquiredBeforeInternationalRelease = masterGame.InternationalReleaseDate.HasValue && masterGame.InternationalReleaseDate.Value > dateOfAcquisition;
+                    if (!acquiredBeforeInternationalRelease)
+                    {
+                        claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Released Internationally", true));
+                    }
+                }
+                else if (releasedInternationallyTag.Status.Equals(TagStatus.Required) && !gameReleasedInternationallyFirst)
+                {
+                    claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Released Internationally", true));
+                }
             }
 
             return claimErrors;
