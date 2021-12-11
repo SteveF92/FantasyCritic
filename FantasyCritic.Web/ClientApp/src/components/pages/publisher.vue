@@ -50,7 +50,7 @@ export default {
       return this.$store.getters.moveMode;
     },
     userIsPublisher() {
-      return this.publisher.userID === this.$store.getters.userInfo.userID;
+      return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
     }
   },
   methods: {

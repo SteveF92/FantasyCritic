@@ -59,7 +59,7 @@ export default {
       return this.$store.getters.advancedProjections;
     },
     userIsPublisher() {
-      return this.publisher.userID === this.$store.getters.userInfo.userID;
+      return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
     }
   }
 };
