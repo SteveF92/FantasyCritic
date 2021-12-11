@@ -20,13 +20,6 @@ namespace FantasyCritic.Lib.Services
                 return true;
             }
 
-            var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors.Value);
-            if (leagueYearClaimErrors.Any())
-            {
-                //This game is not eligible in this league at all
-                return false;
-            }
-
             var slotClaimErrors = GetClaimErrorsForSlot(publisherSlot, eligibilityFactors.Value);
             return !slotClaimErrors.Any();
         }
