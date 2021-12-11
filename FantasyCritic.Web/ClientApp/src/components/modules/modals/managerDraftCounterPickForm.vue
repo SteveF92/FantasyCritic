@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="managerDraftCounterPickForm" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" hide-footer @hidden="clearData">
+  <b-modal id="managerDraftCounterPickForm" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" hide-footer
+           @hidden="clearData" @show="getPossibleCounterPicks">
     <div v-if="nextPublisherUp">
       <div class="form-group">
         <label for="nextPublisherUp" class="control-label">Select the next counter pick for publisher: </label>
@@ -11,7 +12,7 @@
         <div class="form-group">
           <label for="selectedCounterPick" class="control-label">Game</label>
           <b-form-select v-model="selectedCounterPick">
-            <option v-for="publisherGame in availableCounterPicks" v-bind:value="publisherGame">
+            <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame">
               {{ publisherGame.gameName }}
             </option>
           </b-form-select>
@@ -32,10 +33,11 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      selectedCounterPick: null
+      selectedCounterPick: null,
+      possibleCounterPicks: []
     };
   },
-  props: ['nextPublisherUp', 'availableCounterPicks'],
+  props: ['nextPublisherUp'],
   methods: {
     selectCounterPick() {
       var request = {
@@ -68,8 +70,21 @@ export default {
 
         });
     },
+    getPossibleCounterPicks() {
+      axios
+        .get('/api/league/PossibleCounterPicks?publisherID=' + this.nextPublisherUp.publisherID)
+        .then(response => {
+          this.possibleCounterPicks = response.data;
+          this.isBusy = false;
+          this.counterPicking = true;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
     clearData() {
       this.selectedCounterPick = null;
+      this.possibleCounterPicks = [];
     }
   }
 };

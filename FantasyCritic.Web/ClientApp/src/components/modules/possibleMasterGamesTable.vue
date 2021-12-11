@@ -56,7 +56,7 @@ export default {
     StatusBadge,
     MasterGamePopover
   },
-  props: ['possibleGames', 'counterPicking', 'value'],
+  props: ['possibleGames', 'value'],
   computed: {
     rows() {
       return this.possibleGames.length;
@@ -69,11 +69,7 @@ export default {
       return gameRows;
     },
     gameFields() {
-      if (!this.counterPicking) {
-        return this.gameFieldsInternal;
-      } else {
-        return this.gameFieldsInternal.filter(item => item.key !== 'masterGame.status');
-      }
+      return this.gameFieldsInternal;
     }
   },
   methods: {

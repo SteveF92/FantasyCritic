@@ -17,7 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
     {
         public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Maybe<Publisher> userPublisher,
             LocalDate currentDate, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
-            DraftPhase draftPhase, IEnumerable<PublisherGame> availableCounterPicks, SystemWideValues systemWideValues,
+            DraftPhase draftPhase, SystemWideValues systemWideValues,
             IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
             Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner,
             Maybe<IReadOnlyList<MasterGameYear>> publicBiddingGames)
@@ -102,9 +102,6 @@ namespace FantasyCritic.Web.Models.Responses
             }
 
             PlayStatus = new PlayStatusViewModel(leagueYear.PlayStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
-            AvailableCounterPicks = availableCounterPicks
-                .Select(x => new PublisherGameViewModel(x, currentDate))
-                .OrderBy(x => x.GameName).ToList();
             EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
             TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();
 
@@ -138,7 +135,6 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<TagOverrideViewModel> TagOverrides { get; }
         public PublisherViewModel UserPublisher { get; }
         public PlayStatusViewModel PlayStatus { get; }
-        public IReadOnlyList<PublisherGameViewModel> AvailableCounterPicks { get; }
         public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
         public IReadOnlyList<MasterGameYearViewModel> PublicBiddingGames { get; }
     }

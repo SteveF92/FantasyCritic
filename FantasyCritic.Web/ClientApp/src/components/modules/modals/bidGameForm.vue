@@ -21,52 +21,72 @@
         </span>
       </div>
 
-      <b-button v-show="!showingTopAvailable || bidMasterGame" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
-      <b-button v-show="!showingTopAvailable || bidMasterGame" variant="secondary" v-on:click="getPossibleCounterPicks" class="show-top-button">Show Available Counter Picks</b-button>
+      <b-button variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+      <b-button variant="secondary" v-on:click="getPossibleCounterPicks" class="show-top-button">Show Available Counter Picks</b-button>
 
-      <div v-if="!bidMasterGame">
-        <h3 class="text-black" v-show="counterPicking">Available Counter Picks</h3>
-        <h3 class="text-black" v-show="!counterPicking && showingTopAvailable">Top Available Games</h3>
-        <h3 class="text-black" v-show="!counterPicking && !showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames" :counterPicking="counterPicking"
-                                  v-on:input="newGameSelected"></possibleMasterGamesTable>
+      <div v-show="isBusy" class="spinner">
+        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#000000' }" />
+      </div>
+
+      <div v-if="!counterPicking" class="search-results">
+        <div v-if="!bidMasterGame">
+          <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
+          <h3 class="text-black" v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
+          <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames"
+                                    v-on:input="newGameSelected"></possibleMasterGamesTable>
+        </div>
+        <div v-else>
+          <ValidationObserver v-slot="{ invalid }">
+            <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
+            <masterGameSummary :masterGame="bidMasterGame"></masterGameSummary>
+            <hr />
+            <div class="form-group">
+              <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{leagueYear.userPublisher.budget | money}})</label>
+
+              <ValidationProvider rules="required|integer" v-slot="{ errors }">
+                <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />
+                <span class="text-danger">{{ errors[0] }}</span>
+              </ValidationProvider>
+            </div>
+            <div class="form-group" v-if="!counterPicking">
+              <label for="conditionalDrop" class="control-label">Conditional Drop</label>
+              <b-form-select v-model="conditionalDrop">
+                <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame">
+                  {{ publisherGame.gameName }}
+                </option>
+              </b-form-select>
+            </div>
+            <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || invalid">{{bidButtonText}}</b-button>
+            <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
+              <h3 class="alert-heading">Error!</h3>
+              <ul>
+                <li v-for="error in bidResult.errors">{{error}}</li>
+              </ul>
+            </div>
+          </ValidationObserver>
+        </div>
+      </div>
+      <div v-else class="search-results">
+        <h3 class="text-black">Available Counter Picks</h3>
+        <b-form-select v-model="bidCounterPick">
+          <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame">
+            {{ publisherGame.gameName }}
+          </option>
+        </b-form-select>
+
+        <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || invalid">{{bidButtonText}}</b-button>
+        <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
+          <h3 class="alert-heading">Error!</h3>
+          <ul>
+            <li v-for="error in bidResult.errors">{{error}}</li>
+          </ul>
+        </div>
       </div>
 
       <div class="alert alert-info" v-show="searched && !bidMasterGame && possibleMasterGames.length === 0">
         <div class="row">
           <span class="col-12 col-md-7">No games were found.</span>
         </div>
-      </div>
-
-      <div v-if="bidMasterGame">
-        <ValidationObserver v-slot="{ invalid }">
-          <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
-          <masterGameSummary :masterGame="bidMasterGame"></masterGameSummary>
-          <hr />
-          <div class="form-group">
-            <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{leagueYear.userPublisher.budget | money}})</label>
-
-            <ValidationProvider rules="required|integer" v-slot="{ errors }">
-              <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />
-              <span class="text-danger">{{ errors[0] }}</span>
-            </ValidationProvider>
-          </div>
-          <div class="form-group" v-if="!counterPicking">
-            <label for="conditionalDrop" class="control-label">Conditional Drop</label>
-            <b-form-select v-model="conditionalDrop">
-              <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame">
-                {{ publisherGame.gameName }}
-              </option>
-            </b-form-select>
-          </div>
-          <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || invalid">{{bidButtonText}}</b-button>
-          <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
-            <h3 class="alert-heading">Error!</h3>
-            <ul>
-              <li v-for="error in bidResult.errors">{{error}}</li>
-            </ul>
-          </div>
-        </ValidationObserver>
       </div>
     </form>
   </b-modal>
@@ -83,10 +103,12 @@ export default {
     return {
       bidGameName: '',
       bidMasterGame: null,
+      bidCounterPick: null,
       bidAmount: 0,
       bidResult: null,
       conditionalDrop: null,
       possibleMasterGames: [],
+      possibleCounterPicks: [],
       counterPicking: false,
       errorInfo: '',
       showingTopAvailable: false,
@@ -100,7 +122,11 @@ export default {
   },
   computed: {
     formIsValid() {
-      return (this.bidMasterGame);
+      if (!this.counterPicking) {
+        return !!this.bidMasterGame;
+      }
+
+      return !!this.bidCounterPick;
     },
     publisherSlotsAreFilled() {
       let userGames = this.leagueYear.userPublisher.games;
@@ -117,6 +143,9 @@ export default {
       } else {
         return 'Place Counter Pick Bid';
       }
+    },
+    availableCounterPicks() {
+      return this.leagueYear.availableCounterPicks;
     }
   },
   props: ['leagueYear', 'publisher'],
@@ -153,11 +182,10 @@ export default {
       this.clearDataExceptSearch();
       this.isBusy = true;
       axios
-        .get('/api/league/PossibleCounterPicks?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
+        .get('/api/league/PossibleCounterPicks?publisherID=' + this.publisher.publisherID)
         .then(response => {
-          this.possibleMasterGames = response.data;
+          this.possibleCounterPicks = response.data;
           this.isBusy = false;
-          this.showingTopAvailable = true;
           this.counterPicking = true;
         })
         .catch(response => {
@@ -218,6 +246,7 @@ export default {
 </script>
 <style scoped>
   .add-game-button {
+    margin-top: 20px;
     width: 100%;
   }
 
@@ -232,5 +261,14 @@ export default {
   .override-checkbox {
     margin-left: 10px;
     margin-top: 8px;
+  }
+
+  .search-results{
+      margin-top: 20px;
+  }
+
+  .spinner {
+      margin-top: 20px;
+      text-align:center;
   }
 </style>

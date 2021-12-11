@@ -290,12 +290,6 @@ namespace FantasyCritic.Web.Controllers.API
                 userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Id == currentUser.Id);
             }
 
-            IReadOnlyList<PublisherGame> availableCounterPicks = new List<PublisherGame>();
-            if (nextDraftPublisher.HasValue)
-            {
-                availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear.Value, nextDraftPublisher.Value, publishersInLeague);
-            }
-
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear.Value);
 
@@ -318,8 +312,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var currentDate = _clock.GetToday();
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, currentDate,
-                startDraftResult, activeUsers, nextDraftPublisher, draftPhase, availableCounterPicks,
-                systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager,
+                startDraftResult, activeUsers, nextDraftPublisher, draftPhase, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager,
                 currentUser, managerMessages, previousYearWinner, publicBiddingGames);
             return Ok(leagueViewModel);
         }
@@ -1247,31 +1240,21 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
-        public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> PossibleCounterPicks(int year, Guid leagueID)
+        public async Task<ActionResult<List<PublisherGameViewModel>>> PossibleCounterPicks(Guid publisherID)
         {
-            var currentUserResult = await GetCurrentUser();
-            if (currentUserResult.IsFailure)
-            {
-                return BadRequest(currentUserResult.Error);
-            }
-            var currentUser = currentUserResult.Value;
-
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
-            if (leagueYear.HasNoValue)
+            var publisher = await _publisherService.GetPublisher(publisherID);
+            if (publisher.HasNoValue)
             {
                 return BadRequest();
             }
 
-            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-            var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
-            if (userPublisher is null)
-            {
-                return BadRequest();
-            }
-
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(publisher.Value.LeagueYear);
+            var availableCounterPicks = _draftService.GetAvailableCounterPicks(publisher.Value.LeagueYear, publisher.Value, publishersInLeague);
             var currentDate = _clock.GetToday();
-            var topAvailableGames = _gameSearchingService.GetPossibleCounterPicks(userPublisher, publishersInLeague, year);
-            var viewModels = topAvailableGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).ToList();
+            var viewModels = availableCounterPicks
+                .Select(x => new PublisherGameViewModel(x, currentDate))
+                .OrderBy(x => x.GameName).ToList();
+
             return viewModels;
         }
 
