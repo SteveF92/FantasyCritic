@@ -51,14 +51,13 @@ namespace FantasyCritic.MySQL
                     leagueID = id
                 };
 
-                LeagueEntity leagueEntity = await connection.QuerySingleAsync<LeagueEntity>(
-                    "select * from vw_league where LeagueID = @leagueID and IsDeleted = 0", queryObject);
+                string leagueSQL = "select * from vw_league where LeagueID = @leagueID and IsDeleted = 0;";
+                LeagueEntity leagueEntity = await connection.QuerySingleAsync<LeagueEntity>(leagueSQL, queryObject);
 
                 FantasyCriticUser manager = await _userStore.FindByIdAsync(leagueEntity.LeagueManager.ToString(), CancellationToken.None);
 
-                IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year where LeagueID = @leagueID", queryObject);
-                IEnumerable<int> years = yearEntities.Select(x => x.Year);
-
+                string leagueYearSQL = "select Year from tbl_league_year where LeagueID = @leagueID;";
+                IEnumerable<int> years = await connection.QueryAsync<int>(leagueYearSQL, queryObject);
                 League league = leagueEntity.ToDomain(manager, years);
                 return league;
             }
