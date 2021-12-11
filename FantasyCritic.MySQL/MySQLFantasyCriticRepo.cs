@@ -403,7 +403,7 @@ namespace FantasyCritic.MySQL
                     var publisher = publisherDictionary[bidEntity.PublisherID];
                     var leagueYear = leagueDictionary[publisher.LeagueYear.League.LeagueID].Single(x => x.Year == year);
                     Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
-                    if (bidEntity.ConditionalDropMasterGameID.HasValue)
+                    if (bidEntity.ConditionalDropMasterGameID.HasValue && !processed)
                     {
                         conditionalDropPublisherGame = publisherGameDictionary[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)];
                     }
