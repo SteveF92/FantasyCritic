@@ -1661,10 +1661,6 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest();
             }
-            if (!leagueYear.Value.PlayStatus.DraftFinished)
-            {
-                return BadRequest("Draft has not finished for that year.");
-            }
 
             var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == publisher.Value.LeagueYear.Year);
             if (supportedYear is null)
