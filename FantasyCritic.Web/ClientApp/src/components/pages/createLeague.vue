@@ -143,6 +143,7 @@ export default {
         counterPicksBlockDrops: this.leagueYearSettings.counterPicksBlockDrops,
         minimumBidAmount: this.leagueYearSettings.minimumBidAmount,
         tags: this.leagueYearSettings.tags,
+        specialGameSlots: this.leagueYearSettings.specialGameSlots,
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,
         draftSystem: 'Flexible',
