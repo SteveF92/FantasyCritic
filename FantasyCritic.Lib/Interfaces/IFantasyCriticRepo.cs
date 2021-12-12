@@ -58,7 +58,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task CreatePublisher(Publisher publisher);
         Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear);
         Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> usersInLeague);
-        Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, bool includeDeleted = false);
+        Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, IReadOnlyList<LeagueYear> allLeagueYears, bool includeDeleted = false);
         Task AddPublisherGame(PublisherGame publisherGame);
         Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
         Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame);
@@ -79,15 +79,15 @@ namespace FantasyCritic.Lib.Interfaces
         Task RemovePickupBid(PickupBid bid);
         Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
         Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear);
-        Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year);
-        Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year);
+        Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear);
+        Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear);
         Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);
         Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
 
         Task CreateDropRequest(DropRequest currentDropRequest);
         Task RemoveDropRequest(DropRequest dropRequest);
         Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher);
-        Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year);
+        Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear);
         Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID);
 
         Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher);

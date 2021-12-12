@@ -43,10 +43,12 @@ namespace FantasyCritic.DatabaseUtility
             MySQLFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
 
             var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
+
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
-                var allPublishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, true);
+                var leagueYears = await fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+                var allPublishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears, true);
                 foreach (var publisher in allPublishers)
                 {
                     var orderedStandardGames = publisher.PublisherGames.Where(x => !x.CounterPick).OrderBy(x => x.Timestamp).ToList();

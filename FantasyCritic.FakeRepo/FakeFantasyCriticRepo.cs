@@ -176,11 +176,6 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task SafelyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
         {
             throw new NotImplementedException();
@@ -232,12 +227,9 @@ namespace FantasyCritic.FakeRepo
             return Task.FromResult<IReadOnlyList<Publisher>>(publishers);
         }
 
-        public Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, bool includeDeleted = false)
+        public Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, IReadOnlyList<LeagueYear> allLeagueYears, bool includeDeleted = false)
         {
-            var publishers = _publishers
-                .Where(x => x.LeagueYear.Year == year)
-                .ToList();
-            return Task.FromResult<IReadOnlyList<Publisher>>(publishers);
+            throw new NotImplementedException();
         }
 
         public Task AddPublisherGame(PublisherGame publisherGame)
@@ -321,21 +313,25 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year)
+        public Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year)
+        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
         {
-            IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> activePickupBids = new Dictionary<LeagueYear, IReadOnlyList<PickupBid>>();
-            return Task.FromResult(activePickupBids);
+            throw new NotImplementedException();
         }
 
         public Task<Maybe<PickupBid>> GetPickupBid(Guid bidID)
         {
             Maybe<PickupBid> pickupBid = Maybe<PickupBid>.None;
             return Task.FromResult(pickupBid);
+        }
+
+        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID)
@@ -564,11 +560,6 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HypeConstants> GetHypeConstants()
         {
             throw new NotImplementedException();
         }

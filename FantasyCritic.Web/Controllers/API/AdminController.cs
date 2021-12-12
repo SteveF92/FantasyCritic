@@ -242,19 +242,22 @@ namespace FantasyCritic.Web.Controllers.API
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
 
+            IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticService.GetLeagueYears(currentYear.Year);
+            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticService.GetAllPublishersForYear(currentYear.Year, allLeagueYears);
+
             var nextBidTime = _gameAcquisitionService.GetNextBidTime();
-            var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime);
+            var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears, allPublishers);
             IEnumerable<LeagueAction> failingActions = actionResults.LeagueActions.Where(x => x.IsFailed);
             var failingActionGames = failingActions.Select(x => x.MasterGameName).Distinct();
 
             var currentDate = _clock.GetToday();
-            var allBids = await _gameAcquisitionService.GetActiveAcquisitionBids(currentYear);
+            var allBids = await _gameAcquisitionService.GetActiveAcquisitionBids(currentYear, allLeagueYears, allPublishers);
             var distinctBids = allBids.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
             List<MasterGameViewModel> pickupGames = distinctBids
                 .Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingActionGames.Contains(x.MasterGame.GameName)))
                 .ToList();
 
-            var allDrops = await _gameAcquisitionService.GetActiveDropRequests(currentYear);
+            var allDrops = await _gameAcquisitionService.GetActiveDropRequests(currentYear, allLeagueYears, allPublishers);
             var distinctDrops = allDrops.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
             List<MasterGameViewModel> dropGames = distinctDrops
                 .Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingActionGames.Contains(x.MasterGame.GameName)))

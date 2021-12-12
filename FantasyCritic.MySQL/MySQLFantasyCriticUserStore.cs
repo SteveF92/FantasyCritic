@@ -13,14 +13,17 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL.Entities.Identity;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using NLog;
 using NodaTime;
 
 namespace FantasyCritic.MySQL
 {
     public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     {
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly string _connectionString;
         private readonly IClock _clock;
+        private List<FantasyCriticUser> _userCache = null;
 
         public MySQLFantasyCriticUserStore(string connectionString, IClock clock)
         {
@@ -44,6 +47,7 @@ namespace FantasyCritic.MySQL
                     entity);
             }
 
+            _userCache = null;
             return IdentityResult.Success;
         }
 
@@ -60,6 +64,7 @@ namespace FantasyCritic.MySQL
                     });
             }
 
+            _userCache = null;
             return IdentityResult.Success;
         }
 
@@ -89,6 +94,7 @@ namespace FantasyCritic.MySQL
                 await connection.ExecuteAsync(sql, entity);
             }
 
+            _userCache = null;
             return IdentityResult.Success;
         }
 
@@ -147,17 +153,29 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
         {
+            if (_userCache is not null)
+            {
+                return _userCache.ToList();
+            }
+
             string sql = "select * from tbl_user";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(sql);
                 var results = userResult.Select(x => x.ToDomain()).ToList();
+                _userCache = results;
                 return results;
             }
         }
 
         public async Task<IReadOnlyList<FantasyCriticUser>> GetUsers(IEnumerable<Guid> userIDs)
         {
+            var hashSet = userIDs.ToHashSet();
+            if (_userCache is not null)
+            {
+                return _userCache.Where(x => hashSet.Contains(x.Id)).ToList();
+            }
+
             string sql = "select * from tbl_user WHERE UserID IN @userIDs";
             var queryObject = new
             {
@@ -323,6 +341,8 @@ namespace FantasyCritic.MySQL
                 string insertSQL = "insert into tbl_user_hasrole (UserID, RoleID) VALUES (@UserID, @RoleID)";
                 await connection.ExecuteAsync(insertSQL, new { UserID = user.Id, RoleID = roleID });
             }
+
+            _userCache = null;
         }
 
         public async Task<bool> IsInRoleAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken)
@@ -346,6 +366,8 @@ namespace FantasyCritic.MySQL
                 string deleteSQL = "delete from tbl_user_hasrole where UserID = @UserID and RoleID = @RoleID)";
                 await connection.ExecuteAsync(deleteSQL, new { UserID = user.Id, RoleID = roleID });
             }
+
+            _userCache = null;
         }
 
         public async Task DeleteUserAccount(FantasyCriticUser user)
@@ -391,6 +413,8 @@ namespace FantasyCritic.MySQL
                     await transaction.CommitAsync();
                 }
             }
+
+            _userCache = null;
         }
 
         public async Task<int> GetOpenDisplayNumber(string displayName)
@@ -454,6 +478,8 @@ namespace FantasyCritic.MySQL
                     await transaction.CommitAsync(cancellationToken);
                 }
             }
+
+            _userCache = null;
         }
 
         public async Task<bool> RedeemCodeAsync(FantasyCriticUser user, string code, CancellationToken cancellationToken)
@@ -468,6 +494,8 @@ namespace FantasyCritic.MySQL
                 int count = await connection.ExecuteAsync(sql, entity);
                 return count == 1;
             }
+
+            _userCache = null;
         }
 
         public async Task<int> CountCodesAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -507,6 +535,8 @@ namespace FantasyCritic.MySQL
                                    "VALUES (@LoginProvider,@ProviderKey,@UserID,@ProviderDisplayName);";
                 await connection.ExecuteAsync(insertSQL, entity);
             }
+
+            _userCache = null;
         }
 
         public async Task RemoveLoginAsync(FantasyCriticUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
@@ -526,6 +556,8 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync(sql, deleteObject);
             }
+
+            _userCache = null;
         }
 
         public async Task<IList<UserLoginInfo>> GetLoginsAsync(FantasyCriticUser user, CancellationToken cancellationToken)

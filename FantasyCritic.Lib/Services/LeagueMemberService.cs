@@ -292,5 +292,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.TransferLeagueManager(league, newManager);
         }
+
+        public Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
+        {
+            return _userManager.GetAllUsers();
+        }
     }
 }

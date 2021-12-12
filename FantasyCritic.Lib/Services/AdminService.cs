@@ -254,7 +254,8 @@ namespace FantasyCritic.Lib.Services
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
-                var publishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year);
+                var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+                var publishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears);
                 var publisherGames = publishers.SelectMany(x => x.PublisherGames);
                 var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue).ToList();
                 allGamesWithPoints.AddRange(gamesWithPoints);
@@ -307,11 +308,12 @@ namespace FantasyCritic.Lib.Services
                 List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
                 IReadOnlyList<MasterGame> cleanMasterGames = await _masterGameRepo.GetMasterGames();
                 IReadOnlyList<MasterGameYear> cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
-                IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year);
+                IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+                IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears);
                 IReadOnlyList<Publisher> publishersInRealLeagues = allPublishers.Where(x => !x.LeagueYear.League.TestLeague).ToList();
                 IReadOnlyList<Publisher> publishersInCompleteLeagues = publishersInRealLeagues.Where(x => x.LeagueYear.PlayStatus.DraftFinished).ToList();
                 IReadOnlyList<PublisherGame> publisherGames = publishersInCompleteLeagues.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue).ToList();
-                IReadOnlyList<PickupBid> processedBids = await _fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year);
+                IReadOnlyList<PickupBid> processedBids = await _fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year, leagueYears, allPublishers);
                 ILookup<MasterGame, PickupBid> bidsByGame = processedBids.ToLookup(x => x.MasterGame);
                 IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
 

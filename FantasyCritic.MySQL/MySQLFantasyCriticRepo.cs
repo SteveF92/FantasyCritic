@@ -65,6 +65,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<League>> GetAllLeagues(bool includeDeleted = false)
         {
+            _logger.Info("Investigate - GetAllLeagues Starting");
             using (var connection = new MySqlConnection(_connectionString))
             {
                 string sql = "select * from vw_league where IsDeleted = 0;";
@@ -74,6 +75,7 @@ namespace FantasyCritic.MySQL
                 }
 
                 var leagueEntities = await connection.QueryAsync<LeagueEntity>(sql);
+                _logger.Info("Investigate - GetAllLeagues Query Done");
 
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year");
                 var leagueYearLookup = yearEntities.ToLookup(x => x.LeagueID);
@@ -88,6 +90,7 @@ namespace FantasyCritic.MySQL
                     leagues.Add(league);
                 }
 
+                _logger.Info("Investigate - GetAllLeagues Finished");
                 return leagues;
             }
         }
@@ -125,11 +128,13 @@ namespace FantasyCritic.MySQL
 
                 LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
                 return year;
+                return year;
             }
         }
 
         public async Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year, bool includeDeleted = false)
         {
+            _logger.Info("Investigate - GetLeagueYears Starting");
             var allLeagueTags = await GetLeagueYearTagEntities(year);
             var allSpecialGameSlots = await GetSpecialGameSlotEntities(year);
             var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
@@ -139,6 +144,8 @@ namespace FantasyCritic.MySQL
             var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
             var allTagOverrides = await GetAllTagOverrides(year);
             IReadOnlyList<League> leagues = await GetAllLeagues(includeDeleted);
+            _logger.Info("Investigate - PreQueries Finished");
+
             Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -149,6 +156,7 @@ namespace FantasyCritic.MySQL
                 };
 
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year where Year = @year", queryObject);
+                _logger.Info("Investigate - GetLeagueYears Query Done");
                 List<LeagueYear> leagueYears = new List<LeagueYear>();
                 
                 foreach (var entity in yearEntities)
@@ -183,6 +191,7 @@ namespace FantasyCritic.MySQL
                     leagueYears.Add(leagueYear);
                 }
 
+                _logger.Info("Investigate - GetLeagueYears Finished");
                 return leagueYears;
             }
         }
@@ -363,22 +372,21 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year)
+        public async Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
         {
-            var processedBids = await GetPickupBids(year, true);
+            var processedBids = await GetPickupBids(year, allLeagueYears, allPublishersForYear, true);
             var list = processedBids.SelectMany(x => x.Value).ToList();
             return list;
         }
 
 
-        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year) => GetPickupBids(year, false);
+        public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear) => GetPickupBids(year, allLeagueYears, allPublishersForYear, false);
 
-        private async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetPickupBids(int year, bool processed)
+        private async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear, bool processed)
         {
-            var leagueYears = await GetLeagueYears(year);
-            var leagueDictionary = leagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
-            var publishers = await GetAllPublishersForYear(year);
-            var publisherDictionary = publishers.ToDictionary(x => x.PublisherID, y => y);
+            _logger.Info("Investigate - GetPickupBids Starting");
+            var leagueDictionary = allLeagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
+            var publisherDictionary = allPublishersForYear.ToDictionary(x => x.PublisherID, y => y);
 
             var sql = "select * from vw_league_pickupbid where Year = @year and Successful is NULL and IsDeleted = 0";
             if (processed)
@@ -386,7 +394,7 @@ namespace FantasyCritic.MySQL
                 sql = "select * from vw_league_pickupbid where Year = @year and Successful is NOT NULL and IsDeleted = 0";
             }
 
-            var publisherGameDictionary = publishers
+            var publisherGameDictionary = allPublishersForYear
                 .SelectMany(x => x.PublisherGames)
                 .Where(x => x.MasterGame.HasValue)
                 .ToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
@@ -394,8 +402,9 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, new { year });
+                _logger.Info("Investigate - GetPickupBids Query Done");
 
-                Dictionary<LeagueYear, List<PickupBid>> pickupBidsByLeagueYear = leagueYears.ToDictionary(x => x, y => new List<PickupBid>());
+                Dictionary<LeagueYear, List<PickupBid>> pickupBidsByLeagueYear = allLeagueYears.ToDictionary(x => x, y => new List<PickupBid>());
 
                 foreach (var bidEntity in bidEntities)
                 {
@@ -416,6 +425,7 @@ namespace FantasyCritic.MySQL
                 }
 
                 IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> finalDictionary = pickupBidsByLeagueYear.ToDictionary(x => x.Key, y => (IReadOnlyList<PickupBid>)y.Value);
+                _logger.Info("Investigate - GetPickupBids Finished");
                 return finalDictionary;
             }
         }
@@ -923,7 +933,7 @@ namespace FantasyCritic.MySQL
                              "where tbl_league_year.Year = @year and tbl_league_hasuser.UserID = @userID";
                 IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>(sql, queryObject);
                 List<LeagueYear> leagueYears = new List<LeagueYear>();
-                IReadOnlyList<League> leagues = await GetAllLeagues();
+                IReadOnlyList<League> leagues = await GetLeaguesForUser(user);
                 Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
 
                 foreach (var entity in yearEntities)
@@ -1292,8 +1302,9 @@ namespace FantasyCritic.MySQL
             return domainPublishers;
         }
 
-        public async Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, bool includeDeleted = false)
+        public async Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, IReadOnlyList<LeagueYear> allLeagueYears, bool includeDeleted = false)
         {
+            _logger.Info("Investigate - GetAllPublishersForYear Starting");
             var query = new
             {
                 year
@@ -1301,7 +1312,6 @@ namespace FantasyCritic.MySQL
 
             var allUsers = await _userStore.GetAllUsers();
             var usersDictionary = allUsers.ToDictionary(x => x.Id, y => y);
-            IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year, includeDeleted);
             var leaguesDictionary = allLeagueYears.ToDictionary(x => x.League.LeagueID, y => y);
 
             string sql = "select tbl_league_publisher.* from tbl_league_publisher " +
@@ -1318,7 +1328,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var publisherEntities = await connection.QueryAsync<PublisherEntity>(sql, query);
-
+                _logger.Info("Investigate - GetAllPublishersForYear Query Done");
                 IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(year, includeDeleted);
                 Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherEntities.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
                 foreach (var game in allDomainGames)
@@ -1336,6 +1346,7 @@ namespace FantasyCritic.MySQL
                     publishers.Add(domainPublisher);
                 }
 
+                _logger.Info("Investigate - GetAllPublishersForYear Finished");
                 return publishers;
             }
         }
@@ -1390,6 +1401,7 @@ namespace FantasyCritic.MySQL
 
         private async Task<IReadOnlyList<PublisherGame>> GetAllPublisherGamesForYear(int year, bool includeDeleted = false)
         {
+            _logger.Info("Investigate - GetAllPublisherGamesForYear Starting");
             var query = new
             {
                 year
@@ -1411,6 +1423,7 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(sql, query);
+                _logger.Info("Investigate - GetAllPublisherGamesForYear Query Done");
 
                 List<PublisherGame> domainGames = new List<PublisherGame>();
                 foreach (var entity in gameEntities)
@@ -1424,6 +1437,7 @@ namespace FantasyCritic.MySQL
                     domainGames.Add(entity.ToDomain(masterGame));
                 }
 
+                _logger.Info("Investigate - GetAllPublisherGamesForYear Finished");
                 return domainGames;
             }
         }
@@ -2363,18 +2377,18 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year)
+        public async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
         {
-            var leagueYears = await GetLeagueYears(year);
-            var leagueDictionary = leagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
-            var publishers = await GetAllPublishersForYear(year);
-            var publisherDictionary = publishers.ToDictionary(x => x.PublisherID, y => y);
+            _logger.Info("Investigate - GetActiveDropRequests Starting");
+            var leagueDictionary = allLeagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
+            var publisherDictionary = allPublishersForYear.ToDictionary(x => x.PublisherID, y => y);
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var dropEntities = await connection.QueryAsync<DropRequestEntity>("select * from vw_league_droprequest where Year = @year and Successful is NULL and IsDeleted = 0", new { year });
+                _logger.Info("Investigate - GetActiveDropRequests Query Done");
 
-                Dictionary<LeagueYear, List<DropRequest>> dropRequestsByLeagueYear = leagueYears.ToDictionary(x => x, y => new List<DropRequest>());
+                Dictionary<LeagueYear, List<DropRequest>> dropRequestsByLeagueYear = allLeagueYears.ToDictionary(x => x, y => new List<DropRequest>());
 
                 foreach (var dropEntity in dropEntities)
                 {
@@ -2386,6 +2400,7 @@ namespace FantasyCritic.MySQL
                     dropRequestsByLeagueYear[leagueYear].Add(domainDrop);
                 }
 
+                _logger.Info("Investigate - GetActiveDropRequests Finished");
                 return dropRequestsByLeagueYear.SealDictionary();
             }
         }
