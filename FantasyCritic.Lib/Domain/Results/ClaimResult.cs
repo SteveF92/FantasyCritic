@@ -35,7 +35,7 @@ namespace FantasyCritic.Lib.Domain.Results
         public IReadOnlyList<ClaimError> Errors { get; }
         public bool Overridable { get; }
 
-        public bool NoSpaceError => Errors.Any(x => NoSpaceError);
+        public bool NoSpaceError => Errors.Any(x => x.NoSpaceError);
 
     }
 }
