@@ -16,6 +16,13 @@
 
     <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possibleGames="possibleMasterGames" v-on:input="addGameToQueue"></possibleMasterGamesTable>
 
+    <div v-if="queueResult && !queueResult.success" class="alert bid-error alert-danger">
+      <h3 class="alert-heading">Error!</h3>
+      <ul>
+        <li v-for="error in queueResult.errors">{{error}}</li>
+      </ul>
+    </div>
+
     <hr />
     <h3 class="text-black">Current Watchlist</h3>
     <label>
@@ -133,6 +140,7 @@ export default {
       axios
         .post('/api/league/AddGameToQueue', request)
         .then(response => {
+          this.queueResult = response.data;
           this.isBusy = false;
           this.fetchQueuedGames();
         })

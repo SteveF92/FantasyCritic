@@ -289,11 +289,6 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError("That game has already been released.", true));
             }
 
-            if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year != year && !dropping && !manuallyEligible)
-            {
-                claimErrors.Add(new ClaimError($"That game is not scheduled to release in {year}.", true));
-            }
-
             if (currentDate != dateOfPotentialAcquisition)
             {
                 bool releaseBeforeNextBids = masterGame.IsReleased(dateOfPotentialAcquisition);
@@ -315,12 +310,9 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
             }
 
-            if (!dropping)
+            if (!dropping && !released && masterGame.MinimumReleaseDate.Year > year && !manuallyEligible)
             {
-                if (!released && masterGame.MinimumReleaseDate.Year > year && !manuallyEligible)
-                {
-                    claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
-                }
+                claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
             }
 
             bool hasScore = masterGame.CriticScore.HasValue;
