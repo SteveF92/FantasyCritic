@@ -55,7 +55,7 @@
         <span class="game-name-column">
           <span class="game-name-side">
             <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
-            <slotTypeBadge v-if="hasSpecialSlots" :gameSlot="gameSlot"></slotTypeBadge>
+            <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
             <span v-if="gameSlot.counterPick" class="game-status">
               Warning!
               <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="emptyCounterpickText" />
