@@ -97,6 +97,11 @@ namespace FantasyCritic.Lib.Domain
 
         private decimal? GetEmptyCounterPickSlotPoints()
         {
+            if (!SupportedYear.Year2022FeatureSupported(LeagueYear.Year))
+            {
+                return 0m;
+            }
+
             if (!LeagueYear.SupportedYear.Finished)
             {
                 return null;

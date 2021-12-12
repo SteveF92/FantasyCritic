@@ -163,7 +163,7 @@ namespace FantasyCritic.Lib.Services
             var currentDate = _clock.GetToday();
             foreach (var publisher in allPublishersForYear)
             {
-                var slots = publisher.GetPublisherSlots();
+                var slots = publisher.GetPublisherSlots().Where(x => x.PublisherGame.HasValue).ToList();
                 foreach (var publisherSlot in slots)
                 {
                     //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
