@@ -248,11 +248,7 @@ namespace FantasyCritic.Web
                 app.UseHsts();
             }
 
-            if (https)
-            {
-                app.UseHttpsRedirection();
-            }
-
+            app.UseHttpsRedirection();
             app.UseRewriter(new RewriteOptions()
                 .AddRedirectToWww()
             );
