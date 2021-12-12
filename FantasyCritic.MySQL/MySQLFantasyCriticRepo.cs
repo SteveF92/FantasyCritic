@@ -226,7 +226,7 @@ namespace FantasyCritic.MySQL
                         return Result.Failure("Removing game failed.");
                     }
 
-                    await MakePublisherGameSlotsConsistent(publisherGame.PublisherID, publisherGame.PublisherGameID, connection, transaction);
+                    await MakePublisherGameSlotsConsistent(publisherGame.PublisherID, connection, transaction);
                     await transaction.CommitAsync();
                     return Result.Success();
                 }
@@ -1350,7 +1350,7 @@ namespace FantasyCritic.MySQL
             
             string sql = "select tbl_league_publisher.* from tbl_league_publisher " +
                          "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
-                         "where tbl_league_publisher.PublisherID = @publisherIDs and tbl_league.IsDeleted = 0;";
+                         "where tbl_league_publisher.PublisherID in @publisherIDs and tbl_league.IsDeleted = 0;";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -1574,15 +1574,13 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        private Task MakePublisherGameSlotsConsistent(Guid publisherID, Guid removedPublisherGameID, MySqlConnection connection, MySqlTransaction transaction)
+        private Task MakePublisherGameSlotsConsistent(Guid publisherID, MySqlConnection connection, MySqlTransaction transaction)
         {
-            return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, new List<Guid>() { removedPublisherGameID }, connection, transaction);
+            return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, connection, transaction);
         }
 
-        private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, IEnumerable<Guid> removedPublisherGameIDs, 
-            MySqlConnection connection, MySqlTransaction transaction)
+        private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, MySqlConnection connection, MySqlTransaction transaction)
         {
-            var removedPublisherGameIDsHashSet = removedPublisherGameIDs.ToHashSet();
             var publishers = await GetPublishers(publisherIDs);
             var specialSlotPublisherIDs = publishers.Where(x => x.LeagueYear.Options.HasSpecialSlots())
                 .Select(x => x.PublisherID).ToHashSet();
@@ -1595,7 +1593,6 @@ namespace FantasyCritic.MySQL
                 {
                     var standardGames = publisher.PublisherGames
                         .Where(x => !x.CounterPick)
-                        .Where(x => !removedPublisherGameIDsHashSet.Contains(x.PublisherGameID))
                         .OrderBy(x => x.SlotNumber);
                     foreach (var standardGame in standardGames)
                     {
@@ -1608,7 +1605,6 @@ namespace FantasyCritic.MySQL
                 slotNumber = 0;
                 var counterPicks = publisher.PublisherGames
                     .Where(x => x.CounterPick)
-                    .Where(x => !removedPublisherGameIDsHashSet.Contains(x.PublisherGameID))
                     .OrderBy(x => x.SlotNumber);
                 foreach (var counterPick in counterPicks)
                 {
@@ -2257,8 +2253,7 @@ namespace FantasyCritic.MySQL
                     await AddPublisherGames(actionProcessingResults.AddedPublisherGames, connection, transaction);
 
                     var allPublisherIDsToAdjust = actionProcessingResults.SuccessDrops.Select(x => x.Publisher.PublisherID);
-                    var removedPublisherGameIDs = actionProcessingResults.RemovedPublisherGames.Select(x => x.PublisherGameID);
-                    await MakePublisherGameSlotsConsistent(allPublisherIDsToAdjust, removedPublisherGameIDs, connection, transaction);
+                    await MakePublisherGameSlotsConsistent(allPublisherIDsToAdjust, connection, transaction);
 
                     await transaction.CommitAsync();
                 }
