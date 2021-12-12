@@ -234,11 +234,6 @@ namespace FantasyCritic.Lib.Services
             var publishersInLeagues = allPublishersForYear.Where(x => onlyLeaguesWithActions.Contains(x.LeagueYear.Key));
 
             ActionProcessingResults results = _actionProcessingService.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, processingTime);
-            var currentPublisherGames = results.UpdatedPublishers.SelectMany(x => x.PublisherGames).ToList();
-            var newPublisherGames = results.AddedPublisherGames;
-            var allPublisherGames = currentPublisherGames.Concat(newPublisherGames).DistinctBy(x => x.PublisherGameID);
-            var grouped = allPublisherGames.GroupBy(x => (x.PublisherGameID, x.CounterPick, x.SlotNumber)).Where(x => x.Count() > 1);
-
             return results;
         }
 
