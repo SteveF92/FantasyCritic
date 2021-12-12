@@ -47,6 +47,11 @@ namespace FantasyCritic.Web.Hubs
                     return;
                 }
 
+                if (!leagueYear.Value.PlayStatus.DraftIsActive)
+                {
+                    return;
+                }
+
                 await Groups.AddToGroupAsync(Context.ConnectionId, leagueYear.Value.GetGroupName);
             }
             catch (Exception e)
