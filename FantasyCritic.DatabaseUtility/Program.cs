@@ -47,7 +47,7 @@ namespace FantasyCritic.DatabaseUtility
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
-                var leagueYears = await fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+                var leagueYears = await fantasyCriticRepo.GetLeagueYears(supportedYear.Year, true);
                 var allPublishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears, true);
                 foreach (var publisher in allPublishers)
                 {
