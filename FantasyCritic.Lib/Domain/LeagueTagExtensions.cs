@@ -31,18 +31,18 @@ namespace FantasyCritic.Lib.Domain
             var leagueNonCustomCodeTags = combinedLeagueTags.Except(leagueCustomCodeTags).ToList();
 
             //Non custom code tags
-            var bannedTags = leagueNonCustomCodeTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag).ToList();
-            var requiredTags = leagueNonCustomCodeTags.Where(x => x.Status.Equals(TagStatus.Required)).Select(x => x.Tag).ToList();
+            var nonCustomCodeBannedTags = leagueNonCustomCodeTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag).ToList();
+            var allRequiredTags = combinedLeagueTags.Where(x => x.Status.Equals(TagStatus.Required)).Select(x => x.Tag).ToList();
 
-            var bannedTagsIntersection = masterGameNonCustomCodeTags.Intersect(bannedTags);
-            var requiredTagsIntersection = masterGameNonCustomCodeTags.Intersect(requiredTags);
+            var bannedTagsIntersection = masterGameNonCustomCodeTags.Intersect(nonCustomCodeBannedTags);
+            var requiredTagsIntersection = masterGameTags.Intersect(allRequiredTags);
 
-            bool hasNoRequiredTags = requiredTags.Any() && !requiredTagsIntersection.Any();
+            bool hasNoRequiredTags = allRequiredTags.Any() && !requiredTagsIntersection.Any();
 
             List<ClaimError> claimErrors = bannedTagsIntersection.Select(x => new ClaimError($"That game is not eligible because the {x.ReadableName} tag has been banned.", true)).ToList();
             if (hasNoRequiredTags)
             {
-                claimErrors.Add(new ClaimError($"That game is not eligible because it does not have any of the following required tags: ({string.Join(",", requiredTags.Select(x => x.ReadableName))})", true));
+                claimErrors.Add(new ClaimError($"That game is not eligible because it does not have any of the following required tags: ({string.Join(",", allRequiredTags.Select(x => x.ReadableName))})", true));
             }
 
             if (!leagueCustomCodeTags.Any())
