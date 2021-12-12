@@ -56,7 +56,7 @@
                 </option>
               </b-form-select>
             </div>
-            <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || invalid">{{bidButtonText}}</b-button>
+            <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy">{{bidButtonText}}</b-button>
             <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
               <h3 class="alert-heading">Error!</h3>
               <ul>
@@ -74,7 +74,11 @@
           </option>
         </b-form-select>
 
-        <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || invalid">{{bidButtonText}}</b-button>
+        <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">
+          Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.
+        </div>
+
+        <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || counterPickInvalid">{{bidButtonText}}</b-button>
         <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
           <h3 class="alert-heading">Error!</h3>
           <ul>
@@ -146,6 +150,9 @@ export default {
     },
     availableCounterPicks() {
       return this.leagueYear.availableCounterPicks;
+    },
+    counterPickInvalid() {
+      return this.bidCounterPick && !this.bidCounterPick.masterGameID;
     }
   },
   props: ['leagueYear', 'publisher'],
