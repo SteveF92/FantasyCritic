@@ -2424,7 +2424,7 @@ namespace FantasyCritic.MySQL
                 "insert into tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
                 "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,DraftPosition,OverallDraftPosition) VALUES " +
                 "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-                "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@DraftPosition,@OverallDraftPosition,);";
+                "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@DraftPosition,@OverallDraftPosition);";
             var entities = publisherGames.Select(x => new PublisherGameEntity(x));
             return connection.ExecuteAsync(sql, entities, transaction);
         }
