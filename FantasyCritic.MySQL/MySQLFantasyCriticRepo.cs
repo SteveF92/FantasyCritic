@@ -2269,8 +2269,8 @@ namespace FantasyCritic.MySQL
                     await AddLeagueActions(actionProcessingResults.LeagueActions, connection, transaction);
                     await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.UpdatedPublishers, connection, transaction);
 
-                    await AddPublisherGames(actionProcessingResults.AddedPublisherGames, connection, transaction);
                     await DeletePublisherGames(actionProcessingResults.RemovedPublisherGames, connection, transaction);
+                    await AddPublisherGames(actionProcessingResults.AddedPublisherGames, connection, transaction);
 
                     var allPublisherIDsToAdjust = actionProcessingResults.SuccessDrops.Select(x => x.Publisher.PublisherID);
                     var removedPublisherGameIDs = actionProcessingResults.RemovedPublisherGames.Select(x => x.PublisherGameID);
