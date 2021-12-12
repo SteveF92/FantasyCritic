@@ -12,18 +12,6 @@ namespace FantasyCritic.Lib.Services
 {
     public static class SlotEligibilityService
     {
-        public static bool SlotIsCurrentlyValid(PublisherSlot publisherSlot, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors)
-        {
-            if (eligibilityFactors.HasNoValue)
-            {
-                //This is an unlinked master game
-                return true;
-            }
-
-            var slotClaimErrors = GetClaimErrorsForSlot(publisherSlot, eligibilityFactors.Value);
-            return !slotClaimErrors.Any();
-        }
-
         public static bool GameIsEligibleInLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
         {
             var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors);
@@ -128,7 +116,7 @@ namespace FantasyCritic.Lib.Services
             return baseEligibilityResult;
         }
 
-        private static IReadOnlyList<ClaimError> GetClaimErrorsForSlot(PublisherSlot publisherSlot, MasterGameWithEligibilityFactors eligibilityFactors)
+        public static IReadOnlyList<ClaimError> GetClaimErrorsForSlot(PublisherSlot publisherSlot, MasterGameWithEligibilityFactors eligibilityFactors)
         {
             //This function returns a list of errors if a game is not eligible in THIS slot
             if (eligibilityFactors.GameIsSpecificallyAllowed)

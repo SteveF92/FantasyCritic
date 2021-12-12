@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models.RoundTrip;
@@ -22,7 +23,8 @@ namespace FantasyCritic.Web.Models.Responses
             SpecialSlot = slot.SpecialGameSlot.GetValueOrDefault(x => new SpecialGameSlotViewModel(x));
             PublisherGame = slot.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate));
 
-            GameMeetsSlotCriteria = slot.SlotIsValid(leagueYear);
+            EligibilityErrors = slot.GetClaimErrorsForSlot(leagueYear).Select(x => x.Error).ToList();
+            GameMeetsSlotCriteria = !EligibilityErrors.Any();
 
             var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(year);
             SimpleProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, scoringSystem, systemWideValues, true, currentDate);
@@ -34,6 +36,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool CounterPick { get; }
         public SpecialGameSlotViewModel SpecialSlot { get; }
         public PublisherGameViewModel PublisherGame { get; }
+        public IReadOnlyList<string> EligibilityErrors { get; }
         public bool GameMeetsSlotCriteria { get; }
 
         public decimal? SimpleProjectedFantasyPoints { get; }

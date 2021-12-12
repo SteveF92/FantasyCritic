@@ -118,15 +118,24 @@ export default {
           return "What does this mean?";
         },
         content: () => {
+          let eligibilityErrorsList = '';
+          this.gameSlot.eligibilityErrors.forEach(error => {
+            eligibilityErrorsList += `<li>${error}</li>`
+          });
+
+          let eligibilityErrorsListElement = `<h5>Errors</h5><ul>${eligibilityErrorsList}</ul>`;
+
+          let mainText = 'This game is currently ineligible based on your league rules. Until you take action, the points the game recieved will not count. <br/> <br/>' +
+            'The intention is for the league to discuss what should happen. If you manually mark the game as eligible or change your ' +
+            'league rules, this will disappear. <br/> <br/>' +
+            'You could also choose to remove the game. The manager can use "Remove Publisher Game" to do that.';
           if (this.hasSpecialSlots) {
-            return 'This game is not eligible for this slot. Until you take action, the points the game recieved will not count. <br/> <br/>' +
+            mainText = 'This game is not eligible for this slot. Until you take action, the points the game recieved will not count. <br/> <br/>' +
               'You can either move this game for a different slot, or, if your league disagrees with this the tags this game has, you can override the tags for this game.';
-          } else {
-            return 'This game is currently ineligible based on your league rules. Until you take action, the points the game recieved will not count. <br/> <br/>' +
-              'The intention is for the league to discuss what should happen. If you manually mark the game as eligible or change your ' +
-              'league rules, this will disappear. <br/> <br/>' +
-              'You could also choose to remove the game. The manager can use "Remove Publisher Game" to do that.';
           }
+
+          let fullText = `${mainText}<br/><br/>${eligibilityErrorsListElement}`;
+          return fullText;
         }
       }
     },

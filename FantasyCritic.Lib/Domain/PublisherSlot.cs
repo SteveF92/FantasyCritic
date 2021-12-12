@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
@@ -36,13 +37,18 @@ namespace FantasyCritic.Lib.Domain
 
         public bool SlotIsValid(LeagueYear leagueYear)
         {
+            return !GetClaimErrorsForSlot(leagueYear).Any();
+        }
+
+        public IReadOnlyList<ClaimError> GetClaimErrorsForSlot(LeagueYear leagueYear)
+        {
             var eligibilityFactors = leagueYear.GetEligibilityFactorsForSlot(this);
             if (eligibilityFactors.HasNoValue)
             {
-                return true;
+                return new List<ClaimError>();
             }
 
-            return SlotEligibilityService.SlotIsCurrentlyValid(this, eligibilityFactors.Value);
+            return SlotEligibilityService.GetClaimErrorsForSlot(this, eligibilityFactors.Value);
         }
 
         public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
