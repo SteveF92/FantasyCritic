@@ -432,7 +432,7 @@ namespace FantasyCritic.FakeRepo
 
         public Task<SystemWideSettings> GetSystemWideSettings()
         {
-            return Task.FromResult(new SystemWideSettings(false));
+            return Task.FromResult(new SystemWideSettings(false, false));
         }
 
         public Task<SiteCounts> GetSiteCounts()

@@ -65,6 +65,13 @@ namespace FantasyCritic.Lib.Services
         public async Task RefreshCriticInfo()
         {
             _logger.Info("Refreshing critic scores");
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (!systemWideSettings.RefreshOpenCritic)
+            {
+                _logger.Info("Not refreshing Open Critic scores as the flag is turned off.");
+                return;
+            }
+
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var masterGames = await _interLeagueService.GetMasterGames();
 
