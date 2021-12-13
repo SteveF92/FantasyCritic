@@ -44,6 +44,7 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
+using NLog;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 
@@ -52,11 +53,25 @@ namespace FantasyCritic.Web
     public class Startup
     {
         private readonly IWebHostEnvironment _env;
+        private readonly string _spaPath;
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             _env = env;
+
+
+            if (_env.IsDevelopment())
+            {
+                _logger.Info("Startup: Running in Development mode.");
+                _spaPath = "ClientApp";
+            }
+            else
+            {
+                _logger.Info("Startup: Running in Production mode.");
+                _spaPath = "ClientApp/dist";
+            }
         }
 
         public IConfiguration Configuration { get; }
@@ -226,7 +241,7 @@ namespace FantasyCritic.Web
             // In production, the Vue files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/dist";
+                configuration.RootPath = _spaPath;
             });
 
             DapperNodaTimeSetup.Register();
@@ -287,16 +302,20 @@ namespace FantasyCritic.Web
                 endpoints.MapHub<UpdateHub>("/updatehub");
             });
 
+            var spaStaticFileOptions = new StaticFileOptions
+            {
+                FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(System.IO.Path.Combine(env.ContentRootPath, _spaPath))
+            };
+
             app.UseSpa(spa =>
             {
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
 
-                spa.Options.SourcePath = "ClientApp/dist";
+                spa.Options.SourcePath = _spaPath;
 
                 if (env.IsDevelopment())
                 {
-                    spa.Options.SourcePath = "ClientApp";
                     // run npm process with client app
                     if (mode == "start")
                     {
@@ -310,6 +329,10 @@ namespace FantasyCritic.Web
                     {
                         spa.UseProxyToSpaDevelopmentServer($"{(https ? "https" : "http")}://localhost:{port}"); // your Vue app port
                     }
+                }
+                else
+                {
+                    spa.Options.DefaultPageStaticFileOptions = spaStaticFileOptions;
                 }
             });
         }
