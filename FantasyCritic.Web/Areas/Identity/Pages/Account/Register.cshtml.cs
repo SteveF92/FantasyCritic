@@ -80,14 +80,15 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new FantasyCriticUser { UserName = Input.DisplayName, Email = Input.Email };
+                var user = new FantasyCriticUser { Id = Guid.NewGuid(), UserName = Input.DisplayName, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
-                    await _emailSender.SendConfirmationEmail(user, confirmLink);
+                    var fullUser = await _userManager.FindByIdAsync(user.Id.ToString());
+                    var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, fullUser, Request);
+                    await _emailSender.SendConfirmationEmail(fullUser, confirmLink);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -95,7 +96,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        await _signInManager.SignInAsync(fullUser, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
                 }

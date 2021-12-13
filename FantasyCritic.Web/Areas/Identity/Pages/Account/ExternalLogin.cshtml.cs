@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -21,13 +21,13 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
     public class ExternalLoginModel : PageModel
     {
         private readonly SignInManager<FantasyCriticUser> _signInManager;
-        private readonly UserManager<FantasyCriticUser> _userManager;
+        private readonly FantasyCriticUserManager _userManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
             SignInManager<FantasyCriticUser> signInManager,
-            UserManager<FantasyCriticUser> userManager,
+            FantasyCriticUserManager userManager,
             ILogger<ExternalLoginModel> logger,
             IEmailSender emailSender)
         {
@@ -122,7 +122,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new FantasyCriticUser { UserName = Input.Email, Email = Input.Email };
+                var user = new FantasyCriticUser { Id = Guid.NewGuid(), UserName = Input.Email, Email = Input.Email };
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
@@ -132,13 +132,13 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
-                        var userId = await _userManager.GetUserIdAsync(user);
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var fullUser = await _userManager.FindByIdAsync(user.Id.ToString());
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(fullUser);
                         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                         var callbackUrl = Url.Page(
                             "/Account/ConfirmEmail",
                             pageHandler: null,
-                            values: new { area = "Identity", userId = userId, code = code },
+                            values: new { area = "Identity", userId = fullUser.Id, code = code },
                             protocol: Request.Scheme);
 
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
@@ -150,7 +150,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
                             return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
                         }
 
-                        await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
+                        await _signInManager.SignInAsync(fullUser, isPersistent: false, info.LoginProvider);
 
                         return LocalRedirect(returnUrl);
                     }
