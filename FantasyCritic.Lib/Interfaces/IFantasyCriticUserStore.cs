@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Interfaces
         IUserStore<FantasyCriticUser>, IUserEmailStore<FantasyCriticUser>, IUserPasswordStore<FantasyCriticUser>, 
         IUserRoleStore<FantasyCriticUser>, IUserSecurityStampStore<FantasyCriticUser>, 
         IUserAuthenticatorKeyStore<FantasyCriticUser>, IUserTwoFactorStore<FantasyCriticUser>, IUserTwoFactorRecoveryCodeStore<FantasyCriticUser>,
-        IUserLoginStore<FantasyCriticUser>
+        IUserLoginStore<FantasyCriticUser>, IUserPhoneNumberStore<FantasyCriticUser>
     {
         Task DeleteUserAccount(FantasyCriticUser user);
     }
