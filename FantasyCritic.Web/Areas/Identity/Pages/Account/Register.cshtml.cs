@@ -44,7 +44,10 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
 
         public string ReturnUrl { get; set; }
 
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
+        public AuthenticationScheme GoogleLogin { get; set; }
+        public AuthenticationScheme MicrosoftLogin { get; set; }
+        public AuthenticationScheme TwitchLogin { get; set; }
+        public AuthenticationScheme DiscordLogin { get; set; }
 
         public class InputModel
         {
@@ -71,13 +74,24 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            var externalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            GoogleLogin = externalLogins.SingleOrDefault(x => x.Name == "Google");
+            MicrosoftLogin = externalLogins.SingleOrDefault(x => x.Name == "Microsoft");
+            TwitchLogin = externalLogins.SingleOrDefault(x => x.Name == "Twitch");
+            DiscordLogin = externalLogins.SingleOrDefault(x => x.Name == "Discord");
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            var externalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            GoogleLogin = externalLogins.SingleOrDefault(x => x.Name == "Google");
+            MicrosoftLogin = externalLogins.SingleOrDefault(x => x.Name == "Microsoft");
+            TwitchLogin = externalLogins.SingleOrDefault(x => x.Name == "Twitch");
+            DiscordLogin = externalLogins.SingleOrDefault(x => x.Name == "Discord");
+
             if (ModelState.IsValid)
             {
                 var user = new FantasyCriticUser { Id = Guid.NewGuid(), UserName = Input.DisplayName, Email = Input.Email };
