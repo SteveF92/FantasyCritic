@@ -128,7 +128,7 @@
               Override "Will not Release"
             </li>
             <li class="fake-link action">
-              <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Edit Game Settings</router-link>
+              <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year }}">Change Year-Specific Options</router-link>
             </li>
             <li class="fake-link action" v-b-modal="'manageEligibilityOverridesModal'">
               Override Game Eligibility
@@ -137,7 +137,7 @@
               Override Game Tags
             </li>
             <li class="fake-link action" v-b-modal="'changeLeagueOptionsForm'">
-              Change League Options
+              Change General League Options
             </li>
             <li class="fake-link action" v-b-modal="'removePlayerForm'">
               Remove a Player
