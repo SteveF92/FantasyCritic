@@ -601,29 +601,30 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public void Dispose()
-        {
-
-        }
-
         public Task SetPhoneNumberAsync(FantasyCriticUser user, string phoneNumber, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task<string> GetPhoneNumberAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<string>(null);
         }
 
         public Task<bool> GetPhoneNumberConfirmedAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(false);
+
         }
 
         public Task SetPhoneNumberConfirmedAsync(FantasyCriticUser user, bool confirmed, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 }
