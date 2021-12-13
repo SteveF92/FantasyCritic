@@ -24,14 +24,17 @@ namespace FantasyCritic.Web.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            _logger.Error($"SignalR connected: {Context.ConnectionId}");
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception ex)
         {
-            _logger.Error($"SignalR disconnected: {Context.ConnectionId}");
-            _logger.Error(ex);
+            if (ex is not null)
+            {
+                _logger.Error($"SignalR disconnected with error: {Context.ConnectionId}");
+                _logger.Error(ex);
+            }
+            
             await base.OnDisconnectedAsync(ex);
         }
 
