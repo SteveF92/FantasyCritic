@@ -292,10 +292,11 @@ namespace FantasyCritic.Web
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
 
-                spa.Options.SourcePath = "ClientApp";
+                spa.Options.SourcePath = "ClientApp/dist";
 
                 if (env.IsDevelopment())
                 {
+                    spa.Options.SourcePath = "ClientApp";
                     // run npm process with client app
                     if (mode == "start")
                     {
@@ -309,10 +310,6 @@ namespace FantasyCritic.Web
                     {
                         spa.UseProxyToSpaDevelopmentServer($"{(https ? "https" : "http")}://localhost:{port}"); // your Vue app port
                     }
-                }
-                else
-                {
-                    spa.Options.SourcePath = "ClientApp/dist";
                 }
             });
         }
