@@ -312,7 +312,7 @@ namespace FantasyCritic.Web
                 }
                 else
                 {
-                    spa.Options.SourcePath = "dist";
+                    spa.Options.SourcePath = "ClientApp/dist";
                 }
             });
         }
