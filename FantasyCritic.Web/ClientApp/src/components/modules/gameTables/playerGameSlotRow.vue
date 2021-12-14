@@ -46,8 +46,14 @@
         <td class="score-column">{{game.fantasyPoints | score(2)}}</td>
       </template>
       <template v-else>
-        <td class="score-column">{{game.criticScore | score }}</td>
-        <td class="score-column">{{game.fantasyPoints | score }}</td>
+        <td class="score-column">{{game.criticScore | score}}</td>
+        <template v-if="advancedProjections">
+          <td class="score-column" v-if="game.fantasyPoints || !game.willRelease">{{game.fantasyPoints | score}}</td>
+          <td class="score-column" v-else><em>~{{gameSlot.advancedProjectedFantasyPoints | score}}</em></td>
+        </template>
+        <template v-else>
+          <td class="score-column">{{game.fantasyPoints | score}}</td>
+        </template>
       </template>
     </template>
     <template v-else>
@@ -67,7 +73,7 @@
         <td></td>
         <td></td>
       </template>
-      <td class="score-column"></td>
+      <td class="score-column"></td> 
       <td class="score-column">{{emptySlotScore}}</td>
     </template>
   </tr>
@@ -86,6 +92,9 @@ export default {
   computed: {
     game(){
       return this.gameSlot.publisherGame;
+    },
+    advancedProjections() {
+      return this.$store.getters.advancedProjections;
     },
     releaseDate() {
       return moment(this.game.releaseDate).format('MMMM Do, YYYY');
