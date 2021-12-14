@@ -198,6 +198,7 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInvitedToLeague = false;
             bool isManager = false;
             bool userIsFollowingLeague = false;
+            bool userIsAdmin = false;
             Maybe<LeagueInvite> leagueInvite = Maybe<LeagueInvite>.None;
             if (currentUser != null)
             {
@@ -206,6 +207,7 @@ namespace FantasyCritic.Web.Controllers.API
                 isManager = (league.Value.LeagueManager.Id == currentUser.Id);
                 userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Id);
                 leagueInvite = inviteesToLeague.GetMatchingInvite(currentUser.Email);
+                userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
             }
 
             bool inviteCodeIsValid = false;
@@ -215,7 +217,7 @@ namespace FantasyCritic.Web.Controllers.API
                 inviteCodeIsValid = activeLinks.Any(x => x.Active && x.InviteCode == inviteCode.Value);
             }
 
-            if (!userIsInLeague && !userIsInvitedToLeague && !league.Value.PublicLeague && !inviteCodeIsValid)
+            if (!userIsInLeague && !userIsInvitedToLeague && !league.Value.PublicLeague && !inviteCodeIsValid && !userIsAdmin)
             {
                 return Forbid();
             }
@@ -253,11 +255,13 @@ namespace FantasyCritic.Web.Controllers.API
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
             bool isManager = false;
+            bool userIsAdmin = false;
             if (currentUser != null)
             {
                 userIsInLeague = activeUsers.Any(x => x.Id == currentUser.Id);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
                 isManager = (leagueYear.Value.League.LeagueManager.Id == currentUser.Id);
+                userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
             }
 
             bool inviteCodeIsValid = false;
@@ -267,7 +271,7 @@ namespace FantasyCritic.Web.Controllers.API
                 inviteCodeIsValid = activeLinks.Any(x => x.Active && x.InviteCode == inviteCode.Value);
             }
 
-            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !inviteCodeIsValid)
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !inviteCodeIsValid && !userIsAdmin)
             {
                 return Forbid();
             }
@@ -341,14 +345,16 @@ namespace FantasyCritic.Web.Controllers.API
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
+            bool userIsAdmin = false;
             if (currentUser != null)
             {
                 var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
                 userIsInLeague = usersInLeague.Any(x => x.Id == currentUser.Id);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
+                userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
             }
 
-            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !userIsAdmin)
             {
                 return Forbid();
             }
@@ -386,13 +392,15 @@ namespace FantasyCritic.Web.Controllers.API
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
+            bool userIsAdmin = false;
             if (currentUser != null)
             {
                 userIsInLeague = playersInLeague.Any(x => x.Id == currentUser.Id);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
+                userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
             }
 
-            if (!userIsInLeague && !publisher.Value.LeagueYear.League.PublicLeague)
+            if (!userIsInLeague && !publisher.Value.LeagueYear.League.PublicLeague && !userIsAdmin)
             {
                 return Forbid();
             }
@@ -430,6 +438,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
+            bool userIsAdmin = false;
             FantasyCriticUser currentUser = null;
             if (!string.IsNullOrWhiteSpace(User.Identity.Name))
             {
@@ -445,9 +454,10 @@ namespace FantasyCritic.Web.Controllers.API
                 var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
                 userIsInLeague = usersInLeague.Any(x => x.Id == currentUser.Id);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
+                userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
             }
 
-            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !userIsAdmin)
             {
                 return Forbid();
             }
@@ -1152,6 +1162,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
             var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
+            bool userIsAdmin = false;
 
             bool userIsInLeague = false;
             bool userIsInvitedToLeague = false;
@@ -1159,9 +1170,10 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 userIsInLeague = activeUsers.Any(x => x.Id == currentUser.Id);
                 userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
+                userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
             }
 
-            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague)
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !userIsAdmin)
             {
                 return Forbid();
             }
