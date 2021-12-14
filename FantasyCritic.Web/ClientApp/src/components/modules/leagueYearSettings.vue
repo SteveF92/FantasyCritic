@@ -75,7 +75,7 @@
           </a>
         </p>
 
-        <ValidationProvider rules="required|max_value:5|integer" v-slot="{ errors }">
+        <ValidationProvider rules="required|max_value:50|integer" v-slot="{ errors }">
           <input v-model="local.counterPicks" @input="update('counterPicks', $event.target.value)" id="counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
@@ -91,7 +91,7 @@
           </a>
         </p>
 
-        <ValidationProvider rules="required|min_value:1|max_value:5|integer" v-slot="{ errors }">
+        <ValidationProvider rules="required|max_value:50|integer" v-slot="{ errors }">
           <input v-model="local.counterPicksToDraft" @input="update('counterPicksToDraft', $event.target.value)" id="counterPicksToDraft" name="Counter picks to Draft" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
