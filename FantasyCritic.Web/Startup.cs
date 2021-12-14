@@ -147,7 +147,9 @@ namespace FantasyCritic.Web
             });
 
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
-                    options.SignIn.RequireConfirmedAccount = true)
+                {
+                    options.SignIn.RequireConfirmedAccount = false;
+                })
                 .AddDefaultUI()
                 .AddUserManager<FantasyCriticUserManager>()
                 .AddRoleManager<FantasyCriticRoleManager>()
