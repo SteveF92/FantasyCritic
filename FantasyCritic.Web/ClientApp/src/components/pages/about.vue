@@ -79,7 +79,7 @@
         </p>
         <p>
           <h4>Cookies</h4>
-          Fantasy Critic uses JSON Web Tokens stored in your browser's local storage to manage authentication. These are not exactly cookies, but they function similarly.
+          Fantasy Critic uses cookies to manage user authentication, but we don't track you for advertising purposes or anything like that.
         </p>
         <p>
           <h4>Advertising</h4>
