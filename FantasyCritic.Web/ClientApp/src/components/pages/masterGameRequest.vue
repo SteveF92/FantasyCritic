@@ -57,6 +57,13 @@
 
                 <div class="form-group">
                   <label for="requestNote" class="control-label">Any other notes?</label>
+                  <div class="alert alert-info">
+                    In particular, please indicate if this game needs any special tags. Such as:
+                    <ul>
+                      <li>Is this game currently in early access?</li>
+                      <li>Is this game the start of a new franchise or part of an existing one?</li>
+                    </ul>
+                  </div>
                   <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
                 </div>
 
