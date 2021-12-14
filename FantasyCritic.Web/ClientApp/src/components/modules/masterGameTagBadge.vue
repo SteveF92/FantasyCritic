@@ -6,7 +6,7 @@
     <span v-if="short" class="badge tag-badge" :id="'popover-target' + _uid" v-bind:style="badgeColor">
       {{tag.shortName}}
     </span>
-    <b-popover :target="'popover-target' + _uid" triggers="hover" placement="right">
+    <b-popover :target="'popover-target' + _uid" triggers="hover" placement="right" custom-class="master-game-tag-popover">
       <template #title class="popover-title">
         {{tag.readableName}}
       </template>
@@ -41,5 +41,9 @@ export default {
 <style>
   .popover-header{
     color: black;
+  }
+
+  .master-game-tag-popover {
+    z-index: 300000;
   }
 </style>
