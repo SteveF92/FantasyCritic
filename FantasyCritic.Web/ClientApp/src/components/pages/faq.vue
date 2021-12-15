@@ -222,11 +222,29 @@
         </div>
       </faqCollapse>
       <faqCollapse>
-        <div slot="question">How does the bidding system work?</div>
+        <div slot="question">How does the 'secret' bidding system work?</div>
         <div slot="answer">
           If you’re familiar with Free Agency Acquisition Budget (FAAB) rules in fantasy football, it works like that. Essentially, any player that is interested in a game will place a secret "bid" for the game,
           using some of their available budget. Every player starts the year with $100 of budget. Then, on Saturday evenings at 8PM Eastern, the system will process those bids. The top bidder for any given game
           will recieve the game and spend the money that they bid. The other players keep their money but do not get the game.
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">How does the 'public' bidding system work?</div>
+        <div slot="answer">
+          This option is new for 2022. It is very similar to the standard 'secret' system, with one critical difference.
+          The week is divided into two sections - the 'secret' section, and the 'public' section. From Saturday night, after the previous week of bids process, until Thursday night at 8PM Eastern,
+          all bids are made privately, just like they are in the standard system.
+          <br />
+          <br />
+          Then, on Thursday at 8PM, the names of all of the games that have active bids are made public to the rest of your league.
+          The names of the players and the amounts being bid are not revealed, only the names of the games. From this point until bids process at 8PM on Saturday, players can edit the bids they have
+          already made, or bid on a game that someone else has bid on that they haven't. However, players are <strong>not</strong> allowed to bid for a game that no one is currently bidding on.
+          <br />
+          <br />
+          The intention of this system to help prevent one "highly tuned in" player from dominating a league by always being the first to know about new games. If half of your players frequently
+          find themselves saying something like: "Hey I didn't even know that game got announced and you already picked it up for $1. I have no shot at winning!", then you should consider this setting.
+          If your leagues are already very competitive, we reccommend sticking with the 'secret' bidding system.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -245,7 +263,7 @@
       <faqCollapse>
         <div slot="question">Can I bid zero dollars on a game?</div>
         <div slot="answer">
-          Yes, unless your league sets a minimum bid amount, which is a new option for 2021.
+          Yes, unless your league sets a minimum bid amount.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -285,9 +303,10 @@
       <faqCollapse>
         <div slot="question">Drops and bids are processed at the same time? How does that work?</div>
         <div slot="answer">
-          This is new for 2021. Before, drops were on Sunday night and bids were on Monday night. Now I run both at 8PM on Saturday. Drops run first, then bids.
+          Drops run first, then bids.
           The system WILL allow you to bid on a game even if you have no slots left, but it will fail if there are no available when the bids actually run. This allows you to place a drop and a bid, have the drop
           process first, then you will have a spot for the bid to succeed.
+          You can also use the 'conditional drop' option on your bid, which will drop the specified game <em>only if</em> you win the bid in question.
         </div>
       </faqCollapse>
       <br />
@@ -345,7 +364,7 @@
           you get 20 points for 70 through 90, and 8 points for 90 through 94, for a total of 28 points for the 94.
           <br />
           <br />
-          Also, new for 2021, there are diminishing returns on how much a very bad game hurts you. Each point from 60 through 70 loses you one point, but every 10 point range below that,
+          Another special rule is that there are diminishing returns on how much a very bad game hurts you. Each point from 60 through 70 loses you one point, but every 10 point range below that,
           each point is worth half of the range above it. I realize that sounds complicated, but I will provide examples below. The effect is that you can never lose more than 20 points, no matter how bad a game is.
         </div>
       </faqCollapse>
@@ -666,6 +685,25 @@
               </ul>
             </li>
           </ul>
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">What is a 'Special Game Slot'?</div>
+        <div slot="answer">
+          New for 2022, special roster slots allow your league to specify a requirement of certain game types in each roster,
+          including games that are banned in your normal league rules. For example even if your league doesn’t allow yearly installments,
+          you can require each publisher to have one yearly installment on their roster. This slot will only give points for games that meet its designated requirements.
+          <br />
+          <br />
+          A good way to think of this is like "positions" in Fantasy Football. You don't just draft 11 "players", you have quarterbacks, running backs, wide recievers, etc, each of which
+          have designated slots. In Fantasy Critic, these "positions" are the tags, so you can have "Remake" slot, a "Currently in Early Access" slot, and a "Virtual Reality" slot, if you so desire.
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">How do I move games into a special slot?</div>
+        <div slot="answer">
+          They system should assign a game to the best slot when drafted or picked up.
+          However, if you do need to move a game in your roster, this can be done at the My Publisher Details page, found under the Player Actions tab.
         </div>
       </faqCollapse>
       <br />
