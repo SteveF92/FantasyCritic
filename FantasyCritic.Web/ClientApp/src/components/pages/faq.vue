@@ -609,8 +609,66 @@
           See the above answer about 'Planned for Early Access' and 'Currently in Early Access', because the same logic applies.
         </div>
       </faqCollapse>
-      <br />
+      <faqCollapse>
+        <div slot="question">
+          What's the definition of a 'New Gaming Franchise'?
+        </div>
+        <div slot="answer">
+          I admit this is tricky, so here's a list of criteria that we consider:
+          <br />
+          <br />
+          <h6>Signs a game <em>is</em> a 'New Gaming Franchise':</h6>
+          <ul>
+            <li>Is this game an obvious, clear as day new IP?</li>
+            <li class="nested-list">
+              <ul>
+                <li>Celeste, The Last of Us, Death's Door</li>
+              </ul>
+            </li>
+            <li>Is this game a 'spiritual successor' but not the same universe?</li>
+            <li class="nested-list">
+              <ul>
+                <li>Elden Ring, Back 4 Blood</li>
+              </ul>
+            </li>
+            <li>Is this game based on a property that has never been a video game before?</li>
+            <li class="nested-list">
+              <ul>
+                <li>Cyberpunk 2077, Metro 2033</li>
+              </ul>
+            </li>
+            <li>Is this game based on a public domain IP, and <em>this adaptation</em> is new?</li>
+            <li class="nested-list">
+              <ul>
+                <li>Sherlock Holmes: The Mystery of the Mummy (2002), The Sinking City</li>
+              </ul>
+            </li>
+            <li>Is this game 'very on brand' for a developer but nonetheless not a sequel?</li>
+            <li class="nested-list">
+              <ul>
+                <li>Triangle Strategy</li>
+              </ul>
+            </li>
+          </ul>
 
+          <h6>Signs a game <em>is not</em> a 'New Gaming Franchise'</h6>
+          <ul>
+            <li>Is this game better defined as a sequel, spinoff, or reboot?</li>
+            <li class="nested-list">
+              <ul>
+                <li>Tomb Raider (2013), Prince of Persia (2008), Gears Tactics, Project L (League of Legends fighting game)</li>
+              </ul>
+            </li>
+            <li>Is this game based on an IP, that is <em>not</em> in the public domain, that IS represented in video games?</li>
+            <li class="nested-list">
+              <ul>
+                <li>Spider Man (2018),Gotham Knights,Wonder Woman</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </faqCollapse>
+      <br />
 
       <h2><a name="winning">Winning</a></h2>
       <faqCollapse>
