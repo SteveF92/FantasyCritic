@@ -6,6 +6,18 @@
         <span v-if="masterGame.releaseDate">{{formatDate(masterGame.releaseDate)}}</span>
         <span v-else>{{masterGame.estimatedReleaseDate}} (Estimated)</span>
       </li>
+      <li v-if="masterGame.minimumReleaseDate && !masterGame.releaseDate">
+        <strong>Minimum Release Date: </strong>
+        <span v-if="masterGame.minimumReleaseDate">{{formatDate(masterGame.minimumReleaseDate)}}</span>
+        <font-awesome-icon color="white" icon="info-circle" class="date-info"
+                           v-b-popover.hover="'Minimum Release Date is our attempt at defining the \'earlist possible release date\' based on the above estimate from the makers of the game.'" />
+      </li>
+      <li v-if="masterGame.maximumReleaseDate  && !masterGame.releaseDate">
+        <strong>Maximum Release Date: </strong>
+        <span v-if="masterGame.maximumReleaseDate">{{formatDate(masterGame.maximumReleaseDate)}}</span>
+        <font-awesome-icon color="white" icon="info-circle" class="date-info"
+                           v-b-popover.hover="'Maximum Release Date is our attempt at defining the \'latest possible release date\' based on the above estimate from the makers of the game.'" />
+      </li>
       <li v-if="masterGame.earlyAccessReleaseDate">
         <strong>Early Access Release Date: </strong>
         <span v-if="masterGame.earlyAccessReleaseDate">{{formatDate(masterGame.earlyAccessReleaseDate)}}</span>
@@ -51,6 +63,9 @@ export default {
   },
   methods: {
     formatDate(releaseDate) {
+      if (releaseDate === '9999-12-31') {
+        return 'No Maximum Release Date';
+      }
       return moment(releaseDate).format('MMMM Do, YYYY');
     },
     openCriticLink(game) {
@@ -59,3 +74,8 @@ export default {
   }
 };
 </script>
+<style>
+  .date-info {
+    margin-left: 5px;
+  }
+</style>
