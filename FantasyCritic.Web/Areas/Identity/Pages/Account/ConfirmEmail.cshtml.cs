@@ -27,7 +27,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetAsync(string userId, string code)
         {
-            if (userId == null || code == null)
+            if (userId == null || code == null) 
             {
                 return RedirectToPage("/Index");
             }

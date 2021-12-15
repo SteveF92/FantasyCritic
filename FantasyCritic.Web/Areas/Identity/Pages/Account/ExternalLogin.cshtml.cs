@@ -8,6 +8,8 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Web.Extensions;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -133,22 +135,8 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
                         var fullUser = await _userManager.FindByIdAsync(user.Id.ToString());
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(fullUser);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = fullUser.Id, code = code },
-                            protocol: Request.Scheme);
-
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                        // If account confirmation is required, we need to show the link if we don't have a real email sender
-                        if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                        {
-                            return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
-                        }
+                        var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
+                        await _emailSender.SendConfirmationEmail(user, confirmLink);
 
                         await _signInManager.SignInAsync(fullUser, isPersistent: false, info.LoginProvider);
 
