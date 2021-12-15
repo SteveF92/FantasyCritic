@@ -107,22 +107,43 @@ namespace FantasyCritic.Lib.Services
                 return Result.Failure("Budget cannot be set to under $0.");
             }
 
-            if (editValues.WillReleaseGamesDropped.HasValue && editValues.WillReleaseGamesDropped.Value > 
-                editValues.Publisher.LeagueYear.Options.WillReleaseDroppableGames)
+            bool allowUnlimitedWillReleaseDrops = editValues.Publisher.LeagueYear.Options.WillReleaseDroppableGames == -1;
+            if (editValues.WillReleaseGamesDropped.HasValue)
             {
-                return Result.Failure("Will release games dropped cannot be set to more than is allowed in the league.");
+                if (allowUnlimitedWillReleaseDrops)
+                {
+                    return Result.Failure("Your league allows unlimited will release drops, so there is no reason to edit this.");
+                }
+                if (editValues.WillReleaseGamesDropped.Value > editValues.Publisher.LeagueYear.Options.WillReleaseDroppableGames)
+                {
+                    return Result.Failure("Will release games dropped cannot be set to more than is allowed in the league.");
+                }
             }
 
-            if (editValues.WillNotReleaseGamesDropped.HasValue && editValues.WillNotReleaseGamesDropped.Value >
-                editValues.Publisher.LeagueYear.Options.WillNotReleaseDroppableGames)
+            bool allowUnlimitedWillNotReleaseDrops = editValues.Publisher.LeagueYear.Options.WillNotReleaseDroppableGames == -1;
+            if (editValues.WillNotReleaseGamesDropped.HasValue)
             {
-                return Result.Failure("Will not release games dropped cannot be set to more than is allowed in the league.");
+                if (allowUnlimitedWillNotReleaseDrops)
+                {
+                    return Result.Failure("Your league allows unlimited will not release drops, so there is no reason to edit this.");
+                }
+                if (editValues.WillNotReleaseGamesDropped.Value > editValues.Publisher.LeagueYear.Options.WillNotReleaseDroppableGames)
+                {
+                    return Result.Failure("Will not release games dropped cannot be set to more than is allowed in the league.");
+                }
             }
 
-            if (editValues.FreeGamesDropped.HasValue && editValues.FreeGamesDropped.Value >
-                editValues.Publisher.LeagueYear.Options.FreeDroppableGames)
+            bool allowUnlimitedFreeDrops = editValues.Publisher.LeagueYear.Options.FreeDroppableGames == -1;
+            if (editValues.FreeGamesDropped.HasValue)
             {
-                return Result.Failure("Unrestricted games dropped cannot be set to more than is allowed in the league.");
+                if (allowUnlimitedFreeDrops)
+                {
+                    return Result.Failure("Your league allows unlimited unrestricted drops, so there is no reason to edit this.");
+                }
+                if (editValues.FreeGamesDropped.Value > editValues.Publisher.LeagueYear.Options.FreeDroppableGames)
+                {
+                    return Result.Failure("Unrestricted games dropped cannot be set to more than is allowed in the league.");
+                }
             }
 
             LeagueAction leagueAction = new LeagueAction(editValues, _clock.GetCurrentInstant());
