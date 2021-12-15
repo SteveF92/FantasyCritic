@@ -211,9 +211,25 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
         }
 
-        public Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease)
+        public async Task ManuallySetWillNotRelease(LeagueYear leagueYear, PublisherGame publisherGame, bool willNotRelease)
         {
-            return _fantasyCriticRepo.ManuallySetWillNotRelease(publisherGame, willNotRelease);
+            await _fantasyCriticRepo.ManuallySetWillNotRelease(publisherGame, willNotRelease);
+
+            var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+            var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.League.LeagueManager.Id);
+
+            string description;
+            if (willNotRelease)
+            {
+                description = $"{publisherGame.GameName}'s eligibility setting was reset to normal.";
+            }
+            else
+            {
+                description = $"{publisherGame.GameName} was manually set to 'Ineligible'";
+            }
+
+            LeagueAction eligibilityAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "'Will not release' Overridden", description, true);
+            await _fantasyCriticRepo.AddLeagueAction(eligibilityAction);
         }
 
         public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)

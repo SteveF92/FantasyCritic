@@ -1140,7 +1140,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            await _fantasyCriticService.ManuallySetWillNotRelease(publisherGame.Value, request.WillNotRelease);
+            await _fantasyCriticService.ManuallySetWillNotRelease(leagueYear.Value, publisherGame.Value, request.WillNotRelease);
 
             return Ok();
         }
