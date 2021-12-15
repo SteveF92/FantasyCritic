@@ -31,7 +31,7 @@
                                  class="mt-1">
             <b-form-checkbox value="gameName">Name</b-form-checkbox>
             <b-form-checkbox value="estimatedReleaseDate">Release Date</b-form-checkbox>
-            <b-form-checkbox value="tags">Tags</b-form-checkbox>
+            <b-form-checkbox value="readableTags">Tags</b-form-checkbox>
           </b-form-checkbox-group>
         </b-form-group>
       </b-col>

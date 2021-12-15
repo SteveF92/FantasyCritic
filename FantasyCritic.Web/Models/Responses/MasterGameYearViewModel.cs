@@ -30,6 +30,7 @@ namespace FantasyCritic.Web.Models.Responses
             OpenCriticID = masterGame.MasterGame.OpenCriticID;
             SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, currentDate)).ToList();
             Tags = masterGame.MasterGame.Tags.Select(x => x.Name).ToList();
+            ReadableTags = masterGame.MasterGame.Tags.Select(x => x.ReadableName).ToList();
             BoxartFileName = masterGame.MasterGame.BoxartFileName;
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
@@ -105,6 +106,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int? OpenCriticID { get; }
         public IReadOnlyList<MasterGameYearViewModel> SubGames { get; }
         public IReadOnlyList<string> Tags { get; }
+        public IReadOnlyList<string> ReadableTags { get; }
         public string BoxartFileName { get; }
         public Instant AddedTimestamp { get; }
 
