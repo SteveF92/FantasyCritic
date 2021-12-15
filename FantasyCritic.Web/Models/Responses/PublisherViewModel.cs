@@ -40,7 +40,9 @@ namespace FantasyCritic.Web.Models.Responses
 
             AverageCriticScore = publisher.AverageCriticScore;
             TotalFantasyPoints = publisher.TotalFantasyPoints;
-            TotalProjectedPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate);
+
+            var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(publisher.LeagueYear.Year);
+            TotalProjectedPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, ineligiblePointsShouldCount);
             Budget = publisher.Budget;
 
             if (nextDraftPublisher.HasValue && nextDraftPublisher.Value.PublisherID == publisher.PublisherID)

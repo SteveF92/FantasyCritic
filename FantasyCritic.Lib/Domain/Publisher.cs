@@ -79,11 +79,11 @@ namespace FantasyCritic.Lib.Domain
             }
         }
 
-        public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
+        public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate, bool ineligiblePointsShouldCount)
         {
-            var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(LeagueYear.Year);
             var currentGamesScore = GetPublisherSlots()
-                .Sum(x => x.GetProjectedOrRealFantasyPoints(x.SlotIsValid(LeagueYear) || ineligiblePointsShouldCount, LeagueYear.Options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
+                .Sum(x => x.GetProjectedOrRealFantasyPoints(ineligiblePointsShouldCount || x.SlotIsValid(LeagueYear), 
+                    LeagueYear.Options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
 
             var availableStandardSlots = GetNumberAvailableSlots(false, LeagueYear.SupportedYear.Finished);
             var emptyStandardSlotsScore = availableStandardSlots * systemWideValues.AverageStandardGamePoints;
