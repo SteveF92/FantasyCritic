@@ -32,11 +32,11 @@ namespace FantasyCritic.Web.Models.Requests.Admin
 
         public List<string> GetRequestedTags() => Tags ?? new List<string>();
 
-        public Lib.Domain.MasterGame ToDomain(Instant timestamp, IEnumerable<MasterGameTag> tags)
+        public Lib.Domain.MasterGame ToDomain(Lib.Domain.MasterGame existingMasterGame, Instant timestamp, IEnumerable<MasterGameTag> tags)
         {
-            Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
-                EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, null, Notes, BoxartFileName,
-                null, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, timestamp, new List<MasterSubGame>(), tags);
+            var masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
+                EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, existingMasterGame.RawCriticScore, Notes, BoxartFileName,
+                existingMasterGame.FirstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, timestamp, existingMasterGame.SubGames, tags);
             return masterGame;
         }
     }

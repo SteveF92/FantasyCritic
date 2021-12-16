@@ -99,7 +99,13 @@ namespace FantasyCritic.Web.Controllers.API
                 .Where(x => viewModel.GetRequestedTags().Contains(x.Name))
                 .ToList();
 
-            MasterGame masterGame = viewModel.ToDomain(instant, tags);
+            var existingMasterGame = await _interLeagueService.GetMasterGame(viewModel.MasterGameID);
+            if (existingMasterGame.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            MasterGame masterGame = viewModel.ToDomain(existingMasterGame.Value, instant, tags);
             await _interLeagueService.EditMasterGame(masterGame);
             var currentDate = _clock.GetToday();
             var vm = new MasterGameViewModel(masterGame, currentDate);

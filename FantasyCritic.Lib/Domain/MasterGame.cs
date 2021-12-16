@@ -10,8 +10,6 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGame : IEquatable<MasterGame>
     {
-        private readonly decimal? _criticScore;
-
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
             LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate,  LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
             string notes, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
@@ -26,7 +24,7 @@ namespace FantasyCritic.Lib.Domain
             InternationalReleaseDate = internationalReleaseDate;
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
-            _criticScore = criticScore;
+            RawCriticScore = criticScore;
             Notes = notes;
             SubGames = subGames.ToList();
             BoxartFileName = boxartFileName;
@@ -58,13 +56,14 @@ namespace FantasyCritic.Lib.Domain
 
         public LocalDate GetDefiniteMaximumReleaseDate() => MaximumReleaseDate ?? LocalDate.MaxIsoValue;
 
+        public decimal? RawCriticScore { get; }
         public decimal? CriticScore
         {
             get
             {
-                if (_criticScore.HasValue)
+                if (RawCriticScore.HasValue)
                 {
-                    return _criticScore;
+                    return RawCriticScore;
                 }
 
                 if (!SubGames.Any(x => x.CriticScore.HasValue))
@@ -81,7 +80,7 @@ namespace FantasyCritic.Lib.Domain
         {
             get
             {
-                if (_criticScore.HasValue)
+                if (RawCriticScore.HasValue)
                 {
                     return false;
                 }
