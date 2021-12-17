@@ -40,6 +40,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -149,6 +150,10 @@ namespace FantasyCritic.Web
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
+                    var letters = "abcdefghijklmnopqrstuvwxyz";
+                    var numbers = "0123456789";
+                    var specials = "-._@+ ";
+                    options.User.AllowedUserNameCharacters = letters + letters.ToUpper() + numbers + specials;
                 })
                 .AddDefaultUI()
                 .AddUserManager<FantasyCriticUserManager>()
