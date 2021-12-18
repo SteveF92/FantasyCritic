@@ -52,6 +52,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required, MinLength(1), MaxLength(30)]
+            [Display(Name = "Display Name")]
             public string DisplayName { get; set; }
 
             [Required]

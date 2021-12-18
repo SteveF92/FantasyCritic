@@ -54,6 +54,10 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+
+            [Required, MinLength(1), MaxLength(30)]
+            [Display(Name = "Display Name")]
+            public string DisplayName { get; set; }
         }
 
         public IActionResult OnGetAsync()
@@ -124,7 +128,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new FantasyCriticUser { Id = Guid.NewGuid(), UserName = Input.Email, Email = Input.Email };
+                var user = new FantasyCriticUser { Id = Guid.NewGuid(), UserName = Input.DisplayName, Email = Input.Email };
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
