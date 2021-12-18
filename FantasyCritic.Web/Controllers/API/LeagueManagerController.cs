@@ -85,9 +85,20 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Impressive API usage, but required tags are not ready for prime time yet.");
             }
 
-            if (!SupportedYear.Year2022FeatureSupported(request.InitialYear) && request.CounterPicks != request.CounterPicksToDraft)
+            if (!SupportedYear.Year2022FeatureSupported(request.InitialYear))
             {
-                return BadRequest("Pickup counter picks are not supported until 2022.");
+                if (request.CounterPicks != request.CounterPicksToDraft)
+                {
+                    return BadRequest("Pickup counter picks are not supported until 2022.");
+                }
+                if (request.PickupSystem != PickupSystem.SecretBidding.Value)
+                {
+                    return BadRequest("That bidding System is not supported until 2022.");
+                }
+                if (request.SpecialGameSlots.Any())
+                {
+                    return BadRequest("Special Game Slots are not supported until 2022.");
+                }
             }
 
             var supportedYears = await _interLeagueService.GetSupportedYears();
@@ -306,17 +317,6 @@ namespace FantasyCritic.Web.Controllers.API
                     return BadRequest("Special Game Slots are not supported until 2022.");
                 }
             }
-
-            if (request.SpecialGameSlots.Count > request.StandardGames)
-            {
-                return BadRequest("You cannot have more special game slots than the number of games per player.");
-            }
-
-            if (request.SpecialGameSlots.Any(x => !x.RequiredTags.Any()))
-            {
-                return BadRequest("All of your special slots must list at least one tag.");
-            }
-
             var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
             EditLeagueYearParameters domainRequest = request.ToDomain(currentUser, tagDictionary);
             Result result = await _fantasyCriticService.EditLeague(league.Value, domainRequest);

@@ -178,17 +178,7 @@ export default {
       pickupSystem: 'SecretBidding',
       tradingSystem: 'Standard',
       specialGameSlots: [],
-      tags: {
-        required: [],
-        banned: [
-          'CurrentlyInEarlyAccess',
-          'DirectorsCut',
-          'Port',
-          'ReleasedInternationally',
-          'Remaster',
-          'YearlyInstallment'
-        ]
-      }
+      tags: {}
     };
   }
 };

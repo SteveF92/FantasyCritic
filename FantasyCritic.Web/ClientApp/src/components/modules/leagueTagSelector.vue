@@ -44,7 +44,7 @@
   import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
   export default {
-    props: ['value'],
+    props: ['value', 'gameMode'],
     components: {
       draggable,
       MasterGameTagBadge
@@ -65,10 +65,11 @@
         return this.$store.getters.allTags;
       },
       showWarning() {
+        if (this.gameMode === 'Beginner') {
+          return false;
+        }
         let recommendedAllowedTags = [
           'Reimagining',
-          'PlannedForEarlyAccess',
-          'WillReleaseInternationallyFirst',
         ];
         let recommendedBannedTags = [
           'DirectorsCut',
@@ -82,6 +83,7 @@
       showDanger() {
         let recommendedAllowedTags = [
           'NewGame',
+          'NewGamingFranchise',
           'PlannedForEarlyAccess',
           'WillReleaseInternationallyFirst'
         ];
@@ -128,6 +130,12 @@
     mounted() {
       this.initialValue = _.cloneDeep(this.value);
       this.updateInternal();
+    },
+    watch: {
+      value: function () {
+        this.initialValue = _.cloneDeep(this.value);
+        this.updateInternal();
+      }
     }
   }
 </script>
@@ -143,7 +151,7 @@
   .tag-flex-container {
     display: flex;
   }
-  .tag-flex-drag{
+  .tag-flex-drag {
     flex-grow: 1;
     margin: 3px;
   }

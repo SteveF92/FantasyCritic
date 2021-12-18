@@ -144,6 +144,26 @@ namespace FantasyCritic.Lib.Domain
                 return Result.Failure("If you ban 'Will Release Internationally First' you must also ban 'Released Internationally'. See the FAQ page for an explanation.");
             }
 
+            if (SpecialGameSlots.Count > StandardGames)
+            {
+                return Result.Failure("You cannot have more special game slots than the number of games per player.");
+            }
+
+            if (SpecialGameSlots.Any(x => !x.Tags.Any()))
+            {
+                return Result.Failure("All of your special slots must list at least one tag.");
+            }
+
+            if (SpecialGameSlots.Any())
+            {
+                var expectedSpecialSlotNumbers = Enumerable.Range(0, SpecialGameSlots.Count);
+                var actualNumbers = SpecialGameSlots.Select(x => x.SpecialSlotPosition);
+                if (!actualNumbers.SequenceEqual(expectedSpecialSlotNumbers))
+                {
+                    return Result.Failure("Your special game slots have invalid positions. You should reload the page and try again. This shouldn't be possible.");
+                }
+            }
+
             return Result.Success();
         }
     }

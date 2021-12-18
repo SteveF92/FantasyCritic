@@ -215,7 +215,7 @@
         <br />
         All games have a number of tags associated with them. If you place a tag in the "Banned" column, any game with that tag will not be selectable.
       </div>
-      <leagueTagSelector v-model="local.tags"></leagueTagSelector>
+      <leagueTagSelector v-model="local.tags" :gameMode="gameMode"></leagueTagSelector>
 
       <hr />
       <h3>Special Game Slots</h3>
@@ -384,15 +384,111 @@ export default {
       this.value.unlimitedWillNotReleaseDroppableGames = true;
       this.value.unlimitedWillReleaseDroppableGames = false;
 
+      let alwaysBannedTags = [
+        "Cancelled",
+        "Port"
+      ];
+
+      let standardBannedTags = [
+        "CurrentlyInEarlyAccess",
+        "ReleasedInternationally",
+        "YearlyInstallment",
+        "DirectorsCut",
+        "PartialRemake",
+        "Remaster"
+      ];
+
+      let advancedBannedTags = [
+        "ExpansionPack",
+      ];
+
+      let bannedTags = alwaysBannedTags;
+      if (this.gameMode === 'Standard' || this.gameMode === 'Advanced') {
+        bannedTags = bannedTags.concat(standardBannedTags);
+      }
+      if (this.gameMode === 'Advanced') {
+        bannedTags = bannedTags.concat(advancedBannedTags);
+      }
+
+      this.value.tags = {
+        required: [],
+        banned: bannedTags
+      }
+
       this.$emit('input', this.local);
+    },
+    autoUpdateSpecialSlotOptions() {
+      this.value.specialGameSlots = [];
+      if (this.gameMode === "Beginner") {
+        return;
+      }
+
+      let numberOfSpecialSlots = Math.floor(this.value.standardGames / 2);
+      if (numberOfSpecialSlots < 1) {
+        return;
+      }
+
+      let includeYearlyInstallmentSlot = true;
+      let includeExpansionPackSlot = numberOfSpecialSlots >= 2;
+      let includeRemakeSlot = numberOfSpecialSlots >= 2;
+      let numberNGFSlots = numberOfSpecialSlots - 3
+      if (numberNGFSlots < 0) {
+        numberNGFSlots = 0;
+      }
+
+      let slotIndex = 0;
+      for (slotIndex = 0; slotIndex < numberNGFSlots; slotIndex++) {
+        this.value.specialGameSlots.push({
+          specialSlotPosition: slotIndex,
+          requiredTags: [
+            'NewGamingFranchise'
+          ]
+        });
+      }
+
+      if (includeYearlyInstallmentSlot) {
+        this.value.specialGameSlots.push({
+          specialSlotPosition: slotIndex,
+          requiredTags: [
+            'YearlyInstallment'
+          ]
+        });
+      }
+      slotIndex++;
+
+      if (includeExpansionPackSlot) {
+        this.value.specialGameSlots.push({
+          specialSlotPosition: slotIndex,
+          requiredTags: [
+            'ExpansionPack'
+          ]
+        });
+      }
+      slotIndex++;
+
+      if (includeRemakeSlot) {
+        this.value.specialGameSlots.push({
+          specialSlotPosition: slotIndex,
+          requiredTags: [
+            'PartialRemake',
+            'DirectorsCut'
+          ]
+        });
+      }
+      slotIndex++;
     }
   },
   watch: {
     intendedNumberOfPlayers: function (val) {
       this.autoUpdateOptions();
+      this.autoUpdateSpecialSlotOptions();
     },
     gameMode: function (val) {
       this.autoUpdateOptions();
+      this.autoUpdateSpecialSlotOptions();
+    },
+    'local.standardGames': function () {
+      this.autoUpdateSpecialSlotOptions();
     }
   },
   mounted() {
