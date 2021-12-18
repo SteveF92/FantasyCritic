@@ -15,7 +15,6 @@ using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Requests.MasterGame;
 using FantasyCritic.Web.Models.Responses;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
@@ -138,7 +137,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> DeleteMasterGameRequest([FromBody] MasterGameRequestDeletionRequest request)
         {
             if (!ModelState.IsValid)
