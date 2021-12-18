@@ -729,6 +729,7 @@
 <script>
 import FaqCollapse from '@/components/modules/faqCollapse';
 import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
+const TIMEOUT = 1;
 
 export default {
   components: {
@@ -750,6 +751,15 @@ export default {
       let thisID = this.lastID;
       this.lastID = this.lastID + 1;
       return thisID;
+    },
+    scrollTo(hashtag){
+      setTimeout(() => { location.href = hashtag }, TIMEOUT)
+    }
+  },
+  mounted() {
+    // From testing, without a brief timeout, it won't work.
+    if (this.$route.hash) {
+      setTimeout(() => this.scrollTo(this.$route.hash), TIMEOUT)
     }
   }
 };
