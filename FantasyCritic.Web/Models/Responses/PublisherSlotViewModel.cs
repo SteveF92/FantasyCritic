@@ -15,7 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherSlotViewModel
     {
-        public PublisherSlotViewModel(int year, PublisherSlot slot, LocalDate currentDate, LeagueYear leagueYear, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
+        public PublisherSlotViewModel(int year, PublisherSlot slot, LocalDate currentDate, LeagueYear leagueYear, SystemWideValues systemWideValues)
         {
             SlotNumber = slot.SlotNumber;
             OverallSlotNumber = slot.OverallSlotNumber;
@@ -27,8 +27,8 @@ namespace FantasyCritic.Web.Models.Responses
             GameMeetsSlotCriteria = !EligibilityErrors.Any();
 
             var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(year);
-            SimpleProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, scoringSystem, systemWideValues, true, currentDate);
-            AdvancedProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, scoringSystem, systemWideValues, false, currentDate);
+            SimpleProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, leagueYear.Options.ScoringSystem, systemWideValues, true, currentDate);
+            AdvancedProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, leagueYear.Options.ScoringSystem, systemWideValues, false, currentDate);
         }
 
         public int SlotNumber { get; }

@@ -21,8 +21,20 @@
         </span>
       </div>
 
-      <b-button variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
-      <b-button variant="secondary" v-on:click="getPossibleCounterPicks" class="show-top-button">Show Available Counter Picks</b-button>
+      <div v-if="!leagueYear.hasSpecialSlots">
+        <b-button variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+        <b-button variant="secondary" v-on:click="getPossibleCounterPicks" class="show-top-button">Show Available Counter Picks</b-button>
+      </div>
+      <div v-else>
+        <h5 class="text-black">Search by Slot</h5>
+        <span class="search-tags">
+          <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG"></searchSlotTypeBadge>
+          <searchSlotTypeBadge v-for="specialSlot in leagueYear.slotInfo.specialSlots" :gameSlot="specialSlot"></searchSlotTypeBadge>
+          <searchSlotTypeBadge v-if="leagueYear.slotInfo.counterPickSlot" :gameSlot="leagueYear.slotInfo.counterPickSlot"></searchSlotTypeBadge>
+        </span>
+      </div>
+      
 
       <div v-show="isBusy" class="spinner">
         <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#000000' }" />
@@ -101,6 +113,7 @@ import Vue from 'vue';
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
 import MasterGameSummary from '@/components/modules/masterGameSummary';
+import SearchSlotTypeBadge from '@/components/modules/gameTables/searchSlotTypeBadge';
 
 export default {
   data() {
@@ -122,7 +135,8 @@ export default {
   },
   components: {
     PossibleMasterGamesTable,
-    MasterGameSummary
+    MasterGameSummary,
+    SearchSlotTypeBadge
   },
   computed: {
     formIsValid() {
@@ -277,5 +291,13 @@ export default {
   .spinner {
       margin-top: 20px;
       text-align:center;
+  }
+
+  .search-tags {
+    display: flex;
+    padding: 5px;
+    background: rgba(50, 50, 50, 0.7);
+    border-radius: 5px;
+    justify-content: space-around;
   }
 </style>

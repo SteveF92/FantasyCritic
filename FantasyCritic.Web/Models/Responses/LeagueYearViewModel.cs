@@ -104,6 +104,7 @@ namespace FantasyCritic.Web.Models.Responses
             PlayStatus = new PlayStatusViewModel(leagueYear.PlayStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
             EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
             TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();
+            SlotInfo = new PublisherSlotRequirementsViewModel(leagueYear.Options);
 
             ManagerMessages = managerMessages.Select(x => new ManagerMessageViewModel(x, x.IsDismissed(accessingUser))).OrderBy(x => x.Timestamp).ToList();
             if (!userIsInLeague)
@@ -133,6 +134,7 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<PublisherViewModel> Publishers { get; }
         public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
         public IReadOnlyList<TagOverrideViewModel> TagOverrides { get; }
+        public PublisherSlotRequirementsViewModel SlotInfo { get; }
         public PublisherViewModel UserPublisher { get; }
         public PlayStatusViewModel PlayStatus { get; }
         public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
