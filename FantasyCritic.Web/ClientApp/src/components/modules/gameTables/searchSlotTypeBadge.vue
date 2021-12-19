@@ -1,21 +1,21 @@
 <template>
   <span>
     <span v-if="gameSlot.counterPick">
-      <span class="badge tag-badge counter-pick-badge flex-badge">
+      <span class="badge tag-badge counter-pick-badge flex-badge search-tag">
         CP
       </span>
     </span>
     <span v-if="!gameSlot.counterPick && name">
-      <span class="badge tag-badge regular-slot-badge flex-badge">
+      <span class="badge tag-badge regular-slot-badge flex-badge search-tag">
         {{name}}
       </span>
     </span>
     <span v-if="!gameSlot.counterPick && !name">
       <template v-if="gameSlot.requiredTags.length === 1">
-        <masterGameTagBadge :tagName="gameSlot.requiredTags[0]" short="true" class="flex-real-badge"></masterGameTagBadge>
+        <masterGameTagBadge :tagName="gameSlot.requiredTags[0]" short="true" class="flex-real-badge search-tag"></masterGameTagBadge>
       </template>
       <template v-else>
-        <span class="badge tag-badge flex-badge" v-bind:style="getMultiBadgeColor(gameSlot.requiredTags)"
+        <span class="badge tag-badge flex-badge search-tag" v-bind:style="getMultiBadgeColor(gameSlot.requiredTags)"
               v-b-popover.hover="getFlexText(gameSlot.requiredTags)">
           FLX
         </span>
@@ -94,5 +94,13 @@ export default {
   .counter-pick-badge {
     background-color: #AA1E1E;
     color: white;
+  }
+
+  .search-tag{
+    cursor: pointer;
+  }
+
+  .search-tag:hover {
+    opacity: 80%;
   }
 </style>

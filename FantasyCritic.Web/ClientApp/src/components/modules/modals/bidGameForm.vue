@@ -28,10 +28,10 @@
       <div v-else>
         <h5 class="text-black">Search by Slot</h5>
         <span class="search-tags">
-          <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL"></searchSlotTypeBadge>
-          <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG"></searchSlotTypeBadge>
-          <searchSlotTypeBadge v-for="specialSlot in leagueYear.slotInfo.specialSlots" :gameSlot="specialSlot"></searchSlotTypeBadge>
-          <searchSlotTypeBadge v-if="leagueYear.slotInfo.counterPickSlot" :gameSlot="leagueYear.slotInfo.counterPickSlot"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL" v-on:click.native="getTopGames"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG" v-on:click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
+          <searchSlotTypeBadge v-for="specialSlot in leagueYear.slotInfo.specialSlots" :gameSlot="specialSlot" v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+          <searchSlotTypeBadge v-if="leagueYear.slotInfo.counterPickSlot" :gameSlot="leagueYear.slotInfo.counterPickSlot" v-on:click.native="getPossibleCounterPicks"></searchSlotTypeBadge>
         </span>
       </div>
       
@@ -79,24 +79,33 @@
         </div>
       </div>
       <div v-else class="search-results">
-        <h3 class="text-black">Available Counter Picks</h3>
-        <b-form-select v-model="bidCounterPick">
-          <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame">
-            {{ publisherGame.gameName }}
-          </option>
-        </b-form-select>
+        <ValidationObserver v-slot="{ invalid }">
+          <h3 class="text-black">Available Counter Picks</h3>
+          <b-form-select v-model="bidCounterPick">
+            <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame">
+              {{ publisherGame.gameName }}
+            </option>
+          </b-form-select>
 
-        <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">
-          Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.
-        </div>
+          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{leagueYear.userPublisher.budget | money}})</label>
 
-        <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || counterPickInvalid">{{bidButtonText}}</b-button>
-        <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
-          <h3 class="alert-heading">Error!</h3>
-          <ul>
-            <li v-for="error in bidResult.errors">{{error}}</li>
-          </ul>
-        </div>
+          <ValidationProvider rules="required|integer" v-slot="{ errors }">
+            <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />
+            <span class="text-danger">{{ errors[0] }}</span>
+          </ValidationProvider>
+
+          <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">
+            Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.
+          </div>
+
+          <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || counterPickInvalid">{{bidButtonText}}</b-button>
+          <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
+            <h3 class="alert-heading">Error!</h3>
+            <ul>
+              <li v-for="error in bidResult.errors">{{error}}</li>
+            </ul>
+          </div>
+        </ValidationObserver>
       </div>
 
       <div class="alert alert-info" v-show="searched && !bidMasterGame && possibleMasterGames.length === 0">
@@ -166,7 +175,7 @@ export default {
       return this.leagueYear.availableCounterPicks;
     },
     counterPickInvalid() {
-      return this.bidCounterPick && !this.bidCounterPick.masterGameID;
+      return this.bidCounterPick && !this.bidCounterPick.masterGame;
     }
   },
   props: ['leagueYear', 'publisher'],
@@ -199,6 +208,20 @@ export default {
           this.isBusy = false;
         });
     },
+    getGamesForSlot(slotInfo) {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      axios
+        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
+        .then(response => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.showingTopAvailable = true;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
     getPossibleCounterPicks() {
       this.clearDataExceptSearch();
       this.isBusy = true;
@@ -216,10 +239,17 @@ export default {
     bidGame() {
       var request = {
         publisherID: this.leagueYear.userPublisher.publisherID,
-        masterGameID: this.bidMasterGame.masterGameID,
         bidAmount: this.bidAmount,
         counterPick: this.counterPicking
       };
+
+      let masterGameToUse = null;
+      if (!this.counterPicking) {
+        masterGameToUse = this.bidMasterGame;
+      } else {
+        masterGameToUse = this.bidCounterPick.masterGame;
+      }
+      request.masterGameID = masterGameToUse.masterGameID;
 
       if (this.conditionalDrop) {
         request.conditionalDropPublisherGameID = this.conditionalDrop.publisherGameID;
@@ -234,7 +264,7 @@ export default {
           }
           this.$refs.bidGameFormRef.hide();
           var bidInfo = {
-            gameName: this.bidMasterGame.gameName,
+            gameName: masterGameToUse.gameName,
             bidAmount: this.bidAmount
           };
           this.$emit('gameBid', bidInfo);
