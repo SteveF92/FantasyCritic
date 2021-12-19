@@ -17,7 +17,19 @@
             <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <b-button v-show="!showingTopAvailable || draftMasterGame" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+
+        <div v-if="!leagueYear.hasSpecialSlots">
+          <b-button variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+        </div>
+        <div v-else>
+          <h5 class="text-black">Search by Slot</h5>
+          <span class="search-tags">
+            <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL" v-on:click.native="getTopGames"></searchSlotTypeBadge>
+            <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG" v-on:click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
+            <searchSlotTypeBadge v-for="specialSlot in leagueYear.slotInfo.specialSlots" :gameSlot="specialSlot" v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+          </span>
+        </div>
+
 
         <div v-if="!draftMasterGame">
           <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
@@ -74,6 +86,7 @@ import Vue from 'vue';
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
 import MasterGameSummary from '@/components/modules/masterGameSummary';
+import SearchSlotTypeBadge from '@/components/modules/gameTables/searchSlotTypeBadge';
 
 export default {
   data() {
@@ -92,14 +105,15 @@ export default {
   },
   components: {
     PossibleMasterGamesTable,
-    MasterGameSummary
+    MasterGameSummary,
+    SearchSlotTypeBadge
   },
   computed: {
     formIsValid() {
       return (this.draftUnlistedGame || this.draftMasterGame);
     },
   },
-  props: ['nextPublisherUp', 'year'],
+  props: ['leagueYear','nextPublisherUp', 'year'],
   methods: {
     searchGame() {
       this.clearDataExceptSearch();
@@ -120,6 +134,23 @@ export default {
       this.isBusy = true;
       axios
         .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
+        .then(response => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.showingTopAvailable = true;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
+    getGamesForSlot(slotInfo) {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      let slotJSON = JSON.stringify(slotInfo);
+      let base64Slot = btoa(slotJSON);
+      let urlEncodedSlot = encodeURI(base64Slot);
+      axios
+        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&slotInfo=' + urlEncodedSlot)
         .then(response => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
@@ -214,5 +245,13 @@ export default {
 }
 .show-top-button {
   margin-bottom: 10px;
+}
+
+.search-tags {
+  display: flex;
+  padding: 5px;
+  background: rgba(50, 50, 50, 0.7);
+  border-radius: 5px;
+  justify-content: space-around;
 }
 </style>

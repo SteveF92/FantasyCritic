@@ -35,7 +35,6 @@
         </span>
       </div>
       
-
       <div v-show="isBusy" class="spinner">
         <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#000000' }" />
       </div>

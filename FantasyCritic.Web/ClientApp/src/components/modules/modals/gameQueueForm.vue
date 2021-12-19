@@ -11,7 +11,18 @@
       </div>
     </div>
 
-    <b-button v-show="!showingTopAvailable" variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+    <div v-if="!leagueYear.hasSpecialSlots">
+      <b-button variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+    </div>
+    <div v-else>
+      <h5 class="text-black">Search by Slot</h5>
+      <span class="search-tags">
+        <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL" v-on:click.native="getTopGames"></searchSlotTypeBadge>
+        <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG" v-on:click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
+        <searchSlotTypeBadge v-for="specialSlot in leagueYear.slotInfo.specialSlots" :gameSlot="specialSlot" v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+      </span>
+    </div>
+
     <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
 
     <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possibleGames="possibleMasterGames" v-on:input="addGameToQueue"></possibleMasterGamesTable>
@@ -70,14 +81,16 @@ import draggable from 'vuedraggable';
 
 import PossibleMasterGamesTable from '@/components/modules/possibleMasterGamesTable';
 import StatusBadge from '@/components/modules/statusBadge';
+import SearchSlotTypeBadge from '@/components/modules/gameTables/searchSlotTypeBadge';
 
 export default {
   components: {
     draggable,
     PossibleMasterGamesTable,
-    StatusBadge
+    StatusBadge,
+    SearchSlotTypeBadge
   },
-  props: ['publisher', 'year'],
+  props: ['leagueYear','publisher', 'year'],
   data() {
     return {
       queuedGames: null,
@@ -126,6 +139,23 @@ export default {
           this.possibleMasterGames = response.data;
           this.showingTopAvailable = true;
           this.isBusy = false;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
+    getGamesForSlot(slotInfo) {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      let slotJSON = JSON.stringify(slotInfo);
+      let base64Slot = btoa(slotJSON);
+      let urlEncodedSlot = encodeURI(base64Slot);
+      axios
+        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&slotInfo=' + urlEncodedSlot)
+        .then(response => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.showingTopAvailable = true;
         })
         .catch(response => {
           this.isBusy = false;
@@ -216,5 +246,13 @@ export default {
 <style scoped>
   .select-cell {
     text-align: center;
+  }
+
+  .search-tags {
+    display: flex;
+    padding: 5px;
+    background: rgba(50, 50, 50, 0.7);
+    border-radius: 5px;
+    justify-content: space-around;
   }
 </style>
