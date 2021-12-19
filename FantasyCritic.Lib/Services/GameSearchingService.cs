@@ -80,6 +80,39 @@ namespace FantasyCritic.Lib.Services
             return possibleMasterGames;
         }
 
+        public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGamesForSlot(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, 
+            int year, IEnumerable<LeagueTagStatus> leagueTagRequirements)
+        {
+            HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => !x.CounterPick && x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .ToHashSet();
+
+            HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
+
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
+            IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
+            List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
+
+            LocalDate currentDate = _clock.GetToday();
+            foreach (var masterGame in matchingMasterGames)
+            {
+                var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames,
+                    eligibilityFactors, leagueTagRequirements, currentDate);
+
+                if (!possibleMasterGame.IsAvailable)
+                {
+                    continue;
+                }
+
+                possibleMasterGames.Add(possibleMasterGame);
+            }
+
+            return possibleMasterGames;
+        }
+
         public async Task<IReadOnlyList<PossibleMasterGameYear>> GetQueuedPossibleGames(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, 
             IEnumerable<QueuedGame> queuedGames)
         {
@@ -114,6 +147,22 @@ namespace FantasyCritic.Lib.Services
             HashSet<MasterGame> myPublisherMasterGames, MasterGameWithEligibilityFactors eligibilityFactors, LocalDate currentDate)
         {
             bool isEligible = SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);
+            bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
+            bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
+            bool isReleased = masterGame.MasterGame.IsReleased(currentDate);
+            bool willRelease = masterGame.WillRelease();
+            bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
+
+            PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isReleased, willRelease, hasScore);
+            return possibleMasterGame;
+        }
+
+        public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherStandardMasterGames,
+            HashSet<MasterGame> myPublisherMasterGames, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<LeagueTagStatus> tagsForSlot, LocalDate currentDate)
+        {
+            var tagsToUse = eligibilityFactors.TagOverrides.Any() ? eligibilityFactors.TagOverrides : masterGame.MasterGame.Tags;
+            var claimErrors = LeagueTagExtensions.GameHasValidTags(tagsForSlot, new List<LeagueTagStatus>(), masterGame.MasterGame, tagsToUse, currentDate);
+            bool isEligible = !claimErrors.Any();
             bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
             bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
             bool isReleased = masterGame.MasterGame.IsReleased(currentDate);

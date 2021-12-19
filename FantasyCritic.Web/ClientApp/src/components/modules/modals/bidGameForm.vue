@@ -211,8 +211,11 @@ export default {
     getGamesForSlot(slotInfo) {
       this.clearDataExceptSearch();
       this.isBusy = true;
+      let slotJSON = JSON.stringify(slotInfo);
+      let base64Slot = btoa(slotJSON);
+      let urlEncodedSlot = encodeURI(base64Slot);
       axios
-        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
+        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&slotInfo=' + urlEncodedSlot)
         .then(response => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;

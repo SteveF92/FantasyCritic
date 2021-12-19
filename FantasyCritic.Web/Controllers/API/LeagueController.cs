@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NodaTime;
 using static MoreLinq.Extensions.MaxByExtension;
 
@@ -1223,7 +1224,7 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModels;
         }
 
-        public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> TopAvailableGames(int year, Guid leagueID)
+        public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> TopAvailableGames(int year, Guid leagueID, string slotInfo)
         {
             var currentUserResult = await GetCurrentUser();
             if (currentUserResult.IsFailure)
@@ -1245,8 +1246,21 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            IReadOnlyList<PossibleMasterGameYear> topAvailableGames;
+            if (slotInfo is not null)
+            {
+                string slotInfoJSON = Encoding.UTF8.GetString(Convert.FromBase64String(slotInfo));
+                PublisherSingleSlotRequirementsViewModel slotInfoObject = JsonConvert.DeserializeObject<PublisherSingleSlotRequirementsViewModel>(slotInfoJSON);
+                var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
+                var leagueTagRequirements = slotInfoObject.GetLeagueTagStatus(tagDictionary);
+                topAvailableGames = await _gameSearchingService.GetTopAvailableGamesForSlot(userPublisher, publishersInLeague, year, leagueTagRequirements);
+            }
+            else
+            {
+                topAvailableGames = await _gameSearchingService.GetTopAvailableGames(userPublisher, publishersInLeague, year);
+            }
+
             var currentDate = _clock.GetToday();
-            var topAvailableGames = await _gameSearchingService.GetTopAvailableGames(userPublisher, publishersInLeague, year);
             var viewModels = topAvailableGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(100).ToList();
 
             return viewModels;
