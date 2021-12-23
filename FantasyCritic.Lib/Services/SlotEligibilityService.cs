@@ -119,6 +119,11 @@ namespace FantasyCritic.Lib.Services
         public static IReadOnlyList<ClaimError> GetClaimErrorsForSlot(PublisherSlot publisherSlot, MasterGameWithEligibilityFactors eligibilityFactors)
         {
             //This function returns a list of errors if a game is not eligible in THIS slot
+            if (publisherSlot.CounterPick)
+            {
+                return new List<ClaimError>();
+            }
+
             if (eligibilityFactors.GameIsSpecificallyAllowed)
             {
                 return new List<ClaimError>();
