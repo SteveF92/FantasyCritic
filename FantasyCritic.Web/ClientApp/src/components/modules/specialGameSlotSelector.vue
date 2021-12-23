@@ -7,6 +7,10 @@
     <div v-show="showNoTagsWarning" class="alert alert-warning">
       All of your special game slots should have at least one tag listed.
     </div>
+    <div v-show="showPortDanger" class="alert alert-danger">
+      Please, please, don't allow the tag 'Port'. These games very very rarely get new Open Critic pages, so we usually end up assigning the points from the original game.
+      You're free to allow the tag, but please be aware that this is an "unsupported" feature.
+    </div>
     <div v-for="specialGameSlot in internalValue" class="special-game-slot">
       <div class="special-slot-header">
         <h4>Special Slot {{specialGameSlot.specialSlotPosition + 1}}</h4>
@@ -41,6 +45,9 @@
       },
       showNoTagsWarning() {
         return _.some(this.internalValue, x => x.requiredTags.length === 0);
+      },
+      showPortDanger() {
+        return _.some(this.internalValue, x => _.some(x.requiredTags, y => y.name === "Port"));
       }
     },
     methods: {
