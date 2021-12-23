@@ -62,3 +62,13 @@ Vue.filter('percent', function(value, decimals) {
 Vue.filter('thousands', function (value) {
   return new Intl.NumberFormat().format(value);
 });
+
+
+Vue.filter('selectTextFromPossibleOptions', function (value, possibleOptions) {
+  let matchingValue = _.filter(possibleOptions, x => x.value === value)[0];
+  if (matchingValue) {
+    return matchingValue.text;
+  }
+
+  return value;
+});

@@ -1,6 +1,6 @@
 <template>
   <b-modal id="leagueOptionsModal" ref="leagueOptionsModalRef" title="League Options" hide-footer>
-    <div v-if="league && leagueYear && leagueYearOptions">
+    <div v-if="league && leagueYear && leagueYearOptions && possibleLeagueOptions">
       <table class="table table-responsive-sm table-bordered table-striped">
         <tbody>
           <tr>
@@ -51,12 +51,26 @@
             <td>{{leagueYearOptions.counterPicksBlockDrops | yesNo }}</td>
           </tr>
           <tr>
+            <th class="bg-primary">Bidding System</th>
+            <td>{{ leagueYearOptions.pickupSystem | selectTextFromPossibleOptions(possibleLeagueOptions.pickupSystems) }}</td>
+          </tr>
+          <tr>
+            <th class="bg-primary">Trading System</th>
+            <td>{{ leagueYearOptions.tradingSystem | selectTextFromPossibleOptions(possibleLeagueOptions.tradingSystems) }}</td>
+          </tr>
+
+          <tr>
             <th class="bg-primary">Banned Tags</th>
             <td>
               <span v-for="tag in leagueYearOptions.tags.banned">
                 <masterGameTagBadge :tagName="tag" short="true"></masterGameTagBadge>
               </span>
             </td>
+          </tr>
+          <tr>
+            <th class="bg-primary">Special Game Slots</th>
+            <td v-if="leagueYearOptions.specialGameSlots && leagueYearOptions.specialGameSlots.length > 0">{{ leagueYearOptions.specialGameSlots.length }}</td>
+            <td v-else>None</td>
           </tr>
 
           <tr>
@@ -84,10 +98,19 @@ export default {
   },
   data() {
     return {
+      possibleLeagueOptions: null,
       leagueYearOptions: null
     };
   },
   methods: {
+    fetchPossibleLeagueOptions() {
+      axios
+        .get('/api/League/LeagueOptions')
+        .then(response => {
+          this.possibleLeagueOptions = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
+    },
     fetchLeagueYearOptions() {
       axios
         .get('/api/League/GetLeagueYearOptions?leagueID=' + this.league.leagueID + '&year=' + this.leagueYear.year)
@@ -98,6 +121,7 @@ export default {
     }
   },
   mounted() {
+    this.fetchPossibleLeagueOptions();
     this.fetchLeagueYearOptions();
   }
 };
