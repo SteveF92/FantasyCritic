@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -97,12 +98,18 @@ namespace FantasyCritic.Lib.Domain
                 return null;
             }
 
-            if (!gameIsValidInSlot)
+            var calculatedScore = PublisherGame.Value.MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
+            if (gameIsValidInSlot)
             {
-                return 0m;
+                return calculatedScore;
             }
 
-            return PublisherGame.Value.MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
+            if (calculatedScore.HasValue && calculatedScore.Value <= 0m)
+            {
+                return calculatedScore;
+            }
+
+            return 0m;
         }
     }
 }
