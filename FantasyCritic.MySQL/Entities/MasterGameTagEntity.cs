@@ -20,6 +20,7 @@ namespace FantasyCritic.MySQL.Entities
             ShortName = domain.ShortName;
             TagType = domain.TagType.Name;
             HasCustomCode = domain.HasCustomCode;
+            SystemTagOnly = domain.SystemTagOnly;
             Description = domain.Description;
             Examples = JsonConvert.SerializeObject(domain.Examples);
             BadgeColor = domain.BadgeColor;
@@ -30,6 +31,7 @@ namespace FantasyCritic.MySQL.Entities
         public string ShortName { get; set; }
         public string TagType { get; set; }
         public bool HasCustomCode { get; set; }
+        public bool SystemTagOnly { get; set; }
         public string Description { get; set; }
         public string Examples { get; set; }
         public string BadgeColor { get; set; }
@@ -37,7 +39,7 @@ namespace FantasyCritic.MySQL.Entities
         public MasterGameTag ToDomain()
         {
             var examples = JsonConvert.DeserializeObject<List<string>>(Examples);
-            return new MasterGameTag(Name, ReadableName, ShortName, new MasterGameTagType(TagType), HasCustomCode, Description, examples, BadgeColor);
+            return new MasterGameTag(Name, ReadableName, ShortName, new MasterGameTagType(TagType), HasCustomCode, SystemTagOnly, Description, examples, BadgeColor);
         }
     }
 }

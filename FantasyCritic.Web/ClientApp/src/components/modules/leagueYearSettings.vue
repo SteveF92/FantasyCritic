@@ -385,7 +385,6 @@ export default {
       this.value.unlimitedWillReleaseDroppableGames = false;
 
       let alwaysBannedTags = [
-        "Cancelled",
         "Port"
       ];
 

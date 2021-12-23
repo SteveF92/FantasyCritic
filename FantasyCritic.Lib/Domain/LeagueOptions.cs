@@ -134,7 +134,8 @@ namespace FantasyCritic.Lib.Domain
                 return Result.Failure("Can't have more drafted counter picks than drafted games.");
             }
 
-            var bannedTagNames = LeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag.Name).ToHashSet();
+            var bannedTags = LeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).ToList();
+            var bannedTagNames = bannedTags.Select(x => x.Tag.Name).ToHashSet();
             if (bannedTagNames.Contains("PlannedForEarlyAccess") && !bannedTagNames.Contains("CurrentlyInEarlyAccess"))
             {
                 return Result.Failure("If you ban 'Planned for Early Access' you must also ban 'Currently in Early Access'. See the FAQ page for an explanation.");
@@ -142,6 +143,17 @@ namespace FantasyCritic.Lib.Domain
             if (bannedTagNames.Contains("WillReleaseInternationallyFirst") && !bannedTagNames.Contains("ReleasedInternationally"))
             {
                 return Result.Failure("If you ban 'Will Release Internationally First' you must also ban 'Released Internationally'. See the FAQ page for an explanation.");
+            }
+
+            if (bannedTags.Any(x => x.Tag.SystemTagOnly))
+            {
+                return Result.Failure("You cannot ban 'system only' tags. These are for behind the scenes use only.");
+            }
+
+            var requiredSpecialSlotTags = SpecialGameSlots.SelectMany(x => x.Tags).Distinct().ToList();
+            if (requiredSpecialSlotTags.Any(x => x.SystemTagOnly))
+            {
+                return Result.Failure("You cannot have a slot that requires a 'system only' tag. These are for behind the scenes use only.");
             }
 
             if (SpecialGameSlots.Count > StandardGames)

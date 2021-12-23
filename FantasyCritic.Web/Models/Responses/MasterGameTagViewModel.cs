@@ -18,6 +18,7 @@ namespace FantasyCritic.Web.Models.Responses
             Description = domain.Description;
             Examples = domain.Examples;
             BadgeColor = domain.BadgeColor;
+            SystemTagOnly = domain.SystemTagOnly;
         }
 
         public string Name { get; }
@@ -27,5 +28,6 @@ namespace FantasyCritic.Web.Models.Responses
         public string Description { get; }
         public IReadOnlyList<string> Examples { get; }
         public string BadgeColor { get; }
+        public bool SystemTagOnly { get; }
     }
 }

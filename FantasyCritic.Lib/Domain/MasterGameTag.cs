@@ -8,13 +8,15 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGameTag : IEquatable<MasterGameTag>
     {
-        public MasterGameTag(string name, string readableName, string shortName, MasterGameTagType tagType, bool hasCustomCode, string description, IEnumerable<string> examples, string badgeColor)
+        public MasterGameTag(string name, string readableName, string shortName, MasterGameTagType tagType,
+            bool hasCustomCode, bool systemTagOnly, string description, IEnumerable<string> examples, string badgeColor)
         {
             Name = name;
             ReadableName = readableName;
             ShortName = shortName;
             TagType = tagType;
             HasCustomCode = hasCustomCode;
+            SystemTagOnly = systemTagOnly;
             Description = description;
             Examples = examples.ToList();
             BadgeColor = badgeColor;
@@ -25,6 +27,7 @@ namespace FantasyCritic.Lib.Domain
         public string ShortName { get; }
         public MasterGameTagType TagType { get; }
         public bool HasCustomCode { get; }
+        public bool SystemTagOnly { get; }
         public string Description { get; }
         public IReadOnlyList<string> Examples { get; }
         public string BadgeColor { get; }

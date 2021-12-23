@@ -66,7 +66,7 @@
     },
     computed: {
       tagOptions() {
-        return this.$store.getters.allTags;
+        return _.filter(this.$store.getters.allTags, x => !x.systemTagOnly);
       },
       showWarning() {
         if (this.gameMode === 'Beginner') {
