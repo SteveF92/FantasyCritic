@@ -81,7 +81,7 @@
                 </div>
 
                 <h3>Tags</h3>
-                <masterGameTagSelector v-model="tags"></masterGameTagSelector>
+                <masterGameTagSelector v-model="tags" :includeSystem="true"></masterGameTagSelector>
 
                 <div class="form-group">
                   <label for="notes" class="control-label">Other Notes</label>

@@ -16,7 +16,7 @@ import Multiselect from 'vue-multiselect'
 import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
 export default {
-  props: ['value'],
+  props: ['value','includeSystem'],
   components: {
     Multiselect,
     MasterGameTagBadge
@@ -28,7 +28,10 @@ export default {
   },
   computed: {
     tagOptions() {
-      return this.$store.getters.allTags;
+      if (this.includeSystem) {
+        return this.$store.getters.allTags;
+      }
+      return _.filter(this.$store.getters.allTags, x => !x.systemTagOnly);
     },
   },
   methods: {

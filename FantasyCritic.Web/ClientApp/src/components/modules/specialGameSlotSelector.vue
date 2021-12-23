@@ -40,9 +40,6 @@
       }
     },
     computed: {
-      tagOptions() {
-        return _.filter(this.$store.getters.allTags, x => !x.systemTagOnly);
-      },
       showNoTagsWarning() {
         return _.some(this.internalValue, x => x.requiredTags.length === 0);
       },
