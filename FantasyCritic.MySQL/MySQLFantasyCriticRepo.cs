@@ -1619,16 +1619,27 @@ namespace FantasyCritic.MySQL
 
         public async Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
         {
-            var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
+            var realOrderEntities = new List<PublisherGameSlotNumberUpdateEntity>();
+            var tempOrderEntities = new List<PublisherGameSlotNumberUpdateEntity>();
+
+            int tempSlotNumber = 10_000;
             foreach (var slotState in slotStates)
             {
-                updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(slotState.Value, slotState.Key));
+                tempOrderEntities.Add(new PublisherGameSlotNumberUpdateEntity(slotState.Value, tempSlotNumber));
+                realOrderEntities.Add(new PublisherGameSlotNumberUpdateEntity(slotState.Value, slotState.Key));
+                tempSlotNumber++;
             }
 
             string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(sql, updateEntities);
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(sql, tempOrderEntities, transaction);
+                    await connection.ExecuteAsync(sql, realOrderEntities, transaction);
+                    await transaction.CommitAsync();
+                }
             }
         }
 
