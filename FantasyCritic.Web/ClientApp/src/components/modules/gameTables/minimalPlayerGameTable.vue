@@ -22,7 +22,7 @@
       </thead>
       <tbody>
         <playerGameSlotRow v-for="gameSlot in publisher.gameSlots" :minimal="true"
-                           :gameSlot="gameSlot" :yearFinished="leagueYear.supportedYear.finished" 
+                           :gameSlot="gameSlot" :supportedYear="leagueYear.supportedYear" 
                            :hasSpecialSlots="leagueYear.hasSpecialSlots" :userIsPublisher="userIsPublisher"
                            v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
           <tr class="minimal-game-row">
