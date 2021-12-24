@@ -238,8 +238,10 @@
           <br />
           <br />
           Then, on Thursday at 8PM, the names of all of the games that have active bids are made public to the rest of your league.
-          The names of the players and the amounts being bid are not revealed, only the names of the games. From this point until bids process at 8PM on Saturday, players can edit the bids they have
-          already made, or bid on a game that someone else has bid on that they haven't. However, players are <strong>not</strong> allowed to bid for a game that no one is currently bidding on.
+          The names of the players and the amounts being bid are not revealed, only the names of the games. From this point until bids process at 8PM on Saturday,
+          players can edit the dollar amounts on the bids they have already made, or bid on a game that someone else has bid on that they haven't.
+          However, players are <strong>not</strong> allowed to bid for a game that no one is currently bidding on, and players <strong>cannot</strong> cancel a bid entirely
+          in the 'public bidding window'.
           <br />
           <br />
           The intention of this system to help prevent one "highly tuned in" player from dominating a league by always being the first to know about new games. If half of your players frequently
