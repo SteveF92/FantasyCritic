@@ -251,7 +251,7 @@ namespace FantasyCritic.Web.Controllers.API
             IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticService.GetLeagueYears(currentYear.Year);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticService.GetAllPublishersForYear(currentYear.Year, allLeagueYears);
 
-            var nextBidTime = _gameAcquisitionService.GetNextBidTime();
+            var nextBidTime = _clock.GetNextBidTime();
             var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears, allPublishers);
             IEnumerable<LeagueAction> failingActions = actionResults.LeagueActions.Where(x => x.IsFailed);
             var failingActionGames = failingActions.Select(x => x.MasterGameName).Distinct();

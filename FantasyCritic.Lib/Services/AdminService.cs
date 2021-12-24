@@ -244,7 +244,7 @@ namespace FantasyCritic.Lib.Services
             var timeOfDay = nycNow.TimeOfDay;
             var earliestTimeToSet = new LocalTime(19, 59);
             var latestTimeToSet = new LocalTime(20, 59);
-            if (dayOfWeek == IsoDayOfWeek.Saturday && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet)
+            if (dayOfWeek == TimeExtensions.ActionProcessingDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet)
             {
                 _logger.Info($"Automatically setting action processing mode = true because date/time is: {nycNow}");
                 await _interLeagueService.SetActionProcessingMode(true);

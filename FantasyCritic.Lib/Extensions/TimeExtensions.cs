@@ -29,9 +29,48 @@ namespace FantasyCritic.Lib.Extensions
             return date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         }
 
+        public static Instant GetNextBidTime(this IClock clock)
+        {
+            var currentTime = clock.GetCurrentInstant();
+            var nyc = EasternTimeZone;
+            LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
+            LocalDate nextBidDate;
+            if (currentDate.DayOfWeek == ActionProcessingDay)
+            {
+                nextBidDate = currentDate;
+            }
+            else
+            {
+                nextBidDate = currentDate.Next(ActionProcessingDay);
+            }
+
+            LocalDateTime dateTime = nextBidDate + ActionProcessingTime;
+            return dateTime.InZoneStrictly(nyc).ToInstant();
+        }
+
+        public static Instant GetPreviousBidTime(this IClock clock)
+        {
+            var currentTime = clock.GetCurrentInstant();
+            var nyc = EasternTimeZone;
+            LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
+            LocalDate previousBidDate;
+            if (currentDate.DayOfWeek == ActionProcessingDay)
+            {
+                previousBidDate = currentDate;
+            }
+            else
+            {
+                previousBidDate = currentDate.Previous(ActionProcessingDay);
+            }
+
+            LocalDateTime dateTime = previousBidDate + ActionProcessingTime;
+            return dateTime.InZoneStrictly(nyc).ToInstant();
+        }
+
         public static readonly DateTimeZone EasternTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
         public static readonly IsoDayOfWeek PublicBiddingRevealDay = IsoDayOfWeek.Thursday;
         public static readonly LocalTime PublicBiddingRevealTime = new LocalTime(20, 0);
+        public static readonly IsoDayOfWeek ActionProcessingDay = IsoDayOfWeek.Saturday;
         public static readonly LocalTime ActionProcessingTime = new LocalTime(20, 0);
     }
 }

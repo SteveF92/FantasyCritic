@@ -389,7 +389,7 @@ namespace FantasyCritic.Lib.Services
             var leagueYear = publisher.LeagueYear;
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
 
-            Instant nextBidTime = GetNextBidTime();
+            Instant nextBidTime = _clock.GetNextBidTime();
 
             int? validDropSlot = null;
             if (conditionalDropPublisherGame.HasValue)
@@ -420,25 +420,6 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.CreatePickupBid(currentBid);
 
             return claimResult;
-        }
-
-        public Instant GetNextBidTime()
-        {
-            var currentTime = _clock.GetCurrentInstant();
-            var nyc = TimeExtensions.EasternTimeZone;
-            LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
-            LocalDate nextBidDate;
-            if (currentDate.DayOfWeek == IsoDayOfWeek.Saturday)
-            {
-                nextBidDate = currentDate;
-            }
-            else
-            {
-                nextBidDate = currentDate.Next(IsoDayOfWeek.Saturday);
-            }
-
-            LocalDateTime dateTime = nextBidDate + TimeExtensions.ActionProcessingTime;
-            return dateTime.InZoneStrictly(nyc).ToInstant();
         }
 
         public async Task<ClaimResult> QueueGame(Publisher publisher, MasterGame masterGame)
@@ -636,30 +617,14 @@ namespace FantasyCritic.Lib.Services
             }
 
             var currentTime = _clock.GetCurrentInstant();
-            var currentDate = currentTime.ToEasternDate();
-            if (currentDate.DayOfWeek < TimeExtensions.PublicBiddingRevealDay)
-            {
-                return false;
-            }
+            var previousBidTime = _clock.GetPreviousBidTime();
+            LocalDate previousBidDate = previousBidTime.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
+            var publicBidDate = previousBidDate.Next(TimeExtensions.PublicBiddingRevealDay);
+            var publicBidDateTime = (publicBidDate + TimeExtensions.PublicBiddingRevealTime)
+                .InZoneStrictly(TimeExtensions.EasternTimeZone)
+                .ToInstant();
 
-            var nycTime = currentTime.InZone(TimeExtensions.EasternTimeZone);
-            var localTime = nycTime.LocalDateTime.TimeOfDay;
-            if (localTime < TimeExtensions.PublicBiddingRevealTime)
-            {
-                return false;
-            }
-
-            if (currentDate.DayOfWeek == IsoDayOfWeek.Saturday && localTime > TimeExtensions.ActionProcessingTime)
-            {
-                return false;
-            }
-
-            if (currentDate.DayOfWeek > IsoDayOfWeek.Saturday)
-            {
-                return false;
-            }
-
-            return true;
+            return currentTime > publicBidDateTime;
         }
     }
 }
