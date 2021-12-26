@@ -40,7 +40,14 @@
         This is not reverseable. You should be really, really, sure that this is what you want.
       </div>
       <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
-        If you are sure, type <strong>REMOVE PLAYER</strong> into the box below and click the button.
+        I'm so confident that you <em>almost certainly</em> do not want to do this that I'm going to be very annoying about it. In order you remove this player, you must type the "secret phase".
+        <br />
+        You can get the "secret phase" in two ways:
+        <ul>
+          <li>Ask me on Discord/Twitter, with an explanation of the situation.</li>
+          <li>Look through the site's source code on GitHub. It's in there, in the file that controls this dialog box.</li>
+        </ul>
+        Once you have it, type it into the box below and click the button.
       </div>
 
 
@@ -51,7 +58,7 @@
       <input v-model="removeConfirmation" v-show="playerToRemove && !playerIsLeagueManager(playerToRemove)" type="text" class="form-control input" />
 
 
-      <b-button variant="danger" class="remove-button" v-show="playerToRemove && !playerIsLeagueManager(playerToRemove)" v-on:click="removePlayer" :disabled="!removeConfirmed">Remove Player</b-button>
+      <b-button variant="danger" class="remove-button" v-if="playerToRemove && !playerIsLeagueManager(playerToRemove)" v-on:click="removePlayer" :disabled="!removeConfirmed(playerToRemove)">Remove Player</b-button>
     </div>
   </b-modal>
 </template>
@@ -75,10 +82,7 @@
       players() {
         return this.leagueYear.players;
       },
-      removeConfirmed() {
-        let upperCase = this.removeConfirmation.toUpperCase();
-        return upperCase === 'REMOVE PLAYER';
-      }
+      
     },
     methods: {
       playerIsSafelyRemoveable(player) {
@@ -87,6 +91,15 @@
         });
 
         return matchingLeagueLevelPlayer.removable;
+      },
+      removeConfirmed(player) {
+        //This "password" isn't a security concern, it's just to protect the user from doing something they really don't want to do. If you've dug through the code and found this, you probably do know what you are doing.
+        let passphase = 'REMOVE PLAYER';
+        if (!this.playerIsSafelyRemoveable(player)) {
+          passphase = 'I AM SURE I KNOW WHAT I AM DOING';
+        }
+        let upperCase = this.removeConfirmation.toUpperCase();
+        return upperCase === passphase;
       },
       playerIsLeagueManager(player) {
         return player.user.userID === this.league.leagueManager.userID;
