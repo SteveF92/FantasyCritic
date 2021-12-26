@@ -616,6 +616,11 @@ namespace FantasyCritic.Lib.Services
                 return false;
             }
 
+            if (!leagueYear.PlayStatus.DraftFinished)
+            {
+                return false;
+            }
+
             var currentTime = _clock.GetCurrentInstant();
             var previousBidTime = _clock.GetPreviousBidTime();
             LocalDate previousBidDate = previousBidTime.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
