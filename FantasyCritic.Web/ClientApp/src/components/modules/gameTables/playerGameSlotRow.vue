@@ -94,7 +94,7 @@ export default {
       return this.gameSlot.publisherGame;
     },
     yearFinished() {
-      return this.supportedYear.yearFinished;
+      return this.supportedYear.finished;
     },
     advancedProjections() {
       return this.$store.getters.advancedProjections;
