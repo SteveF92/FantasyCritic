@@ -34,6 +34,16 @@ namespace FantasyCritic.Lib.Identity
             return createdUser;
         }
 
+        public override async Task<IdentityResult> CreateAsync(FantasyCriticUser user)
+        {
+            int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
+            var now = _clock.GetCurrentInstant();
+            var fullUser = new FantasyCriticUser(user.Id, user.UserName, openUserNumber, user.Email,
+                user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
+            var createdUser = await base.CreateAsync(fullUser);
+            return createdUser;
+        }
+
         public Task<int> GetOpenDisplayNumber(string displayName)
         {
             return _userStore.GetOpenDisplayNumber(displayName);
