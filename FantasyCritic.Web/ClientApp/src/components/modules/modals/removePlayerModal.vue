@@ -33,7 +33,7 @@
       </div>
       <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
         This will affect prior years of this league, not only the current one. Removing a player for the current year in this way will delete their publishers from prior years. If you
-        just want to remove a player because they won't be participating in the league anymore, you should use the "Manage Active Players" feature.
+        just want to remove a player because they won't be participating in the league anymore, you should use the "Manage Active Players" feature. You can do that after you start the new league year.
       </div>
       <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
         If you delete a user's publishers, all of their games will become available for pickup.
@@ -49,7 +49,12 @@
         </ul>
         Once you have it, type it into the box below and click the button.
       </div>
-
+      <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
+        The only reason I can think of to use this feature is if a player has been a "problem" in some way,
+        and you need to forcibly remove them from the league, and are you okay with the consequences.
+        Again, if you just need to remove a player that played last year, but will not be playing this year, <em>do not use this feature.</em>
+        Use "Manage Active Players" after starting the new year.
+      </div>
 
       <div class="alert alert-danger" v-show="playerToRemove && playerIsLeagueManager(playerToRemove)">
         You cannot remove yourself!
