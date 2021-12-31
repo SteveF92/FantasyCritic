@@ -336,6 +336,9 @@ export default {
       this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
     },
     autoUpdateOptions() {
+      if (!this.freshSettings) {
+        return;
+      }
       if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
         this.intendedNumberOfPlayersEverValid = true;
       }
@@ -417,6 +420,9 @@ export default {
       this.$emit('input', this.local);
     },
     autoUpdateSpecialSlotOptions() {
+      if (!this.freshSettings) {
+        return;
+      }
       this.value.specialGameSlots = [];
       if (this.gameMode === "Beginner") {
         return;
