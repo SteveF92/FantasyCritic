@@ -719,7 +719,7 @@ namespace FantasyCritic.MySQL
             await AddPlayerToLeague(league, league.LeagueManager);
         }
 
-        public async Task EditLeagueYear(LeagueYear leagueYear)
+        public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments)
         {
             LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.PlayStatus);
             var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
@@ -744,6 +744,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(editLeagueYearSQL, leagueYearEntity, transaction);
                     await connection.ExecuteAsync(deleteTagsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
                     await connection.ExecuteAsync(deleteSpecialSlotsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
+                    await OrganizeSlots(leagueYear, slotAssignments, connection, transaction);
                     await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
                     await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
                     await transaction.CommitAsync();
@@ -1615,6 +1616,37 @@ namespace FantasyCritic.MySQL
             
             string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
             await connection.ExecuteAsync(sql, updateEntities, transaction);
+        }
+
+        private async Task OrganizeSlots(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            int tempSlotNumber = 1000;
+            List<PublisherGameSlotNumberUpdateEntity> preRunUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
+            List<PublisherGameSlotNumberUpdateEntity> finalUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
+            var publishers = await GetPublishersInLeagueForYear(leagueYear);
+            foreach (var publisher in publishers)
+            {
+                var nonCounterPicks = publisher.PublisherGames.Where(x => !x.CounterPick);
+                foreach (var publisherGame in nonCounterPicks)
+                {
+                    var foundGame = slotAssignments.TryGetValue(publisherGame.PublisherGameID, out var newSlotNumber);
+                    if (!foundGame)
+                    {
+                        string error =
+                            $"Cannot figure out slots for LeagueID: {publisher.LeagueYear.League.LeagueID} PublisherID: {publisher.PublisherID} " +
+                            $"PublisherGameID: {publisherGame.PublisherGameID} GameName: {publisherGame.GameName}";
+                        throw new Exception(error);
+                    }
+
+                    preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(publisherGame.PublisherGameID, tempSlotNumber));
+                    finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(publisherGame.PublisherGameID, newSlotNumber));
+                    tempSlotNumber++;
+                }
+            }
+
+            string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
+            await connection.ExecuteAsync(sql, preRunUpdates, transaction);
+            await connection.ExecuteAsync(sql, finalUpdates, transaction);
         }
 
         public async Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)

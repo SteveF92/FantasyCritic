@@ -20,7 +20,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<Maybe<LeagueYear>> GetLeagueYear(League requestLeague, int requestYear);
         Task CreateLeague(League league, int initialYear, LeagueOptions options);
         Task AddNewLeagueYear(League league, int year, LeagueOptions options);
-        Task EditLeagueYear(LeagueYear leagueYear);
+        Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments);
 
         Task<IReadOnlyList<League>> GetAllLeagues(bool includeDeleted = false);
         Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
