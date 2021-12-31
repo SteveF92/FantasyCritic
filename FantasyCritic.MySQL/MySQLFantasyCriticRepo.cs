@@ -1620,6 +1620,11 @@ namespace FantasyCritic.MySQL
 
         private async Task OrganizeSlots(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, MySqlConnection connection, MySqlTransaction transaction)
         {
+            if (!slotAssignments.Any())
+            {
+                return;
+            }
+
             int tempSlotNumber = 1000;
             List<PublisherGameSlotNumberUpdateEntity> preRunUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
             List<PublisherGameSlotNumberUpdateEntity> finalUpdates = new List<PublisherGameSlotNumberUpdateEntity>();

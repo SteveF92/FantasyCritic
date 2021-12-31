@@ -9,7 +9,5 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         public Guid UserID { get; set; }
         [Required]
         public Guid LeagueID { get; set; }
-        [Required]
-        public bool DeletePublishers { get; set; }
     }
 }
