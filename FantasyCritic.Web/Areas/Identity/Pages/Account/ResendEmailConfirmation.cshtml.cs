@@ -49,17 +49,18 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
                 return Page();
             }
 
+            string message = "If you have an account, a verification email has been sent. Please check your email.";
             var user = await _userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+                ModelState.AddModelError(string.Empty, message);
                 return Page();
             }
 
             var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
             await _emailSender.SendConfirmationEmail(user, confirmLink);
 
-            ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+            ModelState.AddModelError(string.Empty, message);
             return Page();
         }
     }
