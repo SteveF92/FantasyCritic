@@ -52,15 +52,15 @@ namespace FantasyCritic.Lib.Extensions
         {
             var currentTime = clock.GetCurrentInstant();
             var nyc = EasternTimeZone;
-            LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
+            var currentDateTime = currentTime.InZone(nyc).LocalDateTime;
             LocalDate previousBidDate;
-            if (currentDate.DayOfWeek == ActionProcessingDay)
+            if (currentDateTime.Date.DayOfWeek == ActionProcessingDay && currentDateTime.TimeOfDay > ActionProcessingTime)
             {
-                previousBidDate = currentDate;
+                previousBidDate = currentDateTime.Date;
             }
             else
             {
-                previousBidDate = currentDate.Previous(ActionProcessingDay);
+                previousBidDate = currentDateTime.Date.Previous(ActionProcessingDay);
             }
 
             LocalDateTime dateTime = previousBidDate + ActionProcessingTime;
