@@ -62,7 +62,7 @@ namespace FantasyCritic.Lib.Domain
                 {
                     claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Planned For Early Access", true));
                 }
-                else if (plannedEarlyAccessTag.Status.Equals(TagStatus.Required) && (!gameIsPlannedForEarlyAccess || gameIsInEarlyAccess))
+                else if (plannedEarlyAccessTag.Status.Equals(TagStatus.Required) && !gameIsPlannedForEarlyAccess && !gameIsInEarlyAccess)
                 {
                     claimErrors.Add(new ClaimError("That game is not eligible because it is not planned for or in early access", true));
                 }
@@ -91,7 +91,7 @@ namespace FantasyCritic.Lib.Domain
                 {
                     claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Will Release Internationally First", true));
                 }
-                else if (willReleaseInternationallyFirstTag.Status.Equals(TagStatus.Required) && (!gameWillReleaseInternationallyFirst || gameReleasedInternationallyFirst))
+                else if (willReleaseInternationallyFirstTag.Status.Equals(TagStatus.Required) && !gameWillReleaseInternationallyFirst & !gameReleasedInternationallyFirst)
                 {
                     claimErrors.Add(new ClaimError("That game is not eligible because it will not or has not released internationally first", true));
                 }
