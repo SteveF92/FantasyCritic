@@ -484,6 +484,8 @@ export default {
     }
   },
   async mounted() {
+    this.$store.commit('setAdvancedProjections', false);
+    this.$store.commit('setDraftOrderView', false);
     this.selectedYear = this.year;
     this.getInviteCode();
     this.fetchLeague();
@@ -493,6 +495,8 @@ export default {
   watch: {
     '$route'(to, from) {
       if (to.path !== from.path) {
+        this.$store.commit('setAdvancedProjections', false);
+        this.$store.commit('setDraftOrderView', false);
         this.fetchLeagueYear();
       }
     },

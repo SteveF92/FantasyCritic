@@ -21,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        <playerGameSlotRow v-for="gameSlot in publisher.gameSlots" :minimal="true"
+        <playerGameSlotRow v-for="gameSlot in gameSlots" :minimal="true"
                            :gameSlot="gameSlot" :supportedYear="leagueYear.supportedYear" 
                            :hasSpecialSlots="leagueYear.hasSpecialSlots" :userIsPublisher="userIsPublisher"
                            v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
@@ -60,6 +60,13 @@ export default {
     },
     userIsPublisher() {
       return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
+    },
+    gameSlots() {
+      if (!this.$store.getters.draftOrderView) {
+        return this.publisher.gameSlots;
+      }
+
+      return _.orderBy(this.publisher.gameSlots, ['counterPick', 'publisherGame.timestamp'], ['asc', 'asc']);
     }
   }
 };
