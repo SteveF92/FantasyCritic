@@ -14,10 +14,11 @@ namespace FantasyCritic.Lib.Domain
 {
     public static class LeagueTagExtensions
     {
-        public static IReadOnlyList<ClaimError> GameIsRoyaleEligible(IEnumerable<MasterGameTag> allMasterGameTags, MasterGame masterGame, LocalDate dateOfAcquisition)
+        public static IReadOnlyList<ClaimError> GetRoyaleClaimErrors(IEnumerable<MasterGameTag> allMasterGameTags, MasterGame masterGame, LocalDate dateOfAcquisition)
         {
-            return GameHasValidTags(GetRoyaleEligibilitySettings(allMasterGameTags), new List<LeagueTagStatus>(),
-                masterGame, masterGame.Tags, dateOfAcquisition);
+            var royaleSettings = GetRoyaleEligibilitySettings(allMasterGameTags);
+            var claimErrors = GameHasValidTags(royaleSettings, new List<LeagueTagStatus>(), masterGame, masterGame.Tags, dateOfAcquisition);
+            return claimErrors;
         }
 
         public static IReadOnlyList<ClaimError> GameHasValidTags(IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueTagStatus> slotSpecificTags, 

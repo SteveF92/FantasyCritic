@@ -3,19 +3,20 @@
     <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
 
     <b-table small bordered striped responsive :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
-      <template v-slot:cell(gameName)="data">
+      <template v-slot:cell(masterGame.gameName)="data">
         <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
-      <template v-slot:cell(maximumReleaseDate)="data">
+      <template v-slot:cell(masterGame.maximumReleaseDate)="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
           <span>{{data.item.masterGame.estimatedReleaseDate}}</span>
           <span v-show="data.item.masterGame.isReleased">(Released)</span>
         </div>
       </template>
-      <template v-slot:cell(tags)="data">
-        <span v-for="(tag, index) in data.item.tags">
-          <masterGameTagBadge :tagName="data.item.tags[index]" short="true"></masterGameTagBadge>
-        </span>
+      <template v-slot:cell(masterGame.dateAdjustedHypeFactor)="data">
+        {{data.item.masterGame.dateAdjustedHypeFactor | score(1)}}
+      </template>
+      <template v-slot:cell(status)="data">
+        <statusBadge :possibleMasterGame="data.item"></statusBadge>
       </template>
       <template v-slot:cell(cost)="data">
         {{data.item.cost | money}}
@@ -38,10 +39,11 @@ export default {
       selectedPossibleRoyaleGame: null,
       lastPopoverShown: null,
       gameFields: [
-        { key: 'gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
-        { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'tags', label: 'Tags', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary' },
+        { key: 'status', label: 'Status', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'select', label: '', thClass: 'bg-primary' }
       ],
     };

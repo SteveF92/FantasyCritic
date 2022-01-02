@@ -21,7 +21,7 @@
       <template v-slot:cell(masterGame.dateAdjustedHypeFactor)="data">
         {{data.item.masterGame.dateAdjustedHypeFactor | score(1)}}
       </template>
-      <template v-slot:cell(masterGame.status)="data">
+      <template v-slot:cell(status)="data">
         <statusBadge :possibleMasterGame="data.item"></statusBadge>
       </template>
       <template v-slot:cell(select)="data">
@@ -45,7 +45,7 @@ export default {
         { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'masterGame.status', label: 'Status', thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'status', label: 'Status', thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'select', label: '', thClass: 'bg-primary' }
       ],
       sortBy: 'dateAdjustedHypeFactor',

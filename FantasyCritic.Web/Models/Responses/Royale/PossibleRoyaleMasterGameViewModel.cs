@@ -12,35 +12,48 @@ namespace FantasyCritic.Web.Models.Responses.Royale
         {
             MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
             WillReleaseInQuarter = masterGame.WillReleaseInQuarter(yearQuarter.YearQuarter);
-            IsEligible = LeagueTagExtensions.GameIsRoyaleEligible(masterGameTags, masterGame.MasterGame, currentDate).Any();
             AlreadyOwned = alreadyOwned;
+            IsEligible = !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate).Any();
+            IsReleased = masterGame.MasterGame.IsReleased(currentDate);
+            HasScore = masterGame.MasterGame.CriticScore.HasValue;
             Cost = masterGame.GetRoyaleGameCost();
         }
 
         public MasterGameYearViewModel MasterGame { get; }
         public bool WillReleaseInQuarter { get; }
-        public bool IsEligible { get; }
-        public bool AlreadyOwned { get; }
         public decimal Cost { get; }
-        public bool IsAvailable => WillReleaseInQuarter && !AlreadyOwned && IsEligible;
+        public bool AlreadyOwned { get; }
+        public bool IsEligible { get; }
+        public bool IsReleased { get; }
+        public bool HasScore { get; }
+        public bool IsAvailable => !AlreadyOwned && IsEligible && !IsReleased && !HasScore && WillReleaseInQuarter;
 
         public string Status
         {
             get
             {
+
                 if (AlreadyOwned)
                 {
                     return "Already Owned";
                 }
-                if (!WillReleaseInQuarter)
+                if (IsReleased)
                 {
-                    return "Will Not Release";
+                    return "Released";
+                }
+                if (HasScore)
+                {
+                    return "Has Score";
                 }
                 if (!IsEligible)
                 {
                     return "Ineligible";
                 }
-                
+                if (!WillReleaseInQuarter)
+                {
+                    return "Will Not Release";
+                }
+
                 return "Available";
             }
         }

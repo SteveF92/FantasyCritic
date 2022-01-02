@@ -117,7 +117,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             var masterGameTags = await _masterGameRepo.GetMasterGameTags();
-            var eligibilityErrors = LeagueTagExtensions.GameIsRoyaleEligible(masterGameTags, masterGame.MasterGame, currentDate);
+            var eligibilityErrors = LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate);
             if (eligibilityErrors.Any())
             {
                 return new ClaimResult("Game is not eligible under Royale rules.", null);
