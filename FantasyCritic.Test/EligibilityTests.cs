@@ -259,12 +259,45 @@ namespace FantasyCritic.Test
             {
                 new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
                 new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
             };
 
             var slotTags = new List<LeagueTagStatus>()
             {
                 new LeagueTagStatus(_tagDictionary["P-EA"], TagStatus.Required),
                 new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Required)
+            };
+
+            var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
+            Assert.AreEqual(0, claimErrors.Count);
+        }
+
+        [Test]
+        public void EarlyAccessReleasedInternationallyComplexSlotEligible()
+        {
+            Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-01-31T20:49:24Z").GetValueOrThrow();
+            var acquisitionDate = acquisitionTime.ToEasternDate();
+
+            MasterGame masterGame = CreateComplexMasterGame("Baldur's Gate 3", new LocalDate(2022, 1, 3), null,
+                new LocalDate(2020, 10, 6), null, new List<MasterGameTag>()
+                {
+                    _tagDictionary["NG"],
+                    _tagDictionary["C-EA"],
+                });
+
+            var leagueTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            };
+
+            var slotTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Required),
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Required),
+                new LeagueTagStatus(_tagDictionary["NG"], TagStatus.Required),
+                new LeagueTagStatus(_tagDictionary["NGF"], TagStatus.Required),
             };
 
             var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
