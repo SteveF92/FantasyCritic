@@ -61,12 +61,12 @@
           </ul>
 
           <div class="form-check" v-if="draftResult.overridable">
-            <span>
+            <span >
               <label v-show="!isManager" class="form-check-label">Your league manager can override these warnings.</label>
               <label v-show="isManager" class="form-check-label">
-                <span>You as league manager can override these warnings.</span>
+                <span class="text-white">You as league manager can override these warnings.</span>
                 <br />
-                <span>Use the "Select Next Game" button under "Manager Actions".</span>
+                <span class="text-white">Use the "Select Next Game" button under "Manager Actions".</span>
               </label>
             </span>
           </div>
