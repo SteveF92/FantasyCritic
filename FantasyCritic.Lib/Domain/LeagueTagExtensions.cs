@@ -63,9 +63,16 @@ namespace FantasyCritic.Lib.Domain
                 {
                     claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Planned For Early Access", true));
                 }
-                else if (plannedEarlyAccessTag.Status.Equals(TagStatus.Required) && !gameIsPlannedForEarlyAccess && !gameIsInEarlyAccess)
+                else if (plannedEarlyAccessTag.Status.Equals(TagStatus.Required))
                 {
-                    claimErrors.Add(new ClaimError("That game is not eligible because it is not planned for or in early access", true));
+                    if (!gameIsPlannedForEarlyAccess && !gameIsInEarlyAccess && hasNoRequiredTags)
+                    {
+                        claimErrors.Add(new ClaimError("That game is not eligible because it is not planned for or in early access", true));
+                    }
+                    else if (gameIsPlannedForEarlyAccess || gameIsInEarlyAccess)
+                    {
+                        hasNoRequiredTags = false;
+                    }
                 }
             }
             if (leagueCustomCodeTagsDictionary.TryGetValue("CurrentlyInEarlyAccess", out var currentlyInEarlyAccessTags))
@@ -78,9 +85,16 @@ namespace FantasyCritic.Lib.Domain
                         claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Currently in Early Access", true));
                     }
                 }
-                else if (currentlyInEarlyAccessTags.Status.Equals(TagStatus.Required) && !gameIsInEarlyAccess)
+                else if (currentlyInEarlyAccessTags.Status.Equals(TagStatus.Required))
                 {
-                    claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Currently in Early Access", true));
+                    if (!gameIsInEarlyAccess && hasNoRequiredTags)
+                    {
+                        claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Currently in Early Access", true));
+                    }
+                    else if (gameIsInEarlyAccess)
+                    {
+                        hasNoRequiredTags = false;
+                    }
                 }
             }
 
@@ -92,9 +106,16 @@ namespace FantasyCritic.Lib.Domain
                 {
                     claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Will Release Internationally First", true));
                 }
-                else if (willReleaseInternationallyFirstTag.Status.Equals(TagStatus.Required) && !gameWillReleaseInternationallyFirst & !gameReleasedInternationallyFirst)
+                else if (willReleaseInternationallyFirstTag.Status.Equals(TagStatus.Required))
                 {
-                    claimErrors.Add(new ClaimError("That game is not eligible because it will not or has not released internationally first", true));
+                    if (!gameWillReleaseInternationallyFirst && !gameReleasedInternationallyFirst && hasNoRequiredTags)
+                    {
+                        claimErrors.Add(new ClaimError("That game is not eligible because it will not or has not released internationally first", true));
+                    }
+                    else if (gameWillReleaseInternationallyFirst || gameReleasedInternationallyFirst)
+                    {
+                        hasNoRequiredTags = false;
+                    }
                 }
             }
             if (leagueCustomCodeTagsDictionary.TryGetValue("ReleasedInternationally", out var releasedInternationallyTag))
@@ -107,9 +128,16 @@ namespace FantasyCritic.Lib.Domain
                         claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Released Internationally", true));
                     }
                 }
-                else if (releasedInternationallyTag.Status.Equals(TagStatus.Required) && !gameReleasedInternationallyFirst)
+                else if (releasedInternationallyTag.Status.Equals(TagStatus.Required))
                 {
-                    claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Released Internationally", true));
+                    if (!gameReleasedInternationallyFirst && hasNoRequiredTags)
+                    {
+                        claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Released Internationally", true));
+                    }
+                    else if (gameReleasedInternationallyFirst)
+                    {
+                        hasNoRequiredTags = false;
+                    }
                 }
             }
 
