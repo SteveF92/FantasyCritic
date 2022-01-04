@@ -244,6 +244,7 @@ namespace FantasyCritic.Lib.Services
 
                     if (totalPointsForPublisher > highestPoints && publisher.LeagueYear.WinningUser.HasNoValue)
                     {
+                        highestPoints = totalPointsForPublisher;
                         winningUsers[publisher.LeagueYear.Key] = publisher.User;
                     }
                 }

@@ -139,10 +139,10 @@ namespace FantasyCritic.Lib.Services
                 await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats.PublisherGameCalculatedStats);
             }
 
-            var mostRecentFinishedYear = supportedYears.Where(x => x.Finished).MaxBy(x => x.Year).SingleOrDefault();
-            if (mostRecentFinishedYear is not null)
+            var finishedYears = supportedYears.Where(x => x.Finished);
+            foreach (var finishedYear in finishedYears)
             {
-                var calculatedStats = await _fantasyCriticService.GetCalculatedStatsForYear(mostRecentFinishedYear.Year);
+                var calculatedStats = await _fantasyCriticService.GetCalculatedStatsForYear(finishedYear.Year);
                 await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers);
             }
 
