@@ -139,7 +139,7 @@ namespace FantasyCritic.Lib.Services
             var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
             LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.Value.PlayStatus, eligibilityOverrides, 
-                tagOverrides, leagueYear.Value.DraftStartedTimestamp);
+                tagOverrides, leagueYear.Value.DraftStartedTimestamp, leagueYear.Value.WinningUser);
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments);
 
             return Result.Success();
@@ -242,7 +242,7 @@ namespace FantasyCritic.Lib.Services
                         }
                     }
 
-                    if (totalPointsForPublisher > highestPoints)
+                    if (totalPointsForPublisher > highestPoints && publisher.LeagueYear.WinningUser.HasNoValue)
                     {
                         winningUsers[publisher.LeagueYear.Key] = publisher.User;
                     }

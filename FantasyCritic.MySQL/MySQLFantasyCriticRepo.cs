@@ -124,8 +124,8 @@ namespace FantasyCritic.MySQL
                     specialGameSlotsForLeagueYear = new List<SpecialGameSlot>();
                 }
 
-                LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
-                return year;
+                var winningUser = await GetUserThatMightExist(yearEntity.WinningUserID);
+                LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear, winningUser);
                 return year;
             }
         }
@@ -182,7 +182,8 @@ namespace FantasyCritic.MySQL
                         specialGameSlotsForLeagueYear = new List<SpecialGameSlot>();
                     }
 
-                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
+                    var winningUser = await GetUserThatMightExist(entity.WinningUserID);
+                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear, winningUser);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -978,7 +979,8 @@ namespace FantasyCritic.MySQL
                         specialGameSlotsForLeagueYear = new List<SpecialGameSlot>();
                     }
 
-                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear);
+                    var winningUser = await GetUserThatMightExist(entity.WinningUserID);
+                    LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear, winningUser);
                     leagueYears.Add(leagueYear);
                 }
 
@@ -2730,6 +2732,22 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 await connection.ExecuteAsync(sql, finishObject);
             }
+        }
+
+        private async Task<Maybe<FantasyCriticUser>> GetUserThatMightExist(Guid? userID)
+        {
+            if (!userID.HasValue)
+            {
+                return Maybe<FantasyCriticUser>.None;
+            }
+
+            var user = await _userStore.FindByIdAsync(userID.Value.ToString(), CancellationToken.None);
+            if (user is null)
+            {
+                return Maybe<FantasyCriticUser>.None;
+            }
+
+            return user;
         }
     }
 }
