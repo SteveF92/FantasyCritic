@@ -247,6 +247,7 @@ namespace FantasyCritic.Lib.Services
         private async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
         {
             await Task.Delay(1000);
+            var today = _clock.GetToday();
             var updatedPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
             var nextPublisher = GetNextDraftPublisher(leagueYear, updatedPublishers);
             if (nextPublisher.HasNoValue)
@@ -268,9 +269,24 @@ namespace FantasyCritic.Lib.Services
             {
                 var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
                 var availableGames = await _gameSearchingService.GetTopAvailableGames(nextPublisher.Value, updatedPublishers, leagueYear.Year);
+                var availableGamesEligibleInRemainingSlots = new List<PossibleMasterGameYear>();
+                var openSlots = nextPublisher.Value.GetPublisherSlots().Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).ToList();
+                foreach (var availableGame in availableGames)
+                {
+                    foreach (var slot in openSlots)
+                    {
+                        var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(availableGame.MasterGame.MasterGame, today);
+                        var claimErrors = SlotEligibilityService.GetClaimErrorsForSlot(slot, eligibilityFactors);
+                        if (!claimErrors.Any())
+                        {
+                            availableGamesEligibleInRemainingSlots.Add(availableGame);
+                            break;
+                        }
+                    }
+                }
 
                 var gamesToTake = publisherWatchList.OrderBy(x => x.Rank).Select(x => x.MasterGame)
-                    .Concat(availableGames.Select(x => x.MasterGame.MasterGame));
+                    .Concat(availableGamesEligibleInRemainingSlots.Select(x => x.MasterGame.MasterGame));
 
                 foreach (var possibleGame in gamesToTake)
                 {
