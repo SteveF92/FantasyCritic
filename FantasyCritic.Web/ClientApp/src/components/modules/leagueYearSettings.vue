@@ -481,6 +481,7 @@ export default {
         this.value.specialGameSlots.push({
           specialSlotPosition: slotIndex,
           requiredTags: [
+            'Remake',
             'PartialRemake',
             'DirectorsCut'
           ]
