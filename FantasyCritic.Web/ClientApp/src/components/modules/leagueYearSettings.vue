@@ -336,6 +336,7 @@ export default {
       this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
     },
     autoUpdateOptions() {
+      console.log('Auto updating options');
       if (!this.freshSettings) {
         return;
       }
@@ -420,6 +421,7 @@ export default {
       this.$emit('input', this.local);
     },
     autoUpdateSpecialSlotOptions() {
+      console.log('Auto updating slots');
       if (!this.freshSettings) {
         return;
       }
