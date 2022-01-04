@@ -244,6 +244,7 @@ export default {
     return {
       intendedNumberOfPlayers: '',
       intendedNumberOfPlayersEverValid: false,
+      updatingOptions: true,
       gameMode: 'Standard',
       gameModeOptions: [
         'Beginner',
@@ -334,6 +335,9 @@ export default {
     },
     update(key, value) {
       this.$emit('input', tap(cloneDeep(this.local), v => set(v, key, value)));
+    },
+    doneUpdatingOptions() {
+      this.updatingOptions = false;
     },
     autoUpdateOptions() {
       console.log('Auto updating options');
@@ -486,16 +490,22 @@ export default {
     }
   },
   watch: {
-    intendedNumberOfPlayers: function (val) {
+    intendedNumberOfPlayers: function () {
+      this.updatingOptions = true;
       this.autoUpdateOptions();
       this.autoUpdateSpecialSlotOptions();
+      setTimeout(this.doneUpdatingOptions, 100);
     },
-    gameMode: function (val) {
+    gameMode: function () {
+      this.updatingOptions = true;
       this.autoUpdateOptions();
       this.autoUpdateSpecialSlotOptions();
+      setTimeout(this.doneUpdatingOptions, 100);
     },
     'local.standardGames': function () {
-      this.autoUpdateSpecialSlotOptions();
+      if (!this.updatingOptions) {
+        this.autoUpdateSpecialSlotOptions();
+      }
     }
   },
   mounted() {
