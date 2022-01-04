@@ -527,5 +527,11 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.DismissManagerMessage(messageID, userID);
         }
+
+        public Task<Maybe<FantasyCriticUser>> GetPreviousYearWinner(LeagueYear leagueYear)
+        {
+            int previousYear = leagueYear.Year - 1;
+            return _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, previousYear);
+        }
     }
 }

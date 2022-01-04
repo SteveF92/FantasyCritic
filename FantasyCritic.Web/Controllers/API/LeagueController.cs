@@ -298,21 +298,7 @@ namespace FantasyCritic.Web.Controllers.API
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
             IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear.Value);
 
-            Maybe<FantasyCriticUser> previousYearWinner = Maybe<FantasyCriticUser>.None;
-            int previousYear = leagueYear.Value.Year - 1;
-            if (leagueYear.Value.League.Years.Contains(previousYear))
-            {
-                var previousSupportedYear = supportedYears.SingleOrDefault(x => x.Year == previousYear);
-                Maybe<LeagueYear> previousLeagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, previousYear);
-                if (previousLeagueYear.HasValue && previousLeagueYear.Value.PlayStatus.DraftFinished && previousSupportedYear.Finished)
-                {
-                    var previousYearActiveUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, previousYear);
-                    var previousYearPublishers = await _publisherService.GetPublishersInLeagueForYear(previousLeagueYear.Value, previousYearActiveUsers);
-                    var topPublisher = previousYearPublishers.MaxBy(x => x.TotalFantasyPoints).First();
-                    previousYearWinner = topPublisher.User;
-                }
-            }
-
+            Maybe<FantasyCriticUser> previousYearWinner = await _fantasyCriticService.GetPreviousYearWinner(leagueYear.Value);
             var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear.Value);
 
             var currentDate = _clock.GetToday();

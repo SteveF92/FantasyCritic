@@ -135,5 +135,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<Result> DismissManagerMessage(Guid messageId, Guid userId);
         Task FinishYear(SupportedYear supportedYear);
         Task EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount);
+        Task<Maybe<FantasyCriticUser>> GetLeagueYearWinner(Guid leagueID, int year);
     }
 }

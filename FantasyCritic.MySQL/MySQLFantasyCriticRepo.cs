@@ -102,6 +102,7 @@ namespace FantasyCritic.MySQL
             var tagOverrides = await GetTagOverrides(requestLeague, requestYear);
             var supportedYear = await GetSupportedYear(requestYear);
 
+            string sql = "select * from tbl_league_year where LeagueID = @leagueID and Year = @year";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var queryObject = new
@@ -110,7 +111,7 @@ namespace FantasyCritic.MySQL
                     year = requestYear
                 };
 
-                LeagueYearEntity yearEntity = await connection.QueryFirstOrDefaultAsync<LeagueYearEntity>("select * from tbl_league_year where LeagueID = @leagueID and Year = @year", queryObject);
+                LeagueYearEntity yearEntity = await connection.QuerySingleOrDefaultAsync<LeagueYearEntity>(sql, queryObject);
                 if (yearEntity == null)
                 {
                     return Maybe<LeagueYear>.None;
@@ -297,6 +298,29 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync("UPDATE tbl_league_pickupbid SET ConditionalDropMasterGameID = @ConditionalDropMasterGameID, " +
                                               "BidAmount = @BidAmount WHERE BidID = @BidID;", entity);
+            }
+        }
+
+        public async Task<Maybe<FantasyCriticUser>> GetLeagueYearWinner(Guid leagueID, int year)
+        {
+
+            string sql = "select * from tbl_league_year where LeagueID = @leagueID and Year = @year";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var queryObject = new
+                {
+                    leagueID,
+                    year
+                };
+
+                LeagueYearEntity yearEntity = await connection.QuerySingleOrDefaultAsync<LeagueYearEntity>(sql, queryObject);
+                if (yearEntity == null)
+                {
+                    return Maybe<FantasyCriticUser>.None;
+                }
+
+                var winningUser = await GetUserThatMightExist(yearEntity.WinningUserID);
+                return winningUser;
             }
         }
 
