@@ -384,6 +384,8 @@ namespace FantasyCritic.MySQL
             string deleteUnprocessedBids = "DELETE tbl_league_droprequest FROM tbl_league_droprequest " +
                                            "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_droprequest.PublisherID " +
                                            "WHERE UserID = @userID AND Successful IS null;";
+            string deleteExternalLogins = "delete from tbl_user_externallogin where UserID = @userID;";
+
             string updateUserAccount = "UPDATE tbl_user SET " +
                                        "DisplayName = '<Deleted>', " +
                                        "EmailAddress = @fakeEmailAddress, " +
@@ -409,6 +411,7 @@ namespace FantasyCritic.MySQL
                     await connection.ExecuteAsync(updatePublisherNames, deleteObject, transaction);
                     await connection.ExecuteAsync(deleteUnprocessedDrops, deleteObject, transaction);
                     await connection.ExecuteAsync(deleteUnprocessedBids, deleteObject, transaction);
+                    await connection.ExecuteAsync(deleteExternalLogins, deleteObject, transaction);
                     await connection.ExecuteAsync(updateUserAccount, deleteObject, transaction);
                     await transaction.CommitAsync();
                 }
