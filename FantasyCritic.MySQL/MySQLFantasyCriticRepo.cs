@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Enums;
@@ -202,6 +203,28 @@ namespace FantasyCritic.MySQL
                     for (var index = 0; index < updateBatches.Count; index++)
                     {
                         _logger.Info($"Running publisher game update {index+1}/{updateBatches.Count}");
+                        var batch = updateBatches[index];
+                        await connection.ExecuteAsync(sql, batch, transaction);
+                    }
+
+                    await transaction.CommitAsync();
+                }
+            }
+        }
+
+        public async Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers)
+        {
+            string sql = "update tbl_league_year SET WinningUserID = @WinningUserID WHERE LeagueID = @LeagueID AND Year = @Year AND WinningUserID is null;";
+            List<LeagueYearWinnerUpdateEntity> updateEntities = winningUsers.Select(x => new LeagueYearWinnerUpdateEntity(x)).ToList();
+            var updateBatches = updateEntities.Batch(1000).ToList();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    for (var index = 0; index < updateBatches.Count; index++)
+                    {
+                        _logger.Info($"Running league year winner update {index + 1}/{updateBatches.Count}");
                         var batch = updateBatches[index];
                         await connection.ExecuteAsync(sql, batch, transaction);
                     }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Enums;
@@ -71,6 +72,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year, bool includeDeleted = false);
 
         Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats);
+        Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers);
+
         Task<Result> RemovePublisherGame(PublisherGame publisherGame);
         Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
         Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease);

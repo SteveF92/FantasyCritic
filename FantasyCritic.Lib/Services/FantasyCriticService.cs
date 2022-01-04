@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
@@ -209,30 +210,46 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.SetPlayersActive(league, year, mostRecentActivePlayers);
         }
 
-        public async Task UpdateLeaguePointsAndStatuses(int year)
+        public async Task<YearCalculatedStatsSet> GetCalculatedStatsForYear(int year)
         {
-            Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
+            Dictionary<Guid, PublisherGameCalculatedStats> publisherGameCalculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
             IReadOnlyList<Publisher> allPublishersForYear = await _fantasyCriticRepo.GetAllPublishersForYear(year, leagueYears);
 
             var currentDate = _clock.GetToday();
-            foreach (var publisher in allPublishersForYear)
+            Dictionary<LeagueYearKey, FantasyCriticUser> winningUsers = new Dictionary<LeagueYearKey, FantasyCriticUser>();
+            var publishersByLeagueYear = allPublishersForYear.GroupBy(x => x.LeagueYear.Key);
+            foreach (var publishersForLeagueYear in publishersByLeagueYear)
             {
-                var slots = publisher.GetPublisherSlots().Where(x => x.PublisherGame.HasValue).ToList();
-                foreach (var publisherSlot in slots)
+                decimal highestPoints = 0m;
+                foreach (var publisher in publishersForLeagueYear)
                 {
-                    //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
-                    var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(year);
-                    var gameIsEligible = publisherSlot.SlotIsValid(publisher.LeagueYear);
-                    var pointsShouldCount = gameIsEligible || ineligiblePointsShouldCount;
+                    decimal totalPointsForPublisher = 0m;
+                    var slots = publisher.GetPublisherSlots().Where(x => x.PublisherGame.HasValue).ToList();
+                    foreach (var publisherSlot in slots)
+                    {
+                        //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
+                        var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(year);
+                        var gameIsEligible = publisherSlot.SlotIsValid(publisher.LeagueYear);
+                        var pointsShouldCount = gameIsEligible || ineligiblePointsShouldCount;
 
-                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, publisher.LeagueYear.Options.ScoringSystem, currentDate);
-                    var stats = new PublisherGameCalculatedStats(fantasyPoints);
-                    calculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
+                        decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, publisher.LeagueYear.Options.ScoringSystem, currentDate);
+                        var stats = new PublisherGameCalculatedStats(fantasyPoints);
+                        publisherGameCalculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
+                        if (fantasyPoints.HasValue)
+                        {
+                            totalPointsForPublisher += fantasyPoints.Value;
+                        }
+                    }
+
+                    if (totalPointsForPublisher > highestPoints)
+                    {
+                        winningUsers[publisher.LeagueYear.Key] = publisher.User;
+                    }
                 }
             }
 
-            await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats);
+            return new YearCalculatedStatsSet(publisherGameCalculatedStats, winningUsers);
         }
 
         public async Task UpdatePublisherGameCalculatedStats(LeagueYear leagueYear)

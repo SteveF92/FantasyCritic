@@ -134,12 +134,20 @@ namespace FantasyCritic.Lib.Services
             var supportedYears = await _interLeagueService.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
-                if (supportedYear.Finished || !supportedYear.OpenForPlay)
+                if (!supportedYear.OpenForPlay && !supportedYear.Finished)
                 {
                     continue;
                 }
 
-                await _fantasyCriticService.UpdateLeaguePointsAndStatuses(supportedYear.Year);
+                var calculatedStats = await _fantasyCriticService.GetCalculatedStatsForYear(supportedYear.Year);
+                if (supportedYear.Finished)
+                {
+                    await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers);
+                }
+                else
+                {
+                    await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats.PublisherGameCalculatedStats);
+                }
             }
 
             _logger.Info("Done updating fantasy points");
