@@ -109,11 +109,37 @@ namespace FantasyCritic.Lib.Services
 
             if (maxStandardGames > options.StandardGames)
             {
-                return Result.Failure($"Cannot reduce number of standard games to {options.StandardGames} as a publisher has {maxStandardGames} draft games currently.");
+                return Result.Failure($"Cannot reduce number of standard games to {options.StandardGames} as a publisher has {maxStandardGames} standard games currently.");
             }
             if (maxCounterPicks > options.CounterPicks)
             {
                 return Result.Failure($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
+            }
+
+            if (leagueYear.Value.PlayStatus.DraftIsActive)
+            {
+                if (leagueYear.Value.Options.GamesToDraft > parameters.GamesToDraft)
+                {
+                    return Result.Failure("Cannot decrease the number of drafted games during the draft. Reset the draft if you need to do this.");
+                }
+
+                if (leagueYear.Value.Options.CounterPicksToDraft > parameters.CounterPicksToDraft)
+                {
+                    return Result.Failure("Cannot decrease the number of drafted counter picks during the draft. Reset the draft if you need to do this.");
+                }
+            }
+
+            if (leagueYear.Value.PlayStatus.DraftFinished)
+            {
+                if (leagueYear.Value.Options.GamesToDraft != parameters.GamesToDraft)
+                {
+                    return Result.Failure("Cannot change the number of drafted games after the draft.");
+                }
+
+                if (leagueYear.Value.Options.CounterPicksToDraft != parameters.CounterPicksToDraft)
+                {
+                    return Result.Failure("Cannot change the number of drafted counter picks after the draft.");
+                }
             }
 
             int maxFreeGamesFreeDropped = publishers.Select(publisher => publisher.FreeGamesDropped).DefaultIfEmpty(0).Max();
