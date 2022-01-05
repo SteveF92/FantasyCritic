@@ -340,10 +340,14 @@ export default {
       this.updatingOptions = false;
     },
     autoUpdateOptions() {
-      console.log('Auto updating options');
       if (!this.freshSettings) {
         return;
       }
+
+      if (!this.intendedNumberOfPlayers) {
+        return;
+      }
+
       if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
         this.intendedNumberOfPlayersEverValid = true;
       }
@@ -425,10 +429,14 @@ export default {
       this.$emit('input', this.local);
     },
     autoUpdateSpecialSlotOptions() {
-      console.log('Auto updating slots');
       if (!this.freshSettings) {
         return;
       }
+
+      if (!this.value.standardGames || this.value.standardGames > 50) {
+        return;
+      }
+
       this.value.specialGameSlots = [];
       if (this.gameMode === "Beginner") {
         return;
