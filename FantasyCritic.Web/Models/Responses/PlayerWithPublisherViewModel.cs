@@ -25,10 +25,10 @@ namespace FantasyCritic.Web.Models.Responses
 
         public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, LocalDate currentDate,
             SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague,
-            SupportedYear supportedYear, bool removable, bool previousYearWinner)
+            SupportedYear supportedYear, bool removable, bool previousYearWinner, IReadOnlySet<Guid> dropBlockedPublisherGameIDs)
         {
             User = new PlayerViewModel(leagueYear.League, user, removable);
-            Publisher = new PublisherViewModel(publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished);
+            Publisher = new PublisherViewModel(publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished, dropBlockedPublisherGameIDs);
             TotalFantasyPoints = publisher.TotalFantasyPoints;
 
             var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);

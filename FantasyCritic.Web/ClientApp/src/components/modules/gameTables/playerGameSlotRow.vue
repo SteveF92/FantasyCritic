@@ -11,6 +11,10 @@
               <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
               <span v-if="!game.linked">{{game.gameName}}</span>
             </span>
+
+            <span v-if="game.dropBlocked" class="lock-icon">
+              <font-awesome-icon color="white" size="lg" icon="lock" v-b-popover.hover="gameDropBlockedText" />
+            </span>
           </span>
 
           <span class="game-info-side">
@@ -167,6 +171,17 @@ export default {
             'See the FAQ for a full explanation.';
         }
       }
+    },
+    gameDropBlockedText() {
+      return {
+        html: true,
+        title: () => {
+          return "Locked!";
+        },
+        content: () => {
+          return 'This game was counter picked, so it cannot be dropped.';
+        }
+      }
     }
   },
   methods:{
@@ -216,5 +231,9 @@ export default {
     border-radius: 4px;
     color: #ffffff;
     text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+  }
+
+  .lock-icon{
+      margin-left: 5px;
   }
 </style>
