@@ -98,7 +98,7 @@
              :items="gameRows"
              :fields="gameFields"
              :filter="filter"
-             :filter-included-fields="filterOn"
+             :filter-function="filterGames"
              bordered
              :small="tableIsSmall"
              responsive
@@ -239,6 +239,30 @@ export default {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
+    },
+    filterGames(item) {
+      if (this.filterOn.length === 0 || this.filterOn.includes('gameName')) {
+        let normalizedFilter = this.filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        let normalizedGameName = item.gameName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        if (normalizedGameName.includes(normalizedFilter)) {
+          return true;
+        }
+      }
+
+      if (this.filterOn.length === 0 || this.filterOn.includes('estimatedReleaseDate')) {
+        if (item.estimatedReleaseDate.toLowerCase().includes(this.filter.toLowerCase())) {
+          return true;
+        }
+      }
+
+      if (this.filterOn.length === 0 || this.filterOn.includes('readableTags')) {
+        let allTags = item.readableTags.join().toLowerCase();
+        if (allTags.includes(this.filter.toLowerCase())) {
+          return true;
+        }
+      }
+
+      return false;
     }
   },
   mounted() {
