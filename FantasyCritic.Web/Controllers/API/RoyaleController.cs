@@ -86,6 +86,11 @@ namespace FantasyCritic.Web.Controllers.API
             }
             var currentUser = currentUserResult.Value;
 
+            if (string.IsNullOrWhiteSpace(request.PublisherName))
+            {
+                return BadRequest("You cannot have a blank name.");
+            }
+
             IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
             var selectedQuarter = supportedQuarters.Single(x => x.YearQuarter.Year == request.Year && x.YearQuarter.Quarter == request.Quarter);
             if (!selectedQuarter.OpenForPlay || selectedQuarter.Finished)
@@ -112,6 +117,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest(currentUserResult.Error);
             }
             var currentUser = currentUserResult.Value;
+
+            if (string.IsNullOrWhiteSpace(request.PublisherName))
+            {
+                return BadRequest("You cannot have a blank name.");
+            }
 
             Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
             if (publisher.HasNoValue)

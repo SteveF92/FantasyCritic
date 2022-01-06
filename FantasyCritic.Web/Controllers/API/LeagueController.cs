@@ -559,6 +559,11 @@ namespace FantasyCritic.Web.Controllers.API
             }
             var currentUser = currentUserResult.Value;
 
+            if (string.IsNullOrWhiteSpace(request.PublisherName))
+            {
+                return BadRequest("You cannot have a blank name.");
+            }
+
             bool userIsActive = await _leagueMemberService.UserIsActiveInLeagueYear(league.Value, request.Year, currentUser);
             if (!userIsActive)
             {
@@ -602,6 +607,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest(currentUserResult.Error);
             }
             var currentUser = currentUserResult.Value;
+
+            if (string.IsNullOrWhiteSpace(request.PublisherName))
+            {
+                return BadRequest("You cannot have a blank name.");
+            }
 
             bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
             if (!userIsInLeague)

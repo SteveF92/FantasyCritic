@@ -80,6 +80,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Some of the settings you chose are not valid.");
             }
 
+            if (string.IsNullOrWhiteSpace(request.LeagueName))
+            {
+                return BadRequest("You cannot have a blank league name.");
+            }
+
             if (request.Tags.Required.Any())
             {
                 return BadRequest("Impressive API usage, but required tags are not ready for prime time yet.");
@@ -236,6 +241,11 @@ namespace FantasyCritic.Web.Controllers.API
             if (!ModelState.IsValid)
             {
                 return BadRequest();
+            }
+
+            if (string.IsNullOrWhiteSpace(request.LeagueName))
+            {
+                return BadRequest("You cannot have a blank league name.");
             }
 
             var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
