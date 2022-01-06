@@ -33,10 +33,11 @@ namespace FantasyCritic.AdvancedStats
             _clock = SystemClock.Instance;
             DapperNodaTimeSetup.Register();
 
-            await GetAdvancedStats();
+            await GetAdvancedStats1();
+            await GetAdvancedStats2();
         }
 
-        private static async Task GetAdvancedStats()
+        private static async Task GetAdvancedStats1()
         {
             MySQLFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_connectionString, _clock);
             MySQLMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
@@ -77,6 +78,51 @@ namespace FantasyCritic.AdvancedStats
                 foreach (var game in grouped)
                 {
                     Console.WriteLine($"{game.Key} was in {game.Item2}/{winningPublishers.Count} ({((double) game.Item2 / (double) winningPublishers.Count) * 100}%) of winning publishers in {supportedYear.Year}");
+                }
+            }
+        }
+
+        private static async Task GetAdvancedStats2()
+        {
+            MySQLFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_connectionString, _clock);
+            MySQLMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
+            MySQLFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
+
+            var supportedYears = await fantasyCriticRepo.GetSupportedYears();
+            foreach (var supportedYear in supportedYears)
+            {
+                Console.WriteLine($"Stats for {supportedYear.Year}");
+                var allLeagueYears = await fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+                var publishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, allLeagueYears);
+                var publishersByLeagueYear = publishers.ToLookup(x => x.LeagueYear.Key);
+                var publishersToCount = new List<Publisher>();
+
+                var leaguesToCount = allLeagueYears
+                    .Where(x => x.PlayStatus.DraftFinished)
+                    .Where(x => !x.League.TestLeague)
+                    .ToList();
+                foreach (var leagueYear in leaguesToCount)
+                {
+                    var publishersInLeagueYear = publishersByLeagueYear[leagueYear.Key];
+                    publishersToCount.AddRange(publishersInLeagueYear);
+                }
+
+                var allPublisherGamesToCount = publishersToCount
+                    .SelectMany(x => x.PublisherGames)
+                    .Where(x => x.MasterGame.HasValue)
+                    .Where(x => !x.CounterPick)
+                    .ToList();
+
+                List<IGrouping<int?, PublisherGame>> grouped = allPublisherGamesToCount
+                    .GroupBy(x => x.OverallDraftPosition)
+                    .OrderBy(x => x.Key)
+                    .ToList();
+
+                foreach (var group in grouped)
+                {
+                    var points = group.Select(x => x.FantasyPoints);
+                    var averagePoints = points.Average();
+                    Console.WriteLine($"Draft position: {group.Key} gives an average of {averagePoints} points.");
                 }
             }
         }
