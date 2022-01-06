@@ -100,3 +100,11 @@ body {
     height: 40px;
     background: white;
 }
+
+.consent-scope-list {
+    list-style: none;
+}
+
+.consent-scope-list li {
+    list-style: none;
+}
