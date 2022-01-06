@@ -11,34 +11,15 @@
               <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
               <span v-if="!game.linked">{{game.gameName}}</span>
             </span>
-
-            <span v-if="game.dropBlocked" class="lock-icon">
-              <font-awesome-icon color="white" size="lg" icon="lock" v-b-popover.hover="gameDropBlockedText" />
-            </span>
           </span>
 
           <span class="game-info-side">
-            <span v-if="!game.linked" class="game-status">
-              Not linked to Master Game
-            </span>
-
-            <span v-if="!game.willRelease && game.linked && !game.manualWillNotRelease" class="game-status">
-              <span v-show="!yearFinished">Will not Release</span>
-              <span v-show="yearFinished">Did not Release</span>
-            </span>
-            <span v-if="game.released && game.linked && !game.criticScore && !yearFinished" class="game-status">
-              <span>Needs more reviews</span>
-            </span>
-            <span v-if="game.manualWillNotRelease && game.linked && !yearFinished" class="game-status">
-              Will not Release (League Override)
-            </span>
-            <span v-if="game.manualCriticScore && game.linked" class="game-status">
-              Manually Scored
-            </span>
-            <span v-if="!gameSlot.gameMeetsSlotCriteria" class="game-status">
-              Ineligible
-              <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="inEligibleText" />
-            </span>
+            <font-awesome-icon v-if="!game.linked" color="white" size="lg" icon="question-circle" v-b-popover.hover.top="unlinkedText" />
+            <font-awesome-icon v-if="!game.willRelease" color="white" size="lg" icon="calendar-times" v-b-popover.hover.top="willNotReleaseText" />
+            <font-awesome-icon v-if="game.dropBlocked" color="white" size="lg" icon="lock" v-b-popover.hover.top="gameDropBlockedText" />
+            <font-awesome-icon v-if="game.released && game.linked && !game.criticScore && !yearFinished" color="white" size="lg" icon="hourglass-half" v-b-popover.hover.top="needsMoreReviewsText" />
+            <font-awesome-icon v-if="game.manualCriticScore && game.linked" color="white" size="lg" icon="pen" v-b-popover.hover.top="manuallyScoredText" />
+            <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria" color="white" size="lg" icon="exclamation-triangle" v-b-popover.hover.top="inEligibleText" />
           </span>
         </span>
       </td>
@@ -69,7 +50,7 @@
           </span>
           <span v-if="gameSlot.counterPick" class="game-status">
             Warning!
-            <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="emptyCounterpickText" />
+            <font-awesome-icon color="white" size="lg" icon="exclamation-triangle" v-b-popover.hover.top="emptyCounterpickText" />
           </span>
         </span>
       </td>
@@ -131,7 +112,7 @@ export default {
       return {
         html: true,
         title: () => {
-          return "What does this mean?";
+          return "Ineligible Game";
         },
         content: () => {
           let eligibilityErrorsList = '';
@@ -180,6 +161,62 @@ export default {
         },
         content: () => {
           return 'This game was counter picked, so it cannot be dropped.';
+        }
+      }
+    },
+    unlinkedText() {
+      return {
+        html: true,
+        title: () => {
+          return "Not Linked to Master Game";
+        },
+        content: () => {
+          return 'This is a "custom game" that has not be linked to a master game. The league manager can link it using "associate game" in the sidebar.';
+        }
+      }
+    },
+    needsMoreReviewsText() {
+      return {
+        html: true,
+        title: () => {
+          return "Needs more reviews.";
+        },
+        content: () => {
+          return 'This game has released, and has an Open Critic page, but there are not enough reviews yet.';
+        }
+      }
+    },
+    manuallyScoredText() {
+      return {
+        html: true,
+        title: () => {
+          return "Manually Scored";
+        },
+        content: () => {
+          return 'This game was manually scored by the league manager.';
+        }
+      }
+    },
+    willNotReleaseText() {
+      return {
+        html: true,
+        title: () => {
+          if (this.yearFinished) {
+            return "Did Not Release";
+          }
+          if (this.game.manualWillNotRelease) {
+            return "Will Not Release (League Override)";
+          }
+          return "Will Not Release";
+        },
+        content: () => {
+          if (this.yearFinished) {
+            return "This game did not release in the league year.";
+          }
+          if (this.game.manualWillNotRelease) {
+            return 'This game has been marked as "Will Not Release" manually by the league manager.';
+          }
+          return "This game will not release this year.";
         }
       }
     }

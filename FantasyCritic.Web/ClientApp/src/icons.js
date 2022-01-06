@@ -41,7 +41,10 @@ import {
   faArchive,
   faThumbtack,
   faCrown,
-  faLock
+  faLock,
+  faCalendarTimes,
+  faPen,
+  faHourglassHalf
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -111,7 +114,10 @@ library.add(
   faArchive,
   faThumbtack,
   faCrown,
-  faLock
+  faLock,
+  faCalendarTimes,
+  faPen,
+  faHourglassHalf
 );
 
 export {
