@@ -21,19 +21,19 @@
                     <h4>@Model.ClientName <small>is requesting your permission</small></h4>
                 </div>
                 <div class="card-body">
-                    <p>Uncheck the permissions you do not wish to grant.</p>
-                    @if (Model.ApiScopes.Any())
-                    {
-                        <ul class="consent-scope-list">
-                            @foreach (var scope in Model.ApiScopes)
-                            {
-                                <partial name="_ScopeListItem" model="scope" />
-                            }
-                        </ul>
-                    }
-
                     <form asp-action="Index">
-                        <input type="hidden" asp-for="ReturnUrl"/>
+                        <p>Uncheck the permissions you do not wish to grant.</p>
+                        @if (Model.ApiScopes.Any())
+                        {
+                            <ul class="consent-scope-list">
+                                @foreach (var scope in Model.ApiScopes)
+                                {
+                                    <partial name="_ScopeListItem" model="scope" />
+                                }
+                            </ul>
+                        }
+
+                        <input type="hidden" asp-for="ReturnUrl" />
                         @if (Model.AllowRememberConsent)
                         {
                             <div class="form-group">
