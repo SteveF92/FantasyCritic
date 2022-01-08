@@ -5,7 +5,7 @@
         <div class="col-lg-6 col-md-12 game-image-area">
           <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName">
             <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image">
-            <a :href="ggLink(masterGame)" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
+            <a :href="ggLink" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
           </div>
           <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
             <font-awesome-icon :icon="['far', 'square']" />
@@ -26,7 +26,7 @@
 
             <div>
               <strong>Release Date: </strong>
-              <span v-if="masterGame.releaseDate">{{releaseDate(masterGame)}}</span>
+              <span v-if="masterGame.releaseDate">{{releaseDate}}</span>
               <span v-else>{{masterGame.estimatedReleaseDate}} (Estimated)</span>
             </div>
             <div>
@@ -53,7 +53,7 @@
               <span v-show="masterGame.projectedFantasyPoints">~{{masterGame.projectedFantasyPoints | score(1)}}</span>
             </div>
             <div v-if="masterGame.openCriticID">
-              <a :href="openCriticLink(masterGame)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
+              <a :href="openCriticLink" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
             </div>
             <div>
               <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}"><strong>View full details</strong></router-link>
@@ -96,17 +96,15 @@ export default {
     },
     isAdmin() {
       return this.$store.getters.isAdmin;
-    }
-  },
-  methods: {
-    releaseDate(game) {
-      return moment(game.releaseDate).format('MMMM Do, YYYY');
     },
-    openCriticLink(game) {
-      return `https://opencritic.com/game/${game.openCriticID}/a`;
+    releaseDate() {
+      return moment(this.masterGame.releaseDate).format('MMMM Do, YYYY');
     },
-    ggLink(game) {
-      return `https://ggapp.io/games/${game.ggToken}`;
+    openCriticLink() {
+      return `https://opencritic.com/game/${this.masterGame.openCriticID}/a`;
+    },
+    ggLink() {
+      return `https://ggapp.io/games/${this.masterGame.ggToken}`;
     }
   }
 };
