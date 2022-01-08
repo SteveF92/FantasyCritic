@@ -12,7 +12,7 @@
         <b-button variant="info" size="sm" v-clipboard:copy="createdGame.masterGameID">Copy</b-button>
       </div>
       <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
-      <div v-if="openCriticID || steamID">
+      <div v-if="openCriticID || steamID || ggToken">
         <h2>Links</h2>
         <ul>
           <li>
@@ -22,6 +22,10 @@
           <li>
             <a v-if="steamID" :href="steamLink" target="_blank">Steam Link <font-awesome-icon icon="external-link-alt" /></a>
             <span v-else>No Steam Link</span>
+          </li>
+          <li>
+            <a v-if="ggToken" :href="ggLink" target="_blank">GG| Link <font-awesome-icon icon="external-link-alt" /></a>
+            <span v-else>No GG| Link</span>
           </li>
         </ul>
         <hr />
@@ -80,6 +84,11 @@
                 <input v-model="openCriticID" id="openCriticID" name="openCriticID" class="form-control input" />
               </div>
 
+              <div class="form-group">
+                <label for="ggToken" class="control-label">GG| Token</label>
+                <input v-model="ggToken" id="ggToken" name="ggToken" class="form-control input" />
+              </div>
+
               <h3>Tags</h3>
               <masterGameTagSelector v-model="tags" :includeSystem="true"></masterGameTagSelector>
 
@@ -114,6 +123,7 @@
         requestNote: '',
         steamID: null,
         openCriticID: null,
+        ggToken: null,
         gameName: '',
         estimatedReleaseDate: '',
         minimumReleaseDate: null,
@@ -136,6 +146,9 @@
       },
       steamLink() {
         return 'https://store.steampowered.com/app/' + this.steamID;
+      },
+      ggLink() {
+        return `https://ggapp.io/games/${this.ggToken}`;
       }
     },
     methods: {
@@ -151,6 +164,7 @@
           internationalReleaseDate: this.internationalReleaseDate,
           releaseDate: this.releaseDate,
           openCriticID: this.openCriticID,
+          ggToken: this.ggToken,
           tags: tagNames,
           notes: this.notes
         };
@@ -196,6 +210,7 @@
             }
             this.steamID = this.request.steamID;
             this.openCriticID = this.request.openCriticID;
+            this.ggToken = this.request.ggToken;
             this.requestNote = this.request.requestNote;
           })
           .catch(returnedError => (this.error = returnedError));

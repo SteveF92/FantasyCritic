@@ -15,6 +15,7 @@ namespace FantasyCritic.Web.Models.Responses
             EstimatedReleaseDate = domain.EstimatedReleaseDate;
             SteamID = domain.SteamID;
             OpenCriticID = domain.OpenCriticID;
+            GGToken = domain.GGToken.GetValueOrDefault();
 
             Answered = domain.Answered;
             ResponseNote = domain.ResponseNote;
@@ -34,6 +35,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string EstimatedReleaseDate { get; }
         public int? SteamID { get; }
         public int? OpenCriticID { get; }
+        public string GGToken { get; }
         public string RequestNote { get; }
 
         //Response
