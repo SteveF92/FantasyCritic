@@ -14,11 +14,13 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
         [Required]
         public string RequestNote { get; set; }
         public string OpenCriticLink { get; set; }
+        public string GGLink { get; set; }
 
         public MasterGameChangeRequest ToDomain(FantasyCriticUser user, Instant requestTimestamp, Lib.Domain.MasterGame masterGame)
         {
             int? openCriticID = URLParsingExtensions.GetOpenCriticIDFromURL(OpenCriticLink);
-            return new MasterGameChangeRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, masterGame, openCriticID, false, null, null, false);
+            var ggToken = URLParsingExtensions.GetGGTokenFromURL(GGLink);
+            return new MasterGameChangeRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, masterGame, openCriticID, ggToken, false, null, null, false);
         }
     }
 }

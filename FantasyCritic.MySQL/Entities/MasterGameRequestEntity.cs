@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
@@ -27,6 +29,7 @@ namespace FantasyCritic.MySQL.Entities
             GameName = domain.GameName;
             SteamID = domain.SteamID;
             OpenCriticID = domain.OpenCriticID;
+            GGToken = domain.GGToken.GetValueOrDefault();
             ReleaseDate = domain.ReleaseDate;
             EstimatedReleaseDate = domain.EstimatedReleaseDate;
 
@@ -52,6 +55,7 @@ namespace FantasyCritic.MySQL.Entities
         public string GameName { get; set; }
         public int? SteamID { get; set; }
         public int? OpenCriticID { get; set; }
+        public string GGToken { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         public string EstimatedReleaseDate { get; set; }
 
@@ -65,7 +69,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public MasterGameRequest ToDomain(FantasyCriticUser user, Maybe<MasterGame> masterGame)
         {
-            return new MasterGameRequest(RequestID, user, RequestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, ReleaseDate, EstimatedReleaseDate,
+            return new MasterGameRequest(RequestID, user, RequestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, GGToken.ToMaybe(), ReleaseDate, EstimatedReleaseDate,
                 Answered, ResponseTimestamp, ResponseNote, masterGame, Hidden);
         }
     }

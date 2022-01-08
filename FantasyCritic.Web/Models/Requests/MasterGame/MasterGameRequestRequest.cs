@@ -16,6 +16,7 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
 
         public string SteamLink { get; set; }
         public string OpenCriticLink { get; set; }
+        public string GGLink { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         public string EstimatedReleaseDate { get; set; }
 
@@ -35,8 +36,10 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame
             }
 
             int? openCriticID = URLParsingExtensions.GetOpenCriticIDFromURL(OpenCriticLink);
+            var ggToken = URLParsingExtensions.GetGGTokenFromURL(GGLink);
 
-            return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, ReleaseDate, EstimatedReleaseDate, false, null, null, Maybe<Lib.Domain.MasterGame>.None, false);
+            return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, ggToken,
+                ReleaseDate, EstimatedReleaseDate, false, null, null, Maybe<Lib.Domain.MasterGame>.None, false);
         }
     }
 }

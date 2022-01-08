@@ -25,6 +25,7 @@ namespace FantasyCritic.MySQL.Entities
             RequestNote = domain.RequestNote;
             MasterGameID = domain.MasterGame.MasterGameID;
             OpenCriticID = domain.OpenCriticID;
+            GGToken = domain.GGToken.GetValueOrDefault();
 
             Answered = domain.Answered;
             ResponseTimestamp = domain.ResponseTimestamp;
@@ -40,6 +41,7 @@ namespace FantasyCritic.MySQL.Entities
         public string RequestNote { get; set; }
         public Guid MasterGameID { get; set; }
         public int? OpenCriticID { get; set; }
+        public string GGToken { get; set; }
 
         //Response
         public bool Answered { get; set; }
@@ -50,7 +52,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public MasterGameChangeRequest ToDomain(FantasyCriticUser user, MasterGame masterGame)
         {
-            return new MasterGameChangeRequest(RequestID, user, RequestTimestamp, RequestNote, masterGame, OpenCriticID, Answered, ResponseTimestamp, ResponseNote, Hidden);
+            return new MasterGameChangeRequest(RequestID, user, RequestTimestamp, RequestNote, masterGame, OpenCriticID, GGToken, Answered, ResponseTimestamp, ResponseNote, Hidden);
         }
     }
 }

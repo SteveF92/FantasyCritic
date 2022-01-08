@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Web.Extensions
@@ -23,6 +25,22 @@ namespace FantasyCritic.Web.Extensions
             }
 
             return openCriticID;
+        }
+
+        public static Maybe<string> GetGGTokenFromURL(string ggLink)
+        {
+            var result = SubstringSearching.GetBetween(ggLink, "/games/", "/");
+            if (result.IsFailure)
+            {
+                return Maybe<string>.None;
+            }
+
+            if (result.Value.Length != 6)
+            {
+                return Maybe<string>.None;
+            }
+
+            return result.Value;
         }
     }
 }
