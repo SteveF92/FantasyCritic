@@ -55,6 +55,9 @@
             <div v-if="masterGame.openCriticID">
               <a :href="openCriticLink" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
             </div>
+            <div v-if="masterGame.ggToken && !masterGame.ggCoverArtFileName">
+              <a :href="ggLink" target="_blank"><strong>GG| Link <font-awesome-icon icon="external-link-alt" /></strong></a>
+            </div>
             <div>
               <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}"><strong>View full details</strong></router-link>
             </div>

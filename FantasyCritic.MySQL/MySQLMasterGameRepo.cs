@@ -276,9 +276,9 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,ReleaseDate,EstimatedReleaseDate," +
+                    "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,GGToken,ReleaseDate,EstimatedReleaseDate," +
                     "Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
-                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@ReleaseDate,@EstimatedReleaseDate," +
+                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@GGToken,@ReleaseDate,@EstimatedReleaseDate," +
                     "@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
                     entity);
             }
@@ -291,8 +291,8 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(
-                    "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,OpenCriticID,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
-                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@Answered,@ResponseTimestamp,@ResponseNote,@Hidden);",
+                    "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,OpenCriticID,GGToken,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
+                    "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@GGToken,@Answered,@ResponseTimestamp,@ResponseNote,@Hidden);",
                     entity);
             }
         }
@@ -551,6 +551,22 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync(
                     "update tbl_mastergame SET OpenCriticID = @openCriticID where MasterGameID = @masterGameID;",
+                    linkObject);
+            }
+        }
+
+        public async Task LinkToGG(MasterGame masterGame, string ggToken)
+        {
+            var linkObject = new
+            {
+                masterGameID = masterGame.MasterGameID,
+                ggToken
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(
+                    "update tbl_mastergame SET GGToken = @ggToken where MasterGameID = @masterGameID;",
                     linkObject);
             }
         }

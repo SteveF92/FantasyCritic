@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FantasyCritic.Web.Models.Requests.Admin
 {
-    public class LinkGameToGGRequest
+    public class LinkGameToOpenCriticRequest
     {
         [Required]
         public Guid MasterGameID { get; set; }
         [Required]
-        public string GGToken { get; set; }
+        public int OpenCriticID { get; set; }
     }
 }

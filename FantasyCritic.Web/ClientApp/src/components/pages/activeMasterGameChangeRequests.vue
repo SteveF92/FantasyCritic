@@ -7,7 +7,7 @@
       </div>
       <hr />
       <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
-      <div v-if="showLinked" class="alert alert-success">Game has been linked to OpenCritic</div>
+      <div v-if="linkSuccessType" class="alert alert-success">Game has been linked to {{linkSuccessType}}</div>
 
       <div v-if="activeRequests && activeRequests.length === 0" class="alert alert-info">No active requests.</div>
 
@@ -19,6 +19,8 @@
               <th scope="col">User Name</th>
               <th scope="col">Note</th>
               <th scope="col">OpenCritic ID</th>
+              <th scope="col">GG Token</th>
+              <th scope="col"></th>
               <th scope="col"></th>
               <th scope="col"></th>
               <th scope="col"></th>
@@ -33,6 +35,9 @@
               <td>
                 <a v-if="request.openCriticID" :href="openCriticLink(request.openCriticID)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
               </td>
+              <td>
+                <a v-if="request.ggToken" :href="ggLink(request.ggToken)" target="_blank"><strong>GG| Link <font-awesome-icon icon="external-link-alt" /></strong></a>
+              </td>
               <td class="select-cell">
                 <b-button variant="info" size="sm" v-on:click="createResponse(request)">Respond</b-button>
               </td>
@@ -41,14 +46,17 @@
                           :to="{ name: 'masterGameEditor',
                           params: { mastergameid: request.masterGame.masterGameID },
                           query: { changeRequestID: request.requestID }}">
-                Edit Game
+                  Edit Game
                 </b-button>
               </td>
               <td class="select-cell">
                 <b-button variant="info" size="sm" v-on:click="generateSQL(request)">Generate SQL</b-button>
               </td>
               <td class="select-cell">
-                <b-button variant="danger" size="sm" v-on:click="linkToOpenCritic(request)">Link to OpenCritic</b-button>
+                <b-button variant="danger" size="sm" v-on:click="linkToOpenCritic(request)">Link OpenCritic</b-button>
+              </td>
+              <td class="select-cell">
+                <b-button variant="danger" size="sm" v-on:click="linkToGG(request)">Link GG|</b-button>
               </td>
             </tr>
           </tbody>
@@ -98,7 +106,7 @@ export default {
     return {
       activeRequests: null,
       showResponded: false,
-      showLinked: false,
+      linkSuccessType: null,
       requestSelected: null,
       responseNote: '',
       generatedSQL: ''
@@ -151,6 +159,9 @@ export default {
     openCriticLink(openCriticID) {
       return 'https://opencritic.com/game/' + openCriticID + '/a';
     },
+    ggLink(ggToken) {
+      return `https://ggapp.io/games/${ggToken}`;
+    },
     linkToOpenCritic(request) {
       let linkRequest = {
         masterGameID: request.masterGame.masterGameID,
@@ -160,7 +171,22 @@ export default {
       axios
         .post('/api/admin/LinkGameToOpenCritic', linkRequest)
         .then(response => {
-          this.showLinked = true;
+          this.linkSuccessType = "Open Critic";
+        })
+        .catch(error => {
+          this.errorInfo = error.response;
+        });
+    },
+    linkToGG(request) {
+      let linkRequest = {
+        masterGameID: request.masterGame.masterGameID,
+        ggToken: request.ggToken
+      };
+
+      axios
+        .post('/api/admin/LinkGameToGG', linkRequest)
+        .then(response => {
+          this.linkSuccessType = "GG|";
         })
         .catch(error => {
           this.errorInfo = error.response;

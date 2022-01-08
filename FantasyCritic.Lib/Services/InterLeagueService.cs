@@ -181,6 +181,11 @@ namespace FantasyCritic.Lib.Services
             return _masterGameRepo.LinkToOpenCritic(masterGame, openCriticID);
         }
 
+        public Task LinkToGG(MasterGame masterGame, string ggToken)
+        {
+            return _masterGameRepo.LinkToGG(masterGame, ggToken);
+        }
+
         public Task UpdateSystemWideValues(SystemWideValues systemWideValues)
         {
             return _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);

@@ -14,6 +14,7 @@ namespace FantasyCritic.Web.Models.Responses
 
             RequestNote = domain.RequestNote;
             OpenCriticID = domain.OpenCriticID;
+            GGToken = domain.GGToken.GetValueOrDefault();
 
             Answered = domain.Answered;
             ResponseNote = domain.ResponseNote;
@@ -25,6 +26,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string RequesterDisplayName { get; }
         public string RequestNote { get; }
         public int? OpenCriticID { get; }
+        public string GGToken { get; }
         public MasterGameViewModel MasterGame { get; }
 
         //Response

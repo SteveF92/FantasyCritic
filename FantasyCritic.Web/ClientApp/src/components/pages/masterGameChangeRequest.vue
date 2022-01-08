@@ -45,6 +45,11 @@
                 </div>
 
                 <div class="form-group">
+                  <label for="ggLink" class="control-label">Link to GG| Page (Optional)</label>
+                  <input v-model="ggLink" id="ggLink" name="ggLink" class="form-control input" />
+                </div>
+
+                <div class="form-group">
                   <div class="right-button">
                     <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
                   </div>
@@ -115,6 +120,7 @@ export default {
       masterGame: null,
       requestNote: '',
       openCriticLink: '',
+      ggLink: '',
       piecewiseStyle: {
         'backgroundColor': '#ccc',
         'visibility': 'visible',
@@ -147,7 +153,8 @@ export default {
       let request = {
         masterGameID: this.masterGame.masterGameID,
         requestNote: this.requestNote,
-        openCriticLink: this.openCriticLink
+        openCriticLink: this.openCriticLink,
+        ggLink: this.ggLink
       };
       axios
         .post('/api/game/CreateMasterGameChangeRequest', request)
@@ -168,6 +175,7 @@ export default {
     clearData() {
       this.requestNote = '';
       this.openCriticLink = '';
+      this.ggLink = '';
     },
     cancelRequest(request) {
       let model = {

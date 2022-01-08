@@ -80,6 +80,11 @@
                   <input v-model="masterGame.openCriticID" id="openCriticID" name="openCriticID" class="form-control input" />
                 </div>
 
+                <div class="form-group">
+                  <label for="ggToken" class="control-label">GG Token</label>
+                  <input v-model="masterGame.ggToken" id="ggToken" name="ggToken" class="form-control input" />
+                </div>
+
                 <h3>Tags</h3>
                 <masterGameTagSelector v-model="tags" :includeSystem="true"></masterGameTagSelector>
 

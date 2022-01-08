@@ -62,6 +62,10 @@
               <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
               <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
             </div>
+            <div class="form-group">
+              <label for="ggLink" class="control-label">Link to GG| Page (Optional)</label>
+              <input v-model="ggLink" id="ggLink" name="ggLink" class="form-control input" />
+            </div>
 
             <div class="form-group">
               <label for="requestNote" class="control-label">Any other notes?</label>
@@ -141,6 +145,7 @@ export default {
       requestNote: '',
       steamLink: '',
       openCriticLink: '',
+      ggLink: '',
       releaseDate: new Date(),
       estimatedReleaseDate: '',
       hasReleaseDate: false,
@@ -174,6 +179,7 @@ export default {
         requestNote: this.requestNote,
         steamLink: this.steamLink,
         openCriticLink: this.openCriticLink,
+        ggLink: this.ggLink,
         estimatedReleaseDate: this.estimatedReleaseDate
       };
 
@@ -202,6 +208,7 @@ export default {
       this.requestNote = '';
       this.steamLink = '';
       this.openCriticLink = '';
+      this.ggLink = '';
       this.releaseDate = '';
       this.estimatedReleaseDate = '';
       this.$validator.reset();

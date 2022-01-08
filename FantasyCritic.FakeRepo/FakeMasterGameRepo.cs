@@ -48,6 +48,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task LinkToGG(MasterGame masterGame, string ggToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task UpdateCalculatedStats(IEnumerable<MasterGameCalculatedStats> calculatedStats, int year)
         {
             throw new NotImplementedException();

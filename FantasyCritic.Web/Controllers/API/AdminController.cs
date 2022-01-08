@@ -169,6 +169,20 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> LinkGameToGG([FromBody] LinkGameToGGRequest request)
+        {
+            Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+            if (masterGame.HasNoValue)
+            {
+                return BadRequest("Bad master game");
+            }
+
+            await _interLeagueService.LinkToGG(masterGame.Value, request.GGToken);
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> MergeMasterGame([FromBody] MergeGameRequest request)
         {
             Maybe<MasterGame> removeMasterGame = await _interLeagueService.GetMasterGame(request.RemoveMasterGameID);
