@@ -90,7 +90,7 @@ export default {
   computed: {
     ggCoverArtLink() {
       if (this.masterGame.ggCoverArtFileName) {
-        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=307&dpr=1&fit=crop&auto=compress&q=95`;
+        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=190&dpr=1&fit=crop&auto=compress&q=95`;
       }
       return null;
     },
@@ -129,8 +129,6 @@ export default {
   .game-image {
     display: block;
     margin: auto;
-    max-width: 300px;
-    max-height: 250px;
     border-radius: 5%;
   }
 
