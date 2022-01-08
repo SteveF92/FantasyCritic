@@ -39,7 +39,7 @@ namespace FantasyCritic.AdvancedStats
             //await GetAdvancedStats3();
             //await GetAdvancedStats4();
             //await GetAdvancedStats5();
-            await GetAdvancedStats6();
+            //await GetAdvancedStats6();
         }
 
         private static async Task GetAdvancedStats1()
@@ -82,7 +82,7 @@ namespace FantasyCritic.AdvancedStats
 
                 foreach (var game in grouped)
                 {
-                    Console.WriteLine($"{game.Key} was in {game.Item2}/{winningPublishers.Count} ({((double) game.Item2 / (double) winningPublishers.Count) * 100}%) of winning publishers in {supportedYear.Year}");
+                    Console.WriteLine($"{supportedYear.Year}: {game.Key} was in {game.Item2}/{winningPublishers.Count} ({((double) game.Item2 / (double) winningPublishers.Count) * 100}%) of winning publishers");
                 }
             }
         }
@@ -96,7 +96,6 @@ namespace FantasyCritic.AdvancedStats
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             foreach (var supportedYear in supportedYears)
             {
-                Console.WriteLine($"Stats for {supportedYear.Year}");
                 var allLeagueYears = await fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
                 var publishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, allLeagueYears);
                 var publishersByLeagueYear = publishers.ToLookup(x => x.LeagueYear.Key);
@@ -127,7 +126,7 @@ namespace FantasyCritic.AdvancedStats
                 {
                     var points = group.Select(x => x.FantasyPoints);
                     var averagePoints = points.Average();
-                    Console.WriteLine($"Draft position: {group.Key} gives an average of {averagePoints} points.");
+                    Console.WriteLine($"{supportedYear.Year}: Draft position: {group.Key} gives an average of {averagePoints} points.");
                 }
             }
         }
