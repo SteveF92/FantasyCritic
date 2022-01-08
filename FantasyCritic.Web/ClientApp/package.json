@@ -51,9 +51,9 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.2.0",
     "jquery": "^3.6.0",
-    "node-sass": "^7.0.1",
+    "node-sass": "^6.0.1",
     "popper.js": "^1.16.1",
-    "sass-loader": "^12.4.0",
+    "sass-loader": "^10.2.0",
     "vue-template-compiler": "^2.6.14"
   }
 }
