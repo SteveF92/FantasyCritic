@@ -28,10 +28,12 @@ namespace FantasyCritic.Web.Models.Responses
             CriticScore = masterGame.MasterGame.CriticScore;
             AveragedScore = masterGame.MasterGame.AveragedScore;
             OpenCriticID = masterGame.MasterGame.OpenCriticID;
+            GGToken = masterGame.MasterGame.GGToken;
             SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, currentDate)).ToList();
             Tags = masterGame.MasterGame.Tags.Select(x => x.Name).ToList();
             ReadableTags = masterGame.MasterGame.Tags.Select(x => x.ReadableName).ToList();
             BoxartFileName = masterGame.MasterGame.BoxartFileName;
+            GGCoverArtFileName = masterGame.MasterGame.GGCoverArtFileName;
             PercentStandardGame = masterGame.PercentStandardGame;
             PercentCounterPick = masterGame.PercentCounterPick;
             AdjustedPercentCounterPick = masterGame.AdjustedPercentCounterPick;
@@ -104,10 +106,12 @@ namespace FantasyCritic.Web.Models.Responses
         public decimal? CriticScore { get; }
         public bool AveragedScore { get; }
         public int? OpenCriticID { get; }
+        public string GGToken { get; }
         public IReadOnlyList<MasterGameYearViewModel> SubGames { get; }
         public IReadOnlyList<string> Tags { get; }
         public IReadOnlyList<string> ReadableTags { get; }
         public string BoxartFileName { get; }
+        public string GGCoverArtFileName { get; }
         public Instant AddedTimestamp { get; }
 
         public double PercentStandardGame { get; }

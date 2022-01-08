@@ -3,8 +3,11 @@
     <div v-if="masterGame" class="col-md-10 offset-md-1 col-sm-12">
       <h1>{{masterGame.gameName}}</h1>
       <div class="game-image-area">
-        <img v-show="this.masterGame.boxartFileName" :src="boxartLink" alt="Cover Image" class="game-image">
-        <font-awesome-layers v-show="!this.masterGame.boxartFileName" class="fa-8x no-game-image">
+        <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName">
+          <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image">
+          <a :href="ggLink" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
+        </div>
+        <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
           <font-awesome-icon :icon="['far', 'square']" />
           <font-awesome-layers-text transform="shrink-14" value="No image found" />
         </font-awesome-layers>
@@ -55,11 +58,14 @@ export default {
     MasterGameDetails
   },
   computed: {
-    boxartLink() {
-      if (this.masterGame.boxartFileName) {
-        return 'https://s3.amazonaws.com/fantasy-critic-box-art/' + this.masterGame.boxartFileName;
+    ggCoverArtLink() {
+      if (this.masterGame.ggCoverArtFileName) {
+        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=307&dpr=1&fit=crop&auto=compress&q=95`;
       }
       return null;
+    },
+    ggLink() {
+      return `https://ggapp.io/games/${this.masterGame.ggToken}`;
     },
     isAdmin() {
       return this.$store.getters.isAdmin;
@@ -85,3 +91,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+  .game-image {
+    border-radius: 5%;
+  }
+</style>

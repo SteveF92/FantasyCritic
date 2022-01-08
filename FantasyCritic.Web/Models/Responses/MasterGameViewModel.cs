@@ -27,9 +27,11 @@ namespace FantasyCritic.Web.Models.Responses
             AveragedScore = masterGame.AveragedScore;
             Notes = masterGame.Notes;
             OpenCriticID = masterGame.OpenCriticID;
+            GGToken = masterGame.GGToken;
             SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
             Tags = masterGame.Tags.Select(x => x.Name).ToList();
             BoxartFileName = masterGame.BoxartFileName;
+            GGCoverArtFileName = masterGame.GGCoverArtFileName;
             AddedTimestamp = masterGame.AddedTimestamp;
 
             Error = error;
@@ -63,10 +65,12 @@ namespace FantasyCritic.Web.Models.Responses
         public decimal? CriticScore { get; }
         public bool AveragedScore { get; }
         public int? OpenCriticID { get; }
+        public string GGToken { get; }
         public IReadOnlyList<MasterGameViewModel> SubGames { get; }
         public IReadOnlyList<string> Tags { get; }
         public string Notes { get; }
         public string BoxartFileName { get; }
+        public string GGCoverArtFileName { get; }
         public Instant AddedTimestamp { get; }
         public bool Error { get; }
         public int NumberOutstandingCorrections { get; }

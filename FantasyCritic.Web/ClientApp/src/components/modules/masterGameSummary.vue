@@ -3,8 +3,11 @@
     <div v-if="masterGame" class="summary">
       <div class="row">
         <div class="col-lg-6 col-md-12 game-image-area">
-          <img v-show="this.masterGame.boxartFileName" :src="boxartLink" alt="Cover Image" class="game-image">
-          <font-awesome-layers v-show="!this.masterGame.boxartFileName" class="fa-8x no-game-image">
+          <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName">
+            <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image">
+            <a :href="ggLink(masterGame)" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
+          </div>
+          <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
             <font-awesome-icon :icon="['far', 'square']" />
             <font-awesome-layers-text transform="shrink-14" value="No image found" />
           </font-awesome-layers>
@@ -85,9 +88,9 @@ export default {
     MasterGameTagBadge
   },
   computed: {
-    boxartLink() {
-      if (this.masterGame.boxartFileName) {
-        return 'https://s3.amazonaws.com/fantasy-critic-box-art/' + this.masterGame.boxartFileName;
+    ggCoverArtLink() {
+      if (this.masterGame.ggCoverArtFileName) {
+        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=307&dpr=1&fit=crop&auto=compress&q=95`;
       }
       return null;
     },
@@ -100,7 +103,10 @@ export default {
       return moment(game.releaseDate).format('MMMM Do, YYYY');
     },
     openCriticLink(game) {
-      return 'https://opencritic.com/game/' + game.openCriticID + '/a';
+      return `https://opencritic.com/game/${game.openCriticID}/a`;
+    },
+    ggLink(game) {
+      return `https://ggapp.io/games/${game.ggToken}`;
     }
   }
 };
@@ -125,6 +131,7 @@ export default {
     margin: auto;
     max-width: 300px;
     max-height: 250px;
+    border-radius: 5%;
   }
 
   .no-game-image {
