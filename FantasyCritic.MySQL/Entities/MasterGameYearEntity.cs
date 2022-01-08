@@ -27,9 +27,11 @@ namespace FantasyCritic.MySQL.Entities
             InternationalReleaseDate = masterGameStats.MasterGame.InternationalReleaseDate?.ToDateTimeUnspecified();
             ReleaseDate = masterGameStats.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGameStats.MasterGame.OpenCriticID;
+            GGToken = masterGameStats.MasterGame.GGToken;
             CriticScore = masterGameStats.MasterGame.CriticScore;
             Notes = masterGameStats.MasterGame.Notes;
             BoxartFileName = masterGameStats.MasterGame.BoxartFileName;
+            GGCoverArtFileName = masterGameStats.MasterGame.GGCoverArtFileName;
             EligibilityChanged = masterGameStats.MasterGame.EligibilityChanged;
             FirstCriticScoreTimestamp = masterGameStats.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
 
@@ -58,9 +60,11 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime? InternationalReleaseDate { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
+        public string GGToken { get; set; }
         public decimal? CriticScore { get; set; }
         public string Notes { get; set; }
         public string BoxartFileName { get; set; }
+        public string GGCoverArtFileName { get; set; }
         public bool EligibilityChanged { get; set; }
         public DateTimeOffset? FirstCriticScoreTimestamp { get; set; }
         public double PercentStandardGame { get; set; }
@@ -112,7 +116,7 @@ namespace FantasyCritic.MySQL.Entities
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
 
             var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate,
-                releaseDate, OpenCriticID, CriticScore, Notes, BoxartFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames, tags);
+                releaseDate, OpenCriticID, GGToken, CriticScore, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames, tags);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
                 NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);

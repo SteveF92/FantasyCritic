@@ -11,8 +11,8 @@ namespace FantasyCritic.Lib.Domain
     public class MasterGame : IEquatable<MasterGame>
     {
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
-            LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate,  LocalDate? releaseDate, int? openCriticID, decimal? criticScore, 
-            string notes, string boxartFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
+            LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate,  LocalDate? releaseDate, int? openCriticID, string ggToken, decimal? criticScore, 
+            string notes, string boxartFileName, string ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
             bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
             MasterGameID = masterGameID;
@@ -24,10 +24,12 @@ namespace FantasyCritic.Lib.Domain
             InternationalReleaseDate = internationalReleaseDate;
             ReleaseDate = releaseDate;
             OpenCriticID = openCriticID;
+            GGToken = ggToken;
             RawCriticScore = criticScore;
             Notes = notes;
             SubGames = subGames.ToList();
             BoxartFileName = boxartFileName;
+            GGCoverArtFileName = ggCoverArtFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
             DoNotRefreshDate = doNotRefreshDate;
             DoNotRefreshAnything = doNotRefreshAnything;
@@ -45,8 +47,10 @@ namespace FantasyCritic.Lib.Domain
         public LocalDate? InternationalReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
+        public string GGToken { get; }
 
         public string BoxartFileName { get; }
+        public string GGCoverArtFileName { get; }
         public Instant? FirstCriticScoreTimestamp { get; }
         public bool DoNotRefreshDate { get; }
         public bool DoNotRefreshAnything { get; }

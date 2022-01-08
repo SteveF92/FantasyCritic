@@ -28,9 +28,11 @@ namespace FantasyCritic.MySQL.Entities
             InternationalReleaseDate = masterGame.InternationalReleaseDate;
             ReleaseDate = masterGame.ReleaseDate;
             OpenCriticID = masterGame.OpenCriticID;
+            GGToken = masterGame.GGToken;
             CriticScore = masterGame.CriticScore;
             Notes = masterGame.Notes;
             BoxartFileName = masterGame.BoxartFileName;
+            GGCoverArtFileName = masterGame.GGCoverArtFileName;
 
             FirstCriticScoreTimestamp = masterGame.FirstCriticScoreTimestamp;
             DoNotRefreshDate = masterGame.DoNotRefreshDate;
@@ -48,9 +50,11 @@ namespace FantasyCritic.MySQL.Entities
         public LocalDate? InternationalReleaseDate { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
+        public string GGToken { get; set; }
         public decimal? CriticScore { get; set; }
         public string Notes { get; set; }
         public string BoxartFileName { get; set; }
+        public string GGCoverArtFileName { get; set; }
         public Instant? FirstCriticScoreTimestamp { get; set; }
         public bool DoNotRefreshDate { get; set; }
         public bool DoNotRefreshAnything { get; set; }
@@ -59,8 +63,8 @@ namespace FantasyCritic.MySQL.Entities
 
         public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, CriticScore,
-                Notes, BoxartFileName, FirstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, AddedTimestamp, subGames, tags);
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, GGToken, CriticScore,
+                Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, AddedTimestamp, subGames, tags);
         }
     }
 }

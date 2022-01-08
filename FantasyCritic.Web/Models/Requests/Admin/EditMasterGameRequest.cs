@@ -21,8 +21,7 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         public LocalDate? InternationalReleaseDate { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
-        [Required]
-        public string BoxartFileName { get; set; }
+        public string GGToken { get; set; }
         [Required]
         public string Notes { get; set; }
         public List<string> Tags { get; set; }
@@ -35,7 +34,7 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         public Lib.Domain.MasterGame ToDomain(Lib.Domain.MasterGame existingMasterGame, Instant timestamp, IEnumerable<MasterGameTag> tags)
         {
             var masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
-                EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, existingMasterGame.RawCriticScore, Notes, BoxartFileName,
+                EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, GGToken, existingMasterGame.RawCriticScore, Notes, existingMasterGame.BoxartFileName, existingMasterGame.GGCoverArtFileName,
                 existingMasterGame.FirstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, timestamp, existingMasterGame.SubGames, tags);
             return masterGame;
         }
