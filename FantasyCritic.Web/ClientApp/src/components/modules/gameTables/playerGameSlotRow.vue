@@ -28,6 +28,7 @@
         <td v-else>{{game.estimatedReleaseDate}} (Estimated)</td>
         <td>{{acquireDate}}</td>
         <td class="score-column">{{game.criticScore | score(2)}}</td>
+        <td class="score-column"><em>~{{game.masterGame.projectedFantasyPoints | score(2)}}</em></td>
         <td class="score-column">{{game.fantasyPoints | score(2)}}</td>
       </template>
       <template v-else>
@@ -55,6 +56,7 @@
         </span>
       </td>
       <template v-if="!minimal">
+        <td></td>
         <td></td>
         <td></td>
       </template>

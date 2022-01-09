@@ -7,6 +7,10 @@
           <th scope="col">Release Date</th>
           <th scope="col">Date Acquired</th>
           <th scope="col">Critic Score</th>
+          <th scope="col">
+            Projected points
+            <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
+          </th>
           <th scope="col">Fantasy Points</th>
         </tr>
       </thead>
@@ -20,6 +24,7 @@
               Total Fantasy Points
             </span>
           </td>
+          <td></td>
           <td></td>
           <td></td>
           <td id="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</td>
@@ -40,7 +45,19 @@ export default {
   computed: {
     storedGameSlots() {
       return this.$store.getters.gameSlots;
-    }
+    },
+    projectedPointsText() {
+      return {
+        html: true,
+        title: () => {
+          return "Projected Points";
+        },
+        content: () => {
+          return 'This is the amount of fantasy points that our algorithm believes this game will result in.' +
+          'If the game already has a critic score, then this was our final projection before the score came in.';
+        }
+      }
+    },
   }
 };
 </script>
