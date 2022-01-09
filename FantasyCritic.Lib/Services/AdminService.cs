@@ -54,6 +54,8 @@ namespace FantasyCritic.Lib.Services
         public async Task FullDataRefresh()
         {
             await RefreshCriticInfo();
+            await Task.Delay(1000);
+            await RefreshGGInfo();
 
             await Task.Delay(1000);
             await RefreshCaches();
@@ -125,6 +127,11 @@ namespace FantasyCritic.Lib.Services
             }
 
             _logger.Info("Done refreshing critic scores");
+        }
+
+        public Task RefreshGGInfo()
+        {
+            return Task.CompletedTask;
         }
 
         public async Task UpdateFantasyPoints()

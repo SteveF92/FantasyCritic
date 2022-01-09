@@ -9,7 +9,6 @@ namespace FantasyCritic.Lib.OpenCritic
 {
     public class OpenCriticGame
     {
-
         public OpenCriticGame(int id, string name, decimal? score, LocalDate? releaseDate)
         {
             ID = id;

@@ -19,6 +19,7 @@ using Dapper.NodaTime;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -133,10 +134,13 @@ namespace FantasyCritic.Web
             services.AddScoped<AdminServiceConfiguration>(_ => adminServiceConfiguration);
             services.AddScoped<AdminService>();
 
-            services.AddHttpClient<IOpenCriticService, OpenCriticService>();
             services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
             {
                 client.BaseAddress = new Uri("https://api.opencritic.com/api/");
+            });
+            services.AddHttpClient<IGGService, GGService>(client =>
+            {
+                client.BaseAddress = new Uri("https://api.ggapp.io/");
             });
 
             //Add scheduled tasks & scheduler
