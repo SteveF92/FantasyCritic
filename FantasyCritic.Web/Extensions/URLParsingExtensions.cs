@@ -13,6 +13,11 @@ namespace FantasyCritic.Web.Extensions
     {
         public static int? GetOpenCriticIDFromURL(string openCriticLink)
         {
+            if (string.IsNullOrWhiteSpace(openCriticLink))
+            {
+                return null;
+            }
+
             int? openCriticID = null;
             var openCriticGameIDString = SubstringSearching.GetBetween(openCriticLink, "/game/", "/");
             if (openCriticGameIDString.IsSuccess)
@@ -29,6 +34,10 @@ namespace FantasyCritic.Web.Extensions
 
         public static Maybe<string> GetGGTokenFromURL(string ggLink)
         {
+            if (string.IsNullOrWhiteSpace(ggLink))
+            {
+                return Maybe<string>.None;
+            }
             var result = SubstringSearching.GetBetween(ggLink, "/games/", "/");
             if (result.IsFailure)
             {
