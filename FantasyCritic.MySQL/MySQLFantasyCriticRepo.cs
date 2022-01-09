@@ -2218,30 +2218,32 @@ namespace FantasyCritic.MySQL
 
             if (editValues.NewPublisherName.HasValue)
             {
-                sql += "PublisherName = @publisherName ";
+                sql += "PublisherName = @publisherName,";
                 parameters.Add("publisherName", editValues.NewPublisherName.Value);
             }
             if (editValues.Budget.HasValue)
             {
-                sql += "Budget = @budget ";
+                sql += "Budget = @budget,";
                 parameters.Add("budget", editValues.Budget.Value);
             }
             if (editValues.WillNotReleaseGamesDropped.HasValue)
             {
-                sql += "WillNotReleaseGamesDropped = @willNotReleaseGamesDropped ";
+                sql += "WillNotReleaseGamesDropped = @willNotReleaseGamesDropped,";
                 parameters.Add("willNotReleaseGamesDropped", editValues.WillNotReleaseGamesDropped.Value);
             }
             if (editValues.WillReleaseGamesDropped.HasValue)
             {
-                sql += "WillReleaseGamesDropped = @willReleaseGamesDropped ";
+                sql += "WillReleaseGamesDropped = @willReleaseGamesDropped,";
                 parameters.Add("willReleaseGamesDropped", editValues.WillReleaseGamesDropped.Value);
             }
             if (editValues.FreeGamesDropped.HasValue)
             {
-                sql += "FreeGamesDropped = @freeGamesDropped ";
+                sql += "FreeGamesDropped = @freeGamesDropped,";
                 parameters.Add("freeGamesDropped", editValues.FreeGamesDropped.Value);
             }
-            sql += "WHERE PublisherID = @publisherID";
+
+            sql = sql.TrimEnd(',');
+            sql += " WHERE PublisherID = @publisherID";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
