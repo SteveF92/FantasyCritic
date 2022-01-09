@@ -133,14 +133,13 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
+                    var fullUser = await _userManager.FindByIdAsync(user.Id.ToString());
+                    result = await _userManager.AddLoginAsync(fullUser, info);
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-
-                        var fullUser = await _userManager.FindByIdAsync(user.Id.ToString());
-                        var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
-                        await _emailSender.SendConfirmationEmail(user, confirmLink);
+                        var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, fullUser, Request);
+                        await _emailSender.SendConfirmationEmail(fullUser, confirmLink);
 
                         await _signInManager.SignInAsync(fullUser, isPersistent: false, info.LoginProvider);
 
