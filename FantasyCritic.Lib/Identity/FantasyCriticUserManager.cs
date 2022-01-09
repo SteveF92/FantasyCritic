@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -26,6 +27,12 @@ namespace FantasyCritic.Lib.Identity
 
         public override async Task<IdentityResult> CreateAsync(FantasyCriticUser user, string password)
         {
+            var existingAccountWithEmail = await _userStore.FindByEmailAsync(user.Email, CancellationToken.None);
+            if (existingAccountWithEmail is not null)
+            {
+                return IdentityResult.Failed(new IdentityError(){Code = "Email Taken", Description = "An account with that email address already exists." });
+            }
+            
             int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
             var now = _clock.GetCurrentInstant();
             var fullUser = new FantasyCriticUser(user.Id, user.UserName, openUserNumber, user.Email,
@@ -36,6 +43,12 @@ namespace FantasyCritic.Lib.Identity
 
         public override async Task<IdentityResult> CreateAsync(FantasyCriticUser user)
         {
+            var existingAccountWithEmail = await _userStore.FindByEmailAsync(user.Email, CancellationToken.None);
+            if (existingAccountWithEmail is not null)
+            {
+                return IdentityResult.Failed(new IdentityError() { Code = "Email Taken", Description = "An account with that email address already exists." });
+            }
+
             int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
             var now = _clock.GetCurrentInstant();
             var fullUser = new FantasyCriticUser(user.Id, user.UserName, openUserNumber, user.Email,
