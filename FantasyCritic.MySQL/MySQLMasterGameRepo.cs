@@ -205,7 +205,7 @@ namespace FantasyCritic.MySQL
                                          "OpenCriticID,GGToken,CriticScore,Notes,BoxartFileName,GGCoverArtFileName," +
                                          "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,AddedTimestamp) VALUES " +
                                          "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@ReleaseDate," +
-                                         "@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName" +
+                                         "@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName," +
                                          "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@AddedTimestamp);";
             var entity = new MasterGameEntity(masterGame);
             var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));

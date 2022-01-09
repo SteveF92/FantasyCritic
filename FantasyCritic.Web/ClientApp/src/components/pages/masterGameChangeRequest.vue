@@ -14,7 +14,7 @@
         </p>
         <p v-show="masterGame">
           <strong>
-            Also, you can use this form to let me know if I am missing a link to a game's OpenCritic page.
+            You can also use this form to let me know about a missing link to OpenCritic, so scores can populate, or GG|, so the game will have an image to represent it.
           </strong>
         </p>
         <div v-if="masterGame && masterGame.numberOutstandingCorrections" class="alert alert-warning">There are {{masterGame.numberOutstandingCorrections}} correction(s) currently submitted that I have not reviewed.
