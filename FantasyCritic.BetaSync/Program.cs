@@ -18,6 +18,7 @@ using FantasyCritic.AWS;
 using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.GG;
 
 namespace FantasyCritic.BetaSync
 {
@@ -89,6 +90,7 @@ namespace FantasyCritic.BetaSync
             ActionProcessingService actionProcessingService = null;
             FantasyCriticService fantasyCriticService = new FantasyCriticService(gameAcquisitionService, leagueMemberService, publisherService, interLeagueService, fantasyCriticRepo, _clock, actionProcessingService);
             IOpenCriticService openCriticService = null;
+            IGGService ggService = null;
             IRDSManager rdsManager = null;
             RoyaleService royaleService = null;
             IHypeFactorService hypeFactorService = new LambdaHypeFactorService(_awsRegion, _betaBucket);
@@ -102,7 +104,7 @@ namespace FantasyCritic.BetaSync
             }
 
             return new AdminService(fantasyCriticService, fantasyCriticRepo, masterGameRepo, interLeagueService,
-                openCriticService, _clock, rdsManager, royaleService, hypeFactorService, configuration);
+                openCriticService, ggService, _clock, rdsManager, royaleService, hypeFactorService, configuration);
         }
     }
 }

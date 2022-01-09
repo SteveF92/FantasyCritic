@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Dapper;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -138,26 +139,13 @@ namespace FantasyCritic.MySQL
 
         public async Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
         {
-            DateTime? releaseDate = null;
-            if (openCriticGame.ReleaseDate.HasValue)
-            {
-                releaseDate = openCriticGame.ReleaseDate.Value.ToDateTimeUnspecified();
-            }
-
             string setFirstTimestamp = "";
             if (!masterGame.FirstCriticScoreTimestamp.HasValue && openCriticGame.Score.HasValue)
             {
                 setFirstTimestamp = ", FirstCriticScoreTimestamp = CURRENT_TIMESTAMP ";
             }
 
-            string setReleaseDate = "";
-            //if (!masterGame.DoNotRefreshDate)
-            if (false)
-            {
-                setReleaseDate = ", ReleaseDate = @releaseDate ";
-            }
-
-            string sql = $"update tbl_mastergame set CriticScore = @criticScore {setReleaseDate} {setFirstTimestamp} where MasterGameID = @masterGameID";
+            string sql = $"update tbl_mastergame set CriticScore = @criticScore {setFirstTimestamp} where MasterGameID = @masterGameID";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -165,8 +153,27 @@ namespace FantasyCritic.MySQL
                     new
                     {
                         masterGameID = masterGame.MasterGameID,
-                        criticScore = openCriticGame.Score,
-                        releaseDate,
+                        criticScore = openCriticGame.Score
+                    });
+            }
+        }
+
+        public async Task UpdateGGStats(MasterGame masterGame, GGGame ggGame)
+        {
+            if (ggGame.CoverArtFileName.HasNoValue)
+            {
+                return;
+            }
+
+            string sql = "update tbl_mastergame set GGCoverArtFileName = @ggCoverArtFileName where MasterGameID = @masterGameID;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql,
+                    new
+                    {
+                        masterGameID = masterGame.MasterGameID,
+                        ggCoverArtFileName = ggGame.CoverArtFileName.Value
                     });
             }
         }

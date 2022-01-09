@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.FakeRepo.Factories;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -69,6 +70,11 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task UpdateCodeBasedTags(IReadOnlyDictionary<MasterGame, IReadOnlyList<MasterGameTag>> tagsToAdd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateGGStats(MasterGame masterGame, GGGame ggGame)
         {
             throw new NotImplementedException();
         }

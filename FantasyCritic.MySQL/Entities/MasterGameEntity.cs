@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Extensions;
 using NodaTime;
 
 [assembly: InternalsVisibleTo("FantasyCritic.BetaSync")]
@@ -28,7 +29,7 @@ namespace FantasyCritic.MySQL.Entities
             InternationalReleaseDate = masterGame.InternationalReleaseDate;
             ReleaseDate = masterGame.ReleaseDate;
             OpenCriticID = masterGame.OpenCriticID;
-            GGToken = masterGame.GGToken;
+            GGToken = masterGame.GGToken.GetValueOrDefault();
             CriticScore = masterGame.CriticScore;
             Notes = masterGame.Notes;
             BoxartFileName = masterGame.BoxartFileName;
@@ -63,7 +64,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, GGToken, CriticScore,
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore,
                 Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, AddedTimestamp, subGames, tags);
         }
     }

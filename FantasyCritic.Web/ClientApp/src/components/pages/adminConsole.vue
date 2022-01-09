@@ -17,6 +17,7 @@
       <div>
         <b-button variant="info" v-on:click="fullRefresh">Full Refresh</b-button>
         <b-button variant="info" v-on:click="refreshCriticScores">Refresh Critic Scores</b-button>
+        <b-button variant="info" v-on:click="refreshGGInfo">Refresh GG Info</b-button>
         <b-button variant="info" v-on:click="updateFantasyPoints">Update Fantasy Points</b-button>
         <b-button variant="info" v-on:click="refreshCaches">Refresh Caches</b-button>
       </div>
@@ -90,6 +91,19 @@ export default {
         .then(response => {
           this.isBusy = false;
           this.jobSuccess = 'Refresh Critic Scores';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    refreshGGInfo() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/RefreshGGInfo')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Refresh GG Info';
         })
         .catch(returnedError => {
           this.isBusy = false;

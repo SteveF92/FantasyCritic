@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Royale;
 using MoreLinq;
 using NLog;
@@ -32,11 +33,12 @@ namespace FantasyCritic.Lib.Services
         private readonly IMasterGameRepo _masterGameRepo;
         private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
+        private readonly IGGService _ggService;
         private readonly IClock _clock;
         private readonly AdminServiceConfiguration _configuration;
 
         public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
-            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IClock clock, IRDSManager rdsManager,
+            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, IClock clock, IRDSManager rdsManager,
             RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration)
         {
             _fantasyCriticService = fantasyCriticService;
@@ -44,6 +46,7 @@ namespace FantasyCritic.Lib.Services
             _masterGameRepo = masterGameRepo;
             _interLeagueService = interLeagueService;
             _openCriticService = openCriticService;
+            _ggService = ggService;
             _clock = clock;
             _rdsManager = rdsManager;
             _royaleService = royaleService;
@@ -78,18 +81,9 @@ namespace FantasyCritic.Lib.Services
             var masterGames = await _interLeagueService.GetMasterGames();
 
             var currentDate = _clock.GetToday();
-            foreach (var masterGame in masterGames)
+            var masterGamesToUpdate = masterGames.Where(x => x.OpenCriticID.HasValue && !x.DoNotRefreshAnything).ToList();
+            foreach (var masterGame in masterGamesToUpdate)
             {
-                if (!masterGame.OpenCriticID.HasValue)
-                {
-                    continue;
-                }
-
-                if (masterGame.DoNotRefreshAnything)
-                {
-                    continue;
-                }
-
                 if (masterGame.IsReleased(currentDate) && masterGame.ReleaseDate.HasValue)
                 {
                     var year = masterGame.ReleaseDate.Value.Year;
@@ -129,9 +123,23 @@ namespace FantasyCritic.Lib.Services
             _logger.Info("Done refreshing critic scores");
         }
 
-        public Task RefreshGGInfo()
+        public async Task RefreshGGInfo()
         {
-            return Task.CompletedTask;
+            var masterGames = await _interLeagueService.GetMasterGames();
+
+            var masterGamesToUpdate = masterGames.Where(x => x.GGToken.HasValue && !x.DoNotRefreshAnything).ToList();
+            foreach (var masterGame in masterGamesToUpdate)
+            {
+                var ggGame = await _ggService.GetGGGame(masterGame.GGToken.Value);
+                if (ggGame.HasValue)
+                {
+                    await _interLeagueService.UpdateGGStats(masterGame, ggGame.Value);
+                }
+                else
+                {
+                    _logger.Warn($"Getting an GG| game failed (empty return): {masterGame.GameName} | [{masterGame.GGToken.Value}]");
+                }
+            }
         }
 
         public async Task UpdateFantasyPoints()

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
@@ -11,7 +12,7 @@ namespace FantasyCritic.Lib.Domain
     public class MasterGame : IEquatable<MasterGame>
     {
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
-            LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate,  LocalDate? releaseDate, int? openCriticID, string ggToken, decimal? criticScore, 
+            LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate,  LocalDate? releaseDate, int? openCriticID, Maybe<string> ggToken, decimal? criticScore, 
             string notes, string boxartFileName, string ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
             bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
@@ -47,7 +48,7 @@ namespace FantasyCritic.Lib.Domain
         public LocalDate? InternationalReleaseDate { get; }
         public LocalDate? ReleaseDate { get; }
         public int? OpenCriticID { get; }
-        public string GGToken { get; }
+        public Maybe<string> GGToken { get; }
 
         public string BoxartFileName { get; }
         public string GGCoverArtFileName { get; }

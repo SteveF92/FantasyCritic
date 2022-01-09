@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.OpenCritic;
 using NodaTime;
@@ -47,5 +48,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<MasterGameTag>> GetMasterGameTags();
         Task<IReadOnlyDictionary<string, MasterGameTag>> GetMasterGameTagDictionary();
         Task UpdateCodeBasedTags(IReadOnlyDictionary<MasterGame, IReadOnlyList<MasterGameTag>> tagsToAdd);
+        Task UpdateGGStats(MasterGame masterGame, GGGame ggGame);
     }
 }

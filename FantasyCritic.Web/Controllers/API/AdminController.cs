@@ -250,6 +250,13 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> RefreshGGInfo()
+        {
+            await _adminService.RefreshGGInfo();
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> UpdateFantasyPoints()
         {
             await _adminService.UpdateFantasyPoints();

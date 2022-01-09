@@ -28,7 +28,7 @@ namespace FantasyCritic.Web.Models.Responses
             CriticScore = masterGame.MasterGame.CriticScore;
             AveragedScore = masterGame.MasterGame.AveragedScore;
             OpenCriticID = masterGame.MasterGame.OpenCriticID;
-            GGToken = masterGame.MasterGame.GGToken;
+            GGToken = masterGame.MasterGame.GGToken.GetValueOrDefault();
             SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, currentDate)).ToList();
             Tags = masterGame.MasterGame.Tags.Select(x => x.Name).ToList();
             ReadableTags = masterGame.MasterGame.Tags.Select(x => x.ReadableName).ToList();

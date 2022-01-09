@@ -27,7 +27,7 @@ namespace FantasyCritic.Web.Models.Responses
             AveragedScore = masterGame.AveragedScore;
             Notes = masterGame.Notes;
             OpenCriticID = masterGame.OpenCriticID;
-            GGToken = masterGame.GGToken;
+            GGToken = masterGame.GGToken.GetValueOrDefault();
             SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
             Tags = masterGame.Tags.Select(x => x.Name).ToList();
             BoxartFileName = masterGame.BoxartFileName;
