@@ -1,28 +1,54 @@
 <template>
   <div>
     <div v-if="masterGame" class="col-md-10 offset-md-1 col-sm-12">
-      <h1>{{masterGame.gameName}}</h1>
-      <div class="game-image-area">
-        <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName">
-          <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image">
-          <a :href="ggLink" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
+      <div class="row master-game-section">
+        <div class="col-xl-6 col-lg-12">
+          <div class="game-image-area">
+            <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
+              <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image">
+              <a :href="ggLink" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
+            </div>
+            <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
+              <font-awesome-icon :icon="['far', 'square']" />
+              <font-awesome-layers-text transform="shrink-14" value="No image found" />
+            </font-awesome-layers>
+          </div>
         </div>
-        <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
-          <font-awesome-icon :icon="['far', 'square']" />
-          <font-awesome-layers-text transform="shrink-14" value="No image found" />
-        </font-awesome-layers>
+
+        <div class="col-xl-6 col-lg-12">
+          <h1>{{masterGame.gameName}}</h1>
+          <div>
+            <router-link class="text-primary" :to="{ name: 'masterGameChangeRequest', query: { mastergameid: masterGame.masterGameID }}"><strong>Suggest a correction</strong></router-link>
+          </div>
+          <div v-if="isAdmin">
+            <router-link class="text-primary" :to="{ name: 'masterGameEditor', params: { mastergameid: masterGame.masterGameID }}"><strong>Edit Master Game</strong></router-link>
+          </div>
+          <hr />
+          <div class="text-well">
+            <h2>Details</h2>
+            <masterGameDetails :masterGame="masterGame"></masterGameDetails>
+          </div>
+          
+          <div v-for="masterGameYear in masterGameYears" class="text-well master-game-year-section">
+            <h2>Stats for {{masterGameYear.year}}</h2>
+            <ul>
+              <li>Drafted or picked up in {{masterGameYear.eligiblePercentStandardGame | percent(1)}} of leagues where it is eligible.</li>
+
+              <li v-show="masterGameYear.averageDraftPosition">Average Draft Position: {{masterGameYear.averageDraftPosition | score(1)}}</li>
+              <li v-show="!masterGameYear.averageDraftPosition">Average Draft Position: Undrafted</li>
+
+              <li v-show="masterGameYear.dateAdjustedHypeFactor">Hype Factor: {{masterGameYear.dateAdjustedHypeFactor | score(1)}}</li>
+              <li v-show="!masterGameYear.dateAdjustedHypeFactor">Hype Factor: Unhyped...</li>
+
+              <li v-show="masterGameYear.projectedFantasyPoints">Projected Points: ~{{masterGameYear.projectedFantasyPoints | score(1)}}</li>
+
+              <li>Counter Picked in {{masterGameYear.adjustedPercentCounterPick | percent(1)}} of leagues where it is published.</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <router-link class="text-primary" :to="{ name: 'masterGameChangeRequest', query: { mastergameid: masterGame.masterGameID }}"><strong>Suggest a correction</strong></router-link>
-      </div>
-      <div v-if="isAdmin">
-        <router-link class="text-primary" :to="{ name: 'masterGameEditor', params: { mastergameid: masterGame.masterGameID }}"><strong>Edit Master Game</strong></router-link>
-      </div>
-
-      <masterGameDetails :masterGame="masterGame" class="text-well"></masterGameDetails>
-
-      <div v-if="masterGame.subGames && masterGame.subGames.length > 0">
+      <div class="row" v-if="masterGame.subGames && masterGame.subGames.length > 0">
         <h2>Sub Games (Episodes)</h2>
         <div v-for="subGame in masterGame.subGames">
           <h3>{{subGame.gameName}}</h3>
@@ -50,6 +76,7 @@ export default {
   data() {
     return {
       masterGame: null,
+      masterGameYears: [],
       error: ''
     };
   },
@@ -79,10 +106,19 @@ export default {
           this.masterGame = response.data;
         })
         .catch(returnedError => (this.error = returnedError));
+    },
+    fetchMasterGameYears() {
+      axios
+        .get('/api/game/MasterGameYears/' + this.mastergameid)
+        .then(response => {
+          this.masterGameYears = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
     }
   },
   mounted() {
     this.fetchMasterGame();
+    this.fetchMasterGameYears();
   },
   watch: {
     '$route'(to, from) {
@@ -92,7 +128,26 @@ export default {
 };
 </script>
 <style scoped>
+  .master-game-section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
   .game-image {
     border-radius: 5%;
+  }
+
+  .game-image-area {
+    margin: auto;
+  }
+
+  .gg-image-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .master-game-year-section {
+    margin-top: 10px;
   }
 </style>

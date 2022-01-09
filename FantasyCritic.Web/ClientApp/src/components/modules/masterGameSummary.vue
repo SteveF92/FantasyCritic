@@ -3,7 +3,7 @@
     <div v-if="masterGame" class="summary">
       <div class="row">
         <div class="col-lg-6 col-md-12 game-image-area">
-          <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName">
+          <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
             <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image">
             <a :href="ggLink" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
           </div>
@@ -127,6 +127,12 @@ export default {
     margin: auto;
   }
 
+  .gg-image-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .game-image {
     display: block;
     margin: auto;
@@ -145,4 +151,5 @@ export default {
     text-wrap: normal;
     text-align: center;
   }
+
 </style>

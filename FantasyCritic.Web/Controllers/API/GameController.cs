@@ -66,6 +66,32 @@ namespace FantasyCritic.Web.Controllers.API
             return viewModel;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYears(Guid id)
+        {
+            List<MasterGameYear> masterGameYears = new List<MasterGameYear>();
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            foreach (var supportedYear in supportedYears)
+            {
+                Maybe<MasterGameYear> masterGameYear = await _interLeagueService.GetMasterGameYear(id, supportedYear.Year);
+                if (masterGameYear.HasNoValue)
+                {
+                    continue;
+                }
+
+                if (masterGameYear.Value.PercentStandardGame == 0)
+                {
+                    continue;
+                }
+
+                masterGameYears.Add(masterGameYear.Value);
+            }
+
+            var currentDate = _clock.GetToday();
+            var viewModels = masterGameYears.Select(x => new MasterGameYearViewModel(x, currentDate)).ToList();
+            return viewModels;
+        }
+
         [HttpGet("{year}")]
         public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(int year)
         {
