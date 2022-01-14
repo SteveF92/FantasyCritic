@@ -388,7 +388,7 @@ namespace FantasyCritic.Lib.Services
                 foreach (var masterGame in cleanMasterGames)
                 {
                     var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame);
-                    if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate < new LocalDate(supportedYear.Year, 1, 1) && gameIsCached)
+                    if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year < supportedYear.Year)
                     {
                         continue;
                     }
