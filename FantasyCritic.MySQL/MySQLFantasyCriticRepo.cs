@@ -2675,8 +2675,8 @@ namespace FantasyCritic.MySQL
         public async Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage message)
         {
             var entity = new ManagerMessageEntity(leagueYear, message);
-            string sql = "INSERT INTO tbl_league_managermessage(MessageID,LeagueID,Year,MessageText,IsPublic,Timestamp) VALUES " +
-                         "(@MessageID,@LeagueID,@Year,@MessageText,@IsPublic,@Timestamp);";
+            string sql = "INSERT INTO tbl_league_managermessage(MessageID,LeagueID,Year,MessageText,IsPublic,Timestamp,Deleted) VALUES " +
+                         "(@MessageID,@LeagueID,@Year,@MessageText,@IsPublic,@Timestamp,0);";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -2686,7 +2686,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear)
         {
-            var messageSQL = "select * from tbl_league_managermessage where LeagueID = @leagueID AND Year = @year;";
+            var messageSQL = "select * from tbl_league_managermessage where LeagueID = @leagueID AND Year = @year AND Deleted = 0;";
             var queryObject = new
             {
                 leagueID = leagueYear.League.LeagueID,
@@ -2724,7 +2724,7 @@ namespace FantasyCritic.MySQL
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync("delete from tbl_league_managermessage where MessageID = @messageId;", new { messageId });
+                await connection.ExecuteAsync("UPDATE tbl_league_managermessage SET Deleted = 1 WHERE MessageID = @messageId;", new { messageId });
             }
         }
 
