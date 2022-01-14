@@ -390,7 +390,6 @@ namespace FantasyCritic.Lib.Services
                     var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame);
                     if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate < new LocalDate(supportedYear.Year, 1, 1) && gameIsCached)
                     {
-                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, cachedMasterGame));
                         continue;
                     }
 
