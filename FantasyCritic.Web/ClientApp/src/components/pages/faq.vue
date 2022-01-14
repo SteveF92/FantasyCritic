@@ -505,9 +505,10 @@
       <faqCollapse>
         <div slot="question">I see a score on the site but not on OpenCritic? Why?</div>
         <div slot="answer">
-          This typically happens when a game is very new. OpenCritic doesn't display scores until there's a certain number of reviews available. However, if you retrieve scores via the API, it will give
-          a result as soon as there is even one review. Since FantasyCritic uses the OpenCritic API, you will see a score here before OpenCritic has displayed it on their site. In these cases, the score
-          is likely to change significantly as very few reviews are accounted for.
+          This typically happens when a game is very new. When you use the OpenCritic API, there are actually two seperate scores: "Average Score", and "Top Critic Score". The "Average Score" is simply the average of every scored review that the site lists.
+          The "Top Critic Score" is the average of all scored reviews from critic who are marked as "Top Critics". In both cases, there must be at least 3 reviews in the average before the API will return a number. The score that is displayed on OpenCritic's UI is the
+          "Top Critic Score", and that is what Fantasy Critic uses - when available. If there is no "Top Critic Score" available, but there is an "Average Score", then Fantasy Critic will use that. This will happen if, for example, OpenCritic has three scored reviews listed, but
+          only 2 of them are from "Top Critics". In these cases, the score is likely to change significantly as very few reviews are accounted for so far.
         </div>
       </faqCollapse>
       <faqCollapse>
@@ -690,7 +691,7 @@
             <li>Is this game based on an IP, that is <em>not</em> in the public domain, that IS represented in video games?</li>
             <li class="nested-list">
               <ul>
-                <li>Spider Man (2018),Gotham Knights,Wonder Woman</li>
+                <li>Spider Man (2018), Gotham Knights, Wonder Woman</li>
               </ul>
             </li>
           </ul>
