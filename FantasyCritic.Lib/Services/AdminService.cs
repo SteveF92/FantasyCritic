@@ -130,6 +130,11 @@ namespace FantasyCritic.Lib.Services
             var masterGamesToUpdate = masterGames.Where(x => x.GGToken.HasValue && !x.DoNotRefreshAnything).ToList();
             foreach (var masterGame in masterGamesToUpdate)
             {
+                if (!string.IsNullOrWhiteSpace(masterGame.GGCoverArtFileName))
+                {
+                    continue;
+                }
+
                 var ggGame = await _ggService.GetGGGame(masterGame.GGToken.Value);
                 if (ggGame.HasValue)
                 {
