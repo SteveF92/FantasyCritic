@@ -29,7 +29,7 @@
             <masterGameDetails :masterGame="masterGame"></masterGameDetails>
           </div>
           
-          <div v-for="masterGameYear in masterGameYears" class="text-well master-game-year-section">
+          <div v-for="masterGameYear in reversedMasterGameYears" class="text-well master-game-year-section">
             <h2>Stats for {{masterGameYear.year}}</h2>
             <ul>
               <li>Drafted or picked up in {{masterGameYear.eligiblePercentStandardGame | percent(1)}} of leagues where it is eligible.</li>
@@ -96,6 +96,9 @@ export default {
     },
     isAdmin() {
       return this.$store.getters.isAdmin;
+    },
+    reversedMasterGameYears() {
+      return this.masterGameYears.reverse();
     }
   },
   methods: {
