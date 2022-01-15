@@ -81,18 +81,11 @@ namespace FantasyCritic.Lib.Domain
 
         public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate, bool ineligiblePointsShouldCount)
         {
-            var currentGamesScore = GetPublisherSlots()
+            var score = GetPublisherSlots()
                 .Sum(x => x.GetProjectedOrRealFantasyPoints(ineligiblePointsShouldCount || x.SlotIsValid(LeagueYear), 
                     LeagueYear.Options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
 
-            var availableStandardSlots = GetNumberAvailableSlots(false, LeagueYear.SupportedYear.Finished);
-            var emptyStandardSlotsScore = availableStandardSlots * systemWideValues.AverageStandardGamePoints;
-
-            var availableCounterPickSlots = GetNumberAvailableSlots(true, LeagueYear.SupportedYear.Finished);
-            var projectedEmptyCounterPickScore = availableCounterPickSlots * systemWideValues.AverageCounterPickPoints;
-            var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints() ?? projectedEmptyCounterPickScore;
-
-            return currentGamesScore + emptyStandardSlotsScore + emptyCounterPickSlotPoints;
+            return score;
         }
 
         private decimal? GetEmptyCounterPickSlotPoints()
