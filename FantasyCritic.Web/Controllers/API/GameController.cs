@@ -135,14 +135,6 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var supportedYears = await GetSupportedYears();
-            var finishedYears = supportedYears.Where(x => x.Finished);
-            bool thisYearIsFinished = finishedYears.Any(x => x.Year == year);
-            if (thisYearIsFinished)
-            {
-                return BadRequest();
-            }
-
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
             if (userPublisher is null)
@@ -151,7 +143,6 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var possibleMasterGames = await _gameSearchingService.GetAllPossibleMasterGameYearsForLeagueYear(userPublisher, publishersInLeague, year);
-
             var currentDate = _clock.GetToday();
             var viewModels = possibleMasterGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).ToList();
             return viewModels;

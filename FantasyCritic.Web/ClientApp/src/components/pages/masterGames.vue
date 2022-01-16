@@ -9,7 +9,7 @@
             </div>
 
             <div class="selector-area">
-              <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" class="year-selector" />
+              <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="changeYear" class="year-selector" />
             </div>
           </div>
         </div>
@@ -41,13 +41,15 @@
           <b-form-checkbox v-model="eligibleOnly" v-show="selectedLeague">
             <span class="checkbox-label">Show only eligible games</span>
           </b-form-checkbox>
+          <b-form-checkbox v-model="takenOnly" v-show="selectedLeague">
+            <span class="checkbox-label">Show only taken games</span>
+          </b-form-checkbox>
         </div>
         <b-form-checkbox v-model="unreleasedOnly">
           <span class="checkbox-label">Show only unreleased games</span>
         </b-form-checkbox>
       </div>
       
-
       <div v-if="showGames">
         <masterGamesTable :masterGames="gamesToShow"></masterGamesTable>
       </div>
@@ -69,9 +71,11 @@ import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
 export default {
   data() {
     return {
+      isBusy: true,
       selectedYear: null,
       availableOnly: false,
       eligibleOnly: false,
+      takenOnly: false,
       unreleasedOnly: false,
       supportedYears: [],
       flatMasterGameYears: null,
@@ -108,6 +112,9 @@ export default {
         if (this.unreleasedOnly) {
           filteredGames = _.filter(filteredGames, { 'isReleased': false })
         }
+        if (this.takenOnly) {
+          filteredGames = _.filter(filteredGames, { 'taken': true })
+        }
 
         let flattenedGames = filteredGames.map(v => v.masterGame);
         return flattenedGames;
@@ -116,7 +123,7 @@ export default {
       return [];
     },
     showGames() {
-      return this.gamesToShow && this.gamesToShow.length > 0;
+      return this.gamesToShow && !this.isBusy;
     },
     isPlusUser() {
       return this.$store.getters.isPlusUser;
@@ -141,7 +148,8 @@ export default {
 
         });
     },
-    fetchGamesForYear(year) {
+    fetchGamesForYear() {
+      this.isBusy = true;
       this.flatMasterGameYears = null;
       this.possibleMasterGameYears = null;
 
@@ -150,6 +158,7 @@ export default {
           .get('/api/game/MasterGameYear/' + this.selectedYear)
           .then(response => {
             this.flatMasterGameYears = response.data;
+            this.isBusy = false;
           })
           .catch(response => {
 
@@ -159,13 +168,14 @@ export default {
           .get(`/api/game/MasterGameYearInLeagueContext/${this.selectedYear}?leagueID=${this.selectedLeague.leagueID}`)
           .then(response => {
             this.possibleMasterGameYears = response.data;
+            this.isBusy = false;
           })
           .catch(response => {
 
           });
       }
     },
-    fetchMyLeaguesForYear(year) {
+    fetchMyLeaguesForYear() {
       axios
         .get('/api/League/MyLeagues?year=' + this.selectedYear)
         .then(response => {
@@ -174,6 +184,10 @@ export default {
         .catch(response => {
 
         });
+    },
+    changeYear() {
+      this.fetchGamesForYear();
+      this.fetchMyLeaguesForYear();
     }
   },
   mounted() {
