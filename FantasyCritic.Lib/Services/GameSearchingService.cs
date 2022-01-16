@@ -22,6 +22,31 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
+        public async Task<IReadOnlyList<PossibleMasterGameYear>> GetAllPossibleMasterGameYearsForLeagueYear(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
+        {
+            HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => !x.CounterPick && x.MasterGame.HasValue)
+                .Select(x => x.MasterGame.Value.MasterGame)
+                .ToHashSet();
+
+            HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
+
+            IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
+            List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
+
+            LocalDate currentDate = _clock.GetToday();
+            foreach (var masterGame in masterGames)
+            {
+                var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, publisherMasterGames, myPublisherMasterGames,
+                    eligibilityFactors, currentDate);
+                possibleMasterGames.Add(possibleMasterGame);
+            }
+
+            return possibleMasterGames;
+        }
+
         public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
         {
             HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
@@ -143,7 +168,7 @@ namespace FantasyCritic.Lib.Services
             return possibleMasterGames;
         }
 
-        public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherStandardMasterGames, 
+        public static PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, HashSet<MasterGame> publisherStandardMasterGames, 
             HashSet<MasterGame> myPublisherMasterGames, MasterGameWithEligibilityFactors eligibilityFactors, LocalDate currentDate)
         {
             bool isEligible = SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);

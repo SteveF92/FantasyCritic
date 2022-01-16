@@ -24,17 +24,20 @@ namespace FantasyCritic.Web.Controllers.API
     [Route("api/[controller]/[action]")]
     public class GameController : FantasyCriticController
     {
-        private readonly FantasyCriticUserManager _userManager;
         private readonly InterLeagueService _interLeagueService;
         private readonly FantasyCriticService _fantasyCriticService;
+        private readonly GameSearchingService _gameSearchingService;
+        private readonly PublisherService _publisherService;
         private readonly IClock _clock;
 
-        public GameController(FantasyCriticUserManager userManager, InterLeagueService interLeagueService, FantasyCriticService fantasyCriticService, IClock clock)
+        public GameController(FantasyCriticUserManager userManager, InterLeagueService interLeagueService,
+            FantasyCriticService fantasyCriticService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock)
             : base(userManager)
         {
-            _userManager = userManager;
             _interLeagueService = interLeagueService;
             _fantasyCriticService = fantasyCriticService;
+            _gameSearchingService = gameSearchingService;
+            _publisherService = publisherService;
             _clock = clock;
         }
 
@@ -95,14 +98,8 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpGet("{year}")]
-        public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(int year, Guid? leagueID)
+        public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(int year)
         {
-            Maybe<LeagueYear> leagueYear = Maybe<LeagueYear>.None;
-            if (leagueID.HasValue)
-            {
-                leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID.Value, year);
-            }
-
             IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
             var relevantGames = masterGames.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate.Value.Year >= year);
 
@@ -118,6 +115,45 @@ namespace FantasyCritic.Web.Controllers.API
             var currentDate = _clock.GetToday();
             List<MasterGameYearViewModel> viewModels = relevantGames.Select(x => new MasterGameYearViewModel(x, currentDate)).ToList();
 
+            return viewModels;
+        }
+
+        [HttpGet("{year}")]
+        [Authorize(Roles = "PlusUser")]
+        public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> MasterGameYearInLeagueContext(int year, Guid leagueID)
+        {
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var supportedYears = await GetSupportedYears();
+            var finishedYears = supportedYears.Where(x => x.Finished);
+            bool thisYearIsFinished = finishedYears.Any(x => x.Year == year);
+            if (thisYearIsFinished)
+            {
+                return BadRequest();
+            }
+
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
+            if (userPublisher is null)
+            {
+                return BadRequest();
+            }
+
+            var possibleMasterGames = await _gameSearchingService.GetAllPossibleMasterGameYearsForLeagueYear(userPublisher, publishersInLeague, year);
+
+            var currentDate = _clock.GetToday();
+            var viewModels = possibleMasterGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).ToList();
             return viewModels;
         }
 

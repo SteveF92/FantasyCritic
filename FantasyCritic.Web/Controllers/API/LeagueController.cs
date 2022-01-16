@@ -637,7 +637,6 @@ namespace FantasyCritic.Web.Controllers.API
         public async Task<IActionResult> ChangePublisherIcon([FromBody] ChangePublisherIconRequest request)
         {
             var publisher = await _publisherService.GetPublisher(request.PublisherID);
-            var length = request.PublisherIcon.Length;
             if (publisher.HasNoValue)
             {
                 return BadRequest();

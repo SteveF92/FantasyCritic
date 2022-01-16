@@ -74,7 +74,8 @@ export default {
       eligibleOnly: false,
       unreleasedOnly: false,
       supportedYears: [],
-      gamesForYear: [],
+      flatMasterGameYears: null,
+      possibleMasterGameYears: null,
       myLeaguesForYear: [],
       selectedLeague: ""
     };
@@ -88,11 +89,31 @@ export default {
       return this.$store.getters.isAuthenticated;
     },
     gamesToShow() {
-      if (!this.unreleasedOnly) {
-        return this.gamesForYear;
+      if (this.flatMasterGameYears) {
+        if (!this.unreleasedOnly) {
+          return this.flatMasterGameYears;
+        }
+
+        return _.filter(this.flatMasterGameYears, { 'isReleased': false });
       }
 
-      return _.filter(this.gamesForYear, { 'isReleased': false });
+      if (this.possibleMasterGameYears) {
+        let filteredGames = this.possibleMasterGameYears;
+        if (this.availableOnly) {
+          filteredGames = _.filter(filteredGames, { 'isAvailable': true })
+        }
+        if (this.eligibleOnly) {
+          filteredGames = _.filter(filteredGames, { 'isEligible': true })
+        }
+        if (this.unreleasedOnly) {
+          filteredGames = _.filter(filteredGames, { 'isReleased': false })
+        }
+
+        let flattenedGames = filteredGames.map(v => v.masterGame);
+        return flattenedGames;
+      }
+
+      return [];
     },
     showGames() {
       return this.gamesToShow && this.gamesToShow.length > 0;
@@ -121,19 +142,28 @@ export default {
         });
     },
     fetchGamesForYear(year) {
-      this.gamesForYear = [];
-      let leagueQuery = '';
-      if (this.selectedLeague) {
-        leagueQuery = `?leagueID=${this.selectedLeague.leagueID}`;
-      }
-      axios
-        .get('/api/game/MasterGameYear/' + this.selectedYear + leagueQuery)
-        .then(response => {
-          this.gamesForYear = response.data;
-        })
-        .catch(response => {
+      this.flatMasterGameYears = null;
+      this.possibleMasterGameYears = null;
 
-        });
+      if (!this.selectedLeague) {
+        axios
+          .get('/api/game/MasterGameYear/' + this.selectedYear)
+          .then(response => {
+            this.flatMasterGameYears = response.data;
+          })
+          .catch(response => {
+
+          });
+      } else {
+        axios
+          .get(`/api/game/MasterGameYearInLeagueContext/${this.selectedYear}?leagueID=${this.selectedLeague.leagueID}`)
+          .then(response => {
+            this.possibleMasterGameYears = response.data;
+          })
+          .catch(response => {
+
+          });
+      }
     },
     fetchMyLeaguesForYear(year) {
       axios
