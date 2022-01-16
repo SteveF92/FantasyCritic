@@ -26,13 +26,15 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly InterLeagueService _interLeagueService;
+        private readonly FantasyCriticService _fantasyCriticService;
         private readonly IClock _clock;
 
-        public GameController(FantasyCriticUserManager userManager, InterLeagueService interLeagueService, IClock clock)
+        public GameController(FantasyCriticUserManager userManager, InterLeagueService interLeagueService, FantasyCriticService fantasyCriticService, IClock clock)
             : base(userManager)
         {
             _userManager = userManager;
             _interLeagueService = interLeagueService;
+            _fantasyCriticService = fantasyCriticService;
             _clock = clock;
         }
 
@@ -93,8 +95,14 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpGet("{year}")]
-        public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(int year)
+        public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYear(int year, Guid? leagueID)
         {
+            Maybe<LeagueYear> leagueYear = Maybe<LeagueYear>.None;
+            if (leagueID.HasValue)
+            {
+                leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID.Value, year);
+            }
+
             IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
             var relevantGames = masterGames.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate.Value.Year >= year);
 

@@ -28,6 +28,9 @@
         <div v-if="isPlusUser">
           <label class="league-label">View Games for League</label>
           <b-form-select v-model="selectedLeague" v-on:change="fetchGamesForYear" class="league-selector">
+            <template #first>
+              <option value="">-- none --</option>
+            </template>
             <option v-for="league in myLeaguesForYear" v-bind:value="league">
               {{ league.leagueName }}
             </option>
@@ -73,7 +76,7 @@ export default {
       supportedYears: [],
       gamesForYear: [],
       myLeaguesForYear: [],
-      selectedLeague: null
+      selectedLeague: ""
     };
   },
   components: {
@@ -119,8 +122,12 @@ export default {
     },
     fetchGamesForYear(year) {
       this.gamesForYear = [];
+      let leagueQuery = '';
+      if (this.selectedLeague) {
+        leagueQuery = `?leagueID=${this.selectedLeague.leagueID}`;
+      }
       axios
-        .get('/api/game/MasterGameYear/' + this.selectedYear)
+        .get('/api/game/MasterGameYear/' + this.selectedYear + leagueQuery)
         .then(response => {
           this.gamesForYear = response.data;
         })
@@ -174,7 +181,7 @@ export default {
   }
 
   .league-selector {
-    width: 300px;
+    width: 250px;
   }
 
   .special-selectors {
