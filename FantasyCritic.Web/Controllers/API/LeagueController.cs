@@ -96,7 +96,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(viewModel);
         }
 
-        public async Task<IActionResult> MyLeagues()
+        public async Task<IActionResult> MyLeagues(int? year)
         {
             var currentUserResult = await GetCurrentUser();
             if (currentUserResult.IsFailure)
@@ -110,6 +110,10 @@ namespace FantasyCritic.Web.Controllers.API
             List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
             foreach (var league in myLeagues)
             {
+                if (year.HasValue && !league.Years.Contains(year.Value))
+                {
+                    continue;
+                }
                 bool isManager = (league.LeagueManager.Id == currentUser.Id);
                 viewModels.Add(new LeagueViewModel(league, isManager, true, false));
             }

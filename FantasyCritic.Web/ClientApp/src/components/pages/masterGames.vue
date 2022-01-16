@@ -9,9 +9,6 @@
             </div>
 
             <div class="selector-area">
-              <b-form-checkbox v-model="unreleasedOnly" class="unreleased-checkbox">
-                <span class="checkbox-label">Show only unreleased games</span>
-              </b-form-checkbox>
               <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchGamesForYear" class="year-selector" />
             </div>
           </div>
@@ -26,6 +23,27 @@
           <b-button variant="info" :to="{ name: 'masterGameChangeRequest' }" v-show="isAuth" class="nav-link request-button">Suggest a Correction</b-button>
         </div>
       </div>
+
+      <div class="special-selectors text-well">
+        <div v-if="isPlusUser">
+          <label class="league-label">View Games for League</label>
+          <b-form-select v-model="selectedLeague" v-on:change="fetchGamesForYear" class="league-selector">
+            <option v-for="league in myLeaguesForYear" v-bind:value="league">
+              {{ league.leagueName }}
+            </option>
+          </b-form-select>
+          <b-form-checkbox v-model="availableOnly" v-show="selectedLeague">
+            <span class="checkbox-label">Show only available games</span>
+          </b-form-checkbox>
+          <b-form-checkbox v-model="eligibleOnly" v-show="selectedLeague">
+            <span class="checkbox-label">Show only eligible games</span>
+          </b-form-checkbox>
+        </div>
+        <b-form-checkbox v-model="unreleasedOnly">
+          <span class="checkbox-label">Show only unreleased games</span>
+        </b-form-checkbox>
+      </div>
+      
 
       <div v-if="showGames">
         <masterGamesTable :masterGames="gamesToShow"></masterGamesTable>
@@ -49,9 +67,13 @@ export default {
   data() {
     return {
       selectedYear: null,
+      availableOnly: false,
+      eligibleOnly: false,
       unreleasedOnly: false,
       supportedYears: [],
-      gamesForYear: []
+      gamesForYear: [],
+      myLeaguesForYear: [],
+      selectedLeague: null
     };
   },
   components: {
@@ -71,6 +93,9 @@ export default {
     },
     showGames() {
       return this.gamesToShow && this.gamesToShow.length > 0;
+    },
+    isPlusUser() {
+      return this.$store.getters.isPlusUser;
     }
   },
   methods: {
@@ -85,17 +110,29 @@ export default {
             return v.year;
           });
           this.selectedYear = this.supportedYears[0];
-          this.fetchGamesForYear(this.selectedYear);
+          this.fetchGamesForYear();
+          this.fetchMyLeaguesForYear();
         })
         .catch(response => {
 
         });
     },
     fetchGamesForYear(year) {
+      this.gamesForYear = [];
       axios
-        .get('/api/game/MasterGameYear/' + year)
+        .get('/api/game/MasterGameYear/' + this.selectedYear)
         .then(response => {
           this.gamesForYear = response.data;
+        })
+        .catch(response => {
+
+        });
+    },
+    fetchMyLeaguesForYear(year) {
+      axios
+        .get('/api/League/MyLeagues?year=' + this.selectedYear)
+        .then(response => {
+          this.myLeaguesForYear = response.data;
         })
         .catch(response => {
 
@@ -132,9 +169,21 @@ export default {
     margin-bottom: 15px;
   }
 
-  .unreleased-checkbox {
-    margin-top: 8px;
-    margin-right: 8px;
+  .league-label {
+    margin-right: 10px;
+  }
+
+  .league-selector {
+    width: 300px;
+  }
+
+  .special-selectors {
+    margin: 10px;
+    flex-wrap: wrap;
+  }
+
+  .special-selectors div {
+      margin-right: 10px;
   }
 
   .spinner {
