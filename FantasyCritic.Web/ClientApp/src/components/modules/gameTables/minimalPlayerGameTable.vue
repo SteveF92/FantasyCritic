@@ -1,12 +1,16 @@
 <template>
   <div class="player-summary bg-secondary" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
     <div class="publisher-player-names">
-      <div class="publisher-name">
-        <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">
-          {{ publisher.publisherName }}
-          <font-awesome-icon icon="info-circle" />
-        </router-link>
-
+      <div class="publisher-name-and-icon">
+        <span v-if="publisher.publisherIcon" class="publisher-icon">
+          {{ publisher.publisherIcon }}
+        </span>
+        <div class="publisher-name">
+          <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">
+            {{ publisher.publisherName }}
+            <font-awesome-icon icon="info-circle" />
+          </router-link>
+        </div>
       </div>
       <div class="player-name">
         Player: {{publisher.playerName}}
@@ -99,8 +103,13 @@ export default {
     margin: 15px;
     margin-bottom: 0;
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .publisher-name-and-icon {
+    display: flex;
+    align-items:center;
   }
 
   .publisher-name {
@@ -109,6 +118,10 @@ export default {
     font-size: 1.1em;
     color: #D6993A;
     word-break: break-word;
+  }
+
+  .publisher-icon {
+    font-size: 25px;
   }
 
   .player-name {

@@ -1,8 +1,13 @@
 <template>
   <div v-if="publisher && leagueYear">
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <div class="publisher-name">
-        <h1>{{publisher.publisherName}}</h1>
+      <div class="publisher-name-and-icon">
+        <span v-if="publisher.publisherIcon" class="publisher-icon">
+          {{ publisher.publisherIcon }}
+        </span>
+        <div class="publisher-name">
+          <h1>{{publisher.publisherName}}</h1>
+        </div>
       </div>
 
       <div v-if="publisher.publicLeague && !(publisher.userIsInLeague || publisher.outstandingInvite)" class="alert alert-info" role="info">
@@ -104,10 +109,19 @@ export default {
 };
 </script>
 <style scoped>
+  .publisher-name-and-icon {
+    display: flex;
+    align-items: center;
+  }
+
   .publisher-name {
     display: block;
     max-width: 100%;
     word-wrap: break-word;
+  }
+
+  .publisher-icon {
+    font-size: 25px;
   }
 
   .mode-mode-button{

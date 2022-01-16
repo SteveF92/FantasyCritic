@@ -14,7 +14,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class Publisher : IEquatable<Publisher>
     {
-        public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, int draftPosition, 
+        public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, Maybe<string> publisherIcon, int draftPosition, 
             IEnumerable<PublisherGame> publisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped,
             bool autoDraft)
         {
@@ -22,6 +22,7 @@ namespace FantasyCritic.Lib.Domain
             LeagueYear = leagueYear;
             User = user;
             PublisherName = publisherName;
+            PublisherIcon = publisherIcon;
             DraftPosition = draftPosition;
             PublisherGames = publisherGames.ToList();
             Budget = budget;
@@ -35,6 +36,7 @@ namespace FantasyCritic.Lib.Domain
         public LeagueYear LeagueYear { get; }
         public FantasyCriticUser User { get; }
         public string PublisherName { get; }
+        public Maybe<string> PublisherIcon { get; }
         public int DraftPosition { get; }
         public IReadOnlyList<PublisherGame> PublisherGames { get; private set; }
         public uint Budget { get; private set; }

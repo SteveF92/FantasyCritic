@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.MySQL.Entities
@@ -19,6 +20,7 @@ namespace FantasyCritic.MySQL.Entities
         {
             PublisherID = publisher.PublisherID;
             PublisherName = publisher.PublisherName;
+            PublisherIcon = publisher.PublisherIcon.GetValueOrDefault();
             LeagueID = publisher.LeagueYear.League.LeagueID;
             Year = publisher.LeagueYear.Year;
             UserID = publisher.User.Id;
@@ -32,6 +34,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public Guid PublisherID { get; set; }
         public string PublisherName { get; set; }
+        public string PublisherIcon { get; }
         public Guid LeagueID { get; set; }
         public int Year { get; set; }
         public Guid UserID { get; set; }
@@ -42,8 +45,11 @@ namespace FantasyCritic.MySQL.Entities
         public uint Budget { get; set; }
         public bool AutoDraft { get; set; }
 
-        public Publisher ToDomain(LeagueYear leagueYear, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames) 
-            => new Publisher(PublisherID, leagueYear, user, PublisherName, DraftPosition, publisherGames,
+        public Publisher ToDomain(LeagueYear leagueYear, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames)
+        {
+            return new Publisher(PublisherID, leagueYear, user, PublisherName, PublisherIcon.ToMaybe(), DraftPosition,
+                publisherGames,
                 Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, AutoDraft);
+        }
     }
 }

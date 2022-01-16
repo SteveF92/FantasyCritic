@@ -2,13 +2,17 @@
   <div>
     <div class="league-actions">
       <div v-if="leagueYear.userPublisher">
-        <div class="publisher-image">
-          <font-awesome-icon icon="user-circle" size="4x" />
+        <div class="publisher-section">
+          <div v-if="leagueYear.userPublisher.publisherIcon" class="publisher-image">
+            {{leagueYear.userPublisher.publisherIcon}}
+          </div>
+          <div class="publisher-name-section">
+            <h2 class="publisher-name">{{leagueYear.userPublisher.publisherName}}</h2>
+            <h5>{{leagueYear.userPublisher.playerName}}</h5>
+          </div>
         </div>
-        <h4 class="publisher-name">{{leagueYear.userPublisher.publisherName}}</h4>
-        <span>User: {{leagueYear.userPublisher.playerName}}</span>
-        <hr />
       </div>
+      <hr />
       <div>
         <h4>Public Actions</h4>
         <ul class="actions-list">
@@ -34,7 +38,7 @@
               <router-link :to="{ name: 'publisher', params: { publisherid: leagueYear.userPublisher.publisherID }}">
                 My Publisher Details
               </router-link>
-            </li>            
+            </li>
             <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
               Draft Game
             </li>
@@ -608,20 +612,36 @@ export default {
     background-color: #414141;
     padding-left: 5px;
   }
+
   .publisher-name{
     word-break: break-word;
   }
-  .publisher-image {
+
+  .publisher-section {
     text-align: center;
     margin-top: 5px;
+    padding: 5px;
   }
+
+  .publisher-image {
+      font-size: 75px;
+      padding: 5px;
+  }
+
+  .publisher-name-section{
+      margin-top: 10px;
+      margin-left: 10px;
+  }
+
   .actions-list {
     list-style: square;
     padding-left: 20px;
   }
+
   .action {
     color: #D6993A !important;
   }
+
   .action-note {
     padding-left: 15px;
   }
