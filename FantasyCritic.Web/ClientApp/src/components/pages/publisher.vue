@@ -1,12 +1,27 @@
 <template>
   <div v-if="publisher && leagueYear">
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <div class="publisher-name-and-icon">
-        <span v-if="publisher.publisherIcon" class="publisher-icon">
+
+      <div class="publisher-info">
+        <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
           {{ publisher.publisherIcon }}
-        </span>
-        <div class="publisher-name">
-          <h1>{{publisher.publisherName}}</h1>
+        </div>
+        <div class="publisher-details">
+          <div class="publisher-name">
+            <h1>{{publisher.publisherName}}</h1>
+          </div>
+
+          <h4>Player Name: {{publisher.playerName}}</h4>
+
+          <h4>
+            <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>
+          </h4>
+          <ul>
+            <li>Budget: {{publisher.budget | money}}</li>
+            <li>Will Release Games Dropped: {{getDropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames)}}</li>
+            <li>Will Not Release Games Dropped: {{getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames)}}</li>
+            <li>"Any Unreleased" Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
+          </ul>
         </div>
       </div>
 
@@ -14,17 +29,6 @@
         You are viewing a public league.
       </div>
 
-      <h4>Player Name: {{publisher.playerName}}</h4>
-
-      <h4>
-        <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year }}">League: {{publisher.leagueName}}</router-link>
-      </h4>
-      <ul>
-        <li>Budget: {{publisher.budget | money}}</li>
-        <li>Will Release Games Dropped: {{getDropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames)}}</li>
-        <li>Will Not Release Games Dropped: {{getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames)}}</li>
-        <li>"Any Unreleased" Games Dropped: {{getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames)}}</li>
-      </ul>
       <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
       <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
       <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
@@ -37,6 +41,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import PlayerGameTable from '@/components/modules/gameTables/playerGameTable';
+import GlobalFunctions from '@/globalFunctions';
 
 export default {
   data() {
@@ -56,6 +61,9 @@ export default {
     },
     userIsPublisher() {
       return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
+    },
+    iconIsValid() {
+      return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
     }
   },
   methods: {
@@ -109,9 +117,9 @@ export default {
 };
 </script>
 <style scoped>
-  .publisher-name-and-icon {
+  .publisher-info {
+    margin-top: 10px;
     display: flex;
-    align-items: center;
   }
 
   .publisher-name {
@@ -121,7 +129,7 @@ export default {
   }
 
   .publisher-icon {
-    font-size: 25px;
+    font-size: 100px;
   }
 
   .mode-mode-button{

@@ -614,6 +614,15 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task ChangePublisherIcon(Publisher publisher, string publisherIcon)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync("update tbl_league_publisher SET PublisherIcon = @publisherIcon where PublisherID = @publisherID;",
+                    new { publisherID = publisher.PublisherID, publisherIcon });
+            }
+        }
+
         public async Task SetAutoDraft(Publisher publisher, bool autoDraft)
         {
             using (var connection = new MySqlConnection(_connectionString))

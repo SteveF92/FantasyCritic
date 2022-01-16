@@ -629,6 +629,39 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Roles = "PlusUser")]
+        public async Task<IActionResult> ChangePublisherIcon([FromBody] ChangePublisherIconRequest request)
+        {
+            var publisher = await _publisherService.GetPublisher(request.PublisherID);
+            var length = request.PublisherIcon.Length;
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
+            if (!userIsInLeague)
+            {
+                return Forbid();
+            }
+
+            if (publisher.Value.User.Id != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            await _publisherService.ChangePublisherIcon(publisher.Value, request.PublisherIcon);
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> SetAutoDraft([FromBody] SetAutoDraftRequest request)
         {
             var publisher = await _publisherService.GetPublisher(request.PublisherID);

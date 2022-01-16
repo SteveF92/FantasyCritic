@@ -2,7 +2,7 @@
   <div class="player-summary bg-secondary" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
     <div class="publisher-player-names">
       <div class="publisher-name-and-icon">
-        <span v-if="publisher.publisherIcon" class="publisher-icon">
+        <span v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
           {{ publisher.publisherIcon }}
         </span>
         <div class="publisher-name">
@@ -52,6 +52,7 @@
 </template>
 <script>
 import PlayerGameSlotRow from '@/components/modules/gameTables/playerGameSlotRow';
+import GlobalFunctions from '@/globalFunctions';
 
 export default {
   components: {
@@ -71,6 +72,9 @@ export default {
       }
 
       return _.orderBy(this.publisher.gameSlots, ['counterPick', 'publisherGame.timestamp'], ['asc', 'asc']);
+    },
+    iconIsValid() {
+      return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
     }
   }
 };
@@ -121,7 +125,8 @@ export default {
   }
 
   .publisher-icon {
-    font-size: 25px;
+    font-size: 50px;
+    line-height: 50px;
   }
 
   .player-name {

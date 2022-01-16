@@ -195,5 +195,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _fantasyCriticRepo.ReorderPublisherGames(publisher, slotStates);
         }
+
+        public Task ChangePublisherIcon(Publisher publisher, string publisherIcon)
+        {
+            return _fantasyCriticRepo.ChangePublisherIcon(publisher, publisherIcon);
+        }
     }
 }

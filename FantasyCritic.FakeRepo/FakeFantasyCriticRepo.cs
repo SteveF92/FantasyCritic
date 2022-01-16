@@ -371,6 +371,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task ChangePublisherIcon(Publisher publisher, string publisherIcon)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
         {
             throw new NotImplementedException();

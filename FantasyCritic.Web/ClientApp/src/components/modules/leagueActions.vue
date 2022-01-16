@@ -3,7 +3,7 @@
     <div class="league-actions">
       <div v-if="leagueYear.userPublisher">
         <div class="publisher-section">
-          <div v-if="leagueYear.userPublisher.publisherIcon" class="publisher-image">
+          <div v-if="leagueYear.userPublisher.publisherIcon && iconIsValid" class="publisher-image">
             {{leagueYear.userPublisher.publisherIcon}}
           </div>
           <div class="publisher-name-section">
@@ -65,6 +65,9 @@
             </li>
             <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
               Change Publisher Name
+            </li>
+            <li class="fake-link action" v-b-modal="'changePublisherIconForm'" v-if="isPlusUser">
+              Change Publisher Icon
             </li>
           </ul>
         </div>
@@ -172,7 +175,8 @@
         <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
         <gameQueueForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" :year="leagueYear.year"></gameQueueForm>
 
-        <changePublisherNameForm ref="changePublisherComponentRef" :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
+        <changePublisherNameForm :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
+        <changePublisherIconForm :publisher="leagueYear.userPublisher" v-on:publisherIconChanged="publisherIconChanged"></changePublisherIconForm>
 
         <addNewLeagueYearForm :league="league" :isManager="league.isManager" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
         <invitePlayerForm :league="league" v-on:playerInvited="playerInvited" v-on:linkCopied="linkCopied"></invitePlayerForm>
@@ -214,6 +218,7 @@ import GameQueueForm from '@/components/modules/modals/gameQueueForm';
 import EligibilityOverridesModal from '@/components/modules/modals/eligibilityOverridesModal';
 import TagOverridesModal from '@/components/modules/modals/tagOverridesModal';
 import ChangePublisherNameForm from '@/components/modules/modals/changePublisherNameForm';
+import ChangePublisherIconForm from '@/components/modules/modals/changePublisherIconForm';
 import PlayerDraftGameForm from '@/components/modules/modals/playerDraftGameForm';
 import PlayerDraftCounterPickForm from '@/components/modules/modals/playerDraftCounterPickForm';
 import EditAutoDraftForm from '@/components/modules/modals/editAutoDraftForm';
@@ -242,6 +247,8 @@ import RemovePlayerModal from '@/components/modules/modals/removePlayerModal';
 import ManagerMessageModal from '@/components/modules/modals/managerMessageModal';
 import TransferManagerModal from '@/components/modules/modals/transferManagerModal';
 
+import GlobalFunctions from '@/globalFunctions';
+
 export default {
   data() {
     return {
@@ -258,6 +265,7 @@ export default {
     EligibilityOverridesModal,
     TagOverridesModal,
     ChangePublisherNameForm,
+    ChangePublisherIconForm,
     PlayerDraftGameForm,
     PlayerDraftCounterPickForm,
     EditAutoDraftForm,
@@ -284,6 +292,14 @@ export default {
     RemovePlayerModal,
     ManagerMessageModal,
     TransferManagerModal
+  },
+  computed: {
+    isPlusUser() {
+      return this.$store.getters.isPlusUser;
+    },
+    iconIsValid() {
+      return GlobalFunctions.publisherIconIsValid(this.leagueYear.userPublisher.publisherIcon);
+    }
   },
   methods: {
     gameBid(bidInfo) {
@@ -324,6 +340,13 @@ export default {
     publisherNameChanged(changeInfo) {
       let actionInfo = {
         message: 'Publisher name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    publisherIconChanged(changeInfo) {
+      let actionInfo = {
+        message: 'Publisher icon changed.',
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
