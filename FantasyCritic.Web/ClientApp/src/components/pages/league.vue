@@ -88,12 +88,6 @@
               This year is finished! The winner is <strong>{{topPublisher.publisherName}}</strong>!
             </div>
           </div>
-          <div class="alert alert-warning" role="alert" v-if="userShouldBeActive && !leagueYear.userIsActive">
-            A (minor) error has occurred and this page will no longer update automatically. The draft itself is not affected.
-            <br />
-            Press reload to reconnect.
-            <b-button variant="primary" v-on:click="reloadPage">Reload</b-button>
-          </div>
           <div v-if="!leagueYear.userIsActive && league.userIsInLeague && !userShouldBeActive">
             <div class="alert alert-warning" role="alert">
               You are set to inactive for this year.
@@ -166,9 +160,12 @@
                 <h2>Upcoming Games</h2>
                 <upcomingGames :upcomingGames="upcomingGames" mode="league" />
               </div>
-              <div v-if="leagueYear.publicBiddingGames">
-                <h2>This week's bids</h2>
-                <activeBids :games="leagueYear.publicBiddingGames" />
+              <div>
+
+                <div v-if="leagueYear.publicBiddingGames">
+                  <h2>This week's bids</h2>
+                  <activeBids :games="leagueYear.publicBiddingGames" />
+                </div>
               </div>
               <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
             </div>

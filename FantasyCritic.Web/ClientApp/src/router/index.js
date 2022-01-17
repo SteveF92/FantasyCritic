@@ -32,6 +32,17 @@ router.beforeEach(function (toRoute, fromRoute, next) {
       }
     }));
 
+    prereqs.push(new Promise(function (resolve, reject) {
+      if (!store.getters.bidTimes && !store.getters.bidTimesIsBusy) {
+        store.dispatch("getBidTimes")
+          .then(() => {
+            resolve();
+          });
+      } else {
+        resolve();
+      }
+    }));
+
     return prereqs;
   }
 

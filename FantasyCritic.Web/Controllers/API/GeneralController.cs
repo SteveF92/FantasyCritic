@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
@@ -27,18 +28,26 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly InterLeagueService _interLeagueService;
+        private readonly IClock _clock;
 
-        public GeneralController(FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService)
+        public GeneralController(FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, IClock clock)
         {
             _fantasyCriticService = fantasyCriticService;
             _interLeagueService = interLeagueService;
+            _clock = clock;
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> SiteCounts()
         {
             var counts = await _interLeagueService.GetSiteCounts();
             return Ok(new SiteCountsViewModel(counts));
+        }
+
+        public IActionResult BidTimes()
+        {
+            var nextPublicRevealTime = _clock.GetNextPublicRevealTime();
+            var nextBidTime = _clock.GetNextBidTime();
+            return Ok(new BidTimesViewModel(nextPublicRevealTime, nextBidTime));
         }
     }
 }

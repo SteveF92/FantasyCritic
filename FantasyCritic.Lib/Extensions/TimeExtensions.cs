@@ -29,6 +29,25 @@ namespace FantasyCritic.Lib.Extensions
             return date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         }
 
+        public static Instant GetNextPublicRevealTime(this IClock clock)
+        {
+            var currentTime = clock.GetCurrentInstant();
+            var nyc = EasternTimeZone;
+            LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
+            LocalDate nextPublicRevealDate;
+            if (currentDate.DayOfWeek == PublicBiddingRevealDay)
+            {
+                nextPublicRevealDate = currentDate;
+            }
+            else
+            {
+                nextPublicRevealDate = currentDate.Next(PublicBiddingRevealDay);
+            }
+
+            LocalDateTime dateTime = nextPublicRevealDate + PublicBiddingRevealTime;
+            return dateTime.InZoneStrictly(nyc).ToInstant();
+        }
+
         public static Instant GetNextBidTime(this IClock clock)
         {
             var currentTime = clock.GetCurrentInstant();
