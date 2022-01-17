@@ -29,41 +29,27 @@ namespace FantasyCritic.Lib.Extensions
             return date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         }
 
-        public static Instant GetNextPublicRevealTime(this IClock clock)
+        public static Instant GetNextPublicRevealTime(this IClock clock) => GetNextTime(clock, PublicBiddingRevealDay, PublicBiddingRevealTime);
+        public static Instant GetNextBidTime(this IClock clock) => GetNextTime(clock, ActionProcessingDay, ActionProcessingTime);
+
+        private static Instant GetNextTime(this IClock clock, IsoDayOfWeek dayOfWeek, LocalTime timeOnDay)
         {
             var currentTime = clock.GetCurrentInstant();
             var nyc = EasternTimeZone;
-            LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
+            var localDateTime = currentTime.InZone(nyc).LocalDateTime;
+            LocalDate currentDate = localDateTime.Date;
+            LocalTime currentLocalTime = localDateTime.TimeOfDay;
             LocalDate nextPublicRevealDate;
-            if (currentDate.DayOfWeek == PublicBiddingRevealDay)
+            if (currentDate.DayOfWeek == dayOfWeek)
             {
-                nextPublicRevealDate = currentDate;
+                nextPublicRevealDate = currentLocalTime >= timeOnDay ? currentDate.Next(dayOfWeek) : currentDate;
             }
             else
             {
-                nextPublicRevealDate = currentDate.Next(PublicBiddingRevealDay);
+                nextPublicRevealDate = currentDate.Next(dayOfWeek);
             }
 
-            LocalDateTime dateTime = nextPublicRevealDate + PublicBiddingRevealTime;
-            return dateTime.InZoneStrictly(nyc).ToInstant();
-        }
-
-        public static Instant GetNextBidTime(this IClock clock)
-        {
-            var currentTime = clock.GetCurrentInstant();
-            var nyc = EasternTimeZone;
-            LocalDate currentDate = currentTime.InZone(nyc).LocalDateTime.Date;
-            LocalDate nextBidDate;
-            if (currentDate.DayOfWeek == ActionProcessingDay)
-            {
-                nextBidDate = currentDate;
-            }
-            else
-            {
-                nextBidDate = currentDate.Next(ActionProcessingDay);
-            }
-
-            LocalDateTime dateTime = nextBidDate + ActionProcessingTime;
+            LocalDateTime dateTime = nextPublicRevealDate + timeOnDay;
             return dateTime.InZoneStrictly(nyc).ToInstant();
         }
 

@@ -43,11 +43,12 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok(new SiteCountsViewModel(counts));
         }
 
-        public IActionResult BidTimes()
+        public async Task<IActionResult> BidTimes()
         {
             var nextPublicRevealTime = _clock.GetNextPublicRevealTime();
             var nextBidTime = _clock.GetNextBidTime();
-            return Ok(new BidTimesViewModel(nextPublicRevealTime, nextBidTime));
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            return Ok(new BidTimesViewModel(nextPublicRevealTime, nextBidTime, systemWideSettings.ActionProcessingMode));
         }
     }
 }

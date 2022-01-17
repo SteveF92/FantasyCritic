@@ -163,7 +163,7 @@
               <div>
                 <br />
                 <div class="text-well">
-                  <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic"></bidCountdowns>
+                  <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" v-on:publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
                   <bidCountdowns v-if="!showPublicRevealCountdown" mode="NextBid"></bidCountdowns>
                 </div>
                 <div v-if="leagueYear.publicBiddingGames">
@@ -322,6 +322,10 @@ export default {
         .catch(response => {
 
         });
+    },
+    revealPublicBids() {
+      this.fetchLeagueYear();
+      this.$store.dispatch('getBidTimes');
     },
     fetchCurrentDropRequests() {
       if (!this.leagueYear.userPublisher) {
