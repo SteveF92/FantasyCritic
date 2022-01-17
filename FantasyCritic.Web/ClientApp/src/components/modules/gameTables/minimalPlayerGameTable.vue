@@ -8,7 +8,6 @@
         <div class="publisher-name">
           <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">
             {{ publisher.publisherName }}
-            <font-awesome-icon icon="info-circle" />
           </router-link>
         </div>
       </div>
