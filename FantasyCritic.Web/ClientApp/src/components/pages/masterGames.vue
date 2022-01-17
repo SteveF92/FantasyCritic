@@ -179,7 +179,8 @@ export default {
       axios
         .get('/api/League/MyLeagues?year=' + this.selectedYear)
         .then(response => {
-          this.myLeaguesForYear = response.data;
+          let allLeaguesForYear = response.data;
+          this.myLeaguesForYear = _.filter(allLeaguesForYear, { 'testLeague': false })
         })
         .catch(response => {
 
