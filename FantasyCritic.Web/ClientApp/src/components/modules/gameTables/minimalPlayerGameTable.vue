@@ -1,5 +1,5 @@
 <template>
-  <div class="player-summary bg-secondary" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
+  <div :id="'publisher-' + publisher.publisherID" class="player-summary bg-secondary" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
     <div class="publisher-player-names">
       <div class="publisher-name-and-icon">
         <span v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
@@ -14,6 +14,10 @@
       </div>
       <div class="player-name">
         Player: {{publisher.playerName}}
+        <b-button variant="secondary" v-if="userIsPublisher" size="sm" v-on:click="sharePublisher">
+          <span>Share </span>
+          <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
+        </b-button>
       </div>
     </div>
     <table class="table table-striped">
@@ -51,6 +55,7 @@
 
 </template>
 <script>
+import html2canvas from 'html2canvas';
 import PlayerGameSlotRow from '@/components/modules/gameTables/playerGameSlotRow';
 import GlobalFunctions from '@/globalFunctions';
 
@@ -75,6 +80,17 @@ export default {
     },
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
+    }
+  },
+  methods: {
+    sharePublisher() {
+      let elementID = '#publisher-' + this.publisher.publisherID;
+      html2canvas(document.querySelector(elementID)).then(canvas => {
+        var dataUrl = canvas.toDataURL("png");
+        var win = window.open();
+        win.document.write('<iframe src="' + dataUrl + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen> </iframe>');
+        win.document.title = this.publisher.publisherName;
+      });
     }
   }
 };
@@ -188,5 +204,9 @@ export default {
     text-align: center;
     font-weight: bold;
     font-size: 25px;
+  }
+
+  .share-button {
+    color: white;
   }
 </style>

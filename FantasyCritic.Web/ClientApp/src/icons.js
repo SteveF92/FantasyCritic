@@ -44,7 +44,8 @@ import {
   faLock,
   faCalendarTimes,
   faPen,
-  faHourglassHalf
+  faHourglassHalf,
+  faShareAlt
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -117,7 +118,8 @@ library.add(
   faLock,
   faCalendarTimes,
   faPen,
-  faHourglassHalf
+  faHourglassHalf,
+  faShareAlt
 );
 
 export {
