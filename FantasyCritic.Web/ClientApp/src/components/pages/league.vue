@@ -159,8 +159,6 @@
               <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
                 <h2>Upcoming Games</h2>
                 <upcomingGames :upcomingGames="upcomingGames" mode="league" />
-              </div>
-              <div>
                 <br />
                 <div class="text-well">
                   <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" v-on:publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
