@@ -31,7 +31,7 @@
         </ul>
       </div>
       <div v-if="leagueYear.userPublisher">
-        <div v-show="!leagueYear.supportedYear.finished">
+        <div>
           <h4>Player Actions</h4>
           <ul class="actions-list">
             <li class="action">
@@ -39,30 +39,32 @@
                 My Publisher Details
               </router-link>
             </li>
-            <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
-              Draft Game
-            </li>
-            <li class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
-              Draft Counterpick
-            </li>
-            <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">
-              Make a Bid
-            </li>
-            <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
-              My Current Bids
-            </li>
-            <li class="fake-link action" v-b-modal="'dropGameForm'" v-show="leagueYear.playStatus.draftFinished">
-              Drop a Game
-            </li>
-            <li class="fake-link action" v-b-modal="'currentDropsForm'" v-show="leagueYear.playStatus.draftFinished">
-              My Pending Drops
-            </li>
-            <li class="fake-link action" v-b-modal="'gameQueueForm'">
-              Watchlist
-            </li>
-            <li class="fake-link action" v-b-modal="'editAutoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
-              Set Auto Draft
-            </li>
+            <template v-if="!leagueYear.supportedYear.finished">
+              <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
+                Draft Game
+              </li>
+              <li class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
+                Draft Counterpick
+              </li>
+              <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">
+                Make a Bid
+              </li>
+              <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
+                My Current Bids
+              </li>
+              <li class="fake-link action" v-b-modal="'dropGameForm'" v-show="leagueYear.playStatus.draftFinished">
+                Drop a Game
+              </li>
+              <li class="fake-link action" v-b-modal="'currentDropsForm'" v-show="leagueYear.playStatus.draftFinished">
+                My Pending Drops
+              </li>
+              <li class="fake-link action" v-b-modal="'gameQueueForm'">
+                Watchlist
+              </li>
+              <li class="fake-link action" v-b-modal="'editAutoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">
+                Set Auto Draft
+              </li>
+            </template>
             <li class="fake-link action" v-b-modal="'changePublisherNameForm'">
               Change Publisher Name
             </li>
