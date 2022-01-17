@@ -152,9 +152,8 @@ export default {
 
 </style>
 <style>
-  .player-summary table {
-    border-collapse: collapse;
-    border-style: hidden;
+  .player-summary table th {
+    border-top: none;
   }
 
   .player-summary table td {
