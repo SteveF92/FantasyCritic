@@ -1,6 +1,12 @@
 <template>
   <b-modal id="changePublisherIconForm" ref="changePublisherIconRef" title="Change Publisher Name" @hidden="clearData" @show="clearData">
-    <div v-show="!iconIsValid" class="alert alert-info">Your icon must be a single emoji.</div>
+    <div v-show="!iconIsValid" class="alert alert-info">
+      Your icon must be a single character, ideally an emoji.
+      <br />
+      <br />
+      On mobile your keyboard probably has emoji built in, on desktop you can go to:
+      <a href="https://emojipedia.org/" target="_blank">Emojipedia <font-awesome-icon icon="external-link-alt" size="sm" /></a>
+    </div>
     <div class="form-horizontal">
       <div class="form-group">
         <label for="newPublisherIcon" class="control-label">Publisher Icon</label>
