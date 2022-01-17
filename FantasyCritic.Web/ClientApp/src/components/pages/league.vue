@@ -161,12 +161,17 @@
                 <upcomingGames :upcomingGames="upcomingGames" mode="league" />
               </div>
               <div>
-
+                <br />
+                <div class="text-well">
+                  <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic"></bidCountdowns>
+                  <bidCountdowns v-if="!showPublicRevealCountdown" mode="NextBid"></bidCountdowns>
+                </div>
                 <div v-if="leagueYear.publicBiddingGames">
                   <h2>This week's bids</h2>
                   <activeBids :games="leagueYear.publicBiddingGames" />
                 </div>
               </div>
+              <br />
               <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
             </div>
           </div>
@@ -191,6 +196,7 @@ import CreatePublisherForm from '@/components/modules/modals/createPublisherForm
 import StartDraftModal from '@/components/modules/modals/startDraftModal';
 import UpcomingGames from '@/components/modules/upcomingGames';
 import ActiveBids from '@/components/modules/activeBids';
+import BidCountdowns from '@/components/modules/bidCountdowns';
 
 export default {
   data() {
@@ -215,7 +221,8 @@ export default {
     StartDraftModal,
     LeagueActions,
     UpcomingGames,
-    ActiveBids
+    ActiveBids,
+    BidCountdowns
   },
   computed: {
     nextPublisherUp() {
@@ -251,6 +258,14 @@ export default {
       }
 
       return mostRecentMessage;
+    },
+    showPublicRevealCountdown() {
+      if (!this.leagueYear || this.leagueYear.pickupSystem !== "SemiPublicBidding") {
+        return false;
+      }
+
+      let revealIsNext = this.$store.getters.bidTimes.nextPublicBiddingTime < this.$store.getters.bidTimes.nextBidLockTime;
+      return revealIsNext;
     }
   },
   methods: {
@@ -293,7 +308,7 @@ export default {
         })
         .catch(returnedError => {
           this.errorInfo = 'Something went wrong with this league. Contact us on Twitter for support.';
-        });
+        }); 
     },
     fetchCurrentBids() {
       if (!this.leagueYear.userPublisher) {
