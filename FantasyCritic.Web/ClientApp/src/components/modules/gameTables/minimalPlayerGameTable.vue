@@ -14,9 +14,9 @@
       </div>
       <div class="player-name">
         Player: {{publisher.playerName}}
-        <b-button variant="secondary" v-if="userIsPublisher" size="sm" v-on:click="sharePublisher">
-          <span>Share </span>
+        <b-button variant="secondary" v-if="userIsPublisher && isPlusUser" size="sm" v-on:click="sharePublisher">
           <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
+          <span>Get Image</span>
         </b-button>
       </div>
     </div>
@@ -80,6 +80,9 @@ export default {
     },
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
+    },
+    isPlusUser() {
+      return this.$store.getters.isPlusUser;
     }
   },
   methods: {
