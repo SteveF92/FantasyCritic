@@ -17,6 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             Taken = masterGame.Taken;
             AlreadyOwned = masterGame.AlreadyOwned;
             IsEligible = masterGame.IsEligible;
+            IsEligibleInOpenSlot = masterGame.IsEligibleInOpenSlot;
             IsReleased = masterGame.IsReleased;
             WillRelease = masterGame.WillRelease;
             HasScore = masterGame.HasScore;
@@ -27,6 +28,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool Taken { get; }
         public bool AlreadyOwned { get; }
         public bool IsEligible { get; }
+        public bool IsEligibleInOpenSlot { get; }
         public bool IsReleased { get; }
         public bool WillRelease { get; }
         public bool HasScore { get; }

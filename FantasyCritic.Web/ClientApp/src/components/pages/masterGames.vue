@@ -35,15 +35,14 @@
               {{ league.leagueName }}
             </option>
           </b-form-select>
-          <b-form-checkbox v-model="availableOnly" v-show="selectedLeague">
-            <span class="checkbox-label">Show only available games</span>
-          </b-form-checkbox>
-          <b-form-checkbox v-model="eligibleOnly" v-show="selectedLeague">
-            <span class="checkbox-label">Show only eligible games</span>
-          </b-form-checkbox>
-          <b-form-checkbox v-model="takenOnly" v-show="selectedLeague">
-            <span class="checkbox-label">Show only taken games</span>
-          </b-form-checkbox>
+          <br />
+          <b-button variant="info" v-show="selectedLeague && leagueFilterMode" v-on:click="clearLeagueFilter" class="clear-league-filter-button">Clear League Filter</b-button>
+          <b-form-group v-show="selectedLeague">
+            <b-form-radio v-model="leagueFilterMode" value="availableOnly">Show only available games</b-form-radio>
+            <b-form-radio v-model="leagueFilterMode" value="eligibleOnly">Show only eligible games</b-form-radio>
+            <b-form-radio v-model="leagueFilterMode" value="eligibleInOpenSlotOnly">Show only games eligible in open slot</b-form-radio>
+            <b-form-radio v-model="leagueFilterMode" value="takenOnly">Show only taken games</b-form-radio>
+          </b-form-group>
         </div>
         <b-form-checkbox v-model="unreleasedOnly">
           <span class="checkbox-label">Show only unreleased games</span>
@@ -73,8 +72,10 @@ export default {
     return {
       isBusy: true,
       selectedYear: null,
+      leagueFilterMode: null,
       availableOnly: false,
       eligibleOnly: false,
+      eligibleInOpenSlotOnly: false,
       takenOnly: false,
       unreleasedOnly: false,
       supportedYears: [],
@@ -103,19 +104,20 @@ export default {
 
       if (this.possibleMasterGameYears) {
         let filteredGames = this.possibleMasterGameYears;
-        if (this.availableOnly) {
+        if (this.leagueFilterMode === "availableOnly") {
           filteredGames = _.filter(filteredGames, { 'isAvailable': true })
-        }
-        if (this.eligibleOnly) {
+        } else if (this.leagueFilterMode === "eligibleOnly") {
           filteredGames = _.filter(filteredGames, { 'isEligible': true })
-        }
-        if (this.unreleasedOnly) {
-          filteredGames = _.filter(filteredGames, { 'isReleased': false })
-        }
-        if (this.takenOnly) {
+        } else if (this.leagueFilterMode === "eligibleInOpenSlotOnly") {
+          filteredGames = _.filter(filteredGames, { 'isEligibleInOpenSlot': true })
+        } else if (this.leagueFilterMode === "takenOnly") {
           filteredGames = _.filter(filteredGames, { 'taken': true })
         }
 
+        if (this.unreleasedOnly) {
+          filteredGames = _.filter(filteredGames, { 'isReleased': false })
+        }
+        
         let flattenedGames = filteredGames.map(v => v.masterGame);
         return flattenedGames;
       }
@@ -189,6 +191,9 @@ export default {
     changeYear() {
       this.fetchGamesForYear();
       this.fetchMyLeaguesForYear();
+    },
+    clearLeagueFilter() {
+      this.leagueFilterMode = null;
     }
   },
   mounted() {
@@ -241,5 +246,10 @@ export default {
   .spinner {
     display: flex;
     justify-content: space-around;
+  }
+
+  .clear-league-filter-button {
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 </style>

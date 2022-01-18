@@ -18,6 +18,20 @@ namespace FantasyCritic.Lib.Services
             return !leagueYearClaimErrors.Any();
         }
 
+        public static bool GameIsEligibleInOpenSlot(IReadOnlyList<PublisherSlot> openNonCounterPickSlots, MasterGameWithEligibilityFactors eligibilityFactors)
+        {
+            foreach (var openSlot in openNonCounterPickSlots)
+            {
+                var claimErrorsForSlot = GetClaimErrorsForSlot(openSlot, eligibilityFactors);
+                if (!claimErrorsForSlot.Any())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick, int? validDropSlot)
         {
             string filledSpacesText = "User's game spaces are filled.";
