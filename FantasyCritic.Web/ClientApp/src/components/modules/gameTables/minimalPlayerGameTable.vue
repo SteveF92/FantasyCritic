@@ -13,10 +13,12 @@
       </div>
       <div class="player-name">
         Player: {{publisher.playerName}}
-        <b-button variant="secondary" v-if="userIsPublisher && isPlusUser" size="sm" v-on:click="sharePublisher">
-          <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
-          <span>Get Image</span>
-        </b-button>
+        <div v-show="!renderingSnapshot">
+          <b-button variant="secondary" v-if="userIsPublisher && isPlusUser" size="sm" v-on:click="prepareSnapshot">
+            <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
+            <span>Get Image</span>
+          </b-button>
+        </div>
       </div>
     </div>
     <table class="table table-striped">
@@ -63,6 +65,11 @@ export default {
     PlayerGameSlotRow
   },
   props: ['publisher', 'leagueYear'],
+  data() {
+    return {
+      renderingSnapshot: false
+    };
+  },
   computed: {
     advancedProjections() {
       return this.$store.getters.advancedProjections;
@@ -85,6 +92,10 @@ export default {
     }
   },
   methods: {
+    prepareSnapshot() {
+      this.renderingSnapshot = true;
+      setTimeout(this.sharePublisher, 1);
+    },
     sharePublisher() {
       let elementID = '#publisher-' + this.publisher.publisherID;
       html2canvas(document.querySelector(elementID)).then(canvas => {
@@ -94,6 +105,7 @@ export default {
         win.document.write('<iframe src="' + dataUrl + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen> </iframe>');
         win.document.title = this.publisher.publisherName;
       });
+      this.renderingSnapshot = false;
     }
   }
 };
