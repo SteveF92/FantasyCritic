@@ -11,8 +11,8 @@
             <h5>{{leagueYear.userPublisher.playerName}}</h5>
           </div>
         </div>
+        <hr />
       </div>
-      <hr />
       <div>
         <h4>Public Actions</h4>
         <ul class="actions-list">
@@ -36,7 +36,7 @@
           <ul class="actions-list">
             <li class="action">
               <router-link :to="{ name: 'publisher', params: { publisherid: leagueYear.userPublisher.publisherID }}">
-                My Publisher Details
+                Publisher Details / Move Games
               </router-link>
             </li>
             <template v-if="!leagueYear.supportedYear.finished">

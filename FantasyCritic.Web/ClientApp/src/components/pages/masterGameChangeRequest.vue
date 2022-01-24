@@ -7,18 +7,23 @@
       <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
       <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
       <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
-        <p>
-          <strong>
+        <div class="text-well">
+          <p>
             If you see an issue with a game on the site, for example an incorrect release date, you can send me a note and I'll get it fixed.
-          </strong>
-        </p>
-        <p v-show="masterGame">
-          <strong>
+          </p>
+          <p>
+            However, if this is a "debateable" correction, like whether or not a game is "Remake" or a "Partial Remake", please come to the "eligibility-debates" channel in our
+            <a href="https://discord.gg/dNa7DD3">Discord <font-awesome-icon icon="external-link-alt" size="sm" /></a> so the community can discuss it.
+          </p>
+          <p v-show="masterGame">
             You can also use this form to let me know about a missing link to OpenCritic, so scores can populate, or GG|, so the game will have an image to represent it.
-          </strong>
-        </p>
-        <div v-if="masterGame && masterGame.numberOutstandingCorrections" class="alert alert-warning">There are {{masterGame.numberOutstandingCorrections}} correction(s) currently submitted that I have not reviewed.
-        You may not need to submit anything.</div>
+          </p>
+        </div>
+        <hr />
+        <div v-if="masterGame && masterGame.numberOutstandingCorrections" class="alert alert-warning">
+          There are {{masterGame.numberOutstandingCorrections}} correction(s) currently submitted that I have not reviewed.
+          You may not need to submit anything.
+        </div>
         <p v-show="!masterGame">
           <strong>
             You can suggest a correction by clicking a link on a master game's page.
