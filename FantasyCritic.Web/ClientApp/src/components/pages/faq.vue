@@ -676,7 +676,7 @@
                   <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
-                  This is a port of Mother 1. This version "enough of remake" to consider it a game that "has not been released internationally".
+                  This is a port of Mother 1. This version is not "enough of remake" to consider it a game that "has not been released internationally".
                 </td>
               </tr>
               <tr>
@@ -695,7 +695,7 @@
               <tr>
                 <td>The Great Ace Attorney Chronicles</td>
                 <td>
-                  <masterGameTagBadge tagName="DirectorsCut"></masterGameTagBadge>
+                  <masterGameTagBadge tagName="Remaster"></masterGameTagBadge>
                 </td>
                 <td>
                   <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
@@ -705,7 +705,6 @@
                   This game is a compilation of two games that never came out in North America. It is not "enough of remake" to consider it a game that "has not been released internationally".
                 </td>
               </tr>
-
               <tr>
                 <td>Famicom Detective Club</td>
                 <td>
