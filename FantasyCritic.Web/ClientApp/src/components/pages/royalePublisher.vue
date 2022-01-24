@@ -1,21 +1,29 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="publisher">
-      <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
-        {{publisher.publisherIcon}}
+      <div class="publisher-header">
+        <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
+          {{publisher.publisherIcon}}
+        </div>
+        <h1 class="publisher-name">{{publisher.publisherName}}</h1>
+        <h4>Player Name: {{publisher.playerName}}</h4>
+        <h4>
+          Year/Quarter:
+          <router-link :to="{ name: 'criticsRoyale', params: {year: publisher.yearQuarter.year, quarter: publisher.yearQuarter.quarter }}">
+            {{publisher.yearQuarter.year}}-Q{{publisher.yearQuarter.quarter}}
+          </router-link>
+        </h4>
       </div>
-      <div class="publisher-name">
-        <h1>{{publisher.publisherName}}</h1>
+
+      <div v-if="publisher.quartersWon" class="won-quarters">
+        <span v-for="quarter in publisher.quartersWon" class="badge badge-success">
+          <font-awesome-icon icon="crown" class="quarter-winner-crown" />
+          {{quarter.year}}-Q{{quarter.quarter}} Winner
+        </span>
       </div>
+
       <div class="row">
         <div class="col-md-12 col-lg-8">
-          <h4>Player Name: {{publisher.playerName}}</h4>
-          <h4>
-            Year/Quarter:
-            <router-link :to="{ name: 'criticsRoyale', params: {year: publisher.yearQuarter.year, quarter: publisher.yearQuarter.quarter }}">
-              {{publisher.yearQuarter.year}}-Q{{publisher.yearQuarter.quarter}}
-            </router-link>
-          </h4>
           <h2>
             Total Points: {{publisher.totalFantasyPoints}}
           </h2>
@@ -34,11 +42,6 @@
             <royaleChangePublisherNameForm :userRoyalePublisher="publisher" v-on:publisherNameChanged="publisherNameChanged"></royaleChangePublisherNameForm>
             <royaleChangePublisherIconForm :userRoyalePublisher="publisher" v-on:publisherIconChanged="publisherIconChanged"></royaleChangePublisherIconForm>
           </div>
-          <ul class="won-quarters-list">
-            <li v-for="quarter in publisher.quartersWon">
-              <span class="badge badge-pill badge-primary">{{quarter.year}}-Q{{quarter.quarter}} Winner</span>
-            </li>
-          </ul>
         </div>
       </div>
 
@@ -297,6 +300,15 @@ export default {
 };
 </script>
 <style scoped>
+  .publisher-header {
+    margin-top: 10px;
+    border: 2px;
+    border-color: #D6993A;
+    border-style: solid;
+    background-color: #414141;
+    padding-left: 5px;
+  }
+
   .publisher-name {
     display: block;
     max-width: 100%;
@@ -306,6 +318,7 @@ export default {
   .publisher-icon {
     font-size: 75px;
     padding: 5px;
+    float: left;
   }
 
   .top-area{
@@ -324,8 +337,13 @@ export default {
     min-width: 200px;
   }
 
-  .won-quarters-list{
-      list-style: none;
+  .won-quarters {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .won-quarters span {
+      margin: 5px;
   }
 
   .game-ineligible {
@@ -337,5 +355,9 @@ export default {
 
   .master-game-popover {
     float: left;
+  }
+
+  .quarter-winner-crown {
+    color: #D6993A;
   }
 </style>

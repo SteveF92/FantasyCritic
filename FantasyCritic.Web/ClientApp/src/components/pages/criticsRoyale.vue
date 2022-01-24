@@ -265,6 +265,7 @@ export default {
     margin-left: 4px;
     color: #D6993A;
   }
+
   .onetime-winner {
     margin-left: 4px;
     color: white;
