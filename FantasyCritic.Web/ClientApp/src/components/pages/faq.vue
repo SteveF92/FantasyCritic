@@ -303,9 +303,11 @@
           Twos special notes on 'Lowest Projected Points Wins':
           <ul>
             <li>The projections used are the 'advanced' projections.</li>
-            <li>If your league uses 'special game slots', then points are counted towards your projection even if the game is not eligible for the slot it is in.
-            The reason for this is to prevent people from intentionally moving games into slots they aren't eligible for in order to decrease their projected points
-            while trying to win a bid tiebreak.</li>
+            <li>
+              If your league uses 'special game slots', then points are counted towards your projection even if the game is not eligible for the slot it is in.
+              The reason for this is to prevent people from intentionally moving games into slots they aren't eligible for in order to decrease their projected points
+              while trying to win a bid tiebreak.
+            </li>
           </ul>
         </div>
       </faqCollapse>
@@ -636,6 +638,90 @@
         </div>
         <div slot="answer">
           See the above answer about 'Planned for Early Access' and 'Currently in Early Access', because the same logic applies.
+        </div>
+      </faqCollapse>
+      <faqCollapse>
+        <div slot="question">
+          How are "re-releases" of games that were never released in North America handled?
+        </div>
+        <div slot="answer">
+          This one is complicated. For example, if a game came out in Japan, but not North America, and then some time later, the game is updated with a new release in Japan and <em>that</em> release comes out in North America,
+          the tags on the "updated release" will vary based upon how much the updated release differs from the original release. As a general rule, a game cannot be a "remake" or a "remaster" of a game
+          that never released in North America, so all of these will be "New Game" or "New Gaming Franchise".
+          However, if a game only has minor updates over the original, then it will get the "Released Internationally" tag.
+          One way to think about this is, what would be the tags on the game if Fantasy Critic was a Japan-based site?
+
+          <br />
+          <br />
+          Here are some examples for clarity:
+          <br />
+          <br />
+          <table class="table table-striped table-bordered table-responsive-sm">
+            <thead>
+              <tr class="bg-primary">
+                <th>Game Name</th>
+                <th>Tags in Japanese Context</th>
+                <th>Tags in North American Context</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Earthbound Beginnings</td>
+                <td>
+                  <masterGameTagBadge tagName="Port"></masterGameTagBadge>
+                </td>
+                <td>
+                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                </td>
+                <td>
+                  This is a port of Mother 1. This version "enough of remake" to consider it a game that "has not been released internationally".
+                </td>
+              </tr>
+              <tr>
+                <td>River City Girls Zero</td>
+                <td>
+                  <masterGameTagBadge tagName="Remaster"></masterGameTagBadge>
+                </td>
+                <td>
+                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                </td>
+                <td>
+                  This game was originally released on the Super Famicom in 1994. This version is not "enough of remake" to consider it a game that "has not been released internationally".
+                </td>
+              </tr>
+              <tr>
+                <td>The Great Ace Attorney Chronicles</td>
+                <td>
+                  <masterGameTagBadge tagName="DirectorsCut"></masterGameTagBadge>
+                </td>
+                <td>
+                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                </td>
+                <td>
+                  This game is a compilation of two games that never came out in North America. It is not "enough of remake" to consider it a game that "has not been released internationally".
+                </td>
+              </tr>
+
+              <tr>
+                <td>Famicom Detective Club</td>
+                <td>
+                  <masterGameTagBadge tagName="Remake"></masterGameTagBadge>
+                </td>
+                <td>
+                  <masterGameTagBadge tagName="NewGamingFranchise"></masterGameTagBadge>
+                </td>
+                <td>
+                  This game is "more of a remake" with respect to the original game, compared to the games above. It's not fair to call the original Famicom game as the "same game", meaning that <em>this</em> game has
+                  never released anywhere, and therefore it does not get a "Released Internationally" tag. In addition, there are no games in this franchise previously released in North America, so it gets the
+                  "New Gaming Franchise" tag.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </faqCollapse>
       <faqCollapse>
