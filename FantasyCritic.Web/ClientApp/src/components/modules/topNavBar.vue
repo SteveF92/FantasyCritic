@@ -2,8 +2,14 @@
     <div>
       <nav class="navbar navbar-expand bg-white main-nav">
         <router-link :to="{ name: 'welcome' }" class="navbar-brand">
-          <img class="full-logo" src="/img/horizontal-logo.svg" />
-          <img class="minimal-logo" src="/img/minimal-logo.svg" />
+          <template v-if="!isPlusUser">
+            <img class="full-logo" src="/img/horizontal-logo.svg" />
+            <img class="minimal-logo" src="/img/minimal-logo.svg" />
+          </template>
+          <template v-else>
+            <img class="full-logo" src="/img/horizontal-logo-plus.svg" />
+            <img class="minimal-logo" src="/img/minimal-logo-plus.svg" />
+          </template>
         </router-link>
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
@@ -124,6 +130,9 @@ export default {
         return;
       }
       return this.activeRoyaleYearQuarter.quarter;
+    },
+    isPlusUser() {
+      return this.$store.getters.isPlusUser;
     }
   },
   data() {

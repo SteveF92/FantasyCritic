@@ -15,10 +15,21 @@
 <body>
     <header>
         <nav class="navbar navbar-expand bg-white border-bottom box-shadow mb-3 main-navbar">
-            <a class="navbar-brand logo-link" href="~/">
-                <img class="full-logo" src="/img/horizontal-logo.svg" />
-                <img class="minimal-logo" src="/img/minimal-logo.svg" />
-            </a>
+            @if(!User.IsInRole("PlusUser"))
+            {
+                <a class="navbar-brand logo-link" href="~/">
+                    <img class="full-logo" src="/img/horizontal-logo.svg" />
+                    <img class="minimal-logo" src="/img/minimal-logo.svg" />
+                </a>
+            }
+            else
+            {
+                <a class="navbar-brand logo-link" href="~/">
+                    <img class="full-logo" src="/img/horizontal-logo-plus.svg" />
+                    <img class="minimal-logo" src="/img/minimal-logo-plus.svg" />
+                </a>
+            }
+            
             <div class="container">
                 <div class="navbar-collapse collapse d-inline-flex flex-row-reverse">
                     @{
