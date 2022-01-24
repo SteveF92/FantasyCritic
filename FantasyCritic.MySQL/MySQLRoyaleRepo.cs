@@ -38,8 +38,8 @@ namespace FantasyCritic.MySQL
         public async Task CreatePublisher(RoyalePublisher publisher)
         {
             RoyalePublisherEntity entity = new RoyalePublisherEntity(publisher);
-            string sql = "insert into tbl_royale_publisher (PublisherID,UserID,Year,Quarter,PublisherName,Budget) " +
-                         "VALUES (@PublisherID,@UserID,@Year,@Quarter,@PublisherName,@Budget)";
+            string sql = "insert into tbl_royale_publisher (PublisherID,UserID,Year,Quarter,PublisherName,PublisherIcon,Budget) " +
+                         "VALUES (@PublisherID,@UserID,@Year,@Quarter,@PublisherName,@PublisherIcon,@Budget)";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql, entity);
@@ -55,6 +55,19 @@ namespace FantasyCritic.MySQL
                 {
                     publisherID = publisher.PublisherID,
                     publisherName
+                });
+            }
+        }
+
+        public async Task ChangePublisherIcon(RoyalePublisher publisher, Maybe<string> publisherIcon)
+        {
+            string sql = "UPDATE tbl_royale_publisher SET PublisherIcon = @publisherIcon WHERE PublisherID = @publisherID;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, new
+                {
+                    publisherID = publisher.PublisherID,
+                    publisherIcon = publisherIcon.GetValueOrDefault()
                 });
             }
         }

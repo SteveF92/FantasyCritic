@@ -88,5 +88,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task ChangePublisherIcon(RoyalePublisher publisher, Maybe<string> publisherIcon)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

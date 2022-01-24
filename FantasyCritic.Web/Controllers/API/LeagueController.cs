@@ -660,7 +660,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            await _publisherService.ChangePublisherIcon(publisher.Value, request.PublisherIcon);
+            await _publisherService.ChangePublisherIcon(publisher.Value, request.PublisherIcon.ToMaybe());
             return Ok();
         }
 

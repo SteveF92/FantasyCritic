@@ -5,18 +5,20 @@ using System.Linq;
 using System.Text;
 using FantasyCritic.Lib.Identity;
 using NodaTime;
+using CSharpFunctionalExtensions;
 
 namespace FantasyCritic.Lib.Royale
 {
     public class RoyalePublisher
     {
         public RoyalePublisher(Guid publisherID, RoyaleYearQuarter yearQuarter, FantasyCriticUser user, 
-            string publisherName, IEnumerable<RoyalePublisherGame> publisherGames, decimal budget)
+            string publisherName, Maybe<string> publisherIcon, IEnumerable<RoyalePublisherGame> publisherGames, decimal budget)
         {
             PublisherID = publisherID;
             YearQuarter = yearQuarter;
             User = user;
             PublisherName = publisherName;
+            PublisherIcon = publisherIcon;
             PublisherGames = publisherGames.ToList();
             Budget = budget;
         }
@@ -25,6 +27,7 @@ namespace FantasyCritic.Lib.Royale
         public RoyaleYearQuarter YearQuarter { get; }
         public FantasyCriticUser User { get; }
         public string PublisherName { get; }
+        public Maybe<string> PublisherIcon { get; }
         public IReadOnlyList<RoyalePublisherGame> PublisherGames { get; }
         public decimal Budget { get; }
 

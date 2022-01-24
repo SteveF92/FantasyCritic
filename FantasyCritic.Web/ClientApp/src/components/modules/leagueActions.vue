@@ -3,7 +3,7 @@
     <div class="league-actions">
       <div v-if="leagueYear.userPublisher">
         <div class="publisher-section">
-          <div v-if="leagueYear.userPublisher.publisherIcon && iconIsValid" class="publisher-image">
+          <div v-if="leagueYear.userPublisher.publisherIcon && iconIsValid" class="publisher-icon">
             {{leagueYear.userPublisher.publisherIcon}}
           </div>
           <div class="publisher-name-section">
@@ -648,9 +648,9 @@ export default {
     padding: 5px;
   }
 
-  .publisher-image {
-      font-size: 75px;
-      padding: 5px;
+  .publisher-icon {
+    font-size: 75px;
+    padding: 5px;
   }
 
   .publisher-name-section{

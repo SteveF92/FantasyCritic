@@ -101,7 +101,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddLeagueAction(LeagueAction action);
         Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
         Task ChangePublisherName(Publisher publisher, string publisherName);
-        Task ChangePublisherIcon(Publisher publisher, string publisherIcon);
+        Task ChangePublisherIcon(Publisher publisher, Maybe<string> publisherIcon);
         Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague);
         Task StartDraft(LeagueYear leagueYear);
         Task CompleteDraft(LeagueYear leagueYear);

@@ -138,6 +138,36 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ChangePublisherIcon([FromBody] ChangeRoyalePublisherIconRequest request)
+        {
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            if (string.IsNullOrWhiteSpace(request.PublisherIcon))
+            {
+                return BadRequest("You cannot have a blank name.");
+            }
+
+            Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
+            if (publisher.HasNoValue)
+            {
+                return NotFound();
+            }
+
+            if (!publisher.Value.User.Equals(currentUser))
+            {
+                return Forbid();
+            }
+
+            await _royaleService.ChangePublisherIcon(publisher.Value, request.PublisherIcon.ToMaybe());
+            return Ok();
+        }
+
         [AllowAnonymous]
         [HttpGet("{year}/{quarter}")]
         public async Task<IActionResult> GetUserRoyalePublisher(int year, int quarter)

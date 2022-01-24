@@ -54,7 +54,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user, string publisherName)
         {
-            RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, new List<RoyalePublisherGame>(), 100m);
+            RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, Maybe<string>.None, new List<RoyalePublisherGame>(), 100m);
             await _royaleRepo.CreatePublisher(publisher);
             return publisher;
         }
@@ -62,6 +62,11 @@ namespace FantasyCritic.Lib.Services
         public Task ChangePublisherName(RoyalePublisher publisher, string publisherName)
         {
             return _royaleRepo.ChangePublisherName(publisher, publisherName);
+        }
+
+        public Task ChangePublisherIcon(RoyalePublisher publisher, Maybe<string> publisherIcon)
+        {
+            return _royaleRepo.ChangePublisherIcon(publisher, publisherIcon);
         }
 
         public Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)

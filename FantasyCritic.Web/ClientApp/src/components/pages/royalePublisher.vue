@@ -1,11 +1,14 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="publisher">
+      <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
+        {{publisher.publisherIcon}}
+      </div>
       <div class="publisher-name">
         <h1>{{publisher.publisherName}}</h1>
       </div>
       <div class="row">
-        <div class="col-md-12 col-lg-6">
+        <div class="col-md-12 col-lg-8">
           <h4>Player Name: {{publisher.playerName}}</h4>
           <h4>
             Year/Quarter:
@@ -16,15 +19,20 @@
           <h2>
             Total Points: {{publisher.totalFantasyPoints}}
           </h2>
+          <h4>
+            Remaining Budget: {{publisher.budget | money}}
+          </h4>
         </div>
 
-        <div class="col-md-12 col-lg-6">
-          <h4>Remaining Budget: {{publisher.budget | money}}</h4>
+        <div class="col-md-12 col-lg-4">
           <div v-if="userIsPublisher" class="user-actions">
-            <b-button variant="primary" v-b-modal="'royalePurchaseGameForm'" class="action-button">Purchase a Game</b-button>
-            <b-button variant="secondary" v-b-modal="'royaleChangePublisherNameForm'" class="action-button">Change Publisher Name</b-button>
+            <b-button block variant="primary" v-b-modal="'royalePurchaseGameForm'" class="action-button">Purchase a Game</b-button>
+            <b-button block variant="secondary" v-b-modal="'royaleChangePublisherNameForm'" class="action-button">Change Publisher Name</b-button>
+            <b-button block v-if="isPlusUser" variant="secondary" v-b-modal="'royaleChangePublisherIconForm'" class="action-button">Change Publisher Icon</b-button>
+
             <royalePurchaseGameForm :yearQuarter="publisher.yearQuarter" :userRoyalePublisher="publisher" v-on:gamePurchased="gamePurchased"></royalePurchaseGameForm>
             <royaleChangePublisherNameForm :userRoyalePublisher="publisher" v-on:publisherNameChanged="publisherNameChanged"></royaleChangePublisherNameForm>
+            <royaleChangePublisherIconForm :userRoyalePublisher="publisher" v-on:publisherIconChanged="publisherIconChanged"></royaleChangePublisherIconForm>
           </div>
           <ul class="won-quarters-list">
             <li v-for="quarter in publisher.quartersWon">
@@ -109,7 +117,10 @@ import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import RoyalePurchaseGameForm from '@/components/modules/modals/royalePurchaseGameForm';
 import RoyaleChangePublisherNameForm from '@/components/modules/modals/royaleChangePublisherNameForm';
+import RoyaleChangePublisherIconForm from '@/components/modules/modals/royaleChangePublisherIconForm';
 import SellRoyaleGameModal from '@/components/modules/modals/sellRoyaleGameModal';
+
+import GlobalFunctions from '@/globalFunctions';
 
 export default {
   props: ['publisherid'],
@@ -135,6 +146,7 @@ export default {
   },
   components: {
     RoyaleChangePublisherNameForm,
+    RoyaleChangePublisherIconForm,
     RoyalePurchaseGameForm,
     MasterGamePopover,
     SellRoyaleGameModal
@@ -164,6 +176,12 @@ export default {
             'You can drop the game for a full refund.';
         }
       }
+    },
+    isPlusUser() {
+      return this.$store.getters.isPlusUser;
+    },
+    iconIsValid() {
+      return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
     }
   },
   methods: {
@@ -187,6 +205,15 @@ export default {
     publisherNameChanged() {
       this.fetchPublisher();
       let message = 'Publisher name changed.';
+      let toast = this.$toasted.show(message, {
+        theme: 'primary',
+        position: 'top-right',
+        duration: 5000
+      });
+    },
+    publisherIconChanged() {
+      this.fetchPublisher();
+      let message = 'Publisher icon changed.';
       let toast = this.$toasted.show(message, {
         theme: 'primary',
         position: 'top-right',
@@ -275,6 +302,12 @@ export default {
     max-width: 100%;
     word-wrap: break-word;
   }
+
+  .publisher-icon {
+    font-size: 75px;
+    padding: 5px;
+  }
+
   .top-area{
     margin-top: 10px;
     margin-bottom: 20px;
@@ -289,14 +322,6 @@ export default {
   .main-button{
     margin-top: 5px;
     min-width: 200px;
-  }
-
-  .user-actions {
-    display: flex;
-  }
-
-  .user-actions .action-button {
-    margin: 5px;
   }
 
   .won-quarters-list{

@@ -46,6 +46,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.ChangePublisherName(publisher, publisherName);
         }
 
+        public Task ChangePublisherIcon(Publisher publisher, Maybe<string> publisherIcon)
+        {
+            return _fantasyCriticRepo.ChangePublisherIcon(publisher, publisherIcon);
+        }
+
         public Task SetAutoDraft(Publisher publisher, bool autoDraft)
         {
             return _fantasyCriticRepo.SetAutoDraft(publisher, autoDraft);
@@ -194,11 +199,6 @@ namespace FantasyCritic.Lib.Services
         public Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
         {
             return _fantasyCriticRepo.ReorderPublisherGames(publisher, slotStates);
-        }
-
-        public Task ChangePublisherIcon(Publisher publisher, string publisherIcon)
-        {
-            return _fantasyCriticRepo.ChangePublisherIcon(publisher, publisherIcon);
         }
     }
 }
