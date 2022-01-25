@@ -50,7 +50,11 @@ namespace FantasyCritic.Web.Identity
                     ClientSecrets = { new Secret(fcBotSecret.Sha256()) },
                     RedirectUris = fcBotRedirectUris,
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "FantasyCritic.WebAPI" },
+                    AllowedScopes =
+                    {
+                        "FantasyCritic.WebAPI",
+                        IdentityServerConstants.StandardScopes.OpenId
+                    },
                     AccessTokenLifetime = 604800,
                     RequireConsent = true
                 }
