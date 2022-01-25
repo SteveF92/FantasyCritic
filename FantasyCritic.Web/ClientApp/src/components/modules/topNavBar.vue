@@ -50,18 +50,24 @@
                 <span class="full-nav">Contact</span>
               </router-link>
             </li>
+            <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
+              <router-link :to="{ name: 'fantasyCriticPlus' }" class="nav-link top-nav-link optional-nav" title="Fantasy Critic Plus">
+                <img class="fc-plus-nav minimal-nav topnav-icon" src="/img/plus.svg" />
+                <span class="full-nav">Plus</span>
+              </router-link>
+            </li>
           </ul>
         </div>
         <div class="my-2 my-lg-0" v-if="!authIsBusy">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link top-nav-link brand-nav" href="https://twitter.com/fantasy_critic" target="_blank">
-                <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" class="topnav-icon twitter-icon" />
+              <a class="nav-link top-nav-link brand-nav" href="https://patreon.com/fantasycritic" target="_blank">
+                <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="topnav-icon patreon-icon" />
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link top-nav-link brand-nav" href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-                <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" class="topnav-icon reddit-icon" />
+              <a class="nav-link top-nav-link brand-nav" href="https://twitter.com/fantasy_critic" target="_blank">
+                <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" class="topnav-icon twitter-icon" />
               </a>
             </li>
             <li class="nav-item">
@@ -187,6 +193,16 @@ export default {
     padding-bottom: 3px;
   }
 
+  .fc-plus-nav {
+    height: 24px;
+    padding-bottom: 3px;
+    margin-right: 3px;
+  }
+
+  .plus-icon {
+    display: inline;
+  }
+
   @media only screen and (max-width: 1020px) {
     .full-logo {
       display: none;
@@ -199,7 +215,7 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 340px) {
+  @media only screen and (max-width: 370px) {
     .optional-nav {
       display: none;
     }
@@ -230,6 +246,10 @@ export default {
 
     .critic-royale-nav {
       height: 22px;
+    }
+
+    .fc-plus-nav {
+      height: 19px;
     }
   }
 

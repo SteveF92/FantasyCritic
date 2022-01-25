@@ -34,7 +34,12 @@
           </div>
         </div>
         <div col-md-4>
-          <label>Contact</label>
+          <div>
+            <a href="https://patreon.com/fantasycritic" target="_blank">
+              <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" />
+              <span class="full-contact">Patreon</span>
+            </a>
+          </div>
           <div>
             <a href="https://twitter.com/fantasy_critic" target="_blank">
               <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" class="twitter-icon" />

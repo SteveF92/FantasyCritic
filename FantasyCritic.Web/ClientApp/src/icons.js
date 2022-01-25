@@ -61,7 +61,8 @@ import {
   faRedditSquare,
   faGithubSquare,
   faFacebookSquare,
-  faDiscord
+  faDiscord,
+  faPatreon
 } from '@fortawesome/free-brands-svg-icons';
 
 library.add(
@@ -119,7 +120,8 @@ library.add(
   faCalendarTimes,
   faPen,
   faHourglassHalf,
-  faShareAlt
+  faShareAlt,
+  faPatreon
 );
 
 export {

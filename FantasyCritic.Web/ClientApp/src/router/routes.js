@@ -23,6 +23,7 @@ import CriticsRoyale from '@/components/pages/criticsRoyale';
 import RoyalePublisher from '@/components/pages/royalePublisher';
 import NotFound from '@/components/pages/notFound';
 import MasterGameEditor from '@/components/pages/masterGameEditor';
+import FantasyCriticPlus from '@/components/pages/fantasyCriticPlus';
 
 export const routes = [
   { path: '/404', component: NotFound },
@@ -43,6 +44,15 @@ export const routes = [
     name: 'home',
     meta: {
       title: 'Home'
+    }
+  },
+  {
+    path: '/fantasyCriticPlus',
+    component: FantasyCriticPlus,
+    name: 'fantasyCriticPlus',
+    meta: {
+      title: 'Fantasy Critic Plus',
+      isPublic: true
     }
   },
   {
