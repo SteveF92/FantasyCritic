@@ -1,5 +1,12 @@
 <template>
   <b-modal id="royaleChangePublisherIconForm" ref="changeRoyalePublisherIconRef" title="Change Publisher Icon" @hidden="clearData" @show="clearData">
+    <div v-show="!iconIsValid" class="alert alert-info">
+      Your icon must be a single character, ideally an emoji.
+      <br />
+      <br />
+      On mobile your keyboard probably has emoji built in, on desktop you can go to:
+      <a href="https://emojipedia.org/" target="_blank">Emojipedia <font-awesome-icon icon="external-link-alt" size="sm" /></a>
+    </div>
     <div class="form-horizontal">
       <div class="form-group">
         <label for="newPublisherIcon" class="control-label">Publisher Icon</label>
@@ -7,7 +14,7 @@
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Change Icon" v-on:click="changePublisherIcon" :disabled="!iconIsValid"/>
+      <input type="submit" class="btn btn-primary" value="Change Icon" v-on:click="changePublisherIcon" :disabled="!iconIsValid" />
     </div>
   </b-modal>
 </template>
