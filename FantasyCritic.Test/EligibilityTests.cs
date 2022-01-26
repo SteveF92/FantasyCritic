@@ -41,16 +41,16 @@ namespace FantasyCritic.Test
 
         private static MasterGame CreateBasicMasterGame(string name, LocalDate releaseDate, MasterGameTag tag)
         {
-            return new MasterGame(Guid.NewGuid(), name, releaseDate.ToISOString(), releaseDate, releaseDate, null, null,
+            return new MasterGame(Guid.NewGuid(), name, releaseDate.ToISOString(), releaseDate, releaseDate, null, null, null,
                 releaseDate, null, null, null, "", null, null, null, false, false, false, Instant.MinValue,
                 new List<MasterSubGame>(), new List<MasterGameTag>(){ tag });
         }
 
         private static MasterGame CreateComplexMasterGame(string name, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate, 
-            LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, IEnumerable<MasterGameTag> tags)
+            LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, IEnumerable<MasterGameTag> tags)
         {
             return new MasterGame(Guid.NewGuid(), name, "TBA", minimumReleaseDate, maximumReleaseDate,
-                earlyAccessReleaseDate, internationalReleaseDate, null, null, null, null, "", null, null, null, false, false, false,
+                earlyAccessReleaseDate, internationalReleaseDate, announcementDate, null, null, null, null, "", null, null, null, false, false, false,
                 Instant.MinValue, new List<MasterSubGame>(), tags);
 
         }
@@ -146,7 +146,7 @@ namespace FantasyCritic.Test
             var acquisitionDate = acquisitionTime.ToEasternDate();
 
             MasterGame masterGame = CreateComplexMasterGame("Have a Nice Death", new LocalDate(2022, 1, 3), null,
-                new LocalDate(2022, 3, 6), null, new List<MasterGameTag>()
+                new LocalDate(2022, 3, 6), null, null, new List<MasterGameTag>()
                 {
                     _tagDictionary["NG"],
                     _tagDictionary["C-EA"],
@@ -171,7 +171,7 @@ namespace FantasyCritic.Test
             var acquisitionDate = acquisitionTime.ToEasternDate();
 
             MasterGame masterGame = CreateComplexMasterGame("Have a Nice Death", new LocalDate(2022, 1, 3), null,
-                new LocalDate(2022, 3, 6), null, new List<MasterGameTag>()
+                new LocalDate(2022, 3, 6), null, null, new List<MasterGameTag>()
                 {
                     _tagDictionary["NG"],
                     _tagDictionary["C-EA"],
@@ -197,7 +197,7 @@ namespace FantasyCritic.Test
             var acquisitionDate = acquisitionTime.ToEasternDate();
 
             MasterGame masterGame = CreateComplexMasterGame("Baldur's Gate 3", new LocalDate(2022, 1, 3), null,
-                new LocalDate(2020, 10, 6), null, new List<MasterGameTag>()
+                new LocalDate(2020, 10, 6), null, null, new List<MasterGameTag>()
                 {
                     _tagDictionary["NG"],
                     _tagDictionary["C-EA"],
@@ -221,7 +221,7 @@ namespace FantasyCritic.Test
             var acquisitionDate = acquisitionTime.ToEasternDate();
 
             MasterGame masterGame = CreateComplexMasterGame("Baldur's Gate 3", new LocalDate(2022, 1, 3), null,
-                new LocalDate(2020, 10, 6), null, new List<MasterGameTag>()
+                new LocalDate(2020, 10, 6), null, null, new List<MasterGameTag>()
                 {
                     _tagDictionary["NG"],
                     _tagDictionary["C-EA"],
@@ -249,7 +249,7 @@ namespace FantasyCritic.Test
             var acquisitionDate = acquisitionTime.ToEasternDate();
 
             MasterGame masterGame = CreateComplexMasterGame("Baldur's Gate 3", new LocalDate(2022, 1, 3), null,
-                new LocalDate(2020, 10, 6), null, new List<MasterGameTag>()
+                new LocalDate(2020, 10, 6), null, null, new List<MasterGameTag>()
                 {
                     _tagDictionary["NG"],
                     _tagDictionary["C-EA"],
@@ -279,7 +279,7 @@ namespace FantasyCritic.Test
             var acquisitionDate = acquisitionTime.ToEasternDate();
 
             MasterGame masterGame = CreateComplexMasterGame("Baldur's Gate 3", new LocalDate(2022, 1, 3), null,
-                new LocalDate(2020, 10, 6), null, new List<MasterGameTag>()
+                new LocalDate(2020, 10, 6), null, null, new List<MasterGameTag>()
                 {
                     _tagDictionary["NG"],
                     _tagDictionary["C-EA"],
