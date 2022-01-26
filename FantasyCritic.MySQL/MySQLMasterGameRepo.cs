@@ -231,7 +231,7 @@ namespace FantasyCritic.MySQL
                              "MaximumReleaseDate = @MaximumReleaseDate, " +
                              "EarlyAccessReleaseDate = @EarlyAccessReleaseDate, " +
                              "InternationalReleaseDate = @InternationalReleaseDate, " +
-                             "AnnouncmentDate = @AnnouncmentDate, " +
+                             "AnnouncementDate = @AnnouncementDate, " +
                              "ReleaseDate = @ReleaseDate, " +
                              "OpenCriticID = @OpenCriticID, " +
                              "GGToken = @GGToken, " +
