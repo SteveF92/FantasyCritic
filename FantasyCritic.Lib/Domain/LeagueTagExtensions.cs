@@ -55,6 +55,33 @@ namespace FantasyCritic.Lib.Domain
             var masterGameCustomCodeTagsHashSet = masterGameCustomCodeTags.Select(x => x.Name).ToHashSet();
             var leagueCustomCodeTagsDictionary = leagueCustomCodeTags.ToDictionary(x => x.Tag.Name);
 
+            //Unannounced
+            bool currentlyUnannounced = masterGameCustomCodeTags.Any(x => x.Name == "UnannouncedGame");
+            bool gameCountsAsUnannounced = currentlyUnannounced;
+            if (!gameCountsAsUnannounced && masterGame.AnnouncementDate.HasValue)
+            {
+                gameCountsAsUnannounced = masterGame.AnnouncementDate < dateOfAcquisition;
+            }
+            if (leagueCustomCodeTagsDictionary.TryGetValue("UnannouncedGame", out var unannouncedGameTag))
+            {
+                if (unannouncedGameTag.Status.Equals(TagStatus.Banned) && currentlyUnannounced)
+                {
+                    claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Unannounced Game", true));
+                }
+                else if (unannouncedGameTag.Status.Equals(TagStatus.Required))
+                {
+                    if (!gameCountsAsUnannounced && hasNoRequiredTags)
+                    {
+                        claimErrors.Add(new ClaimError("That game is not eligible because it is not unannounced", true));
+                    }
+                    else if (gameCountsAsUnannounced)
+                    {
+                        hasNoRequiredTags = false;
+                    }
+                }
+            }
+
+            //Planned for Early Access
             var gameIsPlannedForEarlyAccess = masterGameCustomCodeTagsHashSet.Contains("PlannedForEarlyAccess");
             var gameIsInEarlyAccess = masterGameCustomCodeTagsHashSet.Contains("CurrentlyInEarlyAccess");
             if (leagueCustomCodeTagsDictionary.TryGetValue("PlannedForEarlyAccess", out var plannedEarlyAccessTag))
@@ -75,6 +102,8 @@ namespace FantasyCritic.Lib.Domain
                     }
                 }
             }
+
+            //Currently in Early Access
             if (leagueCustomCodeTagsDictionary.TryGetValue("CurrentlyInEarlyAccess", out var currentlyInEarlyAccessTags))
             {
                 if (currentlyInEarlyAccessTags.Status.Equals(TagStatus.Banned) && gameIsInEarlyAccess)
@@ -98,6 +127,7 @@ namespace FantasyCritic.Lib.Domain
                 }
             }
 
+            //Will Release Internationally First
             var gameWillReleaseInternationallyFirst = masterGameCustomCodeTagsHashSet.Contains("WillReleaseInternationallyFirst");
             var gameReleasedInternationallyFirst = masterGameCustomCodeTagsHashSet.Contains("ReleasedInternationally");
             if (leagueCustomCodeTagsDictionary.TryGetValue("WillReleaseInternationallyFirst", out var willReleaseInternationallyFirstTag))
@@ -118,6 +148,8 @@ namespace FantasyCritic.Lib.Domain
                     }
                 }
             }
+
+            //Released Internationally
             if (leagueCustomCodeTagsDictionary.TryGetValue("ReleasedInternationally", out var releasedInternationallyTag))
             {
                 if (releasedInternationallyTag.Status.Equals(TagStatus.Banned) && gameReleasedInternationallyFirst)

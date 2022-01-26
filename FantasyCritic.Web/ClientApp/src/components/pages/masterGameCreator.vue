@@ -10,6 +10,7 @@
       <div v-if="createdGame" class="alert alert-success">
         Master Game created: {{createdGame.masterGameID}}
         <b-button variant="info" size="sm" v-clipboard:copy="createdGame.masterGameID">Copy</b-button>
+        <b-button class="warning" :to="{ name: 'masterGameEditor', params: { mastergameid: masterGame.masterGameID }}">Edit Master Game</b-button>
       </div>
       <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
       <div v-if="openCriticID || steamID || ggToken">

@@ -74,6 +74,10 @@
                   <label for="internationalReleaseDate" class="control-label">International Release Date</label>
                   <flat-pickr v-model="masterGame.internationalReleaseDate" class="form-control"></flat-pickr>
                 </div>
+                <div class="form-group">
+                  <label for="announcementDate" class="control-label">Announcement Date</label>
+                  <flat-pickr v-model="masterGame.announcementDate" class="form-control"></flat-pickr>
+                </div>
 
                 <div class="form-group">
                   <label for="openCriticID" class="control-label">Open Critic ID</label>
@@ -198,6 +202,7 @@
         this.masterGame.maximumReleaseDate = null;
         this.masterGame.estimatedReleaseDate = null;
         this.masterGame.internationalReleaseDate = null;
+        this.masterGame.announcementDate = null;
         this.masterGame.earlyAccessReleaseDate = null;
       },
       sendEditMasterGameRequest() {

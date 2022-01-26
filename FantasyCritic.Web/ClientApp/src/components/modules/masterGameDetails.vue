@@ -26,6 +26,10 @@
         <strong>International Release Date: </strong>
         <span v-if="masterGame.internationalReleaseDate">{{formatDate(masterGame.internationalReleaseDate)}}</span>
       </li>
+      <li v-if="masterGame.announcementDate">
+        <strong>Announcement Date: </strong>
+        <span v-if="masterGame.announcementDate">{{formatDate(masterGame.announcementDate)}}</span>
+      </li>
       <li>
         <label v-if="masterGame.averagedScore">This is an episodic game. We have caluclated an average score.</label>
         <div>
