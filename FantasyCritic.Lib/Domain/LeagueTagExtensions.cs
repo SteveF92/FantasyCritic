@@ -21,157 +21,35 @@ namespace FantasyCritic.Lib.Domain
             return claimErrors;
         }
 
-        public static IReadOnlyList<ClaimError> GameHasValidTags(IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueTagStatus> slotSpecificTags, 
+        public static IReadOnlyList<ClaimError> GameHasValidTags(IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueTagStatus> slotSpecificTags,
             MasterGame masterGame, IEnumerable<MasterGameTag> masterGameTags, LocalDate dateOfAcquisition)
         {
             var combinedLeagueTags = CombineTags(leagueTags, slotSpecificTags);
+            var bannedTags = combinedLeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).ToList();
+            var requiredTags = combinedLeagueTags.Where(x => x.Status.Equals(TagStatus.Required)).ToList();
 
-            var masterGameCustomCodeTags = masterGameTags.Where(x => x.HasCustomCode).ToList();
-            var masterGameNonCustomCodeTags = masterGameTags.Except(masterGameCustomCodeTags).ToList();
-            var leagueCustomCodeTags = combinedLeagueTags.Where(x => x.Tag.HasCustomCode).ToList();
-            var leagueNonCustomCodeTags = combinedLeagueTags.Except(leagueCustomCodeTags).ToList();
-
-            //Non custom code tags
-            var nonCustomCodeBannedTags = leagueNonCustomCodeTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag).ToList();
-            var allRequiredTags = combinedLeagueTags.Where(x => x.Status.Equals(TagStatus.Required)).Select(x => x.Tag).ToList();
-
-            var bannedTagsIntersection = masterGameNonCustomCodeTags.Intersect(nonCustomCodeBannedTags);
-            var requiredTagsIntersection = masterGameTags.Intersect(allRequiredTags);
-
-            bool hasNoRequiredTags = allRequiredTags.Any() && !requiredTagsIntersection.Any();
-
-            List<ClaimError> claimErrors = bannedTagsIntersection.Select(x => new ClaimError($"That game is not eligible because the {x.ReadableName} tag has been banned.", true)).ToList();
-            
-            if (!leagueCustomCodeTags.Any())
+            List<ClaimError> claimErrors = new List<ClaimError>();
+            foreach (var bannedTag in bannedTags)
             {
-                if (hasNoRequiredTags)
+                if (!bannedTag.GameMeetsTagCriteria(masterGame, masterGameTags, dateOfAcquisition))
                 {
-                    claimErrors.Add(new ClaimError($"That game is not eligible because it does not have any of the following required tags: ({string.Join(",", allRequiredTags.Select(x => x.ReadableName))})", true));
-                }
-
-                return claimErrors;
-            }
-
-            //Custom code tags
-            var masterGameCustomCodeTagsHashSet = masterGameCustomCodeTags.Select(x => x.Name).ToHashSet();
-            var leagueCustomCodeTagsDictionary = leagueCustomCodeTags.ToDictionary(x => x.Tag.Name);
-
-            //Unannounced
-            bool currentlyUnannounced = masterGameCustomCodeTags.Any(x => x.Name == "UnannouncedGame");
-            bool gameCountsAsUnannounced = currentlyUnannounced;
-            if (!gameCountsAsUnannounced && masterGame.AnnouncementDate.HasValue)
-            {
-                gameCountsAsUnannounced = masterGame.AnnouncementDate > dateOfAcquisition;
-            }
-            if (leagueCustomCodeTagsDictionary.TryGetValue("UnannouncedGame", out var unannouncedGameTag))
-            {
-                if (unannouncedGameTag.Status.Equals(TagStatus.Banned) && currentlyUnannounced)
-                {
-                    claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Unannounced Game", true));
-                }
-                else if (unannouncedGameTag.Status.Equals(TagStatus.Required))
-                {
-                    if (!gameCountsAsUnannounced && hasNoRequiredTags)
-                    {
-                        claimErrors.Add(new ClaimError("That game is not eligible because it is not unannounced", true));
-                    }
-                    else if (gameCountsAsUnannounced)
-                    {
-                        hasNoRequiredTags = false;
-                    }
+                    claimErrors.Add(new ClaimError($"That game is not eligible because the {bannedTag.Tag.ReadableName} tag has been banned", true));
                 }
             }
 
-            //Planned for Early Access
-            var gameIsPlannedForEarlyAccess = masterGameCustomCodeTagsHashSet.Contains("PlannedForEarlyAccess");
-            var gameIsInEarlyAccess = masterGameCustomCodeTagsHashSet.Contains("CurrentlyInEarlyAccess");
-            if (leagueCustomCodeTagsDictionary.TryGetValue("PlannedForEarlyAccess", out var plannedEarlyAccessTag))
+            bool hasNoRequiredTags = requiredTags.Any();
+            foreach (var requiredTag in requiredTags)
             {
-                if (plannedEarlyAccessTag.Status.Equals(TagStatus.Banned) && gameIsPlannedForEarlyAccess)
+                if (requiredTag.GameMeetsTagCriteria(masterGame, masterGameTags, dateOfAcquisition))
                 {
-                    claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Planned For Early Access", true));
-                }
-                else if (plannedEarlyAccessTag.Status.Equals(TagStatus.Required))
-                {
-                    if (!gameIsPlannedForEarlyAccess && !gameIsInEarlyAccess && hasNoRequiredTags)
-                    {
-                        claimErrors.Add(new ClaimError("That game is not eligible because it is not planned for or in early access", true));
-                    }
-                    else if (gameIsPlannedForEarlyAccess || gameIsInEarlyAccess)
-                    {
-                        hasNoRequiredTags = false;
-                    }
+                    hasNoRequiredTags = false;
+                    break;
                 }
             }
 
-            //Currently in Early Access
-            if (leagueCustomCodeTagsDictionary.TryGetValue("CurrentlyInEarlyAccess", out var currentlyInEarlyAccessTags))
+            if (hasNoRequiredTags)
             {
-                if (currentlyInEarlyAccessTags.Status.Equals(TagStatus.Banned) && gameIsInEarlyAccess)
-                {
-                    bool acquiredBeforeEarlyAccess = masterGame.EarlyAccessReleaseDate.HasValue && masterGame.EarlyAccessReleaseDate.Value > dateOfAcquisition;
-                    if (!acquiredBeforeEarlyAccess)
-                    {
-                        claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Currently in Early Access", true));
-                    }
-                }
-                else if (currentlyInEarlyAccessTags.Status.Equals(TagStatus.Required))
-                {
-                    if (!gameIsInEarlyAccess && hasNoRequiredTags)
-                    {
-                        claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Currently in Early Access", true));
-                    }
-                    else if (gameIsInEarlyAccess)
-                    {
-                        hasNoRequiredTags = false;
-                    }
-                }
-            }
-
-            //Will Release Internationally First
-            var gameWillReleaseInternationallyFirst = masterGameCustomCodeTagsHashSet.Contains("WillReleaseInternationallyFirst");
-            var gameReleasedInternationallyFirst = masterGameCustomCodeTagsHashSet.Contains("ReleasedInternationally");
-            if (leagueCustomCodeTagsDictionary.TryGetValue("WillReleaseInternationallyFirst", out var willReleaseInternationallyFirstTag))
-            {
-                if (willReleaseInternationallyFirstTag.Status.Equals(TagStatus.Banned) && gameWillReleaseInternationallyFirst)
-                {
-                    claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Will Release Internationally First", true));
-                }
-                else if (willReleaseInternationallyFirstTag.Status.Equals(TagStatus.Required))
-                {
-                    if (!gameWillReleaseInternationallyFirst && !gameReleasedInternationallyFirst && hasNoRequiredTags)
-                    {
-                        claimErrors.Add(new ClaimError("That game is not eligible because it will not or has not released internationally first", true));
-                    }
-                    else if (gameWillReleaseInternationallyFirst || gameReleasedInternationallyFirst)
-                    {
-                        hasNoRequiredTags = false;
-                    }
-                }
-            }
-
-            //Released Internationally
-            if (leagueCustomCodeTagsDictionary.TryGetValue("ReleasedInternationally", out var releasedInternationallyTag))
-            {
-                if (releasedInternationallyTag.Status.Equals(TagStatus.Banned) && gameReleasedInternationallyFirst)
-                {
-                    bool acquiredBeforeInternationalRelease = masterGame.InternationalReleaseDate.HasValue && masterGame.InternationalReleaseDate.Value > dateOfAcquisition;
-                    if (!acquiredBeforeInternationalRelease)
-                    {
-                        claimErrors.Add(new ClaimError("That game is not eligible because it has the tag: Released Internationally", true));
-                    }
-                }
-                else if (releasedInternationallyTag.Status.Equals(TagStatus.Required))
-                {
-                    if (!gameReleasedInternationallyFirst && hasNoRequiredTags)
-                    {
-                        claimErrors.Add(new ClaimError("That game is not eligible because it does not have the tag: Released Internationally", true));
-                    }
-                    else if (gameReleasedInternationallyFirst)
-                    {
-                        hasNoRequiredTags = false;
-                    }
-                }
+                claimErrors.Add(new ClaimError($"That game is not eligible because it does not have any of the following required tags: ({string.Join(",", requiredTags.Select(x => x.Tag.ReadableName))})", true));
             }
 
             return claimErrors;

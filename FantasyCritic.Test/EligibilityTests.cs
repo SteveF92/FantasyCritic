@@ -91,7 +91,7 @@ namespace FantasyCritic.Test
 
             var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
             Assert.AreEqual(1, claimErrors.Count);
-            Assert.AreEqual("That game is not eligible because the Port tag has been banned.", claimErrors[0].Error);
+            Assert.AreEqual("That game is not eligible because the Port tag has been banned", claimErrors[0].Error);
         }
 
         [Test]
@@ -187,7 +187,7 @@ namespace FantasyCritic.Test
 
             var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
             Assert.AreEqual(1, claimErrors.Count);
-            Assert.AreEqual("That game is not eligible because it has the tag: Currently in Early Access", claimErrors[0].Error);
+            Assert.AreEqual("That game is not eligible because the Currently in Early Access tag has been banned", claimErrors[0].Error);
         }
 
         [Test]
@@ -361,7 +361,7 @@ namespace FantasyCritic.Test
 
             var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
             Assert.AreEqual(1, claimErrors.Count);
-            Assert.AreEqual("That game is not eligible because it has the tag: Unannounced Game", claimErrors[0].Error);
+            Assert.AreEqual("That game is not eligible because the Unannounced Game tag has been banned", claimErrors[0].Error);
         }
 
         [Test]
@@ -447,7 +447,7 @@ namespace FantasyCritic.Test
 
             var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
             Assert.AreEqual(1, claimErrors.Count);
-            Assert.AreEqual("That game is not eligible because it is not unannounced", claimErrors[0].Error);
+            Assert.AreEqual("That game is not eligible because it does not have any of the following required tags: (Unannounced Game)", claimErrors[0].Error);
         }
 
         [Test]
@@ -457,7 +457,7 @@ namespace FantasyCritic.Test
             var acquisitionDate = acquisitionTime.ToEasternDate();
 
             MasterGame masterGame = CreateComplexMasterGame("The Last of Us Remake", new LocalDate(2022, 1, 27), null,
-                null, null, new LocalDate(2022, 1, 25), new List<MasterGameTag>()
+                null, null, null, new List<MasterGameTag>()
                 {
                     _tagDictionary["RMKE"],
                     _tagDictionary["UNA"]
@@ -477,6 +477,153 @@ namespace FantasyCritic.Test
 
             var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
             Assert.AreEqual(0, claimErrors.Count);
+        }
+
+        [Test]
+        public void UnannouncedRemakeInEligible()
+        {
+            Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-01-05T20:49:24Z").GetValueOrThrow();
+            var acquisitionDate = acquisitionTime.ToEasternDate();
+
+            MasterGame masterGame = CreateComplexMasterGame("The Last of Us Remake", new LocalDate(2022, 1, 27), null,
+                null, null, null, new List<MasterGameTag>()
+                {
+                    _tagDictionary["RMKE"],
+                    _tagDictionary["UNA"]
+                });
+
+            var leagueTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["RMKE"], TagStatus.Banned)
+            };
+
+            var slotTags = new List<LeagueTagStatus>()
+            {
+                
+            };
+
+            var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
+            Assert.AreEqual(1, claimErrors.Count);
+            Assert.AreEqual("That game is not eligible because the Remake tag has been banned", claimErrors[0].Error);
+        }
+
+        [Test]
+        public void PreviouslyUnannouncedRemakeEligible()
+        {
+            Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-01-29T20:49:24Z").GetValueOrThrow();
+            var acquisitionDate = acquisitionTime.ToEasternDate();
+
+            MasterGame masterGame = CreateComplexMasterGame("The Last of Us Remake", new LocalDate(2022, 2, 3), null,
+                null, null, new LocalDate(2022, 2, 2), new List<MasterGameTag>()
+                {
+                    _tagDictionary["RMKE"],
+                });
+
+            var leagueTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),  
+            };
+
+            var slotTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["RMKE"], TagStatus.Required)
+            };
+
+            var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
+            Assert.AreEqual(0, claimErrors.Count);
+        }
+
+        [Test]
+        public void PreviouslyUnannouncedRemakeInEligible()
+        {
+            Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-02-07T20:49:24Z").GetValueOrThrow();
+            var acquisitionDate = acquisitionTime.ToEasternDate();
+
+            MasterGame masterGame = CreateComplexMasterGame("The Last of Us Remake", new LocalDate(2022, 2, 8), null,
+                null, null, new LocalDate(2022, 2, 2), new List<MasterGameTag>()
+                {
+                    _tagDictionary["RMKE"],
+                });
+
+            var leagueTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            };
+
+            var slotTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["UNA"], TagStatus.Required)
+            };
+
+            var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
+            Assert.AreEqual(1, claimErrors.Count);
+            Assert.AreEqual("That game is not eligible because it does not have any of the following required tags: (Unannounced Game)", claimErrors[0].Error);
+        }
+
+        [Test]
+        public void UnannouncedGameFailsSlotConditions()
+        {
+            Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-01-05T20:49:24Z").GetValueOrThrow();
+            var acquisitionDate = acquisitionTime.ToEasternDate();
+
+            MasterGame masterGame = CreateComplexMasterGame("Star Wars Jedi: Fallen Order 2", new LocalDate(2022, 1, 27), null,
+                null, null, null, new List<MasterGameTag>()
+                {
+                    _tagDictionary["NG"],
+                    _tagDictionary["UNA"],
+                });
+
+            var leagueTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            };
+
+            var slotTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["RMKE"], TagStatus.Required)
+            };
+
+            var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
+            Assert.AreEqual(1, claimErrors.Count);
+            Assert.AreEqual("That game is not eligible because it does not have any of the following required tags: (Remake)", claimErrors[0].Error);
+        }
+
+        [Test]
+        public void PreviouslyUnannouncedGameFailsSlotConditions()
+        {
+            Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-01-26T20:49:24Z").GetValueOrThrow();
+            var acquisitionDate = acquisitionTime.ToEasternDate();
+
+            MasterGame masterGame = CreateComplexMasterGame("Star Wars Jedi: Fallen Order 2", new LocalDate(2022, 1, 27), null,
+                null, null, new LocalDate(2022, 1, 25), new List<MasterGameTag>()
+                {
+                    _tagDictionary["NG"],
+                });
+
+            var leagueTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            };
+
+            var slotTags = new List<LeagueTagStatus>()
+            {
+                new LeagueTagStatus(_tagDictionary["RMKE"], TagStatus.Required)
+            };
+
+            var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
+            Assert.AreEqual(1, claimErrors.Count);
+            Assert.AreEqual("That game is not eligible because it does not have any of the following required tags: (Remake)", claimErrors[0].Error);
         }
     }
 }
