@@ -41,13 +41,14 @@ namespace FantasyCritic.Lib.Domain
             bool hasNoRequiredTags = allRequiredTags.Any() && !requiredTagsIntersection.Any();
 
             List<ClaimError> claimErrors = bannedTagsIntersection.Select(x => new ClaimError($"That game is not eligible because the {x.ReadableName} tag has been banned.", true)).ToList();
-            if (hasNoRequiredTags)
-            {
-                claimErrors.Add(new ClaimError($"That game is not eligible because it does not have any of the following required tags: ({string.Join(",", allRequiredTags.Select(x => x.ReadableName))})", true));
-            }
-
+            
             if (!leagueCustomCodeTags.Any())
             {
+                if (hasNoRequiredTags)
+                {
+                    claimErrors.Add(new ClaimError($"That game is not eligible because it does not have any of the following required tags: ({string.Join(",", allRequiredTags.Select(x => x.ReadableName))})", true));
+                }
+
                 return claimErrors;
             }
 
@@ -60,7 +61,7 @@ namespace FantasyCritic.Lib.Domain
             bool gameCountsAsUnannounced = currentlyUnannounced;
             if (!gameCountsAsUnannounced && masterGame.AnnouncementDate.HasValue)
             {
-                gameCountsAsUnannounced = masterGame.AnnouncementDate < dateOfAcquisition;
+                gameCountsAsUnannounced = masterGame.AnnouncementDate > dateOfAcquisition;
             }
             if (leagueCustomCodeTagsDictionary.TryGetValue("UnannouncedGame", out var unannouncedGameTag))
             {
