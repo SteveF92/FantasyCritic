@@ -100,7 +100,7 @@ namespace FantasyCritic.Lib.Domain
             bool hasTag = masterGameTags.Any(x => x.Name == "WillReleaseInternationallyFirst");
             if (Status.Equals(TagStatus.Banned))
             {
-                return hasTag;
+                return !hasTag;
             }
             else if (Status.Equals(TagStatus.Required))
             {
