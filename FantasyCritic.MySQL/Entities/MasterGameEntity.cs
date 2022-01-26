@@ -27,6 +27,7 @@ namespace FantasyCritic.MySQL.Entities
             MaximumReleaseDate = masterGame.MaximumReleaseDate;
             EarlyAccessReleaseDate = masterGame.EarlyAccessReleaseDate;
             InternationalReleaseDate = masterGame.InternationalReleaseDate;
+            AnnouncementDate = masterGame.AnnouncementDate;
             ReleaseDate = masterGame.ReleaseDate;
             OpenCriticID = masterGame.OpenCriticID;
             GGToken = masterGame.GGToken.GetValueOrDefault();
@@ -49,6 +50,7 @@ namespace FantasyCritic.MySQL.Entities
         public LocalDate? MaximumReleaseDate { get; set; }
         public LocalDate? EarlyAccessReleaseDate { get; set; }
         public LocalDate? InternationalReleaseDate { get; set; }
+        public LocalDate? AnnouncementDate { get; set; }
         public LocalDate? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public string GGToken { get; set; }
@@ -64,8 +66,9 @@ namespace FantasyCritic.MySQL.Entities
 
         public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate, ReleaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore,
-                Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, AddedTimestamp, subGames, tags);
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate, 
+                AnnouncementDate, ReleaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore,Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp, 
+                DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, AddedTimestamp, subGames, tags);
         }
     }
 }

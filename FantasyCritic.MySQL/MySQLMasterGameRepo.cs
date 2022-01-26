@@ -201,11 +201,11 @@ namespace FantasyCritic.MySQL
         public async Task CreateMasterGame(MasterGame masterGame)
         {
             string masterGameCreateSQL = "insert into tbl_mastergame" +
-                                         "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,ReleaseDate," +
-                                         "OpenCriticID,GGToken,CriticScore,Notes,BoxartFileName,GGCoverArtFileName," +
+                                         "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,AnnouncementDate" +
+                                         "ReleaseDate,OpenCriticID,GGToken,CriticScore,Notes,BoxartFileName,GGCoverArtFileName," +
                                          "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,AddedTimestamp) VALUES " +
-                                         "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@ReleaseDate," +
-                                         "@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName," +
+                                         "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@AnnouncementDate" +
+                                         "@ReleaseDate,@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName," +
                                          "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@AddedTimestamp);";
             var entity = new MasterGameEntity(masterGame);
             var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
@@ -231,6 +231,7 @@ namespace FantasyCritic.MySQL
                              "MaximumReleaseDate = @MaximumReleaseDate, " +
                              "EarlyAccessReleaseDate = @EarlyAccessReleaseDate, " +
                              "InternationalReleaseDate = @InternationalReleaseDate, " +
+                             "AnnouncmentDate = @AnnouncmentDate, " +
                              "ReleaseDate = @ReleaseDate, " +
                              "OpenCriticID = @OpenCriticID, " +
                              "GGToken = @GGToken, " +

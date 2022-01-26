@@ -26,6 +26,7 @@ namespace FantasyCritic.MySQL.Entities
             MaximumReleaseDate = masterGameStats.MasterGame.MaximumReleaseDate?.ToDateTimeUnspecified();
             EarlyAccessReleaseDate = masterGameStats.MasterGame.EarlyAccessReleaseDate?.ToDateTimeUnspecified();
             InternationalReleaseDate = masterGameStats.MasterGame.InternationalReleaseDate?.ToDateTimeUnspecified();
+            AnnouncementDate = masterGameStats.MasterGame.AnnouncementDate?.ToDateTimeUnspecified();
             ReleaseDate = masterGameStats.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
             OpenCriticID = masterGameStats.MasterGame.OpenCriticID;
             GGToken = masterGameStats.MasterGame.GGToken.GetValueOrDefault();
@@ -59,6 +60,7 @@ namespace FantasyCritic.MySQL.Entities
         public DateTime? MaximumReleaseDate { get; set; }
         public DateTime? EarlyAccessReleaseDate { get; set; }
         public DateTime? InternationalReleaseDate { get; set; }
+        public DateTime? AnnouncementDate { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public int? OpenCriticID { get; set; }
         public string GGToken { get; set; }
@@ -108,6 +110,12 @@ namespace FantasyCritic.MySQL.Entities
                 internationalReleaseDate = LocalDate.FromDateTime(InternationalReleaseDate.Value);
             }
 
+            LocalDate? announcementDate = null;
+            if (AnnouncementDate.HasValue)
+            {
+                announcementDate = LocalDate.FromDateTime(AnnouncementDate.Value);
+            }
+
             Instant? firstCriticScoreTimestamp = null;
             if (FirstCriticScoreTimestamp.HasValue)
             {
@@ -116,7 +124,7 @@ namespace FantasyCritic.MySQL.Entities
 
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
 
-            var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate,
+            var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
                 releaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames, tags);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
