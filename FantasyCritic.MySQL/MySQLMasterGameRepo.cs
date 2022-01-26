@@ -201,10 +201,10 @@ namespace FantasyCritic.MySQL
         public async Task CreateMasterGame(MasterGame masterGame)
         {
             string masterGameCreateSQL = "insert into tbl_mastergame" +
-                                         "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,AnnouncementDate" +
+                                         "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,AnnouncementDate," +
                                          "ReleaseDate,OpenCriticID,GGToken,CriticScore,Notes,BoxartFileName,GGCoverArtFileName," +
                                          "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,AddedTimestamp) VALUES " +
-                                         "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@AnnouncementDate" +
+                                         "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@AnnouncementDate," +
                                          "@ReleaseDate,@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName," +
                                          "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@AddedTimestamp);";
             var entity = new MasterGameEntity(masterGame);
