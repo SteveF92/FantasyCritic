@@ -32,6 +32,12 @@
               <span class="full-nav">About</span>
             </router-link>
           </div>
+          <div>
+            <router-link :to="{ name: 'fantasyCriticPlus' }" title="Fantasy Critic Plus">
+              <img class="fc-plus-nav" src="/img/plus.svg" />
+              <span class="full-nav">Fantasy Critic Plus</span>
+            </router-link>
+          </div>
         </div>
         <div col-md-4>
           <div>
@@ -75,3 +81,10 @@
     </div>
   </footer>
 </template>
+<style scoped>
+  .fc-plus-nav {
+    height: 24px;
+    padding-bottom: 3px;
+    margin-right: 3px;
+  }
+</style>
