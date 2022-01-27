@@ -111,6 +111,13 @@ namespace FantasyCritic.Web
             services.AddScoped<IRoyaleRepo>(factory => new MySQLRoyaleRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore),
                 new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore))));
 
+            services.AddScoped<PatreonService>(factory => new PatreonService(
+                Configuration["PatreonService:AccessToken"],
+                Configuration["PatreonService:RefreshToken"],
+                Configuration["Authentication:Patreon:ClientId"],
+                Configuration["PatreonService:CampaignID"]
+                ));
+
             services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
             services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
             services.AddScoped<FantasyCriticUserManager>();
@@ -124,12 +131,7 @@ namespace FantasyCritic.Web
             services.AddScoped<ActionProcessingService>();
             services.AddScoped<FantasyCriticService>();
             services.AddScoped<RoyaleService>();
-            services.AddScoped<PatreonService>(factory => new PatreonService(
-                Configuration["PatreonService:AccessToken"],
-                Configuration["PatreonService:RefreshToken"],
-                Configuration["Authentication:Patreon:ClientId"],
-                Configuration["PatreonService:CampaignID"]
-                ));
+            
 
             services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 

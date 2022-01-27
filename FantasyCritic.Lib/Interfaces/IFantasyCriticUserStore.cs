@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
@@ -19,5 +20,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task DeleteUserAccount(FantasyCriticUser user);
         Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider);
         Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo);
+        Task AddToRoleProgrammaticAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken);
     }
 }

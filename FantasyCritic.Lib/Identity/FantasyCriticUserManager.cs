@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NLog.LayoutRenderers.Wrappers;
 using NodaTime;
+using System.Linq;
 
 namespace FantasyCritic.Lib.Identity
 {
@@ -16,14 +17,16 @@ namespace FantasyCritic.Lib.Identity
     {
         private readonly IFantasyCriticUserStore _userStore;
         private readonly IClock _clock;
+        private readonly PatreonService _patreonService;
 
         public FantasyCriticUserManager(IFantasyCriticUserStore store, IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<FantasyCriticUser> passwordHasher,
             IEnumerable<IUserValidator<FantasyCriticUser>> userValidators, IEnumerable<IPasswordValidator<FantasyCriticUser>> passwordValidators, ILookupNormalizer keyNormalizer, 
-            IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<FantasyCriticUser>> logger, IClock clock)
+            IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<FantasyCriticUser>> logger, IClock clock, PatreonService patreonService)
             : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {
             _userStore = store;
             _clock = clock;
+            _patreonService = patreonService;
         }
 
         public override async Task<IdentityResult> CreateAsync(FantasyCriticUser user, string password)
@@ -86,6 +89,17 @@ namespace FantasyCritic.Lib.Identity
         public Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
         {
             return _userStore.UpdatePatronInfo(patronInfo);
+        }
+
+        public async Task RefreshExternalLoginFeatures(FantasyCriticUser user)
+        {
+            var externalLogins = await _userStore.GetLoginsAsync(user, CancellationToken.None);
+            var patreonProviderID = externalLogins.SingleOrDefault(x => x.LoginProvider == "Patreon").ProviderKey;
+            var isPlusUser = await _patreonService.UserIsPlusUser(patreonProviderID);
+            if (isPlusUser)
+            {
+                await _userStore.AddToRoleProgrammaticAsync(user, "PlusUser", CancellationToken.None);
+            }
         }
     }
 }

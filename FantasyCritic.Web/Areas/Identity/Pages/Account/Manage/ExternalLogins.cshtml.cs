@@ -12,11 +12,11 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
 {
     public class ExternalLoginsModel : PageModel
     {
-        private readonly UserManager<FantasyCriticUser> _userManager;
+        private readonly FantasyCriticUserManager _userManager;
         private readonly SignInManager<FantasyCriticUser> _signInManager;
 
         public ExternalLoginsModel(
-            UserManager<FantasyCriticUser> userManager,
+            FantasyCriticUserManager userManager,
             SignInManager<FantasyCriticUser> signInManager)
         {
             _userManager = userManager;
@@ -109,6 +109,8 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
                 StatusMessage = "The external login was not added. External logins can only be associated with one account.";
                 return RedirectToPage();
             }
+
+            await _userManager.RefreshExternalLoginFeatures(user);
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);

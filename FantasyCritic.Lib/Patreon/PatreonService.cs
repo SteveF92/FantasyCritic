@@ -61,5 +61,28 @@ namespace FantasyCritic.Lib.Patreon
 
             return patronInfo;
         }
+
+        public async Task<bool> UserIsPlusUser(string patreonProviderID)
+        {
+            using (var client = new PatreonClient(_accessToken, _refreshToken, _clientId))
+            {
+                var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
+                if (campaignMembers != null)
+                {
+                    await foreach (var member in campaignMembers)
+                    {
+                        if (member.Relationships.User.Id != patreonProviderID)
+                        {
+                            continue;
+                        }
+
+                        bool isPlusUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Plus");
+                        return isPlusUser;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }

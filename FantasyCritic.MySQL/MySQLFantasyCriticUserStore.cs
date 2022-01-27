@@ -334,12 +334,30 @@ namespace FantasyCritic.MySQL
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                string retrieveSQL = "select ID from tbl_user_role where Name = @Name";
+                string retrieveSQL = "select RoleID from tbl_user_role where Name = @Name";
 
                 await connection.OpenAsync(cancellationToken);
-                var roleID = await connection.QueryAsync<int>(retrieveSQL, new { Name = roleName });
+                var roleID = await connection.QuerySingleAsync<int>(retrieveSQL, new { Name = roleName });
 
-                string insertSQL = "insert into tbl_user_hasrole (UserID, RoleID) VALUES (@UserID, @RoleID)";
+                string insertSQL = "insert into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 0)";
+                await connection.ExecuteAsync(insertSQL, new { UserID = user.Id, RoleID = roleID });
+            }
+
+            _userCache = null;
+        }
+
+        public async Task AddToRoleProgrammaticAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                string retrieveSQL = "select RoleID from tbl_user_role where Name = @Name";
+
+                await connection.OpenAsync(cancellationToken);
+                var roleID = await connection.QuerySingleAsync<int>(retrieveSQL, new { Name = roleName });
+
+                string insertSQL = "insert into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 1)";
                 await connection.ExecuteAsync(insertSQL, new { UserID = user.Id, RoleID = roleID });
             }
 
