@@ -37,12 +37,12 @@ namespace FantasyCritic.Lib.Services
         private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
         private readonly IGGService _ggService;
-        private readonly IPatreonService _patreonService;
+        private readonly PatreonService _patreonService;
         private readonly IClock _clock;
         private readonly AdminServiceConfiguration _configuration;
 
         public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
-            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, IPatreonService patreonService, IClock clock, IRDSManager rdsManager,
+            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
             RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration)
         {
             _fantasyCriticService = fantasyCriticService;

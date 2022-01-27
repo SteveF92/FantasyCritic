@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Patreon;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 
@@ -17,5 +18,6 @@ namespace FantasyCritic.Lib.Interfaces
     {
         Task DeleteUserAccount(FantasyCriticUser user);
         Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider);
+        Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo);
     }
 }

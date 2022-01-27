@@ -83,9 +83,9 @@ namespace FantasyCritic.Lib.Identity
             return _userStore.DeleteUserAccount(user);
         }
 
-        internal Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
+        public Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
         {
-            throw new NotImplementedException();
+            return _userStore.UpdatePatronInfo(patronInfo);
         }
     }
 }

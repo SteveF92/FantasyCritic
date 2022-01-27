@@ -94,7 +94,7 @@ namespace FantasyCritic.BetaSync
             FantasyCriticService fantasyCriticService = new FantasyCriticService(gameAcquisitionService, leagueMemberService, publisherService, interLeagueService, fantasyCriticRepo, _clock, actionProcessingService);
             IOpenCriticService openCriticService = null;
             IGGService ggService = null;
-            IPatreonService patreonService = null;
+            PatreonService patreonService = null;
             IRDSManager rdsManager = null;
             RoyaleService royaleService = null;
             IHypeFactorService hypeFactorService = new LambdaHypeFactorService(_awsRegion, _betaBucket);

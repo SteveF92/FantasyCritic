@@ -1,5 +1,6 @@
 ﻿using FantasyCritic.Lib.Identity;
 using Microsoft.Extensions.Logging;
+using Patreon.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,20 +10,45 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Patreon
 {
-    public class PatreonService : IPatreonService
+    public class PatreonService
     {
-        private readonly HttpClient _client;
-        private readonly ILogger<PatreonService> _logger;
+        private readonly string _accessToken;
+        private readonly string _refreshToken;
+        private readonly string _clientId;
+        private readonly string _campaignID;
 
-        public PatreonService(HttpClient client, ILogger<PatreonService> logger)
+        public PatreonService(string accessToken, string refreshToken, string clientId, string campaignID)
         {
-            _client = client;
-            _logger = logger;
+            _accessToken = accessToken;
+            _refreshToken = refreshToken;
+            _clientId = clientId;
+            _campaignID = campaignID;
         }
 
-        Task<IReadOnlyList<PatronInfo>> IPatreonService.GetPatronInfo(IReadOnlyList<FantasyCriticUserWithExternalLogins> patreonUsers)
+        public async Task<IReadOnlyList<PatronInfo>> GetPatronInfo(IReadOnlyList<FantasyCriticUserWithExternalLogins> patreonUsers)
         {
-            throw new NotImplementedException();
+            List<PatronInfo> patronInfo = new List<PatronInfo>();
+
+            try
+            {
+                using (var client = new PatreonClient(_accessToken, _refreshToken, _clientId))
+                {
+                    var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.All);
+                    if (campaignMembers != null)
+                    {
+                        await foreach (var member in campaignMembers)
+                        {
+
+                        }
+                    }
+                }
+            }
+            catch (NullReferenceException)
+            {
+
+            }
+            
+            return patronInfo;
         }
     }
 }

@@ -124,6 +124,12 @@ namespace FantasyCritic.Web
             services.AddScoped<ActionProcessingService>();
             services.AddScoped<FantasyCriticService>();
             services.AddScoped<RoyaleService>();
+            services.AddScoped<PatreonService>(factory => new PatreonService(
+                Configuration["PatreonService:AccessToken"],
+                Configuration["PatreonService:RefreshToken"],
+                Configuration["Authentication:Patreon:ClientId"],
+                Configuration["PatreonService:CampaignID"]
+                ));
 
             services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 
@@ -142,10 +148,6 @@ namespace FantasyCritic.Web
             services.AddHttpClient<IGGService, GGService>(client =>
             {
                 client.BaseAddress = new Uri("https://api.ggapp.io/");
-            });
-            services.AddHttpClient<IPatreonService, PatreonService>(client =>
-            {
-                client.BaseAddress = new Uri("https://www.patreon.com/api/oauth2/v2/");
             });
 
             //Add scheduled tasks & scheduler
@@ -193,7 +195,9 @@ namespace FantasyCritic.Web
                 builder.AddSigningCredential($"CN={identityConfig.KeyName}");
             }
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
+            services
+                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => {
                     options.Cookie.Name = "FantasyCriticCookie";
                     options.LoginPath = "/Identity/Account/Login";
                     options.LogoutPath = "/Identity/Account/Logout";

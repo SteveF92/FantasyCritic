@@ -15,6 +15,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using NLog;
 using NodaTime;
+using FantasyCritic.Lib.Patreon;
 
 namespace FantasyCritic.MySQL
 {
@@ -634,6 +635,28 @@ namespace FantasyCritic.MySQL
 
                 return domainResults;
             }
+        }
+
+        public async Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
+        {
+            List<FantasyCriticUserHasRoleEntity> roleEntities = patronInfo
+                .Where(x => x.PatreonTiers.Contains("PlusUser"))
+                .Select(x => new FantasyCriticUserHasRoleEntity(x.User.Id, 4, true))
+                .ToList();
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync("DELETE FROM tbl_user_hasrole WHERE ProgrammaticallyAssigned = 1;", transaction: transaction);
+                    await connection.BulkInsertAsync(roleEntities, "tbl_user_hasrole", 500, transaction);
+
+                    await transaction.CommitAsync();
+                }
+            }
+
+            _userCache = null;
         }
 
         public Task SetPhoneNumberAsync(FantasyCriticUser user, string phoneNumber, CancellationToken cancellationToken)
