@@ -26,6 +26,7 @@ using NLog;
 using NLog.Targets.Wrappers;
 using NodaTime;
 using static MoreLinq.Extensions.BatchExtension;
+using FantasyCritic.Lib.Patreon;
 
 namespace FantasyCritic.MySQL
 {
@@ -2787,6 +2788,11 @@ namespace FantasyCritic.MySQL
             }
 
             return user;
+        }
+
+        public Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
+        {
+            throw new NotImplementedException();
         }
     }
 }

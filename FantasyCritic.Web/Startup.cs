@@ -49,6 +49,7 @@ using Microsoft.Net.Http.Headers;
 using NLog;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
+using FantasyCritic.Lib.Patreon;
 
 namespace FantasyCritic.Web
 {
@@ -142,10 +143,15 @@ namespace FantasyCritic.Web
             {
                 client.BaseAddress = new Uri("https://api.ggapp.io/");
             });
+            services.AddHttpClient<IPatreonService, PatreonService>(client =>
+            {
+                client.BaseAddress = new Uri("https://www.patreon.com/api/oauth2/v2/");
+            });
 
             //Add scheduled tasks & scheduler
             services.AddSingleton<IScheduledTask, RefreshDataTask>();
             services.AddSingleton<IScheduledTask, TimeFlagsTask>();
+            services.AddSingleton<IScheduledTask, PatreonUpdateTask>();
             services.AddScheduler((sender, args) =>
             {
                 args.SetObserved();

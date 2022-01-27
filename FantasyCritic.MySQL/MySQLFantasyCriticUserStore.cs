@@ -604,6 +604,11 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SetPhoneNumberAsync(FantasyCriticUser user, string phoneNumber, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;

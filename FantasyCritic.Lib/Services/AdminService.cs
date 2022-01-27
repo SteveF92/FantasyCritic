@@ -18,6 +18,8 @@ using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Royale;
 using MoreLinq;
 using NLog;
+using FantasyCritic.Lib.Patreon;
+using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -29,24 +31,28 @@ namespace FantasyCritic.Lib.Services
         private readonly RoyaleService _royaleService;
         private readonly IHypeFactorService _hypeFactorService;
         private readonly FantasyCriticService _fantasyCriticService;
+        private readonly FantasyCriticUserManager _userManager;
         private readonly IFantasyCriticRepo _fantasyCriticRepo;
         private readonly IMasterGameRepo _masterGameRepo;
         private readonly InterLeagueService _interLeagueService;
         private readonly IOpenCriticService _openCriticService;
         private readonly IGGService _ggService;
+        private readonly IPatreonService _patreonService;
         private readonly IClock _clock;
         private readonly AdminServiceConfiguration _configuration;
 
-        public AdminService(FantasyCriticService fantasyCriticService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
-            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, IClock clock, IRDSManager rdsManager,
+        public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
+            InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, IPatreonService patreonService, IClock clock, IRDSManager rdsManager,
             RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration)
         {
             _fantasyCriticService = fantasyCriticService;
+            _userManager = userManager;
             _fantasyCriticRepo = fantasyCriticRepo;
             _masterGameRepo = masterGameRepo;
             _interLeagueService = interLeagueService;
             _openCriticService = openCriticService;
             _ggService = ggService;
+            _patreonService = patreonService;
             _clock = clock;
             _rdsManager = rdsManager;
             _royaleService = royaleService;
@@ -275,6 +281,14 @@ namespace FantasyCritic.Lib.Services
                 _logger.Info("Snapshotting database");
                 await _rdsManager.SnapshotRDS(now);
             }
+        }
+
+        public async Task UpdatePatreonRoles()
+        {
+            var patreonUsers = await _userManager.GetAllPatreonUsers();
+            var patronInfo = await _patreonService.GetPatronInfo(patreonUsers);
+            await _userManager.UpdatePatronInfo(patronInfo);
+            await _fantasyCriticRepo.UpdatePatronInfo(patronInfo);
         }
 
         private async Task UpdateSystemWideValues()

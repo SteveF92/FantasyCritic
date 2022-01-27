@@ -11,6 +11,7 @@ using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Patreon;
 using NodaTime;
 
 namespace FantasyCritic.FakeRepo
@@ -581,6 +582,11 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task<Result> DismissManagerMessage(Guid messageId, Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
         {
             throw new NotImplementedException();
         }

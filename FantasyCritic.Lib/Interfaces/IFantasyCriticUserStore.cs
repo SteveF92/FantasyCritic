@@ -16,5 +16,6 @@ namespace FantasyCritic.Lib.Interfaces
         IUserLoginStore<FantasyCriticUser>, IUserPhoneNumberStore<FantasyCriticUser>
     {
         Task DeleteUserAccount(FantasyCriticUser user);
+        Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider);
     }
 }

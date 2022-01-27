@@ -11,6 +11,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.OpenCritic;
+using FantasyCritic.Lib.Patreon;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Interfaces
@@ -137,5 +138,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task FinishYear(SupportedYear supportedYear);
         Task EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount);
         Task<Maybe<FantasyCriticUser>> GetLeagueYearWinner(Guid leagueID, int year);
+        Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo);
     }
 }

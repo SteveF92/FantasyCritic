@@ -19,6 +19,8 @@ using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.GG;
+using FantasyCritic.Lib.Patreon;
+using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.BetaSync
 {
@@ -80,6 +82,7 @@ namespace FantasyCritic.BetaSync
 
         private static AdminService GetAdminService()
         {
+            FantasyCriticUserManager userManager = null;
             IFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
             IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_betaConnectionString, betaUserStore);
             IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_betaConnectionString, betaUserStore, masterGameRepo);
@@ -91,6 +94,7 @@ namespace FantasyCritic.BetaSync
             FantasyCriticService fantasyCriticService = new FantasyCriticService(gameAcquisitionService, leagueMemberService, publisherService, interLeagueService, fantasyCriticRepo, _clock, actionProcessingService);
             IOpenCriticService openCriticService = null;
             IGGService ggService = null;
+            IPatreonService patreonService = null;
             IRDSManager rdsManager = null;
             RoyaleService royaleService = null;
             IHypeFactorService hypeFactorService = new LambdaHypeFactorService(_awsRegion, _betaBucket);
@@ -103,8 +107,8 @@ namespace FantasyCritic.BetaSync
                 configuration = new AdminServiceConfiguration(false);
             }
 
-            return new AdminService(fantasyCriticService, fantasyCriticRepo, masterGameRepo, interLeagueService,
-                openCriticService, ggService, _clock, rdsManager, royaleService, hypeFactorService, configuration);
+            return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
+                openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, configuration);
         }
     }
 }

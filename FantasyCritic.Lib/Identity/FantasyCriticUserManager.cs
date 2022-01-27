@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Patreon;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -67,6 +68,11 @@ namespace FantasyCritic.Lib.Identity
             return _userStore.GetAllUsers();
         }
 
+        public Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetAllPatreonUsers()
+        {
+            return _userStore.GetUsersWithExternalLogin("Patreon");
+        }
+
         public Task<FantasyCriticUser> FindByDisplayName(string displayName, int displayNumber)
         {
             return _userStore.FindByDisplayName(displayName, displayNumber);
@@ -75,6 +81,11 @@ namespace FantasyCritic.Lib.Identity
         public Task DeleteUserAccount(FantasyCriticUser user)
         {
             return _userStore.DeleteUserAccount(user);
+        }
+
+        internal Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
+        {
+            throw new NotImplementedException();
         }
     }
 }
