@@ -373,6 +373,13 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> RefreshPatreonInfo()
+        {
+            await _adminService.UpdatePatreonRoles();
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> SnapshotDatabase()
         {
             await _adminService.SnapshotDatabase();

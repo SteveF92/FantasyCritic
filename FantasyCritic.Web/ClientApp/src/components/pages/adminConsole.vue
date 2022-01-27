@@ -20,6 +20,7 @@
         <b-button variant="info" v-on:click="refreshGGInfo">Refresh GG Info</b-button>
         <b-button variant="info" v-on:click="updateFantasyPoints">Update Fantasy Points</b-button>
         <b-button variant="info" v-on:click="refreshCaches">Refresh Caches</b-button>
+        <b-button variant="info" v-on:click="refreshPatreonInfo">Refresh Patreon</b-button>
       </div>
 
       <h2>Bids</h2>
@@ -169,6 +170,19 @@ export default {
         .then(response => {
           this.isBusy = false;
           this.jobSuccess = 'Refresh Caches';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    },
+    refreshPatreonInfo() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/refreshPatreonInfo')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Refresh Patreon Info';
         })
         .catch(returnedError => {
           this.isBusy = false;

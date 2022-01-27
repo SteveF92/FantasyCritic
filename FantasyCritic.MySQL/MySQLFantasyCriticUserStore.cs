@@ -604,9 +604,36 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider)
+        public async Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider)
         {
-            throw new NotImplementedException();
+            string sql = "select *, LoginProvider, ProviderKey, tbl_user_externallogin.UserID, ProviderDisplayName, TimeAdded " +
+                "FROM tbl_user JOIN tbl_user_externallogin ON tbl_user.UserID = tbl_user_externallogin.UserID " +
+                "WHERE LoginProvider = @provider;";
+
+            var queryObject = new
+            {
+                provider
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var userResults = await connection.QueryAsync<FantasyCriticUserEntity, ExternalLoginEntity, Tuple<FantasyCriticUserEntity, ExternalLoginEntity>>(
+                    sql, (user, externalLogin) => new Tuple<FantasyCriticUserEntity, ExternalLoginEntity>(user, externalLogin), queryObject, splitOn: "LoginProvider");
+                List<FantasyCriticUserWithExternalLogins> domainResults = new List<FantasyCriticUserWithExternalLogins>();
+                foreach(var userEntity in userResults)
+                {
+                    List<UserLoginInfo> userLogins = new List<UserLoginInfo>()
+                    {
+                        new UserLoginInfo(userEntity.Item2.LoginProvider, userEntity.Item2.ProviderKey, userEntity.Item2.ProviderDisplayName)
+                    };
+                    var domain = new FantasyCriticUserWithExternalLogins(userEntity.Item1.ToDomain(), userLogins);
+                    domainResults.Add(domain);
+                }
+
+                return domainResults;
+            }
         }
 
         public Task SetPhoneNumberAsync(FantasyCriticUser user, string phoneNumber, CancellationToken cancellationToken)
