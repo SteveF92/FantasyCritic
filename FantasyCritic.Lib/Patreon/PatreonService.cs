@@ -27,27 +27,38 @@ namespace FantasyCritic.Lib.Patreon
 
         public async Task<IReadOnlyList<PatronInfo>> GetPatronInfo(IReadOnlyList<FantasyCriticUserWithExternalLogins> patreonUsers)
         {
-            List<PatronInfo> patronInfo = new List<PatronInfo>();
-
-            try
+            Dictionary<string, FantasyCriticUser> patreonUserDictionary = new Dictionary<string, FantasyCriticUser>();
+            foreach (var patreonUser in patreonUsers)
             {
-                using (var client = new PatreonClient(_accessToken, _refreshToken, _clientId))
+                var patreonLogin = patreonUser.UserLogins.SingleOrDefault(x => x.LoginProvider == "Patreon");
+                if (patreonLogin == null)
                 {
-                    var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
-                    if (campaignMembers != null)
-                    {
-                        await foreach (var member in campaignMembers)
-                        {
+                    continue;
+                }
 
+                patreonUserDictionary.Add(patreonLogin.ProviderKey, patreonUser.User);
+            }
+
+            List<PatronInfo> patronInfo = new List<PatronInfo>();
+            using (var client = new PatreonClient(_accessToken, _refreshToken, _clientId))
+            {
+                var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
+                if (campaignMembers != null)
+                {
+                    await foreach (var member in campaignMembers)
+                    {
+                        var hasFantasyCriticUser = patreonUserDictionary.TryGetValue(member.Relationships.User.Id, out var fantasyCriticUser);
+                        if (!hasFantasyCriticUser)
+                        {
+                            continue;
                         }
+
+                        bool isPlusUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Plus");
+                        patronInfo.Add(new PatronInfo(fantasyCriticUser, isPlusUser));
                     }
                 }
             }
-            catch (NullReferenceException)
-            {
 
-            }
-            
             return patronInfo;
         }
     }

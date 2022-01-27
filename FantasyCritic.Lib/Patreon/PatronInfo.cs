@@ -9,13 +9,13 @@ namespace FantasyCritic.Lib.Patreon
 {
     public class PatronInfo
     {
-        public PatronInfo(FantasyCriticUser user, IEnumerable<string> patreonTiers)
+        public PatronInfo(FantasyCriticUser user, bool isPlusUser)
         {
             User = user;
-            PatreonTiers = patreonTiers.ToList();
+            IsPlusUser = isPlusUser;
         }
 
         public FantasyCriticUser User { get; }
-        public IReadOnlyList<string> PatreonTiers { get; }
+        public bool IsPlusUser { get; }
     }
 }

@@ -607,7 +607,7 @@ namespace FantasyCritic.MySQL
 
         public async Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider)
         {
-            string sql = "select *, LoginProvider, ProviderKey, tbl_user_externallogin.UserID, ProviderDisplayName, TimeAdded " +
+            string sql = "select tbl_user.*, LoginProvider, ProviderKey, tbl_user_externallogin.UserID, ProviderDisplayName, TimeAdded " +
                 "FROM tbl_user JOIN tbl_user_externallogin ON tbl_user.UserID = tbl_user_externallogin.UserID " +
                 "WHERE LoginProvider = @provider;";
 
@@ -640,7 +640,7 @@ namespace FantasyCritic.MySQL
         public async Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
         {
             List<FantasyCriticUserHasRoleEntity> roleEntities = patronInfo
-                .Where(x => x.PatreonTiers.Contains("PlusUser"))
+                .Where(x => x.IsPlusUser)
                 .Select(x => new FantasyCriticUserHasRoleEntity(x.User.Id, 4, true))
                 .ToList();
 
