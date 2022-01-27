@@ -662,13 +662,20 @@ namespace FantasyCritic.MySQL
                 .Select(x => new FantasyCriticUserHasRoleEntity(x.User.Id, 4, true))
                 .ToList();
 
+            List<FantasyCriticUserDonorEntity> donorEntities = patronInfo
+                .Where(x => x.DonorName.HasValue)
+                .Select(x => new FantasyCriticUserDonorEntity(x.User, x.DonorName.Value))
+                .ToList();
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync("DELETE FROM tbl_user_hasrole WHERE ProgrammaticallyAssigned = 1;", transaction: transaction);
+                    await connection.ExecuteAsync("DELETE FROM tbl_user_donorname;", transaction: transaction);
                     await connection.BulkInsertAsync(roleEntities, "tbl_user_hasrole", 500, transaction);
+                    await connection.BulkInsertAsync(donorEntities, "tbl_user_donorname", 500, transaction);
 
                     await transaction.CommitAsync();
                 }

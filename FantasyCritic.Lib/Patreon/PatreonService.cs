@@ -1,4 +1,5 @@
-﻿using FantasyCritic.Lib.Identity;
+﻿using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Identity;
 using Microsoft.Extensions.Logging;
 using Patreon.Net;
 using System;
@@ -54,7 +55,14 @@ namespace FantasyCritic.Lib.Patreon
                         }
 
                         bool isPlusUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Plus");
-                        patronInfo.Add(new PatronInfo(fantasyCriticUser, isPlusUser));
+                        bool isDonorUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Donor");
+                        Maybe<string> donorName = Maybe<string>.None;
+                        if (isDonorUser)
+                        {
+                            donorName = member.Relationships.User.FullName;
+                        }
+
+                        patronInfo.Add(new PatronInfo(fantasyCriticUser, isPlusUser, donorName));
                     }
                 }
             }

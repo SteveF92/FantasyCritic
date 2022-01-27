@@ -585,10 +585,5 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
-
-        public Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

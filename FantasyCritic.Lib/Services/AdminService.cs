@@ -288,7 +288,6 @@ namespace FantasyCritic.Lib.Services
             var patreonUsers = await _userManager.GetAllPatreonUsers();
             var patronInfo = await _patreonService.GetPatronInfo(patreonUsers);
             await _userManager.UpdatePatronInfo(patronInfo);
-            //await _fantasyCriticRepo.UpdatePatronInfo(patronInfo);
         }
 
         private async Task UpdateSystemWideValues()

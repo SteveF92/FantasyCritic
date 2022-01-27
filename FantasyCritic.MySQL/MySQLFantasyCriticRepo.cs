@@ -2789,10 +2789,5 @@ namespace FantasyCritic.MySQL
 
             return user;
         }
-
-        public Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
