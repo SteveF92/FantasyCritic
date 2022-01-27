@@ -33,7 +33,7 @@ namespace FantasyCritic.Lib.Patreon
             {
                 using (var client = new PatreonClient(_accessToken, _refreshToken, _clientId))
                 {
-                    var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.All);
+                    var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
                     if (campaignMembers != null)
                     {
                         await foreach (var member in campaignMembers)
