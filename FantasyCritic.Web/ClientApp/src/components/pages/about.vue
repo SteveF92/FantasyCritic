@@ -102,18 +102,22 @@
           <li>ASP.NET Core</li>
           <li>Vue.JS</li>
           <li>MySQL</li>
+          <li>MySQLConnector</li>
+          <li>IdentityServer</li>
           <li>Bootstrap</li>
           <li>Vue-Bootstrap</li>
           <li>Webpack</li>
-          <li>SendGrid</li>
           <li>SignalR</li>
           <li>NodaTime</li>
           <li>Dapper</li>
           <li>Newtonsoft.JSON</li>
           <li>MoreLINQ</li>
           <li>CSharpFunctionalExtensions</li>
+          <li>Patreon.Net</li>
+          <li>RazorLight</li>
           <li>NLog</li>
           <li>NUnit</li>
+          <li>CSVHelper</li>
           <li>Python Packages (sklearn, numpy, pandas)</li>
         </ul>
 
@@ -125,8 +129,17 @@
           <li><a href="https://github.com/uioreanu" target="_blank">Calin Uioreanu</a>, for helping develop the "Advanced Projections" statistic.</li>
           <li><a href="https://twitter.com/WhatsGoode1" target="_blank">Matt Goode</a>, for the draft notification sound.</li>
         </ul>
-
       </div>
+
+      <template v-if="donors && donors.length > 0">
+        <h2>Patreon Donors</h2>
+        <div class="text-well">
+          <p>The following people are supporting us at the "Fantasy Critic Donor" tier on Patreon, and we thank them greatly for that:</p>
+          <ul>
+            <li v-for="donor in donors">{{donor}}</li>
+          </ul>
+        </div>
+      </template>
       <hr />
     </div>
 
@@ -138,11 +151,31 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
 import SiteCounts from '@/components/modules/siteCounts';
-
+  
 export default {
   components: {
     SiteCounts
+  },
+  data() {
+    return {
+      donors: [],
+      error: null
+    };
+  },
+  methods: {
+    fetchDonors() {
+      axios
+        .get('/api/general/donors')
+        .then(response => {
+          this.donors = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
+    }
+  },
+  mounted() {
+    this.fetchDonors();
   }
 };
 </script>

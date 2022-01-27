@@ -21,5 +21,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider);
         Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo);
         Task AddToRoleProgrammaticAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken);
+        Task<IReadOnlyList<string>> GetDonors();
     }
 }

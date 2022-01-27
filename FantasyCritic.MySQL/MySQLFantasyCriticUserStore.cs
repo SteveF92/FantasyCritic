@@ -684,6 +684,16 @@ namespace FantasyCritic.MySQL
             _userCache = null;
         }
 
+        public async Task<IReadOnlyList<string>> GetDonors()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var donors = await connection.QueryAsync<string>("select DonorName FROM tbl_user_donorname;");
+                return donors.ToList();
+            }
+        }
+
         public Task SetPhoneNumberAsync(FantasyCriticUser user, string phoneNumber, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
@@ -697,7 +707,6 @@ namespace FantasyCritic.MySQL
         public Task<bool> GetPhoneNumberConfirmedAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
             return Task.FromResult(false);
-
         }
 
         public Task SetPhoneNumberConfirmedAsync(FantasyCriticUser user, bool confirmed, CancellationToken cancellationToken)

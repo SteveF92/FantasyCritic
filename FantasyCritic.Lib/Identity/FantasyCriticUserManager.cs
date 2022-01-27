@@ -101,5 +101,10 @@ namespace FantasyCritic.Lib.Identity
                 await _userStore.AddToRoleProgrammaticAsync(user, "PlusUser", CancellationToken.None);
             }
         }
+
+        public Task<IReadOnlyList<string>> GetDonors()
+        {
+            return _userStore.GetDonors();
+        }
     }
 }

@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
@@ -28,12 +29,14 @@ namespace FantasyCritic.Web.Controllers.API
     {
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly InterLeagueService _interLeagueService;
+        private readonly FantasyCriticUserManager _userManager;
         private readonly IClock _clock;
 
-        public GeneralController(FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, IClock clock)
+        public GeneralController(FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, FantasyCriticUserManager userManager, IClock clock)
         {
             _fantasyCriticService = fantasyCriticService;
             _interLeagueService = interLeagueService;
+            _userManager = userManager;
             _clock = clock;
         }
 
@@ -41,6 +44,12 @@ namespace FantasyCritic.Web.Controllers.API
         {
             var counts = await _interLeagueService.GetSiteCounts();
             return Ok(new SiteCountsViewModel(counts));
+        }
+
+        public async Task<IActionResult> Donors()
+        {
+            var donors = await _userManager.GetDonors();
+            return Ok(donors);
         }
 
         public async Task<IActionResult> BidTimes()
