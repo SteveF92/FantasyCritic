@@ -67,7 +67,7 @@
             </li>
             <li class="nav-item">
               <a class="nav-link top-nav-link brand-nav" href="https://twitter.com/fantasy_critic" target="_blank">
-                <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" class="topnav-icon twitter-icon" />
+                <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="topnav-icon twitter-icon" />
               </a>
             </li>
             <li class="nav-item">

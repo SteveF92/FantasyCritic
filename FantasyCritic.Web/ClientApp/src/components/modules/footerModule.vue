@@ -48,13 +48,13 @@
           </div>
           <div>
             <a href="https://twitter.com/fantasy_critic" target="_blank">
-              <font-awesome-icon :icon="['fab', 'twitter-square']" size="lg" class="twitter-icon" />
+              <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" />
               <span class="full-contact">@fantasy_critic</span>
             </a>
           </div>
           <div>
             <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-              <font-awesome-icon :icon="['fab', 'reddit-square']" size="lg" class="reddit-icon" />
+              <font-awesome-icon :icon="['fab', 'reddit']" size="lg" class="reddit-icon" />
               <span class="full-contact">r/fantasycritic</span>
             </a>
           </div>
@@ -66,13 +66,13 @@
           </div>
           <div>
             <a href="https://www.facebook.com/fantasycritic" target="_blank">
-              <font-awesome-icon :icon="['fab', 'facebook-square']" size="lg" class="fb-icon" />
+              <font-awesome-icon :icon="['fab', 'facebook']" size="lg" class="fb-icon" />
               <span class="full-contact">Facebook</span>
             </a>
           </div>
           <div>
             <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">
-              <font-awesome-icon :icon="['fab', 'github-square']" size="lg" class="github-icon" />
+              <font-awesome-icon :icon="['fab', 'github']" size="lg" class="github-icon" />
               <span class="full-contact">GitHub</span>
             </a>
           </div>
