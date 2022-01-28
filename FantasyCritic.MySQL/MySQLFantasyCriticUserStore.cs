@@ -339,7 +339,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
                 var roleID = await connection.QuerySingleAsync<int>(retrieveSQL, new { Name = roleName });
 
-                string insertSQL = "insert into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 0)";
+                string insertSQL = "insert ignore into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 0)";
                 await connection.ExecuteAsync(insertSQL, new { UserID = user.Id, RoleID = roleID });
             }
 
@@ -357,7 +357,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync(cancellationToken);
                 var roleID = await connection.QuerySingleAsync<int>(retrieveSQL, new { Name = roleName });
 
-                string insertSQL = "insert into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 1)";
+                string insertSQL = "insert ignore into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 1)";
                 await connection.ExecuteAsync(insertSQL, new { UserID = user.Id, RoleID = roleID });
             }
 
