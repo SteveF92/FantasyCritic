@@ -1,4 +1,4 @@
-﻿using CSharpFunctionalExtensions;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Identity;
 using Microsoft.Extensions.Logging;
 using Patreon.Net;
@@ -59,6 +59,7 @@ namespace FantasyCritic.Lib.Patreon
                         Maybe<string> donorName = Maybe<string>.None;
                         if (isDonorUser)
                         {
+                            isPlusUser = true;
                             donorName = member.Relationships.User.FullName;
                         }
 
