@@ -16,11 +16,11 @@ namespace FantasyCritic.MySQL.Entities.Identity
 
         public FantasyCriticUserDonorEntity(FantasyCriticUser user, string donorName)
         {
-            User = user;
+            UserID = user.Id;
             DonorName = donorName;
         }
 
-        public FantasyCriticUser User { get; set; }
+        public Guid UserID { get; set; }
         public string DonorName { get; set; }
     }
 }

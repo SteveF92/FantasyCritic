@@ -8,11 +8,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using NLog;
 
 namespace FantasyCritic.Lib.Patreon
 {
     public class PatreonService
     {
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly string _accessToken;
         private readonly string _refreshToken;
         private readonly string _clientId;
@@ -28,6 +31,7 @@ namespace FantasyCritic.Lib.Patreon
 
         public async Task<IReadOnlyList<PatronInfo>> GetPatronInfo(IReadOnlyList<FantasyCriticUserWithExternalLogins> patreonUsers)
         {
+            _logger.Info("Getting patreon users.");
             Dictionary<string, FantasyCriticUser> patreonUserDictionary = new Dictionary<string, FantasyCriticUser>();
             foreach (var patreonUser in patreonUsers)
             {
@@ -39,13 +43,16 @@ namespace FantasyCritic.Lib.Patreon
 
                 patreonUserDictionary.Add(patreonLogin.ProviderKey, patreonUser.User);
             }
+            _logger.Info($"Found {patreonUserDictionary.Count} patreon users.");
 
             List<PatronInfo> patronInfo = new List<PatronInfo>();
             using (var client = new PatreonClient(_accessToken, _refreshToken, _clientId))
             {
+                _logger.Info("Making patreon request.");
                 var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
                 if (campaignMembers != null)
                 {
+                    _logger.Info("Patreon request successful.");
                     await foreach (var member in campaignMembers)
                     {
                         var hasFantasyCriticUser = patreonUserDictionary.TryGetValue(member.Relationships.User.Id, out var fantasyCriticUser);
