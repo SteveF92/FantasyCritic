@@ -1,6 +1,6 @@
 <template>
-  <b-modal id="changePublisherIconForm" ref="changePublisherIconRef" title="Change Publisher Name" @hidden="clearData" @show="clearData">
-    <div v-show="!iconIsValid" class="alert alert-info">
+  <b-modal id="changePublisherIconForm" ref="changePublisherIconRef" title="Change Publisher Icon" @hidden="clearData" @show="clearData">
+    <div v-show="!newPublisherIcon || !iconIsValid" class="alert alert-info">
       Your icon must be a single character, ideally an emoji.
       <br />
       <br />
