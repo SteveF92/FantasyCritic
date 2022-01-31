@@ -6,7 +6,7 @@
     <div>
       <div class="container-fluid">
         <div class="row">
-          <main class="col-12">
+          <main class="col-12 main-content">
             <router-view></router-view>
           </main>
         </div>

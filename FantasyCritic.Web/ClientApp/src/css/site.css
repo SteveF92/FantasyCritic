@@ -17,6 +17,10 @@ body {
     width: 250px;
 }
 
+.main-content {
+    margin-bottom: 20px;
+}
+
 .table {
     color: white;
 }

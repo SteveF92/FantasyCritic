@@ -1,17 +1,5 @@
-@media only screen and (max-width: 378px) {
-    .full-contact {
-        display: none;
-    }
-}
-
-@media only screen and (max-width: 350px) {
-    .full-nav {
-        display: none;
-    }
-}
-
-@media only screen and (max-width: 679px) {
-    .full-logo {
+@media only screen and (max-width: 500px) {
+    .footer-logo {
         display: none;
     }
 
@@ -29,10 +17,6 @@
 }
 
 @media only screen and (min-width: 680px) {
-    .small-logo {
-        display: none;
-    }
-
     #vue-app {
         margin-bottom: 175px; /* Margin bottom by footer height */
     }

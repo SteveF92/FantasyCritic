@@ -2,12 +2,10 @@
   <footer class="footer">
     <div class="container">
       <div class="row justify-content-between">
-        <div col-md-4>
-          <img class="full-logo" src="/img/logo-white.png" />
-          <img class="small-logo" src="/img/small-logo-white.png" />
+        <div class="footer-logo" col-md-4>
+          <img src="/img/logo-white.png" />
         </div>
         <div col-md-4>
-          <label>Navigation</label>
           <div>
             <router-link :to="{ name: 'howtoplay' }" title="How To Play">
               <font-awesome-icon icon="book-open" size="lg" />
@@ -82,6 +80,10 @@
   </footer>
 </template>
 <style scoped>
+  .footer {
+    padding-top: 10px;
+  }
+
   .fc-plus-nav {
     height: 24px;
     padding-bottom: 3px;
