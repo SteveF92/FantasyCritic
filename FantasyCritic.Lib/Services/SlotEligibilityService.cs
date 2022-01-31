@@ -32,7 +32,7 @@ namespace FantasyCritic.Lib.Services
             return false;
         }
 
-        public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick, int? validDropSlot)
+        public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick, int? validDropSlot, bool watchListing)
         {
             string filledSpacesText = "User's game spaces are filled.";
             if (counterPick)
@@ -56,6 +56,11 @@ namespace FantasyCritic.Lib.Services
                     return new PublisherSlotAcquisitionResult(validDropSlot.Value);
                 }
 
+                if (watchListing)
+                {
+                    return new PublisherSlotAcquisitionResult(1);
+                }
+
                 return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
             }
 
@@ -72,6 +77,11 @@ namespace FantasyCritic.Lib.Services
                 if (validDropSlot.HasValue)
                 {
                     return new PublisherSlotAcquisitionResult(validDropSlot.Value);
+                }
+
+                if (watchListing)
+                {
+                    return new PublisherSlotAcquisitionResult(1);
                 }
 
                 return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });

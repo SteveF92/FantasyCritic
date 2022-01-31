@@ -33,7 +33,7 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public ClaimResult CanClaimGame(ClaimGameDomainRequest request, LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime, int? validDropSlot)
+        public ClaimResult CanClaimGame(ClaimGameDomainRequest request, LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime, int? validDropSlot, bool watchListing)
         {
             var currentDate = _clock.GetToday();
             var dateOfPotentialAcquisition = currentDate;
@@ -95,7 +95,7 @@ namespace FantasyCritic.Lib.Services
                 eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(request.MasterGame.Value, dateOfPotentialAcquisition);
             }
 
-            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(request.Publisher, eligibilityFactors, request.CounterPick, validDropSlot);
+            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(request.Publisher, eligibilityFactors, request.CounterPick, validDropSlot, watchListing);
             if (!slotResult.SlotNumber.HasValue)
             {
                 claimErrors.AddRange(slotResult.ClaimErrors);
@@ -334,7 +334,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             LeagueYear leagueYear = request.Publisher.LeagueYear;
-            ClaimResult claimResult = CanClaimGame(request, leagueYear, publishersForYear, null, null);
+            ClaimResult claimResult = CanClaimGame(request, leagueYear, publishersForYear, null, null, false);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -409,7 +409,7 @@ namespace FantasyCritic.Lib.Services
                 validDropSlot = conditionalDropPublisherGame.Value.SlotNumber;
             }
 
-            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, nextBidTime, validDropSlot);
+            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, nextBidTime, validDropSlot, false);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -435,7 +435,7 @@ namespace FantasyCritic.Lib.Services
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, masterGame, null, null);
             var leagueYear = publisher.LeagueYear;
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
-            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, null, null);
+            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, null, null, true);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -559,7 +559,7 @@ namespace FantasyCritic.Lib.Services
 
             var currentDate = _clock.GetToday();
             MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame, currentDate);
-            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(bid.Publisher, eligibilityFactors, bid.CounterPick, validDropSlot);
+            var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(bid.Publisher, eligibilityFactors, bid.CounterPick, validDropSlot, false);
             if (!slotResult.SlotNumber.HasValue)
             {
                 return new ClaimResult(slotResult.ClaimErrors, null);

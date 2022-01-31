@@ -24,8 +24,10 @@
       <div v-if="!leagueYear.hasSpecialSlots">
         <b-button variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
         <b-button variant="secondary" v-on:click="getPossibleCounterPicks" class="show-top-button">Show Available Counter Picks</b-button>
+        <b-button variant="secondary" v-on:click="getQueuedGames" class="show-top-button">Show My Watchlist</b-button>
       </div>
       <div v-else>
+        <b-button variant="secondary" v-on:click="getQueuedGames" class="show-top-button">Show My Watchlist</b-button>
         <h5 class="text-black">Search by Slot</h5>
         <span class="search-tags">
           <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL" v-on:click.native="getTopGames"></searchSlotTypeBadge>
@@ -42,6 +44,7 @@
       <div v-if="!counterPicking" class="search-results">
         <div v-if="!bidMasterGame">
           <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
+          <h3 class="text-black" v-show="showingQueuedGames">Watchlist</h3>
           <h3 class="text-black" v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
           <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames"
                                     v-on:input="newGameSelected"></possibleMasterGamesTable>
@@ -140,6 +143,7 @@ export default {
       counterPicking: false,
       errorInfo: '',
       showingTopAvailable: false,
+      showingQueuedGames: false,
       searched: false,
       isBusy: false
     };
@@ -205,6 +209,20 @@ export default {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.showingTopAvailable = true;
+        })
+        .catch(response => {
+          this.isBusy = false;
+        });
+    },
+    getQueuedGames() {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      axios
+        .get('/api/league/CurrentQueuedGameYears/' + this.publisher.publisherID)
+        .then(response => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.showingQueuedGames = true;
         })
         .catch(response => {
           this.isBusy = false;

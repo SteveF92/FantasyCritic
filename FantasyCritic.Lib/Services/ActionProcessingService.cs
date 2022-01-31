@@ -151,7 +151,7 @@ namespace FantasyCritic.Lib.Services
                     }
                 }
 
-                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, validConditionalDropSlot);
+                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, validConditionalDropSlot, false);
                 if (claimResult.NoSpaceError)
                 {
                     noSpaceLeftBids.Add(activeBid);
