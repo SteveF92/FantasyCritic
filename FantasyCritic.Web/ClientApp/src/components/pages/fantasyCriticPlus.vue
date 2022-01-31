@@ -21,7 +21,8 @@
             <p>Plus users can click a button to easily share their publishers (their lists of games) to social media.</p>
           </div>
           <div class="col-lg-12 col-xl-6">
-            <img class="screenshot" src="/img/plus-publisher-example.png" />
+            <img class="screenshot full-screenshot" src="/img/plus-publisher-example.png" />
+            <img class="screenshot mobile-screenshot" src="/img/plus-publisher-example-mobile.png" />
           </div>
         </div>
         <hr />
@@ -37,7 +38,8 @@
             </p>
           </div>
           <div class="col-lg-12 col-xl-6">
-            <img class="screenshot" src="/img/master-game-searching-example.png" />
+            <img class="screenshot full-screenshot" src="/img/master-game-searching-example.png" />
+            <img class="screenshot mobile-screenshot" src="/img/master-game-searching-example-mobile.png" />
           </div>
         </div>
 
@@ -75,5 +77,20 @@ export default {
     margin-left: auto;
     margin-right: auto;
     display: block;
+    border-style: solid;
+    border-width: 2px;
+    border-color: white;
+  }
+
+  @media only screen and (max-width: 650px) {
+    .full-screenshot {
+      display: none;
+    }
+  }
+
+  @media only screen and (min-width: 651px) {
+    .mobile-screenshot {
+      display: none;
+    }
   }
 </style>
