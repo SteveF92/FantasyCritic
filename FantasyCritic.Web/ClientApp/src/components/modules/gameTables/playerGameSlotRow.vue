@@ -16,6 +16,7 @@
           <span class="game-info-side">
             <font-awesome-icon v-if="!game.linked" color="white" size="lg" icon="question-circle" v-b-popover.hover.top="unlinkedText" />
             <font-awesome-icon v-if="game.linked && !game.willRelease" color="white" size="lg" icon="calendar-times" v-b-popover.hover.top="willNotReleaseText" />
+            <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" color="white" size="lg" icon="crosshairs" v-b-popover.hover.top="counterPickedText" />
             <font-awesome-icon v-if="game.dropBlocked" color="white" size="lg" icon="lock" v-b-popover.hover.top="gameDropBlockedText" />
             <font-awesome-icon v-if="game.released && game.linked && !game.criticScore && !yearFinished" color="white" size="lg" icon="hourglass-half" v-b-popover.hover.top="needsMoreReviewsText" />
             <font-awesome-icon v-if="game.manualCriticScore" color="white" size="lg" icon="pen" v-b-popover.hover.top="manuallyScoredText" />
@@ -163,6 +164,17 @@ export default {
         },
         content: () => {
           return 'This game was counter picked, so it cannot be dropped.';
+        }
+      }
+    },
+    counterPickedText() {
+      return {
+        html: true,
+        title: () => {
+          return "Counter Picked!";
+        },
+        content: () => {
+          return 'This game was counter picked!';
         }
       }
     },

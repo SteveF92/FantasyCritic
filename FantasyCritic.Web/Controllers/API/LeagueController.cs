@@ -305,12 +305,12 @@ namespace FantasyCritic.Web.Controllers.API
 
             Maybe<FantasyCriticUser> previousYearWinner = await _fantasyCriticService.GetPreviousYearWinner(leagueYear.Value);
             var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear.Value);
-            IReadOnlySet<Guid> dropBlockedPublisherGameIDs = GameUtilities.GetDropBlockedPublisherGameIDs(leagueYear.Value, publishersInLeague);
+            IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear.Value, publishersInLeague);
 
             var currentDate = _clock.GetToday();
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, currentDate,
                 startDraftResult, activeUsers, nextDraftPublisher, draftPhase, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager,
-                currentUser, managerMessages, previousYearWinner, publicBiddingGames, dropBlockedPublisherGameIDs);
+                currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs);
             return Ok(leagueViewModel);
         }
 
@@ -408,11 +408,11 @@ namespace FantasyCritic.Web.Controllers.API
             var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == publisher.Value.LeagueYear.Year);
             var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(publisher.Value.LeagueYear.League, publisher.Value.LeagueYear.Year);
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(publisher.Value.LeagueYear, activeUsers);
-            IReadOnlySet<Guid> dropBlockedPublisherGameIDs = GameUtilities.GetDropBlockedPublisherGameIDs(publisher.Value.LeagueYear, publishersInLeague);
+            IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(publisher.Value.LeagueYear, publishersInLeague);
 
             var currentDate = _clock.GetToday();
             var publisherViewModel = new PublisherViewModel(publisher.Value, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues,
-                supportedYear.Finished, dropBlockedPublisherGameIDs);
+                supportedYear.Finished, counterPickedPublisherGameIDs);
             return Ok(publisherViewModel);
         }
 
@@ -1316,7 +1316,7 @@ namespace FantasyCritic.Web.Controllers.API
             var availableCounterPicks = _draftService.GetAvailableCounterPicks(publisher.Value.LeagueYear, publisher.Value, publishersInLeague);
             var currentDate = _clock.GetToday();
             var viewModels = availableCounterPicks
-                .Select(x => new PublisherGameViewModel(x, currentDate, false))
+                .Select(x => new PublisherGameViewModel(x, currentDate, false, false))
                 .OrderBy(x => x.GameName).ToList();
 
             return viewModels;

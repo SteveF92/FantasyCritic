@@ -17,7 +17,7 @@ namespace FantasyCritic.Web.Models.Responses
             Timestamp = pickupBid.Timestamp.ToDateTimeUtc();
             Successful = pickupBid.Successful;
             MasterGame = new MasterGameViewModel(pickupBid.MasterGame, currentDate);
-            ConditionalDropPublisherGame = pickupBid.ConditionalDropPublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, false));
+            ConditionalDropPublisherGame = pickupBid.ConditionalDropPublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, false, false));
             CounterPick = pickupBid.CounterPick;
         }
 

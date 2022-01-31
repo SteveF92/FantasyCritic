@@ -11,14 +11,14 @@ namespace FantasyCritic.Web.Models.Responses
     public class PublisherViewModel
     {
         public PublisherViewModel(Publisher publisher, LocalDate currentDate, bool userIsInLeague,
-            bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished, IReadOnlySet<Guid> dropBlockedPublisherGameIDs)
-        : this(publisher, currentDate, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues, yearFinished, dropBlockedPublisherGameIDs)
+            bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
+        : this(publisher, currentDate, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues, yearFinished, counterPickedPublisherGameIDs)
         {
 
         }
 
         public PublisherViewModel(Publisher publisher, LocalDate currentDate, Maybe<Publisher> nextDraftPublisher,
-            bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished, IReadOnlySet<Guid> dropBlockedPublisherGameIDs)
+            bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
         {
             PublisherID = publisher.PublisherID;
             LeagueID = publisher.LeagueYear.League.LeagueID;
@@ -32,11 +32,11 @@ namespace FantasyCritic.Web.Models.Responses
             AutoDraft = publisher.AutoDraft;
             Games = publisher.PublisherGames
                 .OrderBy(x => x.Timestamp)
-                .Select(x => new PublisherGameViewModel(x, currentDate, dropBlockedPublisherGameIDs.Contains(x.PublisherGameID)))
+                .Select(x => new PublisherGameViewModel(x, currentDate, counterPickedPublisherGameIDs.Contains(x.PublisherGameID), publisher.LeagueYear.Options.CounterPicksBlockDrops))
                 .ToList();
 
             GameSlots = publisher.GetPublisherSlots()
-                .Select(x => new PublisherSlotViewModel(publisher.LeagueYear.Year, x, currentDate, publisher.LeagueYear, systemWideValues, dropBlockedPublisherGameIDs))
+                .Select(x => new PublisherSlotViewModel(publisher.LeagueYear.Year, x, currentDate, publisher.LeagueYear, systemWideValues, counterPickedPublisherGameIDs))
                 .ToList();
 
             AverageCriticScore = publisher.AverageCriticScore;

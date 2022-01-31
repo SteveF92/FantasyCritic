@@ -20,7 +20,7 @@ namespace FantasyCritic.Web.Models.Responses
             DraftPhase draftPhase, SystemWideValues systemWideValues,
             IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
             Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner,
-            Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingGames, IReadOnlySet<Guid> dropBlockedPublisherGameIDs)
+            Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -36,12 +36,12 @@ namespace FantasyCritic.Web.Models.Responses
             HasSpecialSlots = leagueYear.Options.HasSpecialSlots();
             Publishers = publishers
                 .OrderBy(x => x.DraftPosition)
-                .Select(x => new PublisherViewModel(x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished, dropBlockedPublisherGameIDs))
+                .Select(x => new PublisherViewModel(x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished, counterPickedPublisherGameIDs))
                 .ToList();
 
             if (userPublisher.HasValue)
             {
-                UserPublisher = new PublisherViewModel(userPublisher.Value, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished, dropBlockedPublisherGameIDs);
+                UserPublisher = new PublisherViewModel(userPublisher.Value, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished, counterPickedPublisherGameIDs);
             }
 
             List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
@@ -58,7 +58,7 @@ namespace FantasyCritic.Web.Models.Responses
                 {
                     bool isPreviousYearWinner = previousYearWinner.HasValue && previousYearWinner.Value.Id == user.Id;
                     playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
-                        userIsInLeague, userIsInvitedToLeague, supportedYear, false, isPreviousYearWinner, dropBlockedPublisherGameIDs));
+                        userIsInLeague, userIsInvitedToLeague, supportedYear, false, isPreviousYearWinner, counterPickedPublisherGameIDs));
                 }
             }
 

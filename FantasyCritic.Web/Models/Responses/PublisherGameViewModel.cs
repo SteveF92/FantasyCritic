@@ -11,7 +11,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherGameViewModel
     {
-        public PublisherGameViewModel(PublisherGame publisherGame, LocalDate currentDate, bool dropBlocked)
+        public PublisherGameViewModel(PublisherGame publisherGame, LocalDate currentDate, bool counterPicked, bool counterPicksBlockDrops)
         {
             PublisherGameID = publisherGame.PublisherGameID;
             GameName = publisherGame.GameName;
@@ -48,7 +48,8 @@ namespace FantasyCritic.Web.Models.Responses
             ManualWillNotRelease = publisherGame.ManualWillNotRelease;
             OverallDraftPosition = publisherGame.OverallDraftPosition;
             SlotNumber = publisherGame.SlotNumber;
-            DropBlocked = dropBlocked;
+            CounterPicked = counterPicked;
+            DropBlocked = counterPicked && counterPicksBlockDrops;
         }
 
         public Guid PublisherGameID { get; }
@@ -69,6 +70,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool WillRelease { get; }
         public bool ManualCriticScore { get; }
         public bool ManualWillNotRelease { get; }
+        public bool CounterPicked { get; }
         public bool DropBlocked { get; }
     }
 }
