@@ -10,10 +10,15 @@
                responsive
                small>
         <template v-slot:cell(gameName)="data">
-          <masterGamePopover :masterGame="data.item"></masterGamePopover>
+          <span class="game-name-column">
+            <span v-if="data.item.counterPick" class="badge tag-badge counter-pick-badge" v-b-popover.hover="counterPickText">
+              CP
+            </span>
+            <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+          </span>
         </template>
         <template v-slot:cell(maximumReleaseDate)="data">
-          {{getReleaseDate(data.item)}}
+          {{getReleaseDate(data.item.masterGame)}}
         </template>
       </b-table>
     </div>
@@ -43,6 +48,19 @@
     components: {
       MasterGamePopover,
     },
+    computed: {
+      counterPickText() {
+        return {
+          html: true,
+          title: () => {
+            return "Counter Pick Bid";
+          },
+          content: () => {
+            return 'This game is being bid on as a counter pick.';
+          }
+        }
+      }
+    },
     methods: {
       getReleaseDate(game) {
         if (game.releaseDate) {
@@ -53,3 +71,19 @@
     }
   };
 </script>
+<style scoped>
+  .game-name-column {
+    display: flex;
+    align-items: center;
+  }
+
+  .popover-header {
+    color: black;
+  }
+
+  .counter-pick-badge {
+    background-color: #AA1E1E;
+    color: white;
+    margin-right: 8px;
+  }
+</style>

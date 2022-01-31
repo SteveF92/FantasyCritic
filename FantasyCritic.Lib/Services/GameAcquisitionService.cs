@@ -13,6 +13,7 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
+using MoreLinq;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Services
@@ -589,21 +590,21 @@ namespace FantasyCritic.Lib.Services
             return Result.Success();
         }
 
-        public async Task<Maybe<IReadOnlyList<MasterGameYear>>> GetPublicBiddingGames(LeagueYear leagueYear)
+        public async Task<Maybe<IReadOnlyList<PublicBiddingMasterGame>>> GetPublicBiddingGames(LeagueYear leagueYear)
         {
             var isInPublicWindow = IsInPublicBiddingWindow(leagueYear);
             if (!isInPublicWindow)
             {
-                return Maybe<IReadOnlyList<MasterGameYear>>.None;
+                return Maybe<IReadOnlyList<PublicBiddingMasterGame>>.None;
             }
 
             var activeBidsForLeague = await _fantasyCriticRepo.GetActivePickupBids(leagueYear);
-            var masterGames = activeBidsForLeague.Select(x => x.MasterGame).Distinct();
-            List<MasterGameYear> masterGameYears = new List<MasterGameYear>();
-            foreach (var masterGame in masterGames)
+            var distinctBids = activeBidsForLeague.DistinctBy(x => x.MasterGame);
+            List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
+            foreach (var bid in distinctBids)
             {
-                var masterGameYear = await _masterGameRepo.GetMasterGameYear(masterGame.MasterGameID, leagueYear.Year);
-                masterGameYears.Add(masterGameYear.Value);
+                var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, leagueYear.Year);
+                masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.Value, bid.CounterPick));
             }
 
             return masterGameYears;

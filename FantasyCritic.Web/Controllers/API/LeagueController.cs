@@ -794,7 +794,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear.Value);
-            if (publicBiddingGames.HasValue && !publicBiddingGames.Value.Select(x => x.MasterGame).Contains(masterGame.Value))
+            if (publicBiddingGames.HasValue && !publicBiddingGames.Value.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame.Value))
             {
                 return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
             }

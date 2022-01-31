@@ -20,7 +20,7 @@ namespace FantasyCritic.Web.Models.Responses
             DraftPhase draftPhase, SystemWideValues systemWideValues,
             IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
             Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner,
-            Maybe<IReadOnlyList<MasterGameYear>> publicBiddingGames, IReadOnlySet<Guid> dropBlockedPublisherGameIDs)
+            Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingGames, IReadOnlySet<Guid> dropBlockedPublisherGameIDs)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -114,7 +114,7 @@ namespace FantasyCritic.Web.Models.Responses
 
             if (publicBiddingGames.HasValue)
             {
-                PublicBiddingGames = publicBiddingGames.Value.Select(x => new MasterGameYearViewModel(x, currentDate)).ToList();
+                PublicBiddingGames = publicBiddingGames.Value.Select(x => new PublicBiddingMasterGameViewModel(x, currentDate)).ToList();
             }
         }
 
@@ -138,6 +138,6 @@ namespace FantasyCritic.Web.Models.Responses
         public PublisherViewModel UserPublisher { get; }
         public PlayStatusViewModel PlayStatus { get; }
         public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
-        public IReadOnlyList<MasterGameYearViewModel> PublicBiddingGames { get; }
+        public IReadOnlyList<PublicBiddingMasterGameViewModel> PublicBiddingGames { get; }
     }
 }
