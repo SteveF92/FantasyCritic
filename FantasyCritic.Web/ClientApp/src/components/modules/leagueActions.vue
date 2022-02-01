@@ -49,6 +49,9 @@
               <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">
                 Make a Bid
               </li>
+              <li class="fake-link action" v-b-modal="'bidCounterPickForm'" v-show="leagueYear.playStatus.draftFinished">
+                Make a Counter Pick Bid
+              </li>
               <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
                 My Current Bids
               </li>
@@ -171,6 +174,7 @@
         <playerDraftCounterPickForm :userPublisher="leagueYear.userPublisher" v-on:counterPickDrafted="counterPickDrafted"></playerDraftCounterPickForm>
 
         <bidGameForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:gameBid="gameBid"></bidGameForm>
+        <bidCounterPickForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:gameBid="gameBid"></bidCounterPickForm>
         <currentBidsForm :leagueYear="leagueYear" :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidEdited="bidEdited" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
 
         <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
@@ -212,6 +216,7 @@ import Vue from 'vue';
 import axios from 'axios';
 
 import BidGameForm from '@/components/modules/modals/bidGameForm';
+import BidCounterPickForm from '@/components/modules/modals/bidCounterPickForm';
 import CurrentBidsForm from '@/components/modules/modals/currentBidsForm';
 import DropGameForm from '@/components/modules/modals/dropGameForm';
 import CurrentDropsForm from '@/components/modules/modals/currentDropsForm';
@@ -260,6 +265,7 @@ export default {
   props: ['league', 'leagueYear', 'leagueActions', 'currentBids', 'currentDrops', 'userIsNextInDraft', 'nextPublisherUp'],
   components: {
     BidGameForm,
+    BidCounterPickForm,
     CurrentBidsForm,
     GameQueueForm,
     DropGameForm,
