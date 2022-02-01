@@ -13,7 +13,7 @@ namespace FantasyCritic.MySQL
 {
     public static class BulkInserter
     {
-        public static Task BulkInsertAsync<TInsertType>(this DbConnection conn, IEnumerable<TInsertType> objects, string tableName, int batchSize = 0, DbTransaction transaction = null, IEnumerable<string> excludedFields = null)
+        public static Task BulkInsertAsync<TInsertType>(this DbConnection conn, IEnumerable<TInsertType> objects, string tableName, int batchSize = 0, DbTransaction transaction = null, IEnumerable<string> excludedFields = null, bool insertIgnore = false)
         {
             if (!objects.Any())
             {
@@ -36,11 +36,17 @@ namespace FantasyCritic.MySQL
             PropertyInfo[] properties = objectType.GetProperties();
             List<PropertyInfo> includedProperties = properties.Where(x => !excludedFields.Contains(x.Name)).ToList();
 
+            string ignore = "";
+            if (insertIgnore)
+            {
+                ignore = "IGNORE";
+            }
+
             var propertyNames = includedProperties.Select(x => x.Name);
             var atPropertyNames = includedProperties.Select(x => $"@{x.Name}");
             string propertiesList = string.Join(", ", propertyNames);
             string atPropertiesList = string.Join(", ", atPropertyNames);
-            string sqlCommand = $"insert into {tableName} ({propertiesList}) VALUES ({atPropertiesList}) ...";
+            string sqlCommand = $"insert {ignore} into {tableName} ({propertiesList}) VALUES ({atPropertiesList}) ...";
             return conn.BulkInsertAsync(sqlCommand, objectList, transaction, batchSize);
         }
     }
