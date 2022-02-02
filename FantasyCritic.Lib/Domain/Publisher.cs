@@ -195,6 +195,8 @@ namespace FantasyCritic.Lib.Domain
             return PublisherID.GetHashCode();
         }
 
+        public override string ToString() => $"{PublisherID}|{PublisherName}";
+
         public void AcquireGame(PublisherGame game, uint bidAmount)
         {
             PublisherGames = PublisherGames.Concat(new []{ game }).ToList();

@@ -866,8 +866,9 @@ namespace FantasyCritic.Web.Controllers.API
                 masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
             }
 
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, false, masterGame, null, null);
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear.Value, publishersInLeague, request.CounterPick, masterGame);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false, masterGame, null, null);
             ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, false, publishersInLeague);
             var viewModel = new ManagerClaimResultViewModel(result);
 
@@ -1413,7 +1414,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var draftStatus = _draftService.GetDraftStatus(leagueYear.Value, publishersInLeague);
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, request.ManagerOverride, false,
+            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear.Value, publishersInLeague, request.CounterPick, masterGame);
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false,
                 masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 
             var result = await _draftService.DraftGame(domainRequest, true, leagueYear.Value, publishersInLeague);

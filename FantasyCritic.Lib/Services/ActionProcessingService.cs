@@ -137,7 +137,8 @@ namespace FantasyCritic.Lib.Services
             {
                 Publisher publisher = currentPublisherStates.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
 
-                var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, activeBid.CounterPick, false, false, activeBid.MasterGame, null, null);
+                bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, currentPublisherStates, activeBid.CounterPick, activeBid.MasterGame);
+                var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
                 var publishersForLeagueAndYear = currentPublisherStates.Where(x => x.LeagueYear.League.LeagueID == leagueYear.League.LeagueID && x.LeagueYear.Year == leagueYear.Year);
 
                 int? validConditionalDropSlot = null;

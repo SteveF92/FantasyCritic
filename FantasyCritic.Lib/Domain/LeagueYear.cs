@@ -120,5 +120,7 @@ namespace FantasyCritic.Lib.Domain
                 return ((League != null ? League.GetHashCode() : 0) * 397) ^ Year;
             }
         }
+
+        public override string ToString() => $"{League}|{Year}";
     }
 }

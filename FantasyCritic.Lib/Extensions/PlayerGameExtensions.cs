@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
 
@@ -44,6 +45,25 @@ namespace FantasyCritic.Lib.Extensions
             }
 
             return containsGame;
+        }
+
+        public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear, 
+            IEnumerable<Publisher> publishersInLeagueYear, bool counterPick, Maybe<MasterGame> masterGame)
+        {
+            if (!counterPick || masterGame.HasNoValue)
+            {
+                return false;
+            }
+
+            var gameBeingCounterPickedOptions = publishersInLeagueYear.Select(x => x.GetPublisherGame(masterGame.Value))
+                    .Where(x => x.HasValue && !x.Value.CounterPick).ToList();
+
+            if (gameBeingCounterPickedOptions.Count != 1)
+            {
+                throw new Exception($"Something very strange has happened with bid processing for league year: {leagueYear.Key}");
+            }
+
+            return gameBeingCounterPickedOptions.Single().Value.ManualWillNotRelease;
         }
     }
 }

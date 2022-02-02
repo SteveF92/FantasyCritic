@@ -49,5 +49,7 @@ namespace FantasyCritic.Lib.Domain
         {
             return LeagueID.GetHashCode();
         }
+
+        public override string ToString() => $"{LeagueID}|{LeagueName}";
     }
 }

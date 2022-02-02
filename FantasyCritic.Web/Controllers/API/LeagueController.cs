@@ -1066,7 +1066,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var draftStatus = _draftService.GetDraftStatus(leagueYear.Value, publishersInLeague);
-            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, false, masterGame,
+            ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, false, false, masterGame,
                 draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 
             var draftResult = await _draftService.DraftGame(domainRequest, false, leagueYear.Value, publishersInLeague);

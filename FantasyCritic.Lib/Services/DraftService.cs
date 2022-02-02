@@ -290,7 +290,7 @@ namespace FantasyCritic.Lib.Services
 
                 foreach (var possibleGame in gamesToTake)
                 {
-                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.GameName, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
                     var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers);
                     if (autoDraftResult.Success)
                     {
@@ -311,7 +311,7 @@ namespace FantasyCritic.Lib.Services
                     .OrderByDescending(x => x.AdjustedPercentCounterPick);
                 foreach (var possibleGame in possibleGames)
                 {
-                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.MasterGame.GameName, true, false, true, possibleGame.MasterGame, 
+                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame, 
                         draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
                     var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers);
                     if (autoDraftResult.Success)

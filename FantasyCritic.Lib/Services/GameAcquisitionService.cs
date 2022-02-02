@@ -49,7 +49,7 @@ namespace FantasyCritic.Lib.Services
 
             if (request.MasterGame.HasValue)
             {
-                var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition);
+                var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, request.CounterPickedGameIsManualWillNotRelease);
                 claimErrors.AddRange(masterGameErrors);
             }
 
@@ -119,7 +119,7 @@ namespace FantasyCritic.Lib.Services
             dropErrors.AddRange(basicErrors);
 
             var currentDate = _clock.GetToday();
-            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, true, currentDate, currentDate);
+            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, true, currentDate, currentDate, false);
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
@@ -166,7 +166,7 @@ namespace FantasyCritic.Lib.Services
                 dateOfPotentialAcquisition = nextBidTime.Value.ToEasternDate();
             }
 
-            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame, leagueYear.Year, true, currentDate, dateOfPotentialAcquisition);
+            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame, leagueYear.Year, true, currentDate, dateOfPotentialAcquisition, false);
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
@@ -209,7 +209,7 @@ namespace FantasyCritic.Lib.Services
             var currentDate = _clock.GetToday();
             var dateOfPotentialAcquisition = currentDate;
 
-            IReadOnlyList<ClaimError> masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition);
+            IReadOnlyList<ClaimError> masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, false);
             associationErrors.AddRange(masterGameErrors);
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.LeagueYear);
@@ -278,7 +278,7 @@ namespace FantasyCritic.Lib.Services
         }
 
         private IReadOnlyList<ClaimError> GetGenericSlotMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool dropping, 
-            LocalDate currentDate, LocalDate dateOfPotentialAcquisition)
+            LocalDate currentDate, LocalDate dateOfPotentialAcquisition, bool counterPickedGameIsManualWillNotRelease)
         {
             MasterGameWithEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame, dateOfPotentialAcquisition);
             List<ClaimError> claimErrors = new List<ClaimError>();
@@ -311,7 +311,8 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
             }
 
-            if (!dropping && !released && masterGame.MinimumReleaseDate.Year > year && !manuallyEligible)
+            bool willRelease = masterGame.MinimumReleaseDate.Year == year && !counterPickedGameIsManualWillNotRelease;
+            if (!dropping && !released && !willRelease && !manuallyEligible)
             {
                 claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
             }
@@ -386,9 +387,25 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) }, null);
             }
 
-            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, counterPick, false, false, masterGame, null, null);
             var leagueYear = publisher.LeagueYear;
-            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
+            var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear);
+
+            bool counterPickedGameIsManualWillNotRelease = false;
+            if (counterPick)
+            {
+                var gameBeingCounterPickedOptions = publishersForYear.Select(x => x.GetPublisherGame(masterGame))
+                    .Where(x => x.HasValue && !x.Value.CounterPick).ToList();
+
+                if (gameBeingCounterPickedOptions.Count != 1)
+                {
+                    throw new Exception($"Something very strange has happened with bid processing for publisher: {publisher.PublisherID}");
+                }
+
+                counterPickedGameIsManualWillNotRelease = gameBeingCounterPickedOptions.Single().Value.ManualWillNotRelease;
+            }
+
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, counterPick, 
+                counterPickedGameIsManualWillNotRelease, false, false, masterGame, null, null);
 
             Instant nextBidTime = _clock.GetNextBidTime();
 
@@ -432,7 +449,7 @@ namespace FantasyCritic.Lib.Services
                 return new ClaimResult(new List<ClaimError>() { new ClaimError("You already have that game queued.", false) }, null);
             }
 
-            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, masterGame, null, null);
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, false, masterGame, null, null);
             var leagueYear = publisher.LeagueYear;
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
             var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, null, null, true);
