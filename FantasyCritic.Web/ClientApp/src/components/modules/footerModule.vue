@@ -2,10 +2,10 @@
   <footer class="footer">
     <div class="container">
       <div class="row justify-content-between">
-        <div class="footer-logo" col-md-4>
+        <div class="footer-logo" col-lg-4>
           <img src="/img/logo-white.png" />
         </div>
-        <div col-md-4>
+        <div col-lg-4 col-md-6>
           <div>
             <router-link :to="{ name: 'howtoplay' }" title="How To Play">
               <font-awesome-icon icon="book-open" size="lg" />
@@ -37,7 +37,7 @@
             </router-link>
           </div>
         </div>
-        <div col-md-4>
+        <div col-lg-4 col-md-6>
           <div>
             <a href="https://patreon.com/fantasycritic" target="_blank">
               <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" />
@@ -80,10 +80,6 @@
   </footer>
 </template>
 <style scoped>
-  .footer {
-    padding-top: 10px;
-  }
-
   .fc-plus-nav {
     height: 24px;
     padding-bottom: 3px;

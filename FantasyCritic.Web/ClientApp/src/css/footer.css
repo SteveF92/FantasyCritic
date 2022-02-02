@@ -1,29 +1,11 @@
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 576px) {
     .footer-logo {
         display: none;
     }
-
-    #vue-app {
-        margin-bottom: 75px; /* Margin bottom by footer height */
-    }
-
-    .footer {
-        height: 75px; /* Set the fixed height of the footer here */
-    }
-
-    .container {
-        padding-bottom: 25px;
-    }
 }
 
-@media only screen and (min-width: 680px) {
-    #vue-app {
-        margin-bottom: 175px; /* Margin bottom by footer height */
-    }
-
-    .footer {
-        height: 175px; /* Set the fixed height of the footer here */
-    }
+#vue-app {
+    margin-bottom: 175px; /* Margin bottom by footer height */
 }
 
 .footer {
@@ -32,6 +14,8 @@
     bottom: 0;
     width: 100%;
     line-height: 30px; /* Vertically center the text there */
+    padding-top: 10px;
+    height: 175px;
 }
 
 /* Custom page CSS
@@ -44,4 +28,5 @@
     padding-left: 45px;
     padding-right: 45px;
     background-color: black;
+    padding-bottom: 25px;
 }

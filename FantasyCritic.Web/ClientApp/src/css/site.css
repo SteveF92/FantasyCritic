@@ -5,6 +5,9 @@
 html {
     position: relative;
     min-height: 100%;
+    min-width: 375px;
+    width: auto !important;
+    width: 375px;
 }
 
 body {
@@ -12,9 +15,6 @@ body {
     color: white;
     background-image: url("/img/bg-geo-texture.png");
     background-repeat: repeat;
-    min-width: 375px;
-    width: auto !important;
-    width: 375px;
 }
 
 .main-content {
