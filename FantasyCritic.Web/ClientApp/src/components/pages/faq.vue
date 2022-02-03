@@ -317,6 +317,19 @@
           You can also use the 'conditional drop' option on your bid, which will drop the specified game <em>only if</em> you win the bid in question.
         </div>
       </faqCollapse>
+      <faqCollapse>
+        <div slot="question">How do "Pickup Counter Picks" work?</div>
+        <div slot="answer">
+          Pickup counter picks are like normal counter picks, but instead of taking them in the draft, you take them at any point in the year using the bidding system. A few notes on these:
+          <ul>
+            <li>If you do not fill a pickup counter pick slot by the end of the year, you will lose 15 points.</li>
+            <li>
+              You cannot counter pick a game that is already set to "Will Not Release". You are free to counter pick a game that you <em>think</em> will get delayed, but counter picking a game that is already
+            delayed isn't an interesting 'bet', so it's not allowed. If we did allow it, that would be the entire counter pick strategy. Wait for a game to get delayed, and then counter pick that.
+            </li>
+          </ul>
+        </div>
+      </faqCollapse>
       <br />
 
       <h2><a name="dropping-games">Dropping Games</a></h2>

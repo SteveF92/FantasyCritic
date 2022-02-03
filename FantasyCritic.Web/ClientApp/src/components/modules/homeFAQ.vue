@@ -13,8 +13,11 @@
         Does this cost money?
       </div>
       <div slot="answer">
-        No. It’s totally free. No catch. For now, this is a passion project for me and I’m comfortable eating the cost of servers and advertising.
-        In the future, it is possible that I will consider adding advertising or opening a Patreon, but I’m never going to charge people to play.
+        Fantasy Critic is free to use. However, if you are able to, we would love it if you would support us on Patreon. Doing so will get you access to special
+        rewards, including
+        <router-link :to="{ name: 'fantasyCriticPlus' }" title="Fantasy Critic Plus">
+          Fantasy Critic Plus.
+        </router-link>
       </div>
     </faqCollapse>
     <faqCollapse>
