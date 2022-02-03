@@ -472,13 +472,22 @@ namespace FantasyCritic.Lib.Services
                     bidPercentile = FixDouble(bidPercentile);
                     hypeFactor = FixDouble(hypeFactor);
                     dateAdjustedHypeFactor = FixDouble(dateAdjustedHypeFactor);
+                    double peakHypeFactor = hypeFactor;
 
-                    if (masterGame.CriticScore.HasValue && gameIsCached)
+                    if (gameIsCached)
                     {
-                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
+                        if (cachedMasterGame.PeakHypeFactor > peakHypeFactor)
+                        {
+                            peakHypeFactor = cachedMasterGame.PeakHypeFactor;
+                        }
+
+                        if (masterGame.CriticScore.HasValue)
+                        {
+                            calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
                             adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
-                            dateAdjustedHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
-                        continue;
+                            dateAdjustedHypeFactor, peakHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
+                            continue;
+                        }
                     }
 
                     //Linear Regression
@@ -495,7 +504,7 @@ namespace FantasyCritic.Lib.Services
 
                     calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame, 
                         adjustedPercentCounterPick, numberOfBids, (int) totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor, 
-                        dateAdjustedHypeFactor, linearRegressionHypeFactor));
+                        dateAdjustedHypeFactor, peakHypeFactor, linearRegressionHypeFactor));
                 }
 
                 await _masterGameRepo.UpdateCalculatedStats(calculatedStats, supportedYear.Year);

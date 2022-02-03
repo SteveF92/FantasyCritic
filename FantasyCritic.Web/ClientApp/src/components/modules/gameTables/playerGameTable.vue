@@ -57,7 +57,7 @@ export default {
           'If the game already has a critic score, then this was our final projection before the score came in.';
         }
       }
-    },
+    }
   }
 };
 </script>

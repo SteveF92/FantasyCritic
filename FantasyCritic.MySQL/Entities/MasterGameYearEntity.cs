@@ -48,6 +48,7 @@ namespace FantasyCritic.MySQL.Entities
             AverageWinningBid = masterGameStats.AverageWinningBid;
             HypeFactor = masterGameStats.HypeFactor;
             DateAdjustedHypeFactor = masterGameStats.DateAdjustedHypeFactor;
+            PeakHypeFactor = masterGameStats.PeakHypeFactor;
             LinearRegressionHypeFactor = masterGameStats.LinearRegressionHypeFactor;
             AddedTimestamp = masterGameStats.MasterGame.AddedTimestamp.ToDateTimeUtc();
         }
@@ -81,6 +82,7 @@ namespace FantasyCritic.MySQL.Entities
         public double? AverageWinningBid { get; set; }
         public double HypeFactor { get; set; }
         public double DateAdjustedHypeFactor { get; set; }
+        public double PeakHypeFactor { get; set; }
         public double LinearRegressionHypeFactor { get; set; }
         public DateTime AddedTimestamp { get; set; }
 
@@ -128,7 +130,7 @@ namespace FantasyCritic.MySQL.Entities
                 releaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames, tags);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
-                NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, LinearRegressionHypeFactor);
+                NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, PeakHypeFactor, LinearRegressionHypeFactor);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace FantasyCritic.Lib.Domain
 
         public MasterGameYear(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame,
             double? adjustedPercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageBidAmount,
-            double hypeFactor, double dateAdjustedHypeFactor, double linearRegressionHypeFactor)
+            double hypeFactor, double dateAdjustedHypeFactor, double peakHypeFactor, double linearRegressionHypeFactor)
         {
             MasterGame = masterGame;
             Year = year;
@@ -35,6 +35,7 @@ namespace FantasyCritic.Lib.Domain
 
             HypeFactor = hypeFactor;
             DateAdjustedHypeFactor = dateAdjustedHypeFactor;
+            PeakHypeFactor = peakHypeFactor;
             LinearRegressionHypeFactor = linearRegressionHypeFactor;
         }
 
@@ -51,6 +52,7 @@ namespace FantasyCritic.Lib.Domain
         public double? AverageWinningBid { get; }
         public double HypeFactor { get; }
         public double DateAdjustedHypeFactor { get; }
+        public double PeakHypeFactor { get; }
         public double LinearRegressionHypeFactor { get; }
 
         public override string ToString() => $"{MasterGame}-{Year}";

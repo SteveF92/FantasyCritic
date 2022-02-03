@@ -40,6 +40,17 @@
               <li v-show="masterGameYear.dateAdjustedHypeFactor">Hype Factor: {{masterGameYear.dateAdjustedHypeFactor | score(1)}}</li>
               <li v-show="!masterGameYear.dateAdjustedHypeFactor">Hype Factor: Unhyped...</li>
 
+              <template v-if="masterGameYear.year >= 2022 && masterGameYear.peakHypeFactor > masterGameYear.dateAdjustedHypeFactor">
+                <li v-show="masterGameYear.peakHypeFactor">
+                  Peak Hype Factor: {{masterGameYear.peakHypeFactor | score(1)}}
+                  <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.top="peakHypeFactorText" />
+                </li>
+                <li v-show="!masterGameYear.peakHypeFactor">
+                  Peak Hype Factor: Unhyped...
+                  <font-awesome-icon color="white" icon="info-circle" v-b-popover.hover.top="peakHypeFactorText" />
+                </li>
+              </template>
+              
               <li v-show="masterGameYear.projectedFantasyPoints">Projected Points: ~{{masterGameYear.projectedFantasyPoints | score(1)}}</li>
 
               <li>Counter Picked in {{masterGameYear.adjustedPercentCounterPick | percent(1)}} of leagues where it is published.</li>
@@ -99,6 +110,18 @@ export default {
     },
     reversedMasterGameYears() {
       return this.masterGameYears.reverse();
+    },
+    peakHypeFactorText() {
+      return {
+        html: true,
+        title: () => {
+          return "Peak Hype Factor";
+        },
+        content: () => {
+          return "Sometimes a game's hype factor will go down over the course of the year, particularly if it gets delayed and many players drop it. " +
+          "This number is the highest this game's hype factor ever was in the year.";
+        }
+      }
     }
   },
   methods: {
