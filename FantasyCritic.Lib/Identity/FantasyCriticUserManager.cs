@@ -91,6 +91,11 @@ namespace FantasyCritic.Lib.Identity
             return _userStore.UpdatePatronInfo(patronInfo);
         }
 
+        public Task<IReadOnlyList<FantasyCriticUserWithEmailSettings>> GetAllEmailSettings()
+        {
+            return _userStore.GetAllEmailSettings();
+        }
+
         public async Task RefreshExternalLoginFeatures(FantasyCriticUser user)
         {
             var externalLogins = await _userStore.GetLoginsAsync(user, CancellationToken.None);

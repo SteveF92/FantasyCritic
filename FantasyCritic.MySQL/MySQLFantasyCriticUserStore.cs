@@ -16,6 +16,7 @@ using IdentityServer4.Stores;
 using NLog;
 using NodaTime;
 using FantasyCritic.Lib.Patreon;
+using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.MySQL
 {
@@ -653,6 +654,32 @@ namespace FantasyCritic.MySQL
 
                 return domainResults;
             }
+        }
+
+
+        public async Task<IReadOnlyList<FantasyCriticUserWithEmailSettings>> GetAllEmailSettings()
+        {
+            string emailSQL = "select * from tbl_user_emailsettings;";
+            ILookup<Guid, FantasyCriticUserEmailSettingEntity> userEmailSettings;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var emailResult = await connection.QueryAsync<FantasyCriticUserEmailSettingEntity>(emailSQL);
+                userEmailSettings = emailResult.ToLookup(x => x.UserID);
+            }
+
+            var allUsers = await GetAllUsers();
+            List<FantasyCriticUserWithEmailSettings> usersWithEmailSettings = new List<FantasyCriticUserWithEmailSettings>();
+            foreach (var user in allUsers)
+            {
+                var emailSettings = userEmailSettings[user.Id];
+                if (emailSettings.Any())
+                {
+                    var domainTypes = emailSettings.Select(x => EmailType.FromValue(x.EmailType)).ToList();
+                    usersWithEmailSettings.Add(new FantasyCriticUserWithEmailSettings(user, domainTypes));
+                }
+            }
+
+            return usersWithEmailSettings;
         }
 
         public async Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
