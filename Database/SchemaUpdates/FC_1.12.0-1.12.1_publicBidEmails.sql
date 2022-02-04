@@ -7,7 +7,7 @@ ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC
 ;
 
-INSERT INTO `tbl_user_emailtype` (`EmailType`) VALUES ('Public Bids');
+INSERT INTO `tbl_user_emailtype` (`EmailType`, `ReadableName`) VALUES ('PublicBids', 'Public Bids');
 
 CREATE TABLE `tbl_user_emailsettings` (
 	`UserID` CHAR(36) NOT NULL,
