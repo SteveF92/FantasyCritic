@@ -32,6 +32,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
         Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user);
         Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year);
+        Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher();
+
         Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser user);
         Task FollowLeague(League league, FantasyCriticUser user);
         Task UnfollowLeague(League league, FantasyCriticUser user);
@@ -82,6 +84,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task CreatePickupBid(PickupBid currentBid);
         Task RemovePickupBid(PickupBid bid);
         Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
+        Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> leagueYears);
         Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear);
         Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear);
         Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear);

@@ -414,6 +414,39 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> leagueYears)
+        {
+            var allPublishers = await GetAllPublishersForYear(year, leagueYears);
+            var publisherDictionary = allPublishers.ToDictionary(x => x.PublisherID);
+            var publisherGameDictionary = allPublishers
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.MasterGame.HasValue)
+                .ToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
+
+            string sql = "select * from vw_league_pickupbid where Successful is NULL";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql);
+                List<PickupBid> domainBids = new List<PickupBid>();
+                foreach (var bidEntity in bidEntities)
+                {
+                    var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
+                    Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
+                    if (bidEntity.ConditionalDropMasterGameID.HasValue)
+                    {
+                        conditionalDropPublisherGame = publisherGameDictionary[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)];
+                    }
+
+                    var publisher = publisherDictionary[bidEntity.PublisherID];
+                    PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, publisher.LeagueYear);
+                    domainBids.Add(domain);
+                }
+
+                var finalDictionary = domainBids.GroupToDictionary(x => x.LeagueYear);
+                return finalDictionary;
+            }
+        }
+
         public async Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
         {
             var processedBids = await GetPickupBids(year, allLeagueYears, allPublishersForYear, true);
@@ -1025,6 +1058,29 @@ namespace FantasyCritic.MySQL
                 return leagueYears;
             }
         }
+
+        public async Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher()
+        {
+            string sql = "SELECT UserID, LeagueID, YEAR FROM tbl_league_publisher;";
+
+            IEnumerable<UserActiveLeaguesEntity> entities;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                entities = await connection.QueryAsync<UserActiveLeaguesEntity>(sql);
+            }
+
+            var allUsers = await _userStore.GetAllUsers();
+            Dictionary<FantasyCriticUser, List<LeagueYearKey>> userDictionary = allUsers.ToDictionary(x => x, x => new List<LeagueYearKey>());
+            var entitiesByUserID = entities.ToLookup(x => x.UserID);
+            foreach (var user in allUsers)
+            {
+                var entitiesForUserID = entitiesByUserID[user.Id];
+                userDictionary[user] = entitiesForUserID.Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToList();
+            }
+
+            return userDictionary.SealDictionary();
+        }
+
 
         public async Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser)
         {

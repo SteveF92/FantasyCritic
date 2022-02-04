@@ -302,5 +302,10 @@ namespace FantasyCritic.Lib.Services
         {
             return _userManager.GetAllUsers();
         }
+
+        public Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher()
+        {
+            return _fantasyCriticRepo.GetUsersWithLeagueYearsWithPublisher();
+        }
     }
 }

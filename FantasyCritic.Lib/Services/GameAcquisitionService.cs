@@ -627,6 +627,33 @@ namespace FantasyCritic.Lib.Services
             return masterGameYears;
         }
 
+        public async Task<IReadOnlyList<PublicBiddingSet>> GetPublicBiddingGames(int year)
+        {
+            var leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
+            var activeBidsByLeague = await _fantasyCriticRepo.GetActivePickupBids(year, leagueYears);
+
+            List<PublicBiddingSet> publicBiddingSets = new List<PublicBiddingSet>();
+            foreach (var activeBidsForLeague in activeBidsByLeague)
+            {
+                if (!activeBidsForLeague.Key.PlayStatus.DraftFinished || !activeBidsForLeague.Key.Options.PickupSystem.Equals(PickupSystem.SemiPublicBidding))
+                {
+                    continue;
+                }
+
+                var distinctBids = activeBidsForLeague.Value.DistinctBy(x => x.MasterGame);
+                List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
+                foreach (var bid in distinctBids)
+                {
+                    var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, activeBidsForLeague.Key.Year);
+                    masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.Value, bid.CounterPick));
+                }
+
+                publicBiddingSets.Add(new PublicBiddingSet(activeBidsForLeague.Key, masterGameYears));
+            }
+
+            return publicBiddingSets;
+        }
+
         public bool IsInPublicBiddingWindow(LeagueYear leagueYear)
         {
             if (!leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBidding))

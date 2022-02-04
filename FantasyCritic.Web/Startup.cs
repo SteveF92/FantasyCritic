@@ -156,6 +156,7 @@ namespace FantasyCritic.Web
             services.AddSingleton<IScheduledTask, RefreshDataTask>();
             services.AddSingleton<IScheduledTask, TimeFlagsTask>();
             services.AddSingleton<IScheduledTask, PatreonUpdateTask>();
+            services.AddSingleton<IScheduledTask, EmailSendingTask>();
             services.AddScheduler((sender, args) =>
             {
                 args.SetObserved();
