@@ -6,7 +6,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 
-namespace FantasyCritic.Web.Models.EmailTemplates
+namespace FantasyCritic.Lib.Email.EmailModels
 {
     public class LeagueInviteModel
     {

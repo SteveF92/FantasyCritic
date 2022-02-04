@@ -43,12 +43,11 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly ILogger _logger;
         private readonly GameAcquisitionService _gameAcquisitionService;
         private readonly FantasyCriticUserManager _userManager;
-        private readonly IEmailSender _emailSender;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly EmailSendingService _emailSendingService;
 
         public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
-            ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager, IEmailSender emailSender,
+            ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
             IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService)
         : base(userManager)
         {
@@ -59,7 +58,6 @@ namespace FantasyCritic.Web.Controllers.API
             _logger = logger;
             _gameAcquisitionService = gameAcquisitionService;
             _userManager = userManager;
-            _emailSender = emailSender;
             _webHostEnvironment = webHostEnvironment;
             _emailSendingService = emailSendingService;
         }
@@ -414,7 +412,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
-            await _emailSender.SendConfirmationEmail(user, confirmLink);
+            await _emailSendingService.SendConfirmationEmail(user, confirmLink);
 
             return Ok();
         }

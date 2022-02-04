@@ -5,6 +5,42 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Email\EmailTemplates\ChangeEmail.cshtml" />
+    <None Remove="Email\EmailTemplates\ConfirmEmail.cshtml" />
+    <None Remove="Email\EmailTemplates\LeagueInvite.cshtml" />
+    <None Remove="Email\EmailTemplates\PasswordReset.cshtml" />
+    <None Remove="Email\EmailTemplates\SiteInvite.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Email\EmailTemplates\ChangeEmail.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Email\EmailTemplates\ConfirmEmail.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Email\EmailTemplates\LeagueInvite.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Email\EmailTemplates\PasswordReset.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Email\EmailTemplates\SiteInvite.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="5.0.12" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.27.0" />
     <PackageReference Include="FuzzyString.NETStandard" Version="1.0.0" />
@@ -16,6 +52,7 @@
     <PackageReference Include="NodaTime" Version="3.0.9" />
     <PackageReference Include="CsvHelper" Version="27.2.1" />
     <PackageReference Include="Patreon.Net" Version="1.0.1" />
+	<PackageReference Include="RazorLight" Version="2.0.0-beta1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,12 +1,15 @@
 ﻿using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Email.EmailModels;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using NLog;
 using NodaTime;
+using RazorLight;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -101,6 +104,72 @@ namespace FantasyCritic.Lib.Services
         private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IEnumerable<PublicBiddingSet> publicBiddingSet)
         {
             return;
+        }
+
+        public async Task SendConfirmationEmail(FantasyCriticUser user, string link)
+        {
+            string emailAddress = user.Email;
+            string emailSubject = "FantasyCritic - Confirm your email address.";
+            ConfirmEmailModel model = new ConfirmEmailModel(user, link);
+
+            var htmlResult = await GetHTMLString("ConfirmEmail.cshtml", model);
+
+            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        }
+
+        public async Task SendForgotPasswordEmail(FantasyCriticUser user, string link)
+        {
+            string emailAddress = user.Email;
+            string emailSubject = "FantasyCritic - Reset Your Password.";
+
+            PasswordResetModel model = new PasswordResetModel(user, link);
+            var htmlResult = await GetHTMLString("PasswordReset.cshtml", model);
+
+            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        }
+
+        public async Task SendChangeEmail(FantasyCriticUser user, string link)
+        {
+            string emailAddress = user.Email;
+            string emailSubject = "FantasyCritic - Change Your Email.";
+
+            ChangeEmailModel model = new ChangeEmailModel(user, link);
+            var htmlResult = await GetHTMLString("ChangeEmail.cshtml", model);
+
+            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        }
+
+        public async Task SendSiteInviteEmail(string inviteEmail, League league, string baseURL)
+        {
+            string emailAddress = inviteEmail;
+            string emailSubject = "You have been invited to join a FantasyCritic league!";
+
+            LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
+            var htmlResult = await GetHTMLString("SiteInvite.cshtml", model);
+
+            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        }
+
+        public async Task SendLeagueInviteEmail(string inviteEmail, League league, string baseURL)
+        {
+            string emailAddress = inviteEmail;
+            string emailSubject = "You have been invited to join a FantasyCritic league!";
+
+            LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
+            var htmlResult = await GetHTMLString("LeagueInvite.cshtml", model);
+
+            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        }
+
+        private static async Task<string> GetHTMLString(string template, object model)
+        {
+            var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "EmailTemplates");
+            var engine = new RazorLightEngineBuilder()
+                .UseFilesystemProject(templateFilePath)
+                .UseMemoryCachingProvider()
+                .Build();
+            string htmlResult = await engine.CompileRenderAsync(template, model);
+            return htmlResult;
         }
     }
 }

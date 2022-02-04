@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -21,13 +22,13 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
     {
         private readonly FantasyCriticUserManager _userManager;
         private readonly SignInManager<FantasyCriticUser> _signInManager;
-        private readonly IEmailSender _emailSender;
+        private readonly EmailSendingService _emailSendingService;
 
-        public EmailModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager, IEmailSender emailSender)
+        public EmailModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager, EmailSendingService emailSendingService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
+            _emailSendingService = emailSendingService;
         }
 
         public string Username { get; set; }
@@ -99,7 +100,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
             if (Input.NewEmail != email)
             {
                 var changeEmailLink = await LinkBuilder.GetChangeEmailLink(_userManager, user, Input.NewEmail, Request);
-                await _emailSender.SendChangeEmail(user, changeEmailLink);
+                await _emailSendingService.SendChangeEmail(user, changeEmailLink);
 
                 StatusMessage = "Confirmation link to change email sent. Please check your email.";
                 return RedirectToPage();
@@ -124,7 +125,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
             }
 
             var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
-            await _emailSender.SendConfirmationEmail(user, confirmLink);
+            await _emailSendingService.SendConfirmationEmail(user, confirmLink);
 
             StatusMessage = "Verification email sent. Please check your email.";
             return RedirectToPage();

@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Web.Areas.Identity.Pages.Account
 {
@@ -24,19 +25,16 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<FantasyCriticUser> _signInManager;
         private readonly FantasyCriticUserManager _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly EmailSendingService _emailSendingService;
         private readonly ILogger<ExternalLoginModel> _logger;
 
-        public ExternalLoginModel(
-            SignInManager<FantasyCriticUser> signInManager,
-            FantasyCriticUserManager userManager,
-            ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+        public ExternalLoginModel(SignInManager<FantasyCriticUser> signInManager, FantasyCriticUserManager userManager,
+            ILogger<ExternalLoginModel> logger,EmailSendingService emailSendingService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
-            _emailSender = emailSender;
+            _emailSendingService = emailSendingService;
         }
 
         [BindProperty]
@@ -139,7 +137,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
                         var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, fullUser, Request);
-                        await _emailSender.SendConfirmationEmail(fullUser, confirmLink);
+                        await _emailSendingService.SendConfirmationEmail(fullUser, confirmLink);
 
                         await _signInManager.SignInAsync(fullUser, isPersistent: false, info.LoginProvider);
 

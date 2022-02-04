@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Web.Areas.Identity.Pages.Account
 {
@@ -20,12 +21,12 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
     public class ForgotPasswordModel : PageModel
     {
         private readonly UserManager<FantasyCriticUser> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly EmailSendingService _emailSendingService;
 
-        public ForgotPasswordModel(UserManager<FantasyCriticUser> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(UserManager<FantasyCriticUser> userManager, EmailSendingService emailSendingService)
         {
             _userManager = userManager;
-            _emailSender = emailSender;
+            _emailSendingService = emailSendingService;
         }
 
         [BindProperty]
@@ -50,7 +51,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
                 }
 
                 var forgotPasswordLink = await LinkBuilder.GetForgotPasswordLink(_userManager, user, Request);
-                await _emailSender.SendForgotPasswordEmail(user, forgotPasswordLink);
+                await _emailSendingService.SendForgotPasswordEmail(user, forgotPasswordLink);
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

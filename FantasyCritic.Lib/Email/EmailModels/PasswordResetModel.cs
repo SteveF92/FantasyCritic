@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.Web.Models.EmailTemplates
+namespace FantasyCritic.Lib.Email.EmailModels
 {
     public class PasswordResetModel
     {

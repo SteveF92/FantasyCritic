@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Web.Areas.Identity.Pages.Account
 {
@@ -20,12 +21,12 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
     public class ResendEmailConfirmationModel : PageModel
     {
         private readonly UserManager<FantasyCriticUser> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly EmailSendingService _emailSendingService;
 
-        public ResendEmailConfirmationModel(UserManager<FantasyCriticUser> userManager, IEmailSender emailSender)
+        public ResendEmailConfirmationModel(UserManager<FantasyCriticUser> userManager, EmailSendingService emailSendingService)
         {
             _userManager = userManager;
-            _emailSender = emailSender;
+            _emailSendingService = emailSendingService;
         }
 
         [BindProperty]
@@ -58,7 +59,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
             }
 
             var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
-            await _emailSender.SendConfirmationEmail(user, confirmLink);
+            await _emailSendingService.SendConfirmationEmail(user, confirmLink);
 
             ModelState.AddModelError(string.Empty, message);
             return Page();

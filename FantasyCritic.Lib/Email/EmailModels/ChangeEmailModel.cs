@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.Web.Models.EmailTemplates
+namespace FantasyCritic.Lib.Email.EmailModels
 {
-    public class ConfirmEmailModel
+    public class ChangeEmailModel
     {
-        public ConfirmEmailModel(FantasyCriticUser user, string link)
+        public ChangeEmailModel(FantasyCriticUser user, string link)
         {
             DisplayName = user.UserName;
             Link = link;

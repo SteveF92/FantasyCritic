@@ -28,7 +28,6 @@
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
     <PackageReference Include="NodaTime" Version="3.0.9" />
     <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.0.0" />
-    <PackageReference Include="RazorLight" Version="2.0.0-beta1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.12" />
@@ -56,27 +55,7 @@
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
   </ItemGroup>
 
-    <PropertyGroup>
-        <PreserveCompilationReferences>true</PreserveCompilationReferences>
-        <PreserveCompilationContext>true</PreserveCompilationContext>
-    </PropertyGroup>
-
     <ItemGroup>
-        <Content Update="EmailTemplates\ChangeEmail.cshtml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="EmailTemplates\ConfirmEmail.cshtml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="EmailTemplates\LeagueInvite.cshtml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="EmailTemplates\PasswordReset.cshtml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="EmailTemplates\SiteInvite.cshtml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
         <Content Update="NLog.config">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
