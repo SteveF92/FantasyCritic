@@ -5,7 +5,7 @@
 }
 
 #vue-app {
-    margin-bottom: 175px; /* Margin bottom by footer height */
+    margin-bottom: 215px; /* Margin bottom by footer height */
 }
 
 .footer {
@@ -15,7 +15,7 @@
     width: 100%;
     line-height: 30px; /* Vertically center the text there */
     padding-top: 10px;
-    height: 175px;
+    height: 215px;
 }
 
 /* Custom page CSS
