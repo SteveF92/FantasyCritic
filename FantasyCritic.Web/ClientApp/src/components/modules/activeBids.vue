@@ -15,6 +15,7 @@
               CP
             </span>
             <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+            <font-awesome-icon class="bid-will-fail" v-if="data.item.eligibilityErrors && data.item.eligibilityErrors.length > 0" color="white" icon="exclamation-triangle" v-b-popover.hover.top="bidWillFailText(data.item)" />
           </span>
         </template>
         <template v-slot:cell(maximumReleaseDate)="data">
@@ -67,6 +68,25 @@
           return moment(game.releaseDate).format('YYYY-MM-DD');
         }
         return game.estimatedReleaseDate + ' (Estimated)';
+      },
+      bidWillFailText(publicBid) {
+        return {
+          html: true,
+          title: () => {
+            return "This bid will fail!";
+          },
+          content: () => {
+            let eligibilityErrorsList = '';
+            publicBid.eligibilityErrors.forEach(error => {
+              eligibilityErrorsList += `<li>${error}</li>`
+            });
+
+            let eligibilityErrorsListElement = `<h5>Errors</h5><ul>${eligibilityErrorsList}</ul>`;
+            let mainText = 'This bid will fail for the below reasons:';
+            let fullText = `${mainText}<br/><br/>${eligibilityErrorsListElement}`;
+            return fullText;
+          }
+        }
       }
     }
   };
@@ -85,5 +105,9 @@
     background-color: #AA1E1E;
     color: white;
     margin-right: 8px;
+  }
+
+  .bid-will-fail {
+      margin-left: 5px;
   }
 </style>

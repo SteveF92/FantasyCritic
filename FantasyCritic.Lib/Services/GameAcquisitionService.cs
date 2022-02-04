@@ -615,13 +615,17 @@ namespace FantasyCritic.Lib.Services
                 return Maybe<IReadOnlyList<PublicBiddingMasterGame>>.None;
             }
 
+            var currentDate = _clock.GetToday();
+            var dateOfPotentialAcquisition = _clock.GetNextBidTime().ToEasternDate();
+
             var activeBidsForLeague = await _fantasyCriticRepo.GetActivePickupBids(leagueYear);
             var distinctBids = activeBidsForLeague.DistinctBy(x => x.MasterGame);
             List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
             foreach (var bid in distinctBids)
             {
                 var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, leagueYear.Year);
-                masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.Value, bid.CounterPick));
+                var claimResult = GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, false);
+                masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.Value, bid.CounterPick, claimResult));
             }
 
             return masterGameYears;
@@ -631,6 +635,9 @@ namespace FantasyCritic.Lib.Services
         {
             var leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
             var activeBidsByLeague = await _fantasyCriticRepo.GetActivePickupBids(year, leagueYears);
+
+            var currentDate = _clock.GetToday();
+            var dateOfPotentialAcquisition = _clock.GetNextBidTime().ToEasternDate();
 
             List<PublicBiddingSet> publicBiddingSets = new List<PublicBiddingSet>();
             foreach (var activeBidsForLeague in activeBidsByLeague)
@@ -645,7 +652,8 @@ namespace FantasyCritic.Lib.Services
                 foreach (var bid in distinctBids)
                 {
                     var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, activeBidsForLeague.Key.Year);
-                    masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.Value, bid.CounterPick));
+                    var claimResult = GetGenericSlotMasterGameErrors(activeBidsForLeague.Key, bid.MasterGame, activeBidsForLeague.Key.Year, false, currentDate, dateOfPotentialAcquisition, false);
+                    masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.Value, bid.CounterPick, claimResult));
                 }
 
                 publicBiddingSets.Add(new PublicBiddingSet(activeBidsForLeague.Key, masterGameYears));
