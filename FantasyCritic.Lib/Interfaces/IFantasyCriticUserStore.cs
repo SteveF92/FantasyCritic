@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Patreon;
 using IdentityServer4.Stores;
@@ -23,5 +24,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddToRoleProgrammaticAsync(FantasyCriticUser user, string roleName, CancellationToken cancellationToken);
         Task<IReadOnlyList<string>> GetDonors();
         Task<IReadOnlyList<FantasyCriticUserWithEmailSettings>> GetAllEmailSettings();
+        Task SetEmailSettings(FantasyCriticUser user, bool sendPublicBidEmails);
+        Task<IReadOnlyList<EmailType>> GetEmailSettings(FantasyCriticUser user);
     }
 }

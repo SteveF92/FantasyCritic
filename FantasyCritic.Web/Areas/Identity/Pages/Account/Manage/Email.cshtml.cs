@@ -13,19 +13,17 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
 {
     public partial class EmailModel : PageModel
     {
-        private readonly UserManager<FantasyCriticUser> _userManager;
+        private readonly FantasyCriticUserManager _userManager;
         private readonly SignInManager<FantasyCriticUser> _signInManager;
         private readonly IEmailSender _emailSender;
 
-        public EmailModel(
-            UserManager<FantasyCriticUser> userManager,
-            SignInManager<FantasyCriticUser> signInManager,
-            IEmailSender emailSender)
+        public EmailModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -50,6 +48,9 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
             [EmailAddress]
             [Display(Name = "New email")]
             public string NewEmail { get; set; }
+
+            [Display(Name = "Public Bids")]
+            public bool SendPublicBidEmails { get; set; }
         }
 
         private async Task LoadAsync(FantasyCriticUser user)
@@ -61,6 +62,9 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
             {
                 NewEmail = email,
             };
+
+            var emailSettings = await _userManager.GetEmailSettings(user);
+            Input.SendPublicBidEmails = emailSettings.Any(x => x.Equals(EmailType.PublicBids));
 
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
         }
@@ -123,6 +127,20 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
             await _emailSender.SendConfirmationEmail(user, confirmLink);
 
             StatusMessage = "Verification email sent. Please check your email.";
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostChangeEmailSettingsAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            await _userManager.SetEmailSettings(user, Input.SendPublicBidEmails);
+
+            StatusMessage = "Email Settings Updated.";
             return RedirectToPage();
         }
     }

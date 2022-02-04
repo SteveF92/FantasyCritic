@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using NLog.LayoutRenderers.Wrappers;
 using NodaTime;
 using System.Linq;
+using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Lib.Identity
 {
@@ -94,6 +95,16 @@ namespace FantasyCritic.Lib.Identity
         public Task<IReadOnlyList<FantasyCriticUserWithEmailSettings>> GetAllEmailSettings()
         {
             return _userStore.GetAllEmailSettings();
+        }
+
+        public Task SetEmailSettings(FantasyCriticUser user, bool sendPublicBidEmails)
+        {
+            return _userStore.SetEmailSettings(user, sendPublicBidEmails);
+        }
+
+        public Task<IReadOnlyList<EmailType>> GetEmailSettings(FantasyCriticUser user)
+        {
+            return _userStore.GetEmailSettings(user);
         }
 
         public async Task RefreshExternalLoginFeatures(FantasyCriticUser user)

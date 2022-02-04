@@ -656,7 +656,6 @@ namespace FantasyCritic.MySQL
             }
         }
 
-
         public async Task<IReadOnlyList<FantasyCriticUserWithEmailSettings>> GetAllEmailSettings()
         {
             string emailSQL = "select * from tbl_user_emailsettings;";
@@ -680,6 +679,48 @@ namespace FantasyCritic.MySQL
             }
 
             return usersWithEmailSettings;
+        }
+
+        public async Task SetEmailSettings(FantasyCriticUser user, bool sendPublicBidEmails)
+        {
+            var settingsEntities = new List<FantasyCriticUserEmailSettingEntity>();
+
+            if (sendPublicBidEmails)
+            {
+                settingsEntities.Add(new FantasyCriticUserEmailSettingEntity(user, EmailType.PublicBids));
+            }
+
+            var parameters = new
+            {
+                userID = user.Id
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync("DELETE FROM tbl_user_emailsettings WHERE UserID = @userID;", parameters, transaction: transaction);
+                    await connection.BulkInsertAsync(settingsEntities, "tbl_user_emailsettings", 500, transaction);
+
+                    await transaction.CommitAsync();
+                }
+            }
+        }
+
+        public async Task<IReadOnlyList<EmailType>> GetEmailSettings(FantasyCriticUser user)
+        {
+            string emailSQL = "select * from tbl_user_emailsettings where UserID = @userID;";
+            var parameters = new
+            {
+                userID = user.Id
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var emailResult = await connection.QueryAsync<FantasyCriticUserEmailSettingEntity>(emailSQL, parameters);
+                return emailResult.Select(x => EmailType.FromValue(x.EmailType)).ToList();
+            }
         }
 
         public async Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
