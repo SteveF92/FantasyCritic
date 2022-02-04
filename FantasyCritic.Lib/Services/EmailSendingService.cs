@@ -163,7 +163,7 @@ namespace FantasyCritic.Lib.Services
 
         private static async Task<string> GetHTMLString(string template, object model)
         {
-            var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "EmailTemplates");
+            var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Email", "EmailTemplates");
             var engine = new RazorLightEngineBuilder()
                 .UseFilesystemProject(templateFilePath)
                 .UseMemoryCachingProvider()
