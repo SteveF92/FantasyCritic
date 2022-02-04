@@ -34,6 +34,7 @@
       <h2>Other</h2>
       <div>
         <b-button variant="info" v-on:click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
+        <b-button variant="danger" v-on:click="sendPublicBiddingEmails">Send Public Bidding Emails</b-button>
       </div>
 
       <h2>Database</h2>
@@ -232,6 +233,19 @@ export default {
           this.errorInfo = returnedError.response.data;
         });
     },
+    sendPublicBiddingEmails() {
+      this.isBusy = true;
+      axios
+        .post('/api/admin/SendPublicBiddingEmails')
+        .then(response => {
+          this.isBusy = false;
+          this.jobSuccess = 'Send Public Bid Emails';
+        })
+        .catch(returnedError => {
+          this.isBusy = false;
+          this.errorInfo = returnedError.response.data;
+        });
+    }
   }
 };
 </script>

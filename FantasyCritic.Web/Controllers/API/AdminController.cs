@@ -45,10 +45,11 @@ namespace FantasyCritic.Web.Controllers.API
         private readonly FantasyCriticUserManager _userManager;
         private readonly IEmailSender _emailSender;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly EmailSendingService _emailSendingService;
 
         public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
             ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager, IEmailSender emailSender,
-            IWebHostEnvironment webHostEnvironment)
+            IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService)
         : base(userManager)
         {
             _adminService = adminService;
@@ -60,6 +61,7 @@ namespace FantasyCritic.Web.Controllers.API
             _userManager = userManager;
             _emailSender = emailSender;
             _webHostEnvironment = webHostEnvironment;
+            _emailSendingService = emailSendingService;
         }
 
         [HttpPost]
@@ -414,6 +416,13 @@ namespace FantasyCritic.Web.Controllers.API
             var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
             await _emailSender.SendConfirmationEmail(user, confirmLink);
 
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendPublicBiddingEmails()
+        {
+            await _emailSendingService.SendPublicBidEmails();
             return Ok();
         }
     }

@@ -131,7 +131,8 @@ namespace FantasyCritic.Web
             services.AddScoped<ActionProcessingService>();
             services.AddScoped<FantasyCriticService>();
             services.AddScoped<RoyaleService>();
-            
+            services.AddScoped<EmailSendingService>();
+
 
             services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 

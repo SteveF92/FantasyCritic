@@ -31,7 +31,7 @@ namespace FantasyCritic.Lib.Scheduling
             using (var scope = serviceScopeFactory.CreateScope())
             {
                 var emailSendingService = scope.ServiceProvider.GetRequiredService<EmailSendingService>();
-                await emailSendingService.SendEmails();
+                await emailSendingService.SendScheduledEmails();
             }
         }
     }

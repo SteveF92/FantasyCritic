@@ -39,27 +39,25 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public async Task SendEmails()
+        public async Task SendScheduledEmails()
         {
             var now = _clock.GetCurrentInstant();
             var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
-            
-            await SendPublicBidEmails(nycNow);
-        }
 
-        private async Task SendPublicBidEmails(ZonedDateTime nycNow)
-        {
             var dayOfWeek = nycNow.DayOfWeek;
             var timeOfDay = nycNow.TimeOfDay;
             var earliestTimeToSet = TimeExtensions.PublicBiddingRevealTime.Minus(Period.FromMinutes(1));
             var latestTimeToSet = TimeExtensions.PublicBiddingRevealTime.Plus(Period.FromMinutes(1));
             bool isTimeToSendPublicBidEmails = dayOfWeek == TimeExtensions.PublicBiddingRevealDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet;
-            if (!isTimeToSendPublicBidEmails)
+            if (isTimeToSendPublicBidEmails)
             {
-                return;
+                _logger.Info($"Sending public bid emails because date/time is: {nycNow}");
+                await SendPublicBidEmails();
             }
+        }
 
-            _logger.Info($"Sending public bid emails because date/time is: {nycNow}");
+        public async Task SendPublicBidEmails()
+        {
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
 
