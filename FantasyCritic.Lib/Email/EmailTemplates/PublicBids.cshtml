@@ -36,28 +36,35 @@
         {
             <hr />
             <div>
-            <h3>
-                <a href="@Model.GetLeagueLink(leagueYear.LeagueYear.Key)">@leagueYear.LeagueYear.League.LeagueName</a>
-            </h3>
-            <table>
-                <tr>
-                    <th>Game Name</th>
-                    <th>Release Date</th>
-                </tr>
-                @foreach (var game in leagueYear.MasterGames)
+                <h3>
+                    <a href="@Model.GetLeagueLink(leagueYear.LeagueYear.Key)">@leagueYear.LeagueYear.League.LeagueName</a>
+                </h3>
+                @if (leagueYear.MasterGames.Any())
                 {
-                    <tr>
-                        <td>
-                            @game.MasterGameYear.MasterGame.GameName
-                            @if (game.CounterPick)
-                            {
-                                <text> (Counter Pick)</text>
-                            }
-                        </td>
-                        <td>@game.MasterGameYear.MasterGame.GetReleaseDateString()</td>
-                    </tr>
+                    <table>
+                        <tr>
+                            <th>Game Name</th>
+                            <th>Release Date</th>
+                        </tr>
+                        @foreach (var game in leagueYear.MasterGames)
+                        {
+                            <tr>
+                                <td>
+                                    @game.MasterGameYear.MasterGame.GameName
+                                    @if (game.CounterPick)
+                                    {
+                                        <text> (Counter Pick)</text>
+                                    }
+                                </td>
+                                <td>@game.MasterGameYear.MasterGame.GetReleaseDateString()</td>
+                            </tr>
+                        }
+                    </table>
                 }
-            </table>
+                else
+                {
+                    <p>No bids in this league this week.</p>
+                }
             </div>
         }
     }

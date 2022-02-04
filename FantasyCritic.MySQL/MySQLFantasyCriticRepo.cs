@@ -446,8 +446,14 @@ namespace FantasyCritic.MySQL
                     domainBids.Add(domain);
                 }
 
-                var finalDictionary = domainBids.GroupToDictionary(x => x.LeagueYear);
-                return finalDictionary;
+                var lookup = domainBids.ToLookup(x => x.LeagueYear);
+                Dictionary<LeagueYear, List<PickupBid>> finalDictionary = new Dictionary<LeagueYear, List<PickupBid>>();
+                foreach (var leagueYear in leagueYears)
+                {
+                    finalDictionary[leagueYear] = lookup[leagueYear].ToList();
+                }
+
+                return finalDictionary.SealDictionary();
             }
         }
 

@@ -79,7 +79,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             var userEmailSettings = await _userManager.GetAllEmailSettings();
-            var usersWithPublicBidEmails = userEmailSettings.Where(x => x.EmailTypes.Contains(EmailType.PublicBids)).Select(x => x.User).ToList();
+            var usersWithPublicBidEmails = userEmailSettings.Where(x => x.User.EmailConfirmed && x.EmailTypes.Contains(EmailType.PublicBids)).Select(x => x.User).ToList();
             var usersWithLeagueYears = await _leagueMemberService.GetUsersWithLeagueYearsWithPublisher();
 
             foreach (var user in usersWithPublicBidEmails)
@@ -100,7 +100,7 @@ namespace FantasyCritic.Lib.Services
                     }
                 }
 
-                if (publicBiddingSetsForUser.Any())
+                if (publicBiddingSetsForUser.Any() && publicBiddingSetsForUser.Any(x => x.MasterGames.Any()))
                 {
                     await SendPublicBiddingEmailToUser(user, publicBiddingSetsForUser);
                 }
