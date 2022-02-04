@@ -76,4 +76,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Email\EmailTemplates\PublicBids.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

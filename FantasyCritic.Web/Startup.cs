@@ -18,7 +18,6 @@ using System.Text;
 using Dapper.NodaTime;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -87,6 +86,7 @@ namespace FantasyCritic.Web
             var awsRegion = Configuration["AWS:region"];
             var awsBucket = Configuration["AWS:bucket"];
             var mailgunAPIKey = Configuration["Mailgun:apiKey"];
+            var baseAddress = Configuration["BaseAddress"];
 
             var identityConfig = new IdentityConfig(Configuration["IdentityServer:MainSecret"],
                 Configuration["IdentityServer:FCBotSecret"], Configuration["IdentityServer:CertificateKey"], _env.IsProduction());
@@ -117,6 +117,8 @@ namespace FantasyCritic.Web
                 Configuration["Authentication:Patreon:ClientId"],
                 Configuration["PatreonService:CampaignID"]
                 ));
+
+            services.AddScoped<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress));
 
             services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
             services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));

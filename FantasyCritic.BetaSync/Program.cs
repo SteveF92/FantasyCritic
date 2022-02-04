@@ -17,10 +17,10 @@ using NodaTime;
 using FantasyCritic.AWS;
 using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.DependencyInjection;
 
 namespace FantasyCritic.BetaSync
 {

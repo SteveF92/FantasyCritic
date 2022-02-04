@@ -104,6 +104,15 @@ namespace FantasyCritic.Lib.Domain
         public string Notes { get; }
         public IReadOnlyList<MasterSubGame> SubGames { get; }
 
+        public string GetReleaseDateString()
+        {
+            if (ReleaseDate.HasValue)
+            {
+                return ReleaseDate.Value.ToString();
+            }
+            return EstimatedReleaseDate + " (Estimated)";
+        }
+
         public bool IsReleased(LocalDate currentDate)
         {
             if (SubGames.Any(x => x.IsReleased(currentDate)))

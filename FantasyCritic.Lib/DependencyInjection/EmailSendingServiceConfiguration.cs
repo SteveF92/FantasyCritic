@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.DependencyInjection
 {
-    public record AdminServiceConfiguration(bool DefaultHypeConstants);
+    public record EmailSendingServiceConfiguration(string BaseAddress);
 }

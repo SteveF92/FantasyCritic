@@ -20,6 +20,7 @@ using MoreLinq;
 using NLog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.DependencyInjection;
 
 namespace FantasyCritic.Lib.Services
 {

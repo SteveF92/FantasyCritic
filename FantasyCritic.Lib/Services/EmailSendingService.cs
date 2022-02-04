@@ -1,4 +1,5 @@
-﻿using FantasyCritic.Lib.Domain;
+﻿using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Email.EmailModels;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
@@ -26,12 +27,13 @@ namespace FantasyCritic.Lib.Services
         private readonly FantasyCriticService _fantasyCriticService;
         private readonly GameAcquisitionService _gameAcquisitionService;
         private readonly LeagueMemberService _leagueMemberService;
+        private readonly string _baseAddress;
         private readonly IClock _clock;
 
         public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender, 
             InterLeagueService interLeagueService, FantasyCriticService fantasyCriticService,
             GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService, 
-            IClock clock)
+            EmailSendingServiceConfiguration configuration, IClock clock)
         {
             _userManager = userManager;
             _emailSender = emailSender;
@@ -39,6 +41,7 @@ namespace FantasyCritic.Lib.Services
             _fantasyCriticService = fantasyCriticService;
             _gameAcquisitionService = gameAcquisitionService;
             _leagueMemberService = leagueMemberService;
+            _baseAddress = configuration.BaseAddress;
             _clock = clock;
         }
 
@@ -97,13 +100,22 @@ namespace FantasyCritic.Lib.Services
                     }
                 }
 
-                await SendPublicBiddingEmailToUser(user, publicBiddingSetsForUser);
+                if (publicBiddingSetsForUser.Any())
+                {
+                    await SendPublicBiddingEmailToUser(user, publicBiddingSetsForUser);
+                }
             }
         }
 
-        private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IEnumerable<PublicBiddingSet> publicBiddingSet)
+        private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<PublicBiddingSet> publicBiddingSet)
         {
-            return;
+            string emailAddress = user.Email;
+            string emailSubject = "FantasyCritic - This Week's Public Bids";
+            PublicBidEmailModel model = new PublicBidEmailModel(user, publicBiddingSet, _baseAddress);
+
+            var htmlResult = await GetHTMLString("PublicBids.cshtml", model);
+
+            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
         }
 
         public async Task SendConfirmationEmail(FantasyCriticUser user, string link)
