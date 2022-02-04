@@ -423,10 +423,14 @@ namespace FantasyCritic.MySQL
                 .Where(x => x.MasterGame.HasValue)
                 .ToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
 
-            string sql = "select * from vw_league_pickupbid where Successful is NULL";
+            string sql = "select * from vw_league_pickupbid where Year = @year AND Successful is NULL";
+            var queryObject = new
+            {
+                year
+            };
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql);
+                var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, queryObject);
                 List<PickupBid> domainBids = new List<PickupBid>();
                 foreach (var bidEntity in bidEntities)
                 {
