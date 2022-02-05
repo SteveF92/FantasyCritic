@@ -15,7 +15,7 @@
               CP
             </span>
             <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
-            <font-awesome-icon class="bid-will-fail" v-if="data.item.eligibilityErrors && data.item.eligibilityErrors.length > 0" color="white" icon="exclamation-triangle" v-b-popover.hover.top="bidWillFailText(data.item)" />
+            <font-awesome-icon class="bid-will-fail" v-if="data.item.eligibilityErrors && data.item.eligibilityErrors.length > 0" color="white" icon="exclamation-triangle" v-b-popover.hover="bidWillFailText(data.item)" />
           </span>
         </template>
         <template v-slot:cell(maximumReleaseDate)="data">
