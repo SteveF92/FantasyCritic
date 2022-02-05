@@ -13,8 +13,8 @@ namespace FantasyCritic.Lib.Domain
     {
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
             LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, Maybe<string> ggToken, decimal? criticScore, 
-            string notes, string boxartFileName, string ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate, 
-            bool doNotRefreshAnything, bool eligibilityChanged, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
+            string notes, string boxartFileName, string ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate,
+            bool doNotRefreshAnything, bool eligibilityChanged, bool delayContention, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
             MasterGameID = masterGameID;
             GameName = gameName;
@@ -29,14 +29,15 @@ namespace FantasyCritic.Lib.Domain
             GGToken = ggToken;
             RawCriticScore = criticScore;
             Notes = notes;
-            SubGames = subGames.ToList();
             BoxartFileName = boxartFileName;
             GGCoverArtFileName = ggCoverArtFileName;
             FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
             DoNotRefreshDate = doNotRefreshDate;
+            DelayContention = delayContention;
             DoNotRefreshAnything = doNotRefreshAnything;
             EligibilityChanged = eligibilityChanged;
             AddedTimestamp = addedTimestamp;
+            SubGames = subGames.ToList();
             Tags = tags.ToList();
         }
 
@@ -56,9 +57,11 @@ namespace FantasyCritic.Lib.Domain
         public string GGCoverArtFileName { get; }
         public Instant? FirstCriticScoreTimestamp { get; }
         public bool DoNotRefreshDate { get; }
+        public bool DelayContention { get; }
         public bool DoNotRefreshAnything { get; }
         public bool EligibilityChanged { get; }
         public Instant AddedTimestamp { get; }
+        public IReadOnlyList<MasterSubGame> SubGames { get; }
         public IReadOnlyList<MasterGameTag> Tags { get; }
 
         public LocalDate GetDefiniteMaximumReleaseDate() => MaximumReleaseDate ?? LocalDate.MaxIsoValue;
@@ -102,7 +105,6 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public string Notes { get; }
-        public IReadOnlyList<MasterSubGame> SubGames { get; }
 
         public string GetReleaseDateString()
         {

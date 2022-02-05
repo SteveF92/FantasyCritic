@@ -203,10 +203,10 @@ namespace FantasyCritic.MySQL
             string masterGameCreateSQL = "insert into tbl_mastergame" +
                                          "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,AnnouncementDate," +
                                          "ReleaseDate,OpenCriticID,GGToken,CriticScore,Notes,BoxartFileName,GGCoverArtFileName," +
-                                         "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,AddedTimestamp) VALUES " +
+                                         "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,DelayContention,AddedTimestamp) VALUES " +
                                          "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@AnnouncementDate," +
                                          "@ReleaseDate,@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName," +
-                                         "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@AddedTimestamp);";
+                                         "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@DelayContention,@AddedTimestamp);";
             var entity = new MasterGameEntity(masterGame);
             var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
             var excludeFields = new List<string>() { "TimeAdded" };
@@ -242,7 +242,8 @@ namespace FantasyCritic.MySQL
                              "FirstCriticScoreTimestamp = @FirstCriticScoreTimestamp, " +
                              "DoNotRefreshDate = @DoNotRefreshDate, " +
                              "DoNotRefreshAnything = @DoNotRefreshAnything, " +
-                             "EligibilityChanged = @EligibilityChanged " +
+                             "EligibilityChanged = @EligibilityChanged, " +
+                             "DelayContention = @DelayContention " +
                              "WHERE MasterGameID = @MasterGameID;";
 
             string deleteTagsSQL = "delete from tbl_mastergame_hastag where MasterGameID = @MasterGameID;";

@@ -31,7 +31,7 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         {
             Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
                 EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, null, Notes, "", "",
-                null, false, false, false, timestamp, new List<MasterSubGame>(), tags);
+                null, false, false, false, false, timestamp, new List<MasterSubGame>(), tags);
             return masterGame;
         }
     }

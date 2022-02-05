@@ -114,6 +114,11 @@
                   </b-form-checkbox>
                 </div>
                 <div class="form-group">
+                  <b-form-checkbox v-model="masterGame.delayContention">
+                    <span class="checkbox-label">Delay in Contention</span>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
                   <label for="notes" class="control-label">Box Art File Name</label>
                   <input v-model="masterGame.boxartFileName" id="boxartFileName" name="boxartFileName" class="form-control input" />
                 </div>

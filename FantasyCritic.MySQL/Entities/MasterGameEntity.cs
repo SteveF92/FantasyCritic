@@ -39,6 +39,7 @@ namespace FantasyCritic.MySQL.Entities
             FirstCriticScoreTimestamp = masterGame.FirstCriticScoreTimestamp;
             DoNotRefreshDate = masterGame.DoNotRefreshDate;
             DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
+            DelayContention = masterGame.DelayContention;
             EligibilityChanged = masterGame.EligibilityChanged;
             AddedTimestamp = masterGame.AddedTimestamp;
         }
@@ -62,13 +63,14 @@ namespace FantasyCritic.MySQL.Entities
         public bool DoNotRefreshDate { get; set; }
         public bool DoNotRefreshAnything { get; set; }
         public bool EligibilityChanged { get; set; }
+        public bool DelayContention { get; set; }
         public Instant AddedTimestamp { get; set; }
 
         public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
             return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate, 
                 AnnouncementDate, ReleaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore,Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp, 
-                DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, AddedTimestamp, subGames, tags);
+                DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, subGames, tags);
         }
     }
 }

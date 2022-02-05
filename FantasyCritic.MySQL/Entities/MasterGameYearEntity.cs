@@ -35,6 +35,7 @@ namespace FantasyCritic.MySQL.Entities
             BoxartFileName = masterGameStats.MasterGame.BoxartFileName;
             GGCoverArtFileName = masterGameStats.MasterGame.GGCoverArtFileName;
             EligibilityChanged = masterGameStats.MasterGame.EligibilityChanged;
+            DelayContention = masterGameStats.MasterGame.DelayContention;
             FirstCriticScoreTimestamp = masterGameStats.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
 
             PercentStandardGame = masterGameStats.PercentStandardGame;
@@ -70,6 +71,7 @@ namespace FantasyCritic.MySQL.Entities
         public string BoxartFileName { get; set; }
         public string GGCoverArtFileName { get; set; }
         public bool EligibilityChanged { get; set; }
+        public bool DelayContention { get; set; }
         public DateTimeOffset? FirstCriticScoreTimestamp { get; set; }
         public double PercentStandardGame { get; set; }
         public double PercentCounterPick { get; set; }
@@ -127,7 +129,7 @@ namespace FantasyCritic.MySQL.Entities
             var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
 
             var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
-                releaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, addedTimestamp, subGames, tags);
+                releaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, addedTimestamp, subGames, tags);
 
             return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
                 NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, PeakHypeFactor, LinearRegressionHypeFactor);

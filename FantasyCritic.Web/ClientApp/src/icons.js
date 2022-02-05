@@ -46,7 +46,8 @@ import {
   faPen,
   faHourglassHalf,
   faShareAlt,
-  faCrosshairs
+  faCrosshairs,
+  faBalanceScale
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -123,7 +124,8 @@ library.add(
   faHourglassHalf,
   faShareAlt,
   faPatreon,
-  faCrosshairs
+  faCrosshairs,
+  faBalanceScale
 );
 
 export {

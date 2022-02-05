@@ -30,6 +30,13 @@
         <strong>Announcement Date: </strong>
         <span v-if="masterGame.announcementDate">{{formatDate(masterGame.announcementDate)}}</span>
       </li>
+      <li v-if="masterGame.delayContention">
+        <strong>
+          Delay In Contention:
+        </strong>
+        There are very credible reports that this game has been delayed and therefore will not release this year. The game is still counted as a "will release"
+        game for drop purposes, but it cannot be counter picked, just like a "will not release" game cannot be counter picked.
+      </li>
       <li>
         <label v-if="masterGame.averagedScore">This is an episodic game. We have caluclated an average score.</label>
         <div>

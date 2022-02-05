@@ -26,6 +26,7 @@ namespace FantasyCritic.Web.Models.Responses
             ReleaseDate = masterGame.MasterGame.ReleaseDate;
             IsReleased = masterGame.MasterGame.IsReleased(currentDate);
             WillRelease = masterGame.WillRelease();
+            DelayContention = masterGame.MasterGame.DelayContention;
             CriticScore = masterGame.MasterGame.CriticScore;
             AveragedScore = masterGame.MasterGame.AveragedScore;
             OpenCriticID = masterGame.MasterGame.OpenCriticID;
@@ -107,6 +108,7 @@ namespace FantasyCritic.Web.Models.Responses
         public LocalDate? ReleaseDate { get; }
         public bool IsReleased { get; }
         public bool WillRelease { get; }
+        public bool DelayContention { get; }
         public decimal? CriticScore { get; }
         public bool AveragedScore { get; }
         public int? OpenCriticID { get; }

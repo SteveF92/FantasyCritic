@@ -16,6 +16,7 @@
           <span class="game-info-side">
             <font-awesome-icon v-if="!game.linked" color="white" size="lg" icon="question-circle" v-b-popover.hover.top="unlinkedText" />
             <font-awesome-icon v-if="game.linked && !game.willRelease" color="white" size="lg" icon="calendar-times" v-b-popover.hover.top="willNotReleaseText" />
+            <font-awesome-icon v-if="game.masterGame.delayContention" color="white" size="lg" icon="balance-scale" v-b-popover.hover.top="delayContentionText" />
             <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" color="white" size="lg" icon="crosshairs" v-b-popover.hover.top="counterPickedText" />
             <font-awesome-icon v-if="game.dropBlocked" color="white" size="lg" icon="lock" v-b-popover.hover.top="gameDropBlockedText" />
             <font-awesome-icon v-if="game.released && game.linked && !game.criticScore && !yearFinished" color="white" size="lg" icon="hourglass-half" v-b-popover.hover.top="needsMoreReviewsText" />
@@ -186,6 +187,18 @@ export default {
         },
         content: () => {
           return 'This is a "custom game" that has not be linked to a master game. The league manager can link it using "associate game" in the sidebar.';
+        }
+      }
+    },
+    delayContentionText() {
+      return {
+        html: true,
+        title: () => {
+          return "Delay in Contention";
+        },
+        content: () => {
+          return 'There are very credible reports that this game has been delayed and therefore will not release this year. The game is still counted as a "will release" ' +
+            'game for drop purposes, but it cannot be counter picked, just like a "will not release" game cannot be counter picked.';
         }
       }
     },

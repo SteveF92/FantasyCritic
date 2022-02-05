@@ -29,6 +29,7 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         public bool DoNotRefreshDate { get; set; }
         public bool DoNotRefreshAnything { get; set; }
         public bool EligibilityChanged { get; set; }
+        public bool DelayContention { get; set; }
 
         public List<string> GetRequestedTags() => Tags ?? new List<string>();
 
@@ -36,7 +37,7 @@ namespace FantasyCritic.Web.Models.Requests.Admin
         {
             var masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
                 EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, existingMasterGame.RawCriticScore, Notes, existingMasterGame.BoxartFileName,
-                existingMasterGame.GGCoverArtFileName,existingMasterGame.FirstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged,
+                existingMasterGame.GGCoverArtFileName,existingMasterGame.FirstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention,
                 timestamp, existingMasterGame.SubGames, tags);
             return masterGame;
         }

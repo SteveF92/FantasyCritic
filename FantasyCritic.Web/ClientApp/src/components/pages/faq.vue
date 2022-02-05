@@ -325,7 +325,10 @@
             <li>If you do not fill a pickup counter pick slot by the end of the year, you will lose 15 points.</li>
             <li>
               You cannot counter pick a game that is already set to "Will Not Release". You are free to counter pick a game that you <em>think</em> will get delayed, but counter picking a game that is already
-            delayed isn't an interesting 'bet', so it's not allowed. If we did allow it, that would be the entire counter pick strategy. Wait for a game to get delayed, and then counter pick that.
+              delayed isn't an interesting 'bet', so it's not allowed. If we did allow it, that would be the entire counter pick strategy. Wait for a game to get delayed, and then counter pick that.
+            </li>
+            <li>
+              Sometimes, a game will have extremely credible reports of a delay, but the developer/publisher will not confirm the delay. In that case, we will markt the game as "Delay in Contention", and then the game will not be counter pickable.
             </li>
           </ul>
         </div>
