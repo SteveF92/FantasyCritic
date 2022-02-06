@@ -135,16 +135,15 @@ namespace FantasyCritic.Lib.Services
             List<ValidPickupBid> validPickupBids = new List<ValidPickupBid>();
             foreach (var activeBid in activeBidsForLeague)
             {
-                Publisher publisher = currentPublisherStates.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
-
-                bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, currentPublisherStates, activeBid.CounterPick, activeBid.MasterGame);
+                var currentPublisherStatesForLeagueYear = currentPublisherStates.Where(x => x.LeagueYear.Key.Equals(leagueYear.Key)).ToList();
+                Publisher publisher = currentPublisherStatesForLeagueYear.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
+                bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, currentPublisherStatesForLeagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
                 var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
-                var publishersForLeagueAndYear = currentPublisherStates.Where(x => x.LeagueYear.League.LeagueID == leagueYear.League.LeagueID && x.LeagueYear.Year == leagueYear.Year);
 
                 int? validConditionalDropSlot = null;
                 if (activeBid.ConditionalDropPublisherGame.HasValue)
                 {
-                    var otherPublishersInLeague = publishersForLeagueAndYear.Except(new List<Publisher>() { publisher });
+                    var otherPublishersInLeague = currentPublisherStatesForLeagueYear.Except(new List<Publisher>() { publisher });
                     activeBid.ConditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, leagueYear, publisher, otherPublishersInLeague, processingTime);
                     if (activeBid.ConditionalDropResult.Result.IsSuccess)
                     {
@@ -152,7 +151,7 @@ namespace FantasyCritic.Lib.Services
                     }
                 }
 
-                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersForLeagueAndYear, null, validConditionalDropSlot, false);
+                var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, currentPublisherStatesForLeagueYear, null, validConditionalDropSlot, false);
                 if (claimResult.NoSpaceError)
                 {
                     noSpaceLeftBids.Add(activeBid);

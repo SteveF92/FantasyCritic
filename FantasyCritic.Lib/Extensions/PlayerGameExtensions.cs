@@ -48,7 +48,7 @@ namespace FantasyCritic.Lib.Extensions
         }
 
         public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear, 
-            IEnumerable<Publisher> publishersInLeagueYear, bool counterPick, Maybe<MasterGame> masterGame)
+            IEnumerable<Publisher> publishersInLeagueYear, bool counterPick, Maybe<MasterGame> masterGame, bool gameCouldBeDropped)
         {
             if (!counterPick || masterGame.HasNoValue)
             {
@@ -60,6 +60,11 @@ namespace FantasyCritic.Lib.Extensions
 
             if (gameBeingCounterPickedOptions.Count != 1)
             {
+                if (gameCouldBeDropped && gameBeingCounterPickedOptions.Count == 0)
+                {
+                    return false;
+                }
+
                 throw new Exception($"Something very strange has happened with bid processing for league year: {leagueYear.Key}");
             }
 
