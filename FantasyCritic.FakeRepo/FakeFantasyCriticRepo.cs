@@ -521,7 +521,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task SaveProcessedActionResults(ActionProcessingResults actionProcessingResults)
+        public Task SaveProcessedActionResults(FinalizedActionProcessingResults actionProcessingResults)
         {
             throw new NotImplementedException();
         }

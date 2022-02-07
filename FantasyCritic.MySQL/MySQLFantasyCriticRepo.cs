@@ -2412,26 +2412,26 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task SaveProcessedActionResults(ActionProcessingResults actionProcessingResults)
+        public async Task SaveProcessedActionResults(FinalizedActionProcessingResults actionProcessingResults)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await MarkBidStatus(actionProcessingResults.SuccessBids, true, connection, transaction);
-                    await MarkBidStatus(actionProcessingResults.FailedBids, false, connection, transaction);
+                    await MarkBidStatus(actionProcessingResults.Results.SuccessBids, true, connection, transaction);
+                    await MarkBidStatus(actionProcessingResults.Results.FailedBids, false, connection, transaction);
 
-                    await MarkDropStatus(actionProcessingResults.SuccessDrops, true, connection, transaction);
-                    await MarkDropStatus(actionProcessingResults.FailedDrops, false, connection, transaction);
+                    await MarkDropStatus(actionProcessingResults.Results.SuccessDrops, true, connection, transaction);
+                    await MarkDropStatus(actionProcessingResults.Results.FailedDrops, false, connection, transaction);
 
-                    await AddLeagueActions(actionProcessingResults.LeagueActions, connection, transaction);
-                    await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.UpdatedPublishers, connection, transaction);
+                    await AddLeagueActions(actionProcessingResults.Results.LeagueActions, connection, transaction);
+                    await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.Results.UpdatedPublishers, connection, transaction);
 
-                    await DeletePublisherGames(actionProcessingResults.RemovedPublisherGames, connection, transaction);
-                    await AddPublisherGames(actionProcessingResults.AddedPublisherGames, connection, transaction);
+                    await DeletePublisherGames(actionProcessingResults.Results.RemovedPublisherGames, connection, transaction);
+                    await AddPublisherGames(actionProcessingResults.Results.AddedPublisherGames, connection, transaction);
 
-                    var allPublisherIDsToAdjust = actionProcessingResults.SuccessDrops.Select(x => x.Publisher.PublisherID);
+                    var allPublisherIDsToAdjust = actionProcessingResults.Results.SuccessDrops.Select(x => x.Publisher.PublisherID);
                     await MakePublisherGameSlotsConsistent(allPublisherIDsToAdjust, connection, transaction);
 
                     await transaction.CommitAsync();

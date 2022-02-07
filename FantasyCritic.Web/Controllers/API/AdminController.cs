@@ -274,7 +274,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             var nextBidTime = _clock.GetNextBidTime();
             var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears, allPublishers);
-            IEnumerable<LeagueAction> failingActions = actionResults.LeagueActions.Where(x => x.IsFailed);
+            IEnumerable<LeagueAction> failingActions = actionResults.Results.LeagueActions.Where(x => x.IsFailed);
             var failingActionGames = failingActions.Select(x => x.MasterGameName).Distinct();
 
             var currentDate = _clock.GetToday();
@@ -292,7 +292,7 @@ namespace FantasyCritic.Web.Controllers.API
 
             pickupGames = pickupGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
             dropGames = dropGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
-            var leagueActions = actionResults.LeagueActions.Select(x => new LeagueActionViewModel(x, _clock));
+            var leagueActions = actionResults.Results.LeagueActions.Select(x => new LeagueActionViewModel(x, _clock));
             ActionedGameSet fullSet = new ActionedGameSet(pickupGames, dropGames, leagueActions);
             return Ok(fullSet);
         }
