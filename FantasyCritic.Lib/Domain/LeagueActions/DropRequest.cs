@@ -50,5 +50,10 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         {
             return $"{Publisher.PublisherName}|{MasterGame.GameName}|{Successful}";
         }
+
+        public DropRequest ToDropWithSuccess(bool success, Guid processSetID)
+        {
+            return new DropRequest(DropRequestID, Publisher, LeagueYear, MasterGame, Timestamp, success, processSetID);
+        }
     }
 }
