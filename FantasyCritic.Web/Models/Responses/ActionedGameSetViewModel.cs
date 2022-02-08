@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Web.Models.Responses
 {
-    public class ActionedGameSet
+    public class ActionedGameSetViewModel
     {
-        public ActionedGameSet(IEnumerable<MasterGameViewModel> pickupActions, IEnumerable<MasterGameViewModel> dropActions, IEnumerable<LeagueActionViewModel> leagueActions)
+        public ActionedGameSetViewModel(IEnumerable<MasterGameViewModel> pickupActions, IEnumerable<MasterGameViewModel> dropActions, IEnumerable<LeagueActionViewModel> leagueActions)
         {
             PickupActions = pickupActions;
             DropActions = dropActions;

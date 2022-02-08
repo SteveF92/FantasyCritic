@@ -263,7 +263,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        public async Task<ActionResult<ActionedGameSet>> ActionProcessingDryRun()
+        public async Task<ActionResult<ActionedGameSetViewModel>> ActionProcessingDryRun()
         {
             var supportedYears = await _interLeagueService.GetSupportedYears();
             SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
@@ -293,7 +293,7 @@ namespace FantasyCritic.Web.Controllers.API
             pickupGames = pickupGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
             dropGames = dropGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
             var leagueActions = actionResults.Results.LeagueActions.Select(x => new LeagueActionViewModel(x, _clock));
-            ActionedGameSet fullSet = new ActionedGameSet(pickupGames, dropGames, leagueActions);
+            ActionedGameSetViewModel fullSet = new ActionedGameSetViewModel(pickupGames, dropGames, leagueActions);
             return Ok(fullSet);
         }
 
