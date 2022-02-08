@@ -24,6 +24,7 @@ namespace FantasyCritic.MySQL.Entities
             MasterGameID = domain.MasterGame.MasterGameID;
             Timestamp = domain.Timestamp;
             Successful = domain.Successful;
+            ProcessSetID = domain.ProcessSetID;
         }
 
         public DropRequestEntity(DropRequest domain, bool successful, Guid processSetID)
@@ -33,6 +34,7 @@ namespace FantasyCritic.MySQL.Entities
             MasterGameID = domain.MasterGame.MasterGameID;
             Timestamp = domain.Timestamp;
             Successful = successful;
+            ProcessSetID = processSetID;
         }
 
         public Guid DropRequestID { get; set; }

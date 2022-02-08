@@ -31,6 +31,7 @@ namespace FantasyCritic.MySQL.Entities
             Successful = domain.Successful;
             ProcessSetID = domain.ProcessSetID;
             Outcome = domain.Outcome.GetValueOrDefault();
+            ProjectedPointsAtTimeOfBid = domain.ProjectedPointsAtTimeOfBid;
         }
 
         public PickupBidEntity(IProcessedBid domain, bool successful, Guid processSetID)
@@ -46,6 +47,7 @@ namespace FantasyCritic.MySQL.Entities
             Successful = successful;
             ProcessSetID = processSetID;
             Outcome = domain.Outcome;
+            ProjectedPointsAtTimeOfBid = domain.ProjectedPointsAtTimeOfBid;
         }
 
         public PickupBidEntity(PickupBid domain, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount) : this(domain)
@@ -59,6 +61,9 @@ namespace FantasyCritic.MySQL.Entities
             Priority = domain.Priority;
             BidAmount = bidAmount;
             Successful = domain.Successful;
+            ProcessSetID = domain.ProcessSetID;
+            Outcome = domain.Outcome.GetValueOrDefault();
+            ProjectedPointsAtTimeOfBid = domain.ProjectedPointsAtTimeOfBid;
         }
 
         public Guid BidID { get; set; }
@@ -72,10 +77,11 @@ namespace FantasyCritic.MySQL.Entities
         public bool? Successful { get; set; }
         public Guid? ProcessSetID { get; set; }
         public string Outcome { get; set; }
+        public decimal? ProjectedPointsAtTimeOfBid { get; set; }
 
         public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame, LeagueYear leagueYear)
         {
-            return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, Counterpick, BidAmount, Priority, Timestamp, Successful, ProcessSetID, Outcome.ToMaybe());
+            return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, Counterpick, BidAmount, Priority, Timestamp, Successful, ProcessSetID, Outcome.ToMaybe(), ProjectedPointsAtTimeOfBid);
         }
     }
 }

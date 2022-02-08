@@ -2572,13 +2572,13 @@ namespace FantasyCritic.MySQL
         private Task MarkBidStatus(IEnumerable<IProcessedBid> bids, bool success, Guid processSetID, MySqlConnection connection, MySqlTransaction transaction)
         {
             var entities = bids.Select(x => new PickupBidEntity(x, success, processSetID));
-            return connection.ExecuteAsync("update tbl_league_pickupbid SET Successful = @Successful where BidID = @BidID;", entities, transaction);
+            return connection.ExecuteAsync("update tbl_league_pickupbid SET Successful = @Successful, ProcessSetID = @ProcessSetID, Outcome = @Outcome, ProjectedPointsAtTimeOfBid = @ProjectedPointsAtTimeOfBid where BidID = @BidID;", entities, transaction);
         }
 
         private Task MarkDropStatus(IEnumerable<DropRequest> drops, bool success, Guid processSetID, MySqlConnection connection, MySqlTransaction transaction)
         {
             var entities = drops.Select(x => new DropRequestEntity(x, success, processSetID));
-            return connection.ExecuteAsync("update tbl_league_droprequest SET Successful = @Successful where DropRequestID = @DropRequestID;", entities, transaction);
+            return connection.ExecuteAsync("update tbl_league_droprequest SET Successful = @Successful, ProcessSetID = @ProcessSetID where DropRequestID = @DropRequestID;", entities, transaction);
         }
 
         private Task UpdatePublisherBudgetsAndDroppedGames(IEnumerable<Publisher> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)
