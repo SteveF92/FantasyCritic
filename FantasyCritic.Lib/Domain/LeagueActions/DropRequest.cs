@@ -1,11 +1,13 @@
 ﻿using System;
+using CSharpFunctionalExtensions;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions
 {
     public class DropRequest : IEquatable<DropRequest>
     {
-        public DropRequest(Guid dropRequestID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, Instant timestamp, bool? successful)
+        public DropRequest(Guid dropRequestID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, 
+            Instant timestamp, bool? successful, Guid? processSetID)
         {
             DropRequestID = dropRequestID;
             Publisher = publisher;
@@ -13,6 +15,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             MasterGame = masterGame;
             Timestamp = timestamp;
             Successful = successful;
+            ProcessSetID = processSetID;
         }
 
         public Guid DropRequestID { get; }
@@ -21,6 +24,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public MasterGame MasterGame { get; }
         public Instant Timestamp { get; }
         public bool? Successful { get; }
+        public Guid? ProcessSetID { get; }
 
         public bool Equals(DropRequest other)
         {

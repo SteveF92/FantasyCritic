@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Extensions;
 using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
@@ -25,7 +26,7 @@ namespace FantasyCritic.MySQL.Entities
             Successful = domain.Successful;
         }
 
-        public DropRequestEntity(DropRequest domain, bool successful)
+        public DropRequestEntity(DropRequest domain, bool successful, Guid processSetID)
         {
             DropRequestID = domain.DropRequestID;
             PublisherID = domain.Publisher.PublisherID;
@@ -39,10 +40,11 @@ namespace FantasyCritic.MySQL.Entities
         public Guid MasterGameID { get; set; }
         public Instant Timestamp { get; set; }
         public bool? Successful { get; set; }
+        public Guid? ProcessSetID { get; set; }
 
         public DropRequest ToDomain(Publisher publisher, MasterGame masterGame, LeagueYear leagueYear)
         {
-            return new DropRequest(DropRequestID, publisher, leagueYear, masterGame, Timestamp, Successful);
+            return new DropRequest(DropRequestID, publisher, leagueYear, masterGame, Timestamp, Successful, ProcessSetID);
         }
     }
 }

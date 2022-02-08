@@ -2422,8 +2422,8 @@ namespace FantasyCritic.MySQL
                     await MarkBidStatus(actionProcessingResults.Results.SuccessBids, true, actionProcessingResults.ProcessSetID, connection, transaction);
                     await MarkBidStatus(actionProcessingResults.Results.FailedBids, false, actionProcessingResults.ProcessSetID, connection, transaction);
 
-                    await MarkDropStatus(actionProcessingResults.Results.SuccessDrops, true, connection, transaction);
-                    await MarkDropStatus(actionProcessingResults.Results.FailedDrops, false, connection, transaction);
+                    await MarkDropStatus(actionProcessingResults.Results.SuccessDrops, true, actionProcessingResults.ProcessSetID, connection, transaction);
+                    await MarkDropStatus(actionProcessingResults.Results.FailedDrops, false, actionProcessingResults.ProcessSetID, connection, transaction);
 
                     await AddLeagueActions(actionProcessingResults.Results.LeagueActions, connection, transaction);
                     await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.Results.UpdatedPublishers, connection, transaction);
@@ -2566,9 +2566,9 @@ namespace FantasyCritic.MySQL
             return connection.ExecuteAsync("update tbl_league_pickupbid SET Successful = @Successful where BidID = @BidID;", entities, transaction);
         }
 
-        private Task MarkDropStatus(IEnumerable<DropRequest> drops, bool success, MySqlConnection connection, MySqlTransaction transaction)
+        private Task MarkDropStatus(IEnumerable<DropRequest> drops, bool success, Guid processSetID, MySqlConnection connection, MySqlTransaction transaction)
         {
-            var entities = drops.Select(x => new DropRequestEntity(x, success));
+            var entities = drops.Select(x => new DropRequestEntity(x, success, processSetID));
             return connection.ExecuteAsync("update tbl_league_droprequest SET Successful = @Successful where DropRequestID = @DropRequestID;", entities, transaction);
         }
 

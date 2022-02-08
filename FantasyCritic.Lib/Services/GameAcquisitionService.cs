@@ -495,7 +495,7 @@ namespace FantasyCritic.Lib.Services
                 return new DropResult(Result.Failure("You cannot have two active drop requests for the same game."));
             }
 
-            DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, publisher.LeagueYear, masterGame, _clock.GetCurrentInstant(), null);
+            DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, publisher.LeagueYear, masterGame, _clock.GetCurrentInstant(), null, null);
             var publishersInLeague = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
             var otherPublishers = publishersInLeague.Except(new List<Publisher>(){publisher});
 
