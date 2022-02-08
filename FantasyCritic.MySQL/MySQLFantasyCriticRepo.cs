@@ -2419,6 +2419,7 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
+                    await CreateProcessSet(actionProcessingResults, connection, transaction);
                     await MarkBidStatus(actionProcessingResults.Results.SuccessBids, true, actionProcessingResults.ProcessSetID, connection, transaction);
                     await MarkBidStatus(actionProcessingResults.Results.FailedBids, false, actionProcessingResults.ProcessSetID, connection, transaction);
 
@@ -2558,6 +2559,14 @@ namespace FantasyCritic.MySQL
 
                 return dropRequestsByLeagueYear.SealDictionary();
             }
+        }
+
+        private Task CreateProcessSet(FinalizedActionProcessingResults actionProcessingResults, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            var entity = new ActionProcessingSetEntity(actionProcessingResults);
+            return connection.ExecuteAsync(
+                "insert into tbl_meta_actionprocessingset(ProcessSetID,ProcessTime,ProcessName) VALUES " +
+                "(@ProcessSetID,@ProcessTime,@ProcessName);", entity, transaction);
         }
 
         private Task MarkBidStatus(IEnumerable<IProcessedBid> bids, bool success, Guid processSetID, MySqlConnection connection, MySqlTransaction transaction)
