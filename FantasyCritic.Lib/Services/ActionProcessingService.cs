@@ -128,6 +128,18 @@ namespace FantasyCritic.Lib.Services
         private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
             IReadOnlyList<Publisher> currentPublisherStates, SystemWideValues systemWideValues, Instant processingTime)
         {
+            var gamesGroupedByPublisherAndGame = activeBidsForLeague.GroupBy(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
+            var duplicateBidGroups = gamesGroupedByPublisherAndGame.Where(x => x.Count() > 1).ToList();
+            List<PickupBid> duplicateBids = new List<PickupBid>();
+            foreach (var duplicateBidGroup in duplicateBidGroups)
+            {
+                var bestBid = duplicateBidGroup.MaxBy(x => x.BidAmount).MinBy(x => x.Timestamp).FirstOrDefault();
+                var otherBids = duplicateBidGroup.Except(new List<PickupBid>() { bestBid });
+                duplicateBids.AddRange(otherBids);
+            }
+
+            var nonDuplicateBids = activeBidsForLeague.Except(duplicateBids);
+
             List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
             List<PickupBid> insufficientFundsBids = new List<PickupBid>();
             List<PickupBid> belowMinimumBids = new List<PickupBid>();
@@ -136,7 +148,7 @@ namespace FantasyCritic.Lib.Services
             var currentDate = processingTime.ToEasternDate();
 
             List<ValidPickupBid> validPickupBids = new List<ValidPickupBid>();
-            foreach (var activeBid in activeBidsForLeague)
+            foreach (var activeBid in nonDuplicateBids)
             {
                 var currentPublisherStatesForLeagueYear = currentPublisherStates.Where(x => x.LeagueYear.Key.Equals(leagueYear.Key)).ToList();
                 Publisher publisher = currentPublisherStatesForLeagueYear.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
@@ -186,6 +198,7 @@ namespace FantasyCritic.Lib.Services
             var takenGames = winningBids.Select(x => x.PickupBid.MasterGame);
             var losingBids = activeBidsForLeague
                 .Except(winningBids.Select(x => x.PickupBid))
+                .Except(duplicateBids)
                 .Except(noSpaceLeftBids)
                 .Except(insufficientFundsBids)
                 .Except(belowMinimumBids)
@@ -193,6 +206,7 @@ namespace FantasyCritic.Lib.Services
                 .Where(x => takenGames.Contains(x.MasterGame))
                 .Select(x => new FailedPickupBid(x, "Publisher was outbid.", systemWideValues, currentDate));
 
+            var duplicateBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "You cannot have multiple for the same game.", systemWideValues, currentDate));
             var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value, systemWideValues, currentDate));
             var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget.", systemWideValues, currentDate));
             var belowMinimumBidFailures = belowMinimumBids.Select(x => new FailedPickupBid(x, "Bid is below the minimum bid amount.", systemWideValues, currentDate));
@@ -217,6 +231,7 @@ namespace FantasyCritic.Lib.Services
                 .Concat(insufficientFundsBidFailures)
                 .Concat(belowMinimumBidFailures)
                 .Concat(noSpaceLeftBidFailures)
+                .Concat(duplicateBidFailures)
                 .Concat(invalidGameBidFailures);
 
             var processedSet = new ProcessedBidSet(winningBids, failedBids);
