@@ -9,7 +9,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class PickupBidViewModel
     {
-        public PickupBidViewModel(PickupBid pickupBid, LocalDate currentDate, ScoringSystem scoringSystem, SystemWideValues systemWideValues)
+        public PickupBidViewModel(PickupBid pickupBid, LocalDate currentDate)
         {
             BidID = pickupBid.BidID;
             BidAmount = pickupBid.BidAmount;
@@ -19,6 +19,8 @@ namespace FantasyCritic.Web.Models.Responses
             MasterGame = new MasterGameViewModel(pickupBid.MasterGame, currentDate);
             ConditionalDropPublisherGame = pickupBid.ConditionalDropPublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, false, false));
             CounterPick = pickupBid.CounterPick;
+            Outcome = pickupBid.Outcome.GetValueOrDefault();
+            ProjectedPointsAtTimeOfBid = pickupBid.ProjectedPointsAtTimeOfBid;
         }
 
         public Guid BidID { get; }
@@ -29,5 +31,7 @@ namespace FantasyCritic.Web.Models.Responses
         public MasterGameViewModel MasterGame { get; }
         public PublisherGameViewModel ConditionalDropPublisherGame { get; }
         public bool CounterPick { get; }
+        public string Outcome { get; }
+        public decimal? ProjectedPointsAtTimeOfBid { get; }
     }
 }

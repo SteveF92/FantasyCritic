@@ -295,7 +295,7 @@ namespace FantasyCritic.Web.Controllers.API
             var leagueActions = actionResults.Results.LeagueActions.Select(x => new LeagueActionViewModel(x, _clock));
 
             var leagueActionSets = actionResults.GetLeagueActionSets();
-            var leagueActionSetViewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate, systemWideValues));
+            var leagueActionSetViewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));
             ActionedGameSetViewModel fullSet = new ActionedGameSetViewModel(pickupGames, dropGames, leagueActions, leagueActionSetViewModels);
             return Ok(fullSet);
         }

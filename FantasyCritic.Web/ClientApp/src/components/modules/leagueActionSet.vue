@@ -6,6 +6,18 @@
     <h3 v-if="mode === 'leagueHistory'">
       {{leagueActionSet.processTime}}
     </h3>
+    <h4>Drops</h4>
+    <b-table :items="leagueActionSet.drops"
+             bordered
+             striped
+             responsive>
+    </b-table>
+    <h4>Bids</h4>
+    <b-table :items="leagueActionSet.bids"
+             bordered
+             striped
+             responsive>
+    </b-table>
   </div>
 </template>
 <script>

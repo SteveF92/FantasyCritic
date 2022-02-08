@@ -11,7 +11,7 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class LeagueActionProcessingSetViewModel
     {
-        public LeagueActionProcessingSetViewModel(LeagueActionProcessingSet domain, LocalDate currentDate, SystemWideValues systemWideValues)
+        public LeagueActionProcessingSetViewModel(LeagueActionProcessingSet domain, LocalDate currentDate)
         {
             LeagueID = domain.LeagueYear.League.LeagueID;
             LeagueName = domain.LeagueYear.League.LeagueName;
@@ -20,7 +20,7 @@ namespace FantasyCritic.Web.Models.Responses
             ProcessTime = domain.ProcessTime;
             ProcessName = domain.ProcessName;
             Drops = domain.Drops.Select(x => new DropGameRequestViewModel(x, currentDate)).ToList();
-            Bids = domain.Bids.Select(x => new PickupBidViewModel(x, currentDate, domain.LeagueYear.Options.ScoringSystem, systemWideValues)).ToList();
+            Bids = domain.Bids.Select(x => new PickupBidViewModel(x, currentDate)).ToList();
         }
 
         public Guid LeagueID { get; }
