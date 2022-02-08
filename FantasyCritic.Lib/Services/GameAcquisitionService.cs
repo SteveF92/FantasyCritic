@@ -439,7 +439,7 @@ namespace FantasyCritic.Lib.Services
 
             var nextPriority = pickupBids.Count + 1;
             PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, 
-                bidAmount, nextPriority, _clock.GetCurrentInstant(), null);
+                bidAmount, nextPriority, _clock.GetCurrentInstant(), null, null, Maybe<string>.None);
             await _fantasyCriticRepo.CreatePickupBid(currentBid);
 
             return claimResult;

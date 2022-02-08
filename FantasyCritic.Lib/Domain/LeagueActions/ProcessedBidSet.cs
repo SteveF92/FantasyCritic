@@ -10,17 +10,17 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
     {
         public ProcessedBidSet()
         {
-            SuccessBids = new List<ValidPickupBid>();
+            SuccessBids = new List<SucceededPickupBid>();
             FailedBids = new List<FailedPickupBid>();
         }
 
-        public ProcessedBidSet(IEnumerable<ValidPickupBid> successBids, IEnumerable<FailedPickupBid> failedBids)
+        public ProcessedBidSet(IEnumerable<SucceededPickupBid> successBids, IEnumerable<FailedPickupBid> failedBids)
         {
             SuccessBids = successBids.ToList();
             FailedBids = failedBids.ToList();
         }
 
-        public IReadOnlyList<ValidPickupBid> SuccessBids { get; }
+        public IReadOnlyList<SucceededPickupBid> SuccessBids { get; }
         public IReadOnlyList<FailedPickupBid> FailedBids { get; }
 
         public IEnumerable<PickupBid> ProcessedBids => FailedBids.Select(x => x.PickupBid).Concat(SuccessBids.Select(x => x.PickupBid));

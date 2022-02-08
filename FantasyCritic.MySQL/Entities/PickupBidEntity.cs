@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Extensions;
 using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
@@ -28,19 +29,23 @@ namespace FantasyCritic.MySQL.Entities
             Priority = domain.Priority;
             BidAmount = domain.BidAmount;
             Successful = domain.Successful;
+            ProcessSetID = domain.ProcessSetID;
+            Outcome = domain.Outcome.GetValueOrDefault();
         }
 
-        public PickupBidEntity(PickupBid domain, bool successful)
+        public PickupBidEntity(IProcessedBid domain, bool successful, Guid processSetID)
         {
-            BidID = domain.BidID;
-            PublisherID = domain.Publisher.PublisherID;
-            MasterGameID = domain.MasterGame.MasterGameID;
-            ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.Value.MasterGame.MasterGameID);
-            Counterpick = domain.CounterPick;
-            Timestamp = domain.Timestamp;
-            Priority = domain.Priority;
-            BidAmount = domain.BidAmount;
+            BidID = domain.PickupBid.BidID;
+            PublisherID = domain.PickupBid.Publisher.PublisherID;
+            MasterGameID = domain.PickupBid.MasterGame.MasterGameID;
+            ConditionalDropMasterGameID = domain.PickupBid.ConditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.Value.MasterGame.MasterGameID);
+            Counterpick = domain.PickupBid.CounterPick;
+            Timestamp = domain.PickupBid.Timestamp;
+            Priority = domain.PickupBid.Priority;
+            BidAmount = domain.PickupBid.BidAmount;
             Successful = successful;
+            ProcessSetID = processSetID;
+            Outcome = domain.Outcome;
         }
 
         public PickupBidEntity(PickupBid domain, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount) : this(domain)
@@ -65,10 +70,12 @@ namespace FantasyCritic.MySQL.Entities
         public int Priority { get; set; }
         public uint BidAmount { get; set; }
         public bool? Successful { get; set; }
+        public Guid? ProcessSetID { get; set; }
+        public string Outcome { get; set; }
 
         public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame, LeagueYear leagueYear)
         {
-            return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, Counterpick, BidAmount, Priority, Timestamp, Successful);
+            return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, Counterpick, BidAmount, Priority, Timestamp, Successful, ProcessSetID, Outcome.ToMaybe());
         }
     }
 }

@@ -133,6 +133,8 @@ namespace FantasyCritic.Lib.Services
             List<PickupBid> belowMinimumBids = new List<PickupBid>();
             List<KeyValuePair<PickupBid, string>> invalidGameBids = new List<KeyValuePair<PickupBid, string>>();
 
+            var currentDate = processingTime.ToEasternDate();
+
             List<ValidPickupBid> validPickupBids = new List<ValidPickupBid>();
             foreach (var activeBid in activeBidsForLeague)
             {
@@ -178,7 +180,7 @@ namespace FantasyCritic.Lib.Services
                 validPickupBids.Add(new ValidPickupBid(activeBid, claimResult.BestSlotNumber.Value));
             }
 
-            var winnableBids = GetWinnableBids(leagueYear, validPickupBids, systemWideValues, processingTime);
+            var winnableBids = GetWinnableBids(leagueYear, validPickupBids, systemWideValues, currentDate);
             var winningBids = GetWinningBids(winnableBids);
 
             var takenGames = winningBids.Select(x => x.PickupBid.MasterGame);
@@ -189,11 +191,11 @@ namespace FantasyCritic.Lib.Services
                 .Except(belowMinimumBids)
                 .Except(invalidGameBids.Select(x => x.Key))
                 .Where(x => takenGames.Contains(x.MasterGame))
-                .Select(x => new FailedPickupBid(x, "Publisher was outbid."));
+                .Select(x => new FailedPickupBid(x, "Publisher was outbid.", systemWideValues, currentDate));
 
-            var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value));
-            var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget."));
-            var belowMinimumBidFailures = belowMinimumBids.Select(x => new FailedPickupBid(x, "Bid is below the minimum bid amount."));
+            var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value, systemWideValues, currentDate));
+            var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget.", systemWideValues, currentDate));
+            var belowMinimumBidFailures = belowMinimumBids.Select(x => new FailedPickupBid(x, "Bid is below the minimum bid amount.", systemWideValues, currentDate));
             List<FailedPickupBid> noSpaceLeftBidFailures = new List<FailedPickupBid>();
             foreach (var noSpaceLeftBid in noSpaceLeftBids)
             {
@@ -201,11 +203,12 @@ namespace FantasyCritic.Lib.Services
                 if (noSpaceLeftBid.ConditionalDropPublisherGame.HasValue && noSpaceLeftBid.ConditionalDropResult.Result.IsFailure)
                 {
                     failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available. Attempted to conditionally drop game: " +
-                                                                    $"{noSpaceLeftBid.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName} but failed because: {noSpaceLeftBid.ConditionalDropResult.Result.Error}");
+                                                                    $"{noSpaceLeftBid.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName} " +
+                                                                    $"but failed because: {noSpaceLeftBid.ConditionalDropResult.Result.Error}", systemWideValues, currentDate);
                 }
                 else
                 {
-                    failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available.");
+                    failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available.", systemWideValues, currentDate);
                 }
                 noSpaceLeftBidFailures.Add(failedBid);
             }
@@ -220,48 +223,75 @@ namespace FantasyCritic.Lib.Services
             return processedSet;
         }
 
-        private IReadOnlyList<ValidPickupBid> GetWinnableBids(LeagueYear leagueYear, IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear, SystemWideValues systemWideValues, Instant processingTime)
+        private IReadOnlyList<SucceededPickupBid> GetWinnableBids(LeagueYear leagueYear, IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear, SystemWideValues systemWideValues, LocalDate currentDate)
         {
-            List<ValidPickupBid> winnableBids = new List<ValidPickupBid>();
+            List<SucceededPickupBid> winnableBids = new List<SucceededPickupBid>();
 
             var enoughBudgetBids = activeBidsForLeagueYear.Where(x => x.PickupBid.BidAmount <= x.PickupBid.Publisher.Budget);
             var groupedByGame = enoughBudgetBids.GroupBy(x => x.PickupBid.MasterGame);
-            var currentDate = processingTime.ToEasternDate();
             foreach (var gameGroup in groupedByGame)
             {
-                ValidPickupBid bestBid;
-                if (gameGroup.Count() == 1)
-                {
-                    bestBid = gameGroup.First();
-                }
-                else
-                {
-                    var bestBids = gameGroup.MaxBy(x => x.PickupBid.BidAmount);
-                    bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
-                    var bestBidsByProjectedScore = bestBids.MinBy(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames));
-                    bestBid = bestBidsByProjectedScore.OrderBy(x => x.PickupBid.Timestamp).ThenByDescending(x => x.PickupBid.Publisher.DraftPosition).First();
-                }
-
+                var bestBid = GetWinningBidForGame(gameGroup.Key, leagueYear, gameGroup, systemWideValues, currentDate);
                 winnableBids.Add(bestBid);
             }
 
             return winnableBids;
         }
 
-        private static IReadOnlyList<ValidPickupBid> GetWinningBids(IReadOnlyList<ValidPickupBid> winnableBids)
+        private SucceededPickupBid GetWinningBidForGame(MasterGame masterGame, LeagueYear leagueYear, IEnumerable<ValidPickupBid> bidsForGame, SystemWideValues systemWideValues, LocalDate currentDate)
         {
-            List<ValidPickupBid> winningBids = new List<ValidPickupBid>();
+            if (bidsForGame.Count() == 1)
+            {
+                var singleBid = bidsForGame.First();
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "No competing bids for this game.", systemWideValues, currentDate);
+            }
+
+            var bestBids = bidsForGame.MaxBy(x => x.PickupBid.BidAmount).ToList();
+            if (bestBids.Count == 1)
+            {
+                var singleBid = bestBids.Single();
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was the highest bid.", systemWideValues, currentDate);
+            }
+
+            bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
+            var bestBidsByProjectedScore = bestBids.MinBy(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
+            if (bestBidsByProjectedScore.Count == 1)
+            {
+                var singleBid = bestBidsByProjectedScore.Single();
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Before this round of bids)", systemWideValues, currentDate);
+            }
+
+            var bestBidsByBidTime = bestBidsByProjectedScore.OrderBy(x => x.PickupBid.Timestamp).ToList();
+            if (bestBidsByBidTime.Count == 1)
+            {
+                var singleBid = bestBidsByBidTime.Single();
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest. (Projected points were tied)", systemWideValues, currentDate);
+            }
+
+            var bestBidsByDraftPosition = bestBidsByProjectedScore.OrderByDescending(x => x.PickupBid.Publisher.DraftPosition).ToList();
+            if (bestBidsByDraftPosition.Count == 1)
+            {
+                var singleBid = bestBidsByDraftPosition.Single();
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher had the latest draft position (Projected points and Bid placement time were tied", systemWideValues, currentDate);
+            }
+
+            throw new Exception($"Inconceivable tie situation for game: {masterGame.GameName} for league year: {leagueYear}");
+        }
+
+        private static IReadOnlyList<SucceededPickupBid> GetWinningBids(IReadOnlyList<SucceededPickupBid> winnableBids)
+        {
+            List<SucceededPickupBid> winningBids = new List<SucceededPickupBid>();
             var groupedByPublisher = winnableBids.GroupBy(x => x.PickupBid.Publisher);
             foreach (var publisherGroup in groupedByPublisher)
             {
-                ValidPickupBid winningBid = publisherGroup.MinBy(x => x.PickupBid.Priority).First();
+                SucceededPickupBid winningBid = publisherGroup.MinBy(x => x.PickupBid.Priority).First();
                 winningBids.Add(winningBid);
             }
 
             return winningBids;
         }
 
-        private static ActionProcessingResults GetBidProcessingResults(IReadOnlyList<ValidPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, IReadOnlyList<Publisher> publishers, Instant processingTime)
+        private static ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, IReadOnlyList<Publisher> publishers, Instant processingTime)
         {
             Dictionary<Guid, Publisher> publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
             List<PublisherGame> gamesToAdd = new List<PublisherGame>();
@@ -284,20 +314,17 @@ namespace FantasyCritic.Lib.Services
                 leagueActions.Add(leagueAction);
             }
 
-            var simpleSuccessBids = successBids.Select(x => x.PickupBid).ToList();
-            var simpleFailedBids = failedBids.Select(x => x.PickupBid).ToList();
-
             List<PublisherGame> conditionalDroppedGames = new List<PublisherGame>();
-            var successfulConditionalDrops = simpleSuccessBids.Where(x => x.ConditionalDropPublisherGame.HasValue && x.ConditionalDropResult.Result.IsSuccess);
+            var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame.HasValue && x.PickupBid.ConditionalDropResult.Result.IsSuccess);
             foreach (var successfulConditionalDrop in successfulConditionalDrops)
             {
-                var affectedPublisher = publisherDictionary[successfulConditionalDrop.Publisher.PublisherID];
-                affectedPublisher.DropGame(successfulConditionalDrop.ConditionalDropPublisherGame.Value);
-                conditionalDroppedGames.Add(successfulConditionalDrop.ConditionalDropPublisherGame.Value);
+                var affectedPublisher = publisherDictionary[successfulConditionalDrop.PickupBid.Publisher.PublisherID];
+                affectedPublisher.DropGame(successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value);
+                conditionalDroppedGames.Add(successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value);
             }
 
             var updatedPublishers = publisherDictionary.Values.ToList();
-            ActionProcessingResults bidProcessingResults = ActionProcessingResults.GetResultsSetFromBidResults(simpleSuccessBids, simpleFailedBids, 
+            ActionProcessingResults bidProcessingResults = ActionProcessingResults.GetResultsSetFromBidResults(successBids, failedBids, 
                 leagueActions, updatedPublishers, gamesToAdd, conditionalDroppedGames);
             return bidProcessingResults;
         }

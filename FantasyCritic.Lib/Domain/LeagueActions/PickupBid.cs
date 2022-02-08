@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
     public class PickupBid : IEquatable<PickupBid>
     {
         public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame,
-            bool counterPick, uint bidAmount, int priority, Instant timestamp, bool? successful)
+            bool counterPick, uint bidAmount, int priority, Instant timestamp, bool? successful, Guid? processSetID, Maybe<string> outcome)
         {
             BidID = bidID;
             Publisher = publisher;
@@ -20,6 +20,8 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             Priority = priority;
             Timestamp = timestamp;
             Successful = successful;
+            ProcessSetID = processSetID;    
+            Outcome = outcome;
         }
 
         public Guid BidID { get; }
@@ -32,6 +34,8 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public int Priority { get; }
         public Instant Timestamp { get; }
         public bool? Successful { get; }
+        public Guid? ProcessSetID { get; }
+        public Maybe<string> Outcome { get; }
 
         public DropResult ConditionalDropResult { get; set; }
 

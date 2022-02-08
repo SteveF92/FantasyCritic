@@ -2419,8 +2419,8 @@ namespace FantasyCritic.MySQL
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await MarkBidStatus(actionProcessingResults.Results.SuccessBids, true, connection, transaction);
-                    await MarkBidStatus(actionProcessingResults.Results.FailedBids, false, connection, transaction);
+                    await MarkBidStatus(actionProcessingResults.Results.SuccessBids, true, actionProcessingResults.ProcessSetID, connection, transaction);
+                    await MarkBidStatus(actionProcessingResults.Results.FailedBids, false, actionProcessingResults.ProcessSetID, connection, transaction);
 
                     await MarkDropStatus(actionProcessingResults.Results.SuccessDrops, true, connection, transaction);
                     await MarkDropStatus(actionProcessingResults.Results.FailedDrops, false, connection, transaction);
@@ -2560,9 +2560,9 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        private Task MarkBidStatus(IEnumerable<PickupBid> bids, bool success, MySqlConnection connection, MySqlTransaction transaction)
+        private Task MarkBidStatus(IEnumerable<IProcessedBid> bids, bool success, Guid processSetID, MySqlConnection connection, MySqlTransaction transaction)
         {
-            var entities = bids.Select(x => new PickupBidEntity(x, success));
+            var entities = bids.Select(x => new PickupBidEntity(x, success, processSetID));
             return connection.ExecuteAsync("update tbl_league_pickupbid SET Successful = @Successful where BidID = @BidID;", entities, transaction);
         }
 
