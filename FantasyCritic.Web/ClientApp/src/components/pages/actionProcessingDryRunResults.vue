@@ -46,6 +46,14 @@
             </div>
           </div>
         </b-collapse>
+
+        <h2>League Action Sets</h2>
+        <b-button v-b-toggle.league-action-sets-collapse variant="primary">Toggle Collapse</b-button>
+        <b-collapse id="league-action-sets-collapse" class="mt-2">
+          <div v-for="leagueActionSet in dryRunResults.leagueActionSets" class="row">
+            <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'dryRunPage'"></leagueActionSet>
+          </div>
+        </b-collapse>
       </div>
 
       <div v-else class="spinner">
@@ -57,6 +65,7 @@
 <script>
 import axios from 'axios';
 import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
+import LeagueActionSet from '@/components/modules/leagueActionSet';
 
 export default {
   data() {
@@ -75,7 +84,8 @@ export default {
     };
   },
   components: {
-    MasterGamesTable
+    MasterGamesTable,
+    LeagueActionSet
   },
   methods: {
     fetchActionedGames() {
