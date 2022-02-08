@@ -7,36 +7,45 @@
       <div v-if="dryRunResults && dryRunResults.length !== 0">
 
         <h2>Drops</h2>
-        <div class="row">
-          <masterGamesTable :masterGames="dryRunResults.dropActions"></masterGamesTable>
-        </div>
-        <hr />
+        <b-button v-b-toggle.drop-collapse variant="primary">Toggle Collapse</b-button>
+        <b-collapse id="drop-collapse" class="mt-2">
+          <div class="row">
+            <masterGamesTable :masterGames="dryRunResults.dropActions"></masterGamesTable>
+          </div>
+          <hr />
+        </b-collapse>
 
-        <h2>Pickups</h2>
-        <div class="row">
-          <masterGamesTable :masterGames="dryRunResults.pickupActions"></masterGamesTable>
-        </div>
-        <hr />
+        <h2>Bids</h2>
+        <b-button v-b-toggle.bid-collapse variant="primary">Toggle Collapse</b-button>
+        <b-collapse id="bid-collapse" class="mt-2">
+          <div class="row">
+            <masterGamesTable :masterGames="dryRunResults.pickupActions"></masterGamesTable>
+          </div>
+          <hr />
+        </b-collapse>
 
         <h2>Actions</h2>
-        <div class="row">
-          <div class="history-table">
-            <b-table :sort-by.sync="sortBy"
-                     :sort-desc.sync="sortDesc"
-                     :items="dryRunResults.leagueActions"
-                     :fields="actionFields"
-                     bordered
-                     striped
-                     responsive>
-              <template v-slot:cell(timestamp)="data">
-                {{data.item.timestamp | dateTime}}
-              </template>
-              <template v-slot:cell(managerAction)="data">
-                {{data.item.managerAction | yesNo}}
-              </template>
-            </b-table>
+        <b-button v-b-toggle.action-collapse variant="primary">Toggle Collapse</b-button>
+        <b-collapse id="action-collapse" class="mt-2">
+          <div class="row">
+            <div class="history-table">
+              <b-table :sort-by.sync="sortBy"
+                       :sort-desc.sync="sortDesc"
+                       :items="dryRunResults.leagueActions"
+                       :fields="actionFields"
+                       bordered
+                       striped
+                       responsive>
+                <template v-slot:cell(timestamp)="data">
+                  {{data.item.timestamp | dateTime}}
+                </template>
+                <template v-slot:cell(managerAction)="data">
+                  {{data.item.managerAction | yesNo}}
+                </template>
+              </b-table>
+            </div>
           </div>
-        </div>
+        </b-collapse>
       </div>
 
       <div v-else class="spinner">
