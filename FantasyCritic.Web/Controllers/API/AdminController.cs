@@ -294,7 +294,7 @@ namespace FantasyCritic.Web.Controllers.API
             dropGames = dropGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
             var leagueActions = actionResults.Results.LeagueActions.Select(x => new LeagueActionViewModel(x, _clock));
 
-            var leagueActionSets = actionResults.GetLeagueActionSets();
+            var leagueActionSets = actionResults.GetLeagueActionSets(true);
             var leagueActionSetViewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));
             ActionedGameSetViewModel fullSet = new ActionedGameSetViewModel(pickupGames, dropGames, leagueActions, leagueActionSetViewModels);
             return Ok(fullSet);

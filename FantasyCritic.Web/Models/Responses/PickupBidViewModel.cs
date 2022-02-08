@@ -1,4 +1,5 @@
 using System;
+using System.Reflection.Metadata;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
@@ -12,6 +13,8 @@ namespace FantasyCritic.Web.Models.Responses
         public PickupBidViewModel(PickupBid pickupBid, LocalDate currentDate)
         {
             BidID = pickupBid.BidID;
+            PublisherID = pickupBid.Publisher.PublisherID;
+            PublisherName = pickupBid.Publisher.PublisherName;
             BidAmount = pickupBid.BidAmount;
             Priority = pickupBid.Priority;
             Timestamp = pickupBid.Timestamp.ToDateTimeUtc();
@@ -24,6 +27,8 @@ namespace FantasyCritic.Web.Models.Responses
         }
 
         public Guid BidID { get; }
+        public Guid PublisherID { get; }
+        public string PublisherName { get; }
         public uint BidAmount { get; }
         public int Priority { get; }
         public DateTime Timestamp { get; }

@@ -206,7 +206,7 @@ namespace FantasyCritic.Lib.Services
                 .Where(x => takenGames.Contains(x.MasterGame))
                 .Select(x => new FailedPickupBid(x, "Publisher was outbid.", systemWideValues, currentDate));
 
-            var duplicateBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "You cannot have multiple for the same game.", systemWideValues, currentDate));
+            var duplicateBidFailures = duplicateBids.Select(x => new FailedPickupBid(x, "You cannot have multiple bids for the same game.", systemWideValues, currentDate));
             var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value, systemWideValues, currentDate));
             var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget.", systemWideValues, currentDate));
             var belowMinimumBidFailures = belowMinimumBids.Select(x => new FailedPickupBid(x, "Bid is below the minimum bid amount.", systemWideValues, currentDate));

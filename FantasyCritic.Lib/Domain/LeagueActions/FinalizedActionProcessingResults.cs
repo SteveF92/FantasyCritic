@@ -24,12 +24,28 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public string ProcessName { get; }
         public ActionProcessingResults Results { get; }
 
-        public IReadOnlyList<LeagueActionProcessingSet> GetLeagueActionSets()
+        public IReadOnlyList<LeagueActionProcessingSet> GetLeagueActionSets(bool dryRun)
         {
             var allDrops = Results.SuccessDrops.Concat(Results.FailedDrops);
             var dropsByLeague = allDrops.ToLookup(x => x.Publisher.LeagueYear);
 
-            var allBids = Results.SuccessBids.Select(x => x.PickupBid).Concat(Results.FailedBids.Select(x => x.PickupBid));
+            List<PickupBid> allBids;
+            if (!dryRun)
+            {
+                allBids = Results.SuccessBids.Select(x => x.PickupBid).Concat(Results.FailedBids.Select(x => x.PickupBid)).ToList();
+            }
+            else
+            {
+                allBids = new List<PickupBid>();
+                foreach (var successBid in Results.SuccessBids)
+                {
+                    allBids.Add(successBid.ToFlatBid(ProcessSetID));
+                }
+                foreach (var failedBid in Results.FailedBids)
+                {
+                    allBids.Add(failedBid.ToFlatBid(ProcessSetID));
+                }
+            }
             var bidsByLeague = allBids.GroupToDictionary(x => x.Publisher.LeagueYear);
 
             List<LeagueActionProcessingSet> leagueSets = new List<LeagueActionProcessingSet>();

@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using System;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions
 {
@@ -16,5 +17,13 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public decimal ProjectedPointsAtTimeOfBid { get; }
 
         public string Outcome => FailureReason;
+
+        public PickupBid ToFlatBid(Guid processSetID)
+        {
+            return new PickupBid(PickupBid.BidID, PickupBid.Publisher, PickupBid.LeagueYear, PickupBid.MasterGame,
+                PickupBid.ConditionalDropPublisherGame, PickupBid.CounterPick,
+                PickupBid.BidAmount, PickupBid.Priority, PickupBid.Timestamp, false, processSetID, FailureReason,
+                ProjectedPointsAtTimeOfBid);
+        }
     }
 }
