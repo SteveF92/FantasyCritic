@@ -8,12 +8,12 @@ ENGINE=InnoDB
 ;
 
 ALTER TABLE `tbl_league_droprequest`
-	ADD COLUMN `ProcessSetID` CHAR(36) NOT NULL AFTER `Successful`,
+	ADD COLUMN `ProcessSetID` CHAR(36) NULL DEFAULT NULL AFTER `Successful`,
 	ADD CONSTRAINT `FK_tbl_league_droprequest_tbl_meta_actionprocessingset` FOREIGN KEY (`ProcessSetID`) REFERENCES `tbl_meta_actionprocessingset` (`ProcessSetID`) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE `tbl_league_pickupbid`
-	ADD COLUMN `ProcessSetID` CHAR(36) NOT NULL AFTER `Successful`,
-	ADD COLUMN `Outcome` VARCHAR(255) NULL AFTER `ProcessSetID`,
+	ADD COLUMN `ProcessSetID` CHAR(36) NULL DEFAULT NULL AFTER `Successful`,
+	ADD COLUMN `Outcome` VARCHAR(255) NULL DEFAULT NULL AFTER `ProcessSetID`,
 	ADD COLUMN `ProjectedPointsAtTimeOfBid` DECIMAL(12,4) NULL DEFAULT NULL AFTER `Outcome`;
 
 DROP VIEW IF EXISTS `vw_league_droprequest`;
