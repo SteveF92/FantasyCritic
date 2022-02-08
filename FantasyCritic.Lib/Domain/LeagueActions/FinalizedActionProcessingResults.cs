@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions
 {
-    public record FinalizedActionProcessingResults(Guid ProcessSetID, Instant ProcessTime, ActionProcessingResults Results);
+    public record FinalizedActionProcessingResults(Guid ProcessSetID, Instant ProcessTime, string processName, ActionProcessingResults Results);
 }

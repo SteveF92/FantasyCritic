@@ -34,22 +34,22 @@ namespace FantasyCritic.Lib.Services
                 throw new Exception("There are counter pick bids with conditional drops.");
             }
 
+            string processName = $"Drop/Bid Processing ({processingTime.ToEasternDate()})";
             Guid processSetID = Guid.NewGuid();
             if (!allActiveBids.Any() && !allActiveDrops.Any())
             {
                 var emptyResults = ActionProcessingResults.GetEmptyResultsSet(currentPublisherStates);
-                return new FinalizedActionProcessingResults(processSetID, processingTime, emptyResults);
+                return new FinalizedActionProcessingResults(processSetID, processingTime, processName, emptyResults);
             }
 
             ActionProcessingResults dropResults = ProcessDrops(allActiveDrops, currentPublisherStates, processingTime);
             if (!allActiveBids.Any())
             {
-                return new FinalizedActionProcessingResults(processSetID, processingTime, dropResults);
+                return new FinalizedActionProcessingResults(processSetID, processingTime, processName, dropResults);
             }
 
             ActionProcessingResults bidResults = ProcessPickupsIteration(systemWideValues, allActiveBids, dropResults, processingTime);
-            return new FinalizedActionProcessingResults(processSetID, processingTime, bidResults);
-
+            return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults);
         }
 
         private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, 
