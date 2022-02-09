@@ -203,13 +203,13 @@ export default {
     display: inline;
   }
 
-  @media only screen and (max-width: 1020px) {
+  @media only screen and (max-width: 1070px) {
     .full-logo {
       display: none;
     }
   }
 
-  @media only screen and (min-width: 1021px) {
+  @media only screen and (min-width: 1071px) {
     .minimal-logo {
       display: none;
     }
@@ -221,25 +221,25 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 480px) {
+  @media only screen and (max-width: 500px) {
     .super-optional-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 400px) {
-    .optional-link {
+  @media only screen and (max-width: 435px) {
+    .optional-link, .critic-royale-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 640px) {
+  @media only screen and (max-width: 680px) {
     .brand-nav {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 525px) {
+  @media only screen and (max-width: 550px) {
     .topnav-icon {
       font-size: 15px;
     }
@@ -253,13 +253,13 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 830px) {
+  @media only screen and (max-width: 890px) {
     .full-nav {
       display: none;
     }
   }
 
-  @media screen and (min-width: 829px) and (max-width: 1203px) {
+  @media screen and (min-width: 889px) and (max-width: 1253px) {
     .minimal-nav {
       display: none;
     }
