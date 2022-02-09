@@ -507,7 +507,7 @@ namespace FantasyCritic.MySQL
                     pickupBidsByLeagueYear[leagueYear].Add(domainPickup);
                 }
 
-                IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> finalDictionary = pickupBidsByLeagueYear.ToDictionary(x => x.Key, y => (IReadOnlyList<PickupBid>)y.Value);
+                IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> finalDictionary = pickupBidsByLeagueYear.SealDictionary();
                 return finalDictionary;
             }
         }
