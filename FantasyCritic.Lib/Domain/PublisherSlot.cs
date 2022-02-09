@@ -111,5 +111,38 @@ namespace FantasyCritic.Lib.Domain
 
             return 0m;
         }
+
+        public override string ToString()
+        {
+            var cp = "";
+            if (CounterPick)
+            {
+                cp = "CP-";
+            }
+            var slotType = "REG";
+            if (SpecialGameSlot.HasValue)
+            {
+                if (SpecialGameSlot.Value.Tags.Count > 1)
+                {
+                    slotType = "FLX";
+                }
+                else
+                {
+                    slotType = SpecialGameSlot.Value.Tags[0].ShortName;
+                }
+            }
+
+            var gameName = "Empty";
+            if (PublisherGame.HasValue)
+            {
+                gameName = PublisherGame.Value.GameName;
+                if (PublisherGame.Value.MasterGame.HasValue)
+                {
+                    gameName = PublisherGame.Value.MasterGame.Value.MasterGame.GameName;
+                }
+            }
+
+            return $"{cp}{OverallSlotNumber}|{slotType}|{gameName}";
+        }
     }
 }
