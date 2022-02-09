@@ -360,6 +360,52 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [AllowAnonymous]
+        public async Task<IActionResult> GetLeagueActionSets(Guid leagueID, int year)
+        {
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Something went really wrong, no options are set up for this league.");
+            }
+
+            FantasyCriticUser currentUser = null;
+            if (!string.IsNullOrWhiteSpace(User.Identity.Name))
+            {
+                var currentUserResult = await GetCurrentUser();
+                if (currentUserResult.IsFailure)
+                {
+                    return BadRequest(currentUserResult.Error);
+                }
+                currentUser = currentUserResult.Value;
+            }
+
+            var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
+
+            bool userIsInLeague = false;
+            bool userIsInvitedToLeague = false;
+            bool userIsAdmin = false;
+            if (currentUser != null)
+            {
+                var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
+                userIsInLeague = usersInLeague.Any(x => x.Id == currentUser.Id);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
+                userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
+            }
+
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !userIsAdmin)
+            {
+                return Forbid();
+            }
+
+            var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSet(leagueYear.Value);
+
+            var currentDate = _clock.GetToday();
+            var viewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));
+            viewModels = viewModels.OrderByDescending(x => x.ProcessTime);
+            return Ok(viewModels);
+        }
+
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPublisher(Guid id)
         {

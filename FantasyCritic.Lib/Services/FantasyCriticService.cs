@@ -336,6 +336,11 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);
         }
 
+        public async Task<IReadOnlyList<LeagueActionProcessingSet>> GetLeagueActionProcessingSet(LeagueYear leagueYear)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<FinalizedActionProcessingResults> GetActionProcessingDryRun(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
         {
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year, allLeagueYears, allPublishersForYear);
