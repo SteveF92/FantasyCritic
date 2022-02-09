@@ -86,8 +86,8 @@ export default {
         { key: 'bidAmount', label: 'Bid Amount', sortable: true, thClass: 'bg-primary' },
         { key: 'conditionalDropPublisherGame', label: 'Conditional Drop', sortable: true, thClass: 'bg-primary' },
         { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points', sortable: true, thClass: 'bg-primary' },
-        { key: 'outcome', label: 'Outcome', sortable: true, thClass: 'bg-primary' },
-        { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' }
+        { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' },
+        { key: 'outcome', label: 'Outcome', sortable: true, thClass: 'bg-primary' }
       ],
       sortBy: 'timestamp',
       sortDesc: true

@@ -206,7 +206,7 @@ namespace FantasyCritic.Lib.Services
                 .Where(x => takenGames.Contains(x.MasterGame))
                 .Select(x => new FailedPickupBid(x, "Publisher was outbid.", systemWideValues, currentDate));
 
-            var duplicateBidFailures = duplicateBids.Select(x => new FailedPickupBid(x, "You cannot have multiple bids for the same game.", systemWideValues, currentDate));
+            var duplicateBidFailures = duplicateBids.Select(x => new FailedPickupBid(x, "You cannot have multiple bids for the same game. This bid has been ignored.", systemWideValues, currentDate));
             var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value, systemWideValues, currentDate));
             var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget.", systemWideValues, currentDate));
             var belowMinimumBidFailures = belowMinimumBids.Select(x => new FailedPickupBid(x, "Bid is below the minimum bid amount.", systemWideValues, currentDate));
@@ -273,7 +273,7 @@ namespace FantasyCritic.Lib.Services
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Before this round of bids)", systemWideValues, currentDate);
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game)", systemWideValues, currentDate);
             }
 
             var bestBidsByBidTime = bestBidsByProjectedScore.OrderBy(x => x.PickupBid.Timestamp).ToList();
