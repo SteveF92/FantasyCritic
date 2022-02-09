@@ -162,7 +162,6 @@ import Vue from 'vue';
 import axios from 'axios';
 import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
-import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
 import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
 export default {
@@ -193,7 +192,6 @@ export default {
   },
   components: {
     MasterGamePopover,
-    MasterGamesTable,
     MasterGameTagBadge
   },
   computed: {

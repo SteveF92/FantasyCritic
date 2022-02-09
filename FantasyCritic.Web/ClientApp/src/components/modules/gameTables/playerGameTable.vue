@@ -26,9 +26,9 @@
           </td>
           <td></td>
           <td></td>
-          <td></td>
           <td id="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</td>
-          <td id="total-column" class="success">{{publisher.totalFantasyPoints | score(2)}}</td>
+          <td id="total-column" class="bg-info">{{publisher.totalProjectedPoints | score(2)}}</td>
+          <td id="total-column" class="bg-success">{{publisher.totalFantasyPoints | score(2)}}</td>
         </tr>
       </tbody>
     </table>
