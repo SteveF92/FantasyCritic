@@ -20,9 +20,14 @@
           <hr />
         </div>
 
-        <h2>Bid/Drop Results</h2>
-        <div v-for="leagueActionSet in leagueActionSets" class="row">
-          <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
+        <h2>Detailed Bid/Drop Results</h2>
+        <div v-for="leagueActionSet in leagueActionSets" class="history-table">
+          <faqCollapse>
+            <div slot="question">{{leagueActionSet.processTime | longDate}}</div>
+            <div slot="answer">
+              <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
+            </div>
+          </faqCollapse>
         </div>
 
         <h2>Full Actions History</h2>
@@ -50,6 +55,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import LeagueActionSet from '@/components/modules/leagueActionSet';
+import FaqCollapse from '@/components/modules/faqCollapse';
 
 export default {
   data() {
@@ -68,14 +74,21 @@ export default {
       ],
       sortBy: 'timestamp',
       sortDesc: true,
-      forbidden: false
+      forbidden: false,
+      lastID: 1
     };
   },
   components: {
-    LeagueActionSet
+    LeagueActionSet,
+    FaqCollapse
   },
   props: ['leagueid', 'year'],
   methods: {
+    getCollapseID() {
+      let thisID = this.lastID;
+      this.lastID = this.lastID + 1;
+      return thisID;
+    },
     fetchLeagueActions() {
       axios
         .get('/api/League/GetLeagueActions?leagueID=' + this.leagueid + '&year=' + this.year)

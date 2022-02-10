@@ -3,9 +3,6 @@
     <h3 v-if="mode === 'dryRunPage'">
       <router-link :to="{ name: 'league', params: { leagueid: leagueActionSet.leagueID, year: leagueActionSet.year }}">{{leagueActionSet.leagueName}} - {{leagueActionSet.year}}</router-link>
     </h3>
-    <h3 v-if="mode === 'leagueHistory'">
-      {{leagueActionSet.processTime | longDate}}
-    </h3>
     <div v-if="leagueActionSet.drops.length > 0">
       <h4>Drops</h4>
       <b-table :items="leagueActionSet.drops"
@@ -73,19 +70,19 @@ export default {
     return {
       dropFields: [
         { key: 'publisherName', label: 'Publisher Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
+        { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame', label: 'Master Game', sortable: true, thClass: 'bg-primary' },
         { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' }
       ],
       bidFields: [
         { key: 'publisherName', label: 'Publisher Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
+        { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame', label: 'Master Game', sortable: true, thClass: 'bg-primary' },
         { key: 'counterPick', label: 'Counter Pick', sortable: true, thClass: 'bg-primary' },
         { key: 'priority', label: 'Priority', sortable: true, thClass: 'bg-primary' },
         { key: 'bidAmount', label: 'Bid Amount', sortable: true, thClass: 'bg-primary' },
         { key: 'conditionalDropPublisherGame', label: 'Conditional Drop', sortable: true, thClass: 'bg-primary' },
-        { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points', sortable: true, thClass: 'bg-primary' },
+        { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points (for tiebreaks)', sortable: true, thClass: 'bg-primary' },
         { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' },
         { key: 'outcome', label: 'Outcome', sortable: true, thClass: 'bg-primary' }
       ],

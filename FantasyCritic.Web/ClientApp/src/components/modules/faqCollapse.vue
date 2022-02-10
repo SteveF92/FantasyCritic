@@ -1,4 +1,4 @@
-..<template>
+<template>
   <b-card no-body class="mb-1">
     <b-card-header header-tag="header" class="p-1" role="tab">
       <div v-b-toggle="'accordion-' + _uid" class="btn btn-secondary faq-button">
