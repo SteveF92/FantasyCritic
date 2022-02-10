@@ -25,5 +25,10 @@ namespace FantasyCritic.MySQL.Entities
         public Guid ProcessSetID { get; set; }
         public Instant ProcessTime { get; set; }
         public string ProcessName { get; set; }
+
+        public ActionProcessingSetMetadata ToDomain()
+        {
+            return new ActionProcessingSetMetadata(ProcessSetID, ProcessTime, ProcessName);
+        }
     }
 }

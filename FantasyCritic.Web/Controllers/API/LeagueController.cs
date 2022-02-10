@@ -397,7 +397,7 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSet(leagueYear.Value);
+            var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSets(leagueYear.Value);
 
             var currentDate = _clock.GetToday();
             var viewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));

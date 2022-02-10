@@ -336,9 +336,24 @@ namespace FantasyCritic.Lib.Services
             return _fantasyCriticRepo.GetLeagueActions(leagueYear);
         }
 
-        public async Task<IReadOnlyList<LeagueActionProcessingSet>> GetLeagueActionProcessingSet(LeagueYear leagueYear)
+        public async Task<IReadOnlyList<LeagueActionProcessingSet>> GetLeagueActionProcessingSets(LeagueYear leagueYear)
         {
-            throw new NotImplementedException();
+            var publishersForLeagueYear = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+            var processSets = await _interLeagueService.GetActionProcessingSets();
+            var bidsForLeague = await _fantasyCriticRepo.GetProcessedPickupBids(leagueYear, publishersForLeagueYear);
+            var dropsForLeague = await _fantasyCriticRepo.GetProcessedDropRequests(leagueYear, publishersForLeagueYear);
+            var bidsByProcessSet = bidsForLeague.ToLookup(x => x.ProcessSetID);
+            var dropsByProcessSet = dropsForLeague.ToLookup(x => x.ProcessSetID);
+
+            List<LeagueActionProcessingSet> processingSets = new List<LeagueActionProcessingSet>();
+            foreach (var processSet in processSets)
+            {
+                var bids = bidsByProcessSet[processSet.ProcessSetID];
+                var drops = dropsByProcessSet[processSet.ProcessSetID];
+                processingSets.Add(new LeagueActionProcessingSet(leagueYear, processSet.ProcessSetID, processSet.ProcessTime, processSet.ProcessName, drops, bids));
+            }
+
+            return processingSets;
         }
 
         public async Task<FinalizedActionProcessingResults> GetActionProcessingDryRun(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -215,6 +216,11 @@ namespace FantasyCritic.Lib.Services
         public Task FinishYear(SupportedYear supportedYear)
         {
             return _fantasyCriticRepo.FinishYear(supportedYear);
+        }
+
+        public Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets()
+        {
+            return _fantasyCriticRepo.GetActionProcessingSets();
         }
     }
 }

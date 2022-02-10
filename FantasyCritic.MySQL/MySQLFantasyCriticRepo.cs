@@ -464,6 +464,42 @@ namespace FantasyCritic.MySQL
             return list;
         }
 
+        public async Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(LeagueYear leagueYear, IReadOnlyList<Publisher> allPublishersInLeagueYear)
+        {
+            var publisherGameDictionary = allPublishersInLeagueYear
+                .SelectMany(x => x.PublisherGames)
+                .Where(x => x.MasterGame.HasValue)
+                .ToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
+
+            string sql = "select * from vw_league_pickupbid where LeagueID = @leagueID and Year = @year and Successful IS NOT NULL";
+            var queryObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year
+            };
+
+            var publisherDictionary = allPublishersInLeagueYear.ToDictionary(x => x.PublisherID);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, queryObject);
+                List<PickupBid> domainBids = new List<PickupBid>();
+                foreach (var bidEntity in bidEntities)
+                {
+                    var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
+                    Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
+                    if (bidEntity.ConditionalDropMasterGameID.HasValue)
+                    {
+                        conditionalDropPublisherGame = publisherGameDictionary[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)];
+                    }
+
+                    PickupBid domain = bidEntity.ToDomain(publisherDictionary[bidEntity.PublisherID], masterGame.Value, conditionalDropPublisherGame, leagueYear);
+                    domainBids.Add(domain);
+                }
+
+                return domainBids;
+            }
+        }
 
         public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear) => GetPickupBids(year, allLeagueYears, allPublishersForYear, false);
 
@@ -509,6 +545,33 @@ namespace FantasyCritic.MySQL
 
                 IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> finalDictionary = pickupBidsByLeagueYear.SealDictionary();
                 return finalDictionary;
+            }
+        }
+
+        public async Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(LeagueYear leagueYear, IReadOnlyList<Publisher> allPublishersInLeagueYear)
+        {
+            string sql = "select * from vw_league_droprequest where LeagueID = @leagueID and Year = @year and Successful IS NOT NULL";
+            var queryObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year
+            };
+
+            var publisherDictionary = allPublishersInLeagueYear.ToDictionary(x => x.PublisherID);
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var dropEntities = await connection.QueryAsync<DropRequestEntity>(sql, queryObject);
+                List<DropRequest> domainDrops = new List<DropRequest>();
+                foreach (var dropEntity in dropEntities)
+                {
+                    var masterGame = await _masterGameRepo.GetMasterGame(dropEntity.MasterGameID);
+
+                    DropRequest domain = dropEntity.ToDomain(publisherDictionary[dropEntity.PublisherID], masterGame.Value, leagueYear);
+                    domainDrops.Add(domain);
+                }
+
+                return domainDrops;
             }
         }
 
@@ -2409,6 +2472,18 @@ namespace FantasyCritic.MySQL
                     "join tbl_league_year on (vw_league.LeagueID = tbl_league_year.LeagueID) " +
                     "where PlayStatus <> 'NotStartedDraft' and vw_league.LeagueID = @leagueID and IsDeleted = 0;",
                     selectObject);
+            }
+        }
+
+        public async Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets()
+        {
+            string sql = "select * from tbl_meta_actionprocessingset;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var results = await connection.QueryAsync<ActionProcessingSetEntity>(sql);
+
+                var domains = results.Select(x => x.ToDomain()).ToList();
+                return domains;
             }
         }
 

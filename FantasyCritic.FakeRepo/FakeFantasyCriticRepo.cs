@@ -325,6 +325,11 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(LeagueYear leagueYear, IReadOnlyList<Publisher> allPublishersInLeagueYear)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
         {
             throw new NotImplementedException();
@@ -337,6 +342,11 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(LeagueYear leagueYear, IReadOnlyList<Publisher> allPublishersInLeagueYear)
         {
             throw new NotImplementedException();
         }
@@ -494,6 +504,11 @@ namespace FantasyCritic.FakeRepo
             }
 
             return Task.FromResult(false);
+        }
+
+        public Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets()
+        {
+            throw new NotImplementedException();
         }
 
         public Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
