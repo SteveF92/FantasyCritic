@@ -4,13 +4,13 @@
       <div v-b-toggle="'accordion-' + _uid" class="btn btn-secondary faq-button">
         <font-awesome-icon icon="plus-circle" size="lg" transform="down-2" class="when-closed faq-icon" />
         <font-awesome-icon icon="minus-circle" size="lg" transform="down-2" class="when-opened faq-icon" />
-        <slot name="question"></slot>
+        <slot name="header"></slot>
       </div>
     </b-card-header>
     <b-collapse :id="'accordion-' + _uid" :visible="defaultVisible" accordion="my-accordion" role="tabpanel">
       <b-card-body>
         <p class="card-text">
-          <slot name="answer"></slot>
+          <slot name="body"></slot>
         </p>
       </b-card-body>
     </b-collapse>

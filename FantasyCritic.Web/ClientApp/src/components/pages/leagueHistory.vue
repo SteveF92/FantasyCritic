@@ -22,12 +22,12 @@
 
         <h2>Detailed Bid/Drop Results</h2>
         <div v-for="leagueActionSet in leagueActionSets" class="history-table">
-          <faqCollapse>
-            <div slot="question">{{leagueActionSet.processTime | longDate}}</div>
-            <div slot="answer">
+          <collapseCard>
+            <div slot="header">{{leagueActionSet.processTime | longDate}}</div>
+            <div slot="body">
               <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
             </div>
-          </faqCollapse>
+          </collapseCard>
         </div>
 
         <h2>Full Actions History</h2>
@@ -55,7 +55,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import LeagueActionSet from '@/components/modules/leagueActionSet';
-import FaqCollapse from '@/components/modules/faqCollapse';
+import CollapseCard from '@/components/modules/collapseCard';
 
 export default {
   data() {
@@ -80,7 +80,7 @@ export default {
   },
   components: {
     LeagueActionSet,
-    FaqCollapse
+    CollapseCard
   },
   props: ['leagueid', 'year'],
   methods: {
