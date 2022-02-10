@@ -19,7 +19,13 @@
           </div>
           <hr />
         </div>
-        <h2>Actions</h2>
+
+        <h2>Bid/Drop Results</h2>
+        <div v-for="leagueActionSet in leagueActionSets" class="row">
+          <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
+        </div>
+
+        <h2>Full Actions History</h2>
         <div class="history-table">
           <b-table :sort-by.sync="sortBy"
                    :sort-desc.sync="sortDesc"
@@ -43,6 +49,7 @@
 <script>
 import Vue from 'vue';
 import axios from 'axios';
+import LeagueActionSet from '@/components/modules/leagueActionSet';
 
 export default {
   data() {
@@ -51,6 +58,7 @@ export default {
       league: null,
       leagueYear: null,
       leagueActions: [],
+      leagueActionSets: [],
       actionFields: [
         { key: 'publisherName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
@@ -63,6 +71,9 @@ export default {
       forbidden: false
     };
   },
+  components: {
+    LeagueActionSet
+  },
   props: ['leagueid', 'year'],
   methods: {
     fetchLeagueActions() {
@@ -70,6 +81,14 @@ export default {
         .get('/api/League/GetLeagueActions?leagueID=' + this.leagueid + '&year=' + this.year)
         .then(response => {
           this.leagueActions = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
+    },
+    fetchLeagueActionSets() {
+      axios
+        .get('/api/League/GetLeagueActionSets?leagueID=' + this.leagueid + '&year=' + this.year)
+        .then(response => {
+          this.leagueActionSets = response.data;
         })
         .catch(returnedError => (this.error = returnedError));
     },
@@ -114,6 +133,7 @@ export default {
     this.fetchLeague();
     this.fetchLeagueYear();
     this.fetchLeagueActions();
+    this.fetchLeagueActionSets();
   }
 };
 </script>

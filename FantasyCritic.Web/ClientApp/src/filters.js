@@ -32,7 +32,7 @@ Vue.filter('money', function (value) {
 
 Vue.filter('dateTime', function(value) {
   if (value) {
-    return moment(String(value)).local().format('MMMM Do YYYY, h:mm:ss a');
+    return moment(String(value)).local().format('MMMM Do, YYYY, h:mm:ss a');
   }
   return '';
 });
@@ -40,6 +40,13 @@ Vue.filter('dateTime', function(value) {
 Vue.filter('date', function (value) {
   if (value) {
     return moment(String(value)).local().format('YYYY-MM-DD');
+  }
+  return '';
+});
+
+Vue.filter('longDate', function (value) {
+  if (value) {
+    return moment(String(value)).local().format('MMMM Do, YYYY');
   }
   return '';
 });

@@ -4,7 +4,7 @@
       <router-link :to="{ name: 'league', params: { leagueid: leagueActionSet.leagueID, year: leagueActionSet.year }}">{{leagueActionSet.leagueName}} - {{leagueActionSet.year}}</router-link>
     </h3>
     <h3 v-if="mode === 'leagueHistory'">
-      {{leagueActionSet.processTime}}
+      {{leagueActionSet.processTime | longDate}}
     </h3>
     <div v-if="leagueActionSet.drops.length > 0">
       <h4>Drops</h4>
