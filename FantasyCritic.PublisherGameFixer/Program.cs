@@ -51,10 +51,14 @@ namespace FantasyCritic.PublisherGameFixer
             {
                 var leagueYears = await fantasyCriticRepo.GetLeagueYears(supportedYear.Year, true);
                 var allPublishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears, true);
+                var allBids = await fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year, leagueYears, allPublishers);
+                var bidLookup = allBids.Where(x => x.Successful.HasValue && x.Successful.Value).ToLookup(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
                 var publishersByLeagueYear = allPublishers.GroupBy(x => x.LeagueYear);
+
                 foreach (var publisherGroup in publishersByLeagueYear)
                 {
-                    var allDraftedCounterPicksForLeague = publisherGroup.SelectMany(x => x.PublisherGames).Where(x => x.CounterPick && x.OverallDraftPosition.HasValue).OrderBy(x => x.Timestamp).ToList();
+                    var allPublisherGames = publisherGroup.SelectMany(x => x.PublisherGames).ToList();
+                    var allDraftedCounterPicksForLeague = allPublisherGames.Where(x => x.CounterPick && x.OverallDraftPosition.HasValue).OrderBy(x => x.Timestamp).ToList();
                     for (var index = 0; index < allDraftedCounterPicksForLeague.Count; index++)
                     {
                         var draftedCounterPick = allDraftedCounterPicksForLeague[index];
@@ -69,6 +73,26 @@ namespace FantasyCritic.PublisherGameFixer
                             var draftedCounterPick = allDraftedCounterPicksForPublisher[index];
                             draftPositionUpdateEntities.Add(new PublisherGameDraftPositionUpdateEntity(draftedCounterPick.PublisherGameID, index + 1));
                         }
+                    }
+
+                    var publisherGamesWithMasterGames = allPublisherGames.Where(x => x.MasterGame.HasValue).ToList();
+                    foreach (var publisherGame in publisherGamesWithMasterGames)
+                    {
+                        var possibleBids = bidLookup[(publisherGame.PublisherID, publisherGame.MasterGame.Value.MasterGame.MasterGameID)];
+                        var bidsBeforeAcquisition = possibleBids.Where(x => x.Timestamp < publisherGame.Timestamp).ToList();
+                        if (!bidsBeforeAcquisition.Any())
+                        {
+                            continue;
+                        }
+
+                        var lastBidBeforeAcquisition = bidsBeforeAcquisition.MaxBy(x => x.Timestamp).ToList();
+                        if (lastBidBeforeAcquisition.Count() != 1)
+                        {
+                            throw new Exception("Something strange!");
+                        }
+
+                        var bestBid = lastBidBeforeAcquisition.Single();
+                        bidAmountUpdateEntities.Add(new PublisherGameBidAmountUpdateEntity(publisherGame.PublisherGameID, bestBid.BidAmount));
                     }
                 }
             }
@@ -98,23 +122,23 @@ namespace FantasyCritic.PublisherGameFixer
                 updateStatements.Add(sql);
             }
 
-            var batches = updateStatements.Batch(500).ToList();
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                using (var transaction = await connection.BeginTransactionAsync())
-                {
-                    for (var index = 0; index < batches.Count; index++)
-                    {
-                        Console.WriteLine($"Running publisher game update batch {index + 1}/{batches.Count}");
-                        var batch = batches[index];
-                        var joinedSQL = string.Join('\n', batch);
-                        await connection.ExecuteAsync(joinedSQL, transaction: transaction);
-                    }
+            //var batches = updateStatements.Batch(500).ToList();
+            //using (var connection = new MySqlConnection(_connectionString))
+            //{
+            //    await connection.OpenAsync();
+            //    using (var transaction = await connection.BeginTransactionAsync())
+            //    {
+            //        for (var index = 0; index < batches.Count; index++)
+            //        {
+            //            Console.WriteLine($"Running publisher game update batch {index + 1}/{batches.Count}");
+            //            var batch = batches[index];
+            //            var joinedSQL = string.Join('\n', batch);
+            //            await connection.ExecuteAsync(joinedSQL, transaction: transaction);
+            //        }
 
-                    await transaction.CommitAsync();
-                }
-            }
+            //        await transaction.CommitAsync();
+            //    }
+            //}
         }
     }
 }
