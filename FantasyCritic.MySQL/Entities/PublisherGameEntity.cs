@@ -34,6 +34,8 @@ namespace FantasyCritic.MySQL.Entities
             {
                 MasterGameID = publisherGame.MasterGame.Value.MasterGame.MasterGameID;
             }
+
+            BidAmount = publisherGame.BidAmount;
         }
 
         public Guid PublisherGameID { get; set; }
@@ -48,11 +50,12 @@ namespace FantasyCritic.MySQL.Entities
         public int SlotNumber { get; set; }
         public int? DraftPosition { get; set; }
         public int? OverallDraftPosition { get; set; }
+        public uint? BidAmount { get; set; }
 
         public PublisherGame ToDomain(Maybe<MasterGameYear> masterGame)
         {
             PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick, 
-                ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, SlotNumber, DraftPosition, OverallDraftPosition);
+                ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, SlotNumber, DraftPosition, OverallDraftPosition, BidAmount);
             return domain;
         }
     }

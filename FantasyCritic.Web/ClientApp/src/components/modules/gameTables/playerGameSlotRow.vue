@@ -97,8 +97,11 @@ export default {
       if (this.game.overallDraftPosition) {
         let numberWithSuffix = GlobalFunctions.ordinal_suffix_of(this.game.overallDraftPosition);
         type = `Drafted ${numberWithSuffix} overall`;
+      }
+      if (this.game.bidAmount) {
+        type = `Picked up for ${numberWithSuffix}`;
       } else {
-        type = 'Picked up';
+        type = 'Acquired';
       }
       let date = moment(this.game.timestamp).format('MMMM Do, YYYY');
       return type + ' on ' + date;

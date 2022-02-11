@@ -347,7 +347,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-                masterGameYear, claimResult.BestSlotNumber.Value, request.DraftPosition, request.OverallDraftPosition);
+                masterGameYear, claimResult.BestSlotNumber.Value, request.DraftPosition, request.OverallDraftPosition, null);
 
             LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
             await _fantasyCriticRepo.AddLeagueAction(leagueAction);
