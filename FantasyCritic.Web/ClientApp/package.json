@@ -47,7 +47,7 @@
     "@vue/cli-plugin-pwa": "^4.5.15",
     "@vue/cli-service": "^4.5.15",
     "jquery": "^3.6.0",
-    "node-sass": "^6.0.1",
+    "node-sass": "^7.0.0",
     "popper.js": "^1.16.1",
     "sass-loader": "^10.2.1",
     "vue-template-compiler": "^2.6.14"
