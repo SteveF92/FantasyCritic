@@ -95,10 +95,8 @@ export default {
     acquireDate() {
       let type = '';
       if (this.game.overallDraftPosition) {
-        let numberWithSuffix = GlobalFunctions.ordinal_suffix_of(this.game.overallDraftPosition);
-        type = `Drafted ${numberWithSuffix} overall`;
-      }
-      if (this.game.bidAmount) {
+        type = `Drafted ${GlobalFunctions.ordinal_suffix_of(this.game.overallDraftPosition)}`;
+      } else if (this.game.bidAmount) {
         type = `Picked up for ${numberWithSuffix}`;
       } else {
         type = 'Acquired';
