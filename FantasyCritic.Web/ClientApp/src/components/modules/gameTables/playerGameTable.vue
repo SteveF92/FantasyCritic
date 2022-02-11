@@ -5,7 +5,7 @@
         <tr class="bg-primary">
           <th scope="col">Game Name</th>
           <th scope="col">Release Date</th>
-          <th scope="col">Date Acquired</th>
+          <th scope="col">Acquired</th>
           <th scope="col">Critic Score</th>
           <th scope="col">
             Projected points

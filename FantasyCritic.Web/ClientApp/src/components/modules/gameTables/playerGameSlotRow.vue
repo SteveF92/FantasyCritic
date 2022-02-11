@@ -71,6 +71,7 @@
 import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import SlotTypeBadge from '@/components/modules/gameTables/slotTypeBadge';
+import GlobalFunctions from '@/globalFunctions';
 
 export default {
   components: {
@@ -92,8 +93,11 @@ export default {
       return moment(this.game.releaseDate).format('MMMM Do, YYYY');
     },
     acquireDate() {
-      let type = 'Drafted';
-      if (!this.game.overallDraftPosition) {
+      let type = '';
+      if (this.game.overallDraftPosition) {
+        let numberWithSuffix = GlobalFunctions.ordinal_suffix_of(this.game.overallDraftPosition);
+        type = `Drafted ${numberWithSuffix} overall`;
+      } else {
         type = 'Picked up';
       }
       let date = moment(this.game.timestamp).format('MMMM Do, YYYY');
