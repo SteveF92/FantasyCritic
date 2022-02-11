@@ -52,7 +52,6 @@ namespace FantasyCritic.PublisherGameFixer
             MySQLMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
             MySQLFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
 
-            var overallDraftPositionUpdateEntities = new List<PublisherGameOverallDraftPositionUpdateEntity>();
             var draftPositionUpdateEntities = new List<PublisherGameDraftPositionUpdateEntity>();
 
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
@@ -76,14 +75,9 @@ namespace FantasyCritic.PublisherGameFixer
                     var allCounterPicksForLeague = allPublisherGames
                         .Where(x => x.CounterPick).OrderBy(x => x.Timestamp)
                         .ToList();
-                    for (var index = 0; index < allCounterPicksForLeague.Count; index++)
-                    {
-                        bool counterPickWasDrafted = index <= publisherGroup.Key.Options.CounterPicksToDraft;
-                        if (counterPickWasDrafted)
-                        {
-                            overallDraftPositionUpdateEntities.Add(new PublisherGameOverallDraftPositionUpdateEntity(allCounterPicksForLeague[index].PublisherGameID, index + 1));
-                        }
-                    }
+                    var overallDraftOrder = allCounterPicksForLeague
+                        .Select((counterPick, index) => (counterPick, index))
+                        .ToDictionary(x => x.counterPick.PublisherGameID, x => x.index);
 
                     foreach (var publisher in publisherGroup)
                     {
@@ -92,33 +86,20 @@ namespace FantasyCritic.PublisherGameFixer
                             .ToList();
                         for (var index = 0; index < allCounterPicksForPublisher.Count; index++)
                         {
-                            bool counterPickWasDrafted = index <= publisherGroup.Key.Options.CounterPicksToDraft;
+                            bool counterPickWasDrafted = index < publisherGroup.Key.Options.CounterPicksToDraft;
                             if (counterPickWasDrafted)
                             {
-                                draftPositionUpdateEntities.Add(new PublisherGameDraftPositionUpdateEntity(allCounterPicksForPublisher[index].PublisherGameID, index + 1));
+                                var overallDraftPosition = overallDraftOrder[allCounterPicksForPublisher[index].PublisherGameID];
+                                var draftPosition = index + 1;
+                                draftPositionUpdateEntities.Add(new PublisherGameDraftPositionUpdateEntity(allCounterPicksForPublisher[index].PublisherGameID, overallDraftPosition, draftPosition));
                             }
                         }
                     }
                 }
             }
 
-            var overallDictionary = overallDraftPositionUpdateEntities.ToDictionary(x => x.PublisherGameID);
-            var positionDictionary = draftPositionUpdateEntities.ToDictionary(x => x.PublisherGameID);
-            var allKeys = overallDictionary.Keys
-                .Concat(positionDictionary.Keys)
-                .Distinct()
-                .ToList();
-
-            List<PublisherGameCombinedUpdateEntity> combinedEntities = new List<PublisherGameCombinedUpdateEntity>();
-            foreach (var key in allKeys)
-            {
-                overallDictionary.TryGetValue(key, out var overallEntity);
-                positionDictionary.TryGetValue(key, out var positionEntity);
-                combinedEntities.Add(new PublisherGameCombinedUpdateEntity(key, overallEntity?.OverallDraftPosition, positionEntity?.DraftPosition));
-            }
-
             List<string> updateStatements = new List<string>();
-            foreach (var updateEntity in combinedEntities)
+            foreach (var updateEntity in draftPositionUpdateEntities)
             {
                 string sql = $"UPDATE tbl_league_publishergame SET OverallDraftPosition = {updateEntity.OverallDraftPosition}, DraftPosition = {updateEntity.DraftPosition} WHERE PublisherGameID = '{updateEntity.PublisherGameID}';";
                 updateStatements.Add(sql);
