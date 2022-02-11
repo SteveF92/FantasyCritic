@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using Dapper;
 using Dapper.NodaTime;
@@ -24,6 +25,7 @@ namespace FantasyCritic.PublisherGameFixer
 {
     class Program
     {
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private static string _connectionString;
         private static IClock _clock;
 
@@ -39,53 +41,144 @@ namespace FantasyCritic.PublisherGameFixer
             _clock = SystemClock.Instance;
             DapperNodaTimeSetup.Register();
 
-            await FixPublisherGames();
+            await FixDraftPositions();
+            await FixBidAmounts();
         }
 
-        private static async Task FixPublisherGames()
+        private static async Task FixDraftPositions()
         {
+            _logger.Info("Running draft position fixes");
             MySQLFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_connectionString, _clock);
             MySQLMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
             MySQLFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
 
             var overallDraftPositionUpdateEntities = new List<PublisherGameOverallDraftPositionUpdateEntity>();
             var draftPositionUpdateEntities = new List<PublisherGameDraftPositionUpdateEntity>();
-            var bidAmountUpdateEntities = new List<PublisherGameBidAmountUpdateEntity>();
 
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
-            foreach (var supportedYear in supportedYears)
+            var realYears = supportedYears.Where(x => x.Year > 2018).ToList();
+            foreach (var supportedYear in realYears)
             {
+                _logger.Info($"Running for {supportedYear.Year}");
                 var leagueYears = await fantasyCriticRepo.GetLeagueYears(supportedYear.Year, true);
                 var allPublishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears, true);
-                var allBids = await fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year, leagueYears, allPublishers);
-                var bidLookup = allBids.Where(x => x.Successful.HasValue && x.Successful.Value).ToLookup(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
-                var publishersByLeagueYear = allPublishers.GroupBy(x => x.LeagueYear);
+                var publishersByLeagueYear = allPublishers.GroupBy(x => x.LeagueYear).ToList();
+                _logger.Info($"Got all data for {supportedYear.Year}");
 
-                foreach (var publisherGroup in publishersByLeagueYear)
+                for (var i = 0; i < publishersByLeagueYear.Count; i++)
                 {
-                    var allPublisherGames = publisherGroup.SelectMany(x => x.PublisherGames).ToList();
-                    var allDraftedCounterPicksForLeague = allPublisherGames.Where(x => x.CounterPick && x.OverallDraftPosition.HasValue).OrderBy(x => x.Timestamp).ToList();
-                    for (var index = 0; index < allDraftedCounterPicksForLeague.Count; index++)
+                    if (i % 100 == 0)
                     {
-                        var draftedCounterPick = allDraftedCounterPicksForLeague[index];
-                        overallDraftPositionUpdateEntities.Add(new PublisherGameOverallDraftPositionUpdateEntity(draftedCounterPick.PublisherGameID, index + 1));
+                        _logger.Info($"Running league year {i+1}/{publishersByLeagueYear.Count}");
+                    }
+                    var publisherGroup = publishersByLeagueYear[i];
+                    var allPublisherGames = publisherGroup.SelectMany(x => x.PublisherGames).ToList();
+                    var allCounterPicksForLeague = allPublisherGames
+                        .Where(x => x.CounterPick).OrderBy(x => x.Timestamp)
+                        .ToList();
+                    for (var index = 0; index < allCounterPicksForLeague.Count; index++)
+                    {
+                        bool counterPickWasDrafted = index <= publisherGroup.Key.Options.CounterPicksToDraft;
+                        if (counterPickWasDrafted)
+                        {
+                            overallDraftPositionUpdateEntities.Add(new PublisherGameOverallDraftPositionUpdateEntity(allCounterPicksForLeague[index].PublisherGameID, index + 1));
+                        }
                     }
 
                     foreach (var publisher in publisherGroup)
                     {
-                        var allDraftedCounterPicksForPublisher = publisher.PublisherGames.Where(x => x.CounterPick && x.OverallDraftPosition.HasValue).OrderBy(x => x.Timestamp).ToList();
-                        for (var index = 0; index < allDraftedCounterPicksForPublisher.Count; index++)
+                        var allCounterPicksForPublisher = publisher.PublisherGames
+                            .Where(x => x.CounterPick).OrderBy(x => x.Timestamp)
+                            .ToList();
+                        for (var index = 0; index < allCounterPicksForPublisher.Count; index++)
                         {
-                            var draftedCounterPick = allDraftedCounterPicksForPublisher[index];
-                            draftPositionUpdateEntities.Add(new PublisherGameDraftPositionUpdateEntity(draftedCounterPick.PublisherGameID, index + 1));
+                            bool counterPickWasDrafted = index <= publisherGroup.Key.Options.CounterPicksToDraft;
+                            if (counterPickWasDrafted)
+                            {
+                                draftPositionUpdateEntities.Add(new PublisherGameDraftPositionUpdateEntity(allCounterPicksForPublisher[index].PublisherGameID, index + 1));
+                            }
                         }
                     }
+                }
+            }
 
-                    var publisherGamesWithMasterGames = allPublisherGames.Where(x => x.MasterGame.HasValue).ToList();
-                    foreach (var publisherGame in publisherGamesWithMasterGames)
+            var overallDictionary = overallDraftPositionUpdateEntities.ToDictionary(x => x.PublisherGameID);
+            var positionDictionary = draftPositionUpdateEntities.ToDictionary(x => x.PublisherGameID);
+            var allKeys = overallDictionary.Keys
+                .Concat(positionDictionary.Keys)
+                .Distinct()
+                .ToList();
+
+            List<PublisherGameCombinedUpdateEntity> combinedEntities = new List<PublisherGameCombinedUpdateEntity>();
+            foreach (var key in allKeys)
+            {
+                overallDictionary.TryGetValue(key, out var overallEntity);
+                positionDictionary.TryGetValue(key, out var positionEntity);
+                combinedEntities.Add(new PublisherGameCombinedUpdateEntity(key, overallEntity?.OverallDraftPosition, positionEntity?.DraftPosition));
+            }
+
+            List<string> updateStatements = new List<string>();
+            foreach (var updateEntity in combinedEntities)
+            {
+                string sql = $"UPDATE tbl_league_publishergame SET OverallDraftPosition = {updateEntity.OverallDraftPosition}, DraftPosition = {updateEntity.DraftPosition} WHERE PublisherGameID = '{updateEntity.PublisherGameID}';";
+                updateStatements.Add(sql);
+            }
+
+            //var batches = updateStatements.Batch(500).ToList();
+            //using (var connection = new MySqlConnection(_connectionString))
+            //{
+            //    await connection.OpenAsync();
+            //    using (var transaction = await connection.BeginTransactionAsync())
+            //    {
+            //        for (var index = 0; index < batches.Count; index++)
+            //        {
+            //            Console.WriteLine($"Running publisher game update batch {index + 1}/{batches.Count}");
+            //            var batch = batches[index];
+            //            var joinedSQL = string.Join('\n', batch);
+            //            await connection.ExecuteAsync(joinedSQL, transaction: transaction);
+            //        }
+
+            //        await transaction.CommitAsync();
+            //    }
+            //}
+        }
+
+        private static async Task FixBidAmounts()
+        {
+            _logger.Info("Running bid amount fixes");
+            MySQLFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_connectionString, _clock);
+            MySQLMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
+            MySQLFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
+
+            var bidAmountUpdateEntities = new List<PublisherGameBidAmountUpdateEntity>();
+
+            var supportedYears = await fantasyCriticRepo.GetSupportedYears();
+            var realYears = supportedYears.Where(x => x.Year > 2018).ToList();
+            foreach (var supportedYear in realYears)
+            {
+                _logger.Info($"Running for {supportedYear.Year}");
+                var leagueYears = await fantasyCriticRepo.GetLeagueYears(supportedYear.Year, true);
+                var allPublishers = await fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears, true);
+                var allBids = await fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year, leagueYears, allPublishers);
+                var bidLookup = allBids.Where(x => x.Successful.HasValue && x.Successful.Value).ToLookup(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
+                var publishersByLeagueYear = allPublishers.GroupBy(x => x.LeagueYear).ToList();
+                _logger.Info($"Got all data for {supportedYear.Year}");
+
+                for (var i = 0; i < publishersByLeagueYear.Count; i++)
+                {
+                    if (i % 100 == 0)
+                    {
+                        _logger.Info($"Running league year {i + 1}/{publishersByLeagueYear.Count}");
+                    }
+                    var publisherGroup = publishersByLeagueYear[i];
+                    var allPublisherGames = publisherGroup.SelectMany(x => x.PublisherGames).ToList();
+
+                    var undraftedPublisherGamesWithMasterGames = allPublisherGames.Where(x => x.MasterGame.HasValue && !x.OverallDraftPosition.HasValue).ToList();
+                    foreach (var publisherGame in undraftedPublisherGamesWithMasterGames)
                     {
                         var possibleBids = bidLookup[(publisherGame.PublisherID, publisherGame.MasterGame.Value.MasterGame.MasterGameID)];
-                        var bidsBeforeAcquisition = possibleBids.Where(x => x.Timestamp < publisherGame.Timestamp).ToList();
+                        var bidsBeforeAcquisition =
+                            possibleBids.Where(x => x.Timestamp < publisherGame.Timestamp).ToList();
                         if (!bidsBeforeAcquisition.Any())
                         {
                             continue;
@@ -102,29 +195,10 @@ namespace FantasyCritic.PublisherGameFixer
                     }
                 }
             }
-
-            var overallDictionary = overallDraftPositionUpdateEntities.ToDictionary(x => x.PublisherGameID);
-            var positionDictionary = draftPositionUpdateEntities.ToDictionary(x => x.PublisherGameID);
-            var bidDictionary = bidAmountUpdateEntities.ToDictionary(x => x.PublisherGameID);
-            var allKeys = overallDictionary.Keys
-                .Concat(positionDictionary.Keys)
-                .Concat(bidDictionary.Keys)
-                .Distinct()
-                .ToList();
-
-            List<PublisherGameCombinedUpdateEntity> combinedEntities = new List<PublisherGameCombinedUpdateEntity>();
-            foreach (var key in allKeys)
-            {
-                overallDictionary.TryGetValue(key, out var overallEntity);
-                positionDictionary.TryGetValue(key, out var positionEntity);
-                bidDictionary.TryGetValue(key, out var bidEntity);
-                combinedEntities.Add(new PublisherGameCombinedUpdateEntity(key, bidEntity?.BidAmount, overallEntity?.OverallDraftPosition, positionEntity?.DraftPosition));
-            }
-
             List<string> updateStatements = new List<string>();
-            foreach (var updateEntity in combinedEntities)
+            foreach (var updateEntity in bidAmountUpdateEntities)
             {
-                string sql = $"UPDATE tbl_league_publishergame SET BidAmount = {updateEntity.BidAmount}, OverallDraftPosition = {updateEntity.OverallDraftPosition}, DraftPosition = {updateEntity.DraftPosition} WHERE PublisherGameID = '{updateEntity.PublisherGameID}';";
+                string sql = $"UPDATE tbl_league_publishergame SET BidAmount = {updateEntity.BidAmount} WHERE PublisherGameID = '{updateEntity.PublisherGameID}';";
                 updateStatements.Add(sql);
             }
 

@@ -517,7 +517,7 @@ namespace FantasyCritic.MySQL
             var publisherGameDictionary = allPublishersForYear
                 .SelectMany(x => x.PublisherGames)
                 .Where(x => x.MasterGame.HasValue)
-                .ToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
+                .GroupToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -535,7 +535,7 @@ namespace FantasyCritic.MySQL
                     {
                         if (publisherGameDictionary.ContainsKey((bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)))
                         {
-                            conditionalDropPublisherGame = publisherGameDictionary[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)];
+                            conditionalDropPublisherGame = publisherGameDictionary[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].Single();
                         }
                     }
 
