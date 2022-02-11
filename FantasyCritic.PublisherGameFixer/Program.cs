@@ -17,6 +17,7 @@ using NodaTime;
 using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
 using FantasyCritic.Lib.Domain;
+using Microsoft.Extensions.Configuration;
 using MoreLinq;
 
 namespace FantasyCritic.PublisherGameFixer
@@ -28,15 +29,20 @@ namespace FantasyCritic.PublisherGameFixer
 
         static async Task Main(string[] args)
         {
-            _connectionString = ConfigurationManager.AppSettings["ConnectionString"];
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
+                .Build();
+
+            _connectionString = config["ConnectionString"];
 
             _clock = SystemClock.Instance;
             DapperNodaTimeSetup.Register();
 
-            await InitializeSpecialRosterSlots();
+            await FixPublisherGames();
         }
 
-        private static async Task InitializeSpecialRosterSlots()
+        private static async Task FixPublisherGames()
         {
             MySQLFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_connectionString, _clock);
             MySQLMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
