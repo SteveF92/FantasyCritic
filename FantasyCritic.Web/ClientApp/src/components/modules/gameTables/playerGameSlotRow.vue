@@ -97,7 +97,7 @@ export default {
       if (this.game.overallDraftPosition) {
         type = `Drafted ${GlobalFunctions.ordinal_suffix_of(this.game.overallDraftPosition)}`;
       } else if (this.game.bidAmount) {
-        type = `Picked up for ${this.game.bidAmount}`;
+        type = 'Picked up for $' + this.game.bidAmount;
       } else {
         type = 'Acquired';
       }
