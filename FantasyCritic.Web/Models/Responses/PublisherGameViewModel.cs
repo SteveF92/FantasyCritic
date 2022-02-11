@@ -47,6 +47,7 @@ namespace FantasyCritic.Web.Models.Responses
             WillRelease = publisherGame.WillRelease();
             ManualWillNotRelease = publisherGame.ManualWillNotRelease;
             OverallDraftPosition = publisherGame.OverallDraftPosition;
+            BidAmount = publisherGame.BidAmount;
             SlotNumber = publisherGame.SlotNumber;
             CounterPicked = counterPicked;
             DropBlocked = counterPicked && counterPicksBlockDrops;
@@ -63,6 +64,7 @@ namespace FantasyCritic.Web.Models.Responses
         
         public MasterGameYearViewModel MasterGame { get; }
         public int? OverallDraftPosition { get; }
+        public uint? BidAmount { get; }
         public int SlotNumber { get; }
 
         public bool Linked { get; }
