@@ -96,7 +96,7 @@ export default {
       let type = '';
       if (this.game.overallDraftPosition) {
         type = `Drafted ${GlobalFunctions.ordinal_suffix_of(this.game.overallDraftPosition)}`;
-      } else if (this.game.bidAmount) {
+      } else if (this.game.bidAmount || this.game.bidAmount === 0) {
         type = 'Picked up for $' + this.game.bidAmount;
       } else {
         type = 'Acquired';
