@@ -89,7 +89,7 @@ namespace FantasyCritic.PublisherGameFixer
                             bool counterPickWasDrafted = index < publisherGroup.Key.Options.CounterPicksToDraft;
                             if (counterPickWasDrafted)
                             {
-                                var overallDraftPosition = overallDraftOrder[allCounterPicksForPublisher[index].PublisherGameID];
+                                var overallDraftPosition = overallDraftOrder[allCounterPicksForPublisher[index].PublisherGameID] + 1;
                                 var draftPosition = index + 1;
                                 draftPositionUpdateEntities.Add(new PublisherGameDraftPositionUpdateEntity(allCounterPicksForPublisher[index].PublisherGameID, overallDraftPosition, draftPosition));
                             }
@@ -105,23 +105,26 @@ namespace FantasyCritic.PublisherGameFixer
                 updateStatements.Add(sql);
             }
 
-            //var batches = updateStatements.Batch(500).ToList();
-            //using (var connection = new MySqlConnection(_connectionString))
-            //{
-            //    await connection.OpenAsync();
-            //    using (var transaction = await connection.BeginTransactionAsync())
-            //    {
-            //        for (var index = 0; index < batches.Count; index++)
-            //        {
-            //            Console.WriteLine($"Running publisher game update batch {index + 1}/{batches.Count}");
-            //            var batch = batches[index];
-            //            var joinedSQL = string.Join('\n', batch);
-            //            await connection.ExecuteAsync(joinedSQL, transaction: transaction);
-            //        }
+            _logger.Info("Starting database updates");
+            var batches = updateStatements.Batch(500).ToList();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    for (var index = 0; index < batches.Count; index++)
+                    {
+                        _logger.Info($"Running publisher game update batch {index + 1}/{batches.Count}");
+                        var batch = batches[index];
+                        var joinedSQL = string.Join('\n', batch);
+                        await connection.ExecuteAsync(joinedSQL, transaction: transaction);
+                    }
 
-            //        await transaction.CommitAsync();
-            //    }
-            //}
+                    await transaction.CommitAsync();
+                }
+            }
+
+            _logger.Info("Done running draft position fixes");
         }
 
         private static async Task FixBidAmounts()
@@ -183,23 +186,26 @@ namespace FantasyCritic.PublisherGameFixer
                 updateStatements.Add(sql);
             }
 
-            //var batches = updateStatements.Batch(500).ToList();
-            //using (var connection = new MySqlConnection(_connectionString))
-            //{
-            //    await connection.OpenAsync();
-            //    using (var transaction = await connection.BeginTransactionAsync())
-            //    {
-            //        for (var index = 0; index < batches.Count; index++)
-            //        {
-            //            Console.WriteLine($"Running publisher game update batch {index + 1}/{batches.Count}");
-            //            var batch = batches[index];
-            //            var joinedSQL = string.Join('\n', batch);
-            //            await connection.ExecuteAsync(joinedSQL, transaction: transaction);
-            //        }
+            _logger.Info("Starting database updates");
+            var batches = updateStatements.Batch(500).ToList();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    for (var index = 0; index < batches.Count; index++)
+                    {
+                        _logger.Info($"Running publisher game update batch {index + 1}/{batches.Count}");
+                        var batch = batches[index];
+                        var joinedSQL = string.Join('\n', batch);
+                        await connection.ExecuteAsync(joinedSQL, transaction: transaction);
+                    }
 
-            //        await transaction.CommitAsync();
-            //    }
-            //}
+                    await transaction.CommitAsync();
+                }
+            }
+
+            _logger.Info("Done running bid amount fixes");
         }
     }
 }
