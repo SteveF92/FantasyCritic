@@ -1413,7 +1413,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            var draftStatus = _draftService.GetDraftStatus(leagueYear.Value, publishersInLeague);
+            var draftStatus = _draftService.GetDraftStatus(draftPhase, leagueYear.Value, publishersInLeague);
             bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear.Value, publishersInLeague, request.CounterPick, masterGame, false);
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false,
                 masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);

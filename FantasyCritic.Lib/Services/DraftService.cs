@@ -260,7 +260,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             var draftPhase = GetDraftPhase(leagueYear, updatedPublishers);
-            var draftStatus = GetDraftStatus(leagueYear, updatedPublishers);
+            var draftStatus = GetDraftStatus(draftPhase, leagueYear, updatedPublishers);
             if (draftPhase.Equals(DraftPhase.Complete))
             {
                 return (standardGamesAdded, counterPicksAdded);
@@ -348,16 +348,28 @@ namespace FantasyCritic.Lib.Services
             return DraftPhase.Complete;
         }
 
-        public (int? DraftPosition, int? OverallDraftPosition) GetDraftStatus(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+        public (int? DraftPosition, int? OverallDraftPosition) GetDraftStatus(DraftPhase draftPhase, LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
         {
             var nextPublisher = GetNextDraftPublisher(leagueYear, publishers);
             if (nextPublisher.HasNoValue)
             {
                 return (null, null);
             }
-            var publisherPosition = nextPublisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
-            var overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
-            return (publisherPosition, overallPosition);
+
+            if (draftPhase.Equals(DraftPhase.StandardGames))
+            {
+                var publisherPosition = nextPublisher.Value.PublisherGames.Count(x => !x.CounterPick) + 1;
+                var overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
+                return (publisherPosition, overallPosition);
+            }
+            if (draftPhase.Equals(DraftPhase.CounterPicks))
+            {
+                var publisherPosition = nextPublisher.Value.PublisherGames.Count(x => x.CounterPick) + 1;
+                var overallPosition = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick) + 1;
+                return (publisherPosition, overallPosition);
+            }
+
+            return (null, null);
         }
 
         public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear)

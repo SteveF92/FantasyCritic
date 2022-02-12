@@ -1109,7 +1109,7 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            var draftStatus = _draftService.GetDraftStatus(leagueYear.Value, publishersInLeague);
+            var draftStatus = _draftService.GetDraftStatus(draftPhase, leagueYear.Value, publishersInLeague);
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, false, false, false, masterGame,
                 draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 
