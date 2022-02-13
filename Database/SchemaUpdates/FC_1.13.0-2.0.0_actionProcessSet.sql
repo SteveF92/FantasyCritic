@@ -39,7 +39,7 @@ CREATE TABLE `tbl_league_formerpublishergame` (
 	`OverallDraftPosition` SMALLINT(5) NULL DEFAULT NULL,
 	`BidAmount` SMALLINT(5) NULL DEFAULT NULL,
 	`RemovedTimestamp` DATETIME NOT NULL,
-	`RemovedNote` TEXT NOT NULL COLLATE,
+	`RemovedNote` TEXT NOT NULL,
 	PRIMARY KEY (`PublisherGameID`) USING BTREE,
 	INDEX `FK_tbl_league_formerpublishergame_tbl_league_publisher` (`PublisherID`) USING BTREE,
 	INDEX `FK_tbl_league_formerpublishergame_tbl_mastergame` (`MasterGameID`) USING BTREE,
