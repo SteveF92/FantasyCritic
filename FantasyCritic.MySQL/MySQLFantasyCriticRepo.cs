@@ -1531,7 +1531,7 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        private async Task<IReadOnlyList<Publisher>> GetPublishers(IEnumerable<Guid> publisherIDs)
+        private async Task<IReadOnlyList<Publisher>> GetPublishers(IEnumerable<Guid> publisherIDs, MySqlConnection connection, MySqlTransaction transaction)
         {
             var query = new
             {
@@ -1545,41 +1545,38 @@ namespace FantasyCritic.MySQL
                          "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
                          "where tbl_league_publisher.PublisherID in @publisherIDs and tbl_league.IsDeleted = 0;";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            var allPublisherEntities = await connection.QueryAsync<PublisherEntity>(sql, query, transaction);
+            List<Publisher> publishers = new List<Publisher>();
+            var publisherEntitiesByYear = allPublisherEntities.GroupBy(x => x.Year);
+            foreach (var publisherYearGroup in publisherEntitiesByYear)
             {
-                var allPublisherEntities = await connection.QueryAsync<PublisherEntity>(sql, query);
-                List<Publisher> publishers = new List<Publisher>();
-                var publisherEntitiesByYear = allPublisherEntities.GroupBy(x => x.Year);
-                foreach (var publisherYearGroup in publisherEntitiesByYear)
+                IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(publisherYearGroup.Key);
+                var leaguesDictionary = allLeagueYears.ToDictionary(x => x.League.LeagueID, y => y);
+                IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(publisherYearGroup.Key, connection: connection, transaction: transaction);
+                Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherYearGroup.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
+                foreach (var game in allDomainGames)
                 {
-                    IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(publisherYearGroup.Key);
-                    var leaguesDictionary = allLeagueYears.ToDictionary(x => x.League.LeagueID, y => y);
-                    IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(publisherYearGroup.Key);
-                    Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherYearGroup.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
-                    foreach (var game in allDomainGames)
+                    if (!domainGamesDictionary.ContainsKey(game.PublisherID))
                     {
-                        if (!domainGamesDictionary.ContainsKey(game.PublisherID))
-                        {
-                            domainGamesDictionary[game.PublisherID] = new List<PublisherGame>();
-                        }
-                        domainGamesDictionary[game.PublisherID].Add(game);
+                        domainGamesDictionary[game.PublisherID] = new List<PublisherGame>();
                     }
-
-                    foreach (var entity in publisherYearGroup)
-                    {
-                        var user = usersDictionary[entity.UserID];
-                        var leagueYear = leaguesDictionary[entity.LeagueID];
-                        var domainGames = domainGamesDictionary[entity.PublisherID];
-                        var domainPublisher = entity.ToDomain(leagueYear, user, domainGames);
-                        publishers.Add(domainPublisher);
-                    }
+                    domainGamesDictionary[game.PublisherID].Add(game);
                 }
 
-                return publishers;
+                foreach (var entity in publisherYearGroup)
+                {
+                    var user = usersDictionary[entity.UserID];
+                    var leagueYear = leaguesDictionary[entity.LeagueID];
+                    var domainGames = domainGamesDictionary[entity.PublisherID];
+                    var domainPublisher = entity.ToDomain(leagueYear, user, domainGames);
+                    publishers.Add(domainPublisher);
+                }
             }
+
+            return publishers;
         }
 
-        private async Task<IReadOnlyList<PublisherGame>> GetAllPublisherGamesForYear(int year, bool includeDeleted = false)
+        private async Task<IReadOnlyList<PublisherGame>> GetAllPublisherGamesForYear(int year, bool includeDeleted = false, MySqlConnection connection = null, MySqlTransaction transaction = null)
         {
             var query = new
             {
@@ -1599,24 +1596,33 @@ namespace FantasyCritic.MySQL
                       "where tbl_league_publisher.Year = @year;";
             }
 
-            using (var connection = new MySqlConnection(_connectionString))
+            bool shouldDispose = false;
+            if (connection is null)
             {
-                IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(sql, query);
+                connection = new MySqlConnection(_connectionString);
+                shouldDispose = true;
+            }
 
-                List<PublisherGame> domainGames = new List<PublisherGame>();
-                foreach (var entity in gameEntities)
+            IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(sql, query, transaction);
+
+            List<PublisherGame> domainGames = new List<PublisherGame>();
+            foreach (var entity in gameEntities)
+            {
+                Maybe<MasterGameYear> masterGame = null;
+                if (entity.MasterGameID.HasValue)
                 {
-                    Maybe<MasterGameYear> masterGame = null;
-                    if (entity.MasterGameID.HasValue)
-                    {
-                        masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID.Value, year);
-                    }
-
-                    domainGames.Add(entity.ToDomain(masterGame));
+                    masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID.Value, year);
                 }
 
-                return domainGames;
+                domainGames.Add(entity.ToDomain(masterGame));
             }
+
+            if (shouldDispose)
+            {
+                connection.Dispose();
+            }
+
+            return domainGames;
         }
 
         public async Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
@@ -1789,11 +1795,13 @@ namespace FantasyCritic.MySQL
 
         private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, MySqlConnection connection, MySqlTransaction transaction)
         {
-            var publishers = await GetPublishers(publisherIDs);
+            var publishers = await GetPublishers(publisherIDs, connection, transaction);
             var specialSlotPublisherIDs = publishers.Where(x => x.LeagueYear.Options.HasSpecialSlots())
                 .Select(x => x.PublisherID).ToHashSet();
 
-            var updateEntities = new List<PublisherGameSlotNumberUpdateEntity>();
+            int tempSlotNumber = 1000;
+            var preRunUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
+            var finalUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
             foreach (var publisher in publishers)
             {
                 int slotNumber = 0;
@@ -1804,7 +1812,9 @@ namespace FantasyCritic.MySQL
                         .OrderBy(x => x.SlotNumber);
                     foreach (var standardGame in standardGames)
                     {
-                        updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, slotNumber));
+                        preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, tempSlotNumber));
+                        finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, slotNumber));
+                        tempSlotNumber++;
                         slotNumber++;
                     }
                 }
@@ -1816,13 +1826,16 @@ namespace FantasyCritic.MySQL
                     .OrderBy(x => x.SlotNumber);
                 foreach (var counterPick in counterPicks)
                 {
-                    updateEntities.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, slotNumber));
+                    preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, tempSlotNumber));
+                    finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, slotNumber));
+                    tempSlotNumber++;
                     slotNumber++;
                 }
             }
             
             string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
-            await connection.ExecuteAsync(sql, updateEntities, transaction);
+            await connection.ExecuteAsync(sql, preRunUpdates, transaction);
+            await connection.ExecuteAsync(sql, finalUpdates, transaction);
         }
 
         private async Task OrganizeSlots(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, MySqlConnection connection, MySqlTransaction transaction)
