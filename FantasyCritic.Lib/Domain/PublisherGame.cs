@@ -60,6 +60,8 @@ namespace FantasyCritic.Lib.Domain
             return MasterGame.Value.WillRelease();
         }
 
+        public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
+
         public override string ToString() => GameName;
     }
 }

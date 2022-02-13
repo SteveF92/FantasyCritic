@@ -610,5 +610,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task AddFormerPublisherGame(FormerPublisherGame formerPublisherGame)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

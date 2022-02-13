@@ -56,7 +56,7 @@ namespace FantasyCritic.Lib.Services
             IEnumerable<Publisher> currentPublisherStates, Instant processingTime)
         {
             List<Publisher> updatedPublisherStates = currentPublisherStates.ToList();
-            List<PublisherGame> gamesToDelete = new List<PublisherGame>();
+            List<FormerPublisherGame> gamesToDelete = new List<FormerPublisherGame>();
             List<LeagueAction> leagueActions = new List<LeagueAction>();
             List<DropRequest> successDrops = new List<DropRequest>();
             List<DropRequest> failedDrops = new List<DropRequest>();
@@ -74,7 +74,8 @@ namespace FantasyCritic.Lib.Services
                     {
                         successDrops.Add(dropRequest);
                         var publisherGame = dropRequest.Publisher.GetPublisherGame(dropRequest.MasterGame);
-                        gamesToDelete.Add(publisherGame.Value);
+                        var formerPublisherGame = publisherGame.Value.GetFormerPublisherGame(processingTime, "Dropped by player.");
+                        gamesToDelete.Add(formerPublisherGame);
                         LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, processingTime);
                         affectedPublisher.DropGame(publisherGame.Value);
 
@@ -331,13 +332,14 @@ namespace FantasyCritic.Lib.Services
                 leagueActions.Add(leagueAction);
             }
 
-            List<PublisherGame> conditionalDroppedGames = new List<PublisherGame>();
+            List<FormerPublisherGame> conditionalDroppedGames = new List<FormerPublisherGame>();
             var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame.HasValue && x.PickupBid.ConditionalDropResult.Result.IsSuccess);
             foreach (var successfulConditionalDrop in successfulConditionalDrops)
             {
                 var affectedPublisher = publisherDictionary[successfulConditionalDrop.PickupBid.Publisher.PublisherID];
                 affectedPublisher.DropGame(successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value);
-                conditionalDroppedGames.Add(successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value);
+                var formerPublisherGame = successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value.GetFormerPublisherGame(processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
+                conditionalDroppedGames.Add(formerPublisherGame);
             }
 
             var updatedPublishers = publisherDictionary.Values.ToList();

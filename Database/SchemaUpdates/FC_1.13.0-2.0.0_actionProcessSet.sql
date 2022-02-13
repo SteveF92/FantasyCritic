@@ -13,7 +13,7 @@ ALTER TABLE `tbl_league_droprequest`
 
 ALTER TABLE `tbl_league_pickupbid`
 	ADD COLUMN `ProcessSetID` CHAR(36) NULL DEFAULT NULL AFTER `Successful`,
-	ADD COLUMN `Outcome` VARCHAR(255) NULL DEFAULT NULL AFTER `ProcessSetID`,
+	ADD COLUMN `Outcome` TEXT NULL DEFAULT NULL AFTER `ProcessSetID`,
 	ADD COLUMN `ProjectedPointsAtTimeOfBid` DECIMAL(12,4) NULL DEFAULT NULL AFTER `Outcome`;
 
 ALTER TABLE `tbl_league_publishergame`
@@ -24,5 +24,29 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_league_droprequest` AS 
 
 DROP VIEW IF EXISTS `vw_league_pickupbid`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_league_pickupbid` AS select `tbl_league_pickupbid`.`BidID` AS `BidID`,`tbl_league_publisher`.`PublisherID` AS `PublisherID`,`tbl_league_publisher`.`LeagueID` AS `LeagueID`,`tbl_league_year`.`Year` AS `Year`,`tbl_league_publisher`.`PublisherName` AS `PublisherName`,`tbl_league`.`LeagueName` AS `LeagueName`,`tbl_mastergame`.`MasterGameID` AS `MasterGameID`,`tbl_mastergame`.`GameName` AS `GameName`,`tbl_league_pickupbid`.`ConditionalDropMasterGameID` AS `ConditionalDropMasterGameID`,`tbl_league_pickupbid`.`Counterpick` AS `CounterPick`,`tbl_league_pickupbid`.`Priority` AS `Priority`,`tbl_league_pickupbid`.`BidAmount` AS `BidAmount`,`tbl_league_pickupbid`.`Successful` AS `Successful`,`tbl_league_pickupbid`.`Timestamp` AS `Timestamp`,`tbl_league_pickupbid`.`ProcessSetID` AS `ProcessSetID`,`tbl_league_pickupbid`.`Outcome` AS `Outcome`,`tbl_league_pickupbid`.`ProjectedPointsAtTimeOfBid` AS `ProjectedPointsAtTimeOfBid`,`tbl_league`.`IsDeleted` AS `IsDeleted` from ((((`tbl_league_pickupbid` join `tbl_league_publisher` on((`tbl_league_pickupbid`.`PublisherID` = `tbl_league_publisher`.`PublisherID`))) join `tbl_mastergame` on((`tbl_league_pickupbid`.`MasterGameID` = `tbl_mastergame`.`MasterGameID`))) join `tbl_league_year` on(((`tbl_league_publisher`.`LeagueID` = `tbl_league_year`.`LeagueID`) and (`tbl_league_year`.`Year` = `tbl_league_publisher`.`Year`)))) join `tbl_league` on((`tbl_league_publisher`.`LeagueID` = `tbl_league`.`LeagueID`)));
+
+CREATE TABLE `tbl_league_formerpublishergame` (
+	`PublisherGameID` CHAR(36) NOT NULL,
+	`PublisherID` CHAR(36) NOT NULL,
+	`GameName` VARCHAR(150) NOT NULL,
+	`Timestamp` DATETIME NOT NULL,
+	`CounterPick` BIT(1) NOT NULL,
+	`ManualCriticScore` DECIMAL(7,4) NULL DEFAULT NULL,
+	`ManualWillNotRelease` BIT(1) NOT NULL,
+	`FantasyPoints` DECIMAL(12,4) NULL DEFAULT NULL,
+	`MasterGameID` CHAR(36) NULL DEFAULT NULL,
+	`DraftPosition` TINYINT(3) NULL DEFAULT NULL,
+	`OverallDraftPosition` SMALLINT(5) NULL DEFAULT NULL,
+	`BidAmount` SMALLINT(5) NULL DEFAULT NULL,
+	`RemovedTimestamp` DATETIME NOT NULL,
+	`RemovedNote` TEXT NOT NULL COLLATE,
+	PRIMARY KEY (`PublisherGameID`) USING BTREE,
+	INDEX `FK_tbl_league_formerpublishergame_tbl_league_publisher` (`PublisherID`) USING BTREE,
+	INDEX `FK_tbl_league_formerpublishergame_tbl_mastergame` (`MasterGameID`) USING BTREE,
+	CONSTRAINT `FK_tbl_league_formerpublishergame_tbl_league_publisher` FOREIGN KEY (`PublisherID`) REFERENCES `fantasycritic`.`tbl_league_publisher` (`PublisherID`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	CONSTRAINT `FK_tbl_league_formerpublishergame_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `fantasycritic`.`tbl_mastergame` (`MasterGameID`) ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+ENGINE=InnoDB
+;
 
 -- Run the fixer
