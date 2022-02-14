@@ -8,6 +8,7 @@ html {
     min-width: 375px;
     width: auto !important;
     width: 375px;
+    overflow-y: scroll;
 }
 
 body {

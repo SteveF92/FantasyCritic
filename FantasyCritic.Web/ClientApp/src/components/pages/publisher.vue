@@ -29,37 +29,48 @@
         You are viewing a private league.
       </div>
 
-      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
-      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
-      <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
-      <playerGameTable v-if="leagueYear && publisher" :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
+      <div class="table-options">
+        <label class="view-mode-label">View Mode</label>
+        <toggle-button class="toggle" v-model="sortOrderMode" :sync="true" :labels="{checked: 'Sort Mode', unchecked: 'Slot Mode'}" :css-colors="true" :font-size="13" :width="107" :height="28" />
+        <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
+        <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
+        <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
+      </div>
 
-      <div v-if="publisher && publisher.formerGames.length > 0">
-        <h3>Dropped/Removed Games</h3>
-        <b-table :items="publisher.formerGames"
-                 :fields="formerGameFields"
-                 bordered responsive striped
-                 primary-key="publisherGameID">
 
-          <template v-slot:cell(gameName)="data">
-            <span class="master-game-popover">
-              <masterGamePopover v-if="data.item.linked" :masterGame="data.item.masterGame"></masterGamePopover>
-              <span v-if="!data.item.linked">{{data.item.gameName}}</span>
-            </span>
-          </template>
-          <template v-slot:cell(masterGame.maximumReleaseDate)="data">
-            {{getReleaseDate(data.item)}}
-          </template>
-          <template v-slot:cell(masterGame.criticScore)="data">
-            {{data.item.criticScore | score}}
-          </template>
-          <template v-slot:cell(timestamp)="data">
-            {{getAcquiredDate(data.item)}}
-          </template>
-          <template v-slot:cell(removedTimestamp)="data">
-            {{getRemovedDate(data.item)}}
-          </template>
-        </b-table>
+      <div v-show="!sortOrderMode">
+        <playerGameTable v-if="leagueYear && publisher" :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
+
+        <div v-if="publisher && publisher.formerGames.length > 0">
+          <h3>Dropped/Removed Games</h3>
+          <b-table :items="publisher.formerGames"
+                   :fields="formerGameFields"
+                   bordered responsive striped
+                   primary-key="publisherGameID">
+
+            <template v-slot:cell(gameName)="data">
+              <span class="master-game-popover">
+                <masterGamePopover v-if="data.item.linked" :masterGame="data.item.masterGame"></masterGamePopover>
+                <span v-if="!data.item.linked">{{data.item.gameName}}</span>
+              </span>
+            </template>
+            <template v-slot:cell(masterGame.maximumReleaseDate)="data">
+              {{getReleaseDate(data.item)}}
+            </template>
+            <template v-slot:cell(masterGame.criticScore)="data">
+              {{data.item.criticScore | score}}
+            </template>
+            <template v-slot:cell(timestamp)="data">
+              {{getAcquiredDate(data.item)}}
+            </template>
+            <template v-slot:cell(removedTimestamp)="data">
+              {{getRemovedDate(data.item)}}
+            </template>
+          </b-table>
+        </div>
+      </div>
+      <div v-show="sortOrderMode">
+        Sort
       </div>
     </div>
   </div>
@@ -71,6 +82,7 @@ import axios from 'axios';
 import PlayerGameTable from '@/components/modules/gameTables/playerGameTable';
 import GlobalFunctions from '@/globalFunctions';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
+import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
   data() {
@@ -86,11 +98,13 @@ export default {
         { key: 'removedTimestamp', label: 'Removed Timestamp', sortable: true, thClass: ['bg-primary'] },
         { key: 'removedNote', label: 'Outcome', sortable: true, thClass: ['bg-primary'] }
       ],
+      sortOrderMode: false
     };
   },
   components: {
     PlayerGameTable,
-    MasterGamePopover
+    MasterGamePopover,
+    ToggleButton
   },
   props: ['publisherid'],
   computed: {
@@ -179,8 +193,19 @@ export default {
     font-size: 100px;
   }
 
-  .mode-mode-button{
-      float: right;
-      margin-bottom: 10px;
+  .table-options {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 5px;
+  }
+
+  .toggle {
+    margin: 0;
+  }
+
+  .view-mode-label {
+    margin: 0;
   }
 </style>
