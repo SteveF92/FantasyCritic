@@ -215,8 +215,8 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 370px) {
-    .optional-nav {
+  @media only screen and (max-width: 380px) {
+    .optional-nav, .critic-royale-nav {
       display: none;
     }
   }
@@ -228,7 +228,7 @@ export default {
   }
 
   @media only screen and (max-width: 435px) {
-    .optional-link, .critic-royale-nav {
+    .optional-link {
       display: none;
     }
   }
