@@ -26,8 +26,7 @@
         </span>
       </td>
       <template v-if="!minimal">
-        <td v-if="game.releaseDate">{{releaseDate}}</td>
-        <td v-else>{{game.estimatedReleaseDate}} (Estimated)</td>
+        <td>{{releaseDate}}</td>
         <td>{{acquireDate}}</td>
         <td class="score-column">{{game.criticScore | score(2)}}</td>
         <td class="score-column"><em>~{{gameSlot.advancedProjectedFantasyPoints | score(2)}}</em></td>
@@ -68,7 +67,7 @@
   </tr>
 </template>
 <script>
-import moment from 'moment';
+
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import SlotTypeBadge from '@/components/modules/gameTables/slotTypeBadge';
 import GlobalFunctions from '@/globalFunctions';
@@ -90,19 +89,10 @@ export default {
       return this.$store.getters.advancedProjections;
     },
     releaseDate() {
-      return moment(this.game.releaseDate).format('MMMM Do, YYYY');
+      return GlobalFunctions.formatPublisherGameReleaseDate(this.game);
     },
     acquireDate() {
-      let type = '';
-      if (this.game.overallDraftPosition) {
-        type = `Drafted ${GlobalFunctions.ordinal_suffix_of(this.game.overallDraftPosition)}`;
-      } else if (this.game.bidAmount || this.game.bidAmount === 0) {
-        type = 'Picked up for $' + this.game.bidAmount;
-      } else {
-        type = 'Acquired';
-      }
-      let date = moment(this.game.timestamp).format('MMMM Do, YYYY');
-      return type + ' on ' + date;
+      return GlobalFunctions.formatPublisherGameAcquiredDate(this.game);
     },
     moveMode() {
       return this.$store.getters.moveMode;

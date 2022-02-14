@@ -158,9 +158,7 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
-import axios from 'axios';
-import moment from 'moment';
+import GlobalFunctions from '@/globalFunctions';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
@@ -225,10 +223,7 @@ export default {
   },
   methods: {
     getReleaseDate(game) {
-      if (game.releaseDate) {
-        return moment(game.releaseDate).format('YYYY-MM-DD');
-      }
-      return game.estimatedReleaseDate + ' (Estimated)';
+      return GlobalFunctions.formatMasterGameReleaseDate(game);
     },
     openCriticLink(game) {
       return 'https://opencritic.com/game/' + game.openCriticID + '/a';

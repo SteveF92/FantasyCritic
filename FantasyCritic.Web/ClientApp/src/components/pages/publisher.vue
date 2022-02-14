@@ -32,7 +32,35 @@
       <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
       <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
       <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
-      <playerGameTable v-if="leagueYear" :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
+      <playerGameTable v-if="leagueYear && publisher" :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
+
+      <div v-if="publisher && publisher.formerGames.length > 0">
+        <h3>Dropped/Removed Games</h3>
+        <b-table :items="publisher.formerGames"
+                 :fields="formerGameFields"
+                 bordered responsive striped
+                 primary-key="publisherGameID">
+
+          <template v-slot:cell(gameName)="data">
+            <span class="master-game-popover">
+              <masterGamePopover v-if="data.item.linked" :masterGame="data.item.masterGame"></masterGamePopover>
+              <span v-if="!data.item.linked">{{data.item.gameName}}</span>
+            </span>
+          </template>
+          <template v-slot:cell(masterGame.maximumReleaseDate)="data">
+            {{getReleaseDate(data.item)}}
+          </template>
+          <template v-slot:cell(masterGame.criticScore)="data">
+            {{data.item.criticScore | score}}
+          </template>
+          <template v-slot:cell(timestamp)="data">
+            {{getAcquiredDate(data.item)}}
+          </template>
+          <template v-slot:cell(removedTimestamp)="data">
+            {{getRemovedDate(data.item)}}
+          </template>
+        </b-table>
+      </div>
     </div>
   </div>
 </template>
@@ -42,17 +70,27 @@ import Vue from 'vue';
 import axios from 'axios';
 import PlayerGameTable from '@/components/modules/gameTables/playerGameTable';
 import GlobalFunctions from '@/globalFunctions';
+import MasterGamePopover from '@/components/modules/masterGamePopover';
 
 export default {
   data() {
     return {
       errorInfo: '',
       publisher: null,
-      leagueYear: null
+      leagueYear: null,
+      formerGameFields: [
+        { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', thClass: 'bg-primary' },
+        { key: 'masterGame.criticScore', label: 'Critic Score', thClass: ['bg-primary'], tdClass: ['score-column'] },
+        { key: 'timestamp', label: 'Acquired', sortable: true, thClass: ['bg-primary'] },
+        { key: 'removedTimestamp', label: 'Removed Timestamp', sortable: true, thClass: ['bg-primary'] },
+        { key: 'removedNote', label: 'Outcome', sortable: true, thClass: ['bg-primary'] }
+      ],
     };
   },
   components: {
-    PlayerGameTable
+    PlayerGameTable,
+    MasterGamePopover
   },
   props: ['publisherid'],
   computed: {
@@ -104,6 +142,15 @@ export default {
       this.$store.dispatch("confirmPositions").then(() => {
         this.fetchPublisher();
       });
+    },
+    getReleaseDate(publisherGame) {
+      return GlobalFunctions.formatPublisherGameReleaseDate(publisherGame);
+    },
+    getAcquiredDate(publisherGame) {
+      return GlobalFunctions.formatPublisherGameAcquiredDate(publisherGame);
+    },
+    getRemovedDate(publisherGame) {
+      return GlobalFunctions.formatPublisherGameRemovedDate(publisherGame);
     }
   },
   mounted() {

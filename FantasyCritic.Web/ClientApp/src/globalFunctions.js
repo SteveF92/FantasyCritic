@@ -1,3 +1,4 @@
+import moment from 'moment';
 import GraphemeBreaker from 'grapheme-breaker-mjs';
 
 export default {
@@ -21,5 +22,34 @@ export default {
       return i + "rd";
     }
     return i + "th";
+  },
+  formatPublisherGameReleaseDate(publisherGame) {
+    if (!publisherGame.masterGame) {
+      return "Unknown";
+    }
+
+    return this.formatMasterGameReleaseDate(publisherGame.masterGame);
+  },
+  formatMasterGameReleaseDate(masterGame) {
+    if (masterGame.releaseDate) {
+      return moment(masterGame.releaseDate).format('MMMM Do, YYYY');
+    }
+
+    return masterGame.estimatedReleaseDate + ' (Estimated)';
+  },
+  formatPublisherGameAcquiredDate(publisherGame) {
+    let type = '';
+    if (publisherGame.overallDraftPosition) {
+      type = `Drafted ${this.ordinal_suffix_of(publisherGame.overallDraftPosition)}`;
+    } else if (publisherGame.bidAmount || publisherGame.bidAmount === 0) {
+      type = 'Picked up for $' + publisherGame.bidAmount;
+    } else {
+      type = 'Acquired';
+    }
+    let date = moment(publisherGame.timestamp).format('MMMM Do, YYYY');
+    return type + ' on ' + date;
+  },
+  formatPublisherGameRemovedDate(publisherGame) {
+    return moment(publisherGame.removedTimestamp).format('MMMM Do, YYYY');
   }
 }
