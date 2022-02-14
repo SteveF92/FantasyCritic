@@ -25,5 +25,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         public string ProcessName { get; }
         public IReadOnlyList<DropRequest> Drops { get; }
         public IReadOnlyList<PickupBid> Bids { get; }
+
+        public bool HasActions => Drops.Any() || Bids.Any();
     }
 }

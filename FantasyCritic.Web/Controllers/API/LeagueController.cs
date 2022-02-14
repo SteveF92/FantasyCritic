@@ -400,7 +400,7 @@ namespace FantasyCritic.Web.Controllers.API
             var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSets(leagueYear.Value);
 
             var currentDate = _clock.GetToday();
-            var viewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));
+            var viewModels = leagueActionSets.Where(x => x.HasActions).Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));
             viewModels = viewModels.OrderByDescending(x => x.ProcessTime);
             return Ok(viewModels);
         }
