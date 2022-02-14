@@ -30,8 +30,10 @@
       </div>
 
       <div class="table-options">
-        <label class="view-mode-label">View Mode</label>
-        <toggle-button class="toggle" v-model="sortOrderMode" :sync="true" :labels="{checked: 'Sort Mode', unchecked: 'Slot Mode'}" :css-colors="true" :font-size="13" :width="107" :height="28" />
+        <template v-if="isPlusUser">
+          <label class="view-mode-label">View Mode</label>
+          <toggle-button class="toggle" v-model="sortOrderMode" :sync="true" :labels="{checked: 'Sort Mode', unchecked: 'Slot Mode'}" :css-colors="true" :font-size="13" :width="107" :height="28" />
+        </template>
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
@@ -116,6 +118,9 @@ export default {
     },
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
+    },
+    isPlusUser() {
+      return this.$store.getters.isPlusUser;
     }
   },
   methods: {
