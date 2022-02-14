@@ -71,7 +71,7 @@
                 </option>
               </b-form-select>
             </div>
-            <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy">{{bidButtonText}}</b-button>
+            <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="requestIsBusy">{{bidButtonText}}</b-button>
             <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
               <h3 class="alert-heading">Error!</h3>
               <ul>
@@ -111,7 +111,8 @@ export default {
       showingTopAvailable: false,
       showingQueuedGames: false,
       searched: false,
-      isBusy: false
+      isBusy: false,
+      requestIsBusy: false
     };
   },
   components: {
@@ -209,10 +210,12 @@ export default {
         request.conditionalDropPublisherGameID = this.conditionalDrop.publisherGameID;
       }
 
+      this.requestIsBusy = true;
       axios
         .post('/api/league/MakePickupBid', request)
         .then(response => {
           this.bidResult = response.data;
+          this.requestIsBusy = false;
           if (!this.bidResult.success) {
             return;
           }
@@ -226,6 +229,7 @@ export default {
         })
         .catch(response => {
           this.errorInfo = response.response.data;
+          this.requestIsBusy = false;
         });
     },
     clearDataExceptSearch() {
@@ -236,6 +240,7 @@ export default {
       this.searched = false;
       this.showingTopAvailable = false;
       this.isBusy = false;
+      this.requestIsBusy = false;
       this.conditionalDrop = false;
     },
     clearData() {
