@@ -320,11 +320,11 @@ namespace FantasyCritic.Lib.Services
             string description;
             if (willNotRelease)
             {
-                description = $"{publisherGame.GameName}'s eligibility setting was reset to normal.";
+                description = $"{publisherGame.GameName}' was manually set as 'Will Not Release'.";
             }
             else
             {
-                description = $"{publisherGame.GameName} was manually set to 'Ineligible'";
+                description = $"{publisherGame.GameName}'s manual 'Will Not Release' setting was cleared.";
             }
 
             LeagueAction eligibilityAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "'Will not release' Overridden", description, true);
