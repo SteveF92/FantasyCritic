@@ -115,6 +115,9 @@
             <li class="fake-link action" v-b-modal="'managerMessageForm'">
               Post new Message to League
             </li>
+            <li class="fake-link action" v-b-modal="'createPublisherForUserForm'">
+              Create Publisher For User
+            </li>
             <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">
               Edit Draft Order
             </li>
@@ -187,6 +190,7 @@
         <addNewLeagueYearForm :league="league" :isManager="league.isManager" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
         <invitePlayerForm :league="league" v-on:playerInvited="playerInvited" v-on:linkCopied="linkCopied"></invitePlayerForm>
         <manageActivePlayersForm :league="league" :leagueYear="leagueYear" v-on:activePlayersEdited="activePlayersEdited"></manageActivePlayersForm>
+        <createPublisherForUserForm :leagueYear="leagueYear" v-on:publisherCreated="publisherCreated"></createPublisherForUserForm>
         <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
         <editAutoDraftForm :publisher="leagueYear.userPublisher" v-on:autoDraftSet="autoDraftSet"></editAutoDraftForm>
         <managerDraftGameForm :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
@@ -236,6 +240,7 @@ import ManagerClaimGameForm from '@/components/modules/modals/managerClaimGameFo
 import ManagerDraftGameForm from '@/components/modules/modals/managerDraftGameForm';
 import ManagerAssociateGameForm from '@/components/modules/modals/managerAssociateGameForm';
 import InvitePlayerForm from '@/components/modules/modals/invitePlayerForm';
+import CreatePublisherForUserForm from '@/components/modules/modals/createPublisherForUserForm';
 import ManageActivePlayersForm from '@/components/modules/modals/manageActivePlayersForm';
 import RemoveGameForm from '@/components/modules/modals/removeGameForm';
 import ManuallyScoreGameForm from '@/components/modules/modals/manuallyScoreGameForm';
@@ -299,7 +304,8 @@ export default {
     ManageTagOverridesModal,
     RemovePlayerModal,
     ManagerMessageModal,
-    TransferManagerModal
+    TransferManagerModal,
+    CreatePublisherForUserForm
   },
   computed: {
     isPlusUser() {
@@ -597,6 +603,14 @@ export default {
     publishersEdited() {
       let actionInfo = {
         message: 'Publisher has been edited.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    publisherCreated(createdInfo) {
+      let actionInfo = {
+        message: 'Publisher ' + createdInfo.publisherName + ' has been created.',
+        fetchLeague: true,
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);

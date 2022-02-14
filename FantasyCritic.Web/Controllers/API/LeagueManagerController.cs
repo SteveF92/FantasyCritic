@@ -592,6 +592,71 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> CreatePublisherForUser([FromBody] CreatePublisherForUserRequest request)
+        {
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
+            if (league.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (league.Value.LeagueManager.Id != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            if (string.IsNullOrWhiteSpace(request.PublisherName))
+            {
+                return BadRequest("You cannot have a blank name.");
+            }
+
+            var userToCreate = await _userManager.FindByIdAsync(request.UserID.ToString());
+            if (userToCreate == null)
+            {
+                return BadRequest();
+            }
+
+            bool userIsActive = await _leagueMemberService.UserIsActiveInLeagueYear(league.Value, request.Year, userToCreate);
+            if (!userIsActive)
+            {
+                return BadRequest();
+            }
+
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            if (leagueYear.Value.PlayStatus.PlayStarted)
+            {
+                return BadRequest();
+            }
+
+            var currentPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            var publisherForUser = currentPublishers.SingleOrDefault(x => x.User.Id == userToCreate.Id);
+            if (publisherForUser != null)
+            {
+                return BadRequest("That player already has a publisher for this this league/year.");
+            }
+
+            await _publisherService.CreatePublisher(leagueYear.Value, userToCreate, request.PublisherName, currentPublishers);
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> EditPublisher([FromBody] PublisherEditRequest request)
         {
             var currentUserResult = await GetCurrentUser();
