@@ -20,14 +20,16 @@
           <hr />
         </div>
 
-        <h2>Detailed Bid/Drop Results</h2>
-        <div v-for="leagueActionSet in leagueActionSets" class="history-table">
-          <collapseCard>
-            <div slot="header">{{leagueActionSet.processTime | longDate}}</div>
-            <div slot="body">
-              <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
-            </div>
-          </collapseCard>
+        <div v-if="leagueActionSets && leagueActionSets.length > 0">
+          <h2>Detailed Bid/Drop Results</h2>
+          <div v-for="leagueActionSet in leagueActionSets" class="history-table">
+            <collapseCard>
+              <div slot="header">{{leagueActionSet.processTime | longDate}}</div>
+              <div slot="body">
+                <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
+              </div>
+            </collapseCard>
+          </div>
         </div>
 
         <h2>Full Actions History</h2>

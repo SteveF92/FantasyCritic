@@ -11,6 +11,11 @@
                striped
                responsive
                class="action-table">
+        <template v-slot:cell(publisherName)="data">
+          <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">
+            {{ data.item.publisherName }}
+          </router-link>
+        </template>
         <template v-slot:cell(timestamp)="data">
           {{data.item.timestamp | dateTime}}
         </template>
