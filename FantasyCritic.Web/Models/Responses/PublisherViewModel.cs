@@ -30,11 +30,15 @@ namespace FantasyCritic.Web.Models.Responses
             Year = publisher.LeagueYear.Year;
             DraftPosition = publisher.DraftPosition;
             AutoDraft = publisher.AutoDraft;
+
             Games = publisher.PublisherGames
                 .OrderBy(x => x.Timestamp)
                 .Select(x => new PublisherGameViewModel(x, currentDate, counterPickedPublisherGameIDs.Contains(x.PublisherGameID), publisher.LeagueYear.Options.CounterPicksBlockDrops))
                 .ToList();
-
+            FormerGames = publisher.FormerPublisherGames
+                .OrderBy(x => x.PublisherGame.Timestamp)
+                .Select(x => new PublisherGameViewModel(x, currentDate))
+                .ToList();
             GameSlots = publisher.GetPublisherSlots()
                 .Select(x => new PublisherSlotViewModel(publisher.LeagueYear.Year, x, currentDate, publisher.LeagueYear, systemWideValues, counterPickedPublisherGameIDs))
                 .ToList();
@@ -90,6 +94,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int DraftPosition { get; }
         public bool AutoDraft { get; }
         public IReadOnlyList<PublisherGameViewModel> Games { get; }
+        public IReadOnlyList<PublisherGameViewModel> FormerGames { get; }
         public IReadOnlyList<PublisherSlotViewModel> GameSlots { get; }
         public decimal? AverageCriticScore { get; }
         public decimal TotalFantasyPoints { get; }

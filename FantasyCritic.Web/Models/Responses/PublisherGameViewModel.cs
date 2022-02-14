@@ -53,6 +53,48 @@ namespace FantasyCritic.Web.Models.Responses
             DropBlocked = counterPicked && counterPicksBlockDrops;
         }
 
+        public PublisherGameViewModel(FormerPublisherGame publisherGame, LocalDate currentDate)
+        {
+            PublisherGameID = publisherGame.PublisherGame.PublisherGameID;
+            GameName = publisherGame.PublisherGame.GameName;
+
+            Timestamp = publisherGame.PublisherGame.Timestamp.ToDateTimeUtc();
+            CounterPick = publisherGame.PublisherGame.CounterPick;
+            FantasyPoints = publisherGame.PublisherGame.FantasyPoints;
+
+            Linked = publisherGame.PublisherGame.MasterGame.HasValue;
+            if (Linked)
+            {
+                GameName = publisherGame.PublisherGame.MasterGame.Value.MasterGame.GameName;
+                EstimatedReleaseDate = publisherGame.PublisherGame.MasterGame.Value.MasterGame.EstimatedReleaseDate;
+                if (publisherGame.PublisherGame.MasterGame.Value.MasterGame.ReleaseDate.HasValue)
+                {
+                    ReleaseDate = publisherGame.PublisherGame.MasterGame.Value.MasterGame.ReleaseDate.Value.ToDateTimeUnspecified();
+                }
+
+                CriticScore = publisherGame.PublisherGame.MasterGame.Value.MasterGame.CriticScore;
+                Released = publisherGame.PublisherGame.MasterGame.Value.MasterGame.IsReleased(currentDate);
+                if (publisherGame.PublisherGame.MasterGame.HasValue)
+                {
+                    MasterGame = new MasterGameYearViewModel(publisherGame.PublisherGame.MasterGame.Value, currentDate);
+                }
+            }
+
+            if (publisherGame.PublisherGame.ManualCriticScore.HasValue)
+            {
+                CriticScore = publisherGame.PublisherGame.ManualCriticScore;
+                ManualCriticScore = true;
+            }
+
+            WillRelease = publisherGame.PublisherGame.WillRelease();
+            ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
+            OverallDraftPosition = publisherGame.PublisherGame.OverallDraftPosition;
+            BidAmount = publisherGame.PublisherGame.BidAmount;
+            SlotNumber = publisherGame.PublisherGame.SlotNumber;
+            RemovedTimestamp = publisherGame.RemovedTimestamp;
+            RemovedNote = publisherGame.RemovedNote;
+        }
+
         public Guid PublisherGameID { get; }
         public string GameName { get; }
         public DateTime Timestamp { get; }
@@ -74,5 +116,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool ManualWillNotRelease { get; }
         public bool CounterPicked { get; }
         public bool DropBlocked { get; }
+        public Instant RemovedTimestamp { get; }
+        public string RemovedNote { get; }
     }
 }
