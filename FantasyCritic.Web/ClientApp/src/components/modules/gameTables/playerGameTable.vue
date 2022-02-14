@@ -9,7 +9,7 @@
           <th scope="col">Critic Score</th>
           <th scope="col">
             Projected points
-            <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
+            <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
           </th>
           <th scope="col">Fantasy Points</th>
         </tr>
@@ -54,7 +54,7 @@ export default {
         },
         content: () => {
           return 'This is the amount of fantasy points that our algorithm believes this game will result in.' +
-          'If the game already has a critic score, then this was our final projection before the score came in.';
+          ' If the game already has a critic score, then this was our final projection before the score came in.';
         }
       }
     }
