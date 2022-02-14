@@ -15,7 +15,7 @@ namespace FantasyCritic.Lib.Domain
     public class Publisher : IEquatable<Publisher>
     {
         public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, Maybe<string> publisherIcon, int draftPosition, 
-            IEnumerable<PublisherGame> publisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped,
+            IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped,
             bool autoDraft)
         {
             PublisherID = publisherID;
@@ -25,6 +25,7 @@ namespace FantasyCritic.Lib.Domain
             PublisherIcon = publisherIcon;
             DraftPosition = draftPosition;
             PublisherGames = publisherGames.ToList();
+            FormerPublisherGames = formerPublisherGames.ToList();
             Budget = budget;
             FreeGamesDropped = freeGamesDropped;
             WillNotReleaseGamesDropped = willNotReleaseGamesDropped;
@@ -39,6 +40,7 @@ namespace FantasyCritic.Lib.Domain
         public Maybe<string> PublisherIcon { get; }
         public int DraftPosition { get; }
         public IReadOnlyList<PublisherGame> PublisherGames { get; private set; }
+        public IReadOnlyList<FormerPublisherGame> FormerPublisherGames { get; }
         public uint Budget { get; private set; }
         public int FreeGamesDropped { get; private set; }
         public int WillNotReleaseGamesDropped { get; private set; }
@@ -107,19 +109,6 @@ namespace FantasyCritic.Lib.Domain
             var emptySlots = expectedNumberOfCounterPicks - numberCounterPicks;
             var points = emptySlots * -15m;
             return points;
-        }
-
-        public int GetNumberAvailableSlots(bool counterPick, bool yearFinished)
-        {
-            if (yearFinished)
-            {
-                return 0;
-            }
-
-            var numberSlots = counterPick ? LeagueYear.Options.CounterPicks : LeagueYear.Options.StandardGames;
-            var games = PublisherGames.Where(x => x.CounterPick == counterPick);
-            var numberAvailableSlots = numberSlots - games.Count();
-            return numberAvailableSlots;
         }
 
         public IReadOnlyList<PublisherSlot> GetPublisherSlots()

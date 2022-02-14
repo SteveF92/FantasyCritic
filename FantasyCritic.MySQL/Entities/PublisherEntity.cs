@@ -45,11 +45,10 @@ namespace FantasyCritic.MySQL.Entities
         public uint Budget { get; set; }
         public bool AutoDraft { get; set; }
 
-        public Publisher ToDomain(LeagueYear leagueYear, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames)
+        public Publisher ToDomain(LeagueYear leagueYear, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
         {
             return new Publisher(PublisherID, leagueYear, user, PublisherName, PublisherIcon.ToMaybe(), DraftPosition,
-                publisherGames,
-                Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, AutoDraft);
+                publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, AutoDraft);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace FantasyCritic.Lib.Services
                 draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
             }
 
-            Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear, user, publisherName, null, draftPosition, new List<PublisherGame>(), 100, 0, 0, 0, false);
+            Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear, user, publisherName, null, draftPosition, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, false);
             await _fantasyCriticRepo.CreatePublisher(publisher);
             return publisher;
         }

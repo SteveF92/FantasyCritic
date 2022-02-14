@@ -1483,13 +1483,15 @@ namespace FantasyCritic.MySQL
 
             var publisherIDs = publisherEntities.Select(x => x.PublisherID);
             IReadOnlyList<PublisherGame> domainGames = await GetPublisherGamesInLeague(publisherIDs, leagueYear.Year);
+            IReadOnlyList<FormerPublisherGame> domainFormerGames = await GetFormerPublisherGamesInLeague(publisherIDs, leagueYear.Year);
 
             List<Publisher> domainPublishers = new List<Publisher>();
             foreach (var entity in publisherEntities)
             {
                 var gamesForPublisher = domainGames.Where(x => x.PublisherID == entity.PublisherID);
+                var formerGamesForPublisher = domainFormerGames.Where(x => x.PublisherGame.PublisherID == entity.PublisherID);
                 var user = usersInLeague.Single(x => x.Id == entity.UserID);
-                var domainPublisher = entity.ToDomain(leagueYear, user, gamesForPublisher);
+                var domainPublisher = entity.ToDomain(leagueYear, user, gamesForPublisher, formerGamesForPublisher);
                 domainPublishers.Add(domainPublisher);
             }
 
@@ -1522,19 +1524,18 @@ namespace FantasyCritic.MySQL
             {
                 var publisherEntities = await connection.QueryAsync<PublisherEntity>(sql, query);
                 IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(year, includeDeleted);
-                Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherEntities.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
-                foreach (var game in allDomainGames)
-                {
-                    domainGamesDictionary[game.PublisherID].Add(game);
-                }
+                IReadOnlyList<FormerPublisherGame> allDomainFormerGames = await GetAllFormerPublisherGamesForYear(year, includeDeleted);
+                var domainGameLookup = allDomainGames.ToLookup(x => x.PublisherID);
+                var domainFormerGameLookup = allDomainFormerGames.ToLookup(x => x.PublisherGame.PublisherID);
 
                 List<Publisher> publishers = new List<Publisher>();
                 foreach (var entity in publisherEntities)
                 {
                     var user = usersDictionary[entity.UserID];
                     var leagueYear = leaguesDictionary[entity.LeagueID];
-                    var domainGames = domainGamesDictionary[entity.PublisherID];
-                    var domainPublisher = entity.ToDomain(leagueYear, user, domainGames);
+                    var domainGames = domainGameLookup[entity.PublisherID];
+                    var domainFormerGames = domainFormerGameLookup[entity.PublisherID];
+                    var domainPublisher = entity.ToDomain(leagueYear, user, domainGames, domainFormerGames);
                     publishers.Add(domainPublisher);
                 }
 
@@ -1563,23 +1564,19 @@ namespace FantasyCritic.MySQL
             {
                 IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(publisherYearGroup.Key);
                 var leaguesDictionary = allLeagueYears.ToDictionary(x => x.League.LeagueID, y => y);
+
                 IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(publisherYearGroup.Key, connection: connection, transaction: transaction);
-                Dictionary<Guid, List<PublisherGame>> domainGamesDictionary = publisherYearGroup.ToDictionary(x => x.PublisherID, y => new List<PublisherGame>());
-                foreach (var game in allDomainGames)
-                {
-                    if (!domainGamesDictionary.ContainsKey(game.PublisherID))
-                    {
-                        domainGamesDictionary[game.PublisherID] = new List<PublisherGame>();
-                    }
-                    domainGamesDictionary[game.PublisherID].Add(game);
-                }
+                IReadOnlyList<FormerPublisherGame> allDomainFormerGames = await GetAllFormerPublisherGamesForYear(publisherYearGroup.Key, connection: connection, transaction: transaction);
+                var domainGameLookup = allDomainGames.ToLookup(x => x.PublisherID);
+                var domainFormerGameLookup = allDomainFormerGames.ToLookup(x => x.PublisherGame.PublisherID);
 
                 foreach (var entity in publisherYearGroup)
                 {
                     var user = usersDictionary[entity.UserID];
                     var leagueYear = leaguesDictionary[entity.LeagueID];
-                    var domainGames = domainGamesDictionary[entity.PublisherID];
-                    var domainPublisher = entity.ToDomain(leagueYear, user, domainGames);
+                    var domainGames = domainGameLookup[entity.PublisherID];
+                    var domainFormerGames = domainFormerGameLookup[entity.PublisherID];
+                    var domainPublisher = entity.ToDomain(leagueYear, user, domainGames, domainFormerGames);
                     publishers.Add(domainPublisher);
                 }
             }
@@ -1636,6 +1633,55 @@ namespace FantasyCritic.MySQL
             return domainGames;
         }
 
+        private async Task<IReadOnlyList<FormerPublisherGame>> GetAllFormerPublisherGamesForYear(int year, bool includeDeleted = false, MySqlConnection connection = null, MySqlTransaction transaction = null)
+        {
+            var query = new
+            {
+                year
+            };
+
+            string sql = "select tbl_league_formerpublishergame.* from tbl_league_formerpublishergame " +
+                    "join tbl_league_publisher on (tbl_league_formerpublishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                    "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                    "where tbl_league_publisher.Year = @year and IsDeleted = 0;";
+
+            if (includeDeleted)
+            {
+                sql = "select tbl_league_formerpublishergame.* from tbl_league_formerpublishergame " +
+                      "join tbl_league_publisher on (tbl_league_formerpublishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                      "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                      "where tbl_league_publisher.Year = @year;";
+            }
+
+            bool shouldDispose = false;
+            if (connection is null)
+            {
+                connection = new MySqlConnection(_connectionString);
+                shouldDispose = true;
+            }
+
+            IEnumerable<FormerPublisherGameEntity> gameEntities = await connection.QueryAsync<FormerPublisherGameEntity>(sql, query, transaction);
+
+            List<FormerPublisherGame> domainGames = new List<FormerPublisherGame>();
+            foreach (var entity in gameEntities)
+            {
+                Maybe<MasterGameYear> masterGame = null;
+                if (entity.MasterGameID.HasValue)
+                {
+                    masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID.Value, year);
+                }
+
+                domainGames.Add(entity.ToDomain(masterGame));
+            }
+
+            if (shouldDispose)
+            {
+                connection.Dispose();
+            }
+
+            return domainGames;
+        }
+
         public async Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
         {
             var query = new
@@ -1657,11 +1703,12 @@ namespace FantasyCritic.MySQL
                 }
 
                 IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
+                IReadOnlyList<FormerPublisherGame> domainFormerGames = await GetFormerPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
                 var user = await _userStore.FindByIdAsync(publisherEntity.UserID.ToString(), CancellationToken.None);
                 var league = await GetLeagueByID(publisherEntity.LeagueID);
                 var leagueYear = await GetLeagueYear(league.Value, publisherEntity.Year);
 
-                var domainPublisher = publisherEntity.ToDomain(leagueYear.Value, user, domainGames);
+                var domainPublisher = publisherEntity.ToDomain(leagueYear.Value, user, domainGames, domainFormerGames);
                 return domainPublisher;
             }
         }
@@ -1764,7 +1811,8 @@ namespace FantasyCritic.MySQL
                 }
 
                 IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
-                var domainPublisher = publisherEntity.ToDomain(leagueYear, user, domainGames);
+                IReadOnlyList<FormerPublisherGame> domainFormerGames = await GetFormerPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
+                var domainPublisher = publisherEntity.ToDomain(leagueYear, user, domainGames, domainFormerGames);
                 return domainPublisher;
             }
         }
@@ -2037,6 +2085,38 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        private async Task<IReadOnlyList<FormerPublisherGame>> GetFormerPublisherGames(Guid publisherID, int leagueYear)
+        {
+            var query = new
+            {
+                publisherID
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<FormerPublisherGameEntity> gameEntities = await connection.QueryAsync<FormerPublisherGameEntity>(
+                    "select tbl_league_formerpublishergame.* from tbl_league_formerpublishergame " +
+                    "join tbl_league_publisher on (tbl_league_formerpublishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                    "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                    "where tbl_league_formerpublishergame.PublisherID = @publisherID and IsDeleted = 0;",
+                    query);
+
+                List<FormerPublisherGame> domainGames = new List<FormerPublisherGame>();
+                foreach (var entity in gameEntities)
+                {
+                    Maybe<MasterGameYear> masterGame = null;
+                    if (entity.MasterGameID.HasValue)
+                    {
+                        masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID.Value, leagueYear);
+                    }
+
+                    domainGames.Add(entity.ToDomain(masterGame));
+                }
+
+                return domainGames;
+            }
+        }
+
         private async Task<IReadOnlyList<PublisherGame>> GetPublisherGamesInLeague(IEnumerable<Guid> publisherIDs, int year)
         {
             var query = new
@@ -2054,6 +2134,38 @@ namespace FantasyCritic.MySQL
                     query);
 
                 List<PublisherGame> domainGames = new List<PublisherGame>();
+                foreach (var entity in gameEntities)
+                {
+                    Maybe<MasterGameYear> masterGame = null;
+                    if (entity.MasterGameID.HasValue)
+                    {
+                        masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID.Value, year);
+                    }
+
+                    domainGames.Add(entity.ToDomain(masterGame));
+                }
+
+                return domainGames;
+            }
+        }
+
+        private async Task<IReadOnlyList<FormerPublisherGame>> GetFormerPublisherGamesInLeague(IEnumerable<Guid> publisherIDs, int year)
+        {
+            var query = new
+            {
+                publisherIDs
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                IEnumerable<FormerPublisherGameEntity> gameEntities = await connection.QueryAsync<FormerPublisherGameEntity>(
+                    "select tbl_league_formerpublishergame.* from tbl_league_formerpublishergame " +
+                    "join tbl_league_publisher on (tbl_league_formerpublishergame.PublisherID = tbl_league_publisher.PublisherID) " +
+                    "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                    "where tbl_league_formerpublishergame.PublisherID in @publisherIDs and IsDeleted = 0;",
+                    query);
+
+                List<FormerPublisherGame> domainGames = new List<FormerPublisherGame>();
                 foreach (var entity in gameEntities)
                 {
                     Maybe<MasterGameYear> masterGame = null;
