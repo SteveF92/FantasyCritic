@@ -719,6 +719,22 @@
                 </td>
               </tr>
               <tr>
+                <td>Bravely Default</td>
+                <td>
+                  <masterGameTagBadge tagName="DirectorsCut"></masterGameTagBadge>
+                </td>
+                <td>
+                  <masterGameTagBadge tagName="NewGamingFranchise"></masterGameTagBadge>
+                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                </td>
+                <td>
+                  Bravely Default was originally a Japan-only 3DS game called "Bravely Default: Flying Fairy", released in 2012. In 2013, an expanded version was released, again only in Japan, called "Bravely Default: For The Sequel". In a Japanese context,
+                  we would consider this a "Director's Cut". Then, in 2014, "Bravely Default: For The Sequel" was released in North America as "Bravely Default". Both the original version and the expanded version had previously released outside North America, and
+                  the expanded version is not "enough of a remake" to consider it a "different game" anyway, so this would be tagged as a "New Gaming Franchise" and "Released Internationally". It's worth noting that the tags would be the same even if the second version
+                  released in Japan and North America at the same time.
+                </td>
+              </tr>
+              <tr>
                 <td>Famicom Detective Club</td>
                 <td>
                   <masterGameTagBadge tagName="Remake"></masterGameTagBadge>
@@ -728,6 +744,20 @@
                 </td>
                 <td>
                   This game is "more of a remake" with respect to the original game, compared to the games above. It's not fair to call the original Famicom game as the "same game", meaning that <em>this</em> game has
+                  never released anywhere, and therefore it does not get a "Released Internationally" tag. In addition, there are no games in this franchise previously released in North America, so it gets the
+                  "New Gaming Franchise" tag.
+                </td>
+              </tr>
+              <tr>
+                <td>Live A Live</td>
+                <td>
+                  <masterGameTagBadge tagName="Remake"></masterGameTagBadge>
+                </td>
+                <td>
+                  <masterGameTagBadge tagName="NewGamingFranchise"></masterGameTagBadge>
+                </td>
+                <td>
+                  Like Famicom Dective Club, this game is "more of a remake" with respect to the original game, compared to the games above. It's not fair to call the original Super Famicom game as the "same game", meaning that <em>this</em> game has
                   never released anywhere, and therefore it does not get a "Released Internationally" tag. In addition, there are no games in this franchise previously released in North America, so it gets the
                   "New Gaming Franchise" tag.
                 </td>
