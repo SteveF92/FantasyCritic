@@ -25,8 +25,8 @@
         </div>
       </div>
 
-      <div v-if="publisher.publicLeague && !(publisher.userIsInLeague || publisher.outstandingInvite)" class="alert alert-info" role="info">
-        You are viewing a public league.
+      <div v-if="!publisher.publicLeague && !(publisher.userIsInLeague || publisher.outstandingInvite)" class="alert alert-warning" role="info">
+        You are viewing a private league.
       </div>
 
       <b-button class="mode-mode-button" v-if="leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>

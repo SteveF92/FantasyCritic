@@ -44,8 +44,8 @@
           <div class="preserve-whitespace">{{mostRecentManagerMessage.messageText}}</div>
         </b-alert>
 
-        <div v-if="league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-info" role="info">
-          You are viewing a public league.
+        <div v-if="!league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">
+          You are viewing a private league.
         </div>
 
         <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">

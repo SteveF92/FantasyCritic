@@ -6,7 +6,11 @@
           You do not have permission to view this league.
         </div>
       </div>
-      
+
+      <div v-if="!league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">
+        You are viewing a private league.
+      </div>
+
       <div v-if="league">
         <h1>League History: {{league.leagueName}} (Year {{year}})</h1>
         <hr />
