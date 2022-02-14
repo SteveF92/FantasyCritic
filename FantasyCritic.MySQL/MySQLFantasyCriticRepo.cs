@@ -471,6 +471,11 @@ namespace FantasyCritic.MySQL
                 .Where(x => x.MasterGame.HasValue)
                 .ToDictionary(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
 
+            var formerPublisherGameDictionary = allPublishersInLeagueYear
+                .SelectMany(x => x.FormerPublisherGames)
+                .Where(x => x.PublisherGame.MasterGame.HasValue)
+                .ToDictionary(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame.Value.MasterGame.MasterGameID));
+
             string sql = "select * from vw_league_pickupbid where LeagueID = @leagueID and Year = @year and Successful IS NOT NULL";
             var queryObject = new
             {
@@ -490,11 +495,14 @@ namespace FantasyCritic.MySQL
                     Maybe<PublisherGame> conditionalDropPublisherGame = Maybe<PublisherGame>.None;
                     if (bidEntity.ConditionalDropMasterGameID.HasValue)
                     {
-                        bool stillHasGame = publisherGameDictionary.TryGetValue((bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value), out var stillPresentPublisherGame);
-                        if (stillHasGame)
+                        if (publisherGameDictionary.TryGetValue((bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value), out var stillPresentPublisherGame))
                         {
                             conditionalDropPublisherGame = stillPresentPublisherGame;
-                        } //TODO Former Publisher game
+                        }
+                        else if (formerPublisherGameDictionary.TryGetValue((bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value), out var formerPublisherGame))
+                        {
+                            conditionalDropPublisherGame = formerPublisherGame.PublisherGame;
+                        }
                         else
                         {
                             var conditionalDropGame = await _masterGameRepo.GetMasterGameYear(bidEntity.ConditionalDropMasterGameID.Value, leagueYear.Year);
