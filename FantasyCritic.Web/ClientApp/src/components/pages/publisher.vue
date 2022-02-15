@@ -39,40 +39,41 @@
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
       </div>
 
+      <div v-if="leagueYear && publisher">
+        <div v-show="!sortOrderMode">
+          <playerGameTable :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
 
-      <div v-show="!sortOrderMode">
-        <playerGameTable v-if="leagueYear && publisher" :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
+          <div v-if="publisher.formerGames.length > 0">
+            <h3>Dropped/Removed Games</h3>
+            <b-table :items="publisher.formerGames"
+                     :fields="formerGameFields"
+                     bordered responsive striped
+                     primary-key="publisherGameID">
 
-        <div v-if="publisher && publisher.formerGames.length > 0">
-          <h3>Dropped/Removed Games</h3>
-          <b-table :items="publisher.formerGames"
-                   :fields="formerGameFields"
-                   bordered responsive striped
-                   primary-key="publisherGameID">
-
-            <template v-slot:cell(gameName)="data">
-              <span class="master-game-popover">
-                <masterGamePopover v-if="data.item.linked" :masterGame="data.item.masterGame"></masterGamePopover>
-                <span v-if="!data.item.linked">{{data.item.gameName}}</span>
-              </span>
-            </template>
-            <template v-slot:cell(masterGame.maximumReleaseDate)="data">
-              {{getReleaseDate(data.item)}}
-            </template>
-            <template v-slot:cell(masterGame.criticScore)="data">
-              {{data.item.criticScore | score}}
-            </template>
-            <template v-slot:cell(timestamp)="data">
-              {{getAcquiredDate(data.item)}}
-            </template>
-            <template v-slot:cell(removedTimestamp)="data">
-              {{getRemovedDate(data.item)}}
-            </template>
-          </b-table>
+              <template v-slot:cell(gameName)="data">
+                <span class="master-game-popover">
+                  <masterGamePopover v-if="data.item.linked" :masterGame="data.item.masterGame"></masterGamePopover>
+                  <span v-if="!data.item.linked">{{data.item.gameName}}</span>
+                </span>
+              </template>
+              <template v-slot:cell(masterGame.maximumReleaseDate)="data">
+                {{getReleaseDate(data.item)}}
+              </template>
+              <template v-slot:cell(masterGame.criticScore)="data">
+                {{data.item.criticScore | score}}
+              </template>
+              <template v-slot:cell(timestamp)="data">
+                {{getAcquiredDate(data.item)}}
+              </template>
+              <template v-slot:cell(removedTimestamp)="data">
+                {{getRemovedDate(data.item)}}
+              </template>
+            </b-table>
+          </div>
         </div>
-      </div>
-      <div v-show="sortOrderMode">
-        Sort
+        <div v-show="sortOrderMode">
+          Sort
+        </div>
       </div>
     </div>
   </div>

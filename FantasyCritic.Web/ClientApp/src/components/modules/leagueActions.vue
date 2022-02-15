@@ -36,7 +36,12 @@
           <ul class="actions-list">
             <li class="action">
               <router-link :to="{ name: 'publisher', params: { publisherid: leagueYear.userPublisher.publisherID }}">
-                Publisher Details / Move Games
+                <template v-if="leagueYear.hasSpecialSlots">
+                  My Publisher Details / Move Games
+                </template>
+                <template v-else>
+                  My Publisher Details
+                </template>
               </router-link>
             </li>
             <template v-if="!leagueYear.supportedYear.finished">
