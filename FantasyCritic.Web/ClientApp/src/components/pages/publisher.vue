@@ -32,7 +32,7 @@
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
-        <template v-if="isPlusUser">
+        <template v-if="!moveMode && isPlusUser">
           <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="includeRemovedInSorted">
             <span class="checkbox-label">Include Dropped Games</span>
           </b-form-checkbox>
@@ -76,8 +76,10 @@
                    primary-key="publisherGameID"
                    tbody-tr-class="btable-player-game-row">
             <template #head(masterGame.projectedFantasyPoints)="data">
-              Projected points
-              <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
+              <span class="projected-points-header">
+                Projected points
+                <font-awesome-icon color="black" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
+              </span>       
             </template>
 
             <template v-slot:cell(gameName)="data">
@@ -114,7 +116,7 @@
                 <b-td v-show="includeRemovedInSorted"></b-td>
                 <b-td v-show="includeRemovedInSorted"></b-td>
                 <b-td class="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</b-td>
-                <b-td class="total-column bg-info">{{publisher.totalProjectedPoints | score(2)}}</b-td>
+                <b-td class="total-column bg-info"><em>~{{publisher.totalProjectedPoints | score(2)}}</em></b-td>
                 <b-td class="total-column bg-success">{{publisher.totalFantasyPoints | score(2)}}</b-td>
               </b-tr>
             </template>
@@ -146,7 +148,7 @@ export default {
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'timestamp', label: 'Acquired', sortable: true, thClass: ['bg-primary'] },
         { key: 'masterGame.criticScore', label: 'Critic Score', sortable: true, thClass: ['bg-primary'], tdClass: ['score-column'] },
-        { key: 'masterGame.projectedFantasyPoints', label: 'Projected Points', sortable: true, thClass: ['bg-primary'], tdClass: ['score-column'] },
+        { key: 'masterGame.projectedFantasyPoints', label: 'Projected Points', sortable: true, thClass: ['bg-primary', 'projected-points-column'], tdClass: ['score-column'] },
         { key: 'fantasyPoints', label: 'Fantasy Points', sortable: true, thClass: ['bg-primary'], tdClass: ['score-column'] }
       ],
       sortableFormerGameFields: [
@@ -211,7 +213,8 @@ export default {
         },
         content: () => {
           return 'This is the amount of fantasy points that our algorithm believes this game will result in.' +
-            ' If the game already has a critic score, then this was our final projection before the score came in.';
+            ' If the game already has a critic score, then this was our final projection before the score came in.' +
+            '<br/> The number at the bottom is this player\'s projected final score.';
         }
       }
     }
@@ -394,5 +397,8 @@ export default {
 
   .btable-player-game-row td {
     padding: 0.3rem;
+  }
+  .projected-points-column {
+    width: 110px;
   }
 </style>

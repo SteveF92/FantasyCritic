@@ -9,7 +9,7 @@
           <th scope="col">Critic Score</th>
           <th scope="col">
             Projected points
-            <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
+            <font-awesome-icon color="black" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
           </th>
           <th scope="col">Fantasy Points</th>
         </tr>
@@ -27,7 +27,7 @@
           <td></td>
           <td></td>
           <td class="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</td>
-          <td class="total-column bg-info">{{publisher.totalProjectedPoints | score(2)}}</td>
+          <td class="total-column bg-info"><em>~{{publisher.totalProjectedPoints | score(2)}}</em></td>
           <td class="total-column bg-success">{{publisher.totalFantasyPoints | score(2)}}</td>
         </tr>
       </tbody>
@@ -54,7 +54,8 @@ export default {
         },
         content: () => {
           return 'This is the amount of fantasy points that our algorithm believes this game will result in.' +
-          ' If the game already has a critic score, then this was our final projection before the score came in.';
+            ' If the game already has a critic score, then this was our final projection before the score came in.' +
+            '<br/> The number at the bottom is this player\'s projected final score.';
         }
       }
     }
