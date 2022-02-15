@@ -116,7 +116,7 @@ namespace FantasyCritic.Web.Models.Responses
         public bool ManualWillNotRelease { get; }
         public bool CounterPicked { get; }
         public bool DropBlocked { get; }
-        public Instant RemovedTimestamp { get; }
+        public Instant? RemovedTimestamp { get; }
         public string RemovedNote { get; }
     }
 }

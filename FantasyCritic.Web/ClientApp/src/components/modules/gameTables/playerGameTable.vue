@@ -19,16 +19,16 @@
                            :gameSlot="gameSlot" :supportedYear="leagueYear.supportedYear" :hasSpecialSlots="leagueYear.hasSpecialSlots"
                            v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
         <tr>
-          <td id="total-description">
-            <span id="total-description-text">
+          <td class="total-description">
+            <span class="total-description-text">
               Total Fantasy Points
             </span>
           </td>
           <td></td>
           <td></td>
-          <td id="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</td>
-          <td id="total-column" class="bg-info">{{publisher.totalProjectedPoints | score(2)}}</td>
-          <td id="total-column" class="bg-success">{{publisher.totalFantasyPoints | score(2)}}</td>
+          <td class="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</td>
+          <td class="total-column bg-info">{{publisher.totalProjectedPoints | score(2)}}</td>
+          <td class="total-column bg-success">{{publisher.totalFantasyPoints | score(2)}}</td>
         </tr>
       </tbody>
     </table>
@@ -62,53 +62,54 @@ export default {
 };
 </script>
 <style scoped>
-  #total-description {
+  .total-description {
+    vertical-align: middle;
+  }
+
+  .total-description-text {
+    display: table-cell;
+    vertical-align: middle;
+    font-weight: bold;
+    float: right;
+  }
+
+  .average-critic-column {
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+  }
+
+  .total-column {
+    text-align: center;
+    font-weight: bold;
     vertical-align: middle;
   }
 
   @media only screen and (max-width: 459px) {
-    #average-critic-column {
-      text-align: center;
-      vertical-align: middle;
-      font-weight: bold;
+    .average-critic-column {
       font-size: 14px;
     }
 
-    #total-description-text {
-      display: table-cell;
-      vertical-align: middle;
-      font-weight: bold;
+    .total-description-text {
       font-size: 14px;
     }
 
-    #total-column {
-      text-align: center;
-      font-weight: bold;
+    .total-column {
       font-size: 20px;
-      vertical-align: middle;
     }
   }
 
   @media only screen and (min-width: 460px) {
-    #average-critic-column {
-      text-align: center;
-      vertical-align: middle;
-      font-weight: bold;
+    .average-critic-column {
       font-size: 20px;
     }
 
-    #total-description-text {
-      display: table-cell;
-      vertical-align: middle;
-      font-weight: bold;
+    .total-description-text {
       font-size: 20px;
     }
 
-    #total-column {
-      text-align: center;
-      font-weight: bold;
+    .total-column {
       font-size: 25px;
-      vertical-align: middle;
     }
   }
 </style>

@@ -50,6 +50,9 @@ export default {
     return type + ' on ' + date;
   },
   formatPublisherGameRemovedDate(publisherGame) {
+    if (!publisherGame.removedTimestamp) {
+      return '';
+    }
     return moment(publisherGame.removedTimestamp).format('MMMM Do, YYYY');
   }
 }

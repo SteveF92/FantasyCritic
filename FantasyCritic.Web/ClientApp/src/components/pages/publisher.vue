@@ -1,7 +1,6 @@
 <template>
   <div v-if="publisher && leagueYear">
     <div class="col-md-10 offset-md-1 col-sm-12">
-
       <div class="publisher-info">
         <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
           {{ publisher.publisherIcon }}
@@ -30,31 +29,30 @@
       </div>
 
       <div class="table-options">
-        <template v-if="isPlusUser">
-          <label class="view-mode-label">View Mode</label>
-          <toggle-button class="toggle" v-model="sortOrderMode" :sync="true" :labels="{checked: 'Sort Mode', unchecked: 'Slot Mode'}" :css-colors="true" :font-size="13" :width="107" :height="28" />
-        </template>
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
+        <template v-if="isPlusUser">
+          <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="includeRemovedInSorted">
+            <span class="checkbox-label">Include Removed Games</span>
+          </b-form-checkbox>
+          <toggle-button class="toggle" v-model="sortOrderMode" :sync="true" :labels="{checked: 'Sort Mode', unchecked: 'Slot Mode'}" :css-colors="true" :font-size="13" :width="107" :height="28" />
+        </template>
       </div>
 
       <div v-if="leagueYear && publisher">
         <div v-show="!sortOrderMode">
           <playerGameTable :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
 
-          <div v-if="publisher.formerGames.length > 0">
+          <div v-if="hasFormerGames && isPlusUser">
             <h3>Dropped/Removed Games</h3>
             <b-table :items="publisher.formerGames"
                      :fields="formerGameFields"
                      bordered responsive striped
-                     primary-key="publisherGameID">
-
+                     primary-key="publisherGameID"
+                     tbody-tr-class="btable-player-game-row">
               <template v-slot:cell(gameName)="data">
-                <span class="master-game-popover">
-                  <masterGamePopover v-if="data.item.linked" :masterGame="data.item.masterGame"></masterGamePopover>
-                  <span v-if="!data.item.linked">{{data.item.gameName}}</span>
-                </span>
+                <gameNameColumn :game="data.item"></gameNameColumn>
               </template>
               <template v-slot:cell(masterGame.maximumReleaseDate)="data">
                 {{getReleaseDate(data.item)}}
@@ -72,7 +70,55 @@
           </div>
         </div>
         <div v-show="sortOrderMode">
-          Sort
+          <b-table :items="sortableGames"
+                   :fields="sortableGameFields"
+                   bordered responsive striped
+                   primary-key="publisherGameID"
+                   tbody-tr-class="btable-player-game-row">
+            <template #head(masterGame.projectedFantasyPoints)="data">
+              Projected points
+              <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
+            </template>
+
+            <template v-slot:cell(gameName)="data">
+              <gameNameColumn :game="data.item" :gameSlot="getGameSlot(data.item)" :hasSpecialSlots="leagueYear.hasSpecialSlots" :yearFinished="leagueYear.supportedYear.yearFinished"></gameNameColumn>
+            </template>
+            <template v-slot:cell(masterGame.maximumReleaseDate)="data">
+              {{getReleaseDate(data.item)}}
+            </template>
+            <template v-slot:cell(masterGame.criticScore)="data">
+              {{data.item.criticScore | score(2)}}
+            </template>
+            <template v-slot:cell(masterGame.projectedFantasyPoints)="data">
+              <em>~{{data.item.masterGame.projectedFantasyPoints | score(2)}}</em>
+            </template>
+            <template v-slot:cell(fantasyPoints)="data">
+              {{data.item.fantasyPoints | score(2)}}
+            </template>
+            <template v-slot:cell(timestamp)="data">
+              {{getAcquiredDate(data.item)}}
+            </template>
+            <template v-slot:cell(removedTimestamp)="data">
+              {{getRemovedDate(data.item)}}
+            </template>
+
+            <template slot="custom-foot">
+              <b-tr>
+                <b-td class="total-description">
+                  <span class="total-description-text">
+                    Total Fantasy Points
+                  </span>
+                </b-td>
+                <b-td></b-td>
+                <b-td></b-td>
+                <b-td v-show="includeRemovedInSorted"></b-td>
+                <b-td v-show="includeRemovedInSorted"></b-td>
+                <b-td class="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</b-td>
+                <b-td class="total-column bg-info">{{publisher.totalProjectedPoints | score(2)}}</b-td>
+                <b-td class="total-column bg-success">{{publisher.totalFantasyPoints | score(2)}}</b-td>
+              </b-tr>
+            </template>
+          </b-table>
         </div>
       </div>
     </div>
@@ -83,8 +129,10 @@
 import Vue from 'vue';
 import axios from 'axios';
 import PlayerGameTable from '@/components/modules/gameTables/playerGameTable';
+import SlotTypeBadge from '@/components/modules/gameTables/slotTypeBadge';
 import GlobalFunctions from '@/globalFunctions';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
+import GameNameColumn from '@/components/modules/gameTables/gameNameColumn';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
@@ -93,21 +141,36 @@ export default {
       errorInfo: '',
       publisher: null,
       leagueYear: null,
-      formerGameFields: [
-        { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', thClass: 'bg-primary' },
-        { key: 'masterGame.criticScore', label: 'Critic Score', thClass: ['bg-primary'], tdClass: ['score-column'] },
+      sortableBaseGameFields: [
+        { key: 'gameName', label: 'Game Name', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'timestamp', label: 'Acquired', sortable: true, thClass: ['bg-primary'] },
-        { key: 'removedTimestamp', label: 'Removed Timestamp', sortable: true, thClass: ['bg-primary'] },
-        { key: 'removedNote', label: 'Outcome', sortable: true, thClass: ['bg-primary'] }
+        { key: 'masterGame.criticScore', label: 'Critic Score', sortable: true, thClass: ['bg-primary'], tdClass: ['score-column'] },
+        { key: 'masterGame.projectedFantasyPoints', label: 'Projected Points', sortable: true, thClass: ['bg-primary'], tdClass: ['score-column'] },
+        { key: 'fantasyPoints', label: 'Fantasy Points', sortable: true, thClass: ['bg-primary'], tdClass: ['score-column'] }
       ],
-      sortOrderMode: false
+      sortableFormerGameFields: [
+        { key: 'removedTimestamp', label: 'Removed Timestamp', sortable: true, thClass: ['bg-primary'] },
+        { key: 'removedNote', label: 'Outcome', thClass: ['bg-primary'] }
+      ],
+      formerGameFields: [
+        { key: 'gameName', label: 'Game Name', thClass: 'bg-primary' },
+        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', thClass: 'bg-primary' },
+        { key: 'timestamp', label: 'Acquired', thClass: ['bg-primary'] },
+        { key: 'masterGame.criticScore', label: 'Critic Score', thClass: ['bg-primary'], tdClass: ['score-column'] },
+        { key: 'removedTimestamp', label: 'Removed Timestamp', thClass: ['bg-primary'] },
+        { key: 'removedNote', label: 'Outcome', thClass: ['bg-primary'] }
+      ],
+      sortOrderMode: false,
+      includeRemovedInSorted: false
     };
   },
   components: {
     PlayerGameTable,
     MasterGamePopover,
-    ToggleButton
+    ToggleButton,
+    SlotTypeBadge,
+    GameNameColumn
   },
   props: ['publisherid'],
   computed: {
@@ -122,6 +185,35 @@ export default {
     },
     isPlusUser() {
       return this.$store.getters.isPlusUser;
+    },
+    sortableGames() {
+      if (this.includeRemovedInSorted) {
+        return this.publisher.games.concat(this.publisher.formerGames);
+      }
+
+      return this.publisher.games;
+    },
+    sortableGameFields() {
+      if (this.includeRemovedInSorted) {
+        return this.sortableBaseGameFields.concat(this.sortableFormerGameFields);
+      }
+
+      return this.sortableBaseGameFields;
+    },
+    hasFormerGames() {
+      return this.publisher && this.publisher.formerGames.length > 0;
+    },
+    projectedPointsText() {
+      return {
+        html: true,
+        title: () => {
+          return "Projected Points";
+        },
+        content: () => {
+          return 'This is the amount of fantasy points that our algorithm believes this game will result in.' +
+            ' If the game already has a critic score, then this was our final projection before the score came in.';
+        }
+      }
     }
   },
   methods: {
@@ -171,6 +263,18 @@ export default {
     },
     getRemovedDate(publisherGame) {
       return GlobalFunctions.formatPublisherGameRemovedDate(publisherGame);
+    },
+    getGameSlot(publisherGame) {
+      for (const slot of this.publisher.gameSlots) {
+        if (!slot.publisherGame) {
+          continue;
+        }
+        if (slot.publisherGame.publisherGameID === publisherGame.publisherGameID) {
+          return slot;
+        }
+      }
+
+      return null;
     }
   },
   mounted() {
@@ -213,5 +317,74 @@ export default {
 
   .view-mode-label {
     margin: 0;
+  }
+
+  .counter-pick-badge {
+    background-color: #AA1E1E;
+    color: white;
+  }
+
+  .master-game-popover {
+    display: flex;
+  }
+
+  .total-description {
+    vertical-align: middle;
+  }
+
+  .total-description-text {
+    display: table-cell;
+    vertical-align: middle;
+    font-weight: bold;
+    float: right;
+  }
+
+  .average-critic-column {
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+  }
+
+  .total-column {
+    text-align: center;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+
+  @media only screen and (max-width: 459px) {
+    .average-critic-column {
+      font-size: 14px;
+    }
+
+    .total-description-text {
+      font-size: 14px;
+    }
+
+    .total-column {
+      font-size: 20px;
+    }
+  }
+
+  @media only screen and (min-width: 460px) {
+    .average-critic-column {
+      font-size: 20px;
+    }
+
+    .total-description-text {
+      font-size: 20px;
+    }
+
+    .total-column {
+      font-size: 25px;
+    }
+  }
+</style>
+<style>
+  .btable-player-game-row {
+    height: 40px;
+  }
+
+  .btable-player-game-row td {
+    padding: 0.3rem;
   }
 </style>
