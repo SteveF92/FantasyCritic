@@ -5,7 +5,7 @@
         <b-button variant="danger" class="move-button" v-show="moveMode && !holdingGame && !gameSlot.counterPick" v-on:click="holdGame">Move</b-button>
         <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
       </template>
-      <slotTypeBadge v-if="hasSpecialSlots ||  gameSlot.counterPick || game.counterPick" :gameSlot="gameSlot" :counterPick="game.counterPick"></slotTypeBadge>
+      <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || game.counterPick" :gameSlot="gameSlot" :counterPick="game.counterPick"></slotTypeBadge>
       <span class="master-game-popover">
         <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
         <span v-if="!game.linked">{{game.gameName}}</span>
@@ -18,7 +18,7 @@
       <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" color="white" size="lg" icon="balance-scale" v-b-popover.hover.top="delayContentionText" />
       <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" color="white" size="lg" icon="crosshairs" v-b-popover.hover.top="counterPickedText" />
       <font-awesome-icon v-if="game.dropBlocked" color="white" size="lg" icon="lock" v-b-popover.hover.top="gameDropBlockedText" />
-      <font-awesome-icon v-if="game.released && game.linked && !game.criticScore && !yearFinished" color="white" size="lg" icon="hourglass-half" v-b-popover.hover.top="needsMoreReviewsText" />
+      <font-awesome-icon v-if="game.released && game.linked && !game.criticScore && !supportedYear.finished" color="white" size="lg" icon="hourglass-half" v-b-popover.hover.top="needsMoreReviewsText" />
       <font-awesome-icon v-if="game.manualCriticScore" color="white" size="lg" icon="pen" v-b-popover.hover.top="manuallyScoredText" />
       <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria" color="white" size="lg" icon="exclamation-triangle" v-b-popover.hover.top="inEligibleText" />
     </span>
@@ -34,7 +34,7 @@ export default {
     MasterGamePopover,
     SlotTypeBadge
   },
-  props: ['game', 'gameSlot', 'hasSpecialSlots', 'yearFinished'],
+  props: ['game', 'gameSlot', 'hasSpecialSlots', 'supportedYear'],
   computed: {
     moveMode() {
       return this.$store.getters.moveMode;
@@ -146,7 +146,7 @@ export default {
       return {
         html: true,
         title: () => {
-          if (this.yearFinished) {
+          if (this.supportedYear.finished) {
             return "Did Not Release";
           }
           if (this.game.manualWillNotRelease) {
@@ -155,7 +155,7 @@ export default {
           return "Will Not Release";
         },
         content: () => {
-          if (this.yearFinished) {
+          if (this.supportedYear.finished) {
             return "This game did not release in the league year.";
           }
           if (this.game.manualWillNotRelease) {

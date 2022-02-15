@@ -2,7 +2,7 @@
   <tr v-bind:class="{ 'table-warning': gameSlot && !gameSlot.gameMeetsSlotCriteria, 'minimal-game-row': minimal }">
     <template v-if="game">
       <td>
-        <gameNameColumn :game="game" :gameSlot="gameSlot" :hasSpecialSlots="hasSpecialSlots" :yearFinished="yearFinished"></gameNameColumn>
+        <gameNameColumn :game="game" :gameSlot="gameSlot" :hasSpecialSlots="hasSpecialSlots" :supportedYear="supportedYear"></gameNameColumn>
       </td>
       <template v-if="!minimal">
         <td>{{releaseDate}}</td>
@@ -61,9 +61,6 @@ export default {
   computed: {
     game(){
       return this.gameSlot.publisherGame;
-    },
-    yearFinished() {
-      return this.supportedYear.finished;
     },
     advancedProjections() {
       return this.$store.getters.advancedProjections;

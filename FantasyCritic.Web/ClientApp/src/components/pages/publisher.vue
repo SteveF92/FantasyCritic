@@ -34,7 +34,7 @@
         <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
         <template v-if="isPlusUser">
           <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="includeRemovedInSorted">
-            <span class="checkbox-label">Include Removed Games</span>
+            <span class="checkbox-label">Include Dropped Games</span>
           </b-form-checkbox>
           <toggle-button class="toggle" v-model="sortOrderMode" :sync="true" :labels="{checked: 'Sort Mode', unchecked: 'Slot Mode'}" :css-colors="true" :font-size="13" :width="107" :height="28" />
         </template>
@@ -45,14 +45,14 @@
           <playerGameTable :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
 
           <div v-if="hasFormerGames && isPlusUser">
-            <h3>Dropped/Removed Games</h3>
+            <h3>Dropped Games</h3>
             <b-table :items="publisher.formerGames"
                      :fields="formerGameFields"
                      bordered responsive striped
                      primary-key="publisherGameID"
                      tbody-tr-class="btable-player-game-row">
               <template v-slot:cell(gameName)="data">
-                <gameNameColumn :game="data.item"></gameNameColumn>
+                <gameNameColumn :game="data.item" :gameSlot="getGameSlot(data.item)" :hasSpecialSlots="leagueYear.hasSpecialSlots" :supportedYear="leagueYear.supportedYear"></gameNameColumn>
               </template>
               <template v-slot:cell(masterGame.maximumReleaseDate)="data">
                 {{getReleaseDate(data.item)}}
@@ -81,7 +81,7 @@
             </template>
 
             <template v-slot:cell(gameName)="data">
-              <gameNameColumn :game="data.item" :gameSlot="getGameSlot(data.item)" :hasSpecialSlots="leagueYear.hasSpecialSlots" :yearFinished="leagueYear.supportedYear.yearFinished"></gameNameColumn>
+              <gameNameColumn :game="data.item" :gameSlot="getGameSlot(data.item)" :hasSpecialSlots="leagueYear.hasSpecialSlots" :supportedYear="leagueYear.supportedYear"></gameNameColumn>
             </template>
             <template v-slot:cell(masterGame.maximumReleaseDate)="data">
               {{getReleaseDate(data.item)}}
@@ -150,7 +150,7 @@ export default {
         { key: 'fantasyPoints', label: 'Fantasy Points', sortable: true, thClass: ['bg-primary'], tdClass: ['score-column'] }
       ],
       sortableFormerGameFields: [
-        { key: 'removedTimestamp', label: 'Removed Timestamp', sortable: true, thClass: ['bg-primary'] },
+        { key: 'removedTimestamp', label: 'Drop Timestamp', sortable: true, thClass: ['bg-primary'] },
         { key: 'removedNote', label: 'Outcome', thClass: ['bg-primary'] }
       ],
       formerGameFields: [
@@ -158,7 +158,7 @@ export default {
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', thClass: 'bg-primary' },
         { key: 'timestamp', label: 'Acquired', thClass: ['bg-primary'] },
         { key: 'masterGame.criticScore', label: 'Critic Score', thClass: ['bg-primary'], tdClass: ['score-column'] },
-        { key: 'removedTimestamp', label: 'Removed Timestamp', thClass: ['bg-primary'] },
+        { key: 'removedTimestamp', label: 'Drop Timestamp', thClass: ['bg-primary'] },
         { key: 'removedNote', label: 'Outcome', thClass: ['bg-primary'] }
       ],
       sortOrderMode: false,
@@ -274,7 +274,15 @@ export default {
         }
       }
 
-      return null;
+      //Return a fake slot object so the row draws properly
+      return {
+        counterPick: publisherGame.counterPick,
+        publisherGame: publisherGame,
+        eligibilityErrors: [],
+        gameMeetsSlotCriteria: true,
+        slotNumber: 0,
+        specialSlot: null
+      };
     }
   },
   mounted() {
