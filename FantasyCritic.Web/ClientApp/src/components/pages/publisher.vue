@@ -30,7 +30,7 @@
 
 
       <div v-if="leagueYear && publisher">
-        <newPlayerGameTable :publisher="publisher" :leagueYear="leagueYear"></newPlayerGameTable>
+        <playerGameTable :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
       </div>
     </div>
   </div>
@@ -38,7 +38,7 @@
 
 <script>
 import axios from 'axios';
-import NewPlayerGameTable from '@/components/modules/gameTables/newPlayerGameTable';
+import PlayerGameTable from '@/components/modules/gameTables/playerGameTable';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {
@@ -50,7 +50,7 @@ export default {
     };
   },
   components: {
-    NewPlayerGameTable
+    PlayerGameTable
   },
   props: ['publisherid'],
   computed: {
