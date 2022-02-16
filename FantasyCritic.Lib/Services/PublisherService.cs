@@ -85,7 +85,7 @@ namespace FantasyCritic.Lib.Services
         public async Task<Result> RemovePublisherGame(Publisher publisher, PublisherGame publisherGame)
         {
             var now = _clock.GetCurrentInstant();
-            var formerPublisherGame = publisherGame.GetFormerPublisherGame(now, "Removed by league manager.");
+            var formerPublisherGame = publisherGame.GetFormerPublisherGame(now, "Removed by league manager");
             var result = await _fantasyCriticRepo.RemovePublisherGame(publisherGame);
             if (result.IsSuccess)
             {

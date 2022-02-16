@@ -74,7 +74,7 @@ namespace FantasyCritic.Lib.Services
                     {
                         successDrops.Add(dropRequest);
                         var publisherGame = dropRequest.Publisher.GetPublisherGame(dropRequest.MasterGame);
-                        var formerPublisherGame = publisherGame.Value.GetFormerPublisherGame(processingTime, "Dropped by player.");
+                        var formerPublisherGame = publisherGame.Value.GetFormerPublisherGame(processingTime, "Dropped by player");
                         gamesToDelete.Add(formerPublisherGame);
                         LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, processingTime);
                         affectedPublisher.DropGame(publisherGame.Value);
