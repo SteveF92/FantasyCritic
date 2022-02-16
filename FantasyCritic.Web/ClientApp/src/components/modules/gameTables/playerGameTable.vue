@@ -117,7 +117,7 @@
       },
       tableItems() {
         if (!this.sortOrderMode) {
-          return this.publisher.gameSlots;
+          return this.$store.getters.gameSlots;
         }
         let slotsWithGames = _.reject(this.publisher.gameSlots, ['publisherGame', null]);
         if (this.includeRemovedInSorted) {
@@ -181,7 +181,7 @@
       },
       confirmPositions() {
         this.$store.dispatch("confirmPositions").then(() => {
-          this.fetchPublisher();
+          this.$emit('gamesMoved');
         });
       },
       getReleaseDate(publisherGame) {
@@ -262,10 +262,6 @@
     text-align: center;
     font-weight: bold;
     vertical-align: middle;
-  }
-
-  .projected-text {
-    font-style: italic;
   }
 
   @media only screen and (max-width: 459px) {

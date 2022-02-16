@@ -197,6 +197,10 @@ svg, img.critic-royale-nav {
     color: black;
 }
 
+.projected-text {
+    font-style: italic;
+}
+
 /*This fixes an issue with VueBootstrap responsive sortable tables*/
 .table-responsive table thead th span.sr-only {
     display: none;

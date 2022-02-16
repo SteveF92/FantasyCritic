@@ -30,7 +30,7 @@
 
 
       <div v-if="leagueYear && publisher">
-        <playerGameTable :publisher="publisher" :leagueYear="leagueYear"></playerGameTable>
+        <playerGameTable :publisher="publisher" :leagueYear="leagueYear" v-on:gamesMoved="fetchPublisher"></playerGameTable>
       </div>
     </div>
   </div>
