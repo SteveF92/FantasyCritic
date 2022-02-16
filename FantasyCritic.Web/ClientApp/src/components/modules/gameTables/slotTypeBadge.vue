@@ -1,24 +1,29 @@
 <template>
   <span>
-    <span v-if="gameSlot.specialSlot">
+    <span v-if="!gameSlot.dropped && gameSlot.specialSlot">
       <template v-if="gameSlot.specialSlot.requiredTags.length === 1">
         <masterGameTagBadge :tagName="gameSlot.specialSlot.requiredTags[0]" short="true" class="flex-real-badge"></masterGameTagBadge>
       </template>
       <template v-else>
         <span class="badge tag-badge flex-badge" v-bind:style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)"
-              v-b-popover.hover="getFlexText(gameSlot.specialSlot.requiredTags)">
+              v-b-popover.hover.top="getFlexText(gameSlot.specialSlot.requiredTags)">
           FLX
         </span>
       </template>
     </span>
-    <span v-if="!gameSlot.specialSlot && !gameSlot.counterPick">
-      <span class="badge tag-badge regular-slot-badge flex-badge" v-b-popover.hover="regularText">
+    <span v-if="!gameSlot.dropped && !gameSlot.specialSlot && !gameSlot.counterPick">
+      <span class="badge tag-badge regular-slot-badge flex-badge" v-b-popover.hover.top="regularText">
         REG
       </span>
     </span>
-    <span v-if="!gameSlot.specialSlot && gameSlot.counterPick">
-      <span class="badge tag-badge counter-pick-badge flex-badge" v-b-popover.hover="counterPickText">
+    <span v-if="!gameSlot.dropped && !gameSlot.specialSlot && gameSlot.counterPick">
+      <span class="badge tag-badge counter-pick-badge flex-badge" v-b-popover.hover.top="counterPickText">
         CP
+      </span>
+    </span>
+    <span v-if="gameSlot.dropped">
+      <span class="badge tag-badge dropped-badge flex-badge" v-b-popover.hover.top="droppedText">
+        DRP
       </span>
     </span>
   </span>
@@ -51,6 +56,17 @@ export default {
         },
         content: () => {
           return 'This slot is for counter picks, which are bets against a game. See the FAQ for more details.';
+        }
+      }
+    },
+    droppedText() {
+      return {
+        html: true,
+        title: () => {
+          return "Dropped";
+        },
+        content: () => {
+          return "This game is no longer on this publisher's lineup.";
         }
       }
     }
@@ -117,6 +133,11 @@ export default {
 
   .counter-pick-badge {
     background-color: #AA1E1E;
+    color: white;
+  }
+
+  .dropped-badge {
+    background-color: black;
     color: white;
   }
 </style>

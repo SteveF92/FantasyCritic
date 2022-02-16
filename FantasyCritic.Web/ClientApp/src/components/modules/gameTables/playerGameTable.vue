@@ -24,6 +24,11 @@
         <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
       </template>
 
+      <template #head(publisherGame.timestamp)="data">
+        <span v-show="!sortOrderMode || !includeRemovedInSorted">Acquired</span>
+        <span v-show="sortOrderMode && includeRemovedInSorted">Acquired/Dropped</span>
+      </template>
+
       <template v-slot:cell(publisherGame.gameName)="data">
         <gameNameColumn :gameSlot="data.item" :hasSpecialSlots="leagueYear.hasSpecialSlots" :supportedYear="leagueYear.supportedYear"></gameNameColumn>
       </template>
@@ -55,12 +60,10 @@
       <template v-slot:cell(publisherGame.timestamp)="data">
         <template v-if="data.item.publisherGame">
           {{getAcquiredDate(data.item.publisherGame)}}
-        </template>
-      </template>
-
-      <template v-slot:cell(publisherGame.removedTimestamp)="data">
-        <template v-if="data.item.publisherGame">
-          {{getRemovedDate(data.item.publisherGame)}}
+          <template v-if="data.item.publisherGame.removedTimestamp">
+            <br />
+            {{data.item.publisherGame.removedNote}} on {{getRemovedDate(data.item.publisherGame)}}
+          </template>
         </template>
       </template>
 
@@ -71,8 +74,6 @@
           </b-td>
           <b-td></b-td>
           <b-td></b-td>
-          <b-td v-show="includeRemovedInSorted"></b-td>
-          <b-td v-show="includeRemovedInSorted"></b-td>
           <b-td class="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</b-td>
           <b-td class="total-column projected-text bg-info">~{{publisher.totalProjectedPoints | score(2)}}</b-td>
           <b-td class="total-column bg-success">{{publisher.totalFantasyPoints | score(2)}}</b-td>
@@ -136,24 +137,14 @@
         return slotsWithGames
       },
       tableFields() {
-        let baseGameFields = [
+        return [
           { key: 'publisherGame.gameName', label: 'Game Name', sortable: this.sortOrderMode, thClass: 'bg-primary' },
           { key: 'publisherGame.masterGame.maximumReleaseDate', label: 'Release Date', sortable: this.sortOrderMode, thClass: 'bg-primary' },
-          { key: 'publisherGame.timestamp', label: 'Acquired', sortable: this.sortOrderMode, thClass: ['bg-primary'] },
+          { key: 'publisherGame.timestamp', sortable: this.sortOrderMode, thClass: ['bg-primary'] },
           { key: 'publisherGame.masterGame.criticScore', label: 'Critic Score', sortable: this.sortOrderMode, thClass: ['bg-primary'], tdClass: ['score-column'] },
-          { key: 'publisherGame.masterGame.projectedFantasyPoints', label: 'Projected Points', sortable: this.sortOrderMode, thClass: ['bg-primary'], tdClass: ['score-column'] },
+          { key: 'publisherGame.masterGame.projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary'], tdClass: ['score-column'] },
           { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary'], tdClass: ['score-column'] }
         ];
-        let formerGameFields = [
-          { key: 'publisherGame.removedTimestamp', label: 'Removed Timestamp', sortable: this.sortOrderMode, thClass: ['bg-primary'] },
-          { key: 'publisherGame.removedNote', label: 'Outcome', thClass: ['bg-primary'] }
-        ];
-
-        if (this.sortOrderMode && this.includeRemovedInSorted) {
-          baseGameFields.splice(3, 0, ...formerGameFields);
-          return baseGameFields;
-        }
-        return baseGameFields;
       },
       hasFormerGames() {
         return this.publisher && this.publisher.formerGames.length > 0;
@@ -201,7 +192,8 @@
           eligibilityErrors: [],
           gameMeetsSlotCriteria: true,
           overallSlotNumber: overallSlotNumber,
-          specialSlot: null
+          specialSlot: null,
+          dropped: true
         };
       }
     },

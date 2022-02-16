@@ -3,7 +3,7 @@
     <span class="game-name-side">
       <b-button variant="danger" class="move-button" v-show="moveMode && game && !holdingGame && !gameSlot.counterPick" v-on:click="holdGame">Move</b-button>
       <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
-      <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
+      <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || gameSlot.dropped" :gameSlot="gameSlot"></slotTypeBadge>
       <span class="master-game-popover" v-if="game">
         <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
         <span v-if="!game.linked">{{game.gameName}}</span>
