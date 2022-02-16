@@ -30,10 +30,10 @@
         </tr>
       </thead>
       <tbody>
-        <playerGameSlotRow v-for="gameSlot in gameSlots" :minimal="true"
+        <minimalPlayerGameSlotRow v-for="gameSlot in gameSlots" :minimal="true"
                            :gameSlot="gameSlot" :supportedYear="leagueYear.supportedYear" 
                            :hasSpecialSlots="leagueYear.hasSpecialSlots" :userIsPublisher="userIsPublisher"
-                           v-bind:key="gameSlot.overallSlotNumber"></playerGameSlotRow>
+                           v-bind:key="gameSlot.overallSlotNumber"></minimalPlayerGameSlotRow>
           <tr class="minimal-game-row">
             <td id="total-description">
               <span id="total-description-text" v-if="!advancedProjections">
@@ -57,12 +57,12 @@
 </template>
 <script>
 import html2canvas from 'html2canvas';
-import PlayerGameSlotRow from '@/components/modules/gameTables/playerGameSlotRow';
+import MinimalPlayerGameSlotRow from '@/components/modules/gameTables/minimalPlayerGameSlotRow';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {
   components: {
-    PlayerGameSlotRow
+    MinimalPlayerGameSlotRow
   },
   props: ['publisher', 'leagueYear'],
   data() {

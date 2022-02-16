@@ -1,32 +1,22 @@
 <template>
-  <tr v-bind:class="{ 'table-warning': gameSlot && !gameSlot.gameMeetsSlotCriteria, 'minimal-game-row': minimal }">
+  <tr v-bind:class="{ 'table-warning': gameSlot && !gameSlot.gameMeetsSlotCriteria }" class="minimal-game-row">
     <template v-if="game">
       <td>
         <gameNameColumn :gameSlot="gameSlot" :hasSpecialSlots="hasSpecialSlots" :supportedYear="supportedYear"></gameNameColumn>
       </td>
-      <template v-if="!minimal">
-        <td>{{releaseDate}}</td>
-        <td>{{acquireDate}}</td>
-        <td class="score-column">{{game.criticScore | score(2)}}</td>
-        <td class="score-column"><em>~{{game.masterGame.projectedFantasyPoints | score(2)}}</em></td>
-        <td class="score-column">{{game.fantasyPoints | score(2)}}</td>
+      <td class="score-column">{{game.criticScore | score}}</td>
+      <template v-if="advancedProjections">
+        <td class="score-column" v-if="game.fantasyPoints || !game.willRelease">{{game.fantasyPoints | score}}</td>
+        <td class="score-column" v-else><em>~{{gameSlot.advancedProjectedFantasyPoints | score}}</em></td>
       </template>
       <template v-else>
-        <td class="score-column">{{game.criticScore | score}}</td>
-        <template v-if="advancedProjections">
-          <td class="score-column" v-if="game.fantasyPoints || !game.willRelease">{{game.fantasyPoints | score}}</td>
-          <td class="score-column" v-else><em>~{{gameSlot.advancedProjectedFantasyPoints | score}}</em></td>
-        </template>
-        <template v-else>
-          <td class="score-column">{{game.fantasyPoints | score}}</td>
-        </template>
+        <td class="score-column">{{game.fantasyPoints | score}}</td>
       </template>
     </template>
     <template v-else>
       <td>
         <span class="game-name-column">
           <span class="game-name-side">
-            <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
             <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
           </span>
           <span v-if="gameSlot.counterPick" class="game-status">
@@ -35,11 +25,6 @@
           </span>
         </span>
       </td>
-      <template v-if="!minimal">
-        <td></td>
-        <td></td>
-        <td></td>
-      </template>
       <td class="score-column"></td> 
       <td class="score-column">{{emptySlotScore}}</td>
     </template>
@@ -48,7 +33,6 @@
 <script>
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import SlotTypeBadge from '@/components/modules/gameTables/slotTypeBadge';
-import GlobalFunctions from '@/globalFunctions';
 import GameNameColumn from '@/components/modules/gameTables/gameNameColumn';
 
 export default {
@@ -57,25 +41,13 @@ export default {
     SlotTypeBadge,
     GameNameColumn
   },
-  props: ['minimal', 'gameSlot', 'supportedYear', 'hasSpecialSlots'],
+  props: ['gameSlot', 'supportedYear', 'hasSpecialSlots'],
   computed: {
     game(){
       return this.gameSlot.publisherGame;
     },
     advancedProjections() {
       return this.$store.getters.advancedProjections;
-    },
-    releaseDate() {
-      return GlobalFunctions.formatPublisherGameReleaseDate(this.game);
-    },
-    acquireDate() {
-      return GlobalFunctions.formatPublisherGameAcquiredDate(this.game);
-    },
-    moveMode() {
-      return this.$store.getters.moveMode;
-    },
-    holdingGame() {
-      return this.$store.getters.holdingGame;
     },
     emptySlotScore() {
       if (this.gameSlot.counterPick && this.yearFinished) {
@@ -96,14 +68,6 @@ export default {
         }
       }
     },
-  },
-  methods:{
-    holdGame() {
-      this.$store.commit('holdGame', this.gameSlot);
-    },
-    placeGame() {
-      this.$store.dispatch('moveGame', this.gameSlot);
-    }
   }
 };
 </script>
