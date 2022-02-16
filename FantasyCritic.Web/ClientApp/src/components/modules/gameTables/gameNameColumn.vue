@@ -25,7 +25,6 @@
   </span>
 </template>
 <script>
-
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import SlotTypeBadge from '@/components/modules/gameTables/slotTypeBadge';
 
@@ -34,8 +33,11 @@ export default {
     MasterGamePopover,
     SlotTypeBadge
   },
-  props: ['game', 'gameSlot', 'hasSpecialSlots', 'supportedYear'],
+  props: ['gameSlot', 'hasSpecialSlots', 'supportedYear'],
   computed: {
+    game() {
+      return this.gameSlot.publisherGame;
+    },
     moveMode() {
       return this.$store.getters.moveMode;
     },

@@ -2,7 +2,7 @@
   <tr v-bind:class="{ 'table-warning': gameSlot && !gameSlot.gameMeetsSlotCriteria, 'minimal-game-row': minimal }">
     <template v-if="game">
       <td>
-        <gameNameColumn :game="game" :gameSlot="gameSlot" :hasSpecialSlots="hasSpecialSlots" :supportedYear="supportedYear"></gameNameColumn>
+        <gameNameColumn :gameSlot="gameSlot" :hasSpecialSlots="hasSpecialSlots" :supportedYear="supportedYear"></gameNameColumn>
       </td>
       <template v-if="!minimal">
         <td>{{releaseDate}}</td>
