@@ -1,44 +1,59 @@
 <template>
-  <div v-if="upcomingGames && upcomingGames.length > 0">
-    <b-table :sort-by.sync="sortBy"
-              :sort-desc.sync="sortDesc"
-              :items="upcomingGames"
-              :fields="upcomingGamesFields"
-              bordered
-              striped
-              responsive
-              small>
-      <template v-slot:cell(gameName)="data">
-        <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+  <div>
+    <span class="upcoming-header">
+      <template v-if="mode === 'league'">
+        <h2 v-show="!recentReleasesMode">Upcoming Releases</h2>
+        <h2 v-show="recentReleasesMode">Recent Releases</h2>
       </template>
-      <template v-slot:cell(maximumReleaseDate)="data">
-        {{getReleaseDate(data.item)}}
+      <template v-if="mode === 'user'">
+        <h3 v-show="!recentReleasesMode">Upcoming Releases</h3>
+        <h3 v-show="recentReleasesMode">Recent Releases</h3>
       </template>
-      <template v-slot:cell(league)="data">
-        <router-link v-if="data.item.leagueID" :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year }}">{{data.item.leagueName}}</router-link>
-        <span v-else>{{data.item.leagueName}}</span>
-      </template>
-      <template v-slot:cell(publisher)="data">
-        <span v-if="!data.item.counterPickPublisherID">
-          <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
-        </span>
-        <span v-else>
-          <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
-          - Counter Picked by:
-          <router-link :to="{ name: 'publisher', params: { publisherid: data.item.counterPickPublisherID }}">{{ data.item.counterPickPublisherName }}</router-link>
-        </span>
-      </template>
-    </b-table>
+      <toggle-button v-if="isPlusUser" class="toggle" v-model="recentReleasesMode" :sync="true" :labels="{checked: 'Recent', unchecked: 'Upcoming'}" :css-colors="true" :font-size="13" :width="100" :height="28" />
+    </span>
+    <div v-if="upcomingGames && upcomingGames.length > 0">
+      <b-table :sort-by.sync="sortBy"
+               :sort-desc.sync="sortDesc"
+               :items="upcomingGames"
+               :fields="upcomingGamesFields"
+               bordered
+               striped
+               responsive
+               small>
+        <template v-slot:cell(gameName)="data">
+          <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+        </template>
+        <template v-slot:cell(maximumReleaseDate)="data">
+          {{getReleaseDate(data.item)}}
+        </template>
+        <template v-slot:cell(league)="data">
+          <router-link v-if="data.item.leagueID" :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year }}">{{data.item.leagueName}}</router-link>
+          <span v-else>{{data.item.leagueName}}</span>
+        </template>
+        <template v-slot:cell(publisher)="data">
+          <span v-if="!data.item.counterPickPublisherID">
+            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
+          </span>
+          <span v-else>
+            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
+            - Counter Picked by:
+            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.counterPickPublisherID }}">{{ data.item.counterPickPublisherName }}</router-link>
+          </span>
+        </template>
+      </b-table>
+    </div>
   </div>
 </template>
 <script>
 import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
+import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
   props: ['upcomingGames', 'mode'],
   data() {
     return {
+      recentReleasesMode: false,
       sortBy: 'maximumReleaseDate',
       sortDesc: false,
       baseUpcomingGamesFields: [
@@ -54,6 +69,9 @@ export default {
     };
   },
   computed: {
+    isPlusUser() {
+      return this.$store.getters.isPlusUser;
+    },
     upcomingGamesFields() {
       if (this.mode === 'user') {
         return this.baseUpcomingGamesFields.concat(this.userUpcomingGamesFields);
@@ -66,6 +84,7 @@ export default {
   },
   components: {
     MasterGamePopover,
+    ToggleButton
   },
   methods: {
     getReleaseDate(game) {
@@ -77,3 +96,9 @@ export default {
   }
 };
 </script>
+<style scoped>
+  .upcoming-header {
+    display: flex;
+    justify-content: space-between;
+  }
+</style>

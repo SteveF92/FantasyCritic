@@ -71,7 +71,7 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card title="My Upcoming Games" class="homepage-section">
+          <b-card class="homepage-section">
             <upcomingGames :upcomingGames="upcomingGames" mode="user" />
           </b-card>
         </div>
