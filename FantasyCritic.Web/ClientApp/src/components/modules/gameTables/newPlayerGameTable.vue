@@ -15,6 +15,8 @@
     <b-table :items="tableItems"
              :fields="tableFields"
              bordered responsive striped
+             :sort-by.sync="sortBy"
+             :sort-desc.sync="sortDesc"
              primary-key="overallSlotNumber"
              tbody-tr-class="btable-player-game-row">
       <template #head(publisherGame.masterGame.projectedFantasyPoints)="data">
@@ -92,7 +94,9 @@
     data() {
       return {
         sortOrderMode: false,
-        includeRemovedInSorted: false
+        includeRemovedInSorted: false,
+        sortBy: 'overallSlotNumber',
+        sortDesc: false
       };
     },
     components: {
@@ -202,7 +206,15 @@
           specialSlot: null
         };
       }
-    }
+    },
+    watch: {
+      sortOrderMode: function () {
+        if (!this.sortOrderMode) {
+          this.sortBy = 'overallSlotNumber';
+          this.sortDesc = false;
+        }
+      }
+    },
   };
 </script>
 <style scoped>

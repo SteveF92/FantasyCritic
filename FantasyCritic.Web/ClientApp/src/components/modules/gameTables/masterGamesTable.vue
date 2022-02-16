@@ -18,7 +18,7 @@
       </b-col>
 
       <b-col sm="12" md="6" class="my-1">
-        <b-form-group v-model="sortDirection"
+        <b-form-group
                       label="Filter On"
                       description="Leave all unchecked to filter on all data"
                       label-cols-sm="3"
@@ -183,7 +183,6 @@ export default {
       pageOptions: [10, 50, 100, 1000],
       sortBy: 'dateAdjustedHypeFactor',
       sortDesc: true,
-      sortDirection: 'desc',
       filter: null,
       filterOn: [],
     };
