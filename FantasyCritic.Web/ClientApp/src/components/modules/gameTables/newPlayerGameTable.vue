@@ -15,7 +15,8 @@
     <b-table :items="tableItems"
              :fields="tableFields"
              bordered responsive striped
-             primary-key="overallSlotNumber">
+             primary-key="overallSlotNumber"
+             tbody-tr-class="btable-player-game-row">
       <template #head(publisherGame.masterGame.projectedFantasyPoints)="data">
         Projected points
         <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
@@ -24,23 +25,41 @@
       <template v-slot:cell(publisherGame.gameName)="data">
         <gameNameColumn :gameSlot="data.item" :hasSpecialSlots="leagueYear.hasSpecialSlots" :supportedYear="leagueYear.supportedYear"></gameNameColumn>
       </template>
+
       <template v-slot:cell(publisherGame.masterGame.maximumReleaseDate)="data">
-        {{getReleaseDate(data.item.publisherGame)}}
+        <template v-if="data.item.publisherGame">
+          {{getReleaseDate(data.item.publisherGame)}}
+        </template>
       </template>
+
       <template v-slot:cell(publisherGame.masterGame.criticScore)="data">
-        {{data.item.publisherGame.criticScore | score(2)}}
+        <template v-if="data.item.publisherGame">
+          {{data.item.publisherGame.criticScore | score(2)}}
+        </template>
       </template>
+
       <template v-slot:cell(publisherGame.masterGame.projectedFantasyPoints)="data">
-        <em>~{{data.item.publisherGame.masterGame.projectedFantasyPoints | score(2)}}</em>
+        <template v-if="data.item.publisherGame && data.item.publisherGame.masterGame" class="projected-text">
+          ~{{data.item.publisherGame.masterGame.projectedFantasyPoints | score(2)}}
+        </template>
       </template>
+
       <template v-slot:cell(publisherGame.fantasyPoints)="data">
-        {{data.item.publisherGame.fantasyPoints | score(2)}}
+        <template v-if="data.item.publisherGame">
+          {{data.item.publisherGame.fantasyPoints | score(2)}}
+        </template>
       </template>
+
       <template v-slot:cell(publisherGame.timestamp)="data">
-        {{getAcquiredDate(data.item.publisherGame)}}
+        <template v-if="data.item.publisherGame">
+          {{getAcquiredDate(data.item.publisherGame)}}
+        </template>
       </template>
+
       <template v-slot:cell(publisherGame.removedTimestamp)="data">
-        {{getRemovedDate(data.item.publisherGame)}}
+        <template v-if="data.item.publisherGame">
+          {{getRemovedDate(data.item.publisherGame)}}
+        </template>
       </template>
 
       <template slot="custom-foot">
@@ -50,11 +69,11 @@
           </b-td>
           <b-td></b-td>
           <b-td></b-td>
+          <b-td v-show="includeRemovedInSorted"></b-td>
+          <b-td v-show="includeRemovedInSorted"></b-td>
           <b-td class="average-critic-column">{{publisher.averageCriticScore | score(2)}} (Average)</b-td>
-          <b-td class="total-column projected-footer bg-info">~{{publisher.totalProjectedPoints | score(2)}}</b-td>
+          <b-td class="total-column projected-text bg-info">~{{publisher.totalProjectedPoints | score(2)}}</b-td>
           <b-td class="total-column bg-success">{{publisher.totalFantasyPoints | score(2)}}</b-td>
-          <b-td v-show="includeRemovedInSorted"></b-td>
-          <b-td v-show="includeRemovedInSorted"></b-td>
         </b-tr>
       </template>
     </b-table>
@@ -72,7 +91,7 @@
   export default {
     data() {
       return {
-        sortOrderMode: true,
+        sortOrderMode: false,
         includeRemovedInSorted: false
       };
     },
@@ -95,22 +114,24 @@
         return this.$store.getters.isPlusUser;
       },
       tableItems() {
-        if (this.sortOrderMode) {
-          return _.reject(this.publisher.gameSlots, ['publisherGame', null]);
+        if (!this.sortOrderMode) {
+          return this.publisher.gameSlots;
         }
+        let slotsWithGames = _.reject(this.publisher.gameSlots, ['publisherGame', null]);
         if (this.includeRemovedInSorted) {
           let fakeFormerSlots = [];
 
-          let overallSlotNumber = _maxBy(this.publisher.gameSlots, 'overallSlotNumber').overallSlotNumber;
+          let overallSlotNumber = _.maxBy(this.publisher.gameSlots, 'overallSlotNumber').overallSlotNumber;
           for (const formerGame of this.publisher.formerGames) {
             overallSlotNumber++;
-            let fakeSlot = getFakeGameSlot(formerGame, overallSlotNumber);
+            let fakeSlot = this.getFakeGameSlot(formerGame, overallSlotNumber);
             fakeFormerSlots.push(fakeSlot)
           }
-          return this.publisher.gameSlots.concat(fakeFormerSlots);
+
+          return slotsWithGames.concat(fakeFormerSlots);
         }
 
-        return this.publisher.gameSlots;
+        return slotsWithGames
       },
       tableFields() {
         let baseGameFields = [
@@ -127,7 +148,8 @@
         ];
 
         if (this.sortOrderMode && this.includeRemovedInSorted) {
-          return baseGameFields.concat(formerGameFields);
+          baseGameFields.splice(3, 0, ...formerGameFields);
+          return baseGameFields;
         }
         return baseGameFields;
       },
@@ -142,7 +164,8 @@
           },
           content: () => {
             return 'This is the amount of fantasy points that our algorithm believes this game will result in.' +
-              ' If the game already has a critic score, then this was our final projection before the score came in.';
+              ' If the game already has a critic score, then this was our final projection before the score came in.' +
+              '<br/> The number at the bottom is this player\'s projected final score.';
           }
         }
       }
@@ -231,7 +254,7 @@
     vertical-align: middle;
   }
 
-  .projected-footer {
+  .projected-text {
     font-style: italic;
   }
 

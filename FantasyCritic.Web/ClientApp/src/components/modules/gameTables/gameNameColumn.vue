@@ -1,18 +1,16 @@
 <template>
   <span class="game-name-column">
     <span class="game-name-side">
-      <template v-if="gameSlot">
-        <b-button variant="danger" class="move-button" v-show="moveMode && !holdingGame && !gameSlot.counterPick" v-on:click="holdGame">Move</b-button>
-        <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
-      </template>
-      <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || game.counterPick" :gameSlot="gameSlot" :counterPick="game.counterPick"></slotTypeBadge>
-      <span class="master-game-popover">
+      <b-button variant="danger" class="move-button" v-show="moveMode && !holdingGame && !gameSlot.counterPick" v-on:click="holdGame">Move</b-button>
+      <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
+      <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick" :gameSlot="gameSlot"></slotTypeBadge>
+      <span class="master-game-popover" v-if="game">
         <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
         <span v-if="!game.linked">{{game.gameName}}</span>
       </span>
     </span>
 
-    <span class="game-info-side">
+    <span class="game-info-side" v-if="game">
       <font-awesome-icon v-if="!game.linked" color="white" size="lg" icon="question-circle" v-b-popover.hover.top="unlinkedText" />
       <font-awesome-icon v-if="game.linked && !game.willRelease" color="white" size="lg" icon="calendar-times" v-b-popover.hover.top="willNotReleaseText" />
       <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" color="white" size="lg" icon="balance-scale" v-b-popover.hover.top="delayContentionText" />
