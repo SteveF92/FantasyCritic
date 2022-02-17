@@ -47,7 +47,7 @@
           <div class="col-lg-12 col-xl-6">
             <h3>Extra League Views</h3>
             <p>
-              In addition to being able to see "upcoming games" for a given league or across all their publishers(on the home page), plus users can also see "recent games" in the same fashion.
+              In addition to being able to see "upcoming games" for a given league or across all their publishers (on the home page), plus users can also see "recent games" in the same fashion.
             </p>
             <h3>Extra Publisher Info</h3>
             <p>
