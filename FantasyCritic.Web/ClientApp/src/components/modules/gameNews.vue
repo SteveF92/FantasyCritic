@@ -6,8 +6,8 @@
         <h2 v-show="recentReleasesMode">Recent Releases</h2>
       </template>
       <template v-if="mode === 'user'">
-        <h3 v-show="!recentReleasesMode">Upcoming Releases</h3>
-        <h3 v-show="recentReleasesMode">Recent Releases</h3>
+        <h3 v-show="!recentReleasesMode">My Upcoming Releases</h3>
+        <h3 v-show="recentReleasesMode">My Recent Releases</h3>
       </template>
       <toggle-button v-if="isPlusUser" class="toggle" v-model="recentReleasesMode" :sync="true" :labels="{checked: 'Recent', unchecked: 'Upcoming'}" :css-colors="true" :font-size="13" :width="100" :height="28" />
     </span>
