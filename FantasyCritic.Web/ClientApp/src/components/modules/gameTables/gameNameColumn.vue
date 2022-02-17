@@ -109,7 +109,7 @@ export default {
           return "Not Linked to Master Game";
         },
         content: () => {
-          return 'This is a "custom game" that has not be linked to a master game. The league manager can link it using "associate game" in the sidebar.';
+          return 'This is a "custom game" that has not been linked to a master game. The league manager can link it using "associate game" in the sidebar.';
         }
       }
     },
