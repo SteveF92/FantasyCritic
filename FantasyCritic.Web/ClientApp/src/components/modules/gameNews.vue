@@ -15,7 +15,7 @@
       <b-table :sort-by.sync="sortBy"
                :sort-desc.sync="sortDesc"
                :items="gameNewsItems"
-               :fields="upcomingGamesFields"
+               :fields="gameNewsFields"
                bordered
                striped
                responsive
@@ -56,14 +56,14 @@ export default {
       recentReleasesMode: false,
       sortBy: 'maximumReleaseDate',
       sortDesc: false,
-      baseUpcomingGamesFields: [
+      baseGameNewsFields: [
         { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
       ],
-      userUpcomingGamesFields: [
+      userGameNewsFields: [
         { key: 'league', label: 'League', sortable: true, thClass: ['bg-primary'] },
       ],
-      leagueUpcomingGamesFields: [
+      leagueGameNewsFields: [
         { key: 'publisher', label: 'Publisher', sortable: true, thClass: ['bg-primary'] },
       ],
     };
@@ -72,14 +72,14 @@ export default {
     isPlusUser() {
       return this.$store.getters.isPlusUser;
     },
-    upcomingGamesFields() {
+    gameNewsFields() {
       if (this.mode === 'user') {
-        return this.baseUpcomingGamesFields.concat(this.userUpcomingGamesFields);
+        return this.baseGameNewsFields.concat(this.userGameNewsFields);
       } else if (this.mode === 'league') {
-        return this.baseUpcomingGamesFields.concat(this.leagueUpcomingGamesFields);
+        return this.baseGameNewsFields.concat(this.leagueGameNewsFields);
       }
 
-      return this.baseUpcomingGamesFields;
+      return this.baseGameNewsFields;
     },
     gameNewsItems() {
       if (!this.gameNews) {

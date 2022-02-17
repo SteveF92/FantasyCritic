@@ -72,7 +72,7 @@
       <div class="row">
         <div class="col-lg-8 col-md-12">
           <b-card class="homepage-section">
-            <upcomingGames :gameNews="gameNews" mode="user" />
+            <gameNews :gameNews="gameNews" mode="user" />
           </b-card>
         </div>
 
@@ -108,7 +108,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import Tweets from '@/components/modules/tweets';
 import LeagueTable from '@/components/modules/leagueTable';
-import UpcomingGames from '@/components/modules/upcomingGames';
+import GameNews from '@/components/modules/gameNews';
 
 export default {
   data() {
@@ -134,7 +134,7 @@ export default {
   components: {
     Tweets,
     LeagueTable,
-    UpcomingGames
+    GameNews
   },
   computed: {
     myStandardLeagues() {
@@ -222,7 +222,7 @@ export default {
 
         });
     },
-    async fetchUpcomingGames() {
+    async fetchGameNews() {
       axios
         .get('/api/league/MyGameNews/')
         .then(response => {
@@ -244,7 +244,7 @@ export default {
     }
   },
   async mounted() {
-    await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchUpcomingGames(), this.fetchActiveRoyaleYearQuarter()]);
+    await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()]);
   }
 };
 </script>

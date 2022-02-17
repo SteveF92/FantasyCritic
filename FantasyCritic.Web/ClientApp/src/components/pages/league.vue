@@ -157,7 +157,7 @@
             <div class="col-xl-9 col-lg-8 col-md-12">
               <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
               <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
-                <upcomingGames :gameNews="gameNews" mode="league" />
+                <gameNews :gameNews="gameNews" mode="league" />
                 <br />
                 <div class="text-well">
                   <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" v-on:publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
@@ -191,7 +191,7 @@ import LeagueYearStandings from '@/components/modules/leagueYearStandings';
 import LeagueActions from '@/components/modules/leagueActions';
 import CreatePublisherForm from '@/components/modules/modals/createPublisherForm';
 import StartDraftModal from '@/components/modules/modals/startDraftModal';
-import UpcomingGames from '@/components/modules/upcomingGames';
+import GameNews from '@/components/modules/gameNews';
 import ActiveBids from '@/components/modules/activeBids';
 import BidCountdowns from '@/components/modules/bidCountdowns';
 
@@ -217,7 +217,7 @@ export default {
     CreatePublisherForm,
     StartDraftModal,
     LeagueActions,
-    UpcomingGames,
+    GameNews,
     ActiveBids,
     BidCountdowns
   },
@@ -297,7 +297,7 @@ export default {
           this.selectedYear = this.leagueYear.year;
           this.fetchCurrentBids();
           this.fetchCurrentDropRequests();
-          this.fetchUpcomingGames();
+          this.fetchGameNews();
           if (this.leagueYear.userIsActive) {
             this.userShouldBeActive = true;
           }
@@ -337,7 +337,7 @@ export default {
 
         });
     },
-    fetchUpcomingGames() {
+    fetchGameNews() {
       this.gameNews = null;
       let queryURL = '/api/League/LeagueGameNews?leagueID=' + this.leagueid + '&year=' + this.year;
       axios
