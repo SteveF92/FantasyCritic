@@ -1185,7 +1185,7 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        public async Task<ActionResult<List<UpcomingGameViewModel>>> MyUpcomingGames()
+        public async Task<ActionResult<List<SingleGameNewsViewModel>>> MyUpcomingGames()
         {
             var currentUserResult = await GetCurrentUser();
             if (currentUserResult.IsFailure)
@@ -1219,12 +1219,51 @@ namespace FantasyCritic.Web.Controllers.API
                 }
             }
 
-            var viewModels = GetUpcomingGameViewModels(myPublishers, true).ToList();
+            var viewModels = GetGameNewsViewModel(myPublishers, true, false).ToList();
             return viewModels;
         }
 
+        public async Task<ActionResult<GameNewsViewModel>> MyGameNews()
+        {
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            var supportedYears = await _interLeagueService.GetSupportedYears();
+            var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
+
+            List<Publisher> myPublishers = new List<Publisher>();
+            foreach (var year in activeYears)
+            {
+                IReadOnlyList<LeagueYear> activeLeagueYears = await _leagueMemberService.GetLeaguesYearsForUser(currentUser, year.Year);
+
+                foreach (var leagueYear in activeLeagueYears)
+                {
+                    if (leagueYear.League.TestLeague)
+                    {
+                        continue;
+                    }
+
+                    var userPublisher = await _publisherService.GetPublisher(leagueYear, currentUser);
+                    if (userPublisher.HasNoValue)
+                    {
+                        continue;
+                    }
+
+                    myPublishers.Add(userPublisher.Value);
+                }
+            }
+
+            var upcomingGames = GetGameNewsViewModel(myPublishers, true, false).ToList();
+            var recentGames = GetGameNewsViewModel(myPublishers, true, true).ToList();
+            return new GameNewsViewModel(upcomingGames, recentGames);
+        }
+
         [AllowAnonymous]
-        public async Task<ActionResult<List<UpcomingGameViewModel>>> LeagueUpcomingGames(Guid leagueID, int year)
+        public async Task<ActionResult<List<SingleGameNewsViewModel>>> LeagueUpcomingGames(Guid leagueID, int year)
         {
             Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
             if (leagueYear.HasNoValue)
@@ -1268,8 +1307,58 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var viewModels = GetUpcomingGameViewModels(publishersInLeague, false).ToList();
+            var viewModels = GetGameNewsViewModel(publishersInLeague, false, false).ToList();
             return viewModels;
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult<GameNewsViewModel>> LeagueGameNews(Guid leagueID, int year)
+        {
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Something went really wrong, no options are set up for this league.");
+            }
+
+            FantasyCriticUser currentUser = null;
+            if (!string.IsNullOrWhiteSpace(User.Identity.Name))
+            {
+                var currentUserResult = await GetCurrentUser();
+                if (currentUserResult.IsFailure)
+                {
+                    return BadRequest(currentUserResult.Error);
+                }
+                currentUser = currentUserResult.Value;
+            }
+
+            var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
+            var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
+            bool userIsAdmin = false;
+
+            bool userIsInLeague = false;
+            bool userIsInvitedToLeague = false;
+            if (currentUser != null)
+            {
+                userIsInLeague = activeUsers.Any(x => x.Id == currentUser.Id);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
+                userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
+            }
+
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !userIsAdmin)
+            {
+                return Forbid();
+            }
+
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value, activeUsers);
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            var upcomingGames = GetGameNewsViewModel(publishersInLeague, false, false).ToList();
+            var recentGames = GetGameNewsViewModel(publishersInLeague, false, true).ToList();
+            return new GameNewsViewModel(upcomingGames, recentGames);
         }
 
         public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> PossibleMasterGames(string gameName, int year, Guid leagueID)
@@ -1846,31 +1935,41 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        private IReadOnlyList<UpcomingGameViewModel> GetUpcomingGameViewModels(IEnumerable<Publisher> publishers, bool userMode)
+        private IReadOnlyList<SingleGameNewsViewModel> GetGameNewsViewModel(IEnumerable<Publisher> publishers, bool userMode, bool recentReleases)
         {
             var publisherGames = publishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue);
-            var easternZone = TimeExtensions.EasternTimeZone;
-            if (easternZone is null)
-            {
-                throw new Exception("Time has broken.");
-            }
-
             var currentDate = _clock.GetToday();
             var yesterday = currentDate.PlusDays(-1);
+            var tomorrow = currentDate.PlusDays(1);
 
-            var orderedByReleaseDate = publisherGames
-                .Distinct()
-                .Where(x => x.MasterGame.Value.MasterGame.GetDefiniteMaximumReleaseDate() > yesterday)
-                .OrderBy(x => x.MasterGame.Value.MasterGame.GetDefiniteMaximumReleaseDate())
-                .GroupBy(x => x.MasterGame.Value)
-                .Take(10);
+            IEnumerable<IGrouping<MasterGameYear, PublisherGame>> orderedByReleaseDate;
 
-            List<UpcomingGameViewModel> viewModels = new List<UpcomingGameViewModel>();
+            if (recentReleases)
+            {
+                orderedByReleaseDate = publisherGames
+                    .Distinct()
+                    .Where(x => x.MasterGame.Value.MasterGame.GetDefiniteMaximumReleaseDate() < tomorrow)
+                    .OrderByDescending(x => x.MasterGame.Value.MasterGame.GetDefiniteMaximumReleaseDate())
+                    .GroupBy(x => x.MasterGame.Value)
+                    .Take(10);
+            }
+            else
+            {
+                orderedByReleaseDate = publisherGames
+                    .Distinct()
+                    .Where(x => x.MasterGame.Value.MasterGame.GetDefiniteMaximumReleaseDate() > yesterday)
+                    .OrderBy(x => x.MasterGame.Value.MasterGame.GetDefiniteMaximumReleaseDate())
+                    .GroupBy(x => x.MasterGame.Value)
+                    .Take(10);
+            }
+
+
+            List<SingleGameNewsViewModel> viewModels = new List<SingleGameNewsViewModel>();
             foreach (var publisherGameGroup in orderedByReleaseDate)
             {
                 IEnumerable<Publisher> publishersThatHaveGame = publishers.Where(x => publisherGameGroup.Select(y => y.PublisherID).Contains(x.PublisherID));
                 IEnumerable<Publisher> publishersThatHaveStandardGame = publishersThatHaveGame.Where(x => x.PublisherGames.Where(y => !y.CounterPick).Where(x => x.MasterGame.HasValue).Select(y => y.MasterGame.Value).Contains(publisherGameGroup.Key));
-                viewModels.Add(new UpcomingGameViewModel(publisherGameGroup.Key, publishersThatHaveGame, publishersThatHaveStandardGame, userMode, currentDate));
+                viewModels.Add(new SingleGameNewsViewModel(publisherGameGroup.Key, publishersThatHaveGame, publishersThatHaveStandardGame, userMode, currentDate));
             }
 
             return viewModels;

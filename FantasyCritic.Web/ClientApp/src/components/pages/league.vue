@@ -157,7 +157,7 @@
             <div class="col-xl-9 col-lg-8 col-md-12">
               <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
               <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
-                <upcomingGames :upcomingGames="upcomingGames" mode="league" />
+                <upcomingGames :gameNews="gameNews" mode="league" />
                 <br />
                 <div class="text-well">
                   <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" v-on:publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
@@ -203,7 +203,7 @@ export default {
       leagueYear: null,
       currentBids: [],
       currentDrops: [],
-      upcomingGames: [],
+      gameNews: null,
       forbidden: false,
       advancedProjections: false,
       inviteCode: null,
@@ -338,12 +338,12 @@ export default {
         });
     },
     fetchUpcomingGames() {
-      this.upcomingGames = null;
-      let queryURL = '/api/League/LeagueUpcomingGames?leagueID=' + this.leagueid + '&year=' + this.year;
+      this.gameNews = null;
+      let queryURL = '/api/League/LeagueGameNews?leagueID=' + this.leagueid + '&year=' + this.year;
       axios
         .get(queryURL)
         .then(response => {
-          this.upcomingGames = response.data;
+          this.gameNews = response.data;
         })
         .catch(response => {
 

@@ -8,9 +8,9 @@ using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {
-    public class UpcomingGameViewModel
+    public class SingleGameNewsViewModel
     {
-        public UpcomingGameViewModel(MasterGameYear masterGame, IEnumerable<Publisher> publishers, IEnumerable<Publisher> standardGamePublishers, bool userMode, LocalDate currentDate)
+        public SingleGameNewsViewModel(MasterGameYear masterGame, IEnumerable<Publisher> publishers, IEnumerable<Publisher> standardGamePublishers, bool userMode, LocalDate currentDate)
         {
             MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
             MasterGameID = masterGame.MasterGame.MasterGameID;

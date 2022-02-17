@@ -72,7 +72,7 @@
       <div class="row">
         <div class="col-lg-8 col-md-12">
           <b-card class="homepage-section">
-            <upcomingGames :upcomingGames="upcomingGames" mode="user" />
+            <upcomingGames :gameNews="gameNews" mode="user" />
           </b-card>
         </div>
 
@@ -128,7 +128,7 @@ export default {
       ],
       sortBy: 'numberOfFollowers',
       sortDesc: true,
-      upcomingGames: [],
+      gameNews: null
     };
   },
   components: {
@@ -224,9 +224,9 @@ export default {
     },
     async fetchUpcomingGames() {
       axios
-        .get('/api/league/MyUpcomingGames/')
+        .get('/api/league/MyGameNews/')
         .then(response => {
-          this.upcomingGames = response.data;
+          this.gameNews = response.data;
         })
         .catch(response => {
 

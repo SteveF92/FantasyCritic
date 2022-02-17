@@ -11,10 +11,10 @@
       </template>
       <toggle-button v-if="isPlusUser" class="toggle" v-model="recentReleasesMode" :sync="true" :labels="{checked: 'Recent', unchecked: 'Upcoming'}" :css-colors="true" :font-size="13" :width="100" :height="28" />
     </span>
-    <div v-if="upcomingGames && upcomingGames.length > 0">
+    <div v-if="gameNewsItems && gameNewsItems.length > 0">
       <b-table :sort-by.sync="sortBy"
                :sort-desc.sync="sortDesc"
-               :items="upcomingGames"
+               :items="gameNewsItems"
                :fields="upcomingGamesFields"
                bordered
                striped
@@ -50,7 +50,7 @@ import MasterGamePopover from '@/components/modules/masterGamePopover';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
-  props: ['upcomingGames', 'mode'],
+  props: ['gameNews', 'mode'],
   data() {
     return {
       recentReleasesMode: false,
@@ -80,6 +80,16 @@ export default {
       }
 
       return this.baseUpcomingGamesFields;
+    },
+    gameNewsItems() {
+      if (!this.gameNews) {
+        return [];
+      }
+      if (this.recentReleasesMode) {
+        return this.gameNews.recentGames;
+      }
+
+      return this.gameNews.upcomingGames;
     }
   },
   components: {
@@ -93,7 +103,13 @@ export default {
       }
       return game.estimatedReleaseDate + ' (Estimated)';
     }
-  }
+  },
+  watch: {
+    recentReleasesMode: function () {
+      this.sortBy = 'maximumReleaseDate';
+      this.sortDesc = this.recentReleasesMode;
+    }
+  },
 };
 </script>
 <style scoped>
