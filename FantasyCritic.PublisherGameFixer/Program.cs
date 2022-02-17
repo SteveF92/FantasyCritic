@@ -252,9 +252,12 @@ namespace FantasyCritic.PublisherGameFixer
                 ("Pokemon Let's Go 2 (Unannounced)", "Pokémon Let's Go 2 (Unannounced)"),
                 ("Tom Clancy’s Rainbow Six: Parasite", "Tom Clancy’s Rainbow Six: Extraction"),
                 ("Unannounced Spyro the Dragon Game", "Unannounced Mainline Spyro the Dragon Game"),
+                ("Dying Light 2", "Dying Light 2: Stay Human"),
+                ("Forza Motorsport 8 (Unannounced)", "Forza Motorsport (Xbox Series X)"),
+                ("Untitled Batman Game from WB Games Montréal (Unannounced)", "Gotham Knights"),
+                ("Horizon: Zero Dawn Sequel (Unannounced)", "Horizon Forbidden West"),
+                ("STALKER 2", "STALKER 2: Heart of Chernobyl"),
             }.ToHashSet();
-
-            var attemptedMapping = new HashSet<(string, string)>();
 
             foreach (var supportedYear in realYears)
             {
