@@ -42,6 +42,22 @@
             <img class="screenshot mobile-screenshot" src="/img/master-game-searching-example-mobile.png" />
           </div>
         </div>
+        <hr />
+        <div class="row">
+          <div class="col-lg-12 col-xl-6">
+            <h3>Extra League Views</h3>
+            <p>
+              In addition to being able to see "upcoming games" for a given league or across all their publishers(on the home page), plus users can also see "recent games" in the same fashion.
+            </p>
+            <h3>Extra Publisher Info</h3>
+            <p>
+              Plus users have access to extra features on the publisher details page. They can sort the games a publisher has by any field they like, and they can also see games that player has previously dropped.
+            </p>
+          </div>
+          <div class="col-lg-12 col-xl-6">
+            <img class="screenshot" src="/img/game-news-example.png" />
+          </div>
+        </div>
 
         <h2>Okay, that sounds good. What else?</h2>
         <p>
