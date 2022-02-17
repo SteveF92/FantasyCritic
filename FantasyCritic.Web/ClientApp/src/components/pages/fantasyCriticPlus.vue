@@ -52,6 +52,7 @@
             <h3>Extra Publisher Info</h3>
             <p>
               Plus users have access to extra features on the publisher details page. They can sort the games a publisher has by any field they like, and they can also see games that player has previously dropped.
+              This even works for previous years, making it easy to go back and see how your draft fared.
             </p>
           </div>
           <div class="col-lg-12 col-xl-6">
