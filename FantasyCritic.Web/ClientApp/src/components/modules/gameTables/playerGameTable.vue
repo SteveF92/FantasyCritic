@@ -138,12 +138,12 @@
       },
       tableFields() {
         return [
-          { key: 'publisherGame.gameName', label: 'Game Name', sortable: this.sortOrderMode, thClass: 'bg-primary' },
-          { key: 'publisherGame.masterGame.maximumReleaseDate', label: 'Release Date', sortable: this.sortOrderMode, thClass: 'bg-primary' },
-          { key: 'publisherGame.timestamp', sortable: this.sortOrderMode, thClass: ['bg-primary'] },
-          { key: 'publisherGame.masterGame.criticScore', label: 'Critic Score', sortable: this.sortOrderMode, thClass: ['bg-primary'], tdClass: ['score-column'] },
-          { key: 'publisherGame.masterGame.projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary'], tdClass: ['score-column'] },
-          { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary'], tdClass: ['score-column'] }
+          { key: 'publisherGame.gameName', label: 'Game Name', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'] },
+          { key: 'publisherGame.masterGame.maximumReleaseDate', label: 'Release Date', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'] },
+          { key: 'publisherGame.timestamp', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'] },
+          { key: 'publisherGame.masterGame.criticScore', label: 'Critic Score', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], tdClass: ['full-table-score-column'] },
+          { key: 'publisherGame.masterGame.projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], tdClass: ['full-table-score-column'] },
+          { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], tdClass: ['full-table-score-column'] }
         ];
       },
       hasFormerGames() {
@@ -295,5 +295,15 @@
 
   .projected-points-column {
     width: 110px;
+  }
+
+  .btable-player-table-header {
+      padding: 0;
+  }
+
+  .full-table-score-column {
+    width: 30px;
+    text-align: center;
+    font-weight: bold;
   }
 </style>
