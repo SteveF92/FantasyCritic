@@ -591,6 +591,7 @@
         <div slot="body">
           There are two tags related to early access games. You can use them to chooses to ban games from being drafted/picked up if they are already playable in early access, or,
           alternatively, if they are even PLANNED for early access.
+          It's important to note that games will not recieve points until they are "fully released", meaning games do not get points while still in early access. This is true even if they get reviews while in early access, which is rare.
         </div>
       </collapseCard>
       <collapseCard>
