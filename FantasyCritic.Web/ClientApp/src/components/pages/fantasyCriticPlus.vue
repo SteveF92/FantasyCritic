@@ -59,7 +59,7 @@
             <img class="screenshot" src="/img/game-news-example.png" />
           </div>
         </div>
-
+        <hr />
         <h2>Okay, that sounds good. What else?</h2>
         <p>
           The list of features will continue to grow over time, and we are interested in your input on what should be added. In general, features will be "quality of life" features.
