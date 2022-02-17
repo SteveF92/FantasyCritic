@@ -11,4 +11,5 @@ namespace FantasyCritic.PublisherGameFixer
     public record PublisherGameDraftPositionUpdateEntity(Guid PublisherGameID, int OverallDraftPosition, int DraftPosition);
     public record FormerPublisherGameBidAmountUpdateEntity(Guid PublisherGameID, Instant Timestamp, uint BidAmount);
     public record FormerPublisherGameDraftPositionUpdateEntity(Guid PublisherGameID, Instant Timestamp, int OverallDraftPosition, int DraftPosition);
+    public record FormerPublisherGameClaimUpdateEntity(Guid PublisherGameID, Instant Timestamp);
 }

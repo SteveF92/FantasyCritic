@@ -226,9 +226,10 @@ namespace FantasyCritic.PublisherGameFixer
 
             var draftPositionUpdateEntities = new List<FormerPublisherGameDraftPositionUpdateEntity>();
             var bidAmountUpdateEntities = new List<FormerPublisherGameBidAmountUpdateEntity>();
+            var claimUpdateEntities = new List<FormerPublisherGameClaimUpdateEntity>();
 
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
-            var realYears = supportedYears.Where(x => x.Year >= 2020).ToList();
+            var realYears = supportedYears.Where(x => x.Year > 2018).ToList();
 
             var approvedMappings = new List<(string, string)>()
             {
@@ -257,6 +258,25 @@ namespace FantasyCritic.PublisherGameFixer
                 ("Untitled Batman Game from WB Games Montréal (Unannounced)", "Gotham Knights"),
                 ("Horizon: Zero Dawn Sequel (Unannounced)", "Horizon Forbidden West"),
                 ("STALKER 2", "STALKER 2: Heart of Chernobyl"),
+                ("Call of Duty 2021", "Call of Duty Vanguard"),
+                ("Mario Kart 9 (Unannounced)", "Mario Kart (Unannounced Next Mainline Console Game)"),
+                ("Call of Duty 2020 (Unannounced)", "Call of Duty: Black Ops Cold War"),
+                ("Bravely Default 2", "Bravely Default II"),
+                ("Grand Theft Auto 6 (Unannounced)", "Grand Theft Auto 6"),
+                ("Gods & Monsters", "Immortals: Fenyx Rising"),
+                ("Unannounced 3D Mario", "Unannounced Mainline 3D Mario Platformer"),
+                ("Deltarune", "Deltarune Chapter 2"),
+                ("Unannounced Call of Duty 2022", "Call of Duty: Modern Warfare Sequel (2022)"),
+                ("Unannounced Main Series Sonic Game", "Sonic Frontiers"),
+                ("HuniePop 2", "HuniePop 2: Double Date"),
+                ("Unannounced Next Assassin's Creed", "Assassin's Creed Infinity"),
+                ("Battlefield 2042", "Next Gen Battlefield Game"),
+                ("Demon Souls Remake", "Demon's Souls (2020)"),
+                ("Baldo", "Baldo: The Guardian Owls"),
+                ("Destruction Allstars ", "Destruction Allstars"),
+                ("Dark Alliance", "Dungeons & Dragons: Dark Alliance"),
+                ("Fable (Unannounced)", "Fable (Xbox Series X)"),
+                ("Untitled Final Fantasy XIV Expansion", "Final Fantasy XIV: Endwalker"),
             }.ToHashSet();
 
             foreach (var supportedYear in realYears)
@@ -277,6 +297,7 @@ namespace FantasyCritic.PublisherGameFixer
                         .OrderBy(x => x.Timestamp)
                         .ToList();
                     var filteredDraftActions = FilterDraftActions(leagueActions);
+                    var claimActions = leagueActions.Where(x => x.ActionType == "Publisher Game Claimed").ToList();
 
                     foreach (var publisher in publisherGroup)
                     {
@@ -284,6 +305,9 @@ namespace FantasyCritic.PublisherGameFixer
                             .Where(x => x.PublisherGame.MasterGame.HasValue)
                             .Where(x => !x.PublisherGame.OverallDraftPosition.HasValue && !x.PublisherGame.BidAmount.HasValue)
                             .ToList();
+
+                        var claimActionsForPublisher = claimActions.Where(x => x.PublisherID == publisher.PublisherID).ToList();
+
                         foreach (var formerPublisherGame in formerGamesThatNeedStats)
                         {
                             var matchingBid = GetMatchingBid(bidLookup, publisher, formerPublisherGame);
@@ -293,28 +317,17 @@ namespace FantasyCritic.PublisherGameFixer
                                 continue;
                             }
 
-                            var publisherDraftCount = 0;
-                            for (var index = 0; index < filteredDraftActions.Count; index++)
+                            var draftUpdate = GetDraftUpdate(filteredDraftActions, publisher, formerPublisherGame, approvedMappings);
+                            if (draftUpdate.HasValue)
                             {
-                                var draftAction = filteredDraftActions[index];
-                                if (draftAction.PublisherID == publisher.PublisherID)
-                                {
-                                    publisherDraftCount++;
-                                }
+                                draftPositionUpdateEntities.Add(draftUpdate.Value);
+                                continue;
+                            }
 
-                                var actionGameName = draftAction.Description.TrimStart("Drafted game: ").TrimStart("Auto Drafted game: ").Trim('\'');
-                                if (!actionGameName.Equals(formerPublisherGame.PublisherGame.GameName, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    bool approvedMapping = approvedMappings.Contains((actionGameName, formerPublisherGame.PublisherGame.GameName));
-                                    if (!approvedMapping)
-                                    {
-                                        continue;
-                                    }
-                                }
-
-                                var overallDraftPosition = index + 1;
-                                var draftPosition = publisherDraftCount;
-                                draftPositionUpdateEntities.Add(new FormerPublisherGameDraftPositionUpdateEntity(formerPublisherGame.PublisherGame.PublisherGameID, draftAction.Timestamp, overallDraftPosition, draftPosition));
+                            Maybe<FormerPublisherGameClaimUpdateEntity> claimUpdate = GetClaimUpdate(claimActionsForPublisher, formerPublisherGame, approvedMappings);
+                            if (claimUpdate.HasValue)
+                            {
+                                claimUpdateEntities.Add(claimUpdate.Value);
                             }
                         }
                     }
@@ -331,6 +344,12 @@ namespace FantasyCritic.PublisherGameFixer
             foreach (var updateEntity in bidAmountUpdateEntities)
             {
                 string sql = $"UPDATE tbl_league_formerpublishergame SET Timestamp = '{updateEntity.Timestamp}', BidAmount = {updateEntity.BidAmount} WHERE PublisherGameID = '{updateEntity.PublisherGameID}';";
+                updateStatements.Add(sql);
+            }
+
+            foreach (var updateEntity in claimUpdateEntities)
+            {
+                string sql = $"UPDATE tbl_league_formerpublishergame SET Timestamp = '{updateEntity.Timestamp}' WHERE PublisherGameID = '{updateEntity.PublisherGameID}';";
                 updateStatements.Add(sql);
             }
 
@@ -432,6 +451,63 @@ namespace FantasyCritic.PublisherGameFixer
 
             var bestBid = lastBidBeforeDrop.Single();
             return bestBid;
+        }
+
+        private static Maybe<FormerPublisherGameDraftPositionUpdateEntity> GetDraftUpdate(IReadOnlyList<TempLeagueActionEntity> filteredDraftActions, Publisher publisher,
+            FormerPublisherGame formerPublisherGame, HashSet<(string, string)> approvedMappings)
+        {
+            var publisherDraftCount = 0;
+            for (var index = 0; index < filteredDraftActions.Count; index++)
+            {
+                var draftAction = filteredDraftActions[index];
+                if (draftAction.PublisherID == publisher.PublisherID)
+                {
+                    publisherDraftCount++;
+                }
+
+                var actionGameName = draftAction.Description.TrimStart("Drafted game: ").TrimStart("Auto Drafted game: ").Trim('\'');
+                if (!actionGameName.Equals(formerPublisherGame.PublisherGame.GameName, StringComparison.OrdinalIgnoreCase))
+                {
+                    bool approvedMapping = approvedMappings.Contains((actionGameName, formerPublisherGame.PublisherGame.GameName));
+                    if (!approvedMapping)
+                    {
+                        continue;
+                    }
+                }
+
+                var overallDraftPosition = index + 1;
+                var draftPosition = publisherDraftCount;
+                var update = new FormerPublisherGameDraftPositionUpdateEntity(
+                    formerPublisherGame.PublisherGame.PublisherGameID, draftAction.Timestamp, overallDraftPosition,
+                    draftPosition);
+                return update;
+            }
+
+            return Maybe<FormerPublisherGameDraftPositionUpdateEntity>.None;
+        }
+
+        private static Maybe<FormerPublisherGameClaimUpdateEntity> GetClaimUpdate(List<TempLeagueActionEntity> claimActionsForPublisher, FormerPublisherGame formerPublisherGame, HashSet<(string, string)> approvedMappings)
+        {
+            var claimActionsBeforeDrop = claimActionsForPublisher
+                .Where(x => x.Timestamp < formerPublisherGame.RemovedTimestamp).OrderByDescending(x => x.Timestamp)
+                .ToList();
+            foreach (var claimAction in claimActionsBeforeDrop)
+            {
+                var actionGameName = claimAction.Description.TrimStart("Claimed game: ").Trim('\'');
+                if (!actionGameName.Equals(formerPublisherGame.PublisherGame.GameName, StringComparison.OrdinalIgnoreCase))
+                {
+                    bool approvedMapping = approvedMappings.Contains((actionGameName, formerPublisherGame.PublisherGame.GameName));
+                    if (!approvedMapping)
+                    {
+                        continue;
+                    }
+                }
+
+                var update = new FormerPublisherGameClaimUpdateEntity(formerPublisherGame.PublisherGame.PublisherGameID, claimAction.Timestamp);
+                return update;
+            }
+
+            return Maybe<FormerPublisherGameClaimUpdateEntity>.None;
         }
     }
 }
