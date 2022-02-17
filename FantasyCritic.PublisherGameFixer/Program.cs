@@ -269,7 +269,7 @@ namespace FantasyCritic.PublisherGameFixer
                                     publisherDraftCount++;
                                 }
 
-                                if (!draftAction.Description.Contains(formerPublisherGame.PublisherGame.GameName))
+                                if (!draftAction.Description.Contains(formerPublisherGame.PublisherGame.GameName, StringComparison.OrdinalIgnoreCase))
                                 {
                                     continue;
                                 }
@@ -344,7 +344,7 @@ namespace FantasyCritic.PublisherGameFixer
             {
                 var gameName = draftAction.Description.TrimStart("Drafted game: ").Trim('\'');
                 var futureRemoveActions = removeActions.Where(x => x.Timestamp >= draftAction.Timestamp).ToList();
-                var matchingRemoveActionForGame = futureRemoveActions.Where(x => x.Description.Contains(gameName)).ToList();
+                var matchingRemoveActionForGame = futureRemoveActions.Where(x => x.Description.Contains(gameName, StringComparison.OrdinalIgnoreCase)).ToList();
                 var notAlreadyCounted = matchingRemoveActionForGame.Where(x => !actionsAccountedFor.Contains(x)).ToList();
                 var firstNotAlreadyCounted = notAlreadyCounted.FirstOrDefault();
                 if (firstNotAlreadyCounted is not null)
