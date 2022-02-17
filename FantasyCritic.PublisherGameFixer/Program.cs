@@ -23,8 +23,11 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Configuration;
-using MoreLinq;
 using FantasyCritic.Lib.Extensions;
+using FuzzyString;
+
+using static MoreLinq.Extensions.BatchExtension;
+using static MoreLinq.Extensions.MaxByExtension;
 
 namespace FantasyCritic.PublisherGameFixer
 {
@@ -226,6 +229,33 @@ namespace FantasyCritic.PublisherGameFixer
 
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             var realYears = supportedYears.Where(x => x.Year >= 2020).ToList();
+
+            var approvedMappings = new List<(string, string)>()
+            {
+                ("Persona 5 Scramble: The Phantom Strikers", "Persona 5 Strikers"),
+                ("Tom Clancy’s Rainbow Six: Quarantine", "Tom Clancy’s Rainbow Six: Extraction"),
+                ("Rumored 2D Metroid Sequel (Unannounced)", "Metroid Dread"),
+                ("Ratchet & Clank Rift Apart", "Ratchet & Clank: Rift Apart"),
+                ("Super Mario Sunshine Remaster (Rumored)", "Super Mario Sunshine Remaster (Deprecated)"),
+                ("Mario Odyssey Sequel (Unannounced)", "Super Mario Odyssey 2 (Unannounced)"),
+                ("The Wolf Among Us Season 2", "The Wolf Among Us 2"),
+                ("Final Fantasy 7 Remake", "Final Fantasy VII Remake"),
+                ("Bravely Default 2", "Bravely Default II"),
+                ("GhostWire: Tokyo", "GhostWire Tokyo"),
+                ("Gran Turismo Sequel (Unannounced)", "Gran Turismo 7"),
+                ("Werewolf: The Apocalypse: Earthblood", "Werewolf: The Apocalypse - Earthblood"),
+                ("Bright Memory infinite", "Bright Memory: Infinite"),
+                ("Gran Turismo (PS5) (unannounced)", "Gran Turismo 7"),
+                ("Twelve Minutes", "12 Minutes"),
+                ("God of War: Ragnarok", "God of War: Ragnarök"),
+                ("Last of Us Factions 2", "The Last of Us Factions 2"),
+                ("Pokemon Let's Go 2 (Unannounced)", "Pokémon Let's Go 2 (Unannounced)"),
+                ("Tom Clancy’s Rainbow Six: Parasite", "Tom Clancy’s Rainbow Six: Extraction"),
+                ("Unannounced Spyro the Dragon Game", "Unannounced Mainline Spyro the Dragon Game"),
+            }.ToHashSet();
+
+            var attemptedMapping = new HashSet<(string, string)>();
+
             foreach (var supportedYear in realYears)
             {
                 _logger.Info($"Running for {supportedYear.Year}");
@@ -269,9 +299,14 @@ namespace FantasyCritic.PublisherGameFixer
                                     publisherDraftCount++;
                                 }
 
-                                if (!draftAction.Description.Contains(formerPublisherGame.PublisherGame.GameName, StringComparison.OrdinalIgnoreCase))
+                                var actionGameName = draftAction.Description.TrimStart("Drafted game: ").TrimStart("Auto Drafted game: ").Trim('\'');
+                                if (!actionGameName.Equals(formerPublisherGame.PublisherGame.GameName, StringComparison.OrdinalIgnoreCase))
                                 {
-                                    continue;
+                                    bool approvedMapping = approvedMappings.Contains((actionGameName, formerPublisherGame.PublisherGame.GameName));
+                                    if (!approvedMapping)
+                                    {
+                                        continue;
+                                    }
                                 }
 
                                 var overallDraftPosition = index + 1;
@@ -342,7 +377,7 @@ namespace FantasyCritic.PublisherGameFixer
             var filteredActions = new List<TempLeagueActionEntity>();
             foreach (var draftAction in draftActions)
             {
-                var gameName = draftAction.Description.TrimStart("Drafted game: ").Trim('\'');
+                var gameName = draftAction.Description.TrimStart("Drafted game: ").TrimStart("Auto Drafted game: ").Trim('\'');
                 var futureRemoveActions = removeActions.Where(x => x.Timestamp >= draftAction.Timestamp).ToList();
                 var matchingRemoveActionForGame = futureRemoveActions.Where(x => x.Description.Contains(gameName, StringComparison.OrdinalIgnoreCase)).ToList();
                 var notAlreadyCounted = matchingRemoveActionForGame.Where(x => !actionsAccountedFor.Contains(x)).ToList();
@@ -396,5 +431,4 @@ namespace FantasyCritic.PublisherGameFixer
             return bestBid;
         }
     }
-
 }
