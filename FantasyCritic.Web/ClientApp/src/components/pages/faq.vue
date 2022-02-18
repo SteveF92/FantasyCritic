@@ -664,7 +664,6 @@
           that never released in North America, so all of these will be "New Game" or "New Gaming Franchise".
           However, if a game only has minor updates over the original, then it will get the "Released Internationally" tag.
           One way to think about this is, what would be the tags on the game if Fantasy Critic was a Japan-based site?
-
           <br />
           <br />
           Here are some examples for clarity:
@@ -690,7 +689,7 @@
                   <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
-                  This is a port of Mother 1. This version is not "enough of remake" to consider it a game that "has not been released internationally".
+                  This is a port of Mother 1 for the Famicom to the Wii U. This version is not "enough of remake" to consider it a game that "has not been released internationally".
                 </td>
               </tr>
               <tr>
@@ -703,7 +702,7 @@
                   <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
-                  This game was originally released on the Super Famicom in 1994. This version is not "enough of remake" to consider it a game that "has not been released internationally".
+                  This game was originally released on the Super Famicom in 1994, now remastered for modern platforms. This version is not "enough of remake" to consider it a game that "has not been released internationally".
                 </td>
               </tr>
               <tr>
@@ -716,7 +715,7 @@
                   <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
-                  This game is a compilation of two games that never came out in North America. It is not "enough of remake" to consider it a game that "has not been released internationally".
+                  This game is a compilation of two Nintendo 3DS games that never came out in North America, remastered for Nintendo Switch. It is not "enough of remake" to consider it a game that "has not been released internationally".
                 </td>
               </tr>
               <tr>
@@ -744,6 +743,7 @@
                   <masterGameTagBadge tagName="NewGamingFranchise"></masterGameTagBadge>
                 </td>
                 <td>
+                  This was originally released as two seperate Famicom games, never released in North America.
                   This game is "more of a remake" with respect to the original game, compared to the games above. It's not fair to call the original Famicom game as the "same game", meaning that <em>this</em> game has
                   never released anywhere, and therefore it does not get a "Released Internationally" tag. In addition, there are no games in this franchise previously released in North America, so it gets the
                   "New Gaming Franchise" tag.
@@ -758,6 +758,7 @@
                   <masterGameTagBadge tagName="NewGamingFranchise"></masterGameTagBadge>
                 </td>
                 <td>
+                  This was originally a Super Famicom game, never released in North America.
                   Like Famicom Dective Club, this game is "more of a remake" with respect to the original game, compared to the games above. It's not fair to call the original Super Famicom game as the "same game", meaning that <em>this</em> game has
                   never released anywhere, and therefore it does not get a "Released Internationally" tag. In addition, there are no games in this franchise previously released in North America, so it gets the
                   "New Gaming Franchise" tag.
