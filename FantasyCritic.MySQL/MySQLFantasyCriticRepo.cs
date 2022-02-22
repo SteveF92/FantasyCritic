@@ -2849,9 +2849,9 @@ namespace FantasyCritic.MySQL
         {
             string sql =
                 "insert into tbl_league_formerpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-                "ManualWillNotRelease,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition,RemovedTimestamp,RemovedNote) VALUES " +
+                "ManualWillNotRelease,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition,BidAmount,RemovedTimestamp,RemovedNote) VALUES " +
                 "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-                "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition,@RemovedTimestamp,@RemovedNote);";
+                "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition,@BidAmount,@RemovedTimestamp,@RemovedNote);";
             var entities = publisherGames.Select(x => new FormerPublisherGameEntity(x));
             return connection.ExecuteAsync(sql, entities, transaction);
         }
