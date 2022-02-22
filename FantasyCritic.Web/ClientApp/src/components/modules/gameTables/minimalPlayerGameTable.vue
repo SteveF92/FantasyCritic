@@ -16,7 +16,7 @@
         <div v-show="!renderingSnapshot">
           <b-button variant="secondary" v-if="userIsPublisher && isPlusUser" size="sm" v-on:click="prepareSnapshot">
             <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
-            <span>Get Image</span>
+            <span>Share</span>
           </b-button>
         </div>
       </div>
@@ -98,12 +98,24 @@ export default {
     },
     sharePublisher() {
       let elementID = '#publisher-' + this.publisher.publisherID;
-      html2canvas(document.querySelector(elementID)).then(canvas => {
-        var dataUrl = canvas.toDataURL("png");
-        var win = window.open();
-        win.document.write("<h2>On mobile, long press on this image to share it. On desktop, you'll have to download it first.</h2>");
-        win.document.write('<iframe src="' + dataUrl + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen> </iframe>');
-        win.document.title = this.publisher.publisherName;
+      html2canvas(document.querySelector(elementID)).then(async canvas => {
+        const dataUrl = canvas.toDataURL("png");
+        const blob = await(await fetch(dataUrl)).blob();
+        const filesArray = [
+          new File(
+            [blob],
+            'myPublisher.png',
+            {
+              type: blob.type,
+              lastModified: new Date().getTime()
+            }
+          )
+        ];
+        const shareData = {
+          files: filesArray,
+          title: 'My Fantasy Critic Publisher'
+        };
+        navigator.share(shareData);
       });
       this.renderingSnapshot = false;
     }
