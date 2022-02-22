@@ -13,46 +13,46 @@
         </router-link>
         <div class="navbar-collapse collapse">
           <ul class="navbar-nav">
-            <li class="nav-item">
+            <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
               <router-link :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYear, quarter: activeRoyaleQuarter}}"
-                           class="nav-link top-nav-link optional-nav critic-royale-nav-link" title="Critics Royale">
-                <img class="critic-royale-nav minimal-nav topnav-icon" src="/img/critics-royale-top-nav.svg" />
+                           class="nav-link" title="Critics Royale">
+                <img class="topnav-image minimal-nav" src="/img/critics-royale-top-nav.svg" />
                 <span class="full-nav">Royale</span>
               </router-link>
             </li>
-            <li class="nav-item">
-              <router-link :to="{ name: 'howtoplay' }" class="nav-link top-nav-link super-optional-nav" title="How to Play">
-                <font-awesome-icon class="minimal-nav topnav-icon" icon="book-open" size="lg" />
+            <li class="nav-item" v-bind:class="{ 'optional-link': isAuth }">
+              <router-link :to="{ name: 'howtoplay' }" class="nav-link" title="How to Play">
+                <font-awesome-icon class="topnav-icon minimal-nav" icon="book-open" size="lg" />
                 <span class="full-nav">How to Play</span>
               </router-link>
             </li>
-            <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
-              <router-link :to="{ name: 'faq' }" class="nav-link top-nav-link optional-nav" title="FAQ">
-                <font-awesome-icon class="minimal-nav topnav-icon" icon="question-circle" size="lg" />
+            <li class="nav-item">
+              <router-link :to="{ name: 'faq' }" class="nav-link" title="FAQ">
+                <font-awesome-icon class="topnav-icon minimal-nav" icon="question-circle" size="lg" />
                 <span class="full-nav">FAQ</span>
               </router-link>
             </li>
             <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
-              <router-link :to="{ name: 'masterGames' }" class="nav-link top-nav-link optional-nav" title="Games">
-                <font-awesome-icon class="minimal-nav topnav-icon" icon="gamepad" size="lg" />
+              <router-link :to="{ name: 'masterGames' }" class="nav-link" title="Games">
+                <font-awesome-icon class="topnav-icon minimal-nav" icon="gamepad" size="lg" />
                 <span class="full-nav">Games</span>
               </router-link>
             </li>
-            <li class="nav-item">
-              <router-link :to="{ name: 'about' }" class="nav-link top-nav-link super-optional-nav" title="About">
-                <font-awesome-icon class="minimal-nav topnav-icon" icon="info-circle" size="lg" />
+            <li class="nav-item" v-bind:class="{ 'optional-link': isAuth }">
+              <router-link :to="{ name: 'about' }" class="nav-link" title="About">
+                <font-awesome-icon class="topnav-icon minimal-nav" icon="info-circle" size="lg" />
                 <span class="full-nav">About</span>
               </router-link>
             </li>
-            <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
-              <router-link :to="{ name: 'contact' }" class="nav-link top-nav-link optional-nav" title="Contact">
-                <font-awesome-icon class="minimal-nav topnav-icon" icon="envelope" size="lg" />
+            <li class="nav-item optional-link">
+              <router-link :to="{ name: 'contact' }" class="nav-link" title="Contact">
+                <font-awesome-icon class="topnav-icon minimal-nav" icon="envelope" size="lg" />
                 <span class="full-nav">Contact</span>
               </router-link>
             </li>
             <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
-              <router-link :to="{ name: 'fantasyCriticPlus' }" class="nav-link top-nav-link optional-nav" title="Fantasy Critic Plus">
-                <img class="fc-plus-nav minimal-nav topnav-icon" src="/img/plus.svg" />
+              <router-link :to="{ name: 'fantasyCriticPlus' }" class="nav-link" title="Fantasy Critic Plus">
+                <img class="topnav-image fc-plus-icon minimal-nav" src="/img/plus.svg" />
                 <span class="full-nav">Plus</span>
               </router-link>
             </li>
@@ -61,17 +61,17 @@
         <div class="my-2 my-lg-0" v-if="!authIsBusy">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link top-nav-link brand-nav" href="https://patreon.com/fantasycritic" target="_blank">
+              <a class="nav-link brand-nav" href="https://patreon.com/fantasycritic" target="_blank">
                 <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="topnav-icon patreon-icon" />
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link top-nav-link brand-nav" href="https://twitter.com/fantasy_critic" target="_blank">
+              <a class="nav-link brand-nav" href="https://twitter.com/fantasy_critic" target="_blank">
                 <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="topnav-icon twitter-icon" />
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link top-nav-link brand-nav" href="https://discord.gg/dNa7DD3" target="_blank">
+              <a class="nav-link brand-nav" href="https://discord.gg/dNa7DD3" target="_blank">
                 <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="topnav-icon discord-icon" />
               </a>
             </li>
@@ -92,13 +92,13 @@
               <li class="nav-item top-nav-button">
                 <b-button variant="info" href="/Identity/Account/Login" class="nav-link">
                   <span>Log In</span>
-                  <font-awesome-icon class="full-nav" icon="sign-in-alt" />
+                  <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
                 </b-button>
               </li>
               <li class="nav-item">
                 <b-button variant="primary" href="/Identity/Account/Register" class="nav-link">
                   <span>Sign Up</span>
-                  <font-awesome-icon class="full-nav" icon="user-plus" />
+                  <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
                 </b-button>
               </li>
             </template>
@@ -188,19 +188,10 @@ export default {
     height: 47px;
   }
 
-  .critic-royale-nav{
+  .topnav-image {
     height: 27px;
     padding-bottom: 3px;
-  }
-
-  .fc-plus-nav {
-    height: 24px;
-    padding-bottom: 3px;
     margin-right: 3px;
-  }
-
-  .plus-icon {
-    display: inline;
   }
 
   @media only screen and (max-width: 1080px) {
@@ -215,44 +206,6 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 380px) {
-    .optional-nav, .critic-royale-nav {
-      display: none;
-    }
-  }
-
-  @media only screen and (max-width: 520px) {
-    .super-optional-nav {
-      display: none;
-    }
-  }
-
-  @media only screen and (max-width: 435px) {
-    .optional-link {
-      display: none;
-    }
-  }
-
-  @media only screen and (max-width: 695px) {
-    .brand-nav {
-      display: none;
-    }
-  }
-
-  @media only screen and (max-width: 575px) {
-    .topnav-icon {
-      font-size: 15px;
-    }
-
-    .critic-royale-nav {
-      height: 22px;
-    }
-
-    .fc-plus-nav {
-      height: 19px;
-    }
-  }
-
   @media only screen and (max-width: 890px) {
     .full-nav {
       display: none;
@@ -261,6 +214,24 @@ export default {
 
   @media screen and (min-width: 891px) and (max-width: 1275px) {
     .minimal-nav {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 720px) {
+    .optional-link {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 530px) {
+    .brand-nav {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 745px) {
+    .topnav-button-icon {
       display: none;
     }
   }
