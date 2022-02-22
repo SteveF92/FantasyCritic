@@ -2,27 +2,27 @@
   <span>
     <span v-if="!gameSlot.dropped && gameSlot.specialSlot">
       <template v-if="gameSlot.specialSlot.requiredTags.length === 1">
-        <masterGameTagBadge :tagName="gameSlot.specialSlot.requiredTags[0]" short="true" class="flex-real-badge"></masterGameTagBadge>
+        <masterGameTagBadge :tagName="gameSlot.specialSlot.requiredTags[0]" short="true" class="slot-badge"></masterGameTagBadge>
       </template>
       <template v-else>
-        <span class="badge tag-badge flex-badge" v-bind:style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)"
+        <span class="badge tag-badge slot-badge" v-bind:style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)"
               v-b-popover.hover.top="getFlexText(gameSlot.specialSlot.requiredTags)">
           FLX
         </span>
       </template>
     </span>
     <span v-if="!gameSlot.dropped && !gameSlot.specialSlot && !gameSlot.counterPick">
-      <span class="badge tag-badge regular-slot-badge flex-badge" v-b-popover.hover.top="regularText">
+      <span class="badge tag-badge regular-slot-badge slot-badge" v-b-popover.hover.top="regularText">
         REG
       </span>
     </span>
     <span v-if="!gameSlot.dropped && !gameSlot.specialSlot && gameSlot.counterPick">
-      <span class="badge tag-badge counter-pick-badge flex-badge" v-b-popover.hover.top="counterPickText">
+      <span class="badge tag-badge counter-pick-badge slot-badge" v-b-popover.hover.top="counterPickText">
         CP
       </span>
     </span>
     <span v-if="gameSlot.dropped">
-      <span class="badge tag-badge dropped-badge flex-badge" v-b-popover.hover.top="droppedText">
+      <span class="badge tag-badge dropped-badge slot-badge" v-b-popover.hover.top="droppedText">
         DRP
       </span>
     </span>
@@ -117,27 +117,19 @@ export default {
     color: black;
   }
 
-  .flex-real-badge {
-    margin-right: 5px;
-  }
-
-  .flex-badge {
+  .slot-badge {
     margin-right: 8px;
   }
 
   .regular-slot-badge {
-    color: #ffffff;
-    text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
     background-color: #cccccc;
   }
 
   .counter-pick-badge {
     background-color: #AA1E1E;
-    color: white;
   }
 
   .dropped-badge {
     background-color: black;
-    color: white;
   }
 </style>
