@@ -36,15 +36,18 @@
             </option>
           </b-form-select>
           <br />
-          <b-button variant="info" v-show="selectedLeague && leagueFilterMode" v-on:click="clearLeagueFilter" class="clear-league-filter-button">Clear League Filter</b-button>
+          <b-button variant="info" v-show="selectedLeague && (eligibilityFilter || takenStatusFilter)" v-on:click="clearLeagueFilter" class="clear-league-filter-button">Clear League Filter</b-button>
           <b-form-group v-show="selectedLeague">
-            <b-form-radio v-model="leagueFilterMode" value="availableOnly">Show only available games</b-form-radio>
-            <b-form-radio v-model="leagueFilterMode" value="eligibleOnly">Show only eligible games</b-form-radio>
-            <b-form-radio v-model="leagueFilterMode" value="eligibleInOpenSlotOnly">Show only games eligible in open slot</b-form-radio>
-            <b-form-radio v-model="leagueFilterMode" value="takenOnly">Show only taken games</b-form-radio>
+            <b-form-radio v-model="eligibilityFilter" value="eligibleOnly">Show only eligible games</b-form-radio>
+            <b-form-radio v-model="eligibilityFilter" value="eligibleInOpenSlotOnly">Show only games eligible in open slot</b-form-radio>
+            <b-form-radio v-model="eligibilityFilter" value="ineligibleOnly">Show only ineligible games</b-form-radio>
+          </b-form-group>
+          <b-form-group v-show="selectedLeague">
+            <b-form-radio v-model="takenStatusFilter" value="taken">Show only games currently taken</b-form-radio>
+            <b-form-radio v-model="takenStatusFilter" value="notTaken">Show only games not currently taken</b-form-radio>
           </b-form-group>
         </div>
-        <b-form-checkbox v-model="unreleasedOnly">
+        <b-form-checkbox v-model="unreleasedOnlyFilter">
           <span class="checkbox-label">Show only unreleased games</span>
         </b-form-checkbox>
       </div>
@@ -61,9 +64,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
-import moment from 'moment';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import MasterGamesTable from '@/components/modules/gameTables/masterGamesTable';
 
@@ -72,12 +73,9 @@ export default {
     return {
       isBusy: true,
       selectedYear: null,
-      leagueFilterMode: null,
-      availableOnly: false,
-      eligibleOnly: false,
-      eligibleInOpenSlotOnly: false,
-      takenOnly: false,
-      unreleasedOnly: false,
+      eligibilityFilter: null,
+      takenStatusFilter: null,
+      unreleasedOnlyFilter: false,
       supportedYears: [],
       flatMasterGameYears: null,
       possibleMasterGameYears: null,
@@ -104,17 +102,21 @@ export default {
 
       if (this.possibleMasterGameYears) {
         let filteredGames = this.possibleMasterGameYears;
-        if (this.leagueFilterMode === "availableOnly") {
-          filteredGames = _.filter(filteredGames, { 'isAvailable': true })
-        } else if (this.leagueFilterMode === "eligibleOnly") {
-          filteredGames = _.filter(filteredGames, { 'isEligible': true })
-        } else if (this.leagueFilterMode === "eligibleInOpenSlotOnly") {
-          filteredGames = _.filter(filteredGames, { 'isEligibleInOpenSlot': true })
-        } else if (this.leagueFilterMode === "takenOnly") {
-          filteredGames = _.filter(filteredGames, { 'taken': true })
+        if (this.eligibilityFilter === "eligibleOnly") {
+          filteredGames = _.filter(filteredGames, { 'isEligible': true });
+        } else if (this.eligibilityFilter === "eligibleInOpenSlotOnly") {
+          filteredGames = _.filter(filteredGames, { 'isEligibleInOpenSlot': true });
+        } else if (this.eligibilityFilter === "ineligibleOnly") {
+          filteredGames = _.filter(filteredGames, { 'isEligible': false });
         }
 
-        if (this.unreleasedOnly) {
+        if (this.takenStatusFilter === "taken") {
+          filteredGames = _.filter(filteredGames, { 'taken': true });
+        } else if (this.takenStatusFilter === "notTaken") {
+          filteredGames = _.filter(filteredGames, { 'taken': false });
+        }
+
+        if (this.unreleasedOnlyFilter) {
           filteredGames = _.filter(filteredGames, { 'isReleased': false })
         }
         
