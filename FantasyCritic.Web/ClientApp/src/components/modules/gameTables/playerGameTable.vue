@@ -20,7 +20,9 @@
              primary-key="overallSlotNumber"
              tbody-tr-class="btable-player-game-row">
       <template #head(publisherGame.masterGame.projectedFantasyPoints)="data">
-        Projected points
+        Projected
+        <br />
+        points
         <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
       </template>
 
@@ -151,7 +153,7 @@
           { key: 'publisherGame.masterGame.maximumReleaseDate', label: 'Release Date', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'release-date-column'] },
           { key: 'publisherGame.timestamp', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'acquired-column'] },
           { key: 'publisherGame.masterGame.criticScore', label: 'Critic Score', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] },
-          { key: 'publisherGame.masterGame.projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] },
+          { key: 'publisherGame.masterGame.projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column', 'projected-text'] },
           { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] }
         ];
       },
@@ -322,7 +324,6 @@
   .numeric-column {
     text-align: center;
     font-weight: bold;
-    width: 20px;
-    padding: 0 !important;
+    width: 80px;
   }
 </style>
