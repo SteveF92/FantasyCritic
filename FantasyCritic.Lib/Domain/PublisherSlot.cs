@@ -144,5 +144,10 @@ namespace FantasyCritic.Lib.Domain
 
             return $"{cp}{OverallSlotNumber}|{slotType}|{gameName}";
         }
+
+        public PublisherSlot GetWithReplacedGame(PublisherGame newPublisherGame)
+        {
+            return new PublisherSlot(SlotNumber, OverallSlotNumber, CounterPick, SpecialGameSlot, newPublisherGame);
+        }
     }
 }

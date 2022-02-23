@@ -24,10 +24,13 @@
         </div>
       </div>
 
-      <div v-if="!publisher.publicLeague && !(publisher.userIsInLeague || publisher.outstandingInvite)" class="alert alert-warning" role="info">
+      <div v-if="!publisher.publicLeague && !(publisher.userIsInLeague || publisher.outstandingInvite)" class="alert alert-warning">
         You are viewing a private league.
       </div>
 
+      <div v-show="moveGameError" class="alert alert-danger">
+        {{moveGameError}}
+      </div>
 
       <div v-if="leagueYear && publisher">
         <playerGameTable :publisher="publisher" :leagueYear="leagueYear" v-on:gamesMoved="fetchPublisher"></playerGameTable>
@@ -62,6 +65,9 @@ export default {
     },
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
+    },
+    moveGameError() {
+      return this.$store.getters.moveGameError;
     }
   },
   methods: {

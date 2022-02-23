@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -199,9 +200,32 @@ namespace FantasyCritic.Lib.Services
             return queuedGames.OrderBy(x => x.Rank).ToList();
         }
 
-        public Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
+        public async Task<Result> ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
         {
-            return _fantasyCriticRepo.ReorderPublisherGames(publisher, slotStates);
+            var requestedPositionsWithGames = slotStates.Where(x => x.Value.HasValue).ToList();
+            var gameDictionary = publisher.PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.PublisherGameID);
+            var slotDictionary = publisher.GetPublisherSlots().Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
+            foreach (var requestedSlotState in requestedPositionsWithGames)
+            {
+                var moveIntoSlotExists = slotDictionary.TryGetValue(requestedSlotState.Key, out var moveIntoSlot);
+                if (!moveIntoSlotExists)
+                {
+                    return Result.Failure("Invalid movement.");
+                }
+
+                var game = gameDictionary[requestedSlotState.Value.Value];
+                var currentSlot = slotDictionary[game.SlotNumber];
+                var currentSlotIsValid = currentSlot.SlotIsValid(publisher.LeagueYear);
+                var potentialNewSlot = moveIntoSlot.GetWithReplacedGame(game);
+                var potentialNewSlotIsValid = potentialNewSlot.SlotIsValid(publisher.LeagueYear);
+                if (currentSlotIsValid && !potentialNewSlotIsValid)
+                {
+                    return Result.Failure("You cannot move a game into a slot that it is not eligible for.");
+                }
+            }
+
+            await _fantasyCriticRepo.ReorderPublisherGames(publisher, slotStates);
+            return Result.Success();
         }
     }
 }

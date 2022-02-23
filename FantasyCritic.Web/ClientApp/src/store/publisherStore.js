@@ -7,14 +7,16 @@ export default {
     editableGameSlots: null,
     desiredPositions: null,
     moveMode: false,
-    heldSlot: null
+    heldSlot: null,
+    moveGameError: ""
   },
   getters: {
     publisherID: (state) => state.publisherID,
     gameSlots: (state) => state.editableGameSlots,
     moveMode: (state) => state.moveMode,
     desiredPositions: (state) => state.desiredPositions,
-    holdingGame: (state) => !!state.heldSlot
+    holdingGame: (state) => !!state.heldSlot,
+    moveGameError: (state) => state.moveGameError
   },
   actions: {
     initialize(context, publisher) {
@@ -34,13 +36,15 @@ export default {
           slotStates: context.getters.desiredPositions
         };
         axios.post("/api/League/ReorderPublisherGames", request)
-          .then((res) => {
-            if (res.status === 200) {
+          .then((response) => {
+            if (response.status === 200) {
               context.commit("completeMoveMode");
               resolve();
             }
           })
-          .catch(error => {
+          .catch((error) => {
+            context.commit('setMoveError', error.response.data);
+            context.commit('cancelMoveMode');
             reject();
           });
       });
@@ -88,6 +92,9 @@ export default {
           state.desiredPositions[slot.slotNumber] = null;
         }
       });
+    },
+    setMoveError(state, error) {
+      state.moveGameError = error;
     }
   }
 };

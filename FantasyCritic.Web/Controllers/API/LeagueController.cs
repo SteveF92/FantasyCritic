@@ -1880,7 +1880,11 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            await _publisherService.ReorderPublisherGames(publisher.Value, request.SlotStates);
+            var reorderResult = await _publisherService.ReorderPublisherGames(publisher.Value, request.SlotStates);
+            if (reorderResult.IsFailure)
+            {
+                return BadRequest(reorderResult.Error);
+            }
 
             return Ok();
         }
