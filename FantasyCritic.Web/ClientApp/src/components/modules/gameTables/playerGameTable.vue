@@ -138,12 +138,12 @@
       },
       tableFields() {
         return [
-          { key: 'publisherGame.gameName', label: 'Game Name', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'] },
-          { key: 'publisherGame.masterGame.maximumReleaseDate', label: 'Release Date', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'] },
-          { key: 'publisherGame.timestamp', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'] },
-          { key: 'publisherGame.masterGame.criticScore', label: 'Critic Score', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], tdClass: ['full-table-score-column'] },
-          { key: 'publisherGame.masterGame.projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'projected-points-column'], tdClass: ['full-table-score-column'] },
-          { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'fantasy-points-column'], tdClass: ['full-table-score-column'] }
+          { key: 'publisherGame.gameName', label: 'Game Name', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['game-name-column'] },
+          { key: 'publisherGame.masterGame.maximumReleaseDate', label: 'Release Date', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'release-date-column'] },
+          { key: 'publisherGame.timestamp', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'acquired-column'] },
+          { key: 'publisherGame.masterGame.criticScore', label: 'Critic Score', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] },
+          { key: 'publisherGame.masterGame.projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] },
+          { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] }
         ];
       },
       hasFormerGames() {
@@ -289,29 +289,31 @@
     height: 40px;
   }
 
-    .btable-player-game-row td, th.btable-player-table-header {
-      padding: 0.3rem;
-    }
+  .btable-player-game-row td, th.btable-player-table-header {
+    padding: 0.3rem;
+  }
 
   th.btable-player-table-header {
     text-align: center;
     font-weight: bold;
   }
 
-  .full-table-score-column {
+  .game-name-column {
+    min-width: 300px;
+  }
+
+  .release-date-column {
+    min-width: 200px;
+  }
+
+  .acquired-column {
+    min-width: 250px;
+  }
+
+  .numeric-column {
     text-align: center;
     font-weight: bold;
-  }
-
-  .fantasy-points-column {
-    width: 145px;
-  }
-
-  .projected-points-column {
-    width: 190px;
-  }
-
-  .full-table-score-column {
-    width: 100px;
+    width: 20px;
+    padding: 0 !important;
   }
 </style>
