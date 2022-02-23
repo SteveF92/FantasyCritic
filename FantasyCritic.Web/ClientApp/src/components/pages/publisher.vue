@@ -33,26 +33,25 @@
       </div>
 
       <div v-if="hasIneligibleGame" class="alert alert-warning">
-        {{referToPlayer(true)}} have games in ineligible slots. There are a few reasons this could happen.
+        {{referToPlayer('You have', 'This player has')}} games in ineligible slots. There are a few reasons this could happen.
         <ul>
           <li>A game's tags changed after a correction was made.</li>
-          <li>{{referToPlayer(true)}} picked up a game and there were no eligible slots it could fit in.</li>
-          <li v-if="leagueYear.hasSpecialSlots">{{referToPlayer(true)}} intentionally moved a game into a slot it's not eligble for. This used to be possible but no longer is.</li>
+          <li>{{referToPlayer('You', 'They')}} picked up a game and there were no eligible slots it could fit in.</li>
+          <li v-if="leagueYear.hasSpecialSlots">{{referToPlayer('You', 'They')}} intentionally moved a game into a slot it's not eligble for. This used to be possible but no longer is.</li>
         </ul>
 
         The options going forward are:
         <ul>
-          <li v-if="leagueYear.hasSpecialSlots">{{referToPlayer(true)}} can reorganize your games so everything is eligible.</li>
-          <li>The league manager can override a game's tags if your league disagrees with the tags the site decided.</li>
-          <li>{{referToPlayer(true)}} can drop the game (depending on your league settings).</li>
-          <li>The league could decide to give {{referToPlayer()}} a "free drop" regardless of the league settings if they decide that this game should not be eligible.</li>
-          <li>{{referToPlayer(true)}} could trade the game to another player.</li>
+          <li v-if="leagueYear.hasSpecialSlots">{{referToPlayer('You', 'They')}} can reorganize {{referToPlayer('your', 'their')}} games so everything is eligible.</li>
+          <li>The league manager can override a game's tags if the league disagrees with the tags the site decided.</li>
+          <li>{{referToPlayer('You', 'They')}} can drop the game (depending on the league settings).</li>
+          <li>The league could decide to give {{referToPlayer('you', 'they')}} a "free drop" regardless of the league settings if they decide that this game should not be eligible.</li>
+          <li>{{referToPlayer('You', 'They')}} could trade the game to another player.</li>
         </ul>
 
         <template v-if="leagueYear.hasSpecialSlots">
-          One special note: if {{referToPlayer(false, true)}} intentionally holding a game that is already released in a slot it isn't eligible for, because the game has underperformed
-          and {{referToPlayer(false)}} want to keep the slot the game is actually eligible for open, then {{referToPlayerWithVerb(false)}} playing outside of the spirit of the game.
-          {{referToPlayer(true)}} should put {{referToPlayerPossessive(false)}} games in the correct slots.
+          Generally speaking, players should always be putting their games into slots they are eligible for. Intentionally keeping games in ineligible slots in order to free up
+          'more valuable' slots is outside of the spirit of Fantasy Critic.
         </template>
       </div>
 
@@ -127,41 +126,13 @@ export default {
       }
       return dropped + '/' + droppable;
     },
-    referToPlayer(caps) {
-      let name = 'this player';
+    referToPlayer(publisherText, notPublisherText) {
       if (this.userIsPublisher) {
-        name = 'you';
+        return publisherText;
       }
 
-      if (caps) {
-        name = name.charAt(0).toUpperCase() + name.slice(1);
-      }
-
-      return name;
-    },
-    referToPlayerWithVerb(caps) {
-      let name = 'they';
-      if (this.userIsPublisher) {
-        name = 'you';
-      }
-
-      if (caps) {
-        name = name.charAt(0).toUpperCase() + name.slice(1);
-      }
-
-      return name + ' are';
-    },
-    referToPlayerPossessive(caps) {
-      let name = 'their';
-      if (this.userIsPublisher) {
-        name = 'your';
-      }
-
-      if (caps) {
-        name = name.charAt(0).toUpperCase() + name.slice(1);
-      }
-      return name;
-    },
+      return notPublisherText;
+    }
   },
   mounted() {
     this.fetchPublisher();

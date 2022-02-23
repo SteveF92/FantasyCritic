@@ -846,6 +846,36 @@
           However, if you do need to move a game in your roster, this can be done at the My Publisher Details page, found under the Player Actions tab.
         </div>
       </collapseCard>
+      <collapseCard>
+        <div slot="header">What happens if a game is in a slot it is not eligible for?</div>
+        <div slot="body">
+          This can happen in any league, whether or not the league uses special slots, for a few different reasons:
+          <ul>
+            <li>A game's tags changed after a correction was made.</li>
+            <li>The player picked up a game and there were no eligible slots it could fit in.</li>
+            <li>The player intentionally moved a game into a slot it's not eligble for. This used to be possible but no longer is.</li>
+          </ul>
+
+          <p>
+            A game in a slot it isn't eligible recieves no points, unless the game recieved negative points, then the points still count. A game's projected points
+            also always count towards tiebreakers on bids, to prevent players from trying to game the tiebreaker system.
+          </p>
+
+          <p>
+            Generally speaking, players should always be putting their games into slots they are eligible for. Intentionally keeping games in ineligible slots in order to free up
+            'more valuable' slots is outside of the spirit of Fantasy Critic.
+          </p>
+
+          Some reasonable options are:
+          <ul>
+            <li>The player can reorganize their games so everything is eligible.</li>
+            <li>The league manager can override a game's tags if the league disagrees with the tags the site decided.</li>
+            <li>The player can drop the game (depending on the league settings).</li>
+            <li>The league could decide to give the player a "free drop" regardless of the league settings if they decide that this game should not be eligible.</li>
+            <li>The player could trade the game to another player.</li>
+          </ul>
+        </div>
+      </collapseCard>
       <br />
 
       <h2><a name="winning">Winning</a></h2>
