@@ -12,7 +12,7 @@
       </template>
     </div>
 
-    <b-table :items="tableItems"
+    <b-table :items="tableRows"
              :fields="tableFields"
              bordered responsive striped
              :sort-by.sync="sortBy"
@@ -134,7 +134,16 @@
           return slotsWithGames.concat(fakeFormerSlots);
         }
 
-        return slotsWithGames
+        return slotsWithGames;
+      },
+      tableRows() {
+        let rows = this.tableItems;
+        for (let i = 0; i < rows.length; ++i) {
+          if (!rows[i].gameMeetsSlotCriteria) {
+            rows[i]._rowVariant = 'warning';
+          }
+        }
+        return rows;
       },
       tableFields() {
         return [
