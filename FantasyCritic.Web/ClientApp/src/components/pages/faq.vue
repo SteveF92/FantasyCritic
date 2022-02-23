@@ -148,7 +148,6 @@
       </collapseCard>
       <br />
 
-
       <h2><a name="drafting">Drafting</a></h2>
       <collapseCard>
         <div slot="header">How does the draft work?</div>
@@ -210,7 +209,6 @@
       </collapseCard>
       <br />
 
-
       <h2><a name="bidding-system">Bidding System</a></h2>
       <collapseCard>
         <div slot="header">What is a “draft game” vs a “pickup game”?</div>
@@ -229,21 +227,25 @@
       <collapseCard>
         <div slot="header">How does the 'public' bidding system work?</div>
         <div slot="body">
-          This option is new for 2022. It is very similar to the standard 'secret' system, with one critical difference.
-          The week is divided into two sections - the 'secret' section, and the 'public' section. From Saturday night, after the previous week of bids process, until Thursday night at 8PM Eastern,
-          all bids are made privately, just like they are in the standard system.
-          <br />
-          <br />
-          Then, on Thursday at 8PM, the names of all of the games that have active bids are made public to the rest of your league.
-          The names of the players and the amounts being bid are not revealed, only the names of the games. From this point until bids process at 8PM on Saturday,
-          players can edit the dollar amounts on the bids they have already made, or bid on a game that someone else has bid on that they haven't.
-          However, players are <strong>not</strong> allowed to bid for a game that no one is currently bidding on, and players <strong>cannot</strong> cancel a bid entirely
-          in the 'public bidding window'.
-          <br />
-          <br />
-          The intention of this system to help prevent one "highly tuned in" player from dominating a league by always being the first to know about new games. If half of your players frequently
-          find themselves saying something like: "Hey I didn't even know that game got announced and you already picked it up for $1. I have no shot at winning!", then you should consider this setting.
-          If your leagues are already very competitive, we reccommend sticking with the 'secret' bidding system.
+          <p>
+            This option is new for 2022. It is very similar to the standard 'secret' system, with one critical difference.
+            The week is divided into two sections - the 'secret' section, and the 'public' section. From Saturday night, after the previous week of bids process, until Thursday night at 8PM Eastern,
+            all bids are made privately, just like they are in the standard system.
+          </p>
+
+          <p>
+            Then, on Thursday at 8PM, the names of all of the games that have active bids are made public to the rest of your league.
+            The names of the players and the amounts being bid are not revealed, only the names of the games. From this point until bids process at 8PM on Saturday,
+            players can edit the dollar amounts on the bids they have already made, or bid on a game that someone else has bid on that they haven't.
+            However, players are <strong>not</strong> allowed to bid for a game that no one is currently bidding on, and players <strong>cannot</strong> cancel a bid entirely
+            in the 'public bidding window'.
+          </p>
+
+          <p>
+            The intention of this system to help prevent one "highly tuned in" player from dominating a league by always being the first to know about new games. If half of your players frequently
+            find themselves saying something like: "Hey I didn't even know that game got announced and you already picked it up for $1. I have no shot at winning!", then you should consider this setting.
+            If your leagues are already very competitive, we reccommend sticking with the 'secret' bidding system.
+          </p>
         </div>
       </collapseCard>
       <collapseCard>
@@ -347,10 +349,14 @@
             <li><strong>Free Droppable Games: </strong>The number (or unlimited) of games that can be dropped, whether they are planned to release or not.</li>
           </ul>
 
-          Games that have already released or already have review scores are never droppable.
-          <br />
-          I admit that this feature is a little confusing and I'm still working on the best way to explain it. If you have questions, contact me and I'll try to help.
-          Or, if you understand what I'm trying to say and have a better way to explain it, contact me and maybe your explanation will end up in this section.
+          <p>
+            Games that have already released or already have review scores are never droppable.
+          </p>
+
+          <p>
+            I admit that this feature is a little confusing and I'm still working on the best way to explain it. If you have questions, contact me and I'll try to help.
+            Or, if you understand what I'm trying to say and have a better way to explain it, contact me and maybe your explanation will end up in this section.
+          </p>
         </div>
       </collapseCard>
       <collapseCard>
@@ -379,15 +385,17 @@
       <collapseCard>
         <div slot="header">How does scoring work?</div>
         <div slot="body">
-          A game's score is based on it’s score from <a href="https://opencritic.com/" target="_blank">opencritic.com <font-awesome-icon icon="external-link-alt" size="sm" /></a>. Your team will gain or lose points based upon how well your game reviews.
-          Only critic reviews are taken into account. For every point above a 70 on OpenCritic, your game gets you one point. For every point below 70,
-          you lose one point. If a game doesn’t release in the year you are playing, it is treated as getting a 70, and therefore 0 points.
-          <br />
-          <br />
-          However, there are special rules to make certain points worth more or less. If a game scores above a 90, every point above 90 is worth two points. So if a game gets a 94,
-          you get 20 points for 70 through 90, and 8 points for 90 through 94, for a total of 28 points for the 94.
-          <br />
-          <br />
+          <p>
+            A game's score is based on it’s score from <a href="https://opencritic.com/" target="_blank">opencritic.com <font-awesome-icon icon="external-link-alt" size="sm" /></a>. Your team will gain or lose points based upon how well your game reviews.
+            Only critic reviews are taken into account. For every point above a 70 on OpenCritic, your game gets you one point. For every point below 70,
+            you lose one point. If a game doesn’t release in the year you are playing, it is treated as getting a 70, and therefore 0 points.
+          </p>
+
+          <p>
+            However, there are special rules to make certain points worth more or less. If a game scores above a 90, every point above 90 is worth two points. So if a game gets a 94,
+            you get 20 points for 70 through 90, and 8 points for 90 through 94, for a total of 28 points for the 94.
+          </p>
+
           Another special rule is that there are diminishing returns on how much a very bad game hurts you. Each point from 60 through 70 loses you one point, but every 10 point range below that,
           each point is worth half of the range above it. I realize that sounds complicated, but I will provide examples below. The effect is that you can never lose more than 20 points, no matter how bad a game is.
         </div>
@@ -552,10 +560,11 @@
       <collapseCard>
         <div slot="header">How does the new "tags" system work?</div>
         <div slot="body">
-          New for 2021, chosing what games are eligible has been streamlined. All games now have one or more "tags", such as "Remake", "New Game", or "Yearly Installment". The league manager can choose
-          what tags are and are not allowed. Mouse over any tag to see a description of it.
-          <br />
-          <br />
+          <p>
+            New for 2021, chosing what games are eligible has been streamlined. All games now have one or more "tags", such as "Remake", "New Game", or "Yearly Installment". The league manager can choose
+            what tags are and are not allowed. Mouse over any tag to see a description of it.
+          </p>
+
           <div v-if="allTags">
             <span v-for="tag in allTags">
               <masterGameTagBadge :tagName="tag.name"></masterGameTagBadge>
@@ -659,16 +668,18 @@
           How are "re-releases" of games that were never released in North America handled?
         </div>
         <div slot="body">
-          This one is complicated. For example, if a game came out in Japan, but not North America, and then some time later, the game is updated with a new release in Japan and <em>that</em> release comes out in North America,
-          the tags on the "updated release" will vary based upon how much the updated release differs from the original release. As a general rule, a game cannot be a "remake" or a "remaster" of a game
-          that never released in North America, so all of these will be "New Game" or "New Gaming Franchise".
-          However, if a game only has minor updates over the original, then it will get the "Released Internationally" tag.
-          One way to think about this is, what would be the tags on the game if Fantasy Critic was a Japan-based site?
-          <br />
-          <br />
-          Here are some examples for clarity:
-          <br />
-          <br />
+          <p>
+            This one is complicated. For example, if a game came out in Japan, but not North America, and then some time later, the game is updated with a new release in Japan and <em>that</em> release comes out in North America,
+            the tags on the "updated release" will vary based upon how much the updated release differs from the original release. As a general rule, a game cannot be a "remake" or a "remaster" of a game
+            that never released in North America, so all of these will be "New Game" or "New Gaming Franchise".
+            However, if a game only has minor updates over the original, then it will get the "Released Internationally" tag.
+            One way to think about this is, what would be the tags on the game if Fantasy Critic was a Japan-based site?
+          </p>
+
+          <p>
+            Here are some examples for clarity:
+          </p>
+
           <table class="table table-striped table-bordered table-responsive-sm">
             <thead>
               <tr class="bg-primary">
@@ -773,9 +784,10 @@
           What's the definition of a 'New Gaming Franchise'?
         </div>
         <div slot="body">
-          I admit this is tricky, so here's a list of criteria that we consider:
-          <br />
-          <br />
+          <p>
+            I admit this is tricky, so here's a list of criteria that we consider:
+          </p>
+
           <h6>Signs a game <em>is</em> a 'New Gaming Franchise':</h6>
           <ul>
             <li>Is this game an obvious, clear as day new IP?</li>
@@ -830,13 +842,16 @@
       <collapseCard>
         <div slot="header">What is a 'Special Game Slot'?</div>
         <div slot="body">
-          New for 2022, special roster slots allow your league to specify a requirement of certain game types in each roster,
-          including games that are banned in your normal league rules. For example even if your league doesn’t allow yearly installments,
-          you can require each publisher to have one yearly installment on their roster. This slot will only give points for games that meet its designated requirements.
-          <br />
-          <br />
-          A good way to think of this is like "positions" in Fantasy Football. You don't just draft 11 "players", you have quarterbacks, running backs, wide recievers, etc, each of which
-          have designated slots. In Fantasy Critic, these "positions" are the tags, so you can have "Remake" slot, a "Currently in Early Access" slot, and a "Virtual Reality" slot, if you so desire.
+          <p>
+            New for 2022, special roster slots allow your league to specify a requirement of certain game types in each roster,
+            including games that are banned in your normal league rules. For example even if your league doesn’t allow yearly installments,
+            you can require each publisher to have one yearly installment on their roster. This slot will only give points for games that meet its designated requirements.
+          </p>
+
+          <p>
+            A good way to think of this is like "positions" in Fantasy Football. You don't just draft 11 "players", you have quarterbacks, running backs, wide recievers, etc, each of which
+            have designated slots. In Fantasy Critic, these "positions" are the tags, so you can have "Remake" slot, a "Currently in Early Access" slot, and a "Virtual Reality" slot, if you so desire.
+          </p>
         </div>
       </collapseCard>
       <collapseCard>
