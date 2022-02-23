@@ -1,0 +1,1 @@
+INSERT INTO `fantasycritic`.`tbl_settings_pickupsystem` (`PickupSystem`) VALUES ('SemiPublicBiddingSecretCounterPicks');

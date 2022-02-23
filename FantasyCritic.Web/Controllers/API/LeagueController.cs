@@ -840,7 +840,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear.Value);
-            if (publicBiddingGames.HasValue && !publicBiddingGames.Value.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame.Value))
+            bool publicBidIsValid = _gameAcquisitionService.PublicBidIsValid(leagueYear.Value, masterGame.Value, request.CounterPick, publicBiddingGames);
+            if (!publicBidIsValid)
             {
                 return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
             }
@@ -851,7 +852,7 @@ namespace FantasyCritic.Web.Controllers.API
                 conditionalDropPublisherGame = publisher.Value.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGameID.Value);
             }
             
-            ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, conditionalDropPublisherGame, request.Counterpick, request.BidAmount, leagueYear.Value.Options);
+            ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, conditionalDropPublisherGame, request.CounterPick, request.BidAmount, leagueYear.Value.Options);
             var viewModel = new PickupBidResultViewModel(bidResult);
 
             return Ok(viewModel);
@@ -941,8 +942,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
-            bool publicWindow = _gameAcquisitionService.IsInPublicBiddingWindow(publisher.LeagueYear);
-            if (publicWindow)
+            bool canCancel = _gameAcquisitionService.CanCancelBid(publisher.LeagueYear, maybeBid.Value.CounterPick);
+            if (!canCancel)
             {
                 return BadRequest("Can't cancel a bid when in the public bidding window.");
             }

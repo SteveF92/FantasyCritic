@@ -257,7 +257,7 @@ export default {
       return mostRecentMessage;
     },
     showPublicRevealCountdown() {
-      if (!this.leagueYear || this.leagueYear.pickupSystem !== "SemiPublicBidding") {
+      if (!this.leagueYear || (this.leagueYear.pickupSystem !== "SemiPublicBidding" || this.leagueYear.pickupSystem !== "SemiPublicBiddingSecretCounterPicks")) {
         return false;
       }
 

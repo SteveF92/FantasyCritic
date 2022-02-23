@@ -624,7 +624,14 @@ namespace FantasyCritic.Lib.Services
             var dateOfPotentialAcquisition = _clock.GetNextBidTime().ToEasternDate();
 
             var activeBidsForLeague = await _fantasyCriticRepo.GetActivePickupBids(leagueYear);
-            var distinctBids = activeBidsForLeague.DistinctBy(x => x.MasterGame);
+
+            var bidsToCount = activeBidsForLeague;
+            if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+            {
+                bidsToCount = bidsToCount.Where(x => !x.CounterPick).ToList();
+            }
+
+            var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame);
             List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
             foreach (var bid in distinctBids)
             {
@@ -634,6 +641,42 @@ namespace FantasyCritic.Lib.Services
             }
 
             return masterGameYears;
+        }
+
+        public bool PublicBidIsValid(LeagueYear leagueYear, MasterGame masterGame, bool counterPick, Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingMasterGames)
+        {
+            if (publicBiddingMasterGames.HasNoValue)
+            {
+                return true;
+            }
+
+            if (counterPick && leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+            {
+                return true;
+            }
+
+            return publicBiddingMasterGames.Value.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame);
+        }
+
+        public bool CanCancelBid(LeagueYear leagueYear, bool counterPick)
+        {
+            bool inPublicBidWindow = IsInPublicBiddingWindow(leagueYear);
+            if (!inPublicBidWindow)
+            {
+                return true;
+            }
+
+            if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBidding))
+            {
+                return false;
+            }
+
+            if (counterPick && leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public async Task<IReadOnlyList<PublicBiddingSet>> GetPublicBiddingGames(int year)
@@ -647,12 +690,18 @@ namespace FantasyCritic.Lib.Services
             List<PublicBiddingSet> publicBiddingSets = new List<PublicBiddingSet>();
             foreach (var activeBidsForLeague in activeBidsByLeague)
             {
-                if (!activeBidsForLeague.Key.PlayStatus.DraftFinished || !activeBidsForLeague.Key.Options.PickupSystem.Equals(PickupSystem.SemiPublicBidding))
+                if (!activeBidsForLeague.Key.PlayStatus.DraftFinished || !activeBidsForLeague.Key.Options.PickupSystem.HasPublicBiddingWindow)
                 {
                     continue;
                 }
 
-                var distinctBids = activeBidsForLeague.Value.DistinctBy(x => x.MasterGame);
+                var bidsToCount = activeBidsForLeague.Value;
+                if (activeBidsForLeague.Key.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+                {
+                    bidsToCount = bidsToCount.Where(x => !x.CounterPick).ToList();
+                }
+
+                var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame);
                 List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
                 foreach (var bid in distinctBids)
                 {
@@ -669,7 +718,7 @@ namespace FantasyCritic.Lib.Services
 
         public bool IsInPublicBiddingWindow(LeagueYear leagueYear)
         {
-            if (!leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBidding))
+            if (!leagueYear.Options.PickupSystem.HasPublicBiddingWindow)
             {
                 return false;
             }
