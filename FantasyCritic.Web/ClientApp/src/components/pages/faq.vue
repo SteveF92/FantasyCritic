@@ -705,6 +705,29 @@
                 </td>
               </tr>
               <tr>
+                <td>The Legend of Heroes: Trails to Azure</td>
+                <td>
+                  <masterGameTagBadge tagName="Remaster"></masterGameTagBadge>
+                </td>
+                <td>
+                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                </td>
+                <td>
+                  This game has been released a number of times:
+                  <ul>
+                    <li>On PSP in Japan in 2011</li>
+                    <li>On PC in China in 2013</li>
+                    <li>On PS Vita in Japan in 2014</li>
+                    <li>On PS4 in Japan in 2020</li>
+                    <li>On Switch throughout Asia in 2021</li>
+                  </ul>
+
+                  It will release world wide, including in North America, in 2023 on PC, PS4, and Switch. This world wide release can be considered a remaster of the original PSP game.
+                  Since this game has never been released in North America, it is considered a "New Game". However, this version is already released elsewhere, and it's not "different enough" to lose the "Released Internationally" tag anyway.
+                </td>
+              </tr>
+              <tr>
                 <td>Earthbound Beginnings</td>
                 <td>
                   <masterGameTagBadge tagName="Port"></masterGameTagBadge>
