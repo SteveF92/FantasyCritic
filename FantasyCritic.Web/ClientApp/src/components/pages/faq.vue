@@ -691,6 +691,20 @@
             </thead>
             <tbody>
               <tr>
+                <td>Rune Factory 5</td>
+                <td>
+                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
+                </td>
+                <td>
+                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                </td>
+                <td>
+                  This example is here as a baseline, as this is simply a game that was released in Japan before it was released in North America. The version of the game
+                  released in North America is basically the same as the one released in Japan, save for the localization. It was also released on the same platform in both regions.
+                </td>
+              </tr>
+              <tr>
                 <td>Earthbound Beginnings</td>
                 <td>
                   <masterGameTagBadge tagName="Port"></masterGameTagBadge>
