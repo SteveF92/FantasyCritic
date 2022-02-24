@@ -8,7 +8,7 @@
           <ul>
             <li>Please use the <router-link :to="{ name: 'masterGameRequest' }">Master Game Request form</router-link> for adding new games.</li>
             <li>Please use the "Suggest Correction" form, which can be accessed by clicking on a master game link and clicking the "Suggest a Correction" option for correcting existing games.</li>
-            <li>If you have a particularly "contentious" question, like debating what tags a game should have, please bring that questions to #eligibility-debates in our <a href="https://discord.gg/dNa7DD3">Discord <font-awesome-icon icon="external-link-alt" size="sm" /></a>.</li>
+            <li>If you have a particularly "contentious" question, like debating what tags a game should have, please bring those questions to #eligibility-debates in our <a href="https://discord.gg/dNa7DD3">Discord <font-awesome-icon icon="external-link-alt" size="sm" /></a>.</li>
           </ul>
           
           
