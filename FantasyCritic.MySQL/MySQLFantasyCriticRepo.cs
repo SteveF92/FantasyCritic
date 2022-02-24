@@ -906,7 +906,7 @@ namespace FantasyCritic.MySQL
             await AddPlayerToLeague(league, league.LeagueManager);
         }
 
-        public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments)
+        public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction)
         {
             LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.PlayStatus);
             var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
@@ -934,6 +934,7 @@ namespace FantasyCritic.MySQL
                     await OrganizeSlots(leagueYear, slotAssignments, connection, transaction);
                     await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
                     await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
+                    await AddLeagueActions(new List<LeagueAction>() { settingsChangeAction }, connection, transaction);
                     await transaction.CommitAsync();
                 }
             }

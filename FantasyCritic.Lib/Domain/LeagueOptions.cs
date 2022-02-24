@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.Lib.Domain
 {
@@ -63,7 +64,7 @@ namespace FantasyCritic.Lib.Domain
             _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
         }
 
-        public LeagueOptions(EditLeagueYearParameters parameters)
+        public LeagueOptions(EditLeagueYearParameters parameters, League league)
         {
             StandardGames = parameters.StandardGames;
             GamesToDraft = parameters.GamesToDraft;
@@ -81,7 +82,7 @@ namespace FantasyCritic.Lib.Domain
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
             TradingSystem = parameters.TradingSystem;
-            PublicLeague = parameters.PublicLeague;
+            PublicLeague = league.PublicLeague;
 
             _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
         }
@@ -177,6 +178,103 @@ namespace FantasyCritic.Lib.Domain
             }
 
             return Result.Success();
+        }
+
+        public Maybe<string> GetDifferenceString(LeagueOptions existingOptions)
+        {
+            List<string> differences = new List<string>();
+
+            if (StandardGames != existingOptions.StandardGames)
+            {
+                differences.Add($"Number of standard games per publisher changed from {existingOptions.StandardGames} to {StandardGames}.");
+            }
+
+            if (GamesToDraft != existingOptions.GamesToDraft)
+            {
+                differences.Add($"Number of games to draft per publisher changed from {existingOptions.GamesToDraft} to {GamesToDraft}.");
+            }
+
+            if (CounterPicks != existingOptions.CounterPicks)
+            {
+                differences.Add($"Number of counter picks per publisher changed from {existingOptions.CounterPicks} to {CounterPicks}.");
+            }
+
+            if (CounterPicksToDraft != existingOptions.CounterPicksToDraft)
+            {
+                differences.Add($"Number of counter picks to draft per publisher changed from {existingOptions.CounterPicksToDraft} to {CounterPicksToDraft}.");
+            }
+
+            if (FreeDroppableGames != existingOptions.FreeDroppableGames)
+            {
+                differences.Add($"Number of 'any unreleased' droppable games per publisher changed from {existingOptions.FreeDroppableGames} to {FreeDroppableGames}.");
+            }
+
+            if (WillNotReleaseDroppableGames != existingOptions.WillNotReleaseDroppableGames)
+            {
+                differences.Add($"Number of 'will not release' droppable games per publisher changed from {existingOptions.WillNotReleaseDroppableGames} to {WillNotReleaseDroppableGames}.");
+            }
+
+            if (WillReleaseDroppableGames != existingOptions.WillReleaseDroppableGames)
+            {
+                differences.Add($"Number of 'will release' droppable games per publisher changed from {existingOptions.WillReleaseDroppableGames} to {WillReleaseDroppableGames}.");
+            }
+
+            if (DropOnlyDraftGames != existingOptions.DropOnlyDraftGames)
+            {
+                differences.Add($"'Drop Only Drafted Games' from '{existingOptions.DropOnlyDraftGames.ToYesNoString()}' to '{DropOnlyDraftGames.ToYesNoString()}'.");
+            }
+
+            if (CounterPicksBlockDrops != existingOptions.CounterPicksBlockDrops)
+            {
+                differences.Add($"'Counter Picks Block Drops' from '{existingOptions.CounterPicksBlockDrops.ToYesNoString()}' to '{CounterPicksBlockDrops.ToYesNoString()}'.");
+            }
+
+            if (MinimumBidAmount != existingOptions.MinimumBidAmount)
+            {
+                differences.Add($"'Minimum Bid Amount' changed from {existingOptions.MinimumBidAmount} to {MinimumBidAmount}.");
+            }
+
+            if (!DraftSystem.Equals(existingOptions.DraftSystem))
+            {
+                differences.Add($"Draft System changed from {existingOptions.DraftSystem} to {DraftSystem}.");
+            }
+
+            if (!PickupSystem.Equals(existingOptions.PickupSystem))
+            {
+                differences.Add($"Pickup System changed from {existingOptions.PickupSystem.ReadableName} to {PickupSystem.ReadableName}.");
+            }
+
+            if (!ScoringSystem.Equals(existingOptions.ScoringSystem))
+            {
+                differences.Add($"Scoring System changed from {existingOptions.ScoringSystem} to {ScoringSystem}.");
+            }
+
+            if (!TradingSystem.Equals(existingOptions.TradingSystem))
+            {
+                differences.Add($"Trading System changed from {existingOptions.TradingSystem.ReadableName} to {TradingSystem.ReadableName}.");
+            }
+
+            var orderedExistingTags = existingOptions.LeagueTags.OrderBy(t => t.Tag.Name).ToList();
+            var orderedNewTags = LeagueTags.OrderBy(t => t.Tag.Name).ToList();
+            if (!orderedNewTags.SequenceEqual(orderedExistingTags))
+            {
+                differences.Add($"Banned tags changed from {string.Join(",", orderedExistingTags.Select(x => x.Tag.ReadableName))} to {string.Join(",", orderedNewTags.Select(x => x.Tag.ReadableName))}.");
+            }
+
+            var orderedExistingSpecialSlots = existingOptions.SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
+            var orderedNewSpecialSlots = SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
+            if (!orderedNewSpecialSlots.SequenceEqual(orderedExistingSpecialSlots))
+            {
+                differences.Add($"Special slots changed from \n {string.Join("\n", orderedExistingSpecialSlots.Select(x => x.ToString()))} \n TO \n {string.Join("\n", orderedExistingSpecialSlots.Select(x => x.ToString()))}");
+            }
+
+            if (!differences.Any())
+            {
+                return Maybe<string>.None;
+            }
+
+            string finalString = string.Join("\n", differences.Select(x => $"• {x}"));
+            return finalString;
         }
     }
 }

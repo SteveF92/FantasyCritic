@@ -7,7 +7,7 @@
         </div>
       </div>
 
-      <div v-if="!league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">
+      <div v-if="league && !league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">
         You are viewing a private league.
       </div>
 
@@ -47,6 +47,11 @@
                    responsive>
             <template v-slot:cell(timestamp)="data">
               {{data.item.timestamp | dateTime}}
+            </template>
+            <template v-slot:cell(description)="data">
+              <span class="preserve-whitespace">
+                {{data.item.description}}
+              </span>
             </template>
             <template v-slot:cell(managerAction)="data">
               {{data.item.managerAction | yesNo}}

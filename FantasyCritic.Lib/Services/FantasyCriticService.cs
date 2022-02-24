@@ -89,7 +89,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> EditLeague(League league, EditLeagueYearParameters parameters)
         {
-            LeagueOptions options = new LeagueOptions(parameters);
+            LeagueOptions options = new LeagueOptions(parameters, league);
             var validateOptions = options.Validate();
             if (validateOptions.IsFailure)
             {
@@ -166,7 +166,16 @@ namespace FantasyCritic.Lib.Services
 
             LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.Value.PlayStatus, eligibilityOverrides, 
                 tagOverrides, leagueYear.Value.DraftStartedTimestamp, leagueYear.Value.WinningUser);
-            await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments);
+
+            var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.Value.League.LeagueManager.Id);
+
+            var differenceString = options.GetDifferenceString(leagueYear.Value.Options);
+            if (differenceString.HasValue)
+            {
+                LeagueAction settingsChangeAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString.Value, true);
+                await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
+            }
 
             return Result.Success();
         }

@@ -8,7 +8,7 @@ using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public class LeagueTagStatus
+    public class LeagueTagStatus : IEquatable<LeagueTagStatus>
     {
         public LeagueTagStatus(MasterGameTag tag, TagStatus status)
         {
@@ -28,7 +28,7 @@ namespace FantasyCritic.Lib.Domain
                 {
                     return !simpleTagIsPresent;
                 }
-                else if (Status.Equals(TagStatus.Required))
+                if (Status.Equals(TagStatus.Required))
                 {
                     return simpleTagIsPresent;
                 }
@@ -141,6 +141,26 @@ namespace FantasyCritic.Lib.Domain
             }
 
             throw new NotImplementedException($"Invalid tag status: {Status}");
+        }
+
+        public bool Equals(LeagueTagStatus other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Tag, other.Tag) && Equals(Status, other.Status);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((LeagueTagStatus) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Tag, Status);
         }
     }
 }

@@ -123,8 +123,6 @@ namespace FantasyCritic.Web.Models.RoundTrip
         public string ScoringSystem { get; set; }
         [Required]
         public string TradingSystem { get; set; }
-        [Required]
-        public bool PublicLeague { get; set; }
 
         [Required]
         public LeagueTagOptionsViewModel Tags { get; set; }
@@ -159,7 +157,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-                leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, PublicLeague);
+                leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem);
             return parameters;
         }
     }

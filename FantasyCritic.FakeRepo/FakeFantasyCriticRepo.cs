@@ -55,7 +55,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments)
+        public Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction)
         {
             throw new NotImplementedException();
         }
