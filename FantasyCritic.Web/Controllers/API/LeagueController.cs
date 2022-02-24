@@ -1887,6 +1887,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest(reorderResult.Error);
             }
 
+            await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear.Value);
+
             return Ok();
         }
 
