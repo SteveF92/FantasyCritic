@@ -195,7 +195,9 @@ export default {
       this.fetchMyLeaguesForYear();
     },
     clearLeagueFilter() {
-      this.leagueFilterMode = null;
+      this.eligibilityFilter = null;
+      this.takenStatusFilter = null;
+      this.unreleasedOnlyFilter = false;
     }
   },
   mounted() {
