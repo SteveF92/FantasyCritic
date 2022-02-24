@@ -18,7 +18,7 @@
     </span>
     <span v-if="!gameSlot.dropped && !gameSlot.specialSlot && gameSlot.counterPick">
       <span class="badge tag-badge counter-pick-badge slot-badge" v-b-popover.hover.top="counterPickText">
-        CP
+        CPK
       </span>
     </span>
     <span v-if="gameSlot.dropped">

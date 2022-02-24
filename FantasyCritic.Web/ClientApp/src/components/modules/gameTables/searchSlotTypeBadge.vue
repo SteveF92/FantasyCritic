@@ -2,7 +2,7 @@
   <span>
     <span v-if="gameSlot.counterPick">
       <span class="badge tag-badge counter-pick-badge flex-badge search-tag">
-        CP
+        CPK
       </span>
     </span>
     <span v-if="!gameSlot.counterPick && name">
