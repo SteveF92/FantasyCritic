@@ -47,17 +47,16 @@ CREATE TABLE `tbl_league_trade` (
 ENGINE=InnoDB
 ;
 
-
 CREATE TABLE `tbl_league_tradecomponent` (
 	`TradeID` CHAR(36) NOT NULL,
 	`CurrentParty` VARCHAR(255) NOT NULL,
-	`PublisherGameID` CHAR(36) NOT NULL,
-	PRIMARY KEY (`TradeID`, `CurrentParty`, `PublisherGameID`) USING BTREE,
+	`MasterGameID` CHAR(36) NOT NULL,
+	PRIMARY KEY (`TradeID`, `CurrentParty`, `MasterGameID`) USING BTREE,
 	INDEX `FK_tbl_league_tradecomponent_tbl_meta_tradingparty` (`CurrentParty`) USING BTREE,
-	INDEX `FK_tbl_league_tradecomponent_tbl_league_publishergame` (`PublisherGameID`) USING BTREE,
-	CONSTRAINT `FK_tbl_league_tradecomponent_tbl_league_publishergame` FOREIGN KEY (`PublisherGameID`) REFERENCES `fantasycritic`.`tbl_league_publishergame` (`PublisherGameID`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	INDEX `FK_tbl_league_tradecomponent_tbl_mastergame` (`MasterGameID`) USING BTREE,
 	CONSTRAINT `FK_tbl_league_tradecomponent_tbl_league_trade` FOREIGN KEY (`TradeID`) REFERENCES `fantasycritic`.`tbl_league_trade` (`TradeID`) ON UPDATE NO ACTION ON DELETE NO ACTION,
-	CONSTRAINT `FK_tbl_league_tradecomponent_tbl_meta_tradingparty` FOREIGN KEY (`CurrentParty`) REFERENCES `fantasycritic`.`tbl_meta_tradingparty` (`Status`) ON UPDATE NO ACTION ON DELETE NO ACTION
+	CONSTRAINT `FK_tbl_league_tradecomponent_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `fantasycritic`.`tbl_mastergame` (`MasterGameID`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	CONSTRAINT `FK_tbl_league_tradecomponent_tbl_meta_tradingparty` FOREIGN KEY (`CurrentParty`) REFERENCES `fantasycritic`.`tbl_meta_tradingparty` (`Name`) ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC
