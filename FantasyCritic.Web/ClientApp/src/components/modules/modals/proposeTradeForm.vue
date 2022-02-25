@@ -30,7 +30,7 @@
                       <font-awesome-icon icon="times" size="lg" :style="{ color: '#414141' }" />
                     </div>
                   </div>
-                  
+
                 </div>
                 <b-button variant="secondary" class="add-game-button" v-on:click="addGame(proposerPublisherGames)">Add Game</b-button>
               </div>
@@ -43,7 +43,7 @@
                   <div class="trade-game-row">
                     <label>{{index + 1}}</label>
                     <b-form-select v-model="item.game">
-                      <option v-for="publisherGame in publisher.games" v-bind:value="publisherGame">
+                      <option v-for="publisherGame in counterParty.games" v-bind:value="publisherGame">
                         {{ publisherGame.gameName }}
                       </option>
                     </b-form-select>
@@ -60,18 +60,12 @@
           </div>
           <div class="row">
             <div class="col-6">
-              <ValidationProvider rules="required|integer" v-slot="{ errors }">
-                <label>Budget</label>
-                <input v-model="proposerBudgetSendAmount" id="proposerBudgetSendAmount" name="proposerBudgetSendAmount" type="number" class="form-control input" />
-                <span class="text-danger">{{ errors[0] }}</span>
-              </ValidationProvider>
+              <label>Budget</label>
+              <input v-model="proposerBudgetSendAmount" id="proposerBudgetSendAmount" name="proposerBudgetSendAmount" type="number" class="form-control input" />
             </div>
             <div class="col-6">
-              <ValidationProvider rules="required|integer" v-slot="{ errors }">
-                <label>Budget</label>
-                <input v-model="counterPartyBudgetSendAmount" id="counterPartyBudgetSendAmount" name="counterPartyBudgetSendAmount" type="number" class="form-control input" />
-                <span class="text-danger">{{ errors[0] }}</span>
-              </ValidationProvider>
+              <label>Budget</label>
+              <input v-model="counterPartyBudgetSendAmount" id="counterPartyBudgetSendAmount" name="counterPartyBudgetSendAmount" type="number" class="form-control input" />
             </div>
           </div>
 
@@ -81,8 +75,11 @@
           </div>
         </div>
 
+        <div class="alert alert-warning" v-show="clientError">{{clientError}}</div>
+        <div class="alert alert-danger" v-show="serverError">{{serverError}}</div>
+
         <div slot="modal-footer">
-          <input type="submit" class="btn btn-primary" value="Propose Trade" v-on:click="proposeTrade" :disabled="!tradeIsValid" />
+          <input type="submit" v-show="counterParty" class="btn btn-primary" value="Propose Trade" v-on:click="proposeTrade" />
         </div>
       </b-modal>
     </form>
@@ -101,14 +98,41 @@ export default {
       proposerBudgetSendAmount: 0,
       counterPartyBudgetSendAmount: 0,
       message: "",
-      errorInfo: '',
-      indexer: 0
+      indexer: 0,
+      clientError: '',
+      serverError: '',
     };
   },
   props: ['leagueYear', 'publisher'],
   computed: {
-    tradeIsValid() {
-      return true;
+    getTradeError() {
+      if (this.proposerPublisherGames.length === 0 && this.counterPartyPublisherGames.length === 0) {
+        return "A trade must involve at least one game.";
+      }
+
+      let allGames = this.proposerPublisherGames.concat(this.counterPartyPublisherGames);
+      let nullGames = _.some(allGames, x => !x.game);
+      if (nullGames) {
+        return "All games must be defined.";
+      }
+
+      if (this.proposerPublisherGames.length === 0 && !this.proposerBudgetSendAmount) {
+        return "You must offer something.";
+      }
+
+      if (this.counterPartyPublisherGames.length === 0 && !this.counterPartyBudgetSendAmount) {
+        return "You must recieve something.";
+      }
+
+      if (this.proposerBudgetSendAmount && this.counterPartyBudgetSendAmount) {
+        return "You cannot have budget on both sides of the trade.";
+      }
+
+      if (!this.message) {
+        return "You must include a message.";
+      }
+
+      return "";
     },
     otherPublishers() {
       return _.filter(this.leagueYear.publishers, x => x.publisherID !== this.publisher.publisherID);
@@ -126,9 +150,14 @@ export default {
       this.proposerPublisherGames = _.filter(this.proposerPublisherGames, x => x.id !== id);
     },
     removeCounterPartyGame(id) {
-      this.counterPartyPublisherGames = _.filter(this.proposerPublisherGames, x => x.id !== id);
+      this.counterPartyPublisherGames = _.filter(this.counterPartyPublisherGames, x => x.id !== id);
     },
     proposeTrade() {
+      this.clientError = this.getTradeError;
+      if (this.clientError) {
+        return;
+      }
+
       var request = {
         proposerPublisherID: this.publisher.publisherID,
         counterPartyPublisherID: this.counterParty.publisherID,
