@@ -19,7 +19,7 @@
               <div>
                 <div v-for="(item, index) in proposerPublisherGames" :key="item.publisherGameID">
                   <div class="trade-game-row">
-                    <label>{{index}}</label>
+                    <label>{{index + 1}}</label>
                     <b-form-select v-model="item.game">
                       <option v-for="publisherGame in publisher.games" v-bind:value="publisherGame">
                         {{ publisherGame.gameName }}
@@ -41,7 +41,7 @@
               <div>
                 <div v-for="(item, index) in counterPartyPublisherGames" :key="item.publisherGameID">
                   <div class="trade-game-row">
-                    <label>{{index}}</label>
+                    <label>{{index + 1}}</label>
                     <b-form-select v-model="item.game">
                       <option v-for="publisherGame in publisher.games" v-bind:value="publisherGame">
                         {{ publisherGame.gameName }}
@@ -74,6 +74,11 @@
               </ValidationProvider>
             </div>
           </div>
+
+          <div class="form-group">
+            <label for="messageText" class="control-label">Message</label>
+            <textarea class="form-control" v-model="message" rows="3"></textarea>
+          </div>
         </div>
 
         <div slot="modal-footer">
@@ -95,6 +100,7 @@ export default {
       counterPartyPublisherGames: [],
       proposerBudgetSendAmount: 0,
       counterPartyBudgetSendAmount: 0,
+      message: "",
       errorInfo: '',
       indexer: 0
     };
@@ -124,7 +130,13 @@ export default {
     },
     proposeTrade() {
       var request = {
-
+        proposerPublisherID: this.publisher.publisherID,
+        counterPartyPublisherID: this.counterParty.publisherID,
+        proposerPublisherGameIDs: this.proposerPublisherGames.map(x => x.game.publisherGameID),
+        counterPartyPublisherGameIDs: this.counterPartyPublisherGames.map(x => x.game.publisherGameID),
+        proposerBudgetSendAmount: this.proposerBudgetSendAmount,
+        counterPartyBudgetSendAmount: this.counterPartyBudgetSendAmount,
+        message: this.message
       };
       axios
         .post('/api/league/ProposeTrade', request)
@@ -143,6 +155,7 @@ export default {
       this.counterPartyPublisherGames = [];
       this.proposerBudgetSendAmount = 0;
       this.counterPartyBudgetSendAmount = 0;
+      this.message = "";
     }
   }
 };
