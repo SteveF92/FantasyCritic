@@ -621,5 +621,10 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

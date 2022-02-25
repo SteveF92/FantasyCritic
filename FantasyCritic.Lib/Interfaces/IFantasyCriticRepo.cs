@@ -147,5 +147,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task<Maybe<FantasyCriticUser>> GetLeagueYearWinner(Guid leagueID, int year);
         Task AddFormerPublisherGame(FormerPublisherGame formerPublisherGame);
         Task CreateTrade(Trade trade);
+        Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear);
     }
 }

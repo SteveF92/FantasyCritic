@@ -1881,6 +1881,11 @@ namespace FantasyCritic.MySQL
             }
         }
 
+        public Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear)
+        {
+            throw new NotImplementedException();
+        }
+
         private Task MakePublisherGameSlotsConsistent(Guid publisherID, MySqlConnection connection, MySqlTransaction transaction)
         {
             return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, connection, transaction);

@@ -6,6 +6,7 @@ using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Models.RoundTrip;
@@ -20,7 +21,7 @@ namespace FantasyCritic.Web.Models.Responses
             DraftPhase draftPhase, SystemWideValues systemWideValues,
             IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
             Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner,
-            Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
+            Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs, IEnumerable<Trade> activeTrades)
         {
             LeagueID = leagueYear.League.LeagueID;
             Year = leagueYear.Year;
@@ -117,6 +118,8 @@ namespace FantasyCritic.Web.Models.Responses
             {
                 PublicBiddingGames = publicBiddingGames.Value.Select(x => new PublicBiddingMasterGameViewModel(x, currentDate)).ToList();
             }
+
+            ActiveTrades = activeTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
         }
 
         public Guid LeagueID { get; }
@@ -141,5 +144,6 @@ namespace FantasyCritic.Web.Models.Responses
         public PlayStatusViewModel PlayStatus { get; }
         public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
         public IReadOnlyList<PublicBiddingMasterGameViewModel> PublicBiddingGames { get; }
+        public IReadOnlyList<TradeViewModel> ActiveTrades { get; }
     }
 }

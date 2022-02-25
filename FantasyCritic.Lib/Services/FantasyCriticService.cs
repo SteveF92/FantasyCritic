@@ -677,5 +677,17 @@ namespace FantasyCritic.Lib.Services
 
             return Result.Success();
         }
+
+        public Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear)
+        {
+            return _fantasyCriticRepo.GetTradesForLeague(leagueYear);
+        }
+
+        public async Task<IReadOnlyList<Trade>> GetActiveTradesForLeague(LeagueYear leagueYear)
+        {
+            var allTrades = await GetTradesForLeague(leagueYear);
+            var activeTrades = allTrades.Where(x => x.Status.IsActive).ToList();
+            return activeTrades;
+        }
     }
 }

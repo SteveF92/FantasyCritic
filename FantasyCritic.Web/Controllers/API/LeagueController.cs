@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -308,10 +309,12 @@ namespace FantasyCritic.Web.Controllers.API
             var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear.Value);
             IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear.Value, publishersInLeague);
 
+            IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear.Value);
+
             var currentDate = _clock.GetToday();
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, currentDate,
                 startDraftResult, activeUsers, nextDraftPublisher, draftPhase, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager,
-                currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs);
+                currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades);
             return Ok(leagueViewModel);
         }
 
@@ -2014,16 +2017,49 @@ namespace FantasyCritic.Web.Controllers.API
             return Ok();
         }
 
-        [AllowAnonymous]
-        public async Task<ActionResult<TradeViewModel>> ActiveTrades(Guid leagueID, int year)
-        {
-            return Ok();
-        }
 
         [AllowAnonymous]
         public async Task<ActionResult<TradeViewModel>> TradeHistory(Guid leagueID, int year)
         {
-            return Ok();
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+            if (leagueYear.HasNoValue)
+            {
+                throw new Exception("Something went really wrong, no options are set up for this league.");
+            }
+
+            FantasyCriticUser currentUser = null;
+            if (!string.IsNullOrWhiteSpace(User.Identity.Name))
+            {
+                var currentUserResult = await GetCurrentUser();
+                if (currentUserResult.IsFailure)
+                {
+                    return BadRequest(currentUserResult.Error);
+                }
+                currentUser = currentUserResult.Value;
+            }
+
+            var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
+
+            bool userIsInLeague = false;
+            bool userIsInvitedToLeague = false;
+            bool userIsAdmin = false;
+            if (currentUser != null)
+            {
+                var usersInLeague = await _leagueMemberService.GetUsersInLeague(leagueYear.Value.League);
+                userIsInLeague = usersInLeague.Any(x => x.Id == currentUser.Id);
+                userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
+                userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
+            }
+
+            if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !userIsAdmin)
+            {
+                return Forbid();
+            }
+
+            var currentDate = _clock.GetToday();
+            var trades = await _fantasyCriticService.GetTradesForLeague(leagueYear.Value);
+            var viewModels = trades.Select(x => new TradeViewModel(x, currentDate));
+            return Ok(viewModels);
         }
 
         private IReadOnlyList<SingleGameNewsViewModel> GetGameNewsViewModel(IEnumerable<Publisher> publishers, bool userMode, bool recentReleases)
