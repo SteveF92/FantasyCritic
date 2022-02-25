@@ -12,8 +12,8 @@ namespace FantasyCritic.Lib.Domain.Trades
 {
     public class Trade
     {
-        public Trade(Guid tradeID, Publisher proposer, Publisher counterParty, IEnumerable<MasterGameWithCounterPick> proposerMasterGames,
-            IEnumerable<MasterGameWithCounterPick> counterPartyMasterGames, uint proposerBudgetSendAmount, uint counterPartyBudgetSendAmount,
+        public Trade(Guid tradeID, Publisher proposer, Publisher counterParty, IEnumerable<MasterGameYearWithCounterPick> proposerMasterGames,
+            IEnumerable<MasterGameYearWithCounterPick> counterPartyMasterGames, uint proposerBudgetSendAmount, uint counterPartyBudgetSendAmount,
             string message, Instant proposedTimestamp, Instant? acceptedTimestamp, Instant? completedTimestamp, TradeStatus status)
         {
             TradeID = tradeID;
@@ -33,8 +33,8 @@ namespace FantasyCritic.Lib.Domain.Trades
         public Guid TradeID { get; }
         public Publisher Proposer { get; }
         public Publisher CounterParty { get; }
-        public IReadOnlyList<MasterGameWithCounterPick> ProposerMasterGames { get; }
-        public IReadOnlyList<MasterGameWithCounterPick> CounterPartyMasterGames { get; }
+        public IReadOnlyList<MasterGameYearWithCounterPick> ProposerMasterGames { get; }
+        public IReadOnlyList<MasterGameYearWithCounterPick> CounterPartyMasterGames { get; }
         public uint ProposerBudgetSendAmount { get; }
         public uint CounterPartyBudgetSendAmount { get; }
         public string Message { get; }
@@ -60,8 +60,8 @@ namespace FantasyCritic.Lib.Domain.Trades
                 return $"{CounterParty.PublisherName} does not have enough budget for this trade.";
             }
 
-            var proposerPublisherGamesWithMasterGames = Proposer.PublisherGames.Select(x => x.GetMasterGameWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
-            var counterPartyPublisherGamesWithMasterGames = CounterParty.PublisherGames.Select(x => x.GetMasterGameWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
+            var proposerPublisherGamesWithMasterGames = Proposer.PublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
+            var counterPartyPublisherGamesWithMasterGames = CounterParty.PublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
 
             bool proposerGamesValid = ListExtensions.SequencesContainSameElements(ProposerMasterGames, proposerPublisherGamesWithMasterGames);
             bool counterPartyGamesValid = ListExtensions.SequencesContainSameElements(CounterPartyMasterGames, counterPartyPublisherGamesWithMasterGames);

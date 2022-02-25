@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Domain
 {
-    public record MasterGameWithCounterPick(MasterGame MasterGame, bool CounterPick);
+    public record MasterGameYearWithCounterPick(MasterGameYear MasterGameYear, bool CounterPick);
 }

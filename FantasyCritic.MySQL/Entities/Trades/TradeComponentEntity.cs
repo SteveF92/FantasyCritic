@@ -10,11 +10,11 @@ namespace FantasyCritic.MySQL.Entities.Trades
 {
     public class TradeComponentEntity
     {
-        public TradeComponentEntity(Guid tradeID, TradingParty party, MasterGameWithCounterPick masterGame)
+        public TradeComponentEntity(Guid tradeID, TradingParty party, MasterGameYearWithCounterPick masterGame)
         {
             TradeID = tradeID;
             CurrentParty = party.Value;
-            MasterGameID = masterGame.MasterGame.MasterGameID;
+            MasterGameID = masterGame.MasterGameYear.MasterGame.MasterGameID;
             CounterPick = masterGame.CounterPick;
         }
 

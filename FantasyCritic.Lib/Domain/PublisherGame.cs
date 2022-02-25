@@ -61,14 +61,14 @@ namespace FantasyCritic.Lib.Domain
         }
 
         public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
-        public Maybe<MasterGameWithCounterPick> GetMasterGameWithCounterPick()
+        public Maybe<MasterGameYearWithCounterPick> GetMasterGameYearWithCounterPick()
         {
             if (!MasterGame.HasValue)
             {
-                return Maybe<MasterGameWithCounterPick>.None;
+                return Maybe<MasterGameYearWithCounterPick>.None;
             }
 
-            return new MasterGameWithCounterPick(MasterGame.Value.MasterGame, CounterPick);
+            return new MasterGameYearWithCounterPick(MasterGame.Value, CounterPick);
         }
 
         public override string ToString() => GameName;
