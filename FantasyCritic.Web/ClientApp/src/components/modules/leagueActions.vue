@@ -60,6 +60,9 @@
               <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">
                 My Current Bids
               </li>
+              <li class="fake-link action" v-b-modal="'proposeTradeForm'" v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'">
+                Propose a Trade
+              </li>
               <li class="fake-link action" v-b-modal="'dropGameForm'" v-show="leagueYear.playStatus.draftFinished">
                 Drop a Game
               </li>
@@ -185,6 +188,8 @@
         <bidCounterPickForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:gameBid="gameBid"></bidCounterPickForm>
         <currentBidsForm :leagueYear="leagueYear" :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidEdited="bidEdited" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
 
+        <proposeTradeForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:tradeProposed="tradeProposed"></proposeTradeForm>
+
         <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
         <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
         <gameQueueForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" :year="leagueYear.year"></gameQueueForm>
@@ -230,6 +235,7 @@ import CurrentBidsForm from '@/components/modules/modals/currentBidsForm';
 import DropGameForm from '@/components/modules/modals/dropGameForm';
 import CurrentDropsForm from '@/components/modules/modals/currentDropsForm';
 import GameQueueForm from '@/components/modules/modals/gameQueueForm';
+import ProposeTradeForm from '@/components/modules/modals/proposeTradeForm';
 
 import EligibilityOverridesModal from '@/components/modules/modals/eligibilityOverridesModal';
 import TagOverridesModal from '@/components/modules/modals/tagOverridesModal';
@@ -310,7 +316,8 @@ export default {
     RemovePlayerModal,
     ManagerMessageModal,
     TransferManagerModal,
-    CreatePublisherForUserForm
+    CreatePublisherForUserForm,
+    ProposeTradeForm
   },
   computed: {
     isPlusUser() {
@@ -352,6 +359,13 @@ export default {
     dropCancelled(dropInfo) {
       let actionInfo = {
         message: 'Drop Request for ' + dropInfo.gameName + ' was cancelled.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    tradeProposed(tradeInfo) {
+      let actionInfo = {
+        message: 'Trade proposal has been made.',
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);

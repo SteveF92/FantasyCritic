@@ -31,6 +31,7 @@ namespace FantasyCritic.Web.Models.Responses
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
+            TradingSystem = leagueYear.Options.TradingSystem.Value;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
             UserIsActive = activeUsers.Any(x => x.Id == accessingUser.GetValueOrDefault(y => y.Id));
             HasSpecialSlots = leagueYear.Options.HasSpecialSlots();
@@ -127,6 +128,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string DraftSystem { get; }
         public string PickupSystem { get; }
         public string ScoringSystem { get; }
+        public string TradingSystem { get; }
         public bool UnlinkedGameExists { get; }
         public bool UserIsActive { get; }
         public bool HasSpecialSlots { get; }
