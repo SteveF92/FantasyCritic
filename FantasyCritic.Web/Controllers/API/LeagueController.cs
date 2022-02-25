@@ -1939,6 +1939,53 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> ProposeTrade([FromBody] ProposeTradeRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.ActionProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var publisher = await _publisherService.GetPublisher(request.ProposerPublisherID);
+            if (publisher.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(publisher.Value.LeagueYear.League.LeagueID, publisher.Value.LeagueYear.Year);
+            if (leagueYear.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == publisher.Value.LeagueYear.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            if (supportedYear.Finished)
+            {
+                return BadRequest("That year is already finished");
+            }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            bool userIsPublisher = (currentUser.Id == publisher.Value.User.Id);
+            if (!userIsPublisher)
+            {
+                return Forbid();
+            }
+
             return Ok();
         }
 
