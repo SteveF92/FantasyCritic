@@ -19,6 +19,7 @@ using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Requests.League;
+using FantasyCritic.Web.Models.Requests.League.Trades;
 using FantasyCritic.Web.Models.Requests.LeagueManager;
 using FantasyCritic.Web.Models.Requests.Shared;
 using FantasyCritic.Web.Models.Responses;
@@ -1871,6 +1872,18 @@ namespace FantasyCritic.Web.Controllers.API
 
             await _fantasyCriticService.DeleteManagerMessage(request.MessageID);
 
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RejectTrade([FromBody] BasicTradeRequest request)
+        {
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExecuteTrade([FromBody] BasicTradeRequest request)
+        {
             return Ok();
         }
     }

@@ -19,6 +19,7 @@ using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models;
 using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Requests.League;
+using FantasyCritic.Web.Models.Requests.League.Trades;
 using FantasyCritic.Web.Models.Requests.Shared;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.RoundTrip;
@@ -1939,6 +1940,42 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProposeTrade([FromBody] ProposeTradeRequest request)
+        {
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RescindTrade([FromBody] BasicTradeRequest request)
+        {
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AcceptTrade([FromBody] BasicTradeRequest request)
+        {
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VoteOnTrade([FromBody] TradeVoteRequest request)
+        {
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult<TradeViewModel>> ActiveTrades(Guid leagueID, int year)
+        {
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult<TradeViewModel>> TradeHistory(Guid leagueID, int year)
+        {
             return Ok();
         }
 
