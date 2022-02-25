@@ -826,10 +826,8 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest(currentUserResult.Error);
             }
             var currentUser = currentUserResult.Value;
-
-            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
             bool userIsPublisher = (currentUser.Id == publisher.Value.User.Id);
-            if (!userIsInLeague || !userIsPublisher)
+            if (!userIsPublisher)
             {
                 return Forbid();
             }
@@ -888,9 +886,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
             var currentUser = currentUserResult.Value;
 
-            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.LeagueYear.League, currentUser);
             bool userIsPublisher = (currentUser.Id == publisher.User.Id);
-            if (!userIsInLeague || !userIsPublisher)
+            if (!userIsPublisher)
             {
                 return Forbid();
             }
@@ -936,9 +933,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
             var currentUser = currentUserResult.Value;
 
-            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.LeagueYear.League, currentUser);
             bool userIsPublisher = (currentUser.Id == publisher.User.Id);
-            if (!userIsInLeague || !userIsPublisher)
+            if (!userIsPublisher)
             {
                 return Forbid();
             }
@@ -1510,9 +1506,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
             var currentUser = currentUserResult.Value;
 
-            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
             bool userIsPublisher = (currentUser.Id == publisher.Value.User.Id);
-            if (!userIsInLeague || !userIsPublisher)
+            if (!userIsPublisher)
             {
                 return Forbid();
             }
@@ -1558,9 +1553,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
             var currentUser = currentUserResult.Value;
 
-            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.LeagueYear.League, currentUser);
             bool userIsPublisher = (currentUser.Id == publisher.User.Id);
-            if (!userIsInLeague || !userIsPublisher)
+            if (!userIsPublisher)
             {
                 return Forbid();
             }
@@ -1751,9 +1745,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest(currentUserResult.Error);
             }
             var currentUser = currentUserResult.Value;
-            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(league.Value, currentUser);
+
             bool userIsPublisher = (currentUser.Id == publisher.Value.User.Id);
-            if (!userIsInLeague || !userIsPublisher)
+            if (!userIsPublisher)
             {
                 return Forbid();
             }
@@ -1875,9 +1869,8 @@ namespace FantasyCritic.Web.Controllers.API
             }
             var currentUser = currentUserResult.Value;
 
-            bool userIsInLeague = await _leagueMemberService.UserIsInLeague(publisher.Value.LeagueYear.League, currentUser);
             bool userIsPublisher = (currentUser.Id == publisher.Value.User.Id);
-            if (!userIsInLeague || !userIsPublisher)
+            if (!userIsPublisher)
             {
                 return Forbid();
             }
