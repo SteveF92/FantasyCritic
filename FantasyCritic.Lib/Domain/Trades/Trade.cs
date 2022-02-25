@@ -14,7 +14,8 @@ namespace FantasyCritic.Lib.Domain.Trades
     {
         public Trade(Guid tradeID, Publisher proposer, Publisher counterParty, IEnumerable<MasterGameYearWithCounterPick> proposerMasterGames,
             IEnumerable<MasterGameYearWithCounterPick> counterPartyMasterGames, uint proposerBudgetSendAmount, uint counterPartyBudgetSendAmount,
-            string message, Instant proposedTimestamp, Instant? acceptedTimestamp, Instant? completedTimestamp, TradeStatus status)
+            string message, Instant proposedTimestamp, Instant? acceptedTimestamp, Instant? completedTimestamp, 
+            IEnumerable<TradeVote> tradeVotes, TradeStatus status)
         {
             TradeID = tradeID;
             Proposer = proposer;
@@ -27,6 +28,7 @@ namespace FantasyCritic.Lib.Domain.Trades
             ProposedTimestamp = proposedTimestamp;
             AcceptedTimestamp = acceptedTimestamp;
             CompletedTimestamp = completedTimestamp;
+            TradeVotes = tradeVotes.ToList();
             Status = status;
         }
 
@@ -41,6 +43,7 @@ namespace FantasyCritic.Lib.Domain.Trades
         public Instant ProposedTimestamp { get; }
         public Instant? AcceptedTimestamp { get; }
         public Instant? CompletedTimestamp { get; }
+        public IReadOnlyList<TradeVote> TradeVotes { get; }
         public TradeStatus Status { get; }
 
         public Maybe<string> GetTradeError()

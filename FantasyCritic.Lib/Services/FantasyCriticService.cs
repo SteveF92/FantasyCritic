@@ -670,8 +670,8 @@ namespace FantasyCritic.Lib.Services
 
             Trade validTrade = new Trade(Guid.NewGuid(), proposer, counterParty, proposerPublisherGamesWithMasterGames,
                 counterPartyPublisherGamesWithMasterGames,
-                proposerBudgetSendAmount, counterPartyBudgetSendAmount, message, _clock.GetCurrentInstant(), null, null,
-                TradeStatus.Proposed);
+                proposerBudgetSendAmount, counterPartyBudgetSendAmount, message, _clock.GetCurrentInstant(), null, null, 
+                new List<TradeVote>(), TradeStatus.Proposed);
 
             await _fantasyCriticRepo.CreateTrade(validTrade);
 
