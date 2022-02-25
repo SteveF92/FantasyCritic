@@ -1866,7 +1866,7 @@ namespace FantasyCritic.MySQL
             var allTradeComponents = proposerComponents.Concat(counterPartyComponents).ToList();
 
             string baseTableSQL = "INSERT INTO tbl_league_trade(TradeID,LeagueID,Year,ProposerPublisherID,CounterPartyPublisherID,ProposerBudgetSendAmount,CounterPartyBudgetSendAmount," +
-            "Message,ProposedTimestamp,AcceptedTimestamp,CompletedTimestamp,Status,) VALUES" +
+            "Message,ProposedTimestamp,AcceptedTimestamp,CompletedTimestamp,Status) VALUES" +
             "(@TradeID, @LeagueID, @Year, @ProposerPublisherID, @CounterPartyPublisherID, @ProposerBudgetSendAmount," +
             "@CounterPartyBudgetSendAmount, @Message, @ProposedTimestamp, @AcceptedTimestamp, @CompletedTimestamp, @Status);";
             using (var connection = new MySqlConnection(_connectionString))

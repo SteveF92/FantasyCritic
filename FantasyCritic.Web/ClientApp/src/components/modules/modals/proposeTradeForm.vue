@@ -175,7 +175,7 @@ export default {
           this.clearData();
         })
         .catch(response => {
-          this.errorInfo = response.response.data;
+          this.serverError = response.response.data;
         });
     },
     clearData() {
