@@ -678,14 +678,15 @@ namespace FantasyCritic.Lib.Services
             return Result.Success();
         }
 
-        public Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear)
+        public async Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear)
         {
-            return _fantasyCriticRepo.GetTradesForLeague(leagueYear);
+            var trades = await _fantasyCriticRepo.GetTradesForLeague(leagueYear, publishersInLeagueForYear);
+            return trades;
         }
 
-        public async Task<IReadOnlyList<Trade>> GetActiveTradesForLeague(LeagueYear leagueYear)
+        public async Task<IReadOnlyList<Trade>> GetActiveTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear)
         {
-            var allTrades = await GetTradesForLeague(leagueYear);
+            var allTrades = await GetTradesForLeague(leagueYear, publishersInLeagueForYear);
             var activeTrades = allTrades.Where(x => x.Status.IsActive).ToList();
             return activeTrades;
         }

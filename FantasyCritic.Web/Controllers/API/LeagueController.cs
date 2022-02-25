@@ -309,7 +309,7 @@ namespace FantasyCritic.Web.Controllers.API
             var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear.Value);
             IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear.Value, publishersInLeague);
 
-            IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear.Value);
+            IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear.Value, publishersInLeague);
 
             var currentDate = _clock.GetToday();
             var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, currentDate,
@@ -2056,8 +2056,9 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var currentDate = _clock.GetToday();
-            var trades = await _fantasyCriticService.GetTradesForLeague(leagueYear.Value);
+            var trades = await _fantasyCriticService.GetTradesForLeague(leagueYear.Value, publishersInLeague);
             var viewModels = trades.Select(x => new TradeViewModel(x, currentDate));
             return Ok(viewModels);
         }

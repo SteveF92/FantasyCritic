@@ -29,6 +29,7 @@ namespace FantasyCritic.Web.Models.Responses
             AcceptedTimestamp = domain.AcceptedTimestamp;
             CompletedTimestamp = domain.CompletedTimestamp;
             Status = domain.Status.Value;
+            Error = domain.GetTradeError().GetValueOrDefault();
         }
 
         public Guid TradeID { get; }
@@ -45,5 +46,6 @@ namespace FantasyCritic.Web.Models.Responses
         public Instant? AcceptedTimestamp { get; }
         public Instant? CompletedTimestamp { get; }
         public string Status { get; }
+        public string Error { get; }
     }
 }

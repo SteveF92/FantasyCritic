@@ -16,6 +16,7 @@ using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
@@ -29,6 +30,7 @@ using NodaTime;
 using static MoreLinq.Extensions.BatchExtension;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.MySQL.Entities.Trades;
+using Microsoft.Extensions.Configuration;
 
 namespace FantasyCritic.MySQL
 {
@@ -1881,9 +1883,81 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear)
+        public async Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear)
         {
-            throw new NotImplementedException();
+            string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @leagueID AND Year = @year;";
+            string componentTableSQL = "select * from tbl_league_tradecomponent " +
+                                       "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID" +
+                                       "WHERE LeagueID = @leagueID AND Year = @year;";
+            string voteTableSQL = "select * from tbl_league_tradevote " +
+                                  "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID" +
+                                  "WHERE LeagueID = @leagueID AND Year = @year;";
+
+            var queryObject = new
+            {
+                leagueID = leagueYear.League.LeagueID,
+                year = leagueYear.Year
+            };
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var tradeEntities = await connection.QueryAsync<TradeEntity>(baseTableSQL, queryObject);
+                var componentEntities = await connection.QueryAsync<TradeComponentEntity>(componentTableSQL, queryObject);
+                var voteEntities = await connection.QueryAsync<TradeVoteEntity>(voteTableSQL, queryObject);
+
+                var componentLookup = componentEntities.ToLookup(x => x.TradeID);
+                var voteLookup = voteEntities.ToLookup(x => x.TradeID);
+
+                List<Trade> domainTrades = new List<Trade>();
+                foreach (var tradeEntity in tradeEntities)
+                {
+                    Publisher proposer = publishersInLeagueForYear.SingleOrDefault(x => x.PublisherID == tradeEntity.ProposerPublisherID) ??
+                                         Publisher.GetFakePublisher(leagueYear);
+
+                    Publisher counterParty = publishersInLeagueForYear.SingleOrDefault(x => x.PublisherID == tradeEntity.CounterPartyPublisherID) ??
+                                         Publisher.GetFakePublisher(leagueYear);
+
+                    var components = componentLookup[tradeEntity.TradeID];
+                    List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+                    List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+                    foreach (var component in components)
+                    {
+                        var masterGameYear = await _masterGameRepo.GetMasterGameYear(component.MasterGameID, leagueYear.Year);
+                        if (masterGameYear.HasNoValue)
+                        {
+                            throw new Exception($"Invalid master game when getting trade: {tradeEntity.TradeID}");
+                        }
+
+                        var domainComponent = new MasterGameYearWithCounterPick(masterGameYear.Value, component.CounterPick);
+                        if (component.CurrentParty == TradingParty.Proposer.Value)
+                        {
+                            proposerMasterGameYearWithCounterPicks.Add(domainComponent);
+                        }
+                        else if (component.CurrentParty == TradingParty.CounterParty.Value)
+                        {
+                            counterPartyMasterGameYearWithCounterPicks.Add(domainComponent);
+                        }
+                        else
+                        {
+                            throw new Exception($"Invalid party when getting trade: {tradeEntity.TradeID}");
+                        }
+                    }
+
+                    var votes = voteLookup[tradeEntity.TradeID];
+                    List<TradeVote> tradeVotes = new List<TradeVote>();
+                    foreach (var vote in votes)
+                    {
+                        var user = await _userStore.FindByIdAsync(vote.UserID.ToString(), CancellationToken.None);
+                        var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment.ToMaybe(), vote.Timestamp);
+                        tradeVotes.Add(domainVote);
+                    }
+
+                    domainTrades.Add(tradeEntity.ToDomain(proposer, counterParty, proposerMasterGameYearWithCounterPicks, 
+                        counterPartyMasterGameYearWithCounterPicks, tradeVotes));
+                }
+
+                return domainTrades;
+            }
         }
 
         private Task MakePublisherGameSlotsConsistent(Guid publisherID, MySqlConnection connection, MySqlTransaction transaction)

@@ -48,6 +48,11 @@ namespace FantasyCritic.Lib.Domain.Trades
 
         public Maybe<string> GetTradeError()
         {
+            if (Proposer.PublisherID == Guid.Empty || CounterParty.PublisherID == Guid.Empty)
+            {
+                return "One of the publishers involved in this trade no longer exists.";
+            }
+
             if (Proposer.LeagueYear.Options.TradingSystem.Equals(TradingSystem.NoTrades))
             {
                 return "Trades are not enabled for this league year.";

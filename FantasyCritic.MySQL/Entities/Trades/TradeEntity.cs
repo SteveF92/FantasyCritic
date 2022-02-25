@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Enums;
 using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities.Trades
@@ -38,5 +40,13 @@ namespace FantasyCritic.MySQL.Entities.Trades
         public Instant? AcceptedTimestamp { get; set; }
         public Instant? CompletedTimestamp { get; set; }
         public string Status { get; set; }
+
+        public Trade ToDomain(Publisher proposer, Publisher counterParty, IEnumerable<MasterGameYearWithCounterPick> proposerMasterGames,
+            IEnumerable<MasterGameYearWithCounterPick> counterPartyMasterGames, IEnumerable<TradeVote> votes)
+        {
+            return new Trade(TradeID, proposer, counterParty, proposerMasterGames, counterPartyMasterGames,
+                ProposerBudgetSendAmount, CounterPartyBudgetSendAmount, Message, ProposedTimestamp, AcceptedTimestamp, CompletedTimestamp, 
+                votes, TradeStatus.FromValue(Status));
+        }
     }
 }

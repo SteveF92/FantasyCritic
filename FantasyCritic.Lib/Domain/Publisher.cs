@@ -253,5 +253,12 @@ namespace FantasyCritic.Lib.Domain
             }
             throw new Exception("Publisher cannot drop any more 'Will Not Release' games");
         }
+
+        public static Publisher GetFakePublisher(LeagueYear leagueYear)
+        {
+            return new Publisher(Guid.Empty, leagueYear, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
+                Maybe<string>.None, 0, new List<PublisherGame>(),
+                new List<FormerPublisherGame>(), 0, 0, 0, 0, false);
+        }
     }
 }
