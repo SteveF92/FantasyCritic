@@ -1864,7 +1864,7 @@ namespace FantasyCritic.MySQL
         {
             var tradeEntity = new TradeEntity(trade);
             var proposerComponents = trade.ProposerMasterGames.Select(x => new TradeComponentEntity(trade.TradeID, TradingParty.Proposer, x)).ToList();
-            var counterPartyComponents = trade.ProposerMasterGames.Select(x => new TradeComponentEntity(trade.TradeID, TradingParty.CounterParty, x)).ToList();
+            var counterPartyComponents = trade.CounterPartyMasterGames.Select(x => new TradeComponentEntity(trade.TradeID, TradingParty.CounterParty, x)).ToList();
             var allTradeComponents = proposerComponents.Concat(counterPartyComponents).ToList();
 
             string baseTableSQL = "INSERT INTO tbl_league_trade(TradeID,LeagueID,Year,ProposerPublisherID,CounterPartyPublisherID,ProposerBudgetSendAmount,CounterPartyBudgetSendAmount," +
@@ -1887,10 +1887,10 @@ namespace FantasyCritic.MySQL
         {
             string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @leagueID AND Year = @year;";
             string componentTableSQL = "select * from tbl_league_tradecomponent " +
-                                       "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID" +
+                                       "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
                                        "WHERE LeagueID = @leagueID AND Year = @year;";
             string voteTableSQL = "select * from tbl_league_tradevote " +
-                                  "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID" +
+                                  "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID " +
                                   "WHERE LeagueID = @leagueID AND Year = @year;";
 
             var queryObject = new

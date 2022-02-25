@@ -71,9 +71,8 @@ namespace FantasyCritic.Lib.Domain.Trades
             var proposerPublisherGamesWithMasterGames = Proposer.PublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
             var counterPartyPublisherGamesWithMasterGames = CounterParty.PublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
 
-            bool proposerGamesValid = ListExtensions.SequencesContainSameElements(ProposerMasterGames, proposerPublisherGamesWithMasterGames);
-            bool counterPartyGamesValid = ListExtensions.SequencesContainSameElements(CounterPartyMasterGames, counterPartyPublisherGamesWithMasterGames);
-
+            bool proposerGamesValid = proposerPublisherGamesWithMasterGames.ContainsAllItems(ProposerMasterGames);
+            bool counterPartyGamesValid = counterPartyPublisherGamesWithMasterGames.ContainsAllItems(CounterPartyMasterGames);
             if (!proposerGamesValid)
             {
                 return $"{Proposer.PublisherName} no longer has all of the games involved in this trade.";

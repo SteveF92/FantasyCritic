@@ -15,5 +15,10 @@ namespace FantasyCritic.Lib.Extensions
             var set2 = new HashSet<T>(sequenceTwo);
             return set1.SetEquals(set2);
         }
+
+        public static bool ContainsAllItems<T>(this IEnumerable<T> a, IEnumerable<T> b)
+        {
+            return !b.Except(a).Any();
+        }
     }
 }

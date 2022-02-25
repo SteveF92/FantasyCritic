@@ -12,6 +12,11 @@ namespace FantasyCritic.MySQL.Entities.Trades
 {
     public class TradeEntity
     {
+        public TradeEntity()
+        {
+
+        }
+
         public TradeEntity(Trade domain)
         {
             TradeID = domain.TradeID;
