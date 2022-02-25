@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -591,6 +592,90 @@ namespace FantasyCritic.Lib.Services
         {
             int previousYear = leagueYear.Year - 1;
             return _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, previousYear);
+        }
+
+        public async Task<Result> ProposeTrade(Publisher proposer, Guid counterPartyPublisherID, IReadOnlyList<Guid> proposerPublisherGameIDs,
+            IReadOnlyList<Guid> counterPartyPublisherGameIDs, uint proposerBudgetSendAmount, uint counterPartyBudgetSendAmount, string message)
+        {
+            if (proposer.LeagueYear.Options.TradingSystem.Equals(TradingSystem.NoTrades))
+            {
+                return Result.Failure("Trades are not enabled for this league year.");
+            }
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                return Result.Failure("Trades must include a message.");
+            }
+
+            if (proposerBudgetSendAmount > 0 && counterPartyBudgetSendAmount > 0)
+            {
+                return Result.Failure("You cannot have budget on both sides of the trade.");
+            }
+
+            if (!proposerPublisherGameIDs.Any() && proposerBudgetSendAmount == 0)
+            {
+                return Result.Failure("You must offer something.");
+            }
+
+            if (!counterPartyPublisherGameIDs.Any() && counterPartyBudgetSendAmount == 0)
+            {
+                return Result.Failure("You must receive something.");
+            }
+
+            var counterPartyResult = await _publisherService.GetPublisher(counterPartyPublisherID);
+            if (counterPartyResult.HasNoValue)
+            {
+                return Result.Failure("That publisher does not exist");
+            }
+            var counterParty = counterPartyResult.Value;
+
+            if (!proposer.LeagueYear.Key.Equals(counterParty.LeagueYear.Key))
+            {
+                return Result.Failure("That publisher is not in your league.");
+            }
+
+            if (proposerBudgetSendAmount > proposer.Budget)
+            {
+                return Result.Failure("You do not have enough budget for this trade.");
+            }
+
+            if (counterPartyBudgetSendAmount > counterParty.Budget)
+            {
+                return Result.Failure("The other publisher does not have enough budget for this trade.");
+            }
+
+            var proposerPublisherGames = proposer.PublisherGames.Where(x => proposerPublisherGameIDs.Contains(x.PublisherGameID)).ToList();
+            var counterPartyPublisherGames = counterParty.PublisherGames.Where(x => counterPartyPublisherGameIDs.Contains(x.PublisherGameID)).ToList();
+            if (proposerPublisherGames.Count != proposerPublisherGameIDs.Count)
+            {
+                return Result.Failure("Some of the proposer publisher games are invalid or duplicates.");
+            }
+
+            if (counterPartyPublisherGames.Count != counterPartyPublisherGameIDs.Count)
+            {
+                return Result.Failure("Some of the counter party publisher games are invalid or duplicates.");
+            }
+
+            var proposerPublisherGamesWithMasterGames = proposerPublisherGames.Select(x => x.GetMasterGameWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
+            var counterPartyPublisherGamesWithMasterGames = counterPartyPublisherGames.Select(x => x.GetMasterGameWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
+            if (proposerPublisherGamesWithMasterGames.Count != proposerPublisherGameIDs.Count)
+            {
+                return Result.Failure("All games in a trade must be linked to a master game.");
+            }
+
+            if (counterPartyPublisherGamesWithMasterGames.Count != counterPartyPublisherGameIDs.Count)
+            {
+                return Result.Failure("All games in a trade must be linked to a master game.");
+            }
+
+            Trade validTrade = new Trade(Guid.NewGuid(), proposer, counterParty, proposerPublisherGamesWithMasterGames,
+                counterPartyPublisherGamesWithMasterGames,
+                proposerBudgetSendAmount, counterPartyBudgetSendAmount, message, _clock.GetCurrentInstant(), null, null,
+                TradeStatus.Proposed);
+
+            await _fantasyCriticRepo.CreateTrade(validTrade);
+
+            return Result.Success();
         }
     }
 }

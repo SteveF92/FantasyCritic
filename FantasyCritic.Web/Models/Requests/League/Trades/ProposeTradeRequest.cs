@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Trades;
 
 namespace FantasyCritic.Web.Models.Requests.League.Trades
 {
@@ -23,6 +25,5 @@ namespace FantasyCritic.Web.Models.Requests.League.Trades
         public uint CounterPartyBudgetSendAmount { get; set; }
         [Required]
         public string Message { get; set; }
-
     }
 }

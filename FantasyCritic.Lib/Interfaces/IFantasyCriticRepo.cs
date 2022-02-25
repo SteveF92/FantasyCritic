@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
+using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.OpenCritic;
@@ -145,5 +146,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount);
         Task<Maybe<FantasyCriticUser>> GetLeagueYearWinner(Guid leagueID, int year);
         Task AddFormerPublisherGame(FormerPublisherGame formerPublisherGame);
+        Task CreateTrade(Trade trade);
     }
 }

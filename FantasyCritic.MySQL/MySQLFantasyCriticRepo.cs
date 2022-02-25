@@ -14,6 +14,7 @@ using Dapper;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
+using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.OpenCritic;
@@ -27,6 +28,7 @@ using NLog.Targets.Wrappers;
 using NodaTime;
 using static MoreLinq.Extensions.BatchExtension;
 using FantasyCritic.Lib.Patreon;
+using FantasyCritic.MySQL.Entities.Trades;
 
 namespace FantasyCritic.MySQL
 {
@@ -1853,6 +1855,29 @@ namespace FantasyCritic.MySQL
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql, entity);
+            }
+        }
+
+        public async Task CreateTrade(Trade trade)
+        {
+            var tradeEntity = new TradeEntity(trade);
+            var proposerComponents = trade.ProposerMasterGames.Select(x => new TradeComponentEntity(trade.TradeID, TradingParty.Proposer, x)).ToList();
+            var counterPartyComponents = trade.ProposerMasterGames.Select(x => new TradeComponentEntity(trade.TradeID, TradingParty.CounterParty, x)).ToList();
+            var allTradeComponents = proposerComponents.Concat(counterPartyComponents).ToList();
+
+            string baseTableSQL = "INSERT INTO tbl_league_trade(TradeID,LeagueID,Year,ProposerPublisherID,CounterPartyPublisherID,ProposerBudgetSendAmount,CounterPartyBudgetSendAmount," +
+            "Message,ProposedTimestamp,AcceptedTimestamp,CompletedTimestamp,Status,) VALUES" +
+            "(@TradeID, @LeagueID, @Year, @ProposerPublisherID, @CounterPartyPublisherID, @ProposerBudgetSendAmount," +
+            "@CounterPartyBudgetSendAmount, @Message, @ProposedTimestamp, @AcceptedTimestamp, @CompletedTimestamp, @Status);";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await connection.ExecuteAsync(baseTableSQL, tradeEntity, transaction);
+                    await connection.BulkInsertAsync<TradeComponentEntity>(allTradeComponents, "tbl_league_tradecomponent", 500, transaction);
+                    await transaction.CommitAsync();
+                }
             }
         }
 

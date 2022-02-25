@@ -121,7 +121,7 @@ export default {
       }
 
       if (this.counterPartyPublisherGames.length === 0 && !this.counterPartyBudgetSendAmount) {
-        return "You must recieve something.";
+        return "You must receive something.";
       }
 
       if (this.proposerBudgetSendAmount && this.counterPartyBudgetSendAmount) {

@@ -1986,6 +1986,13 @@ namespace FantasyCritic.Web.Controllers.API
                 return Forbid();
             }
 
+            Result result = await _fantasyCriticService.ProposeTrade(publisher.Value, request.CounterPartyPublisherID, request.ProposerPublisherGameIDs,
+                request.CounterPartyPublisherGameIDs, request.ProposerBudgetSendAmount, request.CounterPartyBudgetSendAmount, request.Message);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
             return Ok();
         }
 

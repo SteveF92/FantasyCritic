@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
+using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Patreon;
@@ -612,6 +613,11 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task AddFormerPublisherGame(FormerPublisherGame formerPublisherGame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task CreateTrade(Trade trade)
         {
             throw new NotImplementedException();
         }

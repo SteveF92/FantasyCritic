@@ -32,6 +32,7 @@ CREATE TABLE `tbl_league_trade` (
 	`CounterPartyBudgetSendAmount` INT(10) UNSIGNED NOT NULL,
 	`Message` TEXT NOT NULL,
 	`ProposedTimestamp` DATETIME NOT NULL,
+	`AcceptedTimestamp` DATETIME NULL DEFAULT NULL,
 	`CompletedTimestamp` DATETIME NULL DEFAULT NULL,
 	`Status` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`TradeID`) USING BTREE,

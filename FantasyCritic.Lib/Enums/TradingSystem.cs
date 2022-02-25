@@ -21,8 +21,6 @@ namespace FantasyCritic.Lib.Enums
         }
 
         public string ReadableName { get; }
-
-
         public override string ToString() => Value;
     }
 }
