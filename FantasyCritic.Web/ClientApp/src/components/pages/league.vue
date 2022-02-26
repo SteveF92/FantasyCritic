@@ -44,6 +44,10 @@
           <div class="preserve-whitespace">{{mostRecentManagerMessage.messageText}}</div>
         </b-alert>
 
+        <b-alert v-if="leagueYear.userIsActive && leagueYear.activeTrades.length > 0" show>
+          There are active trades under consideration. Please check 'See Active Trades' on the sidebar.
+        </b-alert>
+
         <div v-if="!league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">
           You are viewing a private league.
         </div>
