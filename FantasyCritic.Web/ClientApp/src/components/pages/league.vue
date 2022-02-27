@@ -44,10 +44,6 @@
           <div class="preserve-whitespace">{{mostRecentManagerMessage.messageText}}</div>
         </b-alert>
 
-        <b-alert v-if="leagueYear.userIsActive && leagueYear.activeTrades.length > 0" show>
-          There are active trades under consideration. Please check 'See Active Trades' on the sidebar.
-        </b-alert>
-
         <div v-if="!league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">
           You are viewing a private league.
         </div>
@@ -87,6 +83,12 @@
         </div>
 
         <div v-if="leagueYear">
+          <b-alert v-if="leagueYear.userIsActive && hasProposedTrade" show>
+            Someone has proposed a trade with you. Please check 'See Active Trades' on the sidebar.
+          </b-alert>
+          <b-alert v-if="leagueYear.userIsActive && hasActiveTrade" show>
+            There are active trades under consideration. Please check 'See Active Trades' on the sidebar.
+          </b-alert>
           <div v-if="leagueYear.playStatus.playStarted && leagueYear.supportedYear.finished">
             <div class="alert alert-success" role="alert">
               This year is finished! The winner is <strong>{{topPublisher.publisherName}}</strong>!
@@ -267,7 +269,13 @@ export default {
 
       let revealIsNext = this.$store.getters.bidTimes.nextPublicBiddingTime < this.$store.getters.bidTimes.nextBidLockTime;
       return revealIsNext;
-    }
+    },
+    hasActiveTrade() {
+      return _.some(this.leagueYear.activeTrades, x => !x.waitingForUserResponse);
+    },
+    hasProposedTrade() {
+      return _.some(this.leagueYear.activeTrades, x => x.waitingForUserResponse);
+    },
   },
   methods: {
     formatDate(date) {

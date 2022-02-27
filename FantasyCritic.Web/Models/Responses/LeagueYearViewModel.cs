@@ -119,7 +119,7 @@ namespace FantasyCritic.Web.Models.Responses
                 PublicBiddingGames = publicBiddingGames.Value.Select(x => new PublicBiddingMasterGameViewModel(x, currentDate)).ToList();
             }
 
-            ActiveTrades = activeTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
+            ActiveTrades = activeTrades.Select(x => new TradeViewModel(x, currentDate, userPublisher)).ToList();
         }
 
         public Guid LeagueID { get; }

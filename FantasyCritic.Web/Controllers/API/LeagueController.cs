@@ -2059,7 +2059,8 @@ namespace FantasyCritic.Web.Controllers.API
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             var currentDate = _clock.GetToday();
             var trades = await _fantasyCriticService.GetTradesForLeague(leagueYear.Value, publishersInLeague);
-            var viewModels = trades.Select(x => new TradeViewModel(x, currentDate));
+            var inactiveTrades = trades.Where(x => !x.Status.IsActive);
+            var viewModels = inactiveTrades.Select(x => new TradeViewModel(x, currentDate, Maybe<Publisher>.None));
             return Ok(viewModels);
         }
 

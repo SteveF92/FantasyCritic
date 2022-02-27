@@ -4,14 +4,17 @@ using System.Linq;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Enums;
 using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {
     public class TradeViewModel
     {
-        public TradeViewModel(Trade domain, LocalDate currentDate)
+        public TradeViewModel(Trade domain, LocalDate currentDate, Maybe<Publisher> userPublisher)
         {
             TradeID = domain.TradeID;
             ProposerPublisherName = domain.Proposer.PublisherName;
@@ -30,6 +33,11 @@ namespace FantasyCritic.Web.Models.Responses
             CompletedTimestamp = domain.CompletedTimestamp;
             Status = domain.Status.Value;
             Error = domain.GetTradeError().GetValueOrDefault();
+
+            if (userPublisher.HasValue)
+            {
+                WaitingForUserResponse = domain.Status.Equals(TradeStatus.Proposed) && domain.CounterParty.User.Id == userPublisher.Value.User.Id;
+            }
         }
 
         public Guid TradeID { get; }
@@ -47,5 +55,6 @@ namespace FantasyCritic.Web.Models.Responses
         public Instant? CompletedTimestamp { get; }
         public string Status { get; }
         public string Error { get; }
+        public bool WaitingForUserResponse { get; }
     }
 }

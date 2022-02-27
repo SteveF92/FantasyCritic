@@ -63,6 +63,9 @@
               <li class="fake-link action" v-b-modal="'proposeTradeForm'" v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'">
                 Propose a Trade
               </li>
+              <li class="fake-link action" v-b-modal="'activeTradesModal'" v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'">
+                Active Trades
+              </li>
               <li class="fake-link action" v-b-modal="'dropGameForm'" v-show="leagueYear.playStatus.draftFinished">
                 Drop a Game
               </li>
@@ -189,6 +192,7 @@
         <currentBidsForm :leagueYear="leagueYear" :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidEdited="bidEdited" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
 
         <proposeTradeForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:tradeProposed="tradeProposed"></proposeTradeForm>
+        <activeTradesModal :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:tradeActioned="tradeActioned"></activeTradesModal>
 
         <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
         <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
@@ -236,6 +240,7 @@ import DropGameForm from '@/components/modules/modals/dropGameForm';
 import CurrentDropsForm from '@/components/modules/modals/currentDropsForm';
 import GameQueueForm from '@/components/modules/modals/gameQueueForm';
 import ProposeTradeForm from '@/components/modules/modals/proposeTradeForm';
+import ActiveTradesModal from '@/components/modules/modals/activeTradesModal';
 
 import EligibilityOverridesModal from '@/components/modules/modals/eligibilityOverridesModal';
 import TagOverridesModal from '@/components/modules/modals/tagOverridesModal';
@@ -317,7 +322,8 @@ export default {
     ManagerMessageModal,
     TransferManagerModal,
     CreatePublisherForUserForm,
-    ProposeTradeForm
+    ProposeTradeForm,
+    ActiveTradesModal
   },
   computed: {
     isPlusUser() {
@@ -366,6 +372,13 @@ export default {
     tradeProposed(tradeInfo) {
       let actionInfo = {
         message: 'Trade proposal has been made.',
+        fetchLeagueYear: true
+      };
+      this.$emit('actionTaken', actionInfo);
+    },
+    tradeActioned(tradeInfo) {
+      let actionInfo = {
+        message: tradeInfo.message,
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
