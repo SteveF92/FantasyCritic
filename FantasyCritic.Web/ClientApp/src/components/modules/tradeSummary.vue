@@ -1,9 +1,9 @@
 <template>
   <div>
-    <collapseCard>
+    <collapseCard :defaultVisible="defaultVisible">
       <div slot="header">Trade between {{trade.proposerPublisherName}} and {{trade.counterPartyPublisherName}} (Proposed on {{trade.proposedTimestamp | longDate }})</div>
       <div slot="body">
-        <div class="row text-white">
+        <div class="row">
           <div class="col-6">
             <h4>{{trade.proposerPublisherName}}</h4>
             <h5>{{trade.proposerDisplayName}}</h5>
@@ -27,6 +27,12 @@
             </div>
           </div>
         </div>
+        <div class="row">
+          <ul>
+            <li>Trade proposed by {{trade.proposerPublisherName}} at {{trade.proposedTimestamp | dateTime}}</li>
+            <li v-if="trade.status === 'Proposed'">Trade is waiting for approval from {{trade.counterPartyPublisherName}}</li>
+          </ul>
+        </div>
       </div>
     </collapseCard>
   </div>
@@ -37,7 +43,7 @@ import MasterGamePopover from '@/components/modules/masterGamePopover';
 import CollapseCard from '@/components/modules/collapseCard';
 
 export default {
-  props: ['trade', 'leagueYear', 'publisher'],
+  props: ['trade', 'leagueYear', 'publisher', 'defaultVisible'],
   components: {
     MasterGamePopover,
     CollapseCard
@@ -56,5 +62,9 @@ export default {
     margin-bottom: 3px;
     padding: 5px;
     border-radius: 10px;
+  }
+
+  div, p {
+    color: white;
   }
 </style>

@@ -7,7 +7,7 @@
       There are no active trades for this league. To see past trades, check the League History page.
     </div>
 
-    <tradeSummary v-for="activeTrade in activeTrades" :trade="activeTrade" :leagueYear="leagueYear" :publisher="publisher"></tradeSummary>
+    <tradeSummary v-for="activeTrade in activeTrades" :trade="activeTrade" :leagueYear="leagueYear" :publisher="publisher" defaultVisible></tradeSummary>
   </b-modal>
 </template>
 
