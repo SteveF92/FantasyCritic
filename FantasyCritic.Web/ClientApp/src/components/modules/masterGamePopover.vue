@@ -1,21 +1,21 @@
 <template>
-  <div>
-    <div v-if="masterGame">
+  <span>
+    <span v-if="masterGame">
       <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,0px' } }}">
-        <div class="popper">
+        <span class="popper">
           <masterGameSummary :masterGame="masterGame"></masterGameSummary>
 
-          <div class="close-button fake-link" v-on:click="closePopover">
+          <span class="close-button fake-link" v-on:click="closePopover">
             <font-awesome-icon icon="times" size="lg" :style="{ color: 'd6993a' }" />
-          </div>
-        </div>
+          </span>
+        </span>
 
         <span slot="reference" class="fake-link" :class="{ 'text-primary': !currentlyIneligible }">
           {{masterGame.gameName}}
         </span>
       </popper>
-    </div>
-  </div>
+    </span>
+  </span>
 </template>
 
 <script>
