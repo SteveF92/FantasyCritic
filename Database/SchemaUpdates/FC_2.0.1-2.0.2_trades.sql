@@ -12,9 +12,9 @@ INSERT INTO `tbl_meta_tradestatus` (`Status`) VALUES ('RejectedByCounterParty');
 INSERT INTO `tbl_meta_tradestatus` (`Status`) VALUES ('RejectedByManager');
 INSERT INTO `tbl_meta_tradestatus` (`Status`) VALUES ('Executed');
 
-CREATE TABLE `tbl_meta_tradestatus` (
-	`Party` VARCHAR(255) NOT NULL,
-	PRIMARY KEY (`Party`) USING BTREE
+CREATE TABLE `tbl_meta_tradingparty` (
+	`Name` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`Name`) USING BTREE
 )
 ENGINE=InnoDB
 ;
