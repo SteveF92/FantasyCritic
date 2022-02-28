@@ -378,7 +378,6 @@ export default {
     },
     tradeActioned(tradeInfo) {
       let actionInfo = {
-        message: tradeInfo.message,
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);

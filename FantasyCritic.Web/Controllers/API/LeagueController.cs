@@ -2012,6 +2012,12 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
+        public async Task<IActionResult> RejectTrade([FromBody] BasicTradeRequest request)
+        {
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> VoteOnTrade([FromBody] TradeVoteRequest request)
         {
             return Ok();

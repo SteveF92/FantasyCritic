@@ -426,11 +426,13 @@ export default {
         this.fetchLeague();
       }
 
-      let toast = this.$toasted.show(actionInfo.message, {
-        theme: 'primary',
-        position: 'top-right',
-        duration: 5000
-      });
+      if (actionInfo.message) {
+        let toast = this.$toasted.show(actionInfo.message, {
+          theme: 'primary',
+          position: 'top-right',
+          duration: 5000
+        });
+      }
     },
     changeLeagueYear(newVal) {
       var parameters = {

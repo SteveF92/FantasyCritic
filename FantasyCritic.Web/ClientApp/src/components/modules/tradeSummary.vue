@@ -27,11 +27,14 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <ul>
-            <li>Trade proposed by {{trade.proposerPublisherName}} at {{trade.proposedTimestamp | dateTime}}</li>
-            <li v-if="trade.status === 'Proposed'">Trade is waiting for approval from {{trade.counterPartyPublisherName}}</li>
-          </ul>
+        <div class="trade-status-list">
+          <div>• Trade proposed by {{trade.proposerPublisherName}} at {{trade.proposedTimestamp | dateTime}}</div>
+          <div v-if="trade.status === 'Proposed' && !isCounterParty">• Trade is waiting for approval from {{trade.counterPartyPublisherName}}</div>
+          <div class="alert alert-info" v-if="trade.status === 'Proposed' && isCounterParty">
+            This trade is waiting for your approval.
+            <b-button variant="success" v-on:click="acceptTrade">Accept</b-button>
+            <b-button variant="danger" v-on:click="rejectTrade">Reject</b-button>
+          </div>
         </div>
       </div>
     </collapseCard>
@@ -39,6 +42,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import CollapseCard from '@/components/modules/collapseCard';
 
@@ -53,6 +57,38 @@ export default {
 
     };
   },
+  computed: {
+    isProposer() {
+      return this.trade.proposerPublisherID === this.publisher.publisherID;
+    },
+    isCounterParty() {
+      return this.trade.counterPartyPublisherID === this.publisher.publisherID;
+    }
+  },
+  methods: {
+    acceptTrade() {
+      this.sendGenericTradeRequest('AcceptTrade');
+    },
+    rejectTrade() {
+      this.sendGenericTradeRequest('RejectTrade');
+    },
+    rescindTrade() {
+      this.sendGenericTradeRequest('RescindTrade');
+    },
+    sendGenericTradeRequest(endPoint) {
+      var model = {
+        tradeID: this.trade.tradeID
+      };
+      axios
+        .post(`/api/league/${endPoint}`, model)
+        .then(response => {
+          this.$emit('tradeActioned');
+        })
+        .catch(response => {
+
+        });
+    }
+  }
 };
 </script>
 <style scoped>
@@ -66,5 +102,9 @@ export default {
 
   div, p {
     color: white;
+  }
+
+  .trade-status-list div {
+      margin-bottom: 10px;
   }
 </style>

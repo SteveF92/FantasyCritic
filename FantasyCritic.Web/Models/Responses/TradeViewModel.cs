@@ -17,8 +17,10 @@ namespace FantasyCritic.Web.Models.Responses
         public TradeViewModel(Trade domain, LocalDate currentDate, Maybe<Publisher> userPublisher)
         {
             TradeID = domain.TradeID;
+            ProposerPublisherID = domain.Proposer.PublisherID;
             ProposerPublisherName = domain.Proposer.PublisherName;
             ProposerDisplayName = domain.Proposer.User.UserName;
+            CounterPartyPublisherID = domain.CounterParty.PublisherID;
             CounterPartyPublisherName = domain.CounterParty.PublisherName;
             CounterPartyDisplayName = domain.CounterParty.User.UserName;
 
@@ -41,8 +43,10 @@ namespace FantasyCritic.Web.Models.Responses
         }
 
         public Guid TradeID { get; }
+        public Guid ProposerPublisherID { get; }
         public string ProposerPublisherName { get; }
         public string ProposerDisplayName { get; }
+        public Guid CounterPartyPublisherID { get; }
         public string CounterPartyPublisherName { get; }
         public string CounterPartyDisplayName { get; }
         public IReadOnlyList<MasterGameYearWithCounterPickViewModel> ProposerSendGames { get; }
