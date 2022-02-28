@@ -32,7 +32,7 @@
           <div>• Trade accepted by {{trade.counterPartyPublisherName}} at {{trade.acceptedTimestamp | dateTime}}</div>
           <div class="alert alert-info" v-if="trade.status === 'Proposed' && !isCounterParty">
             Trade is waiting for approval from {{trade.counterPartyPublisherName}}.
-            <b-button variant="danger" v-on:click="rescindTrade">Rescind Trade</b-button>
+            <b-button  v-if="isProposer" variant="danger" v-on:click="rescindTrade">Rescind Trade</b-button>
           </div>
           <div class="alert alert-info" v-if="trade.status === 'Proposed' && isCounterParty">
             This trade is waiting for your approval.
