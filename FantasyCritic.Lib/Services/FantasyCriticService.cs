@@ -678,6 +678,11 @@ namespace FantasyCritic.Lib.Services
             return Result.Success();
         }
 
+        public Task<Maybe<Trade>> GetTrade(Guid tradeID)
+        {
+            return _fantasyCriticRepo.GetTrade(tradeID);
+        }
+
         public async Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear)
         {
             var trades = await _fantasyCriticRepo.GetTradesForLeague(leagueYear, publishersInLeagueForYear);
@@ -689,6 +694,54 @@ namespace FantasyCritic.Lib.Services
             var allTrades = await GetTradesForLeague(leagueYear, publishersInLeagueForYear);
             var activeTrades = allTrades.Where(x => x.Status.IsActive).ToList();
             return activeTrades;
+        }
+
+        public async Task<Result> RescindTrade(Trade trade)
+        {
+            if (!trade.Status.IsActive)
+            {
+                return Result.Failure("That trade cannot be rescinded as it is no longer active.");
+            }
+
+            var now = _clock.GetCurrentInstant();
+            await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Rescinded, null, now);
+            return Result.Success();
+        }
+
+        public async Task<Result> AcceptTrade(Trade trade)
+        {
+            if (!trade.Status.IsActive)
+            {
+                return Result.Failure("That trade cannot be accepted as it is no longer active.");
+            }
+
+            var now = _clock.GetCurrentInstant();
+            await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Accepted, now, null);
+            return Result.Success();
+        }
+
+        public async Task<Result> RejectTradeByCounterParty(Trade trade)
+        {
+            if (!trade.Status.IsActive)
+            {
+                return Result.Failure("That trade cannot be rejected as it is no longer active.");
+            }
+
+            var now = _clock.GetCurrentInstant();
+            await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByCounterParty, null, now);
+            return Result.Success();
+        }
+
+        public async Task<Result> RejectTradeByManager(Trade trade)
+        {
+            if (!trade.Status.IsActive)
+            {
+                return Result.Failure("That trade cannot be rejected as it is no longer active.");
+            }
+
+            var now = _clock.GetCurrentInstant();
+            await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByManager, null, now);
+            return Result.Success();
         }
     }
 }

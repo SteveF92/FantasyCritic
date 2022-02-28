@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Patreon;
@@ -623,6 +624,16 @@ namespace FantasyCritic.FakeRepo
         }
 
         public Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Maybe<Trade>> GetTrade(Guid tradeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp)
         {
             throw new NotImplementedException();
         }

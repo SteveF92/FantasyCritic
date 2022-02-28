@@ -148,5 +148,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task AddFormerPublisherGame(FormerPublisherGame formerPublisherGame);
         Task CreateTrade(Trade trade);
         Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear);
+        Task<Maybe<Trade>> GetTrade(Guid tradeID);
+        Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp);
     }
 }

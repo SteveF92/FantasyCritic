@@ -3,7 +3,7 @@
     <div class="alert alert-danger" v-show="errorInfo" role="alert">
       {{errorInfo}}
     </div>
-    <div class="alert alert-info" v-show="!activeTrades" role="alert">
+    <div class="alert alert-info" v-show="activeTrades.length === 0" role="alert">
       There are no active trades for this league. To see past trades, check the League History page.
     </div>
 
