@@ -777,6 +777,11 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> ExecuteTrade(Trade trade)
         {
+            if (trade.Status.Equals(TradeStatus.Accepted))
+            {
+                return Result.Failure("Only accepted trades can be executed.");
+            }
+
             var tradeError = trade.GetTradeError();
             if (tradeError.HasValue)
             {
