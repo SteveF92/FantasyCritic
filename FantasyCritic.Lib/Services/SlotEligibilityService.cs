@@ -106,79 +106,32 @@ namespace FantasyCritic.Lib.Services
             return new PublisherSlotAcquisitionResult(bestSlot.SlotNumber);
         }
 
-        public static int? GetTradeSlotResult(Publisher publisher, MasterGameYearWithCounterPick masterGameYearWithCounterPick, IEnumerable<int> newlyOpenSlots)
+        public static int? GetTradeSlotResult(Publisher publisher, MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> newlyOpenSlots)
         {
-            throw new NotImplementedException();
-            //string filledSpacesText = "User's game spaces are filled.";
-            //if (counterPick)
-            //{
-            //    filledSpacesText = "User's counter pick spaces are filled.";
-            //}
+            var slots = publisher.GetPublisherSlots();
+            var openSlots = slots.Where(x => x.CounterPick == masterGameYearWithCounterPick.CounterPick && x.PublisherGame.HasNoValue || newlyOpenSlots.Contains(x.SlotNumber)).OrderBy(x => x.SlotNumber).ToList();
+            if (!openSlots.Any())
+            {
+                return null;
+            }
 
-            //var slots = publisher.GetPublisherSlots();
-            //var openSlots = slots.Where(x => x.CounterPick == counterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
-            //if (eligibilityFactors.HasNoValue)
-            //{
-            //    //This is an unlinked master game
-            //    if (openSlots.Any())
-            //    {
-            //        var firstSlot = openSlots.First();
-            //        return new PublisherSlotAcquisitionResult(firstSlot.SlotNumber);
-            //    }
+            //At this point, there is an open slot. Which one is best?
+            //We want to check the special slots first, then the regular slots.
+            var openSpotsToCheckOrder = openSlots
+                .OrderByDescending(x => x.SpecialGameSlot.HasValue)
+                .ThenBy(x => x.SlotNumber).ToList();
+            foreach (var openSlot in openSpotsToCheckOrder)
+            {
+                var claimErrorsForSlot = GetClaimErrorsForSlot(openSlot, eligibilityFactors);
+                if (!claimErrorsForSlot.Any())
+                {
+                    return openSlot.SlotNumber;
+                }
+            }
 
-            //    if (validDropSlot.HasValue)
-            //    {
-            //        return new PublisherSlotAcquisitionResult(validDropSlot.Value);
-            //    }
-
-            //    if (watchListing)
-            //    {
-            //        return new PublisherSlotAcquisitionResult(1);
-            //    }
-
-            //    return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
-            //}
-
-            //var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors.Value);
-            //if (leagueYearClaimErrors.Any())
-            //{
-            //    //This game is not eligible in this league at all
-            //    return new PublisherSlotAcquisitionResult(leagueYearClaimErrors);
-            //}
-
-            ////At this point, the game is eligible in the league. Does the publisher have an open slot?
-            //if (!openSlots.Any())
-            //{
-            //    if (validDropSlot.HasValue)
-            //    {
-            //        return new PublisherSlotAcquisitionResult(validDropSlot.Value);
-            //    }
-
-            //    if (watchListing)
-            //    {
-            //        return new PublisherSlotAcquisitionResult(1);
-            //    }
-
-            //    return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
-            //}
-
-            ////At this point, the game is eligible in at least one currently open slot. Which one is best?
-            ////We want to check the special slots first, then the regular slots.
-            //var openSpotsToCheckOrder = openSlots
-            //    .OrderByDescending(x => x.SpecialGameSlot.HasValue)
-            //    .ThenBy(x => x.SlotNumber).ToList();
-            //foreach (var openSlot in openSpotsToCheckOrder)
-            //{
-            //    var claimErrorsForSlot = GetClaimErrorsForSlot(openSlot, eligibilityFactors.Value);
-            //    if (!claimErrorsForSlot.Any())
-            //    {
-            //        return new PublisherSlotAcquisitionResult(openSlot.SlotNumber);
-            //    }
-            //}
-
-            ////This game isn't eligible in any slots, so we will just take the first open one.
-            //var bestSlot = openSlots.First();
-            //return new PublisherSlotAcquisitionResult(bestSlot.SlotNumber);
+            //This game isn't eligible in any slots, so we will just take the first open one.
+            var bestSlot = openSlots.First();
+            return bestSlot.SlotNumber;
         }
 
         private static IReadOnlyList<ClaimError> GetClaimErrorsForLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
