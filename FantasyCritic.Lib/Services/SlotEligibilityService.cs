@@ -106,10 +106,10 @@ namespace FantasyCritic.Lib.Services
             return new PublisherSlotAcquisitionResult(bestSlot.SlotNumber);
         }
 
-        public static int? GetTradeSlotResult(Publisher publisher, MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> newlyOpenSlots)
+        public static int? GetTradeSlotResult(Publisher publisher, MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers)
         {
             var slots = publisher.GetPublisherSlots();
-            var openSlots = slots.Where(x => x.CounterPick == masterGameYearWithCounterPick.CounterPick && x.PublisherGame.HasNoValue || newlyOpenSlots.Contains(x.SlotNumber)).OrderBy(x => x.SlotNumber).ToList();
+            var openSlots = slots.Where(x => openSlotNumbers.Contains(x.SlotNumber)).OrderBy(x => x.SlotNumber).ToList();
             if (!openSlots.Any())
             {
                 return null;

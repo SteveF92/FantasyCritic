@@ -86,7 +86,7 @@ namespace FantasyCritic.Lib.Domain.Trades
             }
 
             var totalNumberStandardGameSlotsForLeague = Proposer.LeagueYear.Options.StandardGames;
-            var totalNumberCounterPickSlotsForLeague = Proposer.LeagueYear.Options.StandardGames;
+            var totalNumberCounterPickSlotsForLeague = Proposer.LeagueYear.Options.CounterPicks;
 
             var resultingProposerStandardGames = GetResultingGameCount(Proposer, ProposerMasterGames, CounterPartyMasterGames, false);
             var resultingCounterPartyStandardGames = GetResultingGameCount(CounterParty, ProposerMasterGames, CounterPartyMasterGames, false);
@@ -190,7 +190,7 @@ namespace FantasyCritic.Lib.Domain.Trades
                 {
                     continue;
                 }
-                if (ProposerMasterGames.Contains(masterGameWithCounterPick.Value))
+                if (CounterPartyMasterGames.Contains(masterGameWithCounterPick.Value))
                 {
                     formerGames.Add(counterPartyGame.GetFormerPublisherGame(completionTime, $"Traded to {Proposer.PublisherName}"));
                 }
@@ -205,31 +205,37 @@ namespace FantasyCritic.Lib.Domain.Trades
             var proposerGameDictionary = Proposer.PublisherGames.Where(x => x.MasterGame.HasValue).ToDictionary(x => x.GetMasterGameYearWithCounterPick().Value);
             var counterPartyGameDictionary = CounterParty.PublisherGames.Where(x => x.MasterGame.HasValue).ToDictionary(x => x.GetMasterGameYearWithCounterPick().Value);
 
-            List<PotentialPublisherSlot> newlyOpenProposerSlots = new List<PotentialPublisherSlot>();
+            List<PotentialPublisherSlot> newlyOpenProposerSlotNumbers = new List<PotentialPublisherSlot>();
             foreach (var game in ProposerMasterGames)
             {
                 var existingPublisherGame = proposerGameDictionary[game];
-                newlyOpenProposerSlots.Add(new PotentialPublisherSlot(existingPublisherGame.SlotNumber, game.CounterPick));
+                newlyOpenProposerSlotNumbers.Add(new PotentialPublisherSlot(existingPublisherGame.SlotNumber, game.CounterPick));
             }
-            List<PotentialPublisherSlot> newlyOpenCounterPartySlots = new List<PotentialPublisherSlot>();
+            List<PotentialPublisherSlot> newlyOpenCounterPartySlotNumbers = new List<PotentialPublisherSlot>();
             foreach (var game in CounterPartyMasterGames)
             {
                 var existingPublisherGame = counterPartyGameDictionary[game];
-                newlyOpenCounterPartySlots.Add(new PotentialPublisherSlot(existingPublisherGame.SlotNumber, game.CounterPick));
+                newlyOpenCounterPartySlotNumbers.Add(new PotentialPublisherSlot(existingPublisherGame.SlotNumber, game.CounterPick));
             }
+
+            var alreadyOpenProposerSlotNumbers = Proposer.GetPublisherSlots().Where(x => x.PublisherGame.HasNoValue).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
+            var alreadyOpenCounterPartySlotNumbers = CounterParty.GetPublisherSlots().Where(x => x.PublisherGame.HasNoValue).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
+            var allOpenProposerSlotNumbers = alreadyOpenProposerSlotNumbers.Concat(newlyOpenProposerSlotNumbers).Distinct().OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
+            var allOpenCounterPartySlotNumbers = alreadyOpenCounterPartySlotNumbers.Concat(newlyOpenCounterPartySlotNumbers).Distinct().OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
 
             List<PublisherGame> newPublisherGames = new List<PublisherGame>();
             foreach (var game in ProposerMasterGames)
             {
                 var existingPublisherGame = proposerGameDictionary[game];
                 var eligibilityFactors = CounterParty.LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
-                var newlyOpenSlots = newlyOpenCounterPartySlots.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
-                var slotResult = SlotEligibilityService.GetTradeSlotResult(CounterParty, game, eligibilityFactors, newlyOpenSlots);
+                var openSlotNumbers = allOpenCounterPartySlotNumbers.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
+                var slotResult = SlotEligibilityService.GetTradeSlotResult(CounterParty, game, eligibilityFactors, openSlotNumbers);
                 if (!slotResult.HasValue)
                 {
                     return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");
                 }
 
+                allOpenCounterPartySlotNumbers = allOpenCounterPartySlotNumbers.Where(x => !(x.SlotNumber == slotResult.Value && x.CounterPick == game.CounterPick)).ToList();
                 PublisherGame newPublisherGame = new PublisherGame(CounterParty.PublisherID, Guid.NewGuid(), game.MasterGameYear.MasterGame.GameName, completionTime,
                     game.CounterPick, existingPublisherGame.ManualCriticScore, existingPublisherGame.ManualWillNotRelease, existingPublisherGame.FantasyPoints, game.MasterGameYear, slotResult.Value, null, null, null, TradeID);
                 newPublisherGames.Add(newPublisherGame);
@@ -238,13 +244,14 @@ namespace FantasyCritic.Lib.Domain.Trades
             {
                 var existingPublisherGame = counterPartyGameDictionary[game];
                 var eligibilityFactors = Proposer.LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
-                var newlyOpenSlots = newlyOpenProposerSlots.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
-                var slotResult = SlotEligibilityService.GetTradeSlotResult(Proposer, game, eligibilityFactors, newlyOpenSlots);
+                var openSlotNumbers = allOpenProposerSlotNumbers.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
+                var slotResult = SlotEligibilityService.GetTradeSlotResult(Proposer, game, eligibilityFactors, openSlotNumbers);
                 if (!slotResult.HasValue)
                 {
                     return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");
                 }
 
+                allOpenProposerSlotNumbers = allOpenProposerSlotNumbers.Where(x => !(x.SlotNumber == slotResult.Value && x.CounterPick == game.CounterPick)).ToList();
                 PublisherGame newPublisherGame = new PublisherGame(Proposer.PublisherID, Guid.NewGuid(), game.MasterGameYear.MasterGame.GameName, completionTime,
                     game.CounterPick, existingPublisherGame.ManualCriticScore, existingPublisherGame.ManualWillNotRelease, existingPublisherGame.FantasyPoints, game.MasterGameYear, slotResult.Value, null, null, null, TradeID);
                 newPublisherGames.Add(newPublisherGame);
