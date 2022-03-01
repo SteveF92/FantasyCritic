@@ -67,10 +67,18 @@
               Trade is waiting for approval from '{{trade.counterPartyPublisherName}}'.
               <b-button v-if="isProposer" variant="danger" v-on:click="rescindTrade">Rescind Trade</b-button>
             </div>
+            <div class="alert alert-info" v-if="trade.status === 'Accepted' && isProposer">
+              Trade is has been accepted by '{{trade.counterPartyPublisherName}}', but you can still rescind it.
+              <b-button variant="danger" v-on:click="rescindTrade">Rescind Trade</b-button>
+            </div>
             <div class="alert alert-info" v-if="trade.status === 'Proposed' && isCounterParty">
               This trade is waiting for your approval.
               <b-button variant="success" v-on:click="acceptTrade">Accept</b-button>
               <b-button variant="danger" v-on:click="rejectTrade">Reject</b-button>
+            </div>
+            <div class="alert alert-info" v-if="trade.status === 'Accepted' && isCounterParty">
+              You accepted this trade, but you are free to change your mind.
+              <b-button variant="danger" v-on:click="rejectTrade">Reject Trade</b-button>
             </div>
 
             <div v-if="trade.status === 'Accepted'">
@@ -138,6 +146,11 @@
             </div>
           </div>
         </div>
+
+        <div class="alert alert-danger" v-show="errorInfo">
+          <h3>Error!</h3>
+          {{errorInfo}}
+        </div>
       </div>
     </collapseCard>
   </div>
@@ -163,7 +176,8 @@ export default {
         { key: 'displayName', label: 'Display Name', thClass: ['bg-primary'] },
         { key: 'approved', label: 'Vote', thClass: ['bg-primary'] },
         { key: 'comment', label: 'Comment', thClass: ['bg-primary'] },
-      ]
+      ],
+      errorInfo: ""
     };
   },
   computed: {
@@ -232,7 +246,7 @@ export default {
           this.$emit('tradeActioned');
         })
         .catch(response => {
-
+          this.errorInfo = response.response.data;
         });
     },
     vote(approved) {
@@ -248,7 +262,7 @@ export default {
           this.comment = "";
         })
         .catch(response => {
-
+          this.errorInfo = response.response.data;
         });
     },
     deleteVote() {
@@ -261,7 +275,7 @@ export default {
           this.$emit('tradeActioned');
         })
         .catch(response => {
-
+          this.errorInfo = response.response.data;
         });
     }
   }
