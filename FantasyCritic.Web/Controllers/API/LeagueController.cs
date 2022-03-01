@@ -2312,7 +2312,7 @@ namespace FantasyCritic.Web.Controllers.API
             var currentDate = _clock.GetToday();
             var trades = await _fantasyCriticService.GetTradesForLeague(leagueYear.Value, publishersInLeague);
             var inactiveTrades = trades.Where(x => !x.Status.IsActive);
-            var viewModels = inactiveTrades.Select(x => new TradeViewModel(x, currentDate, Maybe<Publisher>.None));
+            var viewModels = inactiveTrades.Select(x => new TradeViewModel(x, currentDate));
             return Ok(viewModels);
         }
 

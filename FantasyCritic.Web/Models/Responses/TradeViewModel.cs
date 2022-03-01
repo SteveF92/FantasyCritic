@@ -14,12 +14,14 @@ namespace FantasyCritic.Web.Models.Responses
 {
     public class TradeViewModel
     {
-        public TradeViewModel(Trade domain, LocalDate currentDate, Maybe<Publisher> userPublisher)
+        public TradeViewModel(Trade domain, LocalDate currentDate)
         {
             TradeID = domain.TradeID;
+            ProposerUserID = domain.Proposer.User.Id;
             ProposerPublisherID = domain.Proposer.PublisherID;
             ProposerPublisherName = domain.Proposer.PublisherName;
             ProposerDisplayName = domain.Proposer.User.UserName;
+            CounterPartyUserID = domain.CounterParty.User.Id;
             CounterPartyPublisherID = domain.CounterParty.PublisherID;
             CounterPartyPublisherName = domain.CounterParty.PublisherName;
             CounterPartyDisplayName = domain.CounterParty.User.UserName;
@@ -35,23 +37,15 @@ namespace FantasyCritic.Web.Models.Responses
             CompletedTimestamp = domain.CompletedTimestamp;
             Status = domain.Status.Value;
             Error = domain.GetTradeError().GetValueOrDefault();
-
-            var alreadyVotedUsers = domain.TradeVotes.Select(x => x.User.Id).ToHashSet();
-            if (userPublisher.HasValue)
-            {
-                var userIsProposer = domain.Proposer.User.Id == userPublisher.Value.User.Id;
-                var userIsCounterParty = domain.CounterParty.User.Id == userPublisher.Value.User.Id;
-                WaitingForUserResponse = domain.Status.Equals(TradeStatus.Proposed) && userIsCounterParty;
-                UserCanVote = !userIsProposer && !userIsCounterParty && !alreadyVotedUsers.Contains(userPublisher.Value.User.Id);
-            }
-
             Votes = domain.TradeVotes.Select(x => new TradeVoteViewModel(x)).ToList();
         }
 
         public Guid TradeID { get; }
+        public Guid ProposerUserID { get; }
         public Guid ProposerPublisherID { get; }
         public string ProposerPublisherName { get; }
         public string ProposerDisplayName { get; }
+        public Guid CounterPartyUserID { get; }
         public Guid CounterPartyPublisherID { get; }
         public string CounterPartyPublisherName { get; }
         public string CounterPartyDisplayName { get; }
@@ -65,8 +59,6 @@ namespace FantasyCritic.Web.Models.Responses
         public Instant? CompletedTimestamp { get; }
         public string Status { get; }
         public string Error { get; }
-        public bool WaitingForUserResponse { get; }
-        public bool UserCanVote { get; }
         public IReadOnlyList<TradeVoteViewModel> Votes { get; }
     }
 }

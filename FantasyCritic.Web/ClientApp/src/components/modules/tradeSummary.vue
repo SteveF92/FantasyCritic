@@ -40,43 +40,55 @@
             <b-button variant="danger" v-on:click="rejectTrade">Reject</b-button>
           </div>
           <div class="alert alert-info" v-if="trade.status === 'Accepted'">
-            League members can now vote on this trade, and the league manager can execute the trade.
-            <br />
-            <template v-if="trade.userCanVote">
-              Do you believe this trade is reasonable? A reasonable trade is beneficial to both parties. The following situations are cases where trades should not be approved:
-              <ul>
-                <li>A player is already losing and has agreed to a bad trade to help the other player beat a third player not involved in the trade.</li>
-                <li>A player is taking a bad trade this year with the understanding that they will be 'paid back' next year.</li>
-                <li>You suspect that there is some other "shady deal" going on, such as real money being exchanged behind the scenes.</li>
-              </ul>
-              However, you should <em>not</em> be considering whether or not this trade is good for <em>you.</em> If it's a fair trade for these two parties, you should vote to approve.
-              <br />
-              <div class="form-group">
-                <input type="text" v-model="comment" class="form-control" aria-describedby="emailHelp" placeholder="Enter a comment (Optional)">
-              </div>
-              <b-button variant="success" v-on:click="vote(true)">Approve</b-button>
-              <b-button variant="danger" v-on:click="vote(false)">Reject</b-button>
+            <template v-if="league.isManager">
+              League members can now vote on this trade, and you as league manager can either execute the trade or reject it.
+            </template>
+            <template v-else>
+              League members can now vote on this trade, and the league manager can execute or reject it.
             </template>
           </div>
+
+          <p>
+            When considering a trade, you should ask "is this trade reasonable?"
+            A reasonable trade is beneficial to both parties. The following situations are cases where trades should not be approved:
+            <ul>
+              <li>A player is already losing and has agreed to a bad trade to help the other player beat a third player not involved in the trade.</li>
+              <li>A player is taking a bad trade this year with the understanding that they will be 'paid back' next year.</li>
+              <li>You suspect that there is some other "shady deal" going on, such as real money being exchanged behind the scenes.</li>
+            </ul>
+            However, you should <em>not</em> be considering whether or not this trade is good for <em>you.</em> If it's a fair trade for these two parties, you should vote to approve.
+          </p>
+
+          <div v-if="canVote" class="alert alert-secondary">
+            <h5>Vote</h5>
+            <div class="form-group">
+              <input type="text" v-model="comment" class="form-control" aria-describedby="emailHelp" placeholder="Enter a comment (Optional)">
+            </div>
+            <b-button variant="success" v-on:click="vote(true)">Approve</b-button>
+            <b-button variant="danger" v-on:click="vote(false)">Reject</b-button>
+          </div>
+
           <div class="alert alert-info" v-if="trade.status === 'Accepted' && trade.votes.length === 0">
             There are no votes yet.
           </div>
 
-          <h4>Votes</h4>
-          <b-table-lite :items="trade.votes" :fields="voteFields"
-                        bordered responsive striped>
+          <div v-if="trade.votes.length > 0">
+            <h4>Votes</h4>
+            <b-table-lite :items="trade.votes" :fields="voteFields"
+                          bordered responsive striped>
 
-            <template v-slot:cell(approved)="data">
-              {{data.item.approved | approvedRejected}}
-            </template>
-
-            <template v-slot:cell(comment)="data">
-              {{data.item.comment}}
-              <template v-if="data.item.userID === userInfo.userID">
-                <b-button variant="danger" size="sm" v-on:click="deleteVote">Delete Vote</b-button>
+              <template v-slot:cell(approved)="data">
+                {{data.item.approved | approvedRejected}}
               </template>
-            </template>
-          </b-table-lite>
+
+              <template v-slot:cell(comment)="data">
+                {{data.item.comment}}
+                <template v-if="data.item.userID === userInfo.userID">
+                  <b-button variant="danger" size="sm" v-on:click="deleteVote">Delete Vote</b-button>
+                </template>
+              </template>
+            </b-table-lite>
+          </div>
         </div>
       </div>
     </collapseCard>
@@ -89,7 +101,7 @@ import MasterGamePopover from '@/components/modules/masterGamePopover';
 import CollapseCard from '@/components/modules/collapseCard';
 
 export default {
-  props: ['trade', 'leagueYear', 'publisher', 'defaultVisible'],
+  props: ['trade', 'league', 'leagueYear', 'publisher', 'defaultVisible'],
   components: {
     MasterGamePopover,
     CollapseCard
@@ -110,6 +122,20 @@ export default {
     },
     isCounterParty() {
       return this.trade.counterPartyPublisherID === this.publisher.publisherID;
+    },
+    isInLeagueButNotInvolved() {
+      let involvedParties = [
+        this.trade.proposerUserID,
+        this.trade.counterPartyUserID
+      ];
+      let allUserIDsInLeague = this.leagueYear.players.map(x => x.user.userID);
+      var nonInvolvedParties = _.difference(allUserIDsInLeague, involvedParties);
+      return nonInvolvedParties.includes(this.userInfo.userID);
+    },
+    canVote() {
+      let votedUserIDs = this.trade.votes.map(x => x.userID);
+      let alreadyVoted = votedUserIDs.includes(this.userInfo.userID);
+      return this.isInLeagueButNotInvolved && !alreadyVoted;
     },
     userInfo() {
       return this.$store.getters.userInfo;
@@ -148,6 +174,7 @@ export default {
         .post('/api/league/VoteOnTrade', model)
         .then(response => {
           this.$emit('tradeActioned');
+          this.comment = "";
         })
         .catch(response => {
 

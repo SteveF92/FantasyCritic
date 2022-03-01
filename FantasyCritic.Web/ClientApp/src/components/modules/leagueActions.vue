@@ -192,7 +192,7 @@
         <currentBidsForm :leagueYear="leagueYear" :currentBids="currentBids" :publisher="leagueYear.userPublisher" v-on:bidEdited="bidEdited" v-on:bidCanceled="bidCanceled" v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
 
         <proposeTradeForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:tradeProposed="tradeProposed"></proposeTradeForm>
-        <activeTradesModal :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:tradeActioned="tradeActioned"></activeTradesModal>
+        <activeTradesModal :league="league" :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:tradeActioned="tradeActioned"></activeTradesModal>
 
         <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
         <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
