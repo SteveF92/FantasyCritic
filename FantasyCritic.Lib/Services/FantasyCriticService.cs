@@ -784,20 +784,51 @@ namespace FantasyCritic.Lib.Services
             }
 
             var completionTime = _clock.GetCurrentInstant();
-            Result<IReadOnlyList<PublisherGame>> newPublisherGames = await GetNewPublisherGamesFromTrade(trade, completionTime);
-            if (newPublisherGames.IsFailure)
+            var newPublisherGamesResult = GetNewPublisherGamesFromTrade(trade, completionTime);
+            if (newPublisherGamesResult.IsFailure)
             {
-                return Result.Failure(newPublisherGames.Error);
+                return Result.Failure(newPublisherGamesResult.Error);
             }
 
-            var executedTrade = new ExecutedTrade(trade, completionTime, newPublisherGames.Value);
+            var executedTrade = new ExecutedTrade(trade, completionTime, newPublisherGamesResult.Value);
             await _fantasyCriticRepo.ExecuteTrade(executedTrade);
             return Result.Success();
         }
 
-        private async Task<Result<IReadOnlyList<PublisherGame>>> GetNewPublisherGamesFromTrade(Trade trade, Instant completionTime)
+        private static Result<IReadOnlyList<PublisherGame>> GetNewPublisherGamesFromTrade(Trade trade, Instant completionTime)
         {
-            throw new NotImplementedException();
+            var proposerGameDictionary = trade.Proposer.PublisherGames.Where(x => x.MasterGame.HasValue).ToDictionary(x => x.GetMasterGameYearWithCounterPick().Value);
+            var counterPartyGameDictionary = trade.CounterParty.PublisherGames.Where(x => x.MasterGame.HasValue).ToDictionary(x => x.GetMasterGameYearWithCounterPick().Value);
+
+            List<PublisherGame> newPublisherGames = new List<PublisherGame>();
+            foreach (var game in trade.ProposerMasterGames)
+            {
+                var existingPublisherGame = proposerGameDictionary[game];
+                var slotResult = SlotEligibilityService.GetTradeSlotResult(trade.CounterParty, game, new int[0]);
+                if (!slotResult.HasValue)
+                {
+                    return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");
+                }
+
+                PublisherGame newPublisherGame = new PublisherGame(trade.CounterParty.PublisherID, Guid.NewGuid(), game.MasterGameYear.MasterGame.GameName, completionTime,
+                    game.CounterPick, existingPublisherGame.ManualCriticScore, existingPublisherGame.ManualWillNotRelease, existingPublisherGame.FantasyPoints, game.MasterGameYear, slotResult.Value, null, null, null, trade.TradeID);
+                newPublisherGames.Add(newPublisherGame);
+            }
+            foreach (var game in trade.CounterPartyMasterGames)
+            {
+                var existingPublisherGame = counterPartyGameDictionary[game];
+                var slotResult = SlotEligibilityService.GetTradeSlotResult(trade.Proposer, game, new int[0]);
+                if (!slotResult.HasValue)
+                {
+                    return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");
+                }
+
+                PublisherGame newPublisherGame = new PublisherGame(trade.Proposer.PublisherID, Guid.NewGuid(), game.MasterGameYear.MasterGame.GameName, completionTime,
+                    game.CounterPick, existingPublisherGame.ManualCriticScore, existingPublisherGame.ManualWillNotRelease, existingPublisherGame.FantasyPoints, game.MasterGameYear, slotResult.Value, null, null, null, trade.TradeID);
+                newPublisherGames.Add(newPublisherGame);
+            }
+
+            return newPublisherGames;
         }
     }
 }

@@ -84,7 +84,41 @@ namespace FantasyCritic.Lib.Domain.Trades
                 return $"{CounterParty.PublisherName} no longer has all of the games involved in this trade.";
             }
 
+            var totalNumberStandardGameSlotsForLeague = Proposer.LeagueYear.Options.StandardGames;
+            var totalNumberCounterPickSlotsForLeague = Proposer.LeagueYear.Options.StandardGames;
+
+            var resultingProposerStandardGames = GetResultingGameCount(Proposer, ProposerMasterGames, CounterPartyMasterGames, false);
+            var resultingCounterPartyStandardGames = GetResultingGameCount(CounterParty, ProposerMasterGames, CounterPartyMasterGames, false);
+            var resultingProposerCounterPickGames = GetResultingGameCount(Proposer, ProposerMasterGames, CounterPartyMasterGames, true);
+            var resultingCounterPartyCounterPickGames = GetResultingGameCount(CounterParty, ProposerMasterGames, CounterPartyMasterGames, true);
+
+            if (resultingProposerStandardGames > totalNumberStandardGameSlotsForLeague)
+            {
+                return $"{Proposer.PublisherName} does not have enough standard slots available to complete this trade.";
+            }
+            if (resultingCounterPartyStandardGames > totalNumberStandardGameSlotsForLeague)
+            {
+                return $"{CounterParty.PublisherName} does not have enough standard slots available to complete this trade.";
+            }
+            if (resultingProposerCounterPickGames > totalNumberCounterPickSlotsForLeague)
+            {
+                return $"{Proposer.PublisherName} does not have enough counter pick slots available to complete this trade.";
+            }
+            if (resultingCounterPartyCounterPickGames > totalNumberCounterPickSlotsForLeague)
+            {
+                return $"{CounterParty.PublisherName} does not have enough counter pick slots available to complete this trade.";
+            }
+
             return Maybe<string>.None;
+        }
+
+        private static int GetResultingGameCount(Publisher publisher, IEnumerable<MasterGameYearWithCounterPick> gamesTradingAway, IEnumerable<MasterGameYearWithCounterPick> gamesAcquiring, bool counterPick)
+        {
+            var currentGamesCount = publisher.PublisherGames.Count(x => x.CounterPick == counterPick);
+            var gamesRemovedCount = gamesTradingAway.Count(x => x.CounterPick == counterPick);
+            var gamesAcquiredCount = gamesAcquiring.Count(x => x.CounterPick == counterPick);
+            var resultingNumberOfGames = currentGamesCount - gamesRemovedCount + gamesAcquiredCount;
+            return resultingNumberOfGames;
         }
 
         public IReadOnlyList<Publisher> GetUpdatedPublishers()

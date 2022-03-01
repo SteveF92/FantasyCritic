@@ -317,7 +317,7 @@ namespace FantasyCritic.Lib.Services
             {
                 var masterGameYear = masterGameYearDictionary[successBid.PickupBid.MasterGame.MasterGameID];
                 PublisherGame newPublisherGame = new PublisherGame(successBid.PickupBid.Publisher.PublisherID, Guid.NewGuid(), successBid.PickupBid.MasterGame.GameName, processingTime,
-                    successBid.PickupBid.CounterPick, null, false, null, masterGameYear, successBid.SlotNumber, null, null, successBid.PickupBid.BidAmount);
+                    successBid.PickupBid.CounterPick, null, false, null, masterGameYear, successBid.SlotNumber, null, null, successBid.PickupBid.BidAmount, null);
                 gamesToAdd.Add(newPublisherGame);
                 var affectedPublisher = publisherDictionary[successBid.PickupBid.Publisher.PublisherID];
                 affectedPublisher.AcquireGame(newPublisherGame, successBid.PickupBid.BidAmount);

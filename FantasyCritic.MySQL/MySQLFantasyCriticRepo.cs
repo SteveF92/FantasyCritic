@@ -512,7 +512,7 @@ namespace FantasyCritic.MySQL
                         {
                             var conditionalDropGame = await _masterGameRepo.GetMasterGameYear(bidEntity.ConditionalDropMasterGameID.Value, leagueYear.Year);
                             var fakePublisherGame = new PublisherGame(bidEntity.PublisherID, Guid.NewGuid(), conditionalDropGame.Value.MasterGame.GameName, bidEntity.Timestamp, 
-                                false, null, false, null, conditionalDropGame.Value, 0, null, null, null);
+                                false, null, false, null, conditionalDropGame.Value, 0, null, null, null, null);
                             conditionalDropPublisherGame = fakePublisherGame;
                         }
                     }

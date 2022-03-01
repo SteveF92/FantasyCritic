@@ -51,13 +51,14 @@ namespace FantasyCritic.MySQL.Entities
         public int? DraftPosition { get; set; }
         public int? OverallDraftPosition { get; set; }
         public uint? BidAmount { get; set; }
+        public Guid? AcquiredInTradeID { get; set; }
         public Instant RemovedTimestamp { get; set; }
         public string RemovedNote { get; set; }
 
         public FormerPublisherGame ToDomain(Maybe<MasterGameYear> masterGame)
         {
             PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick, 
-                ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, 0, DraftPosition, OverallDraftPosition, BidAmount);
+                ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, 0, DraftPosition, OverallDraftPosition, BidAmount, AcquiredInTradeID);
             return new FormerPublisherGame(domain, RemovedTimestamp, RemovedNote);
         }
     }
