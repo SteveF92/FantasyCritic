@@ -48,6 +48,7 @@ namespace FantasyCritic.Web.Models.Responses
             ManualWillNotRelease = publisherGame.ManualWillNotRelease;
             OverallDraftPosition = publisherGame.OverallDraftPosition;
             BidAmount = publisherGame.BidAmount;
+            AcquiredInTradeID = publisherGame.AcquiredInTradeID;
             SlotNumber = publisherGame.SlotNumber;
             CounterPicked = counterPicked;
             DropBlocked = counterPicked && counterPicksBlockDrops;
@@ -90,6 +91,7 @@ namespace FantasyCritic.Web.Models.Responses
             ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
             OverallDraftPosition = publisherGame.PublisherGame.OverallDraftPosition;
             BidAmount = publisherGame.PublisherGame.BidAmount;
+            AcquiredInTradeID = publisherGame.PublisherGame.AcquiredInTradeID;
             SlotNumber = publisherGame.PublisherGame.SlotNumber;
             RemovedTimestamp = publisherGame.RemovedTimestamp;
             RemovedNote = publisherGame.RemovedNote;
@@ -107,6 +109,7 @@ namespace FantasyCritic.Web.Models.Responses
         public MasterGameYearViewModel MasterGame { get; }
         public int? OverallDraftPosition { get; }
         public uint? BidAmount { get; }
+        public Guid? AcquiredInTradeID { get; }
         public int SlotNumber { get; }
 
         public bool Linked { get; }

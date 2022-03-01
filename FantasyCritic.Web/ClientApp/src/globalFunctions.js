@@ -56,5 +56,8 @@ export default {
       return '';
     }
     return moment(publisherGame.removedTimestamp).format('MMMM Do, YYYY');
+  },
+  formatLongDate(dateTime) {
+    return moment(String(dateTime)).local().format('MMMM Do, YYYY, h:mm:ss a')
   }
 }

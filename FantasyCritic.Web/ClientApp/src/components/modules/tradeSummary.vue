@@ -1,7 +1,7 @@
 <template>
   <div>
     <collapseCard :defaultVisible="defaultVisible">
-      <div slot="header">Trade between {{trade.proposerPublisherName}} and {{trade.counterPartyPublisherName}} (Proposed on {{trade.proposedTimestamp | longDate }})</div>
+      <div slot="header">{{header}}</div>
       <div slot="body">
         <div class="row">
           <div class="col-6">
@@ -35,6 +35,7 @@
           <div v-if="trade.status === 'RejectedByCounterParty'">• Trade rejected by '{{trade.counterPartyPublisherName}}' at {{trade.completedTimestamp | dateTime}}.</div>
           <div v-if="trade.status === 'RejectedByManager'">• Trade rejected by league manager at {{trade.completedTimestamp | dateTime}}.</div>
           <div v-if="trade.status === 'Rescinded'">• Trade rescinded by '{{trade.proposerPublisherName}}' at {{trade.completedTimestamp | dateTime}}.</div>
+          <div v-if="trade.status === 'Executed'">• Trade executed by league manager at {{trade.completedTimestamp | dateTime}}.</div>
 
 
           <div class="alert alert-info" v-if="trade.status === 'Proposed' && !isCounterParty">
@@ -103,7 +104,7 @@
 
               <template v-slot:cell(comment)="data">
                 {{data.item.comment}}
-                <template v-if="data.item.userID === userInfo.userID">
+                <template v-if="data.item.userID === userInfo.userID && !trade.completedTimestamp">
                   <b-button variant="danger" size="sm" v-on:click="deleteVote">Delete Vote</b-button>
                 </template>
               </template>
@@ -119,12 +120,14 @@
 import axios from 'axios';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
 import CollapseCard from '@/components/modules/collapseCard';
+import GlobalFunctions from '@/globalFunctions';
 
 export default {
   props: ['trade', 'league', 'leagueYear', 'publisher', 'defaultVisible'],
   components: {
     MasterGamePopover,
-    CollapseCard
+    CollapseCard,
+    GlobalFunctions
   },
   data() {
     return {
@@ -163,6 +166,18 @@ export default {
     userInfo() {
       return this.$store.getters.userInfo;
     },
+    header() {
+      let finalHeader = `Trade between ${this.trade.proposerPublisherName} and ${this.trade.counterPartyPublisherName}`;
+      if (this.trade.status === 'Proposed' || this.trade.status === 'Accepted') {
+        const proposedDate = GlobalFunctions.formatLongDate(this.trade.proposedTimestamp);
+        finalHeader += ` (Proposed on ${proposedDate})`;
+      } else {
+        const completedDate = GlobalFunctions.formatLongDate(this.trade.completedTimestamp);
+        finalHeader += ` (${_.startCase(this.trade.status)} on ${completedDate})`;
+      }
+
+      return finalHeader;
+    }
   },
   methods: {
     acceptTrade() {

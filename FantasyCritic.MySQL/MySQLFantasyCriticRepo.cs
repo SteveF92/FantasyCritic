@@ -2124,7 +2124,7 @@ namespace FantasyCritic.MySQL
                     var allPublisherIDsToAdjust = executedTrade.UpdatedPublishers.Select(x => x.PublisherID);
                     await MakePublisherGameSlotsConsistent(allPublisherIDsToAdjust, connection, transaction);
 
-                    await transaction.RollbackAsync();
+                    await transaction.CommitAsync();
                 }
             }
         }
