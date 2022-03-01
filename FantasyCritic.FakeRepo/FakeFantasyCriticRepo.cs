@@ -648,7 +648,7 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
-        public Task ExecuteTrade(Trade trade, IEnumerable<LeagueAction> leagueActions, Instant completedTimestamp)
+        public Task ExecuteTrade(ExecutedTrade executedTrade)
         {
             throw new NotImplementedException();
         }

@@ -783,11 +783,21 @@ namespace FantasyCritic.Lib.Services
                 return Result.Failure(tradeError.Value);
             }
 
-            var actionTime = _clock.GetCurrentInstant();
-            var actions = trade.GetActions(actionTime);
+            var completionTime = _clock.GetCurrentInstant();
+            Result<IReadOnlyList<PublisherGame>> newPublisherGames = await GetNewPublisherGamesFromTrade(trade, completionTime);
+            if (newPublisherGames.IsFailure)
+            {
+                return Result.Failure(newPublisherGames.Error);
+            }
 
-            await _fantasyCriticRepo.ExecuteTrade(trade, actions, actionTime);
+            var executedTrade = new ExecutedTrade(trade, completionTime, newPublisherGames.Value);
+            await _fantasyCriticRepo.ExecuteTrade(executedTrade);
             return Result.Success();
+        }
+
+        private async Task<Result<IReadOnlyList<PublisherGame>>> GetNewPublisherGamesFromTrade(Trade trade, Instant completionTime)
+        {
+            throw new NotImplementedException();
         }
     }
 }

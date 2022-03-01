@@ -2104,15 +2104,26 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task ExecuteTrade(Trade trade, IEnumerable<LeagueAction> leagueActions, Instant completedTimestamp)
+        public async Task ExecuteTrade(ExecutedTrade executedTrade)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await EditTradeStatus(trade, TradeStatus.Executed, null, completedTimestamp, connection, transaction);
-                    await AddLeagueActions(leagueActions, connection, transaction);
+                    await EditTradeStatus(executedTrade.Trade, TradeStatus.Executed, null, executedTrade.CompletionTime, connection, transaction);
+                    await AddLeagueActions(executedTrade.LeagueActions, connection, transaction);
+
+                    await UpdatePublisherBudgetsAndDroppedGames(executedTrade.UpdatedPublishers, connection, transaction);
+
+                    var flatRemovedPublisherGames = executedTrade.RemovedPublisherGames.Select(x => x.PublisherGame).ToList();
+                    await DeletePublisherGames(flatRemovedPublisherGames, connection, transaction);
+                    await AddFormerPublisherGames(executedTrade.RemovedPublisherGames, connection, transaction);
+                    await AddPublisherGames(executedTrade.AddedPublisherGames, connection, transaction);
+
+                    var allPublisherIDsToAdjust = executedTrade.UpdatedPublishers.Select(x => x.PublisherID);
+                    await MakePublisherGameSlotsConsistent(allPublisherIDsToAdjust, connection, transaction);
+
                     await transaction.CommitAsync();
                 }
             }

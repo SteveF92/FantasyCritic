@@ -87,6 +87,19 @@ namespace FantasyCritic.Lib.Domain.Trades
             return Maybe<string>.None;
         }
 
+        public IReadOnlyList<Publisher> GetUpdatedPublishers()
+        {
+            Proposer.ObtainBudget(CounterPartyBudgetSendAmount);
+            Proposer.SpendBudget(ProposerBudgetSendAmount);
+            CounterParty.ObtainBudget(ProposerBudgetSendAmount);
+            CounterParty.SpendBudget(CounterPartyBudgetSendAmount);
+            return new List<Publisher>()
+            {
+                Proposer,
+                CounterParty
+            };
+        }
+
         public IReadOnlyList<LeagueAction> GetActions(Instant actionTime)
         {
             var proposerAction = GetActionForPublisher(Proposer, actionTime, CounterPartyMasterGames, CounterPartyBudgetSendAmount);
@@ -118,6 +131,37 @@ namespace FantasyCritic.Lib.Domain.Trades
             string finalString = string.Join("\n", acquisitions.Select(x => $"• {x}"));
             var proposerAction = new LeagueAction(publisher, actionTime, "Trade Executed", finalString, true);
             return proposerAction;
+        }
+
+        public IReadOnlyList<FormerPublisherGame> GetRemovedPublisherGames(Instant completionTime)
+        {
+            List<FormerPublisherGame> formerGames = new List<FormerPublisherGame>();
+            foreach (var proposerGame in Proposer.PublisherGames)
+            {
+                var masterGameWithCounterPick = proposerGame.GetMasterGameYearWithCounterPick();
+                if (masterGameWithCounterPick.HasNoValue)
+                {
+                    continue;
+                }
+                if (ProposerMasterGames.Contains(masterGameWithCounterPick.Value))
+                {
+                    formerGames.Add(proposerGame.GetFormerPublisherGame(completionTime, $"Traded to {CounterParty.PublisherName}"));
+                }
+            }
+            foreach (var counterPartyGame in CounterParty.PublisherGames)
+            {
+                var masterGameWithCounterPick = counterPartyGame.GetMasterGameYearWithCounterPick();
+                if (masterGameWithCounterPick.HasNoValue)
+                {
+                    continue;
+                }
+                if (ProposerMasterGames.Contains(masterGameWithCounterPick.Value))
+                {
+                    formerGames.Add(counterPartyGame.GetFormerPublisherGame(completionTime, $"Traded to {Proposer.PublisherName}"));
+                }
+            }
+
+            return formerGames;
         }
     }
 }

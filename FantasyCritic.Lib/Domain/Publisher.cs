@@ -192,6 +192,16 @@ namespace FantasyCritic.Lib.Domain
             Budget -= bidAmount;
         }
 
+        public void SpendBudget(uint budget)
+        {
+            Budget -= budget;
+        }
+
+        public void ObtainBudget(uint budget)
+        {
+            Budget += budget;
+        }
+
         public Result CanDropGame(bool willRelease)
         {
             var leagueOptions = LeagueYear.Options;
