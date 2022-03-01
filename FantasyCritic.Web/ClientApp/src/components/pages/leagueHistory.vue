@@ -11,7 +11,7 @@
         You are viewing a private league.
       </div>
 
-      <div v-if="league">
+      <div v-if="league && leagueYear">
         <h1>League History: {{league.leagueName}} (Year {{year}})</h1>
         <hr />
         <div v-if="leagueYear && leagueYear.managerMessages && leagueYear.managerMessages.length > 0">
@@ -34,6 +34,13 @@
               </div>
             </collapseCard>
           </div>
+        </div>
+
+        <div v-if="trades && trades.length > 0">
+          <h2>Trades</h2>
+          <tradeSummary v-for="trade in trades" v-bind:key="trade.tradeID" :trade="trade"
+                        :league="league" :leagueYear="leagueYear" :publisher="leagueYear.userPublisher">
+          </tradeSummary>
         </div>
 
         <h2>Full Actions History</h2>
@@ -67,6 +74,7 @@ import Vue from 'vue';
 import axios from 'axios';
 import LeagueActionSet from '@/components/modules/leagueActionSet';
 import CollapseCard from '@/components/modules/collapseCard';
+import TradeSummary from '@/components/modules/tradeSummary';
 
 export default {
   data() {
@@ -76,6 +84,7 @@ export default {
       leagueYear: null,
       leagueActions: [],
       leagueActionSets: [],
+      trades: [],
       actionFields: [
         { key: 'publisherName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
@@ -91,7 +100,8 @@ export default {
   },
   components: {
     LeagueActionSet,
-    CollapseCard
+    CollapseCard,
+    TradeSummary
   },
   props: ['leagueid', 'year'],
   methods: {
@@ -113,6 +123,14 @@ export default {
         .get('/api/League/GetLeagueActionSets?leagueID=' + this.leagueid + '&year=' + this.year)
         .then(response => {
           this.leagueActionSets = response.data;
+        })
+        .catch(returnedError => (this.error = returnedError));
+    },
+    fetchTrades() {
+      axios
+        .get('/api/League/TradeHistory?leagueID=' + this.leagueid + '&year=' + this.year)
+        .then(response => {
+          this.trades = response.data;
         })
         .catch(returnedError => (this.error = returnedError));
     },
@@ -158,6 +176,7 @@ export default {
     this.fetchLeagueYear();
     this.fetchLeagueActions();
     this.fetchLeagueActionSets();
+    this.fetchTrades();
   }
 };
 </script>

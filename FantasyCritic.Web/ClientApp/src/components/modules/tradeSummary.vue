@@ -29,8 +29,14 @@
         </div>
         <div class="trade-status-list">
           <h5>Action Log</h5>
-          <div>• Trade proposed by '{{trade.proposerPublisherName}}' at {{trade.proposedTimestamp | dateTime}}</div>
-          <div v-if="trade.acceptedTimestamp">• Trade accepted by '{{trade.counterPartyPublisherName}}' at {{trade.acceptedTimestamp | dateTime}}</div>
+          <div>• Trade proposed by '{{trade.proposerPublisherName}}' at {{trade.proposedTimestamp | dateTime}}.</div>
+          <div v-if="trade.acceptedTimestamp">• Trade accepted by '{{trade.counterPartyPublisherName}}' at {{trade.acceptedTimestamp | dateTime}}.</div>
+
+          <div v-if="trade.status === 'RejectedByCounterParty'">• Trade rejected by '{{trade.counterPartyPublisherName}}' at {{trade.completedTimestamp | dateTime}}.</div>
+          <div v-if="trade.status === 'RejectedByManager'">• Trade rejected by league manager at {{trade.completedTimestamp | dateTime}}.</div>
+          <div v-if="trade.status === 'Rescinded'">• Trade rescinded by '{{trade.proposerPublisherName}}' at {{trade.completedTimestamp | dateTime}}.</div>
+
+
           <div class="alert alert-info" v-if="trade.status === 'Proposed' && !isCounterParty">
             Trade is waiting for approval from '{{trade.counterPartyPublisherName}}'.
             <b-button v-if="isProposer" variant="danger" v-on:click="rescindTrade">Rescind Trade</b-button>
@@ -49,7 +55,7 @@
             </template>
           </div>
 
-          <p>
+          <p v-if="tradeIsActive">
             When considering a trade, you should ask "is this trade reasonable?"
             A reasonable trade is beneficial to both parties. The following situations are cases where trades should not be approved:
             <ul>
@@ -69,7 +75,7 @@
             <b-button variant="danger" v-on:click="vote(false)">Reject</b-button>
           </div>
 
-          <div class="alert alert-warning" v-if="league.isManager">
+          <div class="alert alert-warning" v-if="league.isManager && tradeIsActive">
             <p>
               As league manager, you ultimately make the choice to execute or reject the trade. If you reject it, the full record of the trade goes to the league history page, but nothing else happens.
               If you execute the trade, the games and budget (if applicable) will change hands immediately, and again, the full record will be visible on the league history page.
@@ -146,10 +152,13 @@ export default {
       var nonInvolvedParties = _.difference(allUserIDsInLeague, involvedParties);
       return nonInvolvedParties.includes(this.userInfo.userID);
     },
+    tradeIsActive() {
+      return this.trade.status === 'Proposed' || this.trade.status === 'Accepted';
+    },
     canVote() {
       let votedUserIDs = this.trade.votes.map(x => x.userID);
       let alreadyVoted = votedUserIDs.includes(this.userInfo.userID);
-      return this.isInLeagueButNotInvolved && !alreadyVoted;
+      return this.isInLeagueButNotInvolved && !alreadyVoted && this.trade.status === 'Accepted';
     },
     userInfo() {
       return this.$store.getters.userInfo;
