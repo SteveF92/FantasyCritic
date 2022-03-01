@@ -7,7 +7,7 @@
           <div class="col-6">
             <h4>{{trade.proposerPublisherName}}</h4>
             <h5>Player: {{trade.proposerDisplayName}}</h5>
-            <h5>Receives</h5>
+            <h5>{{recievesVerbiage}}</h5>
             <div v-for="game in trade.counterPartySendGames" class="component-row">
               • <masterGamePopover :masterGame="game.masterGameYear"></masterGamePopover>
             </div>
@@ -18,7 +18,7 @@
           <div class="col-6">
             <h4>{{trade.counterPartyPublisherName}}</h4>
             <h5>Player: {{trade.counterPartyDisplayName}}</h5>
-            <h5>Receives</h5>
+            <h5>{{recievesVerbiage}}</h5>
             <div v-for="game in trade.proposerSendGames" class="component-row">
               • <masterGamePopover :masterGame="game.masterGameYear"></masterGamePopover>
             </div>
@@ -181,6 +181,17 @@ export default {
     };
   },
   computed: {
+    recievesVerbiage() {
+      if (this.tradeIsActive) {
+        return 'Receives';
+      }
+
+      if (this.trade.status === 'Executed') {
+        return 'Received';
+      }
+
+      return 'Would have Received';
+    },
     isProposer() {
       return this.trade.proposerPublisherID === this.publisher.publisherID;
     },
