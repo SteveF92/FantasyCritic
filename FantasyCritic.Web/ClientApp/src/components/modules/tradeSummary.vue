@@ -28,6 +28,7 @@
           </div>
         </div>
         <div class="trade-status-list">
+          <h5>Action Log</h5>
           <div>• Trade proposed by '{{trade.proposerPublisherName}}' at {{trade.proposedTimestamp | dateTime}}</div>
           <div v-if="trade.acceptedTimestamp">• Trade accepted by '{{trade.counterPartyPublisherName}}' at {{trade.acceptedTimestamp | dateTime}}</div>
           <div class="alert alert-info" v-if="trade.status === 'Proposed' && !isCounterParty">
@@ -41,7 +42,7 @@
           </div>
           <div class="alert alert-info" v-if="trade.status === 'Accepted'">
             <template v-if="league.isManager">
-              League members can now vote on this trade, and you as league manager can either execute the trade or reject it.
+              League members can now vote on this trade.
             </template>
             <template v-else>
               League members can now vote on this trade, and the league manager can execute or reject it.
@@ -66,6 +67,19 @@
             </div>
             <b-button variant="success" v-on:click="vote(true)">Approve</b-button>
             <b-button variant="danger" v-on:click="vote(false)">Reject</b-button>
+          </div>
+
+          <div class="alert alert-warning" v-if="league.isManager">
+            <p>
+              As league manager, you ultimately make the choice to execute or reject the trade. If you reject it, the full record of the trade goes to the league history page, but nothing else happens.
+              If you execute the trade, the games and budget (if applicable) will change hands immediately, and again, the full record will be visible on the league history page.
+            </p>
+            <p>
+              You should, however, weigh your leagues votes when making your decision.
+            </p>
+
+            <b-button variant="success" v-on:click="executeTrade">Execute Trade</b-button>
+            <b-button variant="danger" v-on:click="managerRejectTrade">Reject Trade</b-button>
           </div>
 
           <div class="alert alert-info" v-if="trade.status === 'Accepted' && trade.votes.length === 0">
@@ -143,20 +157,26 @@ export default {
   },
   methods: {
     acceptTrade() {
-      this.sendGenericTradeRequest('AcceptTrade');
+      this.sendGenericTradeRequest('league/AcceptTrade');
     },
     rejectTrade() {
-      this.sendGenericTradeRequest('RejectTrade');
+      this.sendGenericTradeRequest('league/RejectTrade');
     },
     rescindTrade() {
-      this.sendGenericTradeRequest('RescindTrade');
+      this.sendGenericTradeRequest('league/RescindTrade');
+    },
+    executeTrade() {
+      this.sendGenericTradeRequest('leagueManager/ExecuteTrade');
+    },
+    managerRejectTrade() {
+      this.sendGenericTradeRequest('leagueManager/RejectTrade');
     },
     sendGenericTradeRequest(endPoint) {
       var model = {
         tradeID: this.trade.tradeID
       };
       axios
-        .post(`/api/league/${endPoint}`, model)
+        .post(`/api/${endPoint}`, model)
         .then(response => {
           this.$emit('tradeActioned');
         })

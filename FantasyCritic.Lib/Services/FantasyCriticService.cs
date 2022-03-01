@@ -768,5 +768,10 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.DeleteTradeVote(trade, user);
             return Result.Success();
         }
+
+        public async Task<Result> ExecuteTrade(Trade trade)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

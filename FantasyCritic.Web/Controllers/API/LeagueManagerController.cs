@@ -1878,12 +1878,104 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> RejectTrade([FromBody] BasicTradeRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.ActionProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+            if (trade.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            if (trade.Value.Proposer.LeagueYear.League.LeagueManager.Id != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == trade.Value.Proposer.LeagueYear.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            if (supportedYear.Finished)
+            {
+                return BadRequest("That year is already finished");
+            }
+
+            Result result = await _fantasyCriticService.RejectTradeByManager(trade.Value);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
             return Ok();
         }
 
         [HttpPost]
         public async Task<IActionResult> ExecuteTrade([FromBody] BasicTradeRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.ActionProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+            if (trade.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            if (trade.Value.Proposer.LeagueYear.League.LeagueManager.Id != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == trade.Value.Proposer.LeagueYear.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            if (supportedYear.Finished)
+            {
+                return BadRequest("That year is already finished");
+            }
+
+            Result result = await _fantasyCriticService.ExecuteTrade(trade.Value);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
             return Ok();
         }
     }
