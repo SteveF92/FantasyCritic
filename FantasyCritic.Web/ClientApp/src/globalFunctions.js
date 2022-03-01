@@ -43,6 +43,8 @@ export default {
       type = `Drafted ${this.ordinal_suffix_of(publisherGame.overallDraftPosition)}`;
     } else if (publisherGame.bidAmount || publisherGame.bidAmount === 0) {
       type = 'Picked up for $' + publisherGame.bidAmount;
+    } else if (publisherGame.acquiredInTradeID) {
+      type = 'Acquired in a trade';
     } else {
       type = 'Acquired';
     }

@@ -77,3 +77,11 @@ CREATE TABLE `tbl_league_tradevote` (
 )
 ENGINE=InnoDB
 ;
+
+ALTER TABLE `tbl_league_publishergame`
+	ADD COLUMN `AcquiredInTradeID` CHAR(36) NULL DEFAULT NULL AFTER `BidAmount`,
+	ADD CONSTRAINT `FK_tbl_league_publishergame_tbl_league_trade` FOREIGN KEY (`AcquiredInTradeID`) REFERENCES `tbl_league_trade` (`TradeID`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE `tbl_league_formerpublishergame`
+	ADD COLUMN `AcquiredInTradeID` CHAR(36) NULL DEFAULT NULL AFTER `BidAmount`,
+	ADD CONSTRAINT `FK_tbl_league_formerpublishergame_tbl_league_trade` FOREIGN KEY (`AcquiredInTradeID`) REFERENCES `tbl_league_trade` (`TradeID`) ON UPDATE NO ACTION ON DELETE NO ACTION;
