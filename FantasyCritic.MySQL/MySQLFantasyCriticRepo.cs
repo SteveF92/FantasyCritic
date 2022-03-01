@@ -2077,11 +2077,6 @@ namespace FantasyCritic.MySQL
             await connection.ExecuteAsync(sql, paramsObject, transaction);
         }
 
-        private Task MakePublisherGameSlotsConsistent(Guid publisherID, MySqlConnection connection, MySqlTransaction transaction)
-        {
-            return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, connection, transaction);
-        }
-
         public async Task AddTradeVote(TradeVote vote)
         {
             TradeVoteEntity entity = new TradeVoteEntity(vote);
@@ -2107,6 +2102,25 @@ namespace FantasyCritic.MySQL
             {
                 await connection.ExecuteAsync(sql, paramsObject);
             }
+        }
+
+        public async Task ExecuteTrade(Trade trade, IEnumerable<LeagueAction> leagueActions, Instant completedTimestamp)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    await EditTradeStatus(trade, TradeStatus.Executed, null, completedTimestamp, connection, transaction);
+                    await AddLeagueActions(leagueActions, connection, transaction);
+                    await transaction.CommitAsync();
+                }
+            }
+        }
+
+        private Task MakePublisherGameSlotsConsistent(Guid publisherID, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, connection, transaction);
         }
 
         private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, MySqlConnection connection, MySqlTransaction transaction)

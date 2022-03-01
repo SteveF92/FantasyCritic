@@ -668,12 +668,18 @@ namespace FantasyCritic.Lib.Services
                 return Result.Failure("All games in a trade must be linked to a master game.");
             }
 
-            Trade validTrade = new Trade(Guid.NewGuid(), proposer, counterParty, proposerPublisherGamesWithMasterGames,
+            Trade trade = new Trade(Guid.NewGuid(), proposer, counterParty, proposerPublisherGamesWithMasterGames,
                 counterPartyPublisherGamesWithMasterGames,
                 proposerBudgetSendAmount, counterPartyBudgetSendAmount, message, _clock.GetCurrentInstant(), null, null, 
                 new List<TradeVote>(), TradeStatus.Proposed);
 
-            await _fantasyCriticRepo.CreateTrade(validTrade);
+            var tradeError = trade.GetTradeError();
+            if (tradeError.HasValue)
+            {
+                return Result.Failure(tradeError.Value);
+            }
+
+            await _fantasyCriticRepo.CreateTrade(trade);
 
             return Result.Success();
         }
@@ -771,7 +777,17 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<Result> ExecuteTrade(Trade trade)
         {
-            throw new NotImplementedException();
+            var tradeError = trade.GetTradeError();
+            if (tradeError.HasValue)
+            {
+                return Result.Failure(tradeError.Value);
+            }
+
+            var actionTime = _clock.GetCurrentInstant();
+            var actions = trade.GetActions(actionTime);
+
+            await _fantasyCriticRepo.ExecuteTrade(trade, actions, actionTime);
+            return Result.Success();
         }
     }
 }

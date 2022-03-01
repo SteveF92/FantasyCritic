@@ -152,5 +152,6 @@ namespace FantasyCritic.Lib.Interfaces
         Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp);
         Task AddTradeVote(TradeVote tradeVote);
         Task DeleteTradeVote(Trade trade, FantasyCriticUser user);
+        Task ExecuteTrade(Trade trade, IEnumerable<LeagueAction> leagueActions, Instant completedTimestamp);
     }
 }

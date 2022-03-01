@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Enums;
 using NodaTime;
 using FantasyCritic.Lib.Extensions;
@@ -84,6 +85,39 @@ namespace FantasyCritic.Lib.Domain.Trades
             }
 
             return Maybe<string>.None;
+        }
+
+        public IReadOnlyList<LeagueAction> GetActions(Instant actionTime)
+        {
+            var proposerAction = GetActionForPublisher(Proposer, actionTime, CounterPartyMasterGames, CounterPartyBudgetSendAmount);
+            var counterPartyAction = GetActionForPublisher(CounterParty, actionTime, ProposerMasterGames, ProposerBudgetSendAmount);
+            return new List<LeagueAction>()
+            {
+                proposerAction,
+                counterPartyAction
+            };
+        }
+
+        private static LeagueAction GetActionForPublisher(Publisher publisher, Instant actionTime, IEnumerable<MasterGameYearWithCounterPick> games, uint budgetSend)
+        {
+            List<string> acquisitions = new List<string>();
+            foreach (var game in games)
+            {
+                var counterPickString = "";
+                if (game.CounterPick)
+                {
+                    counterPickString = " (Counter Pick)";
+                }
+                acquisitions.Add($"Acquired {game.MasterGameYear.MasterGame.GameName}{counterPickString}.");
+            }
+            if (budgetSend > 0)
+            {
+                acquisitions.Add($"Acquired ${budgetSend} of budget.");
+            }
+
+            string finalString = string.Join("\n", acquisitions.Select(x => $"• {x}"));
+            var proposerAction = new LeagueAction(publisher, actionTime, "Trade Executed", finalString, true);
+            return proposerAction;
         }
     }
 }
