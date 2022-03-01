@@ -2082,6 +2082,33 @@ namespace FantasyCritic.MySQL
             return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, connection, transaction);
         }
 
+        public async Task AddTradeVote(TradeVote vote)
+        {
+            TradeVoteEntity entity = new TradeVoteEntity(vote);
+
+            string sql =
+                "insert into tbl_league_tradevote (TradeID,UserID,Approved,Comment,Timestamp) VALUES " +
+                "(@TradeID,@UserID,@Approved,@Comment,@Timestamp);";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, entity);
+            }
+        }
+
+        public async Task DeleteTradeVote(Trade trade, FantasyCriticUser user)
+        {
+            string sql = "delete from tbl_league_tradevote where TradeID = @tradeID AND UserID = @userID;";
+            var paramsObject = new
+            {
+                tradeID = trade.TradeID,
+                userID = user.Id
+            };
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, paramsObject);
+            }
+        }
+
         private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, MySqlConnection connection, MySqlTransaction transaction)
         {
             var publishers = await GetPublishers(publisherIDs, connection, transaction);

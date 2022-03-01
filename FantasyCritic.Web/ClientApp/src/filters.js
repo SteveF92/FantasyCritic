@@ -58,6 +58,13 @@ Vue.filter('yesNo', function (value) {
   return 'No';
 });
 
+Vue.filter('approvedRejected', function (value) {
+  if (value) {
+    return 'Approved';
+  }
+  return 'Rejected';
+});
+
 Vue.filter('percent', function(value, decimals) {
   if (!value) value = 0;
   if (!decimals) decimals = 0;

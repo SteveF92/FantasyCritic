@@ -150,5 +150,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear);
         Task<Maybe<Trade>> GetTrade(Guid tradeID);
         Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp);
+        Task AddTradeVote(TradeVote tradeVote);
+        Task DeleteTradeVote(Trade trade, FantasyCriticUser user);
     }
 }

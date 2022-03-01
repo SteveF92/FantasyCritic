@@ -2161,9 +2161,114 @@ namespace FantasyCritic.Web.Controllers.API
         [HttpPost]
         public async Task<IActionResult> VoteOnTrade([FromBody] TradeVoteRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.ActionProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+            if (trade.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(trade.Value.Proposer.LeagueYear);
+            var validUserIDs = publishersInLeague.Select(x => x.User.Id).Except(new List<Guid>()
+                {trade.Value.Proposer.User.Id, trade.Value.CounterParty.User.Id}).ToHashSet();
+            bool userIsInLeagueButNotInTrade = validUserIDs.Contains(currentUser.Id);
+            if (!userIsInLeagueButNotInTrade)
+            {
+                return Forbid();
+            }
+
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == trade.Value.Proposer.LeagueYear.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            if (supportedYear.Finished)
+            {
+                return BadRequest("That year is already finished");
+            }
+
+            Result result = await _fantasyCriticService.VoteOnTrade(trade.Value, currentUser, request.Approved, request.Comment);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteTradeVote([FromBody] BasicTradeRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.ActionProcessingMode)
+            {
+                return BadRequest();
+            }
+
+            var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+            if (trade.HasNoValue)
+            {
+                return BadRequest();
+            }
+
+            var currentUserResult = await GetCurrentUser();
+            if (currentUserResult.IsFailure)
+            {
+                return BadRequest(currentUserResult.Error);
+            }
+            var currentUser = currentUserResult.Value;
+
+            var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(trade.Value.Proposer.LeagueYear);
+            var validUserIDs = publishersInLeague.Select(x => x.User.Id).Except(new List<Guid>()
+                {trade.Value.Proposer.User.Id, trade.Value.CounterParty.User.Id}).ToHashSet();
+            bool userIsInLeagueButNotInTrade = validUserIDs.Contains(currentUser.Id);
+            if (!userIsInLeagueButNotInTrade)
+            {
+                return Forbid();
+            }
+
+            var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == trade.Value.Proposer.LeagueYear.Year);
+            if (supportedYear is null)
+            {
+                return BadRequest();
+            }
+
+            if (supportedYear.Finished)
+            {
+                return BadRequest("That year is already finished");
+            }
+
+            Result result = await _fantasyCriticService.DeleteTradeVote(trade.Value, currentUser);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok();
+        }
 
         [AllowAnonymous]
         public async Task<ActionResult<TradeViewModel>> TradeHistory(Guid leagueID, int year)

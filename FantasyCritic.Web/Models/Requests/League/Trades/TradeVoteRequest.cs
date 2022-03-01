@@ -12,7 +12,7 @@ namespace FantasyCritic.Web.Models.Requests.League.Trades
         [Required]
         public Guid TradeID { get; set; }
         [Required]
-        public bool Approve { get; set; }
+        public bool Approved { get; set; }
         public string Comment { get; set; }
     }
 }

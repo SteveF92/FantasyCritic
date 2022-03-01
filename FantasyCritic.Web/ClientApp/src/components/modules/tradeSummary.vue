@@ -6,7 +6,7 @@
         <div class="row">
           <div class="col-6">
             <h4>{{trade.proposerPublisherName}}</h4>
-            <h5>{{trade.proposerDisplayName}}</h5>
+            <h5>Player: {{trade.proposerDisplayName}}</h5>
             <h5>Receives</h5>
             <div v-for="game in trade.counterPartySendGames" class="component-row">
               • <masterGamePopover :masterGame="game.masterGameYear"></masterGamePopover>
@@ -28,17 +28,55 @@
           </div>
         </div>
         <div class="trade-status-list">
-          <div>• Trade proposed by {{trade.proposerPublisherName}} at {{trade.proposedTimestamp | dateTime}}</div>
-          <div>• Trade accepted by {{trade.counterPartyPublisherName}} at {{trade.acceptedTimestamp | dateTime}}</div>
+          <div>• Trade proposed by '{{trade.proposerPublisherName}}' at {{trade.proposedTimestamp | dateTime}}</div>
+          <div v-if="trade.acceptedTimestamp">• Trade accepted by '{{trade.counterPartyPublisherName}}' at {{trade.acceptedTimestamp | dateTime}}</div>
           <div class="alert alert-info" v-if="trade.status === 'Proposed' && !isCounterParty">
-            Trade is waiting for approval from {{trade.counterPartyPublisherName}}.
-            <b-button  v-if="isProposer" variant="danger" v-on:click="rescindTrade">Rescind Trade</b-button>
+            Trade is waiting for approval from '{{trade.counterPartyPublisherName}}'.
+            <b-button v-if="isProposer" variant="danger" v-on:click="rescindTrade">Rescind Trade</b-button>
           </div>
           <div class="alert alert-info" v-if="trade.status === 'Proposed' && isCounterParty">
             This trade is waiting for your approval.
             <b-button variant="success" v-on:click="acceptTrade">Accept</b-button>
             <b-button variant="danger" v-on:click="rejectTrade">Reject</b-button>
           </div>
+          <div class="alert alert-info" v-if="trade.status === 'Accepted'">
+            League members can now vote on this trade, and the league manager can execute the trade.
+            <br />
+            <template v-if="trade.userCanVote">
+              Do you believe this trade is reasonable? A reasonable trade is beneficial to both parties. The following situations are cases where trades should not be approved:
+              <ul>
+                <li>A player is already losing and has agreed to a bad trade to help the other player beat a third player not involved in the trade.</li>
+                <li>A player is taking a bad trade this year with the understanding that they will be 'paid back' next year.</li>
+                <li>You suspect that there is some other "shady deal" going on, such as real money being exchanged behind the scenes.</li>
+              </ul>
+              However, you should <em>not</em> be considering whether or not this trade is good for <em>you.</em> If it's a fair trade for these two parties, you should vote to approve.
+              <br />
+              <div class="form-group">
+                <input type="text" v-model="comment" class="form-control" aria-describedby="emailHelp" placeholder="Enter a comment (Optional)">
+              </div>
+              <b-button variant="success" v-on:click="vote(true)">Approve</b-button>
+              <b-button variant="danger" v-on:click="vote(false)">Reject</b-button>
+            </template>
+          </div>
+          <div class="alert alert-info" v-if="trade.status === 'Accepted' && trade.votes.length === 0">
+            There are no votes yet.
+          </div>
+
+          <h4>Votes</h4>
+          <b-table-lite :items="trade.votes" :fields="voteFields"
+                        bordered responsive striped>
+
+            <template v-slot:cell(approved)="data">
+              {{data.item.approved | approvedRejected}}
+            </template>
+
+            <template v-slot:cell(comment)="data">
+              {{data.item.comment}}
+              <template v-if="data.item.userID === userInfo.userID">
+                <b-button variant="danger" size="sm" v-on:click="deleteVote">Delete Vote</b-button>
+              </template>
+            </template>
+          </b-table-lite>
         </div>
       </div>
     </collapseCard>
@@ -58,7 +96,12 @@ export default {
   },
   data() {
     return {
-
+      comment: "",
+      voteFields: [
+        { key: 'displayName', label: 'Display Name', thClass: ['bg-primary'] },
+        { key: 'approved', label: 'Vote', thClass: ['bg-primary'] },
+        { key: 'comment', label: 'Comment', thClass: ['bg-primary'] },
+      ]
     };
   },
   computed: {
@@ -67,7 +110,10 @@ export default {
     },
     isCounterParty() {
       return this.trade.counterPartyPublisherID === this.publisher.publisherID;
-    }
+    },
+    userInfo() {
+      return this.$store.getters.userInfo;
+    },
   },
   methods: {
     acceptTrade() {
@@ -91,6 +137,34 @@ export default {
         .catch(response => {
 
         });
+    },
+    vote(approved) {
+      var model = {
+        tradeID: this.trade.tradeID,
+        approved,
+        comment: this.comment
+      };
+      axios
+        .post('/api/league/VoteOnTrade', model)
+        .then(response => {
+          this.$emit('tradeActioned');
+        })
+        .catch(response => {
+
+        });
+    },
+    deleteVote() {
+      var model = {
+        tradeID: this.trade.tradeID
+      };
+      axios
+        .post('/api/league/DeleteTradeVote', model)
+        .then(response => {
+          this.$emit('tradeActioned');
+        })
+        .catch(response => {
+
+        });
     }
   }
 };
@@ -104,7 +178,7 @@ export default {
     border-radius: 10px;
   }
 
-  div, p {
+  div, p, label {
     color: white;
   }
 

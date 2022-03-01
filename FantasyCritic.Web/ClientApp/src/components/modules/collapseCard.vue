@@ -7,7 +7,7 @@
         <slot name="header"></slot>
       </div>
     </b-card-header>
-    <b-collapse :id="'accordion-' + _uid" :visible="defaultVisible" accordion="my-accordion" role="tabpanel">
+    <b-collapse :id="'accordion-' + _uid" :visible="defaultVisible" role="tabpanel">
       <b-card-body>
         <p class="card-text">
           <slot name="body"></slot>

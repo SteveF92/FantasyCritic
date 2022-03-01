@@ -637,5 +637,15 @@ namespace FantasyCritic.FakeRepo
         {
             throw new NotImplementedException();
         }
+
+        public Task AddTradeVote(TradeVote tradeVote)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteTradeVote(Trade trade, FantasyCriticUser user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

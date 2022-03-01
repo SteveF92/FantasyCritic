@@ -743,5 +743,30 @@ namespace FantasyCritic.Lib.Services
             await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByManager, null, now);
             return Result.Success();
         }
+
+        public async Task<Result> VoteOnTrade(Trade trade, FantasyCriticUser user, bool approved, string comment)
+        {
+            var alreadyVoted = trade.TradeVotes.Select(x => x.User.Id).ToHashSet().Contains(user.Id);
+            if (alreadyVoted)
+            {
+                return Result.Failure("You have already vote on this trade.");
+            }
+
+            var tradeVote = new TradeVote(trade.TradeID, user, approved, comment.ToMaybe(), _clock.GetCurrentInstant());
+            await _fantasyCriticRepo.AddTradeVote(tradeVote);
+            return Result.Success();
+        }
+
+        public async Task<Result> DeleteTradeVote(Trade trade, FantasyCriticUser user)
+        {
+            var alreadyVoted = trade.TradeVotes.Select(x => x.User.Id).ToHashSet().Contains(user.Id);
+            if (!alreadyVoted)
+            {
+                return Result.Failure("You have note voted on this trade.");
+            }
+
+            await _fantasyCriticRepo.DeleteTradeVote(trade, user);
+            return Result.Success();
+        }
     }
 }

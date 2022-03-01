@@ -36,10 +36,16 @@ namespace FantasyCritic.Web.Models.Responses
             Status = domain.Status.Value;
             Error = domain.GetTradeError().GetValueOrDefault();
 
+            var alreadyVotedUsers = domain.TradeVotes.Select(x => x.User.Id).ToHashSet();
             if (userPublisher.HasValue)
             {
-                WaitingForUserResponse = domain.Status.Equals(TradeStatus.Proposed) && domain.CounterParty.User.Id == userPublisher.Value.User.Id;
+                var userIsProposer = domain.Proposer.User.Id == userPublisher.Value.User.Id;
+                var userIsCounterParty = domain.CounterParty.User.Id == userPublisher.Value.User.Id;
+                WaitingForUserResponse = domain.Status.Equals(TradeStatus.Proposed) && userIsCounterParty;
+                UserCanVote = !userIsProposer && !userIsCounterParty && !alreadyVotedUsers.Contains(userPublisher.Value.User.Id);
             }
+
+            Votes = domain.TradeVotes.Select(x => new TradeVoteViewModel(x)).ToList();
         }
 
         public Guid TradeID { get; }
@@ -60,5 +66,7 @@ namespace FantasyCritic.Web.Models.Responses
         public string Status { get; }
         public string Error { get; }
         public bool WaitingForUserResponse { get; }
+        public bool UserCanVote { get; }
+        public IReadOnlyList<TradeVoteViewModel> Votes { get; }
     }
 }
