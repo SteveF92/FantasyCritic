@@ -89,9 +89,9 @@ namespace FantasyCritic.Lib.Domain.Trades
             var totalNumberCounterPickSlotsForLeague = Proposer.LeagueYear.Options.CounterPicks;
 
             var resultingProposerStandardGames = GetResultingGameCount(Proposer, ProposerMasterGames, CounterPartyMasterGames, false);
-            var resultingCounterPartyStandardGames = GetResultingGameCount(CounterParty, ProposerMasterGames, CounterPartyMasterGames, false);
+            var resultingCounterPartyStandardGames = GetResultingGameCount(CounterParty, CounterPartyMasterGames, ProposerMasterGames, false);
             var resultingProposerCounterPickGames = GetResultingGameCount(Proposer, ProposerMasterGames, CounterPartyMasterGames, true);
-            var resultingCounterPartyCounterPickGames = GetResultingGameCount(CounterParty, ProposerMasterGames, CounterPartyMasterGames, true);
+            var resultingCounterPartyCounterPickGames = GetResultingGameCount(CounterParty, CounterPartyMasterGames, ProposerMasterGames, true);
 
             if (resultingProposerStandardGames > totalNumberStandardGameSlotsForLeague)
             {
