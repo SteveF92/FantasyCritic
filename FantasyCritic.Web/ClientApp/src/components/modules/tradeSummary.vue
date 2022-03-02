@@ -10,6 +10,7 @@
             <h5>{{recievesVerbiage}}</h5>
             <div v-for="game in trade.counterPartySendGames" class="component-row">
               • <masterGamePopover :masterGame="game.masterGameYear"></masterGamePopover>
+              <template v-if="game.counterPick">(Counter Pick)</template>
             </div>
             <div v-if="trade.counterPartyBudgetSendAmount" class="component-row">
               • ${{trade.counterPartyBudgetSendAmount}} of budget
@@ -21,6 +22,7 @@
             <h5>{{recievesVerbiage}}</h5>
             <div v-for="game in trade.proposerSendGames" class="component-row">
               • <masterGamePopover :masterGame="game.masterGameYear"></masterGamePopover>
+              <template v-if="game.counterPick">(Counter Pick)</template>
             </div>
             <div v-if="trade.proposerBudgetSendAmount" class="component-row">
               • ${{trade.proposerBudgetSendAmount}} of budget
@@ -30,6 +32,8 @@
         <div class="trade-status-list">
           <h5>Action Log</h5>
           <div>• Trade proposed by '{{trade.proposerPublisherName}}' at {{trade.proposedTimestamp | dateTime}}.</div>
+          <label>Message from {{trade.proposerPublisherName}}:</label>
+          <p class="component-row">{{trade.message}}</p>
           <div v-if="trade.acceptedTimestamp">• Trade accepted by '{{trade.counterPartyPublisherName}}' at {{trade.acceptedTimestamp | dateTime}}.</div>
 
           <div v-if="trade.status === 'RejectedByCounterParty'">• Trade rejected by '{{trade.counterPartyPublisherName}}' at {{trade.completedTimestamp | dateTime}}.</div>
@@ -115,7 +119,7 @@
                   If you execute the trade, the games and budget (if applicable) will change hands immediately, and again, the full record will be visible on the league history page.
                 </p>
                 <p>
-                  You should, however, weigh your leagues votes when making your decision.
+                  You should, however, weigh your league's votes when making your decision.
                 </p>
 
                 <b-button variant="success" v-on:click="executeTrade">Execute Trade</b-button>
@@ -296,7 +300,7 @@ export default {
   .component-row {
     width: 100%;
     background-color: #555555;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     padding: 5px;
     border-radius: 10px;
   }

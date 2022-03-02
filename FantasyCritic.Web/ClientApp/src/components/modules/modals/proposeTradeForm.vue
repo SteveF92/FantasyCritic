@@ -11,7 +11,7 @@
           </b-form-select>
         </div>
 
-        <div v-show="counterParty">
+        <div v-if="counterParty">
           <div class="row">
             <div class="col-6">
               <h4 class="text-black">Offer</h4>
@@ -22,7 +22,7 @@
                     <label>{{index + 1}}</label>
                     <b-form-select v-model="item.game">
                       <option v-for="publisherGame in publisher.games" v-bind:value="publisherGame">
-                        {{ publisherGame.gameName }}
+                        {{ getGameOptionName(publisherGame) }}
                       </option>
                     </b-form-select>
 
@@ -44,7 +44,7 @@
                     <label>{{index + 1}}</label>
                     <b-form-select v-model="item.game">
                       <option v-for="publisherGame in counterParty.games" v-bind:value="publisherGame">
-                        {{ publisherGame.gameName }}
+                        {{ getGameOptionName(publisherGame) }}
                       </option>
                     </b-form-select>
 
@@ -60,17 +60,17 @@
           </div>
           <div class="row">
             <div class="col-6">
-              <label>Budget</label>
+              <label>Budget (Current Budget: ${{publisher.budget}})</label>
               <input v-model="proposerBudgetSendAmount" id="proposerBudgetSendAmount" name="proposerBudgetSendAmount" type="number" class="form-control input" />
             </div>
             <div class="col-6">
-              <label>Budget</label>
+              <label>Budget (Current Budget: ${{counterParty.budget}})</label>
               <input v-model="counterPartyBudgetSendAmount" id="counterPartyBudgetSendAmount" name="counterPartyBudgetSendAmount" type="number" class="form-control input" />
             </div>
           </div>
 
           <div class="form-group">
-            <label for="messageText" class="control-label">Message</label>
+            <label for="messageText" class="control-label">Message (All players will see this message.)</label>
             <textarea class="form-control" v-model="message" rows="3"></textarea>
           </div>
         </div>
@@ -151,6 +151,13 @@ export default {
     },
     removeCounterPartyGame(id) {
       this.counterPartyPublisherGames = _.filter(this.counterPartyPublisherGames, x => x.id !== id);
+    },
+    getGameOptionName(game) {
+      if (game.counterPick) {
+        return `${game.gameName} (Counter Pick)`;
+      }
+
+      return game.gameName;
     },
     proposeTrade() {
       this.clientError = this.getTradeError;
