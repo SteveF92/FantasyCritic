@@ -124,7 +124,7 @@ export default {
         return "You must receive something.";
       }
 
-      if (this.proposerBudgetSendAmount && this.counterPartyBudgetSendAmount) {
+      if (this.proposerBudgetSendAmount > 0 && this.counterPartyBudgetSendAmount > 0) {
         return "You cannot have budget on both sides of the trade.";
       }
 
