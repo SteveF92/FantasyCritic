@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="bidCounterPickForm" ref="bidCounterPickFormRef" size="lg" title="Make a Counter Pick Bid" hide-footer @hidden="clearData">
+  <b-modal id="bidCounterPickForm" ref="bidCounterPickFormRef" size="lg" title="Make a Counter Pick Bid" hide-footer @hidden="clearData" @show="getPossibleCounterPicks">
     <div v-if="errorInfo" class="alert alert-danger" role="alert">
       {{errorInfo}}
     </div>
