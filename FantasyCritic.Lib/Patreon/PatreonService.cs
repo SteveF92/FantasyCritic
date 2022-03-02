@@ -68,6 +68,10 @@ namespace FantasyCritic.Lib.Patreon
                         {
                             isPlusUser = true;
                             donorName = member.Relationships.User.FullName;
+                            if (fantasyCriticUser.PatreonDonorNameOverride is not null)
+                            {
+                                donorName = fantasyCriticUser.PatreonDonorNameOverride;
+                            }
                         }
 
                         patronInfo.Add(new PatronInfo(fantasyCriticUser, isPlusUser, donorName));

@@ -29,6 +29,7 @@ namespace FantasyCritic.MySQL.Entities.Identity
 
         public Guid UserID { get; set; }
         public string DisplayName { get; set; }
+        public string PatreonDonorNameOverride { get; set; }
         public int DisplayNumber { get; set; }
         public string EmailAddress { get; set; }
         public string NormalizedEmailAddress { get; set; }
@@ -42,7 +43,7 @@ namespace FantasyCritic.MySQL.Entities.Identity
 
         public FantasyCriticUser ToDomain()
         {
-            FantasyCriticUser domain = new FantasyCriticUser(UserID, DisplayName, DisplayNumber, EmailAddress, NormalizedEmailAddress, EmailConfirmed, 
+            FantasyCriticUser domain = new FantasyCriticUser(UserID, DisplayName, PatreonDonorNameOverride, DisplayNumber, EmailAddress, NormalizedEmailAddress, EmailConfirmed, 
                 SecurityStamp, PasswordHash, TwoFactorEnabled, AuthenticatorKey, LastChangedCredentials, IsDeleted);
             return domain;
         }

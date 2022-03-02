@@ -40,7 +40,7 @@ namespace FantasyCritic.Lib.Identity
             
             int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
             var now = _clock.GetCurrentInstant();
-            var fullUser = new FantasyCriticUser(user.Id, user.UserName, openUserNumber, user.Email,
+            var fullUser = new FantasyCriticUser(user.Id, user.UserName, null, openUserNumber, user.Email,
                 user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
             var createdUser = await base.CreateAsync(fullUser, password);
             return createdUser;
@@ -56,7 +56,7 @@ namespace FantasyCritic.Lib.Identity
 
             int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
             var now = _clock.GetCurrentInstant();
-            var fullUser = new FantasyCriticUser(user.Id, user.UserName, openUserNumber, user.Email,
+            var fullUser = new FantasyCriticUser(user.Id, user.UserName, null, openUserNumber, user.Email,
                 user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
             var createdUser = await base.CreateAsync(fullUser);
             return createdUser;

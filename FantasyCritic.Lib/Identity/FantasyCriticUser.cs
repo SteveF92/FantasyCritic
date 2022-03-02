@@ -13,11 +13,12 @@ namespace FantasyCritic.Lib.Identity
 
         }
 
-        public FantasyCriticUser(Guid userID, string displayName, int displayNumber, string emailAddress, string normalizedEmailAddress, 
+        public FantasyCriticUser(Guid userID, string displayName, string patreonDonorNameOverride, int displayNumber, string emailAddress, string normalizedEmailAddress, 
             bool emailConfirmed, string securityStamp, string passwordHash, bool twoFactorEnabled, string authenticatorKey, Instant lastChangedCredentials, bool isDeleted)
         {
             Id = userID;
             UserName = displayName;
+            PatreonDonorNameOverride = patreonDonorNameOverride;
             DisplayNumber = displayNumber;
             Email = emailAddress;
             NormalizedEmail = normalizedEmailAddress;
@@ -30,6 +31,7 @@ namespace FantasyCritic.Lib.Identity
             IsDeleted = isDeleted;
         }
 
+        public string PatreonDonorNameOverride { get; }
         public int DisplayNumber { get; set; }
         public Instant LastChangedCredentials { get; set; }
         public bool IsDeleted { get; set; }
@@ -58,6 +60,12 @@ namespace FantasyCritic.Lib.Identity
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public static FantasyCriticUser GetFakeUser()
+        {
+            return new FantasyCriticUser(Guid.Empty, "<Non-Existent User>", null, 0, "", "", false, "", "", false, null,
+                Instant.MinValue, false);
         }
     }
 }
