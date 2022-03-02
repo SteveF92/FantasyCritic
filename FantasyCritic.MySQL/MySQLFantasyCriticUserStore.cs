@@ -42,9 +42,9 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync(
-                    "insert into tbl_user(UserID,DisplayName,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp," +
+                    "insert into tbl_user(UserID,DisplayName,PatreonDonorNameOverride,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp," +
                     "TwoFactorEnabled,AuthenticatorKey,LastChangedCredentials,EmailConfirmed,IsDeleted) VALUES " +
-                    "(@UserID,@DisplayName,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp," +
+                    "(@UserID,@DisplayName,@PatreonDonorNameOverride,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp," +
                     "@TwoFactorEnabled,@AuthenticatorKey,@LastChangedCredentials,@EmailConfirmed,@IsDeleted)",
                     entity);
             }
@@ -79,6 +79,7 @@ namespace FantasyCritic.MySQL
             //Not updating password or email confirmed as that breaks password change. Use the SetPasswordHash.
             FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);
             string sql = $@"UPDATE tbl_user SET DisplayName = @{nameof(FantasyCriticUserEntity.DisplayName)}, " +
+                         $"PatreonDonorNameOverride = @{nameof(FantasyCriticUserEntity.PatreonDonorNameOverride)}, " +
                          $"DisplayNumber = @{nameof(FantasyCriticUserEntity.DisplayNumber)}, " +
                          $"EmailAddress = @{nameof(FantasyCriticUserEntity.EmailAddress)}, " +
                          $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +

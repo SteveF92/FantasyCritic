@@ -15,6 +15,7 @@ namespace FantasyCritic.MySQL.Entities.Identity
         {
             UserID = user.Id;
             DisplayName = user.UserName;
+            PatreonDonorNameOverride = user.PatreonDonorNameOverride;
             DisplayNumber = user.DisplayNumber;
             EmailAddress = user.Email;
             NormalizedEmailAddress = user.NormalizedEmail;
