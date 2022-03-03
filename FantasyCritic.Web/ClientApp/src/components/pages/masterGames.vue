@@ -93,7 +93,7 @@ export default {
     },
     gamesToShow() {
       if (this.flatMasterGameYears) {
-        if (!this.unreleasedOnly) {
+        if (!this.unreleasedOnlyFilter) {
           return this.flatMasterGameYears;
         }
 
