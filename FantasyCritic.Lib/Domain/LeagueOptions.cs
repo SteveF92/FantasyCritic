@@ -248,6 +248,11 @@ namespace FantasyCritic.Lib.Domain
                 differences.Add($"Pickup System changed from {existingOptions.PickupSystem.ReadableName} to {PickupSystem.ReadableName}.");
             }
 
+            if (!TiebreakSystem.Equals(existingOptions.TiebreakSystem))
+            {
+                differences.Add($"Tiebreak System changed from {existingOptions.TiebreakSystem.Value.CamelCaseToSpaces()} to {TiebreakSystem.Value.CamelCaseToSpaces()}.");
+            }
+
             if (!ScoringSystem.Equals(existingOptions.ScoringSystem))
             {
                 differences.Add($"Scoring System changed from {existingOptions.ScoringSystem} to {ScoringSystem}.");

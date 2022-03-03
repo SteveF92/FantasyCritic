@@ -37,6 +37,7 @@ namespace FantasyCritic.MySQL.Entities
 
             DraftSystem = options.DraftSystem.Value;
             PickupSystem = options.PickupSystem.Value;
+            TiebreakSystem = options.TiebreakSystem.Value;
             ScoringSystem = options.ScoringSystem.Name;
             TradingSystem = options.TradingSystem.Value;
             PlayStatus = playStatus.Value;
@@ -56,9 +57,9 @@ namespace FantasyCritic.MySQL.Entities
         public int MinimumBidAmount { get; set; }
         public string DraftSystem { get; set; }
         public string PickupSystem { get; set; }
+        public string TiebreakSystem { get; set; }
         public string ScoringSystem { get; set; }
         public string TradingSystem { get; set; }
-        public string TiebreakSystem { get; set; }
         public string PlayStatus { get; set; }
         public Instant Timestamp { get; set; }
         public Instant? DraftStartedTimestamp { get; set; }

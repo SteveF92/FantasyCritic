@@ -890,9 +890,9 @@ namespace FantasyCritic.MySQL
 
             string createLeagueYearSQL =
                 "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-                "CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,ScoringSystem,TradingSystem,PlayStatus) VALUES " +
+                "CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,PlayStatus) VALUES " +
                 "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
-                "@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@ScoringSystem,@TradingSystem,@PlayStatus);";
+                "@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,@PlayStatus);";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -923,7 +923,7 @@ namespace FantasyCritic.MySQL
                 "update tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, CounterPicksToDraft = @CounterPicksToDraft, " +
                 "FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames, " +
                 "DropOnlyDraftGames = @DropOnlyDraftGames, CounterPicksBlockDrops = @CounterPicksBlockDrops, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem, " +
-                "PickupSystem = @PickupSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem WHERE LeagueID = @LeagueID and Year = @Year";
+                "PickupSystem = @PickupSystem, TiebreakSystem = @TiebreakSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem WHERE LeagueID = @LeagueID and Year = @Year";
 
             var deleteTagsSQL = "delete from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
             var deleteSpecialSlotsSQL = "delete from tbl_league_specialgameslot where LeagueID = @leagueID AND Year = @year;";
