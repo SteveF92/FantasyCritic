@@ -120,9 +120,7 @@
       <hr />
       <h3>Trade Settings</h3>
       <div class="alert alert-info">
-        New for 2022, you can allow players in your leagues to trade games with each other. Note: This feature is NOT complete yet, but will be complete sometime in January 2022.
-        <br />
-        Right now, this doesn't do anything, but if you turn trades on, they will be enabled once the feature is added.
+        New for 2022, you can allow players in your leagues to trade games with each other.
       </div>
       <label for="tradingSystem" class="control-label">Trading System</label>
       <b-form-select v-model="local.tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
