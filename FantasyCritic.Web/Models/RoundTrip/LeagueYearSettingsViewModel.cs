@@ -52,6 +52,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
 
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
+            TiebreakSystem = leagueYear.Options.TiebreakSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             TradingSystem = leagueYear.Options.TradingSystem.Value;
 
@@ -123,6 +124,8 @@ namespace FantasyCritic.Web.Models.RoundTrip
         public string ScoringSystem { get; set; }
         [Required]
         public string TradingSystem { get; set; }
+        [Required]
+        public string TiebreakSystem { get; set; }
 
         [Required]
         public LeagueTagOptionsViewModel Tags { get; set; }
@@ -134,6 +137,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             TradingSystem tradingSystem = Lib.Enums.TradingSystem.FromValue(TradingSystem);
+            TiebreakSystem tiebreakSystem = Lib.Enums.TiebreakSystem.FromValue(TiebreakSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             int freeDroppableGames = FreeDroppableGames;
@@ -157,7 +161,7 @@ namespace FantasyCritic.Web.Models.RoundTrip
 
             EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-                leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem);
+                leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem);
             return parameters;
         }
     }

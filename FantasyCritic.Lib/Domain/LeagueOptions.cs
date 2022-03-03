@@ -18,7 +18,7 @@ namespace FantasyCritic.Lib.Domain
 
         public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
             bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, 
-            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, bool publicLeague)
+            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, bool publicLeague)
         {
             StandardGames = standardGames;
             GamesToDraft = gamesToDraft;
@@ -36,6 +36,7 @@ namespace FantasyCritic.Lib.Domain
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
             TradingSystem = tradingSystem;
+            TiebreakSystem = tiebreakSystem;
             PublicLeague = publicLeague;
 
             _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
@@ -59,6 +60,7 @@ namespace FantasyCritic.Lib.Domain
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
             TradingSystem = parameters.TradingSystem;
+            TiebreakSystem = parameters.TiebreakSystem;
             PublicLeague = parameters.PublicLeague;
 
             _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
@@ -82,6 +84,7 @@ namespace FantasyCritic.Lib.Domain
             PickupSystem = parameters.PickupSystem;
             ScoringSystem = parameters.ScoringSystem;
             TradingSystem = parameters.TradingSystem;
+            TiebreakSystem = parameters.TiebreakSystem;
             PublicLeague = league.PublicLeague;
 
             _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
@@ -103,6 +106,7 @@ namespace FantasyCritic.Lib.Domain
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }
         public TradingSystem TradingSystem { get; }
+        public TiebreakSystem TiebreakSystem { get; }
         public bool PublicLeague { get; }
 
         public bool HasSpecialSlots() => SpecialGameSlots.Any();

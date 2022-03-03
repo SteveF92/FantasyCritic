@@ -31,6 +31,7 @@ namespace FantasyCritic.Web.Models.Responses
             CounterPicks = leagueYear.Options.CounterPicks;
             DraftSystem = leagueYear.Options.DraftSystem.Value;
             PickupSystem = leagueYear.Options.PickupSystem.Value;
+            TiebreakSystem = leagueYear.Options.TiebreakSystem.Value;
             ScoringSystem = leagueYear.Options.ScoringSystem.Name;
             TradingSystem = leagueYear.Options.TradingSystem.Value;
             UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
@@ -130,6 +131,7 @@ namespace FantasyCritic.Web.Models.Responses
         public int CounterPicks { get; }
         public string DraftSystem { get; }
         public string PickupSystem { get; }
+        public string TiebreakSystem { get; }
         public string ScoringSystem { get; }
         public string TradingSystem { get; }
         public bool UnlinkedGameExists { get; }

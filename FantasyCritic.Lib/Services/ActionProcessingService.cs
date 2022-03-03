@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 using MoreLinq;
@@ -269,22 +270,51 @@ namespace FantasyCritic.Lib.Services
                 return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was the highest bid.", systemWideValues, currentDate);
             }
 
-            bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
-            var bestBidsByProjectedScore = bestBids.MinBy(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
-            if (bestBidsByProjectedScore.Count == 1)
+            IEnumerable<ValidPickupBid> remainingGamesAfterTiebreaks;
+            if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.LowestProjectedPoints))
             {
-                var singleBid = bestBidsByProjectedScore.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game)", systemWideValues, currentDate);
+                bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
+                var bestBidsByProjectedScore = bestBids.MinBy(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
+                if (bestBidsByProjectedScore.Count == 1)
+                {
+                    var singleBid = bestBidsByProjectedScore.Single();
+                    return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game)", systemWideValues, currentDate);
+                }
+
+                var bestBidsByBidTime = bestBidsByProjectedScore.OrderBy(x => x.PickupBid.Timestamp).ToList();
+                if (bestBidsByBidTime.Count == 1)
+                {
+                    var singleBid = bestBidsByBidTime.Single();
+                    return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest. (Projected points were tied)", systemWideValues, currentDate);
+                }
+
+                remainingGamesAfterTiebreaks = bestBidsByBidTime;
+            }
+            else if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.EarliestBid))
+            {
+                var bestBidsByBidTime = bestBids.OrderBy(x => x.PickupBid.Timestamp).ToList();
+                if (bestBidsByBidTime.Count == 1)
+                {
+                    var singleBid = bestBidsByBidTime.Single();
+                    return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest.", systemWideValues, currentDate);
+                }
+
+                bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
+                var bestBidsByProjectedScore = bestBidsByBidTime.MinBy(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
+                if (bestBidsByProjectedScore.Count == 1)
+                {
+                    var singleBid = bestBidsByProjectedScore.Single();
+                    return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied)", systemWideValues, currentDate);
+                }
+
+                remainingGamesAfterTiebreaks = bestBidsByProjectedScore;
+            }
+            else
+            {
+                throw new NotImplementedException($"Unknown tiebreak system: {leagueYear.Options.TiebreakSystem}");
             }
 
-            var bestBidsByBidTime = bestBidsByProjectedScore.OrderBy(x => x.PickupBid.Timestamp).ToList();
-            if (bestBidsByBidTime.Count == 1)
-            {
-                var singleBid = bestBidsByBidTime.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest. (Projected points were tied)", systemWideValues, currentDate);
-            }
-
-            var bestBidsByDraftPosition = bestBidsByProjectedScore.OrderByDescending(x => x.PickupBid.Publisher.DraftPosition).ToList();
+            var bestBidsByDraftPosition = remainingGamesAfterTiebreaks.OrderByDescending(x => x.PickupBid.Publisher.DraftPosition).ToList();
             if (bestBidsByDraftPosition.Count == 1)
             {
                 var singleBid = bestBidsByDraftPosition.Single();

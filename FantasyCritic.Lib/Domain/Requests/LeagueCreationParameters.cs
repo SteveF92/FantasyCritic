@@ -55,6 +55,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }
         public TradingSystem TradingSystem { get; }
+        public TiebreakSystem TiebreakSystem { get; }
         public bool PublicLeague { get; }
         public bool TestLeague { get; }
     }

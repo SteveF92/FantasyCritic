@@ -58,6 +58,7 @@ namespace FantasyCritic.MySQL.Entities
         public string PickupSystem { get; set; }
         public string ScoringSystem { get; set; }
         public string TradingSystem { get; set; }
+        public string TiebreakSystem { get; set; }
         public string PlayStatus { get; set; }
         public Instant Timestamp { get; set; }
         public Instant? DraftStartedTimestamp { get; set; }
@@ -70,10 +71,11 @@ namespace FantasyCritic.MySQL.Entities
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             TradingSystem tradingSystem = Lib.Enums.TradingSystem.FromValue(TradingSystem);
+            TiebreakSystem tiebreakSystem = Lib.Enums.TiebreakSystem.FromValue(TiebreakSystem);
             ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
             LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-                DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, league.PublicLeague);
+                DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, league.PublicLeague);
 
             return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides, tagOverrides, DraftStartedTimestamp, winningUser);
         }

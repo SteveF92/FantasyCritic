@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
             int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount,
             IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem)
+            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem)
         {
             Manager = manager;
             LeagueID = leagueID;
@@ -34,6 +34,7 @@ namespace FantasyCritic.Lib.Domain.Requests
             PickupSystem = pickupSystem;
             ScoringSystem = scoringSystem;
             TradingSystem = tradingSystem;
+            TiebreakSystem = tiebreakSystem;
         }
 
         public FantasyCriticUser Manager { get; }
@@ -55,5 +56,6 @@ namespace FantasyCritic.Lib.Domain.Requests
         public PickupSystem PickupSystem { get; }
         public ScoringSystem ScoringSystem { get; }
         public TradingSystem TradingSystem { get; }
+        public TiebreakSystem TiebreakSystem { get; }
     }
 }

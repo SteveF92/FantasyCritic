@@ -116,6 +116,8 @@
       </div>
       <label for="pickupSystem" class="control-label">Bidding System</label>
       <b-form-select v-model="local.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
+      <label for="tiebreakSystem" class="control-label">Tiebreak System</label>
+      <b-form-select v-model="local.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
 
       <hr />
       <h3>Trade Settings</h3>

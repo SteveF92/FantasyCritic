@@ -32,7 +32,7 @@ namespace FantasyCritic.FakeRepo.Factories
                 var eligibilityOverrides = new List<EligibilityOverride>();
                 var tagOverrides = new List<TagOverride>();
                 LeagueYear year = new LeagueYear(league, GetSupportedYear(2019), new LeagueOptions(12, 6, 1, 2, 2, -1, 0, false, false, 0, new List<LeagueTagStatus>(), new List<SpecialGameSlot>(), DraftSystem.Flexible, PickupSystem.SecretBidding, 
-                    ScoringSystem.GetScoringSystem("Standard"), TradingSystem.Standard, true), PlayStatus.DraftFinal, eligibilityOverrides, tagOverrides, Instant.FromUtc(2019, 1, 5, 12, 0, 0), Maybe<FantasyCriticUser>.None);
+                    ScoringSystem.GetScoringSystem("Standard"), TradingSystem.Standard, TiebreakSystem.LowestProjectedPoints, true), PlayStatus.DraftFinal, eligibilityOverrides, tagOverrides, Instant.FromUtc(2019, 1, 5, 12, 0, 0), Maybe<FantasyCriticUser>.None);
                 leagueYears.Add(year);
             }
 
