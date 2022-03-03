@@ -292,13 +292,14 @@
       <collapseCard>
         <div slot="header">How are ties handled on bids?</div>
         <div slot="body">
-          Here's the tiebreaker order:
+          The default tiebreaker order is:
           <ol>
             <li>Highest bid wins.</li>
             <li>Lowest projected points wins.</li>
             <li>The bid placed earlier wins.</li>
             <li>The player who was later in the draft order wins.</li>
           </ol>
+          However, leagues can choose to flip the 2nd and 3rd options, so that after highest bids, the next tiebreaker is the bid placed earlier.
           Twos special notes on 'Lowest Projected Points Wins':
           <ul>
             <li>The projections used are the 'advanced' projections.</li>
