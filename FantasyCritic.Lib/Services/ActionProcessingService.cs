@@ -281,7 +281,7 @@ namespace FantasyCritic.Lib.Services
                     return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game)", systemWideValues, currentDate);
                 }
 
-                var bestBidsByBidTime = bestBidsByProjectedScore.OrderBy(x => x.PickupBid.Timestamp).ToList();
+                var bestBidsByBidTime = bestBidsByProjectedScore.MinBy(x => x.PickupBid.Timestamp).ToList();
                 if (bestBidsByBidTime.Count == 1)
                 {
                     var singleBid = bestBidsByBidTime.Single();
@@ -292,7 +292,7 @@ namespace FantasyCritic.Lib.Services
             }
             else if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.EarliestBid))
             {
-                var bestBidsByBidTime = bestBids.OrderBy(x => x.PickupBid.Timestamp).ToList();
+                var bestBidsByBidTime = bestBids.MinBy(x => x.PickupBid.Timestamp).ToList();
                 if (bestBidsByBidTime.Count == 1)
                 {
                     var singleBid = bestBidsByBidTime.Single();
