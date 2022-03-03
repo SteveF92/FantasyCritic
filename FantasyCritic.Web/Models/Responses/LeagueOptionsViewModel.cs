@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Responses
@@ -18,7 +19,7 @@ namespace FantasyCritic.Web.Models.Responses
             OpenYears = openYears.ToList();
             DraftSystems = draftSystems.Select(x => x.Value).ToList();
             PickupSystems = pickupSystems.Select(x => new SelectOptionViewModel(x.Value, x.ReadableName)).ToList();
-            TiebreakSystems = tiebreakSystems.Select(x => x.Value).ToList();
+            TiebreakSystems = tiebreakSystems.Select(x => new SelectOptionViewModel(x.Value, x.Value.CamelCaseToSpaces())).ToList();
             ScoringSystems = scoringSystems.Select(x => x.Name).ToList();
             TradingSystems = tradingSystems.Select(x => new SelectOptionViewModel(x.Value, x.ReadableName)).ToList();
         }
@@ -26,7 +27,7 @@ namespace FantasyCritic.Web.Models.Responses
         public IReadOnlyList<int> OpenYears { get; }
         public IReadOnlyList<string> DraftSystems { get; }
         public IReadOnlyList<SelectOptionViewModel> PickupSystems { get; }
-        public IReadOnlyList<string> TiebreakSystems { get; }
+        public IReadOnlyList<SelectOptionViewModel> TiebreakSystems { get; }
         public IReadOnlyList<string> ScoringSystems { get; }
         public IReadOnlyList<SelectOptionViewModel> TradingSystems { get; }
     }

@@ -55,6 +55,10 @@
             <td>{{ leagueYearOptions.pickupSystem | selectTextFromPossibleOptions(possibleLeagueOptions.pickupSystems) }}</td>
           </tr>
           <tr>
+            <th class="bg-primary">Tiebreak System</th>
+            <td>{{ leagueYearOptions.tiebreakSystem | selectTextFromPossibleOptions(possibleLeagueOptions.tiebreakSystems) }}</td>
+          </tr>
+          <tr>
             <th class="bg-primary">Trading System</th>
             <td>{{ leagueYearOptions.tradingSystem | selectTextFromPossibleOptions(possibleLeagueOptions.tradingSystems) }}</td>
           </tr>

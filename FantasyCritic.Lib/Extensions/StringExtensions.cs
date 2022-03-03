@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 
 namespace FantasyCritic.Lib.Extensions
 {
@@ -19,6 +21,11 @@ namespace FantasyCritic.Lib.Extensions
             }
 
             return result;
+        }
+
+        public static string CamelCaseToSpaces(this string value)
+        {
+            return Regex.Replace(value, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
         }
     }
 }

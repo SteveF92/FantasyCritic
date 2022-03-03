@@ -116,8 +116,12 @@
       </div>
       <label for="pickupSystem" class="control-label">Bidding System</label>
       <b-form-select v-model="local.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
-      <label for="tiebreakSystem" class="control-label">Tiebreak System</label>
-      <b-form-select v-model="local.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
+
+      <div class="form-group">
+        <label for="tiebreakSystem" class="control-label">Tiebreak System</label>
+        <b-form-select v-model="local.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
+        <p>This setting handles how ties on bids are handled. We recommend you stick with 'Lowest Projected Points', as it keeps leagues more competitive.</p>
+      </div>
 
       <hr />
       <h3>Trade Settings</h3>
