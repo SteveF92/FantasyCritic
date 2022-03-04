@@ -4,7 +4,7 @@
       <div class="game-image-area">
         <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
           <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image">
-          <a :href="ggLink" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
+          <a :href="ggLink" target="_blank"><strong>Image Provided by GG| <font-awesome-icon icon="external-link-alt" /></strong></a>
         </div>
         <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
           <font-awesome-icon :icon="['far', 'square']" />
@@ -89,7 +89,7 @@ export default {
   computed: {
     ggCoverArtLink() {
       if (this.masterGame.ggCoverArtFileName) {
-        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=150&dpr=1&fit=crop&auto=compress&q=95`;
+        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=165&dpr=1&fit=crop&auto=compress&q=95`;
       }
       return null;
     },
