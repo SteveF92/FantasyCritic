@@ -225,3 +225,8 @@ svg, img.critic-royale-nav {
 .long-tag-list span {
     margin-right: 1px;
 }
+
+.collapsed > .collapse-opened,
+:not(.collapsed) > .collapse-closed {
+    display: none;
+}

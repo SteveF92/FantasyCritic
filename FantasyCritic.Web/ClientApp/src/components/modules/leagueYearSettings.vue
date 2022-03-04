@@ -117,12 +117,6 @@
       <label for="pickupSystem" class="control-label">Bidding System</label>
       <b-form-select v-model="local.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
 
-      <div class="form-group">
-        <label for="tiebreakSystem" class="control-label">Tiebreak System</label>
-        <b-form-select v-model="local.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
-        <p>This setting handles how ties on bids are handled. We recommend you stick with 'Lowest Projected Points', as it keeps leagues more competitive.</p>
-      </div>
-
       <hr />
       <h3>Trade Settings</h3>
       <div class="alert alert-info">
@@ -231,6 +225,21 @@
         Then, every player must have exactly one 'Yearly Installment'.
       </div>
       <specialGameSlotSelector v-model="local.specialGameSlots"></specialGameSlotSelector>
+
+      <hr />
+      <h3 class="collapse-header" v-b-toggle.advanced-settings-collapse>
+        Advanced Settings
+        <span class="collapse-opened"><font-awesome-icon icon="caret-down" /></span>
+        <span class="collapse-closed"><font-awesome-icon icon="caret-left" /></span>
+      </h3>
+      <b-collapse id="advanced-settings-collapse">
+        <div class="alert alert-info">We recommend you keep these settings to the default options.</div>
+        <div class="form-group">
+          <label for="tiebreakSystem" class="control-label">Tiebreak System</label>
+          <b-form-select v-model="local.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
+          <p>This setting handles how ties on bids are handled. We recommend you stick with 'Lowest Projected Points', as it keeps leagues more competitive.</p>
+        </div>
+      </b-collapse>
     </div>
   </div>
 </template>

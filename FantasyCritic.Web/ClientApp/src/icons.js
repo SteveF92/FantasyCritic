@@ -47,7 +47,9 @@ import {
   faHourglassHalf,
   faShareAlt,
   faCrosshairs,
-  faBalanceScale
+  faBalanceScale,
+  faCaretDown,
+  faCaretLeft
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -125,7 +127,9 @@ library.add(
   faShareAlt,
   faPatreon,
   faCrosshairs,
-  faBalanceScale
+  faBalanceScale,
+  faCaretDown,
+  faCaretLeft
 );
 
 export {
