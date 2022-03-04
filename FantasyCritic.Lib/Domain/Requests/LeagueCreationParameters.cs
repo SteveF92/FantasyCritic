@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Domain.Requests
         public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
             int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount,
             int initialYear, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-            DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, bool publicLeague, bool testLeague)
+            DraftSystem draftSystem, PickupSystem pickupSystem, TiebreakSystem tiebreakSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, bool publicLeague, bool testLeague)
         {
             Manager = manager;
             LeagueName = leagueName;
@@ -30,6 +30,7 @@ namespace FantasyCritic.Lib.Domain.Requests
             SpecialGameSlots = specialGameSlots.ToList();
             DraftSystem = draftSystem;
             PickupSystem = pickupSystem;
+            TiebreakSystem = tiebreakSystem;
             ScoringSystem = scoringSystem;
             TradingSystem = tradingSystem;
             PublicLeague = publicLeague;

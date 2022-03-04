@@ -57,6 +57,8 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Required]
         public string PickupSystem { get; set; }
         [Required]
+        public string TiebreakSystem { get; set; }
+        [Required]
         public string TradingSystem { get; set; }
         [Required]
         public bool PublicLeague { get; set; }
@@ -73,6 +75,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
             DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
             PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
             TradingSystem tradingSystem = Lib.Enums.TradingSystem.FromValue(TradingSystem);
+            TiebreakSystem tiebreakSystem = Lib.Enums.TiebreakSystem.FromValue(TiebreakSystem);
             ScoringSystem scoringSystem = new DiminishingScoringSystem();
 
             int freeDroppableGames = FreeDroppableGames;
@@ -96,7 +99,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
 
             LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
                 freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-                InitialYear, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, PublicLeague, TestLeague);
+                InitialYear, leagueTags, specialGameSlots, draftSystem, pickupSystem, tiebreakSystem, scoringSystem, tradingSystem, PublicLeague, TestLeague);
             return parameters;
         }
     }
