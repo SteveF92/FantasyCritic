@@ -67,7 +67,6 @@ namespace FantasyCritic.Lib.Services
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
 
-            var allPublishers = new List<Publisher>();
             var publicBiddingSetDictionary = new Dictionary<LeagueYearKey, PublicBiddingSet>();
             foreach (var year in activeYears)
             {
