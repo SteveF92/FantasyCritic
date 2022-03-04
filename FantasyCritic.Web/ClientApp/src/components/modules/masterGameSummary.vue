@@ -107,7 +107,7 @@ export default {
     },
     smallGGCoverArtLink() {
       if (this.masterGame.ggCoverArtFileName) {
-        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=100&dpr=1&fit=crop&auto=compress&q=95`;
+        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=140&dpr=1&fit=crop&auto=compress&q=95`;
       }
       return null;
     },
@@ -128,17 +128,13 @@ export default {
 </script>
 <style scoped>
   .summary {
-    min-width: 370px;
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: space-evenly;
     align-items: center;
     color: black;
-  }
-
-  .game-image-area {
-    margin: auto;
+    padding: 5px;
   }
 
   .gg-image-area {

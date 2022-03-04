@@ -1,7 +1,7 @@
 <template>
   <span>
     <span v-if="masterGame">
-      <popper ref="gamePopoverRef" trigger="click" :options="{ placement: 'top', modifiers: { offset: { offset: '0,0px' } }}">
+      <popper ref="gamePopoverRef" trigger="click" :options="{ modifiers: { offset: { offset: '0,0px' } }}">
         <span class="popper">
           <masterGameSummary :masterGame="masterGame"></masterGameSummary>
 
