@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
@@ -82,14 +83,25 @@ namespace FantasyCritic.Lib.Services
                 return Result.Failure<League>(validateOptions.Error);
             }
 
+            if (parameters.ScoringSystem.Name != DiminishingScoringSystem.StaticName)
+            {
+                return Result.Failure<League>("That scoring mode is no longer supported.");
+            }
+
             IEnumerable<int> years = new List<int>() { parameters.InitialYear };
             League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, years, parameters.PublicLeague, parameters.TestLeague, false, 0);
             await _fantasyCriticRepo.CreateLeague(newLeague, parameters.InitialYear, options);
             return Result.Success(newLeague);
         }
 
-        public async Task<Result> EditLeague(League league, EditLeagueYearParameters parameters)
+        public async Task<Result> EditLeague(LeagueYear leagueYear, EditLeagueYearParameters parameters)
         {
+            if (leagueYear.SupportedYear.Finished)
+            {
+                return Result.Failure("You cannot edit a completed year.");
+            }
+
+            var league = leagueYear.League;
             LeagueOptions options = new LeagueOptions(parameters, league);
             var validateOptions = options.Validate();
             if (validateOptions.IsFailure)
@@ -97,13 +109,12 @@ namespace FantasyCritic.Lib.Services
                 return Result.Failure(validateOptions.Error);
             }
 
-            var leagueYear = await GetLeagueYear(league.LeagueID, parameters.Year);
-            if (leagueYear.HasNoValue)
+            if (parameters.ScoringSystem.Name != DiminishingScoringSystem.StaticName)
             {
-                throw new Exception($"League year cannot be found: {parameters.LeagueID}|{parameters.Year}");
+                return Result.Failure("That scoring mode is no longer supported.");
             }
 
-            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
+            IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
 
             int maxStandardGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick)).DefaultIfEmpty(0).Max();
             int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).DefaultIfEmpty(0).Max();
@@ -117,27 +128,27 @@ namespace FantasyCritic.Lib.Services
                 return Result.Failure($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
             }
 
-            if (leagueYear.Value.PlayStatus.DraftIsActive)
+            if (leagueYear.PlayStatus.DraftIsActive)
             {
-                if (leagueYear.Value.Options.GamesToDraft > parameters.GamesToDraft)
+                if (leagueYear.Options.GamesToDraft > parameters.GamesToDraft)
                 {
                     return Result.Failure("Cannot decrease the number of drafted games during the draft. Reset the draft if you need to do this.");
                 }
 
-                if (leagueYear.Value.Options.CounterPicksToDraft > parameters.CounterPicksToDraft)
+                if (leagueYear.Options.CounterPicksToDraft > parameters.CounterPicksToDraft)
                 {
                     return Result.Failure("Cannot decrease the number of drafted counter picks during the draft. Reset the draft if you need to do this.");
                 }
             }
 
-            if (leagueYear.Value.PlayStatus.DraftFinished)
+            if (leagueYear.PlayStatus.DraftFinished)
             {
-                if (leagueYear.Value.Options.GamesToDraft != parameters.GamesToDraft)
+                if (leagueYear.Options.GamesToDraft != parameters.GamesToDraft)
                 {
                     return Result.Failure("Cannot change the number of drafted games after the draft.");
                 }
 
-                if (leagueYear.Value.Options.CounterPicksToDraft != parameters.CounterPicksToDraft)
+                if (leagueYear.Options.CounterPicksToDraft != parameters.CounterPicksToDraft)
                 {
                     return Result.Failure("Cannot change the number of drafted counter picks after the draft.");
                 }
@@ -165,13 +176,13 @@ namespace FantasyCritic.Lib.Services
             var tagOverrides = await GetTagOverrides(league, parameters.Year);
             var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
-            LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.Value.PlayStatus, eligibilityOverrides, 
-                tagOverrides, leagueYear.Value.DraftStartedTimestamp, leagueYear.Value.WinningUser);
+            LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.PlayStatus, eligibilityOverrides, 
+                tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser);
 
-            var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-            var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.Value.League.LeagueManager.Id);
+            var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+            var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.League.LeagueManager.Id);
 
-            var differenceString = options.GetDifferenceString(leagueYear.Value.Options);
+            var differenceString = options.GetDifferenceString(leagueYear.Options);
             if (differenceString.HasValue)
             {
                 LeagueAction settingsChangeAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString.Value, true);

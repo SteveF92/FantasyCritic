@@ -91,22 +91,6 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest("Impressive API usage, but required tags are not ready for prime time yet.");
             }
 
-            if (!SupportedYear.Year2022FeatureSupported(request.InitialYear))
-            {
-                if (request.CounterPicks != request.CounterPicksToDraft)
-                {
-                    return BadRequest("Pickup counter picks are not supported until 2022.");
-                }
-                if (request.PickupSystem != PickupSystem.SecretBidding.Value)
-                {
-                    return BadRequest("That bidding System is not supported until 2022.");
-                }
-                if (request.SpecialGameSlots.Any())
-                {
-                    return BadRequest("Special Game Slots are not supported until 2022.");
-                }
-            }
-
             var supportedYears = await _interLeagueService.GetSupportedYears();
             var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.InitialYear);
             if (selectedSupportedYear is null)
@@ -296,41 +280,20 @@ namespace FantasyCritic.Web.Controllers.API
                 return BadRequest();
             }
 
-            var league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
-            if (league.HasNoValue)
-            {
-                return BadRequest();
-            }
-
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.Value.LeagueID, request.Year);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(request.LeagueID, request.Year);
             if (leagueYear.HasNoValue)
             {
                 return BadRequest();
             }
 
-            if (league.Value.LeagueManager.Id != currentUser.Id)
+            if (leagueYear.Value.League.LeagueManager.Id != currentUser.Id)
             {
                 return Forbid();
             }
 
-            if (!SupportedYear.Year2022FeatureSupported(leagueYear.Value.Year))
-            {
-                if (request.CounterPicks != request.CounterPicksToDraft)
-                {
-                    return BadRequest("Pickup counter picks are not supported until 2022.");
-                }
-                if (request.PickupSystem != PickupSystem.SecretBidding.Value)
-                {
-                    return BadRequest("That bidding System is not supported until 2022.");
-                }
-                if (request.SpecialGameSlots.Any())
-                {
-                    return BadRequest("Special Game Slots are not supported until 2022.");
-                }
-            }
             var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
             EditLeagueYearParameters domainRequest = request.ToDomain(currentUser, tagDictionary);
-            Result result = await _fantasyCriticService.EditLeague(league.Value, domainRequest);
+            Result result = await _fantasyCriticService.EditLeague(leagueYear.Value, domainRequest);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);
