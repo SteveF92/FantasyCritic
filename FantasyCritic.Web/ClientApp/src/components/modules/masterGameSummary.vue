@@ -2,26 +2,14 @@
   <div>
     <div v-if="masterGame" class="summary">
       <div class="game-image-area">
-        <div class="full-game-image">
-          <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
-            <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image">
-            <a :href="ggLink" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
-          </div>
-          <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
-            <font-awesome-icon :icon="['far', 'square']" />
-            <font-awesome-layers-text transform="shrink-14" value="No image found" />
-          </font-awesome-layers>
+        <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
+          <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image">
+          <a :href="ggLink" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
         </div>
-        <div class="minimal-game-image">
-          <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
-            <img v-show="masterGame.ggCoverArtFileName" :src="smallGGCoverArtLink" alt="Cover Image" class="game-image">
-            <a :href="ggLink" target="_blank"><strong>Image Provided by GG|<font-awesome-icon icon="external-link-alt" /></strong></a>
-          </div>
-          <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-4x no-game-image">
-            <font-awesome-icon :icon="['far', 'square']" />
-            <font-awesome-layers-text transform="shrink-14" value="No image found" />
-          </font-awesome-layers>
-        </div>
+        <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
+          <font-awesome-icon :icon="['far', 'square']" />
+          <font-awesome-layers-text transform="shrink-14" value="No image found" />
+        </font-awesome-layers>
       </div>
 
       <div class="game-description">
@@ -101,13 +89,7 @@ export default {
   computed: {
     ggCoverArtLink() {
       if (this.masterGame.ggCoverArtFileName) {
-        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=190&dpr=1&fit=crop&auto=compress&q=95`;
-      }
-      return null;
-    },
-    smallGGCoverArtLink() {
-      if (this.masterGame.ggCoverArtFileName) {
-        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=140&dpr=1&fit=crop&auto=compress&q=95`;
+        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=150&dpr=1&fit=crop&auto=compress&q=95`;
       }
       return null;
     },
@@ -135,6 +117,8 @@ export default {
     align-items: center;
     color: black;
     padding: 5px;
+    max-width: 500px;
+    gap: 10px;
   }
 
   .gg-image-area {
@@ -153,8 +137,7 @@ export default {
   }
 
   .game-description {
-    margin-left: 5px;
-    margin-right: 20px;
+      max-width: 250px;
   }
 
   .game-name {
