@@ -78,7 +78,8 @@ namespace FantasyCritic.Lib.Interfaces
         Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats);
         Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers);
 
-        Task<Result> RemovePublisherGame(PublisherGame publisherGame);
+        Task FullyRemovePublisherGame(PublisherGame publisherGame);
+        Task<Result> ManagerRemovePublisherGame(PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
         Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
         Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease);
 

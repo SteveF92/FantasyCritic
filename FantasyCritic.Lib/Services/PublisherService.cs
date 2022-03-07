@@ -87,15 +87,9 @@ namespace FantasyCritic.Lib.Services
         {
             var now = _clock.GetCurrentInstant();
             var formerPublisherGame = publisherGame.GetFormerPublisherGame(now, "Removed by league manager");
-            var result = await _fantasyCriticRepo.RemovePublisherGame(publisherGame);
-            if (result.IsSuccess)
-            {
-                RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisher, publisherGame);
-                LeagueAction leagueAction = new LeagueAction(removeGameRequest, now);
-                await _fantasyCriticRepo.AddLeagueAction(leagueAction);
-                await _fantasyCriticRepo.AddFormerPublisherGame(formerPublisherGame);
-            }
-
+            RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisher, publisherGame);
+            LeagueAction leagueAction = new LeagueAction(removeGameRequest, now);
+            var result = await _fantasyCriticRepo.ManagerRemovePublisherGame(publisherGame, formerPublisherGame, leagueAction);
             return result;
         }
 

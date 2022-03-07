@@ -427,7 +427,7 @@ namespace FantasyCritic.Lib.Services
                     await _fantasyCriticRepo.DeleteLeagueActions(publisher);
                     foreach (var game in publisher.PublisherGames)
                     {
-                        await _fantasyCriticRepo.RemovePublisherGame(game);
+                        await _fantasyCriticRepo.FullyRemovePublisherGame(game);
                     }
 
                     var bids = await _fantasyCriticRepo.GetActivePickupBids(publisher);

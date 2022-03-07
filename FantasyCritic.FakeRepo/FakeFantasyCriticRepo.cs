@@ -287,6 +287,17 @@ namespace FantasyCritic.FakeRepo
             throw new NotImplementedException();
         }
 
+        public Task FullyRemovePublisherGame(PublisherGame publisherGame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result> ManagerRemovePublisherGame(PublisherGame publisherGame, FormerPublisherGame formerPublisherGame,
+            LeagueAction leagueAction)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Result> RemovePublisherGame(PublisherGame publisherGame)
         {
             throw new NotImplementedException();

@@ -241,7 +241,27 @@ namespace FantasyCritic.MySQL
             }
         }
 
-        public async Task<Result> RemovePublisherGame(PublisherGame publisherGame)
+        public async Task FullyRemovePublisherGame(PublisherGame publisherGame)
+        {
+            string sql = "delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    var removed = await connection.ExecuteAsync(sql, new { publisherGameID = publisherGame.PublisherGameID }, transaction);
+                    if (removed != 1)
+                    {
+                        await transaction.RollbackAsync();
+                    }
+
+                    await MakePublisherGameSlotsConsistent(publisherGame.PublisherID, connection, transaction);
+                    await transaction.CommitAsync();
+                }
+            }
+        }
+
+        public async Task<Result> ManagerRemovePublisherGame(PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction)
         {
             string sql = "delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;";
             using (var connection = new MySqlConnection(_connectionString))
@@ -257,6 +277,8 @@ namespace FantasyCritic.MySQL
                     }
 
                     await MakePublisherGameSlotsConsistent(publisherGame.PublisherID, connection, transaction);
+                    await AddFormerPublisherGames(new List<FormerPublisherGame>() {formerPublisherGame}, connection, transaction);
+                    await AddLeagueActions(new List<LeagueAction>() { leagueAction }, connection, transaction);
                     await transaction.CommitAsync();
                     return Result.Success();
                 }
@@ -1839,7 +1861,7 @@ namespace FantasyCritic.MySQL
                 "insert into tbl_league_formerpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
                 "ManualWillNotRelease,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition,BidAmount,RemovedTimestamp,RemovedNote) VALUES " +
                 "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-                "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@DraftPosition,@OverallDraftPosition,@BidAmount,@RemovedTimestamp,@RemovedNote);";
+                "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition,@BidAmount,@RemovedTimestamp,@RemovedNote);";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql, entity);
