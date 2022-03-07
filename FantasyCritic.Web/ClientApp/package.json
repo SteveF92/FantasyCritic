@@ -9,7 +9,7 @@
     "check": "vue-cli-service lint --no-fix"
   },
   "dependencies": {
-    "@aspnet/signalr": "^1.1.4",
+    "@microsoft/signalr": "^6.0.2",
     "axios": "^0.24.0",
     "bootstrap": "^4.6.1",
     "bootstrap-vue": "^2.21.2",

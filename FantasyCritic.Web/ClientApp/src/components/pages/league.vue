@@ -189,8 +189,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import moment from 'moment';
-import { HubConnection } from '@aspnet/signalr';
-import * as signalR from '@aspnet/signalr';
+import * as signalR from "@microsoft/signalr";
 
 import LeagueGameSummary from '@/components/modules/leagueGameSummary';
 import LeagueYearStandings from '@/components/modules/leagueYearStandings';
@@ -297,12 +296,12 @@ export default {
           this.forbidden = (returnedError.response.status === 403);
         });
     },
-    fetchLeagueYear() {
+    async fetchLeagueYear() {
       let queryURL = '/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year;
       if (this.inviteCode) {
         queryURL += '&inviteCode=' + this.inviteCode;
       }
-      axios
+      await axios
         .get(queryURL)
         .then(response => {
           this.leagueYear = response.data;
@@ -403,16 +402,17 @@ export default {
           this.errorInfo = 'Something went wrong joining the league';
         });
     },
-    startDraft() {
+    async startDraft() {
       var model = {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year
       };
-      axios
+      await axios
         .post('/api/leagueManager/startDraft', model)
-        .then(response => {
-          this.fetchLeague();
-          this.fetchLeagueYear();
+        .then(async response => {
+          await this.fetchLeague();
+          await this.fetchLeagueYear();
+          await this.startHubConnection();
         })
         .catch(response => {
 
@@ -487,8 +487,14 @@ export default {
         });
     },
     async startHubConnection() {
+      if (!this.leagueYear.playStatus.draftIsActive) {
+        return;
+      }
+
+      console.log("Connecting SignalR");
       let hubConnection = new signalR.HubConnectionBuilder()
         .withUrl('/updatehub')
+        .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Error)
         .build();
 
@@ -496,12 +502,18 @@ export default {
 
       hubConnection.invoke('Subscribe', this.leagueid, this.year).catch(err => console.error(err.toString()));
 
-      hubConnection.on('RefreshLeagueYear', data => {
-        this.fetchLeagueYear();
+      hubConnection.on('RefreshLeagueYear',async () => {
+        await this.fetchLeagueYear();
       });
+
+      hubConnection.onreconnecting(e => {
+        console.log("Reconnecting SignalR");
+      });
+
       hubConnection.on('DraftFinished', data => {
         this.$refs.draftFinishedModalRef.show();
       });
+      
       hubConnection.onclose(async () => {
         await this.startHubConnection();
       });
@@ -516,7 +528,7 @@ export default {
     this.selectedYear = this.year;
     this.getInviteCode();
     this.fetchLeague();
-    this.fetchLeagueYear();
+    await this.fetchLeagueYear();
     await this.startHubConnection();
   },
   watch: {
