@@ -60,7 +60,9 @@ namespace FantasyCritic.PublisherGameFixer
             MySQLMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
             MySQLFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
 
-            var formerPublisherGameEntities = new List<FormerPublisherGameEntity>();
+            var formerPublisherGamesFromBids = new List<FormerPublisherGameEntity>();
+            var formerPublisherGamesFromDraft = new List<FormerPublisherGameEntity>();
+            var formerPublisherGamesFromClaims = new List<FormerPublisherGameEntity>();
 
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             var realYears = supportedYears.Where(x => x.Year > 2018).ToList();
@@ -136,7 +138,7 @@ namespace FantasyCritic.PublisherGameFixer
                                     continue;
                                 }
 
-                                formerPublisherGameEntities.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingBid.Value.MasterGame.GameName, 
+                                formerPublisherGamesFromBids.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingBid.Value.MasterGame.GameName, 
                                     matchingBidAction.Value.Timestamp, matchingBid.Value.CounterPick, null, false, null, matchingBid.Value.MasterGame.MasterGameID, null, null, matchingBid.Value.BidAmount, null, removeAction.Timestamp, "Removed by league manager"));
                                 continue;
                             }
@@ -154,7 +156,7 @@ namespace FantasyCritic.PublisherGameFixer
 
                                 bool draftActionIsCounterPick = draftAction.Value.ActionType.ToLower().Contains("counterpick");
 
-                                formerPublisherGameEntities.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
+                                formerPublisherGamesFromDraft.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
                                     draftAction.Value.Timestamp, draftActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, 
                                     draftUpdate.GetValueOrDefault(x => x.DraftPosition), draftUpdate.GetValueOrDefault(x => x.OverallDraftPosition), null, null, removeAction.Timestamp, "Removed by league manager"));
                                 continue;
@@ -171,7 +173,7 @@ namespace FantasyCritic.PublisherGameFixer
 
                                 bool claimActionIsCounterPick = false;
 
-                                formerPublisherGameEntities.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
+                                formerPublisherGamesFromClaims.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
                                     draftAction.Value.Timestamp, claimActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
                                 continue;
                             }
@@ -180,11 +182,13 @@ namespace FantasyCritic.PublisherGameFixer
                 }
             }
 
+            var allEntities = formerPublisherGamesFromBids.Concat(formerPublisherGamesFromDraft).Concat(formerPublisherGamesFromClaims).ToList();
+
             //_logger.Info("Starting database inserts");
             //using (var connection = new MySqlConnection(_connectionString))
             //{
             //    await connection.OpenAsync();
-            //    await connection.BulkInsertAsync(formerPublisherGameEntities, "tbl_league_formerpublishergame", 500);
+            //    await connection.BulkInsertAsync(allEntities, "tbl_league_formerpublishergame", 500);
             //}
 
             //_logger.Info("Done running missing former publisher game additions");
