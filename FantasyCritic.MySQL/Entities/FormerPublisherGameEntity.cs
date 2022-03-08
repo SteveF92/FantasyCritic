@@ -9,7 +9,7 @@ using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
 {
-    internal class FormerPublisherGameEntity
+    public class FormerPublisherGameEntity
     {
         public FormerPublisherGameEntity()
         {
