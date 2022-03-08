@@ -65,54 +65,6 @@ namespace FantasyCritic.PublisherGameFixer
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             var realYears = supportedYears.Where(x => x.Year > 2018).ToList();
 
-            var approvedMappings = new List<(string, string)>()
-            {
-                ("Persona 5 Scramble: The Phantom Strikers", "Persona 5 Strikers"),
-                ("Tom Clancy’s Rainbow Six: Quarantine", "Tom Clancy’s Rainbow Six: Extraction"),
-                ("Rumored 2D Metroid Sequel (Unannounced)", "Metroid Dread"),
-                ("Ratchet & Clank Rift Apart", "Ratchet & Clank: Rift Apart"),
-                ("Super Mario Sunshine Remaster (Rumored)", "Super Mario Sunshine Remaster (Deprecated)"),
-                ("Mario Odyssey Sequel (Unannounced)", "Super Mario Odyssey 2 (Unannounced)"),
-                ("The Wolf Among Us Season 2", "The Wolf Among Us 2"),
-                ("Final Fantasy 7 Remake", "Final Fantasy VII Remake"),
-                ("Bravely Default 2", "Bravely Default II"),
-                ("GhostWire: Tokyo", "GhostWire Tokyo"),
-                ("Gran Turismo Sequel (Unannounced)", "Gran Turismo 7"),
-                ("Werewolf: The Apocalypse: Earthblood", "Werewolf: The Apocalypse - Earthblood"),
-                ("Bright Memory infinite", "Bright Memory: Infinite"),
-                ("Gran Turismo (PS5) (unannounced)", "Gran Turismo 7"),
-                ("Twelve Minutes", "12 Minutes"),
-                ("God of War: Ragnarok", "God of War: Ragnarök"),
-                ("Last of Us Factions 2", "The Last of Us Factions 2"),
-                ("Pokemon Let's Go 2 (Unannounced)", "Pokémon Let's Go 2 (Unannounced)"),
-                ("Tom Clancy’s Rainbow Six: Parasite", "Tom Clancy’s Rainbow Six: Extraction"),
-                ("Unannounced Spyro the Dragon Game", "Unannounced Mainline Spyro the Dragon Game"),
-                ("Dying Light 2", "Dying Light 2: Stay Human"),
-                ("Forza Motorsport 8 (Unannounced)", "Forza Motorsport (Xbox Series X)"),
-                ("Untitled Batman Game from WB Games Montréal (Unannounced)", "Gotham Knights"),
-                ("Horizon: Zero Dawn Sequel (Unannounced)", "Horizon Forbidden West"),
-                ("STALKER 2", "STALKER 2: Heart of Chernobyl"),
-                ("Call of Duty 2021", "Call of Duty Vanguard"),
-                ("Mario Kart 9 (Unannounced)", "Mario Kart (Unannounced Next Mainline Console Game)"),
-                ("Call of Duty 2020 (Unannounced)", "Call of Duty: Black Ops Cold War"),
-                ("Bravely Default 2", "Bravely Default II"),
-                ("Grand Theft Auto 6 (Unannounced)", "Grand Theft Auto 6"),
-                ("Gods & Monsters", "Immortals: Fenyx Rising"),
-                ("Unannounced 3D Mario", "Unannounced Mainline 3D Mario Platformer"),
-                ("Deltarune", "Deltarune Chapter 2"),
-                ("Unannounced Call of Duty 2022", "Call of Duty: Modern Warfare Sequel (2022)"),
-                ("Unannounced Main Series Sonic Game", "Sonic Frontiers"),
-                ("HuniePop 2", "HuniePop 2: Double Date"),
-                ("Unannounced Next Assassin's Creed", "Assassin's Creed Infinity"),
-                ("Battlefield 2042", "Next Gen Battlefield Game"),
-                ("Demon Souls Remake", "Demon's Souls (2020)"),
-                ("Baldo", "Baldo: The Guardian Owls"),
-                ("Destruction Allstars ", "Destruction Allstars"),
-                ("Dark Alliance", "Dungeons & Dragons: Dark Alliance"),
-                ("Fable (Unannounced)", "Fable (Xbox Series X)"),
-                ("Untitled Final Fantasy XIV Expansion", "Final Fantasy XIV: Endwalker"),
-            }.ToHashSet();
-
             foreach (var supportedYear in realYears)
             {
                 _logger.Info($"Running for {supportedYear.Year}");
@@ -147,47 +99,70 @@ namespace FantasyCritic.PublisherGameFixer
 
                     var filteredDraftActions = FilterDraftActions(leagueActions);
                     var claimActions = leagueActions.Where(x => x.ActionType == "Publisher Game Claimed").ToList();
+                    var bidActions = leagueActions.Where(x => x.ActionType == "Pickup Successful").ToList();
 
                     foreach (var publisher in publisherGroup)
                     {
                         var removeActionsForPublisher = removesAfterDraft.Where(x => x.PublisherID == publisher.PublisherID).ToList();
+                        if (!removeActionsForPublisher.Any())
+                        {
+                            continue;
+                        }
+
                         var bidsForPublisher = bidLookup[publisher.PublisherID].ToList();
+                        var bidActionsForPublisher = bidActions.Where(x => x.PublisherID == publisher.PublisherID).ToList();
                         var draftActionsForPublisher = filteredDraftActions.Where(x => x.PublisherID == publisher.PublisherID).ToList();
                         var claimActionsForPublisher = claimActions.Where(x => x.PublisherID == publisher.PublisherID).ToList();
 
                         foreach (var removeAction in removeActionsForPublisher)
                         {
                             var actionGameName = removeAction.Description.TrimStart("Removed game: ").Trim('\'');
-                            var matchingBid = GetMatchingBid(bidsForPublisher, publisher, actionGameName, removeAction, approvedMappings);
+                            var existingFormerGame = publisher.FormerPublisherGames.Where(x => GameNameMatches(actionGameName, x.PublisherGame.GameName) 
+                                    || new Interval(x.RemovedTimestamp.Minus(Duration.FromSeconds(5)), x.RemovedTimestamp.Plus(Duration.FromSeconds(5)))
+                                    .Contains(removeAction.Timestamp))
+                                .ToList();
+                            if (existingFormerGame.Any())
+                            {
+                                continue;
+                            }
+
+                            var matchingBid = GetMatchingBid(bidsForPublisher, publisher, actionGameName, removeAction);
                             if (matchingBid.HasValue)
                             {
+                                var matchingBidAction = GetMatchingBidAction(matchingBid.Value, bidActionsForPublisher);
+                                if (matchingBidAction.HasNoValue)
+                                {
+                                    continue;
+                                }
+
+                                formerPublisherGameEntities.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingBid.Value.MasterGame.GameName, 
+                                    matchingBidAction.Value.Timestamp, matchingBid.Value.CounterPick, null, false, null, matchingBid.Value.MasterGame.MasterGameID, null, null, matchingBid.Value.BidAmount, null, removeAction.Timestamp, "Removed by league manager"));
+                            }
+
+                            //Maybe<TempLeagueActionEntity> draftAction = GetMatchingDraftAction(draftActionsForPublisher, publisher, actionGameName, removeAction, approvedMappings);
+                            //if (draftAction.HasValue)
+                            //{
                                 
-                            }
+                            //}
 
-                            Maybe<TempLeagueActionEntity> draftAction = GetMatchingDraftAction(draftActionsForPublisher, publisher, actionGameName, removeAction, approvedMappings);
-                            if (draftAction.HasValue)
-                            {
-                                
-                            }
+                            //Maybe<TempLeagueActionEntity> claimAction = GetMatchingClaimAction(claimActionsForPublisher, publisher, actionGameName, removeAction, approvedMappings);
+                            //if (claimAction.HasValue)
+                            //{
 
-                            Maybe<TempLeagueActionEntity> claimAction = GetMatchingClaimAction(claimActionsForPublisher, publisher, actionGameName, removeAction, approvedMappings);
-                            if (claimAction.HasValue)
-                            {
-
-                            }
+                            //}
                         }
                     }
                 }
             }
 
-            _logger.Info("Starting database inserts");
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                await connection.BulkInsertAsync(formerPublisherGameEntities, "tbl_league_formerpublishergame", 500);
-            }
+            //_logger.Info("Starting database inserts");
+            //using (var connection = new MySqlConnection(_connectionString))
+            //{
+            //    await connection.OpenAsync();
+            //    await connection.BulkInsertAsync(formerPublisherGameEntities, "tbl_league_formerpublishergame", 500);
+            //}
 
-            _logger.Info("Done running missing former publisher game additions");
+            //_logger.Info("Done running missing former publisher game additions");
         }
 
         private static IReadOnlyList<TempLeagueActionEntity> FilterDraftActions(List<TempLeagueActionEntity> actions)
@@ -250,28 +225,76 @@ namespace FantasyCritic.PublisherGameFixer
         }
 
         private static Maybe<PickupBid> GetMatchingBid(IReadOnlyList<PickupBid> pickupBidsForPublisher, Publisher publisher, 
-            string gameName, TempLeagueActionEntity removeAction, HashSet<(string, string)> approvedMappings)
+            string gameName, TempLeagueActionEntity removeAction)
         {
-            return Maybe<PickupBid>.None;
-            //var possibleBids = bidLookup[(publisher.PublisherID, formerPublisherGame.PublisherGame.MasterGame.Value.MasterGame.MasterGameID)];
-            //var bidsBeforeDrop = possibleBids.Where(x => x.Timestamp < formerPublisherGame.RemovedTimestamp).ToList();
-            //if (!bidsBeforeDrop.Any())
-            //{
-            //    return Maybe<PickupBid>.None;
-            //}
+            var bidsBeforeRemove = pickupBidsForPublisher.Where(x => x.Timestamp < removeAction.Timestamp).OrderByDescending(x => x.Timestamp).ToList();
+            if (!bidsBeforeRemove.Any())
+            {
+                return Maybe<PickupBid>.None;
+            }
 
-            //var lastBidBeforeDrop = bidsBeforeDrop.MaxBy(x => x.Timestamp).ToList();
-            //if (lastBidBeforeDrop.Count() != 1)
-            //{
-            //    throw new Exception("Something strange!");
-            //}
+            List<PickupBid> possibleBids = new List<PickupBid>();
+            foreach (var bid in bidsBeforeRemove)
+            {
+                if (!GameNameMatches(gameName, bid.MasterGame.GameName))
+                {
+                    continue;
+                }
 
-            //var bestBid = lastBidBeforeDrop.Single();
-            //return bestBid;
+                possibleBids.Add(bid);
+            }
+
+
+            if (!possibleBids.Any())
+            {
+                return Maybe<PickupBid>.None;
+            }
+
+            var lastBidBeforeRemove = possibleBids.MaxBy(x => x.Timestamp).ToList();
+            if (lastBidBeforeRemove.Count() != 1)
+            {
+                throw new Exception("Something strange!");
+            }
+
+            return lastBidBeforeRemove.Single();
         }
 
+        private static Maybe<TempLeagueActionEntity> GetMatchingBidAction(PickupBid bid, IReadOnlyList<TempLeagueActionEntity> bidActionsForPublisher)
+        {
+            List<TempLeagueActionEntity> possibleBidActions = new List<TempLeagueActionEntity>();
+            foreach (var bidAction in bidActionsForPublisher)
+            {
+                var actionGameName = bidAction.Description.TrimStart("Acquired game: ").TrimStartingFromFirstInstance(" with a bid of ").Trim('\'');
+                if (!GameNameMatches(actionGameName, bid.MasterGame.GameName))
+                {
+                    continue;
+                }
+
+                bool bidInRange = new Interval(bid.Timestamp, bid.Timestamp.Plus(Duration.FromDays(7))).Contains(bidAction.Timestamp);
+                if (!bidInRange)
+                {
+                    continue;
+                }
+
+                possibleBidActions.Add(bidAction);
+            }
+
+            if (!possibleBidActions.Any())
+            {
+                return Maybe<TempLeagueActionEntity>.None;
+            }
+
+            if (possibleBidActions.Count > 1)
+            {
+                throw new Exception($"More than one match for bid: {bid.BidID}");
+            }
+
+            return possibleBidActions.Single();
+        }
+
+
         private static Maybe<TempLeagueActionEntity> GetMatchingDraftAction(IReadOnlyList<TempLeagueActionEntity> filteredDraftActions, Publisher publisher, 
-            string gameName, TempLeagueActionEntity removeAction, HashSet<(string, string)> approvedMappings)
+            string gameName, TempLeagueActionEntity removeAction)
         {
             return Maybe<TempLeagueActionEntity>.None;
             //var publisherDraftCount = 0;
@@ -305,7 +328,7 @@ namespace FantasyCritic.PublisherGameFixer
         }
 
         private static Maybe<TempLeagueActionEntity> GetMatchingClaimAction(IReadOnlyList<TempLeagueActionEntity> claimActionsForPublisher, Publisher publisher,
-            string gameName, TempLeagueActionEntity removeAction, HashSet<(string, string)> approvedMappings)
+            string gameName, TempLeagueActionEntity removeAction)
         {
             return Maybe<TempLeagueActionEntity>.None;
             //var claimActionsBeforeDrop = claimActionsForPublisher
@@ -328,6 +351,65 @@ namespace FantasyCritic.PublisherGameFixer
             //}
 
             //return Maybe<FormerPublisherGameClaimUpdateEntity>.None;
+        }
+
+        private static bool GameNameMatches(string rawGameName, string possibleMatch)
+        {
+            var approvedMappings = new List<(string, string)>()
+            {
+                ("Persona 5 Scramble: The Phantom Strikers", "Persona 5 Strikers"),
+                ("Tom Clancy’s Rainbow Six: Quarantine", "Tom Clancy’s Rainbow Six: Extraction"),
+                ("Rumored 2D Metroid Sequel (Unannounced)", "Metroid Dread"),
+                ("Ratchet & Clank Rift Apart", "Ratchet & Clank: Rift Apart"),
+                ("Super Mario Sunshine Remaster (Rumored)", "Super Mario Sunshine Remaster (Deprecated)"),
+                ("Mario Odyssey Sequel (Unannounced)", "Super Mario Odyssey 2 (Unannounced)"),
+                ("The Wolf Among Us Season 2", "The Wolf Among Us 2"),
+                ("Final Fantasy 7 Remake", "Final Fantasy VII Remake"),
+                ("Bravely Default 2", "Bravely Default II"),
+                ("GhostWire: Tokyo", "GhostWire Tokyo"),
+                ("Gran Turismo Sequel (Unannounced)", "Gran Turismo 7"),
+                ("Werewolf: The Apocalypse: Earthblood", "Werewolf: The Apocalypse - Earthblood"),
+                ("Bright Memory infinite", "Bright Memory: Infinite"),
+                ("Gran Turismo (PS5) (unannounced)", "Gran Turismo 7"),
+                ("Twelve Minutes", "12 Minutes"),
+                ("God of War: Ragnarok", "God of War: Ragnarök"),
+                ("Last of Us Factions 2", "The Last of Us Factions 2"),
+                ("Pokemon Let's Go 2 (Unannounced)", "Pokémon Let's Go 2 (Unannounced)"),
+                ("Tom Clancy’s Rainbow Six: Parasite", "Tom Clancy’s Rainbow Six: Extraction"),
+                ("Unannounced Spyro the Dragon Game", "Unannounced Mainline Spyro the Dragon Game"),
+                ("Dying Light 2", "Dying Light 2: Stay Human"),
+                ("Forza Motorsport 8 (Unannounced)", "Forza Motorsport (Xbox Series X)"),
+                ("Untitled Batman Game from WB Games Montréal (Unannounced)", "Gotham Knights"),
+                ("Horizon: Zero Dawn Sequel (Unannounced)", "Horizon Forbidden West"),
+                ("STALKER 2", "STALKER 2: Heart of Chernobyl"),
+                ("Call of Duty 2021", "Call of Duty Vanguard"),
+                ("Mario Kart 9 (Unannounced)", "Mario Kart (Unannounced Next Mainline Console Game)"),
+                ("Call of Duty 2020 (Unannounced)", "Call of Duty: Black Ops Cold War"),
+                ("Bravely Default 2", "Bravely Default II"),
+                ("Grand Theft Auto 6 (Unannounced)", "Grand Theft Auto 6"),
+                ("Gods & Monsters", "Immortals: Fenyx Rising"),
+                ("Unannounced 3D Mario", "Unannounced Mainline 3D Mario Platformer"),
+                ("Deltarune", "Deltarune Chapter 2"),
+                ("Unannounced Call of Duty 2022", "Call of Duty: Modern Warfare Sequel (2022)"),
+                ("Unannounced Main Series Sonic Game", "Sonic Frontiers"),
+                ("HuniePop 2", "HuniePop 2: Double Date"),
+                ("Unannounced Next Assassin's Creed", "Assassin's Creed Infinity"),
+                ("Battlefield 2042", "Next Gen Battlefield Game"),
+                ("Demon Souls Remake", "Demon's Souls (2020)"),
+                ("Baldo", "Baldo: The Guardian Owls"),
+                ("Destruction Allstars ", "Destruction Allstars"),
+                ("Dark Alliance", "Dungeons & Dragons: Dark Alliance"),
+                ("Fable (Unannounced)", "Fable (Xbox Series X)"),
+                ("Untitled Final Fantasy XIV Expansion", "Final Fantasy XIV: Endwalker"),
+            }.ToHashSet();
+
+            if (!rawGameName.Equals(possibleMatch, StringComparison.OrdinalIgnoreCase))
+            {
+                bool approvedMapping = approvedMappings.Contains((rawGameName, possibleMatch));
+                return approvedMapping;
+            }
+
+            return true;
         }
     }
 }

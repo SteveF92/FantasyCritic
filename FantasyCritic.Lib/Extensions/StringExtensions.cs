@@ -27,5 +27,16 @@ namespace FantasyCritic.Lib.Extensions
         {
             return Regex.Replace(value, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
         }
+
+        public static string TrimStartingFromFirstInstance(this string source, string startFrom)
+        {
+            int index = source.IndexOf(startFrom);
+            if (index > 0)
+            {
+                source = source.Substring(0, index);
+            }
+
+            return source;
+        }
     }
 }

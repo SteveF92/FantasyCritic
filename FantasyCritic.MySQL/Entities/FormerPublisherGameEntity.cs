@@ -16,6 +16,27 @@ namespace FantasyCritic.MySQL.Entities
 
         }
 
+        public FormerPublisherGameEntity(Guid publisherGameID, Guid publisherID, string gameName, Instant timestamp, bool counterPick, 
+            decimal? manualCriticScore, bool manualWillNotRelease, decimal? fantasyPoints, Guid? masterGameID, int? draftPosition, 
+            int? overallDraftPosition, uint? bidAmount, Guid? acquiredInTradeID, Instant removedTimestamp, string removedNote)
+        {
+            PublisherGameID = publisherGameID;
+            PublisherID = publisherID;
+            GameName = gameName;
+            Timestamp = timestamp;
+            CounterPick = counterPick;
+            ManualCriticScore = manualCriticScore;
+            ManualWillNotRelease = manualWillNotRelease;
+            FantasyPoints = fantasyPoints;
+            MasterGameID = masterGameID;
+            DraftPosition = draftPosition;
+            OverallDraftPosition = overallDraftPosition;
+            BidAmount = bidAmount;
+            AcquiredInTradeID = acquiredInTradeID;
+            RemovedTimestamp = removedTimestamp;
+            RemovedNote = removedNote;
+        }
+
         public FormerPublisherGameEntity(FormerPublisherGame publisherGame)
         {
             PublisherGameID = publisherGame.PublisherGame.PublisherGameID;
