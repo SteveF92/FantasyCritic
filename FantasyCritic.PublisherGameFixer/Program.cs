@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using CSharpFunctionalExtensions;
@@ -90,7 +91,7 @@ namespace FantasyCritic.PublisherGameFixer
                     var draftActions = leagueActions.Where(x => x.ActionType.Contains("Drafted")).ToList();
                     if (!draftActions.Any())
                     {
-                        throw new Exception($"No draft actions for league: {publisherGroup.Key.League.LeagueID}");
+                        continue;
                     }
 
                     var finalDraftAction = draftActions.Last();
@@ -174,7 +175,7 @@ namespace FantasyCritic.PublisherGameFixer
                                 bool claimActionIsCounterPick = false;
 
                                 formerPublisherGamesFromClaims.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
-                                    draftAction.Value.Timestamp, claimActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
+                                    claimAction.Value.Timestamp, claimActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
                                 continue;
                             }
                         }
@@ -184,14 +185,14 @@ namespace FantasyCritic.PublisherGameFixer
 
             var allEntities = formerPublisherGamesFromBids.Concat(formerPublisherGamesFromDraft).Concat(formerPublisherGamesFromClaims).ToList();
 
-            //_logger.Info("Starting database inserts");
-            //using (var connection = new MySqlConnection(_connectionString))
-            //{
-            //    await connection.OpenAsync();
-            //    await connection.BulkInsertAsync(allEntities, "tbl_league_formerpublishergame", 500);
-            //}
+            _logger.Info("Starting database inserts");
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.BulkInsertAsync(allEntities, "tbl_league_formerpublishergame", 500);
+            }
 
-            //_logger.Info("Done running missing former publisher game additions");
+            _logger.Info("Done running missing former publisher game additions");
         }
 
         private static IReadOnlyList<TempLeagueActionEntity> FilterDraftActions(List<TempLeagueActionEntity> actions)
@@ -348,12 +349,12 @@ namespace FantasyCritic.PublisherGameFixer
                 return Maybe<TempLeagueActionEntity>.None;
             }
 
-            if (possibleDraftActions.Count > 1)
+            if (possibleDraftActions.Select(x => x.Description).Distinct().Count() > 1)
             {
                 throw new Exception($"More than one match for draft: {gameName}");
             }
-
-            return possibleDraftActions.Single();
+            
+            return possibleDraftActions.MaxBy(x => x.Timestamp).First();
         }
 
         private static Maybe<TempLeagueActionEntity> GetMatchingClaimAction(IReadOnlyList<TempLeagueActionEntity> claimActionsForPublisher, Publisher publisher,
@@ -368,8 +369,8 @@ namespace FantasyCritic.PublisherGameFixer
                     continue;
                 }
 
-                bool draftBeforeRemove = claimAction.Timestamp < removeAction.Timestamp;
-                if (!draftBeforeRemove)
+                bool claimBeforeRemove = claimAction.Timestamp < removeAction.Timestamp;
+                if (!claimBeforeRemove)
                 {
                     continue;
                 }
@@ -382,12 +383,12 @@ namespace FantasyCritic.PublisherGameFixer
                 return Maybe<TempLeagueActionEntity>.None;
             }
 
-            if (possibleClaimActions.Count > 1)
+            if (possibleClaimActions.Select(x => x.Description.ToLower()).Distinct().Count() > 1)
             {
                 throw new Exception($"More than one match for claim: {gameName}");
             }
 
-            return possibleClaimActions.Single();
+            return possibleClaimActions.MaxBy(x => x.Timestamp).First();
         }
 
         private static bool GameNameMatches(string rawGameName, string possibleMatch)
@@ -475,6 +476,10 @@ namespace FantasyCritic.PublisherGameFixer
                 {
                     publisherDraftCount++;
                 }
+                else
+                {
+                    continue;
+                }
 
                 var actionGameName = draftAction.Description.TrimStart("Drafted game: ").TrimStart("Auto Drafted game: ").Trim('\'');
                 if (!GameNameMatches(actionGameName, masterGame.GameName))
@@ -484,6 +489,11 @@ namespace FantasyCritic.PublisherGameFixer
 
                 var overallDraftPosition = index + 1;
                 var draftPosition = publisherDraftCount;
+                if (draftPosition == 0)
+                {
+                    throw new Exception("Can't have draft position of 0");
+                }
+
                 var update = new FormerPublisherGameDraftPositionUpdateEntity(Guid.NewGuid(), draftAction.Timestamp, overallDraftPosition, draftPosition);
                 return update;
             }
