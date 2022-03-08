@@ -150,7 +150,7 @@ namespace FantasyCritic.PublisherGameFixer
                                     continue;
                                 }
 
-                                bool draftActionIsCounterPick = false;
+                                bool draftActionIsCounterPick = draftAction.Value.ActionType.ToLower().Contains("counterpick");
 
                                 formerPublisherGameEntities.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
                                     draftAction.Value.Timestamp, draftActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
@@ -436,7 +436,18 @@ namespace FantasyCritic.PublisherGameFixer
 
         private static Maybe<MasterGame> GetMatchingMasterGame(string actionGameName, IReadOnlyList<MasterGame> masterGames)
         {
-            throw new NotImplementedException();
+            var matches = masterGames.Where(x => GameNameMatches(actionGameName, x.GameName)).ToList();
+            if (!matches.Any())
+            {
+                return Maybe<MasterGame>.None;
+            }
+
+            if (matches.Count > 1)
+            {
+                throw new Exception($"More than one match for: {actionGameName}");
+            }
+
+            return matches.Single();
         }
     }
 }
