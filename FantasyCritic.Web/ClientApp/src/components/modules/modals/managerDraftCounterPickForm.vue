@@ -18,6 +18,13 @@
           </b-form-select>
         </div>
 
+        <div v-if="draftResult && !draftResult.success" class="alert bid-error alert-danger">
+          <h3 class="alert-heading">Error!</h3>
+          <ul>
+            <li v-for="error in draftResult.errors">{{error}}</li>
+          </ul>
+        </div>
+
         <div v-if="selectedCounterPick">
           <input type="submit" class="btn btn-primary add-game-button" value="Select Game as Counter-Pick" />
         </div>
@@ -34,7 +41,8 @@ export default {
   data() {
     return {
       selectedCounterPick: null,
-      possibleCounterPicks: []
+      possibleCounterPicks: [],
+      draftResult: null
     };
   },
   props: ['nextPublisherUp'],
@@ -55,6 +63,7 @@ export default {
         .post('/api/leagueManager/ManagerDraftGame', request)
         .then(response => {
           this.draftResult = response.data;
+          this.isBusy = false;
           if (!this.draftResult.success) {
             return;
           }
@@ -67,7 +76,7 @@ export default {
           this.selectedCounterPick = null;
         })
         .catch(response => {
-
+          this.isBusy = false;
         });
     },
     getPossibleCounterPicks() {
