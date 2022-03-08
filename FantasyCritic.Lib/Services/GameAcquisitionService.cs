@@ -34,7 +34,7 @@ namespace FantasyCritic.Lib.Services
             _clock = clock;
         }
 
-        public ClaimResult CanClaimGame(ClaimGameDomainRequest request, LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime, int? validDropSlot, bool watchListing)
+        public ClaimResult CanClaimGame(ClaimGameDomainRequest request, LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeague, Instant? nextBidTime, int? validDropSlot, bool watchListing, bool drafting)
         {
             var currentDate = _clock.GetToday();
             var dateOfPotentialAcquisition = currentDate;
@@ -50,7 +50,8 @@ namespace FantasyCritic.Lib.Services
 
             if (request.MasterGame.HasValue)
             {
-                var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, request.CounterPick, request.CounterPickedGameIsManualWillNotRelease);
+                var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, false, currentDate, 
+                    dateOfPotentialAcquisition, request.CounterPick, request.CounterPickedGameIsManualWillNotRelease, drafting);
                 claimErrors.AddRange(masterGameErrors);
             }
 
@@ -120,7 +121,7 @@ namespace FantasyCritic.Lib.Services
             dropErrors.AddRange(basicErrors);
 
             var currentDate = _clock.GetToday();
-            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, true, currentDate, currentDate, false, false);
+            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, true, currentDate, currentDate, false, false, false);
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
@@ -167,7 +168,8 @@ namespace FantasyCritic.Lib.Services
                 dateOfPotentialAcquisition = nextBidTime.Value.ToEasternDate();
             }
 
-            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame, leagueYear.Year, true, currentDate, dateOfPotentialAcquisition, false, false);
+            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame, leagueYear.Year,
+                true, currentDate, dateOfPotentialAcquisition, false, false, false);
             dropErrors.AddRange(masterGameErrors);
 
             //Drop limits
@@ -210,7 +212,8 @@ namespace FantasyCritic.Lib.Services
             var currentDate = _clock.GetToday();
             var dateOfPotentialAcquisition = currentDate;
 
-            IReadOnlyList<ClaimError> masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, request.PublisherGame.CounterPick, false);
+            IReadOnlyList<ClaimError> masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate, 
+                dateOfPotentialAcquisition, request.PublisherGame.CounterPick, false, false);
             associationErrors.AddRange(masterGameErrors);
 
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(request.Publisher.LeagueYear);
@@ -279,7 +282,7 @@ namespace FantasyCritic.Lib.Services
         }
 
         private IReadOnlyList<ClaimError> GetGenericSlotMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool dropping, 
-            LocalDate currentDate, LocalDate dateOfPotentialAcquisition, bool counterPick, bool counterPickedGameIsManualWillNotRelease)
+            LocalDate currentDate, LocalDate dateOfPotentialAcquisition, bool counterPick, bool counterPickedGameIsManualWillNotRelease, bool drafting)
         {
             MasterGameWithEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame, dateOfPotentialAcquisition);
             List<ClaimError> claimErrors = new List<ClaimError>();
@@ -312,7 +315,7 @@ namespace FantasyCritic.Lib.Services
                 claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
             }
 
-            if (counterPick && masterGame.DelayContention)
+            if (counterPick && !drafting && masterGame.DelayContention)
             {
                 claimErrors.Add(new ClaimError($"That game is in 'delay contention', and therefore cannot be counter picked.", true));
             }
@@ -332,7 +335,7 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft, IReadOnlyList<Publisher> publishersForYear)
+        public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft, IReadOnlyList<Publisher> publishersForYear, bool drafting)
         {
             Maybe<MasterGameYear> masterGameYear = Maybe<MasterGameYear>.None;
             if (request.MasterGame.HasValue)
@@ -341,7 +344,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             LeagueYear leagueYear = request.Publisher.LeagueYear;
-            ClaimResult claimResult = CanClaimGame(request, leagueYear, publishersForYear, null, null, false);
+            ClaimResult claimResult = CanClaimGame(request, leagueYear, publishersForYear, null, null, false, drafting);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -432,7 +435,7 @@ namespace FantasyCritic.Lib.Services
                 validDropSlot = conditionalDropPublisherGame.Value.SlotNumber;
             }
 
-            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, nextBidTime, validDropSlot, false);
+            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, nextBidTime, validDropSlot, false, false);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -458,7 +461,7 @@ namespace FantasyCritic.Lib.Services
             var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, false, false, false, false, masterGame, null, null);
             var leagueYear = publisher.LeagueYear;
             var publishersForYear = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
-            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, null, null, true);
+            var claimResult = CanClaimGame(claimRequest, leagueYear, publishersForYear, null, null, true, false);
             if (!claimResult.Success)
             {
                 return claimResult;
@@ -637,7 +640,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var bid in distinctBids)
             {
                 var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, leagueYear.Year);
-                var claimResult = GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false);
+                var claimResult = GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false, false);
                 masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.Value, bid.CounterPick, claimResult));
             }
 
@@ -707,7 +710,7 @@ namespace FantasyCritic.Lib.Services
                 foreach (var bid in distinctBids)
                 {
                     var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, activeBidsForLeague.Key.Year);
-                    var claimResult = GetGenericSlotMasterGameErrors(activeBidsForLeague.Key, bid.MasterGame, activeBidsForLeague.Key.Year, false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false);
+                    var claimResult = GetGenericSlotMasterGameErrors(activeBidsForLeague.Key, bid.MasterGame, activeBidsForLeague.Key.Year, false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false, false);
                     masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.Value, bid.CounterPick, claimResult));
                 }
 

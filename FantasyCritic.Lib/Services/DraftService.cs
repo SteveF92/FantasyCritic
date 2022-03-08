@@ -219,7 +219,7 @@ namespace FantasyCritic.Lib.Services
 
         public async Task<(ClaimResult Result, bool DraftComplete)> DraftGame(ClaimGameDomainRequest request, bool managerAction, LeagueYear leagueYear, IReadOnlyList<Publisher> publishersForYear)
         {
-            var result = await _gameAcquisitionService.ClaimGame(request, managerAction, true, publishersForYear);
+            var result = await _gameAcquisitionService.ClaimGame(request, managerAction, true, publishersForYear, true);
             int standardGamesAdded = 0;
             if (result.Success && !request.CounterPick)
             {
@@ -291,7 +291,7 @@ namespace FantasyCritic.Lib.Services
                 foreach (var possibleGame in gamesToTake)
                 {
                     var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers, true);
                     if (autoDraftResult.Success)
                     {
                         standardGamesAdded++;
@@ -313,7 +313,7 @@ namespace FantasyCritic.Lib.Services
                 {
                     var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame, 
                         draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers, true);
                     if (autoDraftResult.Success)
                     {
                         counterPicksAdded++;

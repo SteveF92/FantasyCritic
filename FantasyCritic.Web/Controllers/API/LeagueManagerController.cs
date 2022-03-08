@@ -898,7 +898,7 @@ namespace FantasyCritic.Web.Controllers.API
             var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
             bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear.Value, publishersInLeague, request.CounterPick, masterGame, false);
             ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(publisher.Value, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false, masterGame, null, null);
-            ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, false, publishersInLeague);
+            ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, false, publishersInLeague, false);
             var viewModel = new ManagerClaimResultViewModel(result);
 
             await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear.Value);
