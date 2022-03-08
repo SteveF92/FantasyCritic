@@ -150,10 +150,13 @@ namespace FantasyCritic.PublisherGameFixer
                                     continue;
                                 }
 
+                                var draftUpdate = GetDraftUpdate(filteredDraftActions, publisher, matchingMasterGame.Value);
+
                                 bool draftActionIsCounterPick = draftAction.Value.ActionType.ToLower().Contains("counterpick");
 
                                 formerPublisherGameEntities.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
-                                    draftAction.Value.Timestamp, draftActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
+                                    draftAction.Value.Timestamp, draftActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, 
+                                    draftUpdate.GetValueOrDefault(x => x.DraftPosition), draftUpdate.GetValueOrDefault(x => x.OverallDraftPosition), null, null, removeAction.Timestamp, "Removed by league manager"));
                                 continue;
                             }
 
@@ -448,6 +451,32 @@ namespace FantasyCritic.PublisherGameFixer
             }
 
             return matches.Single();
+        }
+
+        private static Maybe<FormerPublisherGameDraftPositionUpdateEntity> GetDraftUpdate(IReadOnlyList<TempLeagueActionEntity> filteredDraftActions, Publisher publisher, MasterGame masterGame)
+        {
+            var publisherDraftCount = 0;
+            for (var index = 0; index < filteredDraftActions.Count; index++)
+            {
+                var draftAction = filteredDraftActions[index];
+                if (draftAction.PublisherID == publisher.PublisherID)
+                {
+                    publisherDraftCount++;
+                }
+
+                var actionGameName = draftAction.Description.TrimStart("Drafted game: ").TrimStart("Auto Drafted game: ").Trim('\'');
+                if (!GameNameMatches(actionGameName, masterGame.GameName))
+                {
+                    continue;
+                }
+
+                var overallDraftPosition = index + 1;
+                var draftPosition = publisherDraftCount;
+                var update = new FormerPublisherGameDraftPositionUpdateEntity(Guid.NewGuid(), draftAction.Timestamp, overallDraftPosition, draftPosition);
+                return update;
+            }
+
+            return Maybe<FormerPublisherGameDraftPositionUpdateEntity>.None;
         }
     }
 }
