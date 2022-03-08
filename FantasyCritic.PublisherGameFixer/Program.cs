@@ -64,6 +64,7 @@ namespace FantasyCritic.PublisherGameFixer
 
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             var realYears = supportedYears.Where(x => x.Year > 2018).ToList();
+            var masterGames = await masterGameRepo.GetMasterGames();
 
             foreach (var supportedYear in realYears)
             {
@@ -137,19 +138,40 @@ namespace FantasyCritic.PublisherGameFixer
 
                                 formerPublisherGameEntities.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingBid.Value.MasterGame.GameName, 
                                     matchingBidAction.Value.Timestamp, matchingBid.Value.CounterPick, null, false, null, matchingBid.Value.MasterGame.MasterGameID, null, null, matchingBid.Value.BidAmount, null, removeAction.Timestamp, "Removed by league manager"));
+                                continue;
                             }
 
-                            //Maybe<TempLeagueActionEntity> draftAction = GetMatchingDraftAction(draftActionsForPublisher, publisher, actionGameName, removeAction, approvedMappings);
-                            //if (draftAction.HasValue)
-                            //{
-                                
-                            //}
+                            Maybe<TempLeagueActionEntity> draftAction = GetMatchingDraftAction(draftActionsForPublisher, publisher, actionGameName, removeAction);
+                            if (draftAction.HasValue)
+                            {
+                                Maybe<MasterGame> matchingMasterGame = GetMatchingMasterGame(actionGameName, masterGames);
+                                if (matchingMasterGame.HasNoValue)
+                                {
+                                    continue;
+                                }
 
-                            //Maybe<TempLeagueActionEntity> claimAction = GetMatchingClaimAction(claimActionsForPublisher, publisher, actionGameName, removeAction, approvedMappings);
-                            //if (claimAction.HasValue)
-                            //{
+                                bool draftActionIsCounterPick = false;
 
-                            //}
+                                formerPublisherGameEntities.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
+                                    draftAction.Value.Timestamp, draftActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
+                                continue;
+                            }
+
+                            Maybe<TempLeagueActionEntity> claimAction = GetMatchingClaimAction(claimActionsForPublisher, publisher, actionGameName, removeAction);
+                            if (claimAction.HasValue)
+                            {
+                                Maybe<MasterGame> matchingMasterGame = GetMatchingMasterGame(actionGameName, masterGames);
+                                if (matchingMasterGame.HasNoValue)
+                                {
+                                    continue;
+                                }
+
+                                bool claimActionIsCounterPick = false;
+
+                                formerPublisherGameEntities.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
+                                    draftAction.Value.Timestamp, claimActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
+                                continue;
+                            }
                         }
                     }
                 }
@@ -264,7 +286,7 @@ namespace FantasyCritic.PublisherGameFixer
             List<TempLeagueActionEntity> possibleBidActions = new List<TempLeagueActionEntity>();
             foreach (var bidAction in bidActionsForPublisher)
             {
-                var actionGameName = bidAction.Description.TrimStart("Acquired game: ").TrimStartingFromFirstInstance(" with a bid of ").Trim('\'');
+                var actionGameName = bidAction.Description.TrimStart("Acquired game ").TrimStartingFromFirstInstance(" with a bid of ").Trim('\'');
                 if (!GameNameMatches(actionGameName, bid.MasterGame.GameName))
                 {
                     continue;
@@ -410,6 +432,11 @@ namespace FantasyCritic.PublisherGameFixer
             }
 
             return true;
+        }
+
+        private static Maybe<MasterGame> GetMatchingMasterGame(string actionGameName, IReadOnlyList<MasterGame> masterGames)
+        {
+            throw new NotImplementedException();
         }
     }
 }
