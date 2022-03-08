@@ -318,64 +318,72 @@ namespace FantasyCritic.PublisherGameFixer
         }
 
 
-        private static Maybe<TempLeagueActionEntity> GetMatchingDraftAction(IReadOnlyList<TempLeagueActionEntity> filteredDraftActions, Publisher publisher, 
+        private static Maybe<TempLeagueActionEntity> GetMatchingDraftAction(IReadOnlyList<TempLeagueActionEntity> draftActionsFoActionEntities, Publisher publisher, 
             string gameName, TempLeagueActionEntity removeAction)
         {
-            return Maybe<TempLeagueActionEntity>.None;
-            //var publisherDraftCount = 0;
-            //for (var index = 0; index < filteredDraftActions.Count; index++)
-            //{
-            //    var draftAction = filteredDraftActions[index];
-            //    if (draftAction.PublisherID == publisher.PublisherID)
-            //    {
-            //        publisherDraftCount++;
-            //    }
+            List<TempLeagueActionEntity> possibleDraftActions = new List<TempLeagueActionEntity>();
+            foreach (var draftAction in draftActionsFoActionEntities)
+            {
+                var actionGameName = draftAction.Description.TrimStart("Drafted game: ").Trim('\'');
+                if (!GameNameMatches(actionGameName, gameName))
+                {
+                    continue;
+                }
 
-            //    var actionGameName = draftAction.Description.TrimStart("Drafted game: ").TrimStart("Auto Drafted game: ").Trim('\'');
-            //    if (!actionGameName.Equals(formerPublisherGame.PublisherGame.GameName, StringComparison.OrdinalIgnoreCase))
-            //    {
-            //        bool approvedMapping = approvedMappings.Contains((actionGameName, formerPublisherGame.PublisherGame.GameName));
-            //        if (!approvedMapping)
-            //        {
-            //            continue;
-            //        }
-            //    }
+                bool draftBeforeRemove = draftAction.Timestamp < removeAction.Timestamp;
+                if (!draftBeforeRemove)
+                {
+                    continue;
+                }
 
-            //    var overallDraftPosition = index + 1;
-            //    var draftPosition = publisherDraftCount;
-            //    var update = new FormerPublisherGameDraftPositionUpdateEntity(
-            //        formerPublisherGame.PublisherGame.PublisherGameID, draftAction.Timestamp, overallDraftPosition,
-            //        draftPosition);
-            //    return update;
-            //}
+                possibleDraftActions.Add(draftAction);
+            }
 
-            //return Maybe<FormerPublisherGameDraftPositionUpdateEntity>.None;
+            if (!possibleDraftActions.Any())
+            {
+                return Maybe<TempLeagueActionEntity>.None;
+            }
+
+            if (possibleDraftActions.Count > 1)
+            {
+                throw new Exception($"More than one match for draft: {gameName}");
+            }
+
+            return possibleDraftActions.Single();
         }
 
         private static Maybe<TempLeagueActionEntity> GetMatchingClaimAction(IReadOnlyList<TempLeagueActionEntity> claimActionsForPublisher, Publisher publisher,
             string gameName, TempLeagueActionEntity removeAction)
         {
-            return Maybe<TempLeagueActionEntity>.None;
-            //var claimActionsBeforeDrop = claimActionsForPublisher
-            //    .Where(x => x.Timestamp < formerPublisherGame.RemovedTimestamp).OrderByDescending(x => x.Timestamp)
-            //    .ToList();
-            //foreach (var claimAction in claimActionsBeforeDrop)
-            //{
-            //    var actionGameName = claimAction.Description.TrimStart("Claimed game: ").Trim('\'');
-            //    if (!actionGameName.Equals(formerPublisherGame.PublisherGame.GameName, StringComparison.OrdinalIgnoreCase))
-            //    {
-            //        bool approvedMapping = approvedMappings.Contains((actionGameName, formerPublisherGame.PublisherGame.GameName));
-            //        if (!approvedMapping)
-            //        {
-            //            continue;
-            //        }
-            //    }
+            List<TempLeagueActionEntity> possibleClaimActions = new List<TempLeagueActionEntity>();
+            foreach (var claimAction in claimActionsForPublisher)
+            {
+                var actionGameName = claimAction.Description.TrimStart("Claimed game: ").Trim('\'');
+                if (!GameNameMatches(actionGameName, gameName))
+                {
+                    continue;
+                }
 
-            //    var update = new FormerPublisherGameClaimUpdateEntity(formerPublisherGame.PublisherGame.PublisherGameID, claimAction.Timestamp);
-            //    return update;
-            //}
+                bool draftBeforeRemove = claimAction.Timestamp < removeAction.Timestamp;
+                if (!draftBeforeRemove)
+                {
+                    continue;
+                }
 
-            //return Maybe<FormerPublisherGameClaimUpdateEntity>.None;
+                possibleClaimActions.Add(claimAction);
+            }
+
+            if (!possibleClaimActions.Any())
+            {
+                return Maybe<TempLeagueActionEntity>.None;
+            }
+
+            if (possibleClaimActions.Count > 1)
+            {
+                throw new Exception($"More than one match for claim: {gameName}");
+            }
+
+            return possibleClaimActions.Single();
         }
 
         private static bool GameNameMatches(string rawGameName, string possibleMatch)
