@@ -156,7 +156,7 @@ namespace FantasyCritic.Lib.Domain.Trades
                 {
                     counterPickString = " (Counter Pick)";
                 }
-                acquisitions.Add($"Acquired {game.MasterGameYear.MasterGame.GameName}{counterPickString}.");
+                acquisitions.Add($"Acquired '{game.MasterGameYear.MasterGame.GameName}'{counterPickString}.");
             }
             if (budgetSend > 0)
             {
