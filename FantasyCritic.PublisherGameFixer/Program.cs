@@ -102,7 +102,7 @@ namespace FantasyCritic.PublisherGameFixer
                         .ToList();
 
                     var filteredDraftActions = FilterDraftActions(leagueActions);
-                    var claimActions = leagueActions.Where(x => x.ActionType == "Publisher Game Claimed").ToList();
+                    var claimActions = leagueActions.Where(x => x.ActionType == "Publisher Game Claimed" || x.ActionType == "Publisher Counterpick Claimed").ToList();
                     var bidActions = leagueActions.Where(x => x.ActionType == "Pickup Successful").ToList();
 
                     foreach (var publisher in publisherGroup)
