@@ -105,7 +105,7 @@ namespace FantasyCritic.PublisherGameFixer
 
                     var filteredDraftActions = FilterDraftActions(leagueActions);
                     var claimActions = leagueActions.Where(x => x.ActionType == "Publisher Game Claimed" || x.ActionType == "Publisher Counterpick Claimed").ToList();
-                    var bidActions = leagueActions.Where(x => x.ActionType == "Pickup Successful").ToList();
+                    var bidActions = leagueActions.Where(x => x.ActionType == "Pickup Successful" || x.ActionType == "Counter Pick Pickup Successful").ToList();
 
                     foreach (var publisher in publisherGroup)
                     {
@@ -307,7 +307,7 @@ namespace FantasyCritic.PublisherGameFixer
             List<TempLeagueActionEntity> possibleBidActions = new List<TempLeagueActionEntity>();
             foreach (var bidAction in bidActionsForPublisher)
             {
-                var actionGameName = bidAction.Description.TrimStart("Acquired game ").TrimStartingFromFirstInstance(" with a bid of ").Trim('\'');
+                var actionGameName = bidAction.Description.TrimStart("Acquired game ").TrimStart("Acquired counter pick ").TrimStartingFromFirstInstance(" with a bid of ").Trim('\'');
                 if (!GameNameMatches(actionGameName, bid.MasterGame.GameName))
                 {
                     continue;
@@ -494,6 +494,8 @@ namespace FantasyCritic.PublisherGameFixer
                 ("Untitled Yakuza sequel", "Yakuza: Like a Dragon Sequel"),
                 ("Vampire: The Masquerade - Blood Hunt", "Vampire: The Masquerade - Bloodhunt"),
                 ("Warcraft 3: Reforged", "Warcraft III: Reforged"),
+                ("Super Mario Galaxy Remaster (Rumored)", "Super Mario Galaxy Remaster (Deprecated)"),
+                ("Ghost of Tsushima Standalone Expansion (Rumoured)", "Ghost of Tsushima Director's Cut"),
             }.ToHashSet();
 
             if (!rawGameName.Equals(possibleMatch, StringComparison.OrdinalIgnoreCase))
