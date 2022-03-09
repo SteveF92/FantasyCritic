@@ -151,16 +151,19 @@ namespace FantasyCritic.PublisherGameFixer
                             if (draftAction.HasValue)
                             {
                                 Maybe<MasterGame> matchingMasterGame = GetMatchingMasterGame(actionGameName, masterGames);
-                                if (matchingMasterGame.HasNoValue)
+                                Guid? masterGameID = null;
+                                string gameNameToUse = actionGameName;
+                                if (matchingMasterGame.HasValue)
                                 {
-                                    continue;
+                                    masterGameID = matchingMasterGame.Value.MasterGameID;
+                                    gameNameToUse = matchingMasterGame.Value.GameName;
                                 }
 
                                 bool draftActionIsCounterPick = draftAction.Value.ActionType.ToLower().Contains("counterpick");
-                                var draftUpdate = GetDraftUpdate(filteredDraftActions, publisher, matchingMasterGame.Value, draftActionIsCounterPick);
+                                var draftUpdate = GetDraftUpdate(filteredDraftActions, publisher, gameNameToUse, draftActionIsCounterPick);
 
-                                formerPublisherGamesFromDraft.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
-                                    draftAction.Value.Timestamp, draftActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, 
+                                formerPublisherGamesFromDraft.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, gameNameToUse,
+                                    draftAction.Value.Timestamp, draftActionIsCounterPick, null, false, null, masterGameID, 
                                     draftUpdate.GetValueOrDefault(x => x.DraftPosition), draftUpdate.GetValueOrDefault(x => x.OverallDraftPosition), null, null, removeAction.Timestamp, "Removed by league manager"));
                                 continue;
                             }
@@ -169,15 +172,18 @@ namespace FantasyCritic.PublisherGameFixer
                             if (claimAction.HasValue)
                             {
                                 Maybe<MasterGame> matchingMasterGame = GetMatchingMasterGame(actionGameName, masterGames);
-                                if (matchingMasterGame.HasNoValue)
+                                Guid? masterGameID = null;
+                                string gameNameToUse = actionGameName;
+                                if (matchingMasterGame.HasValue)
                                 {
-                                    continue;
+                                    masterGameID = matchingMasterGame.Value.MasterGameID;
+                                    gameNameToUse = matchingMasterGame.Value.GameName;
                                 }
 
                                 bool claimActionIsCounterPick = claimAction.Value.ActionType.ToLower().Contains("counterpick"); ;
 
-                                formerPublisherGamesFromClaims.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
-                                    claimAction.Value.Timestamp, claimActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
+                                formerPublisherGamesFromClaims.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, gameNameToUse,
+                                    claimAction.Value.Timestamp, claimActionIsCounterPick, null, false, null, masterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
                                 continue;
                             }
                         }
@@ -317,12 +323,23 @@ namespace FantasyCritic.PublisherGameFixer
                 return Maybe<TempLeagueActionEntity>.None;
             }
 
-            if (possibleBidActions.Count > 1)
+            if (possibleBidActions.Count == 1)
             {
-                throw new Exception($"More than one match for bid: {bid.BidID}");
+                return possibleBidActions.Single();
             }
 
-            return possibleBidActions.Single();
+            var bidsInSimpleRange = possibleBidActions.Where(x => new Interval(bid.Timestamp, bid.Timestamp.Plus(Duration.FromDays(7))).Contains(x.Timestamp)).ToList();
+            if (!bidsInSimpleRange.Any())
+            {
+                return Maybe<TempLeagueActionEntity>.None;
+            }
+
+            if (bidsInSimpleRange.Count == 1)
+            {
+                return bidsInSimpleRange.Single();
+            }
+
+            throw new Exception($"More than one match for bid: {bid.BidID}");
         }
 
 
@@ -470,7 +487,7 @@ namespace FantasyCritic.PublisherGameFixer
             return matches.Single();
         }
 
-        private static Maybe<FormerPublisherGameDraftPositionUpdateEntity> GetDraftUpdate(IReadOnlyList<TempLeagueActionEntity> filteredDraftActions, Publisher publisher, MasterGame masterGame, bool counterPick)
+        private static Maybe<FormerPublisherGameDraftPositionUpdateEntity> GetDraftUpdate(IReadOnlyList<TempLeagueActionEntity> filteredDraftActions, Publisher publisher, string gameName, bool counterPick)
         {
             if (counterPick)
             {
@@ -495,7 +512,7 @@ namespace FantasyCritic.PublisherGameFixer
                 }
 
                 var actionGameName = draftAction.Description.TrimStart("Drafted game: ").TrimStart("Auto Drafted game: ").Trim('\'');
-                if (!GameNameMatches(actionGameName, masterGame.GameName))
+                if (!GameNameMatches(actionGameName, gameName))
                 {
                     continue;
                 }
