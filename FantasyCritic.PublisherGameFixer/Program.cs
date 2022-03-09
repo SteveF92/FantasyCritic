@@ -122,7 +122,7 @@ namespace FantasyCritic.PublisherGameFixer
                         {
                             var actionGameName = removeAction.Description.TrimStart("Removed game: ").Trim('\'');
                             var existingFormerGame = publisher.FormerPublisherGames.Where(x => GameNameMatches(actionGameName, x.PublisherGame.GameName) 
-                                    || new Interval(x.RemovedTimestamp.Minus(Duration.FromSeconds(5)), x.RemovedTimestamp.Plus(Duration.FromSeconds(5)))
+                                    || new Interval(x.RemovedTimestamp.Minus(Duration.FromSeconds(1)), x.RemovedTimestamp.Plus(Duration.FromSeconds(1)))
                                     .Contains(removeAction.Timestamp))
                                 .ToList();
                             if (existingFormerGame.Any())
