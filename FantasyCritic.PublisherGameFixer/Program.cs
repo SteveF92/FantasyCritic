@@ -460,6 +460,36 @@ namespace FantasyCritic.PublisherGameFixer
                 ("Fable (Unannounced)", "Fable (Xbox Series X)"),
                 ("Untitled Final Fantasy XIV Expansion", "Final Fantasy XIV: Endwalker"),
                 ("Star Wars: Jedi Fallen Order", "Star Wars Jedi: Fallen Order"),
+                ("Call of Duty 2019", "Call of Duty: Modern Warfare (2019)"),
+                ("Celeste DLC", "Celeste: Farewell"),
+                ("Death March Club", "World's End Club"),
+                ("Diablo II Remake", "Diablo II Resurrected"),
+                ("Dragon Ball ‘Project Z’", "Dragon Ball Z Kakarot"),
+                ("Dying Light 2", "Dying Light 2: Stay Human"),
+                ("God of War: Ragnarok", "God of War: Ragnarök"),
+                ("Modern Warfare 2 Remastered (Unannounced)", "Call of Duty: Modern Warfare 2 Remastered"),
+                ("New Xenoblade Game (Unannounced)", "Xenoblade Chronicles 3"),
+                ("New Xenoblade Game (Unnanounced)", "Xenoblade Chronicles 3"),
+                ("Next Gen Battlefield Game", "Battlefield 2042"),
+                ("One Finger Death Punch 2", "One Finger Death Punch 2 (Switch)"),
+                ("Paper Mario Sequel (Unannounced)", "Paper Mario: The Origami King"),
+                ("Persona 5 The Royal", "Persona 5 Royal"),
+                ("PES 2022", "eFootball"),
+                ("Phoenix Wright: Ace Attorney 7", "Unannounced New Ace Attorney Game"),
+                ("Pikmin 4", "Pikmin 4 (Unannounced)"),
+                ("Pokemon Diamond and Pearl Remake (Unannounced)", "Pokémon Brilliant Diamond & Shining Pearl"),
+                ("Pokémon Generation 9", "Pokémon Scarlet & Violet"),
+                ("Project Maverick (Unannounced Star Wars)", "Star Wars: Squadrons"),
+                ("Rumored 2D Metroid Sequel (Unannounced)", "Metroid Dread"),
+                ("Shantae 5", "Shantae and the Seven Sirens (Console/PC)"),
+                ("Super Mario 3D All Stars", "Super Mario 3D All-Stars"),
+                ("The Elder Scrolls Online: Gates of Oblivion", "The Elder Scrolls Online: Blackwood"),
+                ("Unannounced 3D Mario", "Unannounced Mainline 3D Mario Platformer"),
+                ("Unforseen Incidents", "Unforseen Incidents (Switch)"),
+                ("Unnanounced Donkey Kong Game", "Unannounced Donkey Kong Platforming Game"),
+                ("Untitled Yakuza sequel", "Yakuza: Like a Dragon Sequel"),
+                ("Vampire: The Masquerade - Blood Hunt", "Vampire: The Masquerade - Bloodhunt"),
+                ("Warcraft 3: Reforged", "Warcraft III: Reforged"),
             }.ToHashSet();
 
             if (!rawGameName.Equals(possibleMatch, StringComparison.OrdinalIgnoreCase))
@@ -491,11 +521,11 @@ namespace FantasyCritic.PublisherGameFixer
         {
             if (counterPick)
             {
-                filteredDraftActions = filteredDraftActions.Where(x => x.ActionType.ToLower() is "publisher counterpick drafted" or "publisher counterpick auto drafted").ToList();
+                filteredDraftActions = filteredDraftActions.Where(x => x.ActionType.ToLower() is "publisher counterpick drafted" or "publisher counterpick auto drafted").OrderBy(x => x.Timestamp).ToList();
             }
             else
             {
-                filteredDraftActions = filteredDraftActions.Where(x => x.ActionType.ToLower() is "publisher game drafted" or "publisher game auto drafted").ToList();
+                filteredDraftActions = filteredDraftActions.Where(x => x.ActionType.ToLower() is "publisher game drafted" or "publisher game auto drafted").OrderBy(x => x.Timestamp).ToList();
             }
 
             var publisherDraftCount = 0;
