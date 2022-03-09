@@ -64,6 +64,7 @@ namespace FantasyCritic.PublisherGameFixer
             var formerPublisherGamesFromBids = new List<FormerPublisherGameEntity>();
             var formerPublisherGamesFromDraft = new List<FormerPublisherGameEntity>();
             var formerPublisherGamesFromClaims = new List<FormerPublisherGameEntity>();
+            List<TempLeagueActionEntity> actionsUnfinished = new List<TempLeagueActionEntity>();
 
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             var realYears = supportedYears.Where(x => x.Year > 2018).ToList();
@@ -130,6 +131,8 @@ namespace FantasyCritic.PublisherGameFixer
                                 continue;
                             }
 
+                            actionsUnfinished.Add(removeAction);
+
                             var matchingBid = GetMatchingBid(bidsForPublisher, publisher, actionGameName, removeAction);
                             if (matchingBid.HasValue)
                             {
@@ -182,6 +185,7 @@ namespace FantasyCritic.PublisherGameFixer
                 }
             }
 
+            var distinctActions = actionsUnfinished.Select(x => (x.ActionType, x.Description)).Distinct().ToList();
             var allEntities = formerPublisherGamesFromBids.Concat(formerPublisherGamesFromDraft).Concat(formerPublisherGamesFromClaims).ToList();
 
             _logger.Info("Starting database inserts");
@@ -299,7 +303,7 @@ namespace FantasyCritic.PublisherGameFixer
                     continue;
                 }
 
-                bool bidInRange = new Interval(bid.Timestamp, bid.Timestamp.Plus(Duration.FromDays(7))).Contains(bidAction.Timestamp);
+                bool bidInRange = new Interval(bid.Timestamp, bid.Timestamp.Plus(Duration.FromDays(15))).Contains(bidAction.Timestamp);
                 if (!bidInRange)
                 {
                     continue;
@@ -438,6 +442,7 @@ namespace FantasyCritic.PublisherGameFixer
                 ("Dark Alliance", "Dungeons & Dragons: Dark Alliance"),
                 ("Fable (Unannounced)", "Fable (Xbox Series X)"),
                 ("Untitled Final Fantasy XIV Expansion", "Final Fantasy XIV: Endwalker"),
+                ("Star Wars: Jedi Fallen Order", "Star Wars Jedi: Fallen Order"),
             }.ToHashSet();
 
             if (!rawGameName.Equals(possibleMatch, StringComparison.OrdinalIgnoreCase))
