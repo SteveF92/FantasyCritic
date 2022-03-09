@@ -153,9 +153,8 @@ namespace FantasyCritic.PublisherGameFixer
                                     continue;
                                 }
 
-                                var draftUpdate = GetDraftUpdate(filteredDraftActions, publisher, matchingMasterGame.Value);
-
                                 bool draftActionIsCounterPick = draftAction.Value.ActionType.ToLower().Contains("counterpick");
+                                var draftUpdate = GetDraftUpdate(filteredDraftActions, publisher, matchingMasterGame.Value, draftActionIsCounterPick);
 
                                 formerPublisherGamesFromDraft.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
                                     draftAction.Value.Timestamp, draftActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, 
@@ -172,7 +171,7 @@ namespace FantasyCritic.PublisherGameFixer
                                     continue;
                                 }
 
-                                bool claimActionIsCounterPick = false;
+                                bool claimActionIsCounterPick = claimAction.Value.ActionType.ToLower().Contains("counterpick"); ;
 
                                 formerPublisherGamesFromClaims.Add(new FormerPublisherGameEntity(Guid.NewGuid(), publisher.PublisherID, matchingMasterGame.Value.GameName,
                                     claimAction.Value.Timestamp, claimActionIsCounterPick, null, false, null, matchingMasterGame.Value.MasterGameID, null, null, null, null, removeAction.Timestamp, "Removed by league manager"));
@@ -466,8 +465,17 @@ namespace FantasyCritic.PublisherGameFixer
             return matches.Single();
         }
 
-        private static Maybe<FormerPublisherGameDraftPositionUpdateEntity> GetDraftUpdate(IReadOnlyList<TempLeagueActionEntity> filteredDraftActions, Publisher publisher, MasterGame masterGame)
+        private static Maybe<FormerPublisherGameDraftPositionUpdateEntity> GetDraftUpdate(IReadOnlyList<TempLeagueActionEntity> filteredDraftActions, Publisher publisher, MasterGame masterGame, bool counterPick)
         {
+            if (counterPick)
+            {
+                filteredDraftActions = filteredDraftActions.Where(x => x.ActionType.ToLower() is "publisher counterpick drafted" or "publisher counterpick auto drafted").ToList();
+            }
+            else
+            {
+                filteredDraftActions = filteredDraftActions.Where(x => x.ActionType.ToLower() is "publisher game drafted" or "publisher game auto drafted").ToList();
+            }
+
             var publisherDraftCount = 0;
             for (var index = 0; index < filteredDraftActions.Count; index++)
             {
