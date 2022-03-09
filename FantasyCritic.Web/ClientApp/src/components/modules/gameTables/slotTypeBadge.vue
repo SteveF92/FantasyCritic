@@ -16,14 +16,14 @@
         REG
       </span>
     </span>
-    <span v-if="!gameSlot.dropped && !gameSlot.specialSlot && gameSlot.counterPick">
-      <span class="badge tag-badge counter-pick-badge slot-badge" v-b-popover.hover.top="counterPickText">
-        CPK
-      </span>
-    </span>
     <span v-if="gameSlot.dropped">
       <span class="badge tag-badge dropped-badge slot-badge" v-b-popover.hover.top="droppedText">
         DRP
+      </span>
+    </span>
+    <span v-if="!gameSlot.specialSlot && gameSlot.counterPick">
+      <span class="badge tag-badge counter-pick-badge slot-badge" v-b-popover.hover.top="counterPickText">
+        CPK
       </span>
     </span>
   </span>
