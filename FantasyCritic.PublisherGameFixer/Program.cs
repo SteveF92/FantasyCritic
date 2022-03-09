@@ -69,6 +69,7 @@ namespace FantasyCritic.PublisherGameFixer
             var supportedYears = await fantasyCriticRepo.GetSupportedYears();
             var realYears = supportedYears.Where(x => x.Year > 2018).ToList();
             var masterGames = await masterGameRepo.GetMasterGames();
+            int totalCountRemoveActions = 0;
 
             foreach (var supportedYear in realYears)
             {
@@ -131,6 +132,7 @@ namespace FantasyCritic.PublisherGameFixer
                                 continue;
                             }
 
+                            totalCountRemoveActions++;
                             actionsUnfinished.Add(removeAction);
 
                             var matchingBid = GetMatchingBid(bidsForPublisher, publisher, actionGameName, removeAction);
@@ -193,6 +195,8 @@ namespace FantasyCritic.PublisherGameFixer
 
             var distinctActions = actionsUnfinished.Select(x => (x.ActionType, x.Description)).Distinct().ToList();
             var allEntities = formerPublisherGamesFromBids.Concat(formerPublisherGamesFromDraft).Concat(formerPublisherGamesFromClaims).ToList();
+
+            _logger.Info($"Found {allEntities.Count}/{totalCountRemoveActions} former games");
 
             _logger.Info("Starting database inserts");
             using (var connection = new MySqlConnection(_connectionString))
@@ -349,7 +353,7 @@ namespace FantasyCritic.PublisherGameFixer
             List<TempLeagueActionEntity> possibleDraftActions = new List<TempLeagueActionEntity>();
             foreach (var draftAction in draftActionsFoActionEntities)
             {
-                var actionGameName = draftAction.Description.TrimStart("Drafted game: ").Trim('\'');
+                var actionGameName = draftAction.Description.TrimStart("Drafted game: ").TrimStart("Auto Drafted game: ").Trim('\'');
                 if (!GameNameMatches(actionGameName, gameName))
                 {
                     continue;
