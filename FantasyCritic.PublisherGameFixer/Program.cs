@@ -496,6 +496,7 @@ namespace FantasyCritic.PublisherGameFixer
                 ("Warcraft 3: Reforged", "Warcraft III: Reforged"),
                 ("Super Mario Galaxy Remaster (Rumored)", "Super Mario Galaxy Remaster (Deprecated)"),
                 ("Ghost of Tsushima Standalone Expansion (Rumoured)", "Ghost of Tsushima Director's Cut"),
+                ("New Fire Emblem Game (Unannounced)", "New Mainline Fire Emblem Game (Unannounced)"),
             }.ToHashSet();
 
             if (!rawGameName.Equals(possibleMatch, StringComparison.OrdinalIgnoreCase))
