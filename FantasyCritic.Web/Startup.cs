@@ -49,6 +49,7 @@ using NLog;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 using FantasyCritic.Lib.Patreon;
+using IdentityServer4;
 
 namespace FantasyCritic.Web
 {
@@ -87,6 +88,7 @@ namespace FantasyCritic.Web
             var awsBucket = Configuration["AWS:bucket"];
             var mailgunAPIKey = Configuration["Mailgun:apiKey"];
             var baseAddress = Configuration["BaseAddress"];
+            var jwtSecret = Configuration["Authentication:JWTSecret"];
 
             var identityConfig = new IdentityConfig(Configuration["IdentityServer:MainSecret"],
                 Configuration["IdentityServer:FCBotSecret"], Configuration["IdentityServer:CertificateKey"], _env.IsProduction());
@@ -163,6 +165,35 @@ namespace FantasyCritic.Web
             services.AddScheduler((sender, args) =>
             {
                 args.SetObserved();
+            });
+
+            services.AddAuthorization(ctx =>
+            {
+                ctx.AddPolicy("Api", policy =>
+                {
+                    policy.AddAuthenticationSchemes(
+                        IdentityServerConstants.DefaultCookieAuthenticationScheme,
+                        JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "FantasyCritic.WebAPI");
+                });
+            });
+
+            services.AddAuthentication()
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = baseAddress;
+                options.RequireHttpsMetadata = true;
+
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateAudience = false,
+
+                    ValidTypes = new[] { "at+jwt" },
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+                };
             });
 
             services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
