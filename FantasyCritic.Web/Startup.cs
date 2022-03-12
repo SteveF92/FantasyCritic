@@ -86,6 +86,7 @@ namespace FantasyCritic.Web
             var mailgunAPIKey = Configuration["Mailgun:apiKey"];
             var baseAddress = Configuration["BaseAddress"];
             var jwtSecret = Configuration["Authentication:JWTSecret"];
+            var duendeLicense = Configuration["IdentityServer:License"];
 
             var identityConfig = new IdentityConfig(Configuration["IdentityServer:MainSecret"],
                 Configuration["IdentityServer:FCBotSecret"], Configuration["IdentityServer:CertificateKey"], _env.IsProduction());
@@ -208,6 +209,7 @@ namespace FantasyCritic.Web
 
             var builder = services.AddIdentityServer(options =>
                 {
+                    options.LicenseKey = duendeLicense;
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
