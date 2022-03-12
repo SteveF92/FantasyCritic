@@ -17,8 +17,8 @@ using NodaTime;
 using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
-using MoreLinq;
 
 namespace FantasyCritic.AdvancedStats
 {
@@ -64,7 +64,7 @@ namespace FantasyCritic.AdvancedStats
                 foreach (var leagueYear in leaguesToCount)
                 {
                     var publishersInLeagueYear = publishersByLeagueYear[leagueYear.Key];
-                    var winningPublisher = publishersInLeagueYear.MaxBy(x => x.TotalFantasyPoints).FirstOrDefault();
+                    var winningPublisher = publishersInLeagueYear.MaxBy(x => x.TotalFantasyPoints);
                     winningPublishers.Add(winningPublisher);
                 }
 
@@ -153,7 +153,7 @@ namespace FantasyCritic.AdvancedStats
                 foreach (var leagueYear in leaguesToCount)
                 {
                     var publishersInLeagueYear = publishersByLeagueYear[leagueYear.Key];
-                    var winningPublisher = publishersInLeagueYear.MaxBy(x => x.TotalFantasyPoints).FirstOrDefault();
+                    var winningPublisher = publishersInLeagueYear.MaxBy(x => x.TotalFantasyPoints);
                     winningPublishers.Add(winningPublisher);
                 }
 
@@ -239,7 +239,7 @@ namespace FantasyCritic.AdvancedStats
                         continue;
                     }
                     leaguesToCount.Add(leagueYear);
-                    var winningPublisher = publishersInLeagueYear.MaxBy(x => x.TotalFantasyPoints).FirstOrDefault();
+                    var winningPublisher = publishersInLeagueYear.MaxBy(x => x.TotalFantasyPoints);
                     winningPublishers.Add(winningPublisher);
                 }
 
@@ -290,7 +290,7 @@ namespace FantasyCritic.AdvancedStats
                     foreach (var leagueYear in leagueSizeGroup.Value)
                     {
                         var publishersInLeagueYear = publishersByLeagueYear[leagueYear.Key];
-                        var winningPublisher = publishersInLeagueYear.MaxBy(x => x.TotalFantasyPoints).FirstOrDefault();
+                        var winningPublisher = publishersInLeagueYear.MaxBy(x => x.TotalFantasyPoints);
                         winningPublishers.Add(winningPublisher);
                     }
 

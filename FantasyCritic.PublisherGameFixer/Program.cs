@@ -27,9 +27,6 @@ using Microsoft.Extensions.Configuration;
 using FantasyCritic.Lib.Extensions;
 using FuzzyString;
 
-using static MoreLinq.Extensions.BatchExtension;
-using static MoreLinq.Extensions.MaxByExtension;
-
 namespace FantasyCritic.PublisherGameFixer
 {
     class Program
@@ -293,7 +290,7 @@ namespace FantasyCritic.PublisherGameFixer
                 return Maybe<PickupBid>.None;
             }
 
-            var lastBidBeforeRemove = possibleBids.MaxBy(x => x.Timestamp).ToList();
+            var lastBidBeforeRemove = possibleBids.WhereMax(x => x.Timestamp).ToList();
             if (lastBidBeforeRemove.Count() != 1)
             {
                 throw new Exception("Something strange!");
@@ -378,7 +375,7 @@ namespace FantasyCritic.PublisherGameFixer
                 throw new Exception($"More than one match for draft: {gameName}");
             }
             
-            return possibleDraftActions.MaxBy(x => x.Timestamp).First();
+            return possibleDraftActions.MaxBy(x => x.Timestamp);
         }
 
         private static Maybe<TempLeagueActionEntity> GetMatchingClaimAction(IReadOnlyList<TempLeagueActionEntity> claimActionsForPublisher, Publisher publisher,
@@ -412,7 +409,7 @@ namespace FantasyCritic.PublisherGameFixer
                 throw new Exception($"More than one match for claim: {gameName}");
             }
 
-            return possibleClaimActions.MaxBy(x => x.Timestamp).First();
+            return possibleClaimActions.MaxBy(x => x.Timestamp);
         }
 
         private static bool GameNameMatches(string rawGameName, string possibleMatch)
