@@ -135,7 +135,6 @@ public interface IFantasyCriticRepo
     Task FinishYear(SupportedYear supportedYear);
     Task EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount);
     Task<Maybe<FantasyCriticUser>> GetLeagueYearWinner(Guid leagueID, int year);
-    Task AddFormerPublisherGame(FormerPublisherGame formerPublisherGame);
     Task CreateTrade(Trade trade);
     Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear);
     Task<Maybe<Trade>> GetTrade(Guid tradeID);

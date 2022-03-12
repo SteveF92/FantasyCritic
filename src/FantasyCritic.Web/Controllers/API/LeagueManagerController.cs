@@ -1046,7 +1046,7 @@ public class LeagueManagerController : FantasyCriticController
     }
 
     [HttpPost]
-    public Task<IActionResult> RemoveManualPublisherGameScore([FromBody] ManualPublisherGameScoreRequest request)
+    public Task<IActionResult> RemoveManualPublisherGameScore([FromBody] RemoveManualPublisherGameScoreRequest request)
     {
         return UpdateManualCriticScore(request.PublisherID, request.PublisherGameID, null);
     }

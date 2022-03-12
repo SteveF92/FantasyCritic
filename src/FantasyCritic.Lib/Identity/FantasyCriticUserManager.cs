@@ -54,11 +54,6 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
         return createdUser;
     }
 
-    public Task<int> GetOpenDisplayNumber(string displayName)
-    {
-        return _userStore.GetOpenDisplayNumber(displayName);
-    }
-
     public Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
     {
         return _userStore.GetAllUsers();
