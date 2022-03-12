@@ -8,23 +8,30 @@ namespace FantasyCritic.Lib.Domain
 {
     public class SystemWideValues
     {
-        public SystemWideValues(decimal averageStandardGamePoints, decimal averageCounterPickPoints)
+        public SystemWideValues(decimal averageStandardGamePoints, decimal averagePickupOnlyStandardGamePoints, decimal averageCounterPickPoints)
         {
             AverageStandardGamePoints = averageStandardGamePoints;
+            AveragePickupOnlyStandardGamePoints = averagePickupOnlyStandardGamePoints;
             AverageCounterPickPoints = averageCounterPickPoints;
         }
 
         public decimal AverageStandardGamePoints { get; }
+        public decimal AveragePickupOnlyStandardGamePoints { get; }
         public decimal AverageCounterPickPoints { get; }
 
-        public decimal GetAveragePoints(bool counterPick)
+        public decimal GetAveragePoints(bool pickupOnly, bool counterPick)
         {
-            if (!counterPick)
+            if (counterPick)
             {
-                return AverageStandardGamePoints;
+                return AverageCounterPickPoints;
             }
 
-            return AverageCounterPickPoints;
+            if (pickupOnly)
+            {
+                return AveragePickupOnlyStandardGamePoints;
+            }
+
+            return AverageStandardGamePoints;
         }
     }
 }

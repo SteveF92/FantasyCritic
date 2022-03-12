@@ -17,15 +17,17 @@ namespace FantasyCritic.MySQL.Entities
         public SystemWideValuesEntity(SystemWideValues domain)
         {
             AverageStandardGamePoints = domain.AverageStandardGamePoints;
+            AveragePickupOnlyStandardGamePoints = domain.AveragePickupOnlyStandardGamePoints;
             AverageCounterPickPoints = domain.AverageCounterPickPoints;
         }
 
         public decimal AverageStandardGamePoints { get; set; }
+        public decimal AveragePickupOnlyStandardGamePoints { get; set; }
         public decimal AverageCounterPickPoints { get; set; }
 
         public SystemWideValues ToDomain()
         {
-            return new SystemWideValues(AverageStandardGamePoints, AverageCounterPickPoints);
+            return new SystemWideValues(AverageStandardGamePoints, AveragePickupOnlyStandardGamePoints, AverageCounterPickPoints);
         }
     }
 }

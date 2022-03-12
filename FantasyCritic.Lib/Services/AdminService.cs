@@ -307,9 +307,10 @@ namespace FantasyCritic.Lib.Services
             }
 
             var averageStandardPoints = allGamesWithPoints.Where(x => !x.CounterPick).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
+            var averagePickupOnlyStandardPoints = allGamesWithPoints.Where(x => !x.CounterPick && !x.OverallDraftPosition.HasValue).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
             var averageCounterPickPoints = allGamesWithPoints.Where(x => x.CounterPick).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
 
-            var systemWideValues = new SystemWideValues(averageStandardPoints, averageCounterPickPoints);
+            var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints);
             await _interLeagueService.UpdateSystemWideValues(systemWideValues);
         }
 

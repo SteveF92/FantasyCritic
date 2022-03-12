@@ -462,7 +462,7 @@ namespace FantasyCritic.FakeRepo
 
         public Task<SystemWideValues> GetSystemWideValues()
         {
-            return Task.FromResult(new SystemWideValues(7m, -1m));
+            return Task.FromResult(new SystemWideValues(7m, 5m, -1m));
         }
 
         public Task<SystemWideSettings> GetSystemWideSettings()

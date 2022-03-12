@@ -56,7 +56,7 @@ namespace FantasyCritic.Lib.Domain
         {
             if (PublisherGame.HasNoValue)
             {
-                return systemWideValues.GetAveragePoints(CounterPick);
+                return systemWideValues.GetAveragePoints(!simpleProjections, CounterPick);
             }
 
             if (PublisherGame.Value.MasterGame.HasNoValue)
@@ -66,7 +66,7 @@ namespace FantasyCritic.Lib.Domain
                     return PublisherGame.Value.ManualCriticScore.Value;
                 }
 
-                return systemWideValues.GetAveragePoints(CounterPick);
+                return systemWideValues.GetAveragePoints(!simpleProjections, CounterPick);
             }
 
             decimal? fantasyPoints = CalculateFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);
