@@ -50,7 +50,7 @@
 
       <h1>Games</h1>
       <b-table striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" v-if="publisher.publisherGames.length !== 0" :tbody-tr-class="publisherGameRowClass">
-        <template v-slot:cell(masterGame.gameName)="data">
+        <template #cell(masterGame.gameName)="data">
           <span class="master-game-popover">
             <masterGamePopover :masterGame="data.item.masterGame" :currentlyIneligible="data.item.currentlyIneligible"> </masterGamePopover>
           </span>
@@ -60,26 +60,26 @@
             <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="inEligibleText" />
           </span>
         </template>
-        <template v-slot:cell(masterGame.maximumReleaseDate)="data">
+        <template #cell(masterGame.maximumReleaseDate)="data">
           {{getReleaseDate(data.item.masterGame)}}
         </template>
-        <template v-slot:cell(amountSpent)="data">
+        <template #cell(amountSpent)="data">
           {{ data.item.amountSpent | money }}
         </template>
-        <template v-slot:cell(advertisingMoney)="data">
+        <template #cell(advertisingMoney)="data">
           {{ data.item.advertisingMoney | money }}
           <b-button variant="info" size="sm" v-if="userIsPublisher && !data.item.locked" v-on:click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
-        <template v-slot:cell(masterGame.criticScore)="data">
+        <template #cell(masterGame.criticScore)="data">
           {{ data.item.masterGame.criticScore | score(2) }}
         </template>
-        <template v-slot:cell(fantasyPoints)="data">
+        <template #cell(fantasyPoints)="data">
           {{ data.item.fantasyPoints | score(2) }}
         </template>
-        <template v-slot:cell(timestamp)="data">
+        <template #cell(timestamp)="data">
           {{ data.item.timestamp | date }}
         </template>
-        <template v-slot:cell(sellGame)="data">
+        <template #cell(sellGame)="data">
           <b-button block variant="danger" v-if="!data.item.locked" v-on:click="setGameToSell(data.item)" v-b-modal="'sellRoyaleGameModal'">Sell</b-button>
         </template>
       </b-table>

@@ -52,15 +52,15 @@
                    bordered
                    striped
                    responsive>
-            <template v-slot:cell(timestamp)="data">
+            <template #cell(timestamp)="data">
               {{data.item.timestamp | dateTime}}
             </template>
-            <template v-slot:cell(description)="data">
+            <template #cell(description)="data">
               <span class="preserve-whitespace">
                 {{data.item.description}}
               </span>
             </template>
-            <template v-slot:cell(managerAction)="data">
+            <template #cell(managerAction)="data">
               {{data.item.managerAction | yesNo}}
             </template>
           </b-table>

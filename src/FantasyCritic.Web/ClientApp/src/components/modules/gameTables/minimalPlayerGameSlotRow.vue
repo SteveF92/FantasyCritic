@@ -4,18 +4,18 @@
       <gameNameColumn :gameSlot="gameSlot" :hasSpecialSlots="hasSpecialSlots" :supportedYear="supportedYear"></gameNameColumn>
     </td>
     <template v-if="game">
-      <td class="score-column">{{game.criticScore | score}}</td>
+      <td class="score-column">{{ game.criticScore | score }}</td>
       <template v-if="advancedProjections">
-        <td class="score-column" v-if="game.fantasyPoints || !game.willRelease">{{game.fantasyPoints | score}}</td>
-        <td class="score-column projected-text" v-else>~{{gameSlot.advancedProjectedFantasyPoints | score}}</td>
+        <td class="score-column" v-if="game.fantasyPoints || !game.willRelease">{{ game.fantasyPoints | score }}</td>
+        <td class="score-column projected-text" v-else>~{{ gameSlot.advancedProjectedFantasyPoints | score }}</td>
       </template>
       <template v-else>
-        <td class="score-column">{{game.fantasyPoints | score}}</td>
+        <td class="score-column">{{ game.fantasyPoints | score }}</td>
       </template>
     </template>
     <template v-else>
       <td class="score-column"></td>
-      <td class="score-column">{{emptySlotScore}}</td>
+      <td class="score-column">{{ emptySlotScore }}</td>
     </template>
   </tr>
 </template>
@@ -32,7 +32,7 @@ export default {
   },
   props: ['gameSlot', 'supportedYear', 'hasSpecialSlots'],
   computed: {
-    game(){
+    game() {
       return this.gameSlot.publisherGame;
     },
     advancedProjections() {
@@ -49,27 +49,27 @@ export default {
 };
 </script>
 <style scoped>
-  tr {
-    height: 40px;
-  }
+tr {
+  height: 40px;
+}
 
-  .minimal-game-row {
-    height: 35px;
-  }
+.minimal-game-row {
+  height: 35px;
+}
 
-  .minimal-game-row td {
-    font-size: 10pt;
-  }
+.minimal-game-row td {
+  font-size: 10pt;
+}
 
-  .game-name-column {
-    display: inline-flex;
-    justify-content: space-between;
-    width: 100%;
-  }
+.game-name-column {
+  display: inline-flex;
+  justify-content: space-between;
+  width: 100%;
+}
 
-  .game-status {
-    color: #B1B1B1;
-    font-style: italic;
-    margin-left: auto;
-  }
+.game-status {
+  color: #b1b1b1;
+  font-style: italic;
+  margin-left: auto;
+}
 </style>

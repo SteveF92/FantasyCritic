@@ -17,12 +17,12 @@
              small
              responsive
              striped>
-      <template v-slot:cell(userName)="data">
+      <template #cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
         <font-awesome-icon v-if="data.item.previousYearWinner" icon="crown" class="previous-year-winner" v-b-popover.hover="'Reigning Champion'"/>
         <span v-if="!data.item.user">{{ data.item.inviteName }}</span>
       </template>
-      <template v-slot:cell(publisher)="data">
+      <template #cell(publisher)="data">
         <span v-if="data.item.publisher">
             <a :href="'#' + data.item.publisher.publisherID">{{ data.item.publisher.publisherName }}</a>
             <span class="publisher-badge badge badge-pill badge-primary badge-info"
@@ -38,17 +38,17 @@
           </span>
         </span>
       </template>
-      <template v-slot:cell(simpleProjectedFantasyPoints)="data">{{data.item.simpleProjectedFantasyPoints | score(2)}}</template>
-      <template v-slot:cell(advancedProjectedFantasyPoints)="data">{{data.item.advancedProjectedFantasyPoints | score(2)}}</template>
-      <template v-slot:cell(totalFantasyPoints)="data">{{data.item.totalFantasyPoints | score(2)}}</template>
-      <template v-slot:cell(budget)="data">
+      <template #cell(simpleProjectedFantasyPoints)="data">{{data.item.simpleProjectedFantasyPoints | score(2)}}</template>
+      <template #cell(advancedProjectedFantasyPoints)="data">{{data.item.advancedProjectedFantasyPoints | score(2)}}</template>
+      <template #cell(totalFantasyPoints)="data">{{data.item.totalFantasyPoints | score(2)}}</template>
+      <template #cell(budget)="data">
         <span v-if="data.item.publisher">{{data.item.publisher.budget | money}}</span>
       </template>
-      <template v-slot:cell(totalFantasyPoints)="data">{{data.item.totalFantasyPoints | score(2)}}</template>
-      <template v-slot:cell(gamesReleased)="data">
+      <template #cell(totalFantasyPoints)="data">{{data.item.totalFantasyPoints | score(2)}}</template>
+      <template #cell(gamesReleased)="data">
         <span v-if="data.item.publisher">{{data.item.publisher.gamesReleased}}</span>
       </template>
-      <template v-slot:cell(gamesWillRelease)="data">
+      <template #cell(gamesWillRelease)="data">
         <span v-if="data.item.publisher">{{data.item.publisher.gamesWillRelease}}</span>
       </template>
     </b-table>

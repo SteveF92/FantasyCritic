@@ -6,13 +6,13 @@
           {{ publisher.publisherIcon }}
         </span>
         <div class="publisher-name">
-          <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID }}">
+          <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID } }">
             {{ publisher.publisherName }}
           </router-link>
         </div>
       </div>
       <div class="player-name">
-        Player: {{publisher.playerName}}
+        Player: {{ publisher.playerName }}
         <div v-show="!renderingSnapshot">
           <b-button variant="secondary" v-if="userIsPublisher && isPlusUser" size="sm" v-on:click="prepareSnapshot">
             <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
@@ -30,30 +30,31 @@
         </tr>
       </thead>
       <tbody>
-        <minimalPlayerGameSlotRow v-for="gameSlot in gameSlots" :minimal="true"
-                           :gameSlot="gameSlot" :supportedYear="leagueYear.supportedYear" 
-                           :hasSpecialSlots="leagueYear.hasSpecialSlots" :userIsPublisher="userIsPublisher"
-                           v-bind:key="gameSlot.overallSlotNumber"></minimalPlayerGameSlotRow>
-          <tr class="minimal-game-row">
-            <td id="total-description">
-              <span id="total-description-text" v-if="!advancedProjections">
-                Total Fantasy Points
-              </span>
-              <span id="total-description-text" v-else>
-                Projected Fantasy Points
-              </span>
+        <minimalPlayerGameSlotRow
+          v-for="gameSlot in gameSlots"
+          :minimal="true"
+          :gameSlot="gameSlot"
+          :supportedYear="leagueYear.supportedYear"
+          :hasSpecialSlots="leagueYear.hasSpecialSlots"
+          :userIsPublisher="userIsPublisher"
+          v-bind:key="gameSlot.overallSlotNumber"></minimalPlayerGameSlotRow>
+        <tr class="minimal-game-row">
+          <td id="total-description">
+            <span id="total-description-text" v-if="!advancedProjections">Total Fantasy Points</span>
+            <span id="total-description-text" v-else>Projected Fantasy Points</span>
+          </td>
+          <template v-if="!advancedProjections">
+            <td id="total-column" class="bg-success" colspan="2">{{ publisher.totalFantasyPoints | score }}</td>
+          </template>
+          <template v-else>
+            <td id="total-column" class="bg-info" colspan="2">
+              <em>~{{ publisher.totalProjectedPoints | score }}</em>
             </td>
-            <template v-if="!advancedProjections">
-              <td id="total-column" class="bg-success" colspan="2">{{publisher.totalFantasyPoints | score}}</td>
-            </template>
-            <template v-else>
-              <td id="total-column" class="bg-info" colspan="2"><em>~{{publisher.totalProjectedPoints | score}}</em></td>
-            </template>
-          </tr>
+          </template>
+        </tr>
       </tbody>
     </table>
   </div>
-
 </template>
 <script>
 import html2canvas from 'html2canvas';
@@ -98,18 +99,14 @@ export default {
     },
     sharePublisher() {
       let elementID = '#publisher-' + this.publisher.publisherID;
-      html2canvas(document.querySelector(elementID)).then(async canvas => {
-        const dataUrl = canvas.toDataURL("png");
-        const blob = await(await fetch(dataUrl)).blob();
+      html2canvas(document.querySelector(elementID)).then(async (canvas) => {
+        const dataUrl = canvas.toDataURL('png');
+        const blob = await (await fetch(dataUrl)).blob();
         const filesArray = [
-          new File(
-            [blob],
-            'myPublisher.png',
-            {
-              type: blob.type,
-              lastModified: new Date().getTime()
-            }
-          )
+          new File([blob], 'myPublisher.png', {
+            type: blob.type,
+            lastModified: new Date().getTime()
+          })
         ];
         const shareData = {
           files: filesArray,
@@ -123,117 +120,115 @@ export default {
 };
 </script>
 <style scoped>
-  .player-summary {
-    margin-bottom: 10px;
-    padding: 5px;
-    border: solid;
-    border-width: 1px;
-    padding: 0;
-  }
+.player-summary {
+  margin-bottom: 10px;
+  padding: 5px;
+  border: solid;
+  border-width: 1px;
+  padding: 0;
+}
 
-  .publisher-is-next {
-    border-color: #45621d;
-    border-width: 5px;
-    border-style: solid;
-    padding: 0;
-  }
+.publisher-is-next {
+  border-color: #45621d;
+  border-width: 5px;
+  border-style: solid;
+  padding: 0;
+}
 
-  .publisher-is-next table thead tr.table-primary th {
-    background-color: #ED9D2B;
-  }
+.publisher-is-next table thead tr.table-primary th {
+  background-color: #ed9d2b;
+}
 
-  .player-summary table {
-    margin-bottom: 0;
-  }
+.player-summary table {
+  margin-bottom: 0;
+}
 
-  .publisher-player-names {
-    margin: 15px;
-    margin-bottom: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
+.publisher-player-names {
+  margin: 15px;
+  margin-bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
 
-  .publisher-name-and-icon {
-    display: flex;
-    align-items:center;
-  }
+.publisher-name-and-icon {
+  display: flex;
+  align-items: center;
+}
 
-  .publisher-name {
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 1.1em;
-    color: #D6993A;
-    word-break: break-word;
-  }
+.publisher-name {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 1.1em;
+  color: #d6993a;
+  word-break: break-word;
+}
 
-  .publisher-icon {
-    font-size: 50px;
-    line-height: 50px;
-    padding-bottom: 5px;
-  }
+.publisher-icon {
+  font-size: 50px;
+  line-height: 50px;
+  padding-bottom: 5px;
+}
 
-  .player-name {
-    color: #D6993A;
-    font-weight: bold;
-  }
-
+.player-name {
+  color: #d6993a;
+  font-weight: bold;
+}
 </style>
 <style>
-  .player-summary table th {
-    border-top: none;
-  }
+.player-summary table th {
+  border-top: none;
+}
 
-  .player-summary table td {
-    border: 1px solid white;
-  }
+.player-summary table td {
+  border: 1px solid white;
+}
 
-  .player-summary table thead tr th {
-    height: 35px;
-    padding: 5px;
-  }
+.player-summary table thead tr th {
+  height: 35px;
+  padding: 5px;
+}
 
-  .player-summary table tbody tr td {
-    height: 35px;
-    padding: 5px;
-  }
+.player-summary table tbody tr td {
+  height: 35px;
+  padding: 5px;
+}
 
-  .type-column {
-    width: 30px;
-    text-align: center;
-  }
-  .game-column {
+.type-column {
+  width: 30px;
+  text-align: center;
+}
+.game-column {
+}
 
-  }
+.score-column {
+  width: 30px;
+  text-align: center;
+  font-weight: bold;
+  height: 20px;
+  line-height: 20px;
+}
 
-  .score-column {
-    width: 30px;
-    text-align: center;
-    font-weight: bold;
-    height: 20px;
-    line-height: 20px;
-  }
+#total-description {
+  vertical-align: middle;
+}
 
-  #total-description {
-    vertical-align: middle;
-  }
+#total-description-text {
+  float: right;
+  text-align: right;
+  display: table-cell;
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 20px;
+}
 
-  #total-description-text {
-    float: right;
-    text-align: right;
-    display: table-cell;
-    vertical-align: middle;
-    font-weight: bold;
-    font-size: 20px;
-  }
+#total-column {
+  text-align: center;
+  font-weight: bold;
+  font-size: 25px;
+}
 
-  #total-column {
-    text-align: center;
-    font-weight: bold;
-    font-size: 25px;
-  }
-
-  .share-button {
-    color: white;
-  }
+.share-button {
+  color: white;
+}
 </style>

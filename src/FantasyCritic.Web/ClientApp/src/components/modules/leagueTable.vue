@@ -4,7 +4,7 @@
            thead-class="hidden_header"
            bordered
            striped>
-    <template v-slot:cell(leagueName)="data">
+    <template #cell(leagueName)="data">
       <div class="row-flex">
         <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear }}">
           <font-awesome-icon class="league-icon" :icon="leagueIcon" v-show="leagueIcon !== 'user'" />

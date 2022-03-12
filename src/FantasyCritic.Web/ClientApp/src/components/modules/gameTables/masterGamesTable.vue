@@ -63,13 +63,13 @@
       primary-key="masterGameID"
       sticky-header="1000px"
       @filtered="onFiltered">
-      <template v-slot:cell(gameName)="data">
+      <template #cell(gameName)="data">
         <masterGamePopover :masterGame="data.item"></masterGamePopover>
       </template>
-      <template v-slot:cell(maximumReleaseDate)="data">
+      <template #cell(maximumReleaseDate)="data">
         {{ getReleaseDate(data.item) }}
       </template>
-      <template v-slot:cell(criticScore)="data">
+      <template #cell(criticScore)="data">
         <a v-if="data.item.openCriticID && data.item.criticScore" :href="openCriticLink(data.item)" target="_blank">
           <strong>
             OpenCritic
@@ -78,10 +78,10 @@
         </a>
         <span v-else>--</span>
       </template>
-      <template v-slot:cell(dateAdjustedHypeFactor)="data">
+      <template #cell(dateAdjustedHypeFactor)="data">
         {{ data.item.dateAdjustedHypeFactor | score(1) }}
       </template>
-      <template v-slot:cell(projectedOrRealFantasyPoints)="data">
+      <template #cell(projectedOrRealFantasyPoints)="data">
         <template v-if="data.item.isReleased || !data.item.willRelease">
           {{ data.item.projectedOrRealFantasyPoints | score(1) }}
         </template>
@@ -89,19 +89,19 @@
           <em>~{{ data.item.projectedOrRealFantasyPoints | score(1) }}</em>
         </template>
       </template>
-      <template v-slot:cell(eligiblePercentStandardGame)="data">
+      <template #cell(eligiblePercentStandardGame)="data">
         {{ data.item.eligiblePercentStandardGame | percent(1) }}
       </template>
-      <template v-slot:cell(adjustedPercentCounterPick)="data">
+      <template #cell(adjustedPercentCounterPick)="data">
         <span v-if="data.item.adjustedPercentCounterPick !== null">
           {{ data.item.adjustedPercentCounterPick | percent(1) }}
         </span>
         <span v-else>N/A</span>
       </template>
-      <template v-slot:cell(addedTimestamp)="data">
+      <template #cell(addedTimestamp)="data">
         {{ data.item.addedTimestamp | date }}
       </template>
-      <template v-slot:cell(tags)="data">
+      <template #cell(tags)="data">
         <span v-for="(tag, index) in data.item.tags">
           <masterGameTagBadge :tagName="data.item.tags[index]" short="true"></masterGameTagBadge>
         </span>

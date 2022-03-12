@@ -11,18 +11,18 @@
                striped
                responsive
                class="action-table">
-        <template v-slot:cell(publisherName)="data">
+        <template #cell(publisherName)="data">
           <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">
             {{ data.item.publisherName }}
           </router-link>
         </template>
-        <template v-slot:cell(timestamp)="data">
+        <template #cell(timestamp)="data">
           {{data.item.timestamp | dateTime}}
         </template>
-        <template v-slot:cell(masterGame)="data">
+        <template #cell(masterGame)="data">
           <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
         </template>
-        <template v-slot:cell(successful)="data">
+        <template #cell(successful)="data">
           {{data.item.successful | yesNo}}
         </template>
       </b-table>
@@ -35,28 +35,28 @@
                striped
                responsive
                class="action-table">
-        <template v-slot:cell(publisherName)="data">
+        <template #cell(publisherName)="data">
           <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">
             {{ data.item.publisherName }}
           </router-link>
         </template>
-        <template v-slot:cell(timestamp)="data">
+        <template #cell(timestamp)="data">
           {{data.item.timestamp | dateTime}}
         </template>
-        <template v-slot:cell(masterGame)="data">
+        <template #cell(masterGame)="data">
           <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
         </template>
-        <template v-slot:cell(counterPick)="data">
+        <template #cell(counterPick)="data">
           {{data.item.counterPick | yesNo}}
         </template>
-        <template v-slot:cell(conditionalDropPublisherGame)="data">
+        <template #cell(conditionalDropPublisherGame)="data">
           <masterGamePopover v-if="data.item.conditionalDropPublisherGame" :masterGame="data.item.conditionalDropPublisherGame.masterGame"></masterGamePopover>
           <span v-else>None</span>
         </template>
-        <template v-slot:cell(projectedPointsAtTimeOfBid)="data">
+        <template #cell(projectedPointsAtTimeOfBid)="data">
           {{data.item.projectedPointsAtTimeOfBid | score(2)}}
         </template>
-        <template v-slot:cell(successful)="data">
+        <template #cell(successful)="data">
           {{data.item.successful | yesNo}}
         </template>
       </b-table>

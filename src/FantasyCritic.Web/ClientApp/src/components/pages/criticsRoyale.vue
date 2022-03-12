@@ -44,7 +44,7 @@
 
         <div v-if="royaleStandings">
           <b-table striped bordered responsive small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
-            <template v-slot:cell(ranking)="data">
+            <template #cell(ranking)="data">
               <template v-if="data.item.ranking">
                 {{data.item.ranking}}
               </template>
@@ -52,12 +52,12 @@
                 --
               </template>
             </template>
-            <template v-slot:cell(publisherName)="data">
+            <template #cell(publisherName)="data">
               <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID }}">
                 {{ data.item.publisherName }}
               </router-link>
             </template>
-            <template v-slot:cell(playerName)="data">
+            <template #cell(playerName)="data">
               {{ data.item.playerName }}
               <font-awesome-icon v-if="data.item.previousQuarterWinner" icon="crown" class="previous-quarter-winner" v-b-popover.hover="'Reigning Champion'" />
               <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" icon="crown" class="onetime-winner" v-b-popover.hover="'Previous Champion'" />

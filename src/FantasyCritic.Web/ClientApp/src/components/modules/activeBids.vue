@@ -9,7 +9,7 @@
                striped
                responsive
                small>
-        <template v-slot:cell(gameName)="data">
+        <template #cell(gameName)="data">
           <span class="game-name-column">
             <span v-if="data.item.counterPick" class="badge tag-badge counter-pick-badge" v-b-popover.hover="counterPickText">
               CP
@@ -18,7 +18,7 @@
             <font-awesome-icon class="bid-will-fail" v-if="data.item.eligibilityErrors && data.item.eligibilityErrors.length > 0" color="white" icon="exclamation-triangle" v-b-popover.hover="bidWillFailText(data.item)" />
           </span>
         </template>
-        <template v-slot:cell(maximumReleaseDate)="data">
+        <template #cell(maximumReleaseDate)="data">
           {{getReleaseDate(data.item.masterGame)}}
         </template>
       </b-table>

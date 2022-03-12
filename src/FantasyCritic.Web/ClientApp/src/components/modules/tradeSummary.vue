@@ -136,11 +136,11 @@
               <b-table-lite :items="trade.votes" :fields="voteFields"
                             bordered responsive striped>
 
-                <template v-slot:cell(approved)="data">
+                <template #cell(approved)="data">
                   {{data.item.approved | approvedRejected}}
                 </template>
 
-                <template v-slot:cell(comment)="data">
+                <template #cell(comment)="data">
                   {{data.item.comment}}
                   <template v-if="data.item.userID === userInfo.userID && !trade.completedTimestamp">
                     <b-button variant="danger" size="sm" v-on:click="deleteVote">Delete Vote</b-button>

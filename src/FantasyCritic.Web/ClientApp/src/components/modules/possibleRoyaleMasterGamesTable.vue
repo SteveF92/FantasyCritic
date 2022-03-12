@@ -3,25 +3,25 @@
     <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
 
     <b-table small bordered striped responsive :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
-      <template v-slot:cell(masterGame.gameName)="data">
+      <template #cell(masterGame.gameName)="data">
         <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
-      <template v-slot:cell(masterGame.maximumReleaseDate)="data">
+      <template #cell(masterGame.maximumReleaseDate)="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
           <span>{{data.item.masterGame.estimatedReleaseDate}}</span>
           <span v-show="data.item.masterGame.isReleased">(Released)</span>
         </div>
       </template>
-      <template v-slot:cell(masterGame.dateAdjustedHypeFactor)="data">
+      <template #cell(masterGame.dateAdjustedHypeFactor)="data">
         {{data.item.masterGame.dateAdjustedHypeFactor | score(1)}}
       </template>
-      <template v-slot:cell(status)="data">
+      <template #cell(status)="data">
         <statusBadge :possibleMasterGame="data.item"></statusBadge>
       </template>
-      <template v-slot:cell(cost)="data">
+      <template #cell(cost)="data">
         {{data.item.cost | money}}
       </template>
-      <template v-slot:cell(select)="data">
+      <template #cell(select)="data">
         <b-button size="sm" variant="info" v-on:click="selectGame(data.item)">Select</b-button>
       </template>
     </b-table>

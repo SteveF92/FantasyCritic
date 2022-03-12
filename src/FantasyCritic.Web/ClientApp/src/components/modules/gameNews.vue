@@ -20,17 +20,17 @@
                striped
                responsive
                small>
-        <template v-slot:cell(gameName)="data">
+        <template #cell(gameName)="data">
           <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
         </template>
-        <template v-slot:cell(maximumReleaseDate)="data">
+        <template #cell(maximumReleaseDate)="data">
           {{getReleaseDate(data.item)}}
         </template>
-        <template v-slot:cell(league)="data">
+        <template #cell(league)="data">
           <router-link v-if="data.item.leagueID" :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year }}">{{data.item.leagueName}}</router-link>
           <span v-else>{{data.item.leagueName}}</span>
         </template>
-        <template v-slot:cell(publisher)="data">
+        <template #cell(publisher)="data">
           <span v-if="!data.item.counterPickPublisherID">
             <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID }}">{{ data.item.publisherName }}</router-link>
           </span>
