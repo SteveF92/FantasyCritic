@@ -5,14 +5,16 @@ module.exports = {
     },
     'extends': [
         'eslint:recommended',
-        'plugin:vue/essential'
+        'plugin:vue/recommended',
+        'plugin:prettier/recommended'
     ],
     'parserOptions': {
         'ecmaVersion': 12,
         'sourceType': 'module'
     },
     'plugins': [
-        'vue'
+        'vue',
+        'prettier'
     ],
     'rules': {
         'indent': [
@@ -30,6 +32,7 @@ module.exports = {
         'semi': [
             'error',
             'always'
-        ]
+        ],
+        'prettier/prettier': 'error'
     }
 };

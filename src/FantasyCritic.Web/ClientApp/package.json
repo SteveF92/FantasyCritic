@@ -46,9 +46,13 @@
     "@fortawesome/vue-fontawesome": "^2.0.6",
     "@vue/cli-plugin-pwa": "^4.5.15",
     "@vue/cli-service": "^4.5.15",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "jquery": "^3.6.0",
     "node-sass": "^6.0.1",
     "popper.js": "^1.16.1",
+    "prettier": "^2.5.1",
     "sass-loader": "^10.2.1",
     "vue-template-compiler": "^2.6.14"
   }
