@@ -1,7 +1,6 @@
-namespace FantasyCritic.Web.Models.Requests.MasterGame
+namespace FantasyCritic.Web.Models.Requests.MasterGame;
+
+public class ProcessPickupsRequest
 {
-    public class ProcessPickupsRequest
-    {
-        public int Year { get; set; }
-    }
+    public int Year { get; set; }
 }

@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FantasyCritic.Web.Models.Requests.Account
+namespace FantasyCritic.Web.Models.Requests.Account;
+
+public class SendChangeEmailRequest
 {
-    public class SendChangeEmailRequest
-    {
-        [Required]
-        [EmailAddress]
-        public string NewEmailAddress { get; set; }
-    }
+    [Required]
+    [EmailAddress]
+    public string NewEmailAddress { get; set; }
 }

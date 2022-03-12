@@ -1,4 +1,3 @@
-namespace FantasyCritic.Lib.Domain.Trades
-{
-    public record PotentialPublisherSlot(int SlotNumber, bool CounterPick);
-}
+namespace FantasyCritic.Lib.Domain.Trades;
+
+public record PotentialPublisherSlot(int SlotNumber, bool CounterPick);

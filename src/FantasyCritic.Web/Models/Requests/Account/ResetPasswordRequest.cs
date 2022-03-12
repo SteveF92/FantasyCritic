@@ -1,21 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FantasyCritic.Web.Models.Requests.Account
+namespace FantasyCritic.Web.Models.Requests.Account;
+
+public class ResetPasswordRequest
 {
-    public class ResetPasswordRequest
-    {
-        [Required]
-        [EmailAddress]
-        public string EmailAddress { get; set; }
+    [Required]
+    [EmailAddress]
+    public string EmailAddress { get; set; }
 
-        [Required, MinLength(8), MaxLength(80)]
-        public string Password { get; set; }
+    [Required, MinLength(8), MaxLength(80)]
+    public string Password { get; set; }
 
-        [Required]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+    [Required]
+    [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+    public string ConfirmPassword { get; set; }
 
-        [Required]
-        public string Code { get; set; }
-    }
+    [Required]
+    public string Code { get; set; }
 }

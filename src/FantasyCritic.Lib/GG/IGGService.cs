@@ -1,7 +1,6 @@
-namespace FantasyCritic.Lib.GG
+namespace FantasyCritic.Lib.GG;
+
+public interface IGGService
 {
-    public interface IGGService
-    {
-        Task<Maybe<GGGame>> GetGGGame(string ggToken);
-    }
+    Task<Maybe<GGGame>> GetGGGame(string ggToken);
 }

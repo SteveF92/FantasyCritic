@@ -2,31 +2,30 @@ using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FantasyCritic.Lib.Scheduling
+namespace FantasyCritic.Lib.Scheduling;
+
+public class PatreonUpdateTask : IScheduledTask
 {
-    public class PatreonUpdateTask : IScheduledTask
+    private readonly IServiceProvider _serviceProvider;
+    public string Schedule => "0 */1 * * *";
+
+    public PatreonUpdateTask(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
-        public string Schedule => "0 */1 * * *";
+        _serviceProvider = serviceProvider;
+    }
 
-        public PatreonUpdateTask(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
+    public async Task ExecuteAsync(CancellationToken cancellationToken)
+    {
 #if DEBUG
-            Console.WriteLine("Not updating Patreon - DEBUG version");
-            return;
+        Console.WriteLine("Not updating Patreon - DEBUG version");
+        return;
 #endif
-            var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-            using (var scope = serviceScopeFactory.CreateScope())
-            {
-                var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
-                await adminService.UpdatePatreonRoles();
-            }
+        using (var scope = serviceScopeFactory.CreateScope())
+        {
+            var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
+            await adminService.UpdatePatreonRoles();
         }
     }
 }

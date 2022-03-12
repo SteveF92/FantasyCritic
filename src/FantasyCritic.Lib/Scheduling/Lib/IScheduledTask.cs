@@ -1,8 +1,7 @@
-namespace FantasyCritic.Lib.Scheduling.Lib
+namespace FantasyCritic.Lib.Scheduling.Lib;
+
+public interface IScheduledTask
 {
-    public interface IScheduledTask
-    {
-        string Schedule { get; }
-        Task ExecuteAsync(CancellationToken cancellationToken);
-    }
+    string Schedule { get; }
+    Task ExecuteAsync(CancellationToken cancellationToken);
 }

@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FantasyCritic.Web.Models.Requests.League.Trades
+namespace FantasyCritic.Web.Models.Requests.League.Trades;
+
+public class BasicTradeRequest
 {
-    public class BasicTradeRequest
-    {
-        [Required]
-        public Guid TradeID { get; set; }
-    }
+    [Required]
+    public Guid TradeID { get; set; }
 }

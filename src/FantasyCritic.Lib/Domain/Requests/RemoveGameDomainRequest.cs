@@ -1,14 +1,13 @@
-namespace FantasyCritic.Lib.Domain.Requests
-{
-    public class RemoveGameDomainRequest
-    {
-        public RemoveGameDomainRequest(Publisher publisher, PublisherGame publisherGame)
-        {
-            Publisher = publisher;
-            PublisherGame = publisherGame;
-        }
+namespace FantasyCritic.Lib.Domain.Requests;
 
-        public Publisher Publisher { get; }
-        public PublisherGame PublisherGame { get; }
+public class RemoveGameDomainRequest
+{
+    public RemoveGameDomainRequest(Publisher publisher, PublisherGame publisherGame)
+    {
+        Publisher = publisher;
+        PublisherGame = publisherGame;
     }
+
+    public Publisher Publisher { get; }
+    public PublisherGame PublisherGame { get; }
 }

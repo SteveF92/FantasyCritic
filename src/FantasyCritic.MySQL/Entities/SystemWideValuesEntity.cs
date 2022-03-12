@@ -1,26 +1,25 @@
-namespace FantasyCritic.MySQL.Entities
+namespace FantasyCritic.MySQL.Entities;
+
+public class SystemWideValuesEntity
 {
-    public class SystemWideValuesEntity
+    public SystemWideValuesEntity()
     {
-        public SystemWideValuesEntity()
-        {
 
-        }
+    }
 
-        public SystemWideValuesEntity(SystemWideValues domain)
-        {
-            AverageStandardGamePoints = domain.AverageStandardGamePoints;
-            AveragePickupOnlyStandardGamePoints = domain.AveragePickupOnlyStandardGamePoints;
-            AverageCounterPickPoints = domain.AverageCounterPickPoints;
-        }
+    public SystemWideValuesEntity(SystemWideValues domain)
+    {
+        AverageStandardGamePoints = domain.AverageStandardGamePoints;
+        AveragePickupOnlyStandardGamePoints = domain.AveragePickupOnlyStandardGamePoints;
+        AverageCounterPickPoints = domain.AverageCounterPickPoints;
+    }
 
-        public decimal AverageStandardGamePoints { get; set; }
-        public decimal AveragePickupOnlyStandardGamePoints { get; set; }
-        public decimal AverageCounterPickPoints { get; set; }
+    public decimal AverageStandardGamePoints { get; set; }
+    public decimal AveragePickupOnlyStandardGamePoints { get; set; }
+    public decimal AverageCounterPickPoints { get; set; }
 
-        public SystemWideValues ToDomain()
-        {
-            return new SystemWideValues(AverageStandardGamePoints, AveragePickupOnlyStandardGamePoints, AverageCounterPickPoints);
-        }
+    public SystemWideValues ToDomain()
+    {
+        return new SystemWideValues(AverageStandardGamePoints, AveragePickupOnlyStandardGamePoints, AverageCounterPickPoints);
     }
 }

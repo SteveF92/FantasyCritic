@@ -1,12 +1,11 @@
-namespace FantasyCritic.Lib.Domain.Results
-{
-    public class DropResult
-    {
-        public DropResult(Result result)
-        {
-            Result = result;
-        }
+namespace FantasyCritic.Lib.Domain.Results;
 
-        public Result Result { get; }
+public class DropResult
+{
+    public DropResult(Result result)
+    {
+        Result = result;
     }
+
+    public Result Result { get; }
 }

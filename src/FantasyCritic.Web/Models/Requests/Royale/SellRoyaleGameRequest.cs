@@ -1,8 +1,7 @@
-namespace FantasyCritic.Web.Models.Requests.Royale
+namespace FantasyCritic.Web.Models.Requests.Royale;
+
+public class SellRoyaleGameRequest
 {
-    public class SellRoyaleGameRequest
-    {
-        public Guid PublisherID { get; set; }
-        public Guid MasterGameID { get; set; }
-    }
+    public Guid PublisherID { get; set; }
+    public Guid MasterGameID { get; set; }
 }

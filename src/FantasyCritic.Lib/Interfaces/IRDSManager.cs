@@ -1,10 +1,9 @@
 using FantasyCritic.Lib.Utilities;
 
-namespace FantasyCritic.Lib.Interfaces
+namespace FantasyCritic.Lib.Interfaces;
+
+public interface IRDSManager
 {
-    public interface IRDSManager
-    {
-        Task SnapshotRDS(Instant snapshotTime);
-        Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentSnapshots();
-    }
+    Task SnapshotRDS(Instant snapshotTime);
+    Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentSnapshots();
 }

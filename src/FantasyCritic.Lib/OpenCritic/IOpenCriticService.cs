@@ -1,7 +1,6 @@
-namespace FantasyCritic.Lib.OpenCritic
+namespace FantasyCritic.Lib.OpenCritic;
+
+public interface IOpenCriticService
 {
-    public interface IOpenCriticService
-    {
-        Task<Maybe<OpenCriticGame>> GetOpenCriticGame(int openCriticGameID);
-    }
+    Task<Maybe<OpenCriticGame>> GetOpenCriticGame(int openCriticGameID);
 }

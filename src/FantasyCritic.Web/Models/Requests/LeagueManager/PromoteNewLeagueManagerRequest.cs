@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FantasyCritic.Web.Models.Requests.LeagueManager
+namespace FantasyCritic.Web.Models.Requests.LeagueManager;
+
+public class PromoteNewLeagueManagerRequest
 {
-    public class PromoteNewLeagueManagerRequest
-    {
-        [Required]
-        public Guid LeagueID { get; set; }
-        [Required]
-        public Guid NewManagerUserID { get; set; }
-    }
+    [Required]
+    public Guid LeagueID { get; set; }
+    [Required]
+    public Guid NewManagerUserID { get; set; }
 }

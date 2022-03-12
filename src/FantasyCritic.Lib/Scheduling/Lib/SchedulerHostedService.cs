@@ -1,91 +1,90 @@
 using FantasyCritic.Lib.Scheduling.Lib.Cron;
 
-namespace FantasyCritic.Lib.Scheduling.Lib
+namespace FantasyCritic.Lib.Scheduling.Lib;
+
+public class SchedulerHostedService : HostedService
 {
-    public class SchedulerHostedService : HostedService
+    public event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException;
+
+    private readonly List<SchedulerTaskWrapper> _scheduledTasks = new List<SchedulerTaskWrapper>();
+
+    public SchedulerHostedService(IEnumerable<IScheduledTask> scheduledTasks)
     {
-        public event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException;
+        var referenceTime = DateTime.UtcNow;
 
-        private readonly List<SchedulerTaskWrapper> _scheduledTasks = new List<SchedulerTaskWrapper>();
-
-        public SchedulerHostedService(IEnumerable<IScheduledTask> scheduledTasks)
+        foreach (var scheduledTask in scheduledTasks)
         {
-            var referenceTime = DateTime.UtcNow;
-
-            foreach (var scheduledTask in scheduledTasks)
+            _scheduledTasks.Add(new SchedulerTaskWrapper
             {
-                _scheduledTasks.Add(new SchedulerTaskWrapper
+                Schedule = CrontabSchedule.Parse(scheduledTask.Schedule),
+                Task = scheduledTask,
+                NextRunTime = referenceTime
+            });
+        }
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await ExecuteOnceAsync(cancellationToken);
+
+            await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+        }
+    }
+
+    private async Task ExecuteOnceAsync(CancellationToken cancellationToken)
+    {
+        var taskFactory = new TaskFactory(TaskScheduler.Current);
+        var referenceTime = DateTime.UtcNow;
+
+        var tasksThatShouldRun = _scheduledTasks.Where(t => t.ShouldRun(referenceTime)).ToList();
+
+        foreach (var taskThatShouldRun in tasksThatShouldRun)
+        {
+            taskThatShouldRun.Increment();
+
+            await taskFactory.StartNew(
+                async () =>
                 {
-                    Schedule = CrontabSchedule.Parse(scheduledTask.Schedule),
-                    Task = scheduledTask,
-                    NextRunTime = referenceTime
-                });
-            }
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                await ExecuteOnceAsync(cancellationToken);
-
-                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
-            }
-        }
-
-        private async Task ExecuteOnceAsync(CancellationToken cancellationToken)
-        {
-            var taskFactory = new TaskFactory(TaskScheduler.Current);
-            var referenceTime = DateTime.UtcNow;
-
-            var tasksThatShouldRun = _scheduledTasks.Where(t => t.ShouldRun(referenceTime)).ToList();
-
-            foreach (var taskThatShouldRun in tasksThatShouldRun)
-            {
-                taskThatShouldRun.Increment();
-
-                await taskFactory.StartNew(
-                    async () =>
+                    try
                     {
-                        try
-                        {
-                            await taskThatShouldRun.Task.ExecuteAsync(cancellationToken);
-                        }
-                        catch (Exception ex)
-                        {
-                            var args = new UnobservedTaskExceptionEventArgs(
-                                ex as AggregateException ?? new AggregateException(ex));
+                        await taskThatShouldRun.Task.ExecuteAsync(cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        var args = new UnobservedTaskExceptionEventArgs(
+                            ex as AggregateException ?? new AggregateException(ex));
 
-                            UnobservedTaskException?.Invoke(this, args);
+                        UnobservedTaskException?.Invoke(this, args);
 
-                            if (!args.Observed)
-                            {
-                                throw;
-                            }
+                        if (!args.Observed)
+                        {
+                            throw;
                         }
-                    },
-                    cancellationToken);
-            }
+                    }
+                },
+                cancellationToken);
+        }
+    }
+
+    private class SchedulerTaskWrapper
+    {
+        public CrontabSchedule Schedule { get; set; }
+        public IScheduledTask Task { get; set; }
+
+        public DateTime LastRunTime { get; set; }
+        public DateTime NextRunTime { get; set; }
+
+        public void Increment()
+        {
+            LastRunTime = NextRunTime;
+            NextRunTime = Schedule.GetNextOccurrence(NextRunTime);
         }
 
-        private class SchedulerTaskWrapper
+        public bool ShouldRun(DateTime currentTime)
         {
-            public CrontabSchedule Schedule { get; set; }
-            public IScheduledTask Task { get; set; }
-
-            public DateTime LastRunTime { get; set; }
-            public DateTime NextRunTime { get; set; }
-
-            public void Increment()
-            {
-                LastRunTime = NextRunTime;
-                NextRunTime = Schedule.GetNextOccurrence(NextRunTime);
-            }
-
-            public bool ShouldRun(DateTime currentTime)
-            {
-                return NextRunTime < currentTime && LastRunTime != NextRunTime;
-            }
+            return NextRunTime < currentTime && LastRunTime != NextRunTime;
         }
     }
 }

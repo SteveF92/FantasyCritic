@@ -1,4 +1,3 @@
-namespace FantasyCritic.Lib.DependencyInjection
-{
-    public record RepositoryConfiguration(string ConnectionString, IClock Clock);
-}
+namespace FantasyCritic.Lib.DependencyInjection;
+
+public record RepositoryConfiguration(string ConnectionString, IClock Clock);

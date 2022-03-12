@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FantasyCritic.Web.Models.Requests.League
+namespace FantasyCritic.Web.Models.Requests.League;
+
+public class QueueRankingRequest
 {
-    public class QueueRankingRequest
-    {
-        [Required]
-        public Guid PublisherID { get; set; }
-        [Required]
-        public List<Guid> QueueRanks { get; set; }
-    }
+    [Required]
+    public Guid PublisherID { get; set; }
+    [Required]
+    public List<Guid> QueueRanks { get; set; }
 }

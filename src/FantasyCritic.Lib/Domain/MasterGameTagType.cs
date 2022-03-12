@@ -1,12 +1,11 @@
-namespace FantasyCritic.Lib.Domain
-{
-    public class MasterGameTagType
-    {
-        public MasterGameTagType(string name)
-        {
-            Name = name;
-        }
+namespace FantasyCritic.Lib.Domain;
 
-        public string Name { get; }
+public class MasterGameTagType
+{
+    public MasterGameTagType(string name)
+    {
+        Name = name;
     }
+
+    public string Name { get; }
 }

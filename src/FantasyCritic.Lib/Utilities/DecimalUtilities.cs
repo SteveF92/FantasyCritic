@@ -1,12 +1,11 @@
-namespace FantasyCritic.Lib.Utilities
+namespace FantasyCritic.Lib.Utilities;
+
+public static class DecimalUtilities
 {
-    public static class DecimalUtilities
+    public static decimal TruncateToPrecision(this decimal value, int precision)
     {
-        public static decimal TruncateToPrecision(this decimal value, int precision)
-        {
-            decimal step = (decimal)Math.Pow(10, precision);
-            decimal tmp = Math.Truncate(step * value);
-            return tmp / step;
-        }
+        decimal step = (decimal)Math.Pow(10, precision);
+        decimal tmp = Math.Truncate(step * value);
+        return tmp / step;
     }
 }

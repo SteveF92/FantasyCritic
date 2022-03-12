@@ -1,4 +1,3 @@
-namespace FantasyCritic.Lib.Domain.Calculations
-{
-    public record PublisherGameCalculatedStats(decimal? FantasyPoints);
-}
+namespace FantasyCritic.Lib.Domain.Calculations;
+
+public record PublisherGameCalculatedStats(decimal? FantasyPoints);

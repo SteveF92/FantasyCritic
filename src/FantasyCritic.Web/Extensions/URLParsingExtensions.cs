@@ -1,48 +1,47 @@
 using FantasyCritic.Lib.Utilities;
 
-namespace FantasyCritic.Web.Extensions
+namespace FantasyCritic.Web.Extensions;
+
+public static class URLParsingExtensions
 {
-    public static class URLParsingExtensions
+    public static int? GetOpenCriticIDFromURL(string openCriticLink)
     {
-        public static int? GetOpenCriticIDFromURL(string openCriticLink)
+        if (string.IsNullOrWhiteSpace(openCriticLink))
         {
-            if (string.IsNullOrWhiteSpace(openCriticLink))
-            {
-                return null;
-            }
-
-            int? openCriticID = null;
-            var openCriticGameIDString = SubstringSearching.GetBetween(openCriticLink, "/game/", "/");
-            if (openCriticGameIDString.IsSuccess)
-            {
-                bool parseResult = int.TryParse(openCriticGameIDString.Value, out int openCriticIDResult);
-                if (parseResult)
-                {
-                    openCriticID = openCriticIDResult;
-                }
-            }
-
-            return openCriticID;
+            return null;
         }
 
-        public static Maybe<string> GetGGTokenFromURL(string ggLink)
+        int? openCriticID = null;
+        var openCriticGameIDString = SubstringSearching.GetBetween(openCriticLink, "/game/", "/");
+        if (openCriticGameIDString.IsSuccess)
         {
-            if (string.IsNullOrWhiteSpace(ggLink))
+            bool parseResult = int.TryParse(openCriticGameIDString.Value, out int openCriticIDResult);
+            if (parseResult)
             {
-                return Maybe<string>.None;
+                openCriticID = openCriticIDResult;
             }
-            var result = SubstringSearching.GetBetween(ggLink, "/games/", "/");
-            if (result.IsFailure)
-            {
-                return Maybe<string>.None;
-            }
-
-            if (result.Value.Length != 6)
-            {
-                return Maybe<string>.None;
-            }
-
-            return result.Value;
         }
+
+        return openCriticID;
+    }
+
+    public static Maybe<string> GetGGTokenFromURL(string ggLink)
+    {
+        if (string.IsNullOrWhiteSpace(ggLink))
+        {
+            return Maybe<string>.None;
+        }
+        var result = SubstringSearching.GetBetween(ggLink, "/games/", "/");
+        if (result.IsFailure)
+        {
+            return Maybe<string>.None;
+        }
+
+        if (result.Value.Length != 6)
+        {
+            return Maybe<string>.None;
+        }
+
+        return result.Value;
     }
 }

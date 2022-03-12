@@ -1,7 +1,6 @@
-namespace FantasyCritic.Web.Models.Requests.Admin
+namespace FantasyCritic.Web.Models.Requests.Admin;
+
+public class DateParseRequest
 {
-    public class DateParseRequest
-    {
-        public string EstimatedReleaseDate { get; set; }
-    }
+    public string EstimatedReleaseDate { get; set; }
 }

@@ -1,28 +1,27 @@
-namespace FantasyCritic.MySQL.Entities
+namespace FantasyCritic.MySQL.Entities;
+
+internal class LeagueYearTagEntity
 {
-    internal class LeagueYearTagEntity
+    public LeagueYearTagEntity()
     {
-        public LeagueYearTagEntity()
-        {
 
-        }
+    }
 
-        public LeagueYearTagEntity(League league, int year, LeagueTagStatus domain)
-        {
-            LeagueID = league.LeagueID;
-            Year = year;
-            Tag = domain.Tag.Name;
-            Status = domain.Status.Value;
-        }
+    public LeagueYearTagEntity(League league, int year, LeagueTagStatus domain)
+    {
+        LeagueID = league.LeagueID;
+        Year = year;
+        Tag = domain.Tag.Name;
+        Status = domain.Status.Value;
+    }
 
-        public Guid LeagueID { get; set; }
-        public int Year { get; set; }
-        public string Tag { get; set; }
-        public string Status { get; set; }
+    public Guid LeagueID { get; set; }
+    public int Year { get; set; }
+    public string Tag { get; set; }
+    public string Status { get; set; }
 
-        public LeagueTagStatus ToDomain(MasterGameTag tag)
-        {
-            return new LeagueTagStatus(tag, TagStatus.FromValue(Status));
-        }
+    public LeagueTagStatus ToDomain(MasterGameTag tag)
+    {
+        return new LeagueTagStatus(tag, TagStatus.FromValue(Status));
     }
 }

@@ -1,32 +1,31 @@
 using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.Domain;
+
+public class ManagerMessage
 {
-    public class ManagerMessage
+    public ManagerMessage(Guid messageID, string messageText, bool isPublic, Instant timestamp, IEnumerable<Guid> dismissedByUserIDs)
     {
-        public ManagerMessage(Guid messageID, string messageText, bool isPublic, Instant timestamp, IEnumerable<Guid> dismissedByUserIDs)
+        MessageID = messageID;
+        MessageText = messageText;
+        IsPublic = isPublic;
+        Timestamp = timestamp;
+        DismissedByUserIDs = dismissedByUserIDs.ToList();
+    }
+
+    public Guid MessageID { get; }
+    public string MessageText { get; }
+    public bool IsPublic { get; }
+    public Instant Timestamp { get; }
+    public IReadOnlyList<Guid> DismissedByUserIDs { get; }
+
+    public bool IsDismissed(Maybe<FantasyCriticUser> accessingUser)
+    {
+        if (accessingUser.HasNoValue)
         {
-            MessageID = messageID;
-            MessageText = messageText;
-            IsPublic = isPublic;
-            Timestamp = timestamp;
-            DismissedByUserIDs = dismissedByUserIDs.ToList();
+            return false;
         }
 
-        public Guid MessageID { get; }
-        public string MessageText { get; }
-        public bool IsPublic { get; }
-        public Instant Timestamp { get; }
-        public IReadOnlyList<Guid> DismissedByUserIDs { get; }
-
-        public bool IsDismissed(Maybe<FantasyCriticUser> accessingUser)
-        {
-            if (accessingUser.HasNoValue)
-            {
-                return false;
-            }
-
-            return DismissedByUserIDs.Contains(accessingUser.Value.Id);
-        }
+        return DismissedByUserIDs.Contains(accessingUser.Value.Id);
     }
 }

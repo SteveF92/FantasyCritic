@@ -1,36 +1,35 @@
 using System.Text.RegularExpressions;
 
-namespace FantasyCritic.Lib.Extensions
+namespace FantasyCritic.Lib.Extensions;
+
+public static class StringExtensions
 {
-    public static class StringExtensions
+    public static string TrimStart(this string target, string trimString)
     {
-        public static string TrimStart(this string target, string trimString)
+        if (string.IsNullOrEmpty(trimString)) return target;
+
+        string result = target;
+        while (result.StartsWith(trimString))
         {
-            if (string.IsNullOrEmpty(trimString)) return target;
-
-            string result = target;
-            while (result.StartsWith(trimString))
-            {
-                result = result.Substring(trimString.Length);
-            }
-
-            return result;
+            result = result.Substring(trimString.Length);
         }
 
-        public static string CamelCaseToSpaces(this string value)
+        return result;
+    }
+
+    public static string CamelCaseToSpaces(this string value)
+    {
+        return Regex.Replace(value, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
+    }
+
+    public static string TrimStartingFromFirstInstance(this string source, string startFrom)
+    {
+        int index = source.IndexOf(startFrom);
+        if (index > 0)
         {
-            return Regex.Replace(value, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
+            source = source.Substring(0, index);
         }
 
-        public static string TrimStartingFromFirstInstance(this string source, string startFrom)
-        {
-            int index = source.IndexOf(startFrom);
-            if (index > 0)
-            {
-                source = source.Substring(0, index);
-            }
-
-            return source;
-        }
+        return source;
     }
 }

@@ -7,172 +7,171 @@ using NLog;
 using RazorLight;
 using System.IO;
 
-namespace FantasyCritic.Lib.Services
+namespace FantasyCritic.Lib.Services;
+
+public class EmailSendingService
 {
-    public class EmailSendingService
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
+    private readonly FantasyCriticUserManager _userManager;
+    private readonly IEmailSender _emailSender;
+    private readonly InterLeagueService _interLeagueService;
+    private readonly FantasyCriticService _fantasyCriticService;
+    private readonly GameAcquisitionService _gameAcquisitionService;
+    private readonly LeagueMemberService _leagueMemberService;
+    private readonly string _baseAddress;
+    private readonly IClock _clock;
+
+    public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender,
+        InterLeagueService interLeagueService, FantasyCriticService fantasyCriticService,
+        GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
+        EmailSendingServiceConfiguration configuration, IClock clock)
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        _userManager = userManager;
+        _emailSender = emailSender;
+        _interLeagueService = interLeagueService;
+        _fantasyCriticService = fantasyCriticService;
+        _gameAcquisitionService = gameAcquisitionService;
+        _leagueMemberService = leagueMemberService;
+        _baseAddress = configuration.BaseAddress;
+        _clock = clock;
+    }
 
-        private readonly FantasyCriticUserManager _userManager;
-        private readonly IEmailSender _emailSender;
-        private readonly InterLeagueService _interLeagueService;
-        private readonly FantasyCriticService _fantasyCriticService;
-        private readonly GameAcquisitionService _gameAcquisitionService;
-        private readonly LeagueMemberService _leagueMemberService;
-        private readonly string _baseAddress;
-        private readonly IClock _clock;
+    public async Task SendScheduledEmails()
+    {
+        var now = _clock.GetCurrentInstant();
+        var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
 
-        public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender,
-            InterLeagueService interLeagueService, FantasyCriticService fantasyCriticService,
-            GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
-            EmailSendingServiceConfiguration configuration, IClock clock)
+        var dayOfWeek = nycNow.DayOfWeek;
+        var timeOfDay = nycNow.TimeOfDay;
+        var earliestTimeToSet = TimeExtensions.PublicBiddingRevealTime.Minus(Period.FromMinutes(1));
+        var latestTimeToSet = TimeExtensions.PublicBiddingRevealTime.Plus(Period.FromMinutes(1));
+        bool isTimeToSendPublicBidEmails = dayOfWeek == TimeExtensions.PublicBiddingRevealDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet;
+        if (isTimeToSendPublicBidEmails)
         {
-            _userManager = userManager;
-            _emailSender = emailSender;
-            _interLeagueService = interLeagueService;
-            _fantasyCriticService = fantasyCriticService;
-            _gameAcquisitionService = gameAcquisitionService;
-            _leagueMemberService = leagueMemberService;
-            _baseAddress = configuration.BaseAddress;
-            _clock = clock;
+            _logger.Info($"Sending public bid emails because date/time is: {nycNow}");
+            await SendPublicBidEmails();
         }
+    }
 
-        public async Task SendScheduledEmails()
+    public async Task SendPublicBidEmails()
+    {
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
+
+        var publicBiddingSetDictionary = new Dictionary<LeagueYearKey, PublicBiddingSet>();
+        foreach (var year in activeYears)
         {
-            var now = _clock.GetCurrentInstant();
-            var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
-
-            var dayOfWeek = nycNow.DayOfWeek;
-            var timeOfDay = nycNow.TimeOfDay;
-            var earliestTimeToSet = TimeExtensions.PublicBiddingRevealTime.Minus(Period.FromMinutes(1));
-            var latestTimeToSet = TimeExtensions.PublicBiddingRevealTime.Plus(Period.FromMinutes(1));
-            bool isTimeToSendPublicBidEmails = dayOfWeek == TimeExtensions.PublicBiddingRevealDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet;
-            if (isTimeToSendPublicBidEmails)
+            var publicBiddingSets = await _gameAcquisitionService.GetPublicBiddingGames(year.Year);
+            foreach (var publicBiddingSet in publicBiddingSets)
             {
-                _logger.Info($"Sending public bid emails because date/time is: {nycNow}");
-                await SendPublicBidEmails();
+                publicBiddingSetDictionary[publicBiddingSet.LeagueYear.Key] = publicBiddingSet;
             }
         }
 
-        public async Task SendPublicBidEmails()
-        {
-            var supportedYears = await _interLeagueService.GetSupportedYears();
-            var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
+        var userEmailSettings = await _userManager.GetAllEmailSettings();
+        var usersWithPublicBidEmails = userEmailSettings.Where(x => !x.User.IsDeleted && x.User.EmailConfirmed && x.EmailTypes.Contains(EmailType.PublicBids)).Select(x => x.User).ToList();
+        var usersWithLeagueYears = await _leagueMemberService.GetUsersWithLeagueYearsWithPublisher();
 
-            var publicBiddingSetDictionary = new Dictionary<LeagueYearKey, PublicBiddingSet>();
-            foreach (var year in activeYears)
+        foreach (var user in usersWithPublicBidEmails)
+        {
+            bool hasLeagueYears = usersWithLeagueYears.TryGetValue(user, out var leagueYearKeys);
+            if (!hasLeagueYears)
             {
-                var publicBiddingSets = await _gameAcquisitionService.GetPublicBiddingGames(year.Year);
-                foreach (var publicBiddingSet in publicBiddingSets)
+                continue;
+            }
+
+            List<PublicBiddingSet> publicBiddingSetsForUser = new List<PublicBiddingSet>();
+            foreach (var leagueYearKey in leagueYearKeys)
+            {
+                bool hasPublicBiddingSet = publicBiddingSetDictionary.TryGetValue(leagueYearKey, out var publicBiddingSet);
+                if (hasPublicBiddingSet)
                 {
-                    publicBiddingSetDictionary[publicBiddingSet.LeagueYear.Key] = publicBiddingSet;
+                    publicBiddingSetsForUser.Add(publicBiddingSet);
                 }
             }
 
-            var userEmailSettings = await _userManager.GetAllEmailSettings();
-            var usersWithPublicBidEmails = userEmailSettings.Where(x => !x.User.IsDeleted && x.User.EmailConfirmed && x.EmailTypes.Contains(EmailType.PublicBids)).Select(x => x.User).ToList();
-            var usersWithLeagueYears = await _leagueMemberService.GetUsersWithLeagueYearsWithPublisher();
-
-            foreach (var user in usersWithPublicBidEmails)
+            if (publicBiddingSetsForUser.Any() && publicBiddingSetsForUser.Any(x => x.MasterGames.Any()))
             {
-                bool hasLeagueYears = usersWithLeagueYears.TryGetValue(user, out var leagueYearKeys);
-                if (!hasLeagueYears)
-                {
-                    continue;
-                }
-
-                List<PublicBiddingSet> publicBiddingSetsForUser = new List<PublicBiddingSet>();
-                foreach (var leagueYearKey in leagueYearKeys)
-                {
-                    bool hasPublicBiddingSet = publicBiddingSetDictionary.TryGetValue(leagueYearKey, out var publicBiddingSet);
-                    if (hasPublicBiddingSet)
-                    {
-                        publicBiddingSetsForUser.Add(publicBiddingSet);
-                    }
-                }
-
-                if (publicBiddingSetsForUser.Any() && publicBiddingSetsForUser.Any(x => x.MasterGames.Any()))
-                {
-                    await SendPublicBiddingEmailToUser(user, publicBiddingSetsForUser);
-                }
+                await SendPublicBiddingEmailToUser(user, publicBiddingSetsForUser);
             }
         }
+    }
 
-        private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<PublicBiddingSet> publicBiddingSet)
-        {
-            string emailAddress = user.Email;
-            string emailSubject = "FantasyCritic - This Week's Public Bids";
-            PublicBidEmailModel model = new PublicBidEmailModel(user, publicBiddingSet, _baseAddress);
+    private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<PublicBiddingSet> publicBiddingSet)
+    {
+        string emailAddress = user.Email;
+        string emailSubject = "FantasyCritic - This Week's Public Bids";
+        PublicBidEmailModel model = new PublicBidEmailModel(user, publicBiddingSet, _baseAddress);
 
-            var htmlResult = await GetHTMLString("PublicBids.cshtml", model);
+        var htmlResult = await GetHTMLString("PublicBids.cshtml", model);
 
-            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
-        }
+        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+    }
 
-        public async Task SendConfirmationEmail(FantasyCriticUser user, string link)
-        {
-            string emailAddress = user.Email;
-            string emailSubject = "FantasyCritic - Confirm your email address.";
-            ConfirmEmailModel model = new ConfirmEmailModel(user, link);
+    public async Task SendConfirmationEmail(FantasyCriticUser user, string link)
+    {
+        string emailAddress = user.Email;
+        string emailSubject = "FantasyCritic - Confirm your email address.";
+        ConfirmEmailModel model = new ConfirmEmailModel(user, link);
 
-            var htmlResult = await GetHTMLString("ConfirmEmail.cshtml", model);
+        var htmlResult = await GetHTMLString("ConfirmEmail.cshtml", model);
 
-            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
-        }
+        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+    }
 
-        public async Task SendForgotPasswordEmail(FantasyCriticUser user, string link)
-        {
-            string emailAddress = user.Email;
-            string emailSubject = "FantasyCritic - Reset Your Password.";
+    public async Task SendForgotPasswordEmail(FantasyCriticUser user, string link)
+    {
+        string emailAddress = user.Email;
+        string emailSubject = "FantasyCritic - Reset Your Password.";
 
-            PasswordResetModel model = new PasswordResetModel(user, link);
-            var htmlResult = await GetHTMLString("PasswordReset.cshtml", model);
+        PasswordResetModel model = new PasswordResetModel(user, link);
+        var htmlResult = await GetHTMLString("PasswordReset.cshtml", model);
 
-            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
-        }
+        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+    }
 
-        public async Task SendChangeEmail(FantasyCriticUser user, string link)
-        {
-            string emailAddress = user.Email;
-            string emailSubject = "FantasyCritic - Change Your Email.";
+    public async Task SendChangeEmail(FantasyCriticUser user, string link)
+    {
+        string emailAddress = user.Email;
+        string emailSubject = "FantasyCritic - Change Your Email.";
 
-            ChangeEmailModel model = new ChangeEmailModel(user, link);
-            var htmlResult = await GetHTMLString("ChangeEmail.cshtml", model);
+        ChangeEmailModel model = new ChangeEmailModel(user, link);
+        var htmlResult = await GetHTMLString("ChangeEmail.cshtml", model);
 
-            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
-        }
+        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+    }
 
-        public async Task SendSiteInviteEmail(string inviteEmail, League league, string baseURL)
-        {
-            string emailAddress = inviteEmail;
-            string emailSubject = "You have been invited to join a FantasyCritic league!";
+    public async Task SendSiteInviteEmail(string inviteEmail, League league, string baseURL)
+    {
+        string emailAddress = inviteEmail;
+        string emailSubject = "You have been invited to join a FantasyCritic league!";
 
-            LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
-            var htmlResult = await GetHTMLString("SiteInvite.cshtml", model);
+        LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
+        var htmlResult = await GetHTMLString("SiteInvite.cshtml", model);
 
-            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
-        }
+        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+    }
 
-        public async Task SendLeagueInviteEmail(string inviteEmail, League league, string baseURL)
-        {
-            string emailAddress = inviteEmail;
-            string emailSubject = "You have been invited to join a FantasyCritic league!";
+    public async Task SendLeagueInviteEmail(string inviteEmail, League league, string baseURL)
+    {
+        string emailAddress = inviteEmail;
+        string emailSubject = "You have been invited to join a FantasyCritic league!";
 
-            LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
-            var htmlResult = await GetHTMLString("LeagueInvite.cshtml", model);
+        LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
+        var htmlResult = await GetHTMLString("LeagueInvite.cshtml", model);
 
-            await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
-        }
+        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+    }
 
-        private static async Task<string> GetHTMLString(string template, object model)
-        {
-            var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Email", "EmailTemplates");
-            var engine = new RazorLightEngineBuilder()
-                .UseFilesystemProject(templateFilePath)
-                .UseMemoryCachingProvider()
-                .Build();
-            string htmlResult = await engine.CompileRenderAsync(template, model);
-            return htmlResult;
-        }
+    private static async Task<string> GetHTMLString(string template, object model)
+    {
+        var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Email", "EmailTemplates");
+        var engine = new RazorLightEngineBuilder()
+            .UseFilesystemProject(templateFilePath)
+            .UseMemoryCachingProvider()
+            .Build();
+        string htmlResult = await engine.CompileRenderAsync(template, model);
+        return htmlResult;
     }
 }

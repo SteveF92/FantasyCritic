@@ -2,31 +2,30 @@ using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FantasyCritic.Lib.Scheduling
+namespace FantasyCritic.Lib.Scheduling;
+
+public class EmailSendingTask : IScheduledTask
 {
-    public class EmailSendingTask : IScheduledTask
+    private readonly IServiceProvider _serviceProvider;
+    public string Schedule => "0 */1 * * *";
+
+    public EmailSendingTask(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
-        public string Schedule => "0 */1 * * *";
+        _serviceProvider = serviceProvider;
+    }
 
-        public EmailSendingTask(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
+    public async Task ExecuteAsync(CancellationToken cancellationToken)
+    {
 #if DEBUG
-            Console.WriteLine("Not sending emails - DEBUG version");
-            return;
+        Console.WriteLine("Not sending emails - DEBUG version");
+        return;
 #endif
-            var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-            using (var scope = serviceScopeFactory.CreateScope())
-            {
-                var emailSendingService = scope.ServiceProvider.GetRequiredService<EmailSendingService>();
-                await emailSendingService.SendScheduledEmails();
-            }
+        using (var scope = serviceScopeFactory.CreateScope())
+        {
+            var emailSendingService = scope.ServiceProvider.GetRequiredService<EmailSendingService>();
+            await emailSendingService.SendScheduledEmails();
         }
     }
 }

@@ -1,7 +1,6 @@
-namespace FantasyCritic.Web.Models.Requests.LeagueManager
+namespace FantasyCritic.Web.Models.Requests.LeagueManager;
+
+public class CreateInviteLinkRequest
 {
-    public class CreateInviteLinkRequest
-    {
-        public Guid LeagueID { get; set; }
-    }
+    public Guid LeagueID { get; set; }
 }

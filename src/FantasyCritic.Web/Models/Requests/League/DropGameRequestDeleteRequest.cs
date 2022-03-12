@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FantasyCritic.Web.Models.Requests.League
+namespace FantasyCritic.Web.Models.Requests.League;
+
+public class DropGameRequestDeleteRequest
 {
-    public class DropGameRequestDeleteRequest
-    {
-        [Required]
-        public Guid DropRequestID { get; set; }
-    }
+    [Required]
+    public Guid DropRequestID { get; set; }
 }

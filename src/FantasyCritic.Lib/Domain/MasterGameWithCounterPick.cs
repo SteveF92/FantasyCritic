@@ -1,4 +1,3 @@
-namespace FantasyCritic.Lib.Domain
-{
-    public record MasterGameYearWithCounterPick(MasterGameYear MasterGameYear, bool CounterPick);
-}
+namespace FantasyCritic.Lib.Domain;
+
+public record MasterGameYearWithCounterPick(MasterGameYear MasterGameYear, bool CounterPick);

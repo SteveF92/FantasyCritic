@@ -1,10 +1,9 @@
-namespace FantasyCritic.Web.Models.Requests.LeagueManager
+namespace FantasyCritic.Web.Models.Requests.LeagueManager;
+
+public class AssociateGameRequest
 {
-    public class AssociateGameRequest
-    {
-        public Guid PublisherID { get; set; }
-        public Guid PublisherGameID { get; set; }
-        public Guid MasterGameID { get; set; }
-        public bool ManagerOverride { get; set; }
-    }
+    public Guid PublisherID { get; set; }
+    public Guid PublisherGameID { get; set; }
+    public Guid MasterGameID { get; set; }
+    public bool ManagerOverride { get; set; }
 }

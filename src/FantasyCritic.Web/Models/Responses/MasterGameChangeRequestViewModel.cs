@@ -1,34 +1,33 @@
-namespace FantasyCritic.Web.Models.Responses
+namespace FantasyCritic.Web.Models.Responses;
+
+public class MasterGameChangeRequestViewModel
 {
-    public class MasterGameChangeRequestViewModel
+    public MasterGameChangeRequestViewModel(MasterGameChangeRequest domain, LocalDate currentDate)
     {
-        public MasterGameChangeRequestViewModel(MasterGameChangeRequest domain, LocalDate currentDate)
-        {
-            RequestID = domain.RequestID;
-            RequesterDisplayName = domain.User.UserName;
-            MasterGame = new MasterGameViewModel(domain.MasterGame, currentDate);
+        RequestID = domain.RequestID;
+        RequesterDisplayName = domain.User.UserName;
+        MasterGame = new MasterGameViewModel(domain.MasterGame, currentDate);
 
-            RequestNote = domain.RequestNote;
-            OpenCriticID = domain.OpenCriticID;
-            GGToken = domain.GGToken.GetValueOrDefault();
+        RequestNote = domain.RequestNote;
+        OpenCriticID = domain.OpenCriticID;
+        GGToken = domain.GGToken.GetValueOrDefault();
 
-            Answered = domain.Answered;
-            ResponseNote = domain.ResponseNote;
-            ResponseTimestamp = domain.ResponseTimestamp;
-            Hidden = domain.Hidden;
-        }
-
-        public Guid RequestID { get; }
-        public string RequesterDisplayName { get; }
-        public string RequestNote { get; }
-        public int? OpenCriticID { get; }
-        public string GGToken { get; }
-        public MasterGameViewModel MasterGame { get; }
-
-        //Response
-        public bool Answered { get; }
-        public string ResponseNote { get; }
-        public Instant? ResponseTimestamp { get; }
-        public bool Hidden { get; }
+        Answered = domain.Answered;
+        ResponseNote = domain.ResponseNote;
+        ResponseTimestamp = domain.ResponseTimestamp;
+        Hidden = domain.Hidden;
     }
+
+    public Guid RequestID { get; }
+    public string RequesterDisplayName { get; }
+    public string RequestNote { get; }
+    public int? OpenCriticID { get; }
+    public string GGToken { get; }
+    public MasterGameViewModel MasterGame { get; }
+
+    //Response
+    public bool Answered { get; }
+    public string ResponseNote { get; }
+    public Instant? ResponseTimestamp { get; }
+    public bool Hidden { get; }
 }

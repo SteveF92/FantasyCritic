@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FantasyCritic.Web.Models.Requests.Admin
+namespace FantasyCritic.Web.Models.Requests.Admin;
+
+public class DeleteLeagueRequest
 {
-    public class DeleteLeagueRequest
-    {
-        [Required]
-        public Guid LeagueID { get; set; }
-    }
+    [Required]
+    public Guid LeagueID { get; set; }
 }

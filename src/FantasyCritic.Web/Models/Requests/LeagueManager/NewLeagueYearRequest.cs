@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FantasyCritic.Web.Models.Requests.LeagueManager
+namespace FantasyCritic.Web.Models.Requests.LeagueManager;
+
+public class NewLeagueYearRequest
 {
-    public class NewLeagueYearRequest
-    {
-        [Required]
-        public Guid LeagueID { get; set; }
-        [Required]
-        public int Year { get; set; }
-    }
+    [Required]
+    public Guid LeagueID { get; set; }
+    [Required]
+    public int Year { get; set; }
 }

@@ -1,7 +1,6 @@
-namespace FantasyCritic.Web.Models.Identity
+namespace FantasyCritic.Web.Models.Identity;
+
+public class RedirectViewModel
 {
-    public class RedirectViewModel
-    {
-        public string RedirectUrl { get; set; }
-    }
+    public string RedirectUrl { get; set; }
 }

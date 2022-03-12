@@ -1,31 +1,30 @@
-namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.Domain;
+
+public class SystemWideValues
 {
-    public class SystemWideValues
+    public SystemWideValues(decimal averageStandardGamePoints, decimal averagePickupOnlyStandardGamePoints, decimal averageCounterPickPoints)
     {
-        public SystemWideValues(decimal averageStandardGamePoints, decimal averagePickupOnlyStandardGamePoints, decimal averageCounterPickPoints)
+        AverageStandardGamePoints = averageStandardGamePoints;
+        AveragePickupOnlyStandardGamePoints = averagePickupOnlyStandardGamePoints;
+        AverageCounterPickPoints = averageCounterPickPoints;
+    }
+
+    public decimal AverageStandardGamePoints { get; }
+    public decimal AveragePickupOnlyStandardGamePoints { get; }
+    public decimal AverageCounterPickPoints { get; }
+
+    public decimal GetAveragePoints(bool pickupOnly, bool counterPick)
+    {
+        if (counterPick)
         {
-            AverageStandardGamePoints = averageStandardGamePoints;
-            AveragePickupOnlyStandardGamePoints = averagePickupOnlyStandardGamePoints;
-            AverageCounterPickPoints = averageCounterPickPoints;
+            return AverageCounterPickPoints;
         }
 
-        public decimal AverageStandardGamePoints { get; }
-        public decimal AveragePickupOnlyStandardGamePoints { get; }
-        public decimal AverageCounterPickPoints { get; }
-
-        public decimal GetAveragePoints(bool pickupOnly, bool counterPick)
+        if (pickupOnly)
         {
-            if (counterPick)
-            {
-                return AverageCounterPickPoints;
-            }
-
-            if (pickupOnly)
-            {
-                return AveragePickupOnlyStandardGamePoints;
-            }
-
-            return AverageStandardGamePoints;
+            return AveragePickupOnlyStandardGamePoints;
         }
+
+        return AverageStandardGamePoints;
     }
 }

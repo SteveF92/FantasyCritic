@@ -1,12 +1,11 @@
-namespace FantasyCritic.Lib.Scheduling.Lib.Cron
+namespace FantasyCritic.Lib.Scheduling.Lib.Cron;
+
+[Serializable]
+public enum CrontabFieldKind
 {
-    [Serializable]
-    public enum CrontabFieldKind
-    {
-        Minute,
-        Hour,
-        Day,
-        Month,
-        DayOfWeek
-    }
+    Minute,
+    Hour,
+    Day,
+    Month,
+    DayOfWeek
 }

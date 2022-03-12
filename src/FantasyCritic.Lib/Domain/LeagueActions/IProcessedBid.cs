@@ -1,9 +1,8 @@
-namespace FantasyCritic.Lib.Domain.LeagueActions
+namespace FantasyCritic.Lib.Domain.LeagueActions;
+
+public interface IProcessedBid
 {
-    public interface IProcessedBid
-    {
-        PickupBid PickupBid { get; }
-        string Outcome { get; }
-        decimal ProjectedPointsAtTimeOfBid { get; }
-    }
+    PickupBid PickupBid { get; }
+    string Outcome { get; }
+    decimal ProjectedPointsAtTimeOfBid { get; }
 }

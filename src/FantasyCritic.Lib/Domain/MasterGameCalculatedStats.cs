@@ -1,68 +1,67 @@
-namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.Domain;
+
+public class MasterGameCalculatedStats
 {
-    public class MasterGameCalculatedStats
+    public MasterGameCalculatedStats(MasterGame masterGame, MasterGameYear cachedMasterGameYear)
     {
-        public MasterGameCalculatedStats(MasterGame masterGame, MasterGameYear cachedMasterGameYear)
-        {
-            MasterGame = masterGame;
-            Year = cachedMasterGameYear.Year;
+        MasterGame = masterGame;
+        Year = cachedMasterGameYear.Year;
 
-            PercentStandardGame = cachedMasterGameYear.PercentStandardGame;
-            PercentCounterPick = cachedMasterGameYear.PercentCounterPick;
-            EligiblePercentStandardGame = cachedMasterGameYear.EligiblePercentStandardGame;
-            AdjustedPercentCounterPick = cachedMasterGameYear.AdjustedPercentCounterPick;
-            NumberOfBids = cachedMasterGameYear.NumberOfBids;
-            TotalBidAmount = cachedMasterGameYear.TotalBidAmount;
-            BidPercentile = cachedMasterGameYear.BidPercentile;
-            AverageDraftPosition = cachedMasterGameYear.AverageDraftPosition;
-            AverageWinningBid = cachedMasterGameYear.AverageWinningBid;
+        PercentStandardGame = cachedMasterGameYear.PercentStandardGame;
+        PercentCounterPick = cachedMasterGameYear.PercentCounterPick;
+        EligiblePercentStandardGame = cachedMasterGameYear.EligiblePercentStandardGame;
+        AdjustedPercentCounterPick = cachedMasterGameYear.AdjustedPercentCounterPick;
+        NumberOfBids = cachedMasterGameYear.NumberOfBids;
+        TotalBidAmount = cachedMasterGameYear.TotalBidAmount;
+        BidPercentile = cachedMasterGameYear.BidPercentile;
+        AverageDraftPosition = cachedMasterGameYear.AverageDraftPosition;
+        AverageWinningBid = cachedMasterGameYear.AverageWinningBid;
 
-            HypeFactor = cachedMasterGameYear.HypeFactor;
-            DateAdjustedHypeFactor = cachedMasterGameYear.DateAdjustedHypeFactor;
-            PeakHypeFactor = cachedMasterGameYear.PeakHypeFactor;
-            LinearRegressionHypeFactor = cachedMasterGameYear.LinearRegressionHypeFactor;
-        }
-
-        public MasterGameCalculatedStats(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame,
-            double? adjustedPercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageWinningBid,
-            double hypeFactor, double dateAdjustedHypeFactor, double peakHypeFactor, double linearRegressionHypeFactor)
-        {
-            MasterGame = masterGame;
-            Year = year;
-
-            PercentStandardGame = percentStandardGame;
-            PercentCounterPick = percentCounterPick;
-            EligiblePercentStandardGame = eligiblePercentStandardGame;
-            AdjustedPercentCounterPick = adjustedPercentCounterPick;
-            NumberOfBids = numberOfBids;
-            TotalBidAmount = totalBidAmount;
-            BidPercentile = bidPercentile;
-            AverageDraftPosition = averageDraftPosition;
-            AverageWinningBid = averageWinningBid;
-
-            HypeFactor = hypeFactor;
-            DateAdjustedHypeFactor = dateAdjustedHypeFactor;
-            PeakHypeFactor = peakHypeFactor;
-            LinearRegressionHypeFactor = linearRegressionHypeFactor;
-        }
-
-        public MasterGame MasterGame { get; }
-        public int Year { get; }
-
-        public double PercentStandardGame { get; set; }
-        public double PercentCounterPick { get; set; }
-        public double EligiblePercentStandardGame { get; set; }
-        public double? AdjustedPercentCounterPick { get; set; }
-        public int NumberOfBids { get; set; }
-        public int TotalBidAmount { get; set; }
-        public double BidPercentile { get; set; }
-        public double? AverageDraftPosition { get; set; }
-        public double? AverageWinningBid { get; set; }
-
-        public double HypeFactor { get; }
-        public double DateAdjustedHypeFactor { get; }
-        public double PeakHypeFactor { get; }
-        public double LinearRegressionHypeFactor { get; }
-
+        HypeFactor = cachedMasterGameYear.HypeFactor;
+        DateAdjustedHypeFactor = cachedMasterGameYear.DateAdjustedHypeFactor;
+        PeakHypeFactor = cachedMasterGameYear.PeakHypeFactor;
+        LinearRegressionHypeFactor = cachedMasterGameYear.LinearRegressionHypeFactor;
     }
+
+    public MasterGameCalculatedStats(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame,
+        double? adjustedPercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageWinningBid,
+        double hypeFactor, double dateAdjustedHypeFactor, double peakHypeFactor, double linearRegressionHypeFactor)
+    {
+        MasterGame = masterGame;
+        Year = year;
+
+        PercentStandardGame = percentStandardGame;
+        PercentCounterPick = percentCounterPick;
+        EligiblePercentStandardGame = eligiblePercentStandardGame;
+        AdjustedPercentCounterPick = adjustedPercentCounterPick;
+        NumberOfBids = numberOfBids;
+        TotalBidAmount = totalBidAmount;
+        BidPercentile = bidPercentile;
+        AverageDraftPosition = averageDraftPosition;
+        AverageWinningBid = averageWinningBid;
+
+        HypeFactor = hypeFactor;
+        DateAdjustedHypeFactor = dateAdjustedHypeFactor;
+        PeakHypeFactor = peakHypeFactor;
+        LinearRegressionHypeFactor = linearRegressionHypeFactor;
+    }
+
+    public MasterGame MasterGame { get; }
+    public int Year { get; }
+
+    public double PercentStandardGame { get; set; }
+    public double PercentCounterPick { get; set; }
+    public double EligiblePercentStandardGame { get; set; }
+    public double? AdjustedPercentCounterPick { get; set; }
+    public int NumberOfBids { get; set; }
+    public int TotalBidAmount { get; set; }
+    public double BidPercentile { get; set; }
+    public double? AverageDraftPosition { get; set; }
+    public double? AverageWinningBid { get; set; }
+
+    public double HypeFactor { get; }
+    public double DateAdjustedHypeFactor { get; }
+    public double PeakHypeFactor { get; }
+    public double LinearRegressionHypeFactor { get; }
+
 }

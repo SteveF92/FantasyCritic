@@ -1,19 +1,18 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace FantasyCritic.Lib.Identity
+namespace FantasyCritic.Lib.Identity;
+
+public class FantasyCriticRole : IdentityRole<Guid>
 {
-    public class FantasyCriticRole : IdentityRole<Guid>
+    public FantasyCriticRole()
     {
-        public FantasyCriticRole()
-        {
 
-        }
+    }
 
-        public FantasyCriticRole(Guid roleID, string name, string normalizedName)
-        {
-            Id = roleID;
-            Name = name;
-            NormalizedName = normalizedName;
-        }
+    public FantasyCriticRole(Guid roleID, string name, string normalizedName)
+    {
+        Id = roleID;
+        Name = name;
+        NormalizedName = normalizedName;
     }
 }

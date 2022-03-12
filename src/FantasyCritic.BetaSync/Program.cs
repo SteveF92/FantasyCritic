@@ -20,93 +20,92 @@ using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
 
-namespace FantasyCritic.BetaSync
+namespace FantasyCritic.BetaSync;
+
+public static class Program
 {
-    public static class Program
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
+    private static string _awsRegion;
+    private static string _betaBucket;
+    private static string _productionReadOnlyConnectionString;
+    private static string _betaConnectionString;
+    private static IClock _clock;
+
+    static async Task Main(string[] args)
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        _awsRegion = ConfigurationManager.AppSettings["awsRegion"];
+        _betaBucket = ConfigurationManager.AppSettings["betaBucket"];
+        _productionReadOnlyConnectionString = ConfigurationManager.AppSettings["productionConnectionString"];
+        _betaConnectionString = ConfigurationManager.AppSettings["betaConnectionString"];
+        var productionRDSName = ConfigurationManager.AppSettings["productionRDSName"];
+        var betaRDSName = ConfigurationManager.AppSettings["betaRDSName"];
 
-        private static string _awsRegion;
-        private static string _betaBucket;
-        private static string _productionReadOnlyConnectionString;
-        private static string _betaConnectionString;
-        private static IClock _clock;
+        _clock = SystemClock.Instance;
+        DapperNodaTimeSetup.Register();
 
-        static async Task Main(string[] args)
+        RDSRefresher rdsRefresher = new RDSRefresher(productionRDSName, betaRDSName);
+        await rdsRefresher.CopySourceToDestination();
+
+        MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(_productionReadOnlyConnectionString, _clock);
+        MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
+        MySQLMasterGameRepo productionMasterGameRepo = new MySQLMasterGameRepo(_productionReadOnlyConnectionString, productionUserStore);
+        MySQLMasterGameRepo betaMasterGameRepo = new MySQLMasterGameRepo(_betaConnectionString, betaUserStore);
+        MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
+        AdminService betaAdminService = GetAdminService();
+
+        _logger.Info("Cleaning emails/passwords for non-beta users");
+        var allUsers = await betaUserStore.GetAllUsers();
+        var betaUsers = await betaUserStore.GetUsersInRoleAsync("BetaTester", CancellationToken.None);
+        await cleaner.CleanEmailsAndPasswords(allUsers, betaUsers);
+
+        _logger.Info("Getting master games from production");
+        var productionMasterGameTags = await productionMasterGameRepo.GetMasterGameTags();
+        var productionMasterGames = await productionMasterGameRepo.GetMasterGames();
+        var betaMasterGameTags = await betaMasterGameRepo.GetMasterGameTags();
+        var betaMasterGames = await betaMasterGameRepo.GetMasterGames();
+        IReadOnlyList<MasterGameHasTagEntity> productionGamesHaveTagEntities = await GetProductionGamesHaveTagEntities();
+        await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, betaMasterGameTags, betaMasterGames, productionGamesHaveTagEntities);
+        await betaAdminService.RefreshCaches();
+    }
+
+    private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
+    {
+        using (var connection = new MySqlConnection(_productionReadOnlyConnectionString))
         {
-            _awsRegion = ConfigurationManager.AppSettings["awsRegion"];
-            _betaBucket = ConfigurationManager.AppSettings["betaBucket"];
-            _productionReadOnlyConnectionString = ConfigurationManager.AppSettings["productionConnectionString"];
-            _betaConnectionString = ConfigurationManager.AppSettings["betaConnectionString"];
-            var productionRDSName = ConfigurationManager.AppSettings["productionRDSName"];
-            var betaRDSName = ConfigurationManager.AppSettings["betaRDSName"];
+            var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
+            return masterGameTagResults.ToList();
+        }
+    }
 
-            _clock = SystemClock.Instance;
-            DapperNodaTimeSetup.Register();
+    private static AdminService GetAdminService()
+    {
+        FantasyCriticUserManager userManager = null;
+        IFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
+        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_betaConnectionString, betaUserStore);
+        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_betaConnectionString, betaUserStore, masterGameRepo);
+        InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo);
+        LeagueMemberService leagueMemberService = new LeagueMemberService(null, fantasyCriticRepo, _clock);
+        GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, leagueMemberService, _clock);
+        PublisherService publisherService = null;
+        ActionProcessingService actionProcessingService = null;
+        FantasyCriticService fantasyCriticService = new FantasyCriticService(gameAcquisitionService, leagueMemberService, publisherService, interLeagueService, fantasyCriticRepo, _clock, actionProcessingService);
+        IOpenCriticService openCriticService = null;
+        IGGService ggService = null;
+        PatreonService patreonService = null;
+        IRDSManager rdsManager = null;
+        RoyaleService royaleService = null;
+        IHypeFactorService hypeFactorService = new LambdaHypeFactorService(_awsRegion, _betaBucket);
 
-            RDSRefresher rdsRefresher = new RDSRefresher(productionRDSName, betaRDSName);
-            await rdsRefresher.CopySourceToDestination();
-
-            MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(_productionReadOnlyConnectionString, _clock);
-            MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
-            MySQLMasterGameRepo productionMasterGameRepo = new MySQLMasterGameRepo(_productionReadOnlyConnectionString, productionUserStore);
-            MySQLMasterGameRepo betaMasterGameRepo = new MySQLMasterGameRepo(_betaConnectionString, betaUserStore);
-            MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
-            AdminService betaAdminService = GetAdminService();
-
-            _logger.Info("Cleaning emails/passwords for non-beta users");
-            var allUsers = await betaUserStore.GetAllUsers();
-            var betaUsers = await betaUserStore.GetUsersInRoleAsync("BetaTester", CancellationToken.None);
-            await cleaner.CleanEmailsAndPasswords(allUsers, betaUsers);
-
-            _logger.Info("Getting master games from production");
-            var productionMasterGameTags = await productionMasterGameRepo.GetMasterGameTags();
-            var productionMasterGames = await productionMasterGameRepo.GetMasterGames();
-            var betaMasterGameTags = await betaMasterGameRepo.GetMasterGameTags();
-            var betaMasterGames = await betaMasterGameRepo.GetMasterGames();
-            IReadOnlyList<MasterGameHasTagEntity> productionGamesHaveTagEntities = await GetProductionGamesHaveTagEntities();
-            await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, betaMasterGameTags, betaMasterGames, productionGamesHaveTagEntities);
-            await betaAdminService.RefreshCaches();
+        AdminServiceConfiguration configuration = new AdminServiceConfiguration(true);
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var realHypeConstantsEnvironments = new List<string>() { "STAGING", "PRODUCTION" };
+        if (realHypeConstantsEnvironments.Contains(environment?.ToUpper()))
+        {
+            configuration = new AdminServiceConfiguration(false);
         }
 
-        private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
-        {
-            using (var connection = new MySqlConnection(_productionReadOnlyConnectionString))
-            {
-                var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
-                return masterGameTagResults.ToList();
-            }
-        }
-
-        private static AdminService GetAdminService()
-        {
-            FantasyCriticUserManager userManager = null;
-            IFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
-            IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_betaConnectionString, betaUserStore);
-            IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_betaConnectionString, betaUserStore, masterGameRepo);
-            InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo);
-            LeagueMemberService leagueMemberService = new LeagueMemberService(null, fantasyCriticRepo, _clock);
-            GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, leagueMemberService, _clock);
-            PublisherService publisherService = null;
-            ActionProcessingService actionProcessingService = null;
-            FantasyCriticService fantasyCriticService = new FantasyCriticService(gameAcquisitionService, leagueMemberService, publisherService, interLeagueService, fantasyCriticRepo, _clock, actionProcessingService);
-            IOpenCriticService openCriticService = null;
-            IGGService ggService = null;
-            PatreonService patreonService = null;
-            IRDSManager rdsManager = null;
-            RoyaleService royaleService = null;
-            IHypeFactorService hypeFactorService = new LambdaHypeFactorService(_awsRegion, _betaBucket);
-
-            AdminServiceConfiguration configuration = new AdminServiceConfiguration(true);
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var realHypeConstantsEnvironments = new List<string>() { "STAGING", "PRODUCTION" };
-            if (realHypeConstantsEnvironments.Contains(environment?.ToUpper()))
-            {
-                configuration = new AdminServiceConfiguration(false);
-            }
-
-            return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
-                openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, configuration);
-        }
+        return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
+            openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, configuration);
     }
 }

@@ -1,7 +1,6 @@
-namespace FantasyCritic.Lib.Interfaces
+namespace FantasyCritic.Lib.Interfaces;
+
+public interface ISMSSender
 {
-    public interface ISMSSender
-    {
-        Task SendSmsAsync(string number, string message);
-    }
+    Task SendSmsAsync(string number, string message);
 }

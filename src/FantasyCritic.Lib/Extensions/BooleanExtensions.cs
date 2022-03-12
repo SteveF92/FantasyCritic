@@ -1,10 +1,9 @@
-namespace FantasyCritic.Lib.Extensions
+namespace FantasyCritic.Lib.Extensions;
+
+public static class BooleanExtensions
 {
-    public static class BooleanExtensions
+    public static string ToYesNoString(this bool value)
     {
-        public static string ToYesNoString(this bool value)
-        {
-            return value ? "Yes" : "No";
-        }
+        return value ? "Yes" : "No";
     }
 }

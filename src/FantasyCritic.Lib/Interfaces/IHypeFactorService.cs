@@ -1,7 +1,6 @@
-namespace FantasyCritic.Lib.Interfaces
+namespace FantasyCritic.Lib.Interfaces;
+
+public interface IHypeFactorService
 {
-    public interface IHypeFactorService
-    {
-        Task<HypeConstants> GetHypeConstants(IEnumerable<MasterGameYear> allMasterGameYears);
-    }
+    Task<HypeConstants> GetHypeConstants(IEnumerable<MasterGameYear> allMasterGameYears);
 }

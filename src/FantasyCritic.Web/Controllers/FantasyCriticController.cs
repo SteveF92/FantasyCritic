@@ -1,32 +1,31 @@
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FantasyCritic.Web.Controllers
+namespace FantasyCritic.Web.Controllers;
+
+public abstract class FantasyCriticController : ControllerBase
 {
-    public abstract class FantasyCriticController : ControllerBase
+    private readonly FantasyCriticUserManager _userManager;
+
+    protected FantasyCriticController(FantasyCriticUserManager userManager)
     {
-        private readonly FantasyCriticUserManager _userManager;
+        _userManager = userManager;
+    }
 
-        protected FantasyCriticController(FantasyCriticUserManager userManager)
+    protected async Task<Result<FantasyCriticUser>> GetCurrentUser()
+    {
+        var userID = User.Claims.SingleOrDefault(x => x.Type == "sub")?.Value;
+        if (userID is null)
         {
-            _userManager = userManager;
+            return Result.Failure<FantasyCriticUser>("Can't get User ID");
         }
 
-        protected async Task<Result<FantasyCriticUser>> GetCurrentUser()
+        var currentUser = await _userManager.FindByIdAsync(userID);
+        if (currentUser is null)
         {
-            var userID = User.Claims.SingleOrDefault(x => x.Type == "sub")?.Value;
-            if (userID is null)
-            {
-                return Result.Failure<FantasyCriticUser>("Can't get User ID");
-            }
-
-            var currentUser = await _userManager.FindByIdAsync(userID);
-            if (currentUser is null)
-            {
-                return Result.Failure<FantasyCriticUser>("User does not exist.");
-            }
-
-            return Result.Success(currentUser);
+            return Result.Failure<FantasyCriticUser>("User does not exist.");
         }
+
+        return Result.Success(currentUser);
     }
 }

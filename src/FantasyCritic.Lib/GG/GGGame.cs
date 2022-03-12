@@ -1,4 +1,3 @@
-namespace FantasyCritic.Lib.GG
-{
-    public record GGGame(string Token, Maybe<string> CoverArtFileName);
-}
+namespace FantasyCritic.Lib.GG;
+
+public record GGGame(string Token, Maybe<string> CoverArtFileName);

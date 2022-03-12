@@ -2,61 +2,60 @@ using FantasyCritic.Lib.Services;
 using Microsoft.AspNetCore.SignalR;
 using NLog;
 
-namespace FantasyCritic.Web.Hubs
+namespace FantasyCritic.Web.Hubs;
+
+public class UpdateHub : Hub
 {
-    public class UpdateHub : Hub
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
+    private readonly FantasyCriticService _fantasyCriticService;
+
+    public UpdateHub(FantasyCriticService fantasyCriticService)
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        _fantasyCriticService = fantasyCriticService;
+    }
 
-        private readonly FantasyCriticService _fantasyCriticService;
+    public override async Task OnConnectedAsync()
+    {
+        await base.OnConnectedAsync();
+    }
 
-        public UpdateHub(FantasyCriticService fantasyCriticService)
+    public override async Task OnDisconnectedAsync(Exception ex)
+    {
+        if (ex is not null)
         {
-            _fantasyCriticService = fantasyCriticService;
+            _logger.Error($"SignalR disconnected with error: {Context.ConnectionId}");
+            _logger.Error(ex);
         }
 
-        public override async Task OnConnectedAsync()
-        {
-            await base.OnConnectedAsync();
-        }
+        await base.OnDisconnectedAsync(ex);
+    }
 
-        public override async Task OnDisconnectedAsync(Exception ex)
+    public async Task Subscribe(string leagueID, string year)
+    {
+        try
         {
-            if (ex is not null)
+            Guid leagueGUID = Guid.Parse(leagueID);
+            int yearInt = int.Parse(year);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueGUID, yearInt);
+            if (leagueYear.HasNoValue)
             {
-                _logger.Error($"SignalR disconnected with error: {Context.ConnectionId}");
-                _logger.Error(ex);
+                return;
             }
 
-            await base.OnDisconnectedAsync(ex);
-        }
+            if (!leagueYear.Value.PlayStatus.DraftIsActive)
+            {
+                return;
+            }
 
-        public async Task Subscribe(string leagueID, string year)
+            await Groups.AddToGroupAsync(Context.ConnectionId, leagueYear.Value.GetGroupName);
+        }
+        catch (Exception e)
         {
-            try
-            {
-                Guid leagueGUID = Guid.Parse(leagueID);
-                int yearInt = int.Parse(year);
-                var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueGUID, yearInt);
-                if (leagueYear.HasNoValue)
-                {
-                    return;
-                }
-
-                if (!leagueYear.Value.PlayStatus.DraftIsActive)
-                {
-                    return;
-                }
-
-                await Groups.AddToGroupAsync(Context.ConnectionId, leagueYear.Value.GetGroupName);
-            }
-            catch (Exception e)
-            {
-                _logger.Error("SignalR fail!");
-                _logger.Error(e);
-                throw;
-            }
-
+            _logger.Error("SignalR fail!");
+            _logger.Error(e);
+            throw;
         }
+
     }
 }

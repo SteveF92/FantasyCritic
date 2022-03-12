@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FantasyCritic.Web.Models.Requests.Royale
+namespace FantasyCritic.Web.Models.Requests.Royale;
+
+public class ChangeRoyalePublisherNameRequest
 {
-    public class ChangeRoyalePublisherNameRequest
-    {
-        [Required]
-        public Guid PublisherID { get; set; }
-        [Required]
-        public string PublisherName { get; set; }
-    }
+    [Required]
+    public Guid PublisherID { get; set; }
+    [Required]
+    public string PublisherName { get; set; }
 }

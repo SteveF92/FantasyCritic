@@ -1,7 +1,6 @@
-namespace FantasyCritic.Web.Models.Requests.League
+namespace FantasyCritic.Web.Models.Requests.League;
+
+public class DismissManagerMessageRequest
 {
-    public class DismissManagerMessageRequest
-    {
-        public Guid MessageID { get; set; }
-    }
+    public Guid MessageID { get; set; }
 }

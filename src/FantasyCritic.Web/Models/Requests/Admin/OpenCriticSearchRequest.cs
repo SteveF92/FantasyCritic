@@ -1,7 +1,6 @@
-namespace FantasyCritic.Web.Models.Requests.Admin
+namespace FantasyCritic.Web.Models.Requests.Admin;
+
+public class OpenCriticSearchRequest
 {
-    public class OpenCriticSearchRequest
-    {
-        public int MinimumOpenCriticID { get; set; }
-    }
+    public int MinimumOpenCriticID { get; set; }
 }

@@ -6,133 +6,132 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using FantasyCritic.Lib.Services;
 
-namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage
+namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage;
+
+public partial class EmailModel : PageModel
 {
-    public partial class EmailModel : PageModel
+    private readonly FantasyCriticUserManager _userManager;
+    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly EmailSendingService _emailSendingService;
+
+    public EmailModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager, EmailSendingService emailSendingService)
     {
-        private readonly FantasyCriticUserManager _userManager;
-        private readonly SignInManager<FantasyCriticUser> _signInManager;
-        private readonly EmailSendingService _emailSendingService;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _emailSendingService = emailSendingService;
+    }
 
-        public EmailModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager, EmailSendingService emailSendingService)
+    public string Username { get; set; }
+
+    public string Email { get; set; }
+
+    public bool IsEmailConfirmed { get; set; }
+
+    [TempData]
+    public string StatusMessage { get; set; }
+
+    [BindProperty]
+    public InputModel Input { get; set; }
+
+    public class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "New email")]
+        public string NewEmail { get; set; }
+
+        [Display(Name = "Public Bids")]
+        public bool SendPublicBidEmails { get; set; }
+    }
+
+    private async Task LoadAsync(FantasyCriticUser user)
+    {
+        var email = await _userManager.GetEmailAsync(user);
+        Email = email;
+
+        Input = new InputModel
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _emailSendingService = emailSendingService;
+            NewEmail = email,
+        };
+
+        var emailSettings = await _userManager.GetEmailSettings(user);
+        Input.SendPublicBidEmails = emailSettings.Any(x => x.Equals(EmailType.PublicBids));
+
+        IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+    }
+
+    public async Task<IActionResult> OnGetAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        public string Username { get; set; }
+        await LoadAsync(user);
+        return Page();
+    }
 
-        public string Email { get; set; }
-
-        public bool IsEmailConfirmed { get; set; }
-
-        [TempData]
-        public string StatusMessage { get; set; }
-
-        [BindProperty]
-        public InputModel Input { get; set; }
-
-        public class InputModel
+    public async Task<IActionResult> OnPostChangeEmailAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
-            [Required]
-            [EmailAddress]
-            [Display(Name = "New email")]
-            public string NewEmail { get; set; }
-
-            [Display(Name = "Public Bids")]
-            public bool SendPublicBidEmails { get; set; }
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        private async Task LoadAsync(FantasyCriticUser user)
+        if (!ModelState.IsValid)
         {
-            var email = await _userManager.GetEmailAsync(user);
-            Email = email;
-
-            Input = new InputModel
-            {
-                NewEmail = email,
-            };
-
-            var emailSettings = await _userManager.GetEmailSettings(user);
-            Input.SendPublicBidEmails = emailSettings.Any(x => x.Equals(EmailType.PublicBids));
-
-            IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-        }
-
-        public async Task<IActionResult> OnGetAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
             await LoadAsync(user);
             return Page();
         }
 
-        public async Task<IActionResult> OnPostChangeEmailAsync()
+        var email = await _userManager.GetEmailAsync(user);
+        if (Input.NewEmail != email)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
+            var changeEmailLink = await LinkBuilder.GetChangeEmailLink(_userManager, user, Input.NewEmail, Request);
+            await _emailSendingService.SendChangeEmail(user, changeEmailLink);
 
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
-            }
-
-            var email = await _userManager.GetEmailAsync(user);
-            if (Input.NewEmail != email)
-            {
-                var changeEmailLink = await LinkBuilder.GetChangeEmailLink(_userManager, user, Input.NewEmail, Request);
-                await _emailSendingService.SendChangeEmail(user, changeEmailLink);
-
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
-                return RedirectToPage();
-            }
-
-            StatusMessage = "Your email is unchanged.";
+            StatusMessage = "Confirmation link to change email sent. Please check your email.";
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostSendVerificationEmailAsync()
+        StatusMessage = "Your email is unchanged.";
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostSendVerificationEmailAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
-            }
-
-            var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
-            await _emailSendingService.SendConfirmationEmail(user, confirmLink);
-
-            StatusMessage = "Verification email sent. Please check your email.";
-            return RedirectToPage();
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        public async Task<IActionResult> OnPostChangeEmailSettingsAsync()
+        if (!ModelState.IsValid)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            await _userManager.SetEmailSettings(user, Input.SendPublicBidEmails);
-
-            StatusMessage = "Email Settings Updated.";
-            return RedirectToPage();
+            await LoadAsync(user);
+            return Page();
         }
+
+        var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, user, Request);
+        await _emailSendingService.SendConfirmationEmail(user, confirmLink);
+
+        StatusMessage = "Verification email sent. Please check your email.";
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostChangeEmailSettingsAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+        }
+
+        await _userManager.SetEmailSettings(user, Input.SendPublicBidEmails);
+
+        StatusMessage = "Email Settings Updated.";
+        return RedirectToPage();
     }
 }

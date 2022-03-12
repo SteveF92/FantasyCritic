@@ -1,12 +1,11 @@
 using FantasyCritic.Lib.Interfaces;
 
-namespace FantasyCritic.Lib.Services
+namespace FantasyCritic.Lib.Services;
+
+public class SMSSender : ISMSSender
 {
-    public class SMSSender : ISMSSender
+    public Task SendSmsAsync(string number, string message)
     {
-        public Task SendSmsAsync(string number, string message)
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }
