@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.8.10" />
-    <PackageReference Include="AWSSDK.RDS" Version="3.7.8.9" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.7.9" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.10" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.10.12" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.8.7" />
   </ItemGroup>
 
   <ItemGroup>
