@@ -29,7 +29,6 @@ using NLog.Targets.Wrappers;
 using NodaTime;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.MySQL.Entities.Trades;
-using static MoreLinq.Extensions.MaxByExtension;
 using static MoreLinq.Extensions.BatchExtension;
 
 namespace FantasyCritic.MySQL
@@ -3407,13 +3406,13 @@ namespace FantasyCritic.MySQL
             var currentPublisherGames = publisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
             if (currentPublisherGames.Any())
             {
-                return currentPublisherGames.MaxBy(x => x.Timestamp).FirstOrDefault();
+                return currentPublisherGames.WhereMax(x => x.Timestamp).FirstOrDefault();
             }
 
             var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
             if (formerPublisherGames.Any())
             {
-                return currentPublisherGames.MaxBy(x => x.Timestamp).FirstOrDefault();
+                return currentPublisherGames.WhereMax(x => x.Timestamp).FirstOrDefault();
             }
 
             var conditionalDropGame = await _masterGameRepo.GetMasterGameYear(bidEntity.ConditionalDropMasterGameID.Value, leagueYear.Year);

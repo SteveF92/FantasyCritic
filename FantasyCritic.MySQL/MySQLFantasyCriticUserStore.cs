@@ -11,8 +11,6 @@ using System;
 using System.Linq;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL.Entities.Identity;
-using IdentityServer4.Models;
-using IdentityServer4.Stores;
 using NLog;
 using NodaTime;
 using FantasyCritic.Lib.Patreon;

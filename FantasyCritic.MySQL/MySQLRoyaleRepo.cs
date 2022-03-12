@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Dapper;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
-using MoreLinq.Extensions;
 using MySqlConnector;
 
 namespace FantasyCritic.MySQL
@@ -337,7 +337,7 @@ namespace FantasyCritic.MySQL
                         continue;
                     }
 
-                    var topPublisher = group.MaxBy(x => x.TotalFantasyPoints).First();
+                    var topPublisher = group.MaxBy(x => x.TotalFantasyPoints);
                     var topDomainPublisher = await GetPublisher(topPublisher.PublisherID);
                     if (!winners.ContainsKey(topDomainPublisher.Value.User))
                     {
