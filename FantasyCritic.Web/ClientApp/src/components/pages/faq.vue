@@ -834,13 +834,13 @@
             <li>Is this game an obvious, clear as day new IP?</li>
             <li class="nested-list">
               <ul>
-                <li>Celeste, The Last of Us, Death's Door</li>
+                <li>Demon's Souls (2009), Celeste, Death's Door</li>
               </ul>
             </li>
-            <li>Is this game a 'spiritual successor' but not the same universe?</li>
+            <li>Is this game a 'spiritual successor' but not the same fictional universe?</li>
             <li class="nested-list">
               <ul>
-                <li>Elden Ring, Back 4 Blood</li>
+                <li>Elden Ring, Back 4 Blood, Yooka-Laylee</li>
               </ul>
             </li>
             <li>Is this game based on a property that has never been a video game before?</li>
@@ -859,6 +859,23 @@
             <li class="nested-list">
               <ul>
                 <li>Triangle Strategy</li>
+                <li>Rock Band</li>
+              </ul>
+            </li>
+            <li>Is this a real world simulation with licensed elements, and the developer/publisher has not created a simulation of this type before?</li>
+            <li class="nested-list">
+              <ul>
+                <li>Skate (2005)</li>
+                <li>F1 Management 2022</li>
+                <li>NFL 2K (1999)</li>
+              </ul>
+            </li>
+            <li>Does this game have "easter eggs" or guest characters that are from an existing game, but these are not the focus of the game, and this is otherwise clearly a New Gaming Franchise?</li>
+            <li class="nested-list">
+              <ul>
+                <li>Brawlhalla</li>
+                <li>Yooka-Laylee (Shovel Knight makes an appearance)</li>
+                <li>The Last of Us (Teased in Uncharted 3)</li>
               </ul>
             </li>
           </ul>
@@ -871,10 +888,17 @@
                 <li>Tomb Raider (2013), Prince of Persia (2008), Gears Tactics, Project L (League of Legends fighting game)</li>
               </ul>
             </li>
-            <li>Is this game based on an IP, that is <em>not</em> in the public domain, that IS represented in video games?</li>
+            <li>Is this game based on a fictional IP, that is <em>not</em> in the public domain, that IS represented in video games?</li>
             <li class="nested-list">
               <ul>
                 <li>Spider Man (2018), Gotham Knights, Wonder Woman</li>
+              </ul>
+            </li>
+            <li>Is this a real world simulation with licensed elements, and a direct follow up to another game?</li>
+            <li class="nested-list">
+              <ul>
+                <li>The WWE games switched publishers in 2014 and switched developers in 2020, but in neither case are they a New Gaming Franchise.</li>
+                <li>Blitz: The League (2005) is a follow up to NFL BLitz Pro (2003), but without the NFL license.</li>
               </ul>
             </li>
           </ul>
