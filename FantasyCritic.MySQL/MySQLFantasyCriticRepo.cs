@@ -2962,7 +2962,7 @@ namespace FantasyCritic.MySQL
         public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
         {
             string deleteSQL = "delete from tbl_caching_systemwidevalues;";
-            string insertSQL = "INSERT into tbl_caching_systemwidevalues VALUES (@AverageStandardGamePoints,@AverageCounterPickPoints);";
+            string insertSQL = "INSERT into tbl_caching_systemwidevalues VALUES (@AverageStandardGamePoints,@AveragePickupOnlyStandardGamePoints,@AverageCounterPickPoints);";
 
             SystemWideValuesEntity entity = new SystemWideValuesEntity(systemWideValues);
             using (var connection = new MySqlConnection(_connectionString))
