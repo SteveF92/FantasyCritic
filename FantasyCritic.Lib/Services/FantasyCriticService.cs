@@ -19,7 +19,6 @@ using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Utilities;
 using Microsoft.AspNetCore.Identity;
 using NodaTime;
-using static MoreLinq.Extensions.DistinctByExtension;
 
 namespace FantasyCritic.Lib.Services
 {

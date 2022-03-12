@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Royale;
-using MoreLinq;
 using NLog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
@@ -263,7 +262,7 @@ namespace FantasyCritic.Lib.Services
                 }
             }
 
-            var latestQuarter = supportedQuarters.MaxBy(x => x.YearQuarter).Single();
+            var latestQuarter = supportedQuarters.WhereMax(x => x.YearQuarter).Single();
             var nextQuarter = latestQuarter.YearQuarter.NextQuarter;
             var dayToStartNextQuarter = nextQuarter.FirstDateOfQuarter.Minus(Period.FromDays(5));
             if (nycNow.Date > dayToStartNextQuarter)

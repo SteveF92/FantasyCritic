@@ -14,7 +14,6 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
-using MoreLinq;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Services

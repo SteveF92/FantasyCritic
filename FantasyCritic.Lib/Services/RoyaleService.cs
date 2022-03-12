@@ -12,7 +12,6 @@ using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
-using MoreLinq;
 using NLog.Targets.Wrappers;
 using NodaTime;
 
@@ -41,7 +40,7 @@ namespace FantasyCritic.Lib.Services
         public async Task<RoyaleYearQuarter> GetActiveYearQuarter()
         {
             IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await GetYearQuarters();
-            var activeQuarter = supportedQuarters.Where(x => x.OpenForPlay).MaxBy(x => x.YearQuarter).Single();
+            var activeQuarter = supportedQuarters.Where(x => x.OpenForPlay).WhereMax(x => x.YearQuarter).Single();
             return activeQuarter;
         }
 

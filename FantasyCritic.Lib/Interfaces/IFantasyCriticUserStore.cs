@@ -7,7 +7,6 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Patreon;
-using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Lib.Interfaces

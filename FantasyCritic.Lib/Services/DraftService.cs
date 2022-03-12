@@ -13,8 +13,6 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using NodaTime;
-using static MoreLinq.Extensions.MaxByExtension;
-using static MoreLinq.Extensions.MinByExtension;
 
 namespace FantasyCritic.Lib.Services
 {
@@ -130,7 +128,7 @@ namespace FantasyCritic.Lib.Services
         public async Task UndoLastDraftAction(IReadOnlyList<Publisher> publishers)
         {
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
-            var newestGame = publisherGames.MaxBy(x => x.Timestamp).First();
+            var newestGame = publisherGames.WhereMax(x => x.Timestamp).First();
 
             var publisher = publishers.Single(x => x.PublisherGames.Select(y => y.PublisherGameID).Contains(newestGame.PublisherGameID));
 
@@ -168,7 +166,7 @@ namespace FantasyCritic.Lib.Services
             var phase = GetDraftPhase(leagueYear, publishersInLeagueForYear);
             if (phase.Equals(DraftPhase.StandardGames))
             {
-                var publishersWithLowestNumberOfGames = publishersInLeagueForYear.MinBy(x => x.PublisherGames.Count(y => !y.CounterPick));
+                var publishersWithLowestNumberOfGames = publishersInLeagueForYear.WhereMin(x => x.PublisherGames.Count(y => !y.CounterPick));
                 var allPlayersHaveSameNumberOfGames = publishersInLeagueForYear.Select(x => x.PublisherGames.Count(y => !y.CounterPick)).Distinct().Count() == 1;
                 var maxNumberOfGames = publishersInLeagueForYear.Max(x => x.PublisherGames.Count(y => !y.CounterPick));
                 var roundNumber = maxNumberOfGames;
@@ -191,7 +189,7 @@ namespace FantasyCritic.Lib.Services
             }
             if (phase.Equals(DraftPhase.CounterPicks))
             {
-                var publishersWithLowestNumberOfGames = publishersInLeagueForYear.MinBy(x => x.PublisherGames.Count(y => y.CounterPick));
+                var publishersWithLowestNumberOfGames = publishersInLeagueForYear.WhereMin(x => x.PublisherGames.Count(y => y.CounterPick));
                 var allPlayersHaveSameNumberOfGames = publishersInLeagueForYear.Select(x => x.PublisherGames.Count(y => y.CounterPick)).Distinct().Count() == 1;
                 var maxNumberOfGames = publishersInLeagueForYear.Max(x => x.PublisherGames.Count(y => y.CounterPick));
 

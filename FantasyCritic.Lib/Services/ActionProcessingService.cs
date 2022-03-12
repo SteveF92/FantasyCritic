@@ -11,7 +11,6 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
-using MoreLinq;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Services
@@ -135,7 +134,7 @@ namespace FantasyCritic.Lib.Services
             List<PickupBid> duplicateBids = new List<PickupBid>();
             foreach (var duplicateBidGroup in duplicateBidGroups)
             {
-                var bestBid = duplicateBidGroup.MaxBy(x => x.BidAmount).MinBy(x => x.Timestamp).FirstOrDefault();
+                var bestBid = duplicateBidGroup.WhereMax(x => x.BidAmount).WhereMin(x => x.Timestamp).FirstOrDefault();
                 var otherBids = duplicateBidGroup.Except(new List<PickupBid>() { bestBid });
                 duplicateBids.AddRange(otherBids);
             }
@@ -263,7 +262,7 @@ namespace FantasyCritic.Lib.Services
                 return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "No competing bids for this game.", systemWideValues, currentDate);
             }
 
-            var bestBids = bidsForGame.MaxBy(x => x.PickupBid.BidAmount).ToList();
+            var bestBids = bidsForGame.WhereMax(x => x.PickupBid.BidAmount).ToList();
             if (bestBids.Count == 1)
             {
                 var singleBid = bestBids.Single();
@@ -274,14 +273,14 @@ namespace FantasyCritic.Lib.Services
             if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.LowestProjectedPoints))
             {
                 bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
-                var bestBidsByProjectedScore = bestBids.MinBy(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
+                var bestBidsByProjectedScore = bestBids.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
                 if (bestBidsByProjectedScore.Count == 1)
                 {
                     var singleBid = bestBidsByProjectedScore.Single();
                     return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game)", systemWideValues, currentDate);
                 }
 
-                var bestBidsByBidTime = bestBidsByProjectedScore.MinBy(x => x.PickupBid.Timestamp).ToList();
+                var bestBidsByBidTime = bestBidsByProjectedScore.WhereMin(x => x.PickupBid.Timestamp).ToList();
                 if (bestBidsByBidTime.Count == 1)
                 {
                     var singleBid = bestBidsByBidTime.Single();
@@ -292,7 +291,7 @@ namespace FantasyCritic.Lib.Services
             }
             else if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.EarliestBid))
             {
-                var bestBidsByBidTime = bestBids.MinBy(x => x.PickupBid.Timestamp).ToList();
+                var bestBidsByBidTime = bestBids.WhereMin(x => x.PickupBid.Timestamp).ToList();
                 if (bestBidsByBidTime.Count == 1)
                 {
                     var singleBid = bestBidsByBidTime.Single();
@@ -300,7 +299,7 @@ namespace FantasyCritic.Lib.Services
                 }
 
                 bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
-                var bestBidsByProjectedScore = bestBidsByBidTime.MinBy(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
+                var bestBidsByProjectedScore = bestBidsByBidTime.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
                 if (bestBidsByProjectedScore.Count == 1)
                 {
                     var singleBid = bestBidsByProjectedScore.Single();
@@ -330,7 +329,7 @@ namespace FantasyCritic.Lib.Services
             var groupedByPublisher = winnableBids.GroupBy(x => x.PickupBid.Publisher);
             foreach (var publisherGroup in groupedByPublisher)
             {
-                SucceededPickupBid winningBid = publisherGroup.MinBy(x => x.PickupBid.Priority).First();
+                SucceededPickupBid winningBid = publisherGroup.WhereMin(x => x.PickupBid.Priority).First();
                 winningBids.Add(winningBid);
             }
 

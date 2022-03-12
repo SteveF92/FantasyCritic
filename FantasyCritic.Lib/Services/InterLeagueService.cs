@@ -10,7 +10,6 @@ using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
-using MoreLinq;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Services

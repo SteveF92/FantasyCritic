@@ -1,5 +1,4 @@
-﻿using MoreLinq.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions
