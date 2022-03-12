@@ -21,7 +21,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.BetaSync", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.AdvancedStats", "FantasyCritic.AdvancedStats\FantasyCritic.AdvancedStats.csproj", "{85D6E439-A8D9-4124-8163-F87762BC79DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.PublisherGameFixer", "FantasyCritic.PublisherGameFixer\FantasyCritic.PublisherGameFixer.csproj", "{A03A2B63-D49E-4035-8F00-1C8788C13387}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.PublisherGameFixer", "FantasyCritic.PublisherGameFixer\FantasyCritic.PublisherGameFixer.csproj", "{A03A2B63-D49E-4035-8F00-1C8788C13387}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A032410D-85DA-46DB-A149-18DFC4C6EC1F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
