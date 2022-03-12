@@ -1,12 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
-using NodaTime;
 
 namespace FantasyCritic.Lib.Royale
 {

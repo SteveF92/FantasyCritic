@@ -1,6 +1,4 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
 
 namespace FantasyCritic.Web.Models.Requests.LeagueManager

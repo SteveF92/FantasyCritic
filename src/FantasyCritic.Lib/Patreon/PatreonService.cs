@@ -1,13 +1,5 @@
-using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Identity;
-using Microsoft.Extensions.Logging;
 using Patreon.Net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
 
 namespace FantasyCritic.Lib.Patreon

@@ -1,14 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
-using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities
 {

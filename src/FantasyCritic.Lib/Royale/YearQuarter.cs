@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NodaTime;
-
 namespace FantasyCritic.Lib.Royale
 {
     public class YearQuarter : IEquatable<YearQuarter>, IComparable<YearQuarter>

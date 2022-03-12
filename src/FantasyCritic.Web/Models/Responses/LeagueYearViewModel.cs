@@ -1,16 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Transactions;
-using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
-using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Domain.Trades;
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Web.Models.RoundTrip;
-using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {

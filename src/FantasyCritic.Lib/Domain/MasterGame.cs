@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Utilities;
-using NodaTime;
-
 namespace FantasyCritic.Lib.Domain
 {
     public class MasterGame : IEquatable<MasterGame>

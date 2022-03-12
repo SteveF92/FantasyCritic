@@ -1,5 +1,3 @@
-using CSharpFunctionalExtensions;
-
 namespace FantasyCritic.Lib.Domain.Requests
 {
     public class ClaimGameDomainRequest

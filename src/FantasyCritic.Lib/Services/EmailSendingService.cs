@@ -1,19 +1,11 @@
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Email.EmailModels;
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using NLog;
-using NodaTime;
 using RazorLight;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FantasyCritic.Lib.Services
 {

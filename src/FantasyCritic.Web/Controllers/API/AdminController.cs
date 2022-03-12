@@ -1,33 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
-using FantasyCritic.Web.Extensions;
-using FantasyCritic.Web.Models;
-using FantasyCritic.Web.Models.Requests;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
 {

@@ -1,5 +1,3 @@
-using System;
-
 namespace FantasyCritic.Lib.Scheduling.Lib.Cron
 {
     [Serializable]

@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Amazon.RDS.Model;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Web.Models.RoundTrip

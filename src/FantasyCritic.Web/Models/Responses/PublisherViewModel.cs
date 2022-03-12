@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Domain.ScoringSystems;
-using NodaTime;
-
 namespace FantasyCritic.Web.Models.Responses
 {
     public class PublisherViewModel

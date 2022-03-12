@@ -1,20 +1,9 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Dapper;
-using FantasyCritic.MySQL.Entities;
-using MySqlConnector;
-using System;
-using System.Linq;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL.Entities.Identity;
 using NLog;
-using NodaTime;
 using FantasyCritic.Lib.Patreon;
-using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.MySQL
 {

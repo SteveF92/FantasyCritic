@@ -1,15 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.FakeRepo;
 using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Utilities;
-using NodaTime;
-using NodaTime.Testing;
-using NodaTime.Text;
 using NUnit.Framework;
 
 namespace FantasyCritic.Test

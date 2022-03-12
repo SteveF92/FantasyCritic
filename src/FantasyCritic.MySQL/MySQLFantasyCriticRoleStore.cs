@@ -1,18 +1,7 @@
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Dapper;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
-using MySqlConnector;
 
 namespace FantasyCritic.MySQL
 {

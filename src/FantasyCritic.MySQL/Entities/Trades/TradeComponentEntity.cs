@@ -1,11 +1,3 @@
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace FantasyCritic.MySQL.Entities.Trades
 {
     public class TradeComponentEntity

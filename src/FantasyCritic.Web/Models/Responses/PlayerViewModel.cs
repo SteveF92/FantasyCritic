@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Web.Models.Responses

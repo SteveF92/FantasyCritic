@@ -1,26 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Cache;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Services;
-using FantasyCritic.Web.Extensions;
-using FantasyCritic.Web.Models;
-using FantasyCritic.Web.Models.Requests;
-using FantasyCritic.Web.Models.Requests.Account;
 using FantasyCritic.Web.Models.Responses;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NodaTime;
 
 namespace FantasyCritic.Web.Controllers.API
 {

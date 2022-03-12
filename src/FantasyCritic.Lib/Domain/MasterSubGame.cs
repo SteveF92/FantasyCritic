@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Utilities;
-using NodaTime;
-
 namespace FantasyCritic.Lib.Domain
 {
     public class MasterSubGame

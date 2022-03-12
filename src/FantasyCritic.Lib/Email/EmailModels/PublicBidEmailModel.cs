@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
 

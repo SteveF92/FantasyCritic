@@ -1,16 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Patreon;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NLog.LayoutRenderers.Wrappers;
-using NodaTime;
-using System.Linq;
-using FantasyCritic.Lib.Enums;
 
 namespace FantasyCritic.Lib.Identity
 {

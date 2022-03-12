@@ -1,7 +1,3 @@
-using System;
-using FantasyCritic.Lib.Domain;
-using NodaTime;
-
 namespace FantasyCritic.Web.Models.Responses
 {
     public class QueuedGameViewModel

@@ -1,7 +1,3 @@
-using System;
-using CSharpFunctionalExtensions;
-using NodaTime;
-
 namespace FantasyCritic.Lib.Domain.LeagueActions
 {
     public class DropRequest : IEquatable<DropRequest>

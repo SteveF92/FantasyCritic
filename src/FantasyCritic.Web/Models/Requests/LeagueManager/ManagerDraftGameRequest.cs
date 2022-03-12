@@ -1,5 +1,3 @@
-using System;
-
 namespace FantasyCritic.Web.Models.Requests.LeagueManager
 {
     public class ManagerDraftGameRequest

@@ -1,12 +1,5 @@
-using System;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using NLog;
 
 namespace FantasyCritic.Web.Hubs

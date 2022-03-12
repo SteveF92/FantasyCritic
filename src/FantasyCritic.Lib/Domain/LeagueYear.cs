@@ -1,16 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Domain.Results;
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
-using FantasyCritic.Lib.Utilities;
-using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {

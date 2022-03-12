@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.FakeRepo.Factories;
@@ -13,7 +12,6 @@ using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Patreon;
 using NodaTime;
 
 namespace FantasyCritic.FakeRepo

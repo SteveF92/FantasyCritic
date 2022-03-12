@@ -1,13 +1,7 @@
-using NodaTime;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Stores;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL.Entities.Identity;
-using MySqlConnector;
 
 namespace FantasyCritic.MySQL
 {

@@ -1,8 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Royale;
-using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses.Royale
 {

@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Enums;
-
 namespace FantasyCritic.MySQL.Entities
 {
     public class SpecialGameSlotEntity

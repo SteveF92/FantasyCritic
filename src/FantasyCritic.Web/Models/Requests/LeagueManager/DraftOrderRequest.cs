@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace FantasyCritic.Web.Models.Requests.LeagueManager
 {
     public class DraftOrderRequest

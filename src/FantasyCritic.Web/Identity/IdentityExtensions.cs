@@ -1,4 +1,3 @@
-using System;
 using Duende.IdentityServer.Models;
 using FantasyCritic.Web.Models.Identity;
 using Microsoft.AspNetCore.Mvc;

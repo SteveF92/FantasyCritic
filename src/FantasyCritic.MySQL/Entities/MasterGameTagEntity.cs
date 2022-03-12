@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using FantasyCritic.Lib.Domain;
 using Newtonsoft.Json;
 
 [assembly: InternalsVisibleTo("FantasyCritic.BetaSync")]

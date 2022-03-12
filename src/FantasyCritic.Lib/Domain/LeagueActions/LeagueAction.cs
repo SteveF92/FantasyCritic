@@ -1,9 +1,6 @@
-using System;
-using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Utilities;
-using NodaTime;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions
 {

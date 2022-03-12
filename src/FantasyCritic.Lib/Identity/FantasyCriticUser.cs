@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using NodaTime;
 
 namespace FantasyCritic.Lib.Identity
 {

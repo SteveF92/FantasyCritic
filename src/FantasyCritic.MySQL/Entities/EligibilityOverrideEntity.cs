@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using FantasyCritic.Lib.Domain;
-using Newtonsoft.Json;
-
 namespace FantasyCritic.MySQL.Entities
 {
     internal class EligibilityOverrideEntity

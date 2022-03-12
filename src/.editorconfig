@@ -9,6 +9,7 @@ trim_trailing_whitespace = true
 
 [*.cs]
 indent_size = 4
+dotnet_diagnostic.IDE0005.severity = warning
 
 [*.{js,json,vue}]
 indent_size = 2

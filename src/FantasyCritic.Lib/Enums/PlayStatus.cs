@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace FantasyCritic.Lib.Enums
 {
     public class PlayStatus : TypeSafeEnum<PlayStatus>

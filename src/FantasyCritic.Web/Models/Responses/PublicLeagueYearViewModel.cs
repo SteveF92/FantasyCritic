@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Transactions;
-using FantasyCritic.Lib.Domain;
-
 namespace FantasyCritic.Web.Models.Responses
 {
     public class PublicLeagueYearViewModel

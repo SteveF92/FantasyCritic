@@ -1,14 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Trades;
-using FantasyCritic.Lib.Enums;
-using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {

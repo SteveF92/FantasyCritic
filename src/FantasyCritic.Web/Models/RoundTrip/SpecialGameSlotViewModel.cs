@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Enums;
-using Newtonsoft.Json;
-
 namespace FantasyCritic.Web.Models.RoundTrip
 {
     public class SpecialGameSlotViewModel

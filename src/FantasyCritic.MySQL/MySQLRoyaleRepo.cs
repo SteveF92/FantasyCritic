@@ -1,21 +1,9 @@
 using FantasyCritic.Lib.Interfaces;
 using NLog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
-using Dapper;
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
-using MySqlConnector;
 
 namespace FantasyCritic.MySQL
 {

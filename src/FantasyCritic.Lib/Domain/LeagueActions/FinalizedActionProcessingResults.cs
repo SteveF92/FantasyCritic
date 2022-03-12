@@ -1,10 +1,3 @@
-using NodaTime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions

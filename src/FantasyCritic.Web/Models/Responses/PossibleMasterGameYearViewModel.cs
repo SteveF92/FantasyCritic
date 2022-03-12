@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.Web.Models.RoundTrip;
-using NodaTime;
-
 namespace FantasyCritic.Web.Models.Responses
 {
     public class PossibleMasterGameYearViewModel

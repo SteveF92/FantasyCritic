@@ -1,10 +1,4 @@
-using System;
-using System.Reflection.Metadata;
-using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
-using FantasyCritic.Lib.Domain.ScoringSystems;
-using NodaTime;
 
 namespace FantasyCritic.Web.Models.Responses
 {

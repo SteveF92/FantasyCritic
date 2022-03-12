@@ -1,15 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Web.Controllers.API;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using NodaTime;
 
 namespace FantasyCritic.Web.Controllers
 {

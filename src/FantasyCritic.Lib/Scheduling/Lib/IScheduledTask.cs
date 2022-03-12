@@ -1,6 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace FantasyCritic.Lib.Scheduling.Lib
 {
     public interface IScheduledTask

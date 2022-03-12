@@ -1,15 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
-using NLog;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NodaTime;
-using NodaTime.Text;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.OpenCritic

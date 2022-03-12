@@ -1,6 +1,4 @@
-using System;
 using FantasyCritic.Lib.Identity;
-using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities.Identity
 {

@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using FantasyCritic.Lib.Domain;
-using NodaTime;
 
 namespace FantasyCritic.Web.Models.Requests.Admin
 {

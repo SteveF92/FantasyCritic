@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using NodaTime.Text;
 

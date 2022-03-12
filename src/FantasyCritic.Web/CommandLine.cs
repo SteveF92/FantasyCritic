@@ -1,6 +1,5 @@
 // original source: https://www.codeproject.com/Articles/3111/C-NET-Command-Line-Arguments-Parser
 
-using System;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 

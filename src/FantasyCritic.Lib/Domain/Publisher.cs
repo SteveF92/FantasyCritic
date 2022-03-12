@@ -1,14 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Domain.LeagueActions;
-using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Services;
-using NodaTime;
 
 namespace FantasyCritic.Lib.Domain
 {

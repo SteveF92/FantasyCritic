@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Web.Controllers.API;
 
 namespace FantasyCritic.Web.Models.Responses
 {

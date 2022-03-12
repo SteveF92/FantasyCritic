@@ -1,7 +1,4 @@
-using System;
-using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Results;
-using NodaTime;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions
 {

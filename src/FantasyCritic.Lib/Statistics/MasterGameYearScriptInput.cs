@@ -1,6 +1,3 @@
-using System;
-using FantasyCritic.Lib.Domain;
-
 namespace FantasyCritic.Lib.Statistics
 {
     public class MasterGameYearScriptInput
