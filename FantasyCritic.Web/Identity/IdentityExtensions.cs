@@ -1,6 +1,6 @@
 using System;
+using Duende.IdentityServer.Models;
 using FantasyCritic.Web.Models.Identity;
-using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Identity

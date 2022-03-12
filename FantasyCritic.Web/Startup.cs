@@ -16,6 +16,7 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Dapper.NodaTime;
+using Duende.IdentityServer;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
@@ -30,9 +31,6 @@ using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Identity;
-using IdentityServer4.Configuration;
-using IdentityServer4.Models;
-using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,7 +47,6 @@ using NLog;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 using FantasyCritic.Lib.Patreon;
-using IdentityServer4;
 
 namespace FantasyCritic.Web
 {

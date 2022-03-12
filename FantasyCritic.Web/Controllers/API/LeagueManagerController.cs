@@ -24,7 +24,6 @@ using FantasyCritic.Web.Models.Requests.LeagueManager;
 using FantasyCritic.Web.Models.Requests.Shared;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.RoundTrip;
-using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
