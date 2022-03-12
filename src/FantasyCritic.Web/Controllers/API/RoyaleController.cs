@@ -21,7 +21,6 @@ using FantasyCritic.Web.Models.Requests.Royale;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.Royale;
 using FantasyCritic.Web.Models.RoundTrip;
-using MoreLinq;
 
 namespace FantasyCritic.Web.Controllers.API
 {

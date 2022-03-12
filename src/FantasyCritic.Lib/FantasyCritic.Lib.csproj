@@ -46,7 +46,6 @@
     <PackageReference Include="FuzzyString.NETStandard" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.3" />
-    <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog" Version="4.7.14" />
     <PackageReference Include="NodaTime" Version="3.0.9" />

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MoreLinq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Lib.Extensions
 {
@@ -24,12 +24,14 @@ namespace FantasyCritic.Lib.Extensions
 
         public static IEnumerable<TSource> WhereMin<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
         {
-            return MoreEnumerable.MinBy(source, selector);
+            var minValue = source.Select(selector).Min();
+            return source.Where(item => selector.Invoke(item).Equals(minValue));
         }
 
         public static IEnumerable<TSource> WhereMax<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
         {
-            return MoreEnumerable.MaxBy(source, selector);
+            var minValue = source.Select(selector).Max();
+            return source.Where(item => selector.Invoke(item).Equals(minValue));
         }
     }
 }

@@ -9,7 +9,6 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.Entities;
-using MoreLinq;
 using MySqlConnector;
 using NLog;
 
@@ -38,7 +37,7 @@ namespace FantasyCritic.BetaSync
                 updateStatements.Add(sql);
             }
 
-            var batches = updateStatements.Batch(500).ToList();
+            var batches = updateStatements.Chunk(500).ToList();
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();

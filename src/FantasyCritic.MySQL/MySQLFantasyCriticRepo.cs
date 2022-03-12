@@ -29,7 +29,6 @@ using NLog.Targets.Wrappers;
 using NodaTime;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.MySQL.Entities.Trades;
-using static MoreLinq.Extensions.BatchExtension;
 
 namespace FantasyCritic.MySQL
 {
@@ -200,7 +199,7 @@ namespace FantasyCritic.MySQL
         {
             string sql = "update tbl_league_publishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;";
             List<PublisherGameUpdateEntity> updateEntities = calculatedStats.Select(x => new PublisherGameUpdateEntity(x)).ToList();
-            var updateBatches = updateEntities.Batch(1000).ToList();
+            var updateBatches = updateEntities.Chunk(1000).ToList();
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
@@ -222,7 +221,7 @@ namespace FantasyCritic.MySQL
         {
             string sql = "update tbl_league_year SET WinningUserID = @WinningUserID WHERE LeagueID = @LeagueID AND Year = @Year AND WinningUserID is null;";
             List<LeagueYearWinnerUpdateEntity> updateEntities = winningUsers.Select(x => new LeagueYearWinnerUpdateEntity(x)).ToList();
-            var updateBatches = updateEntities.Batch(1000).ToList();
+            var updateBatches = updateEntities.Chunk(1000).ToList();
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();

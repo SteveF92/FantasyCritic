@@ -32,7 +32,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NodaTime;
-using static MoreLinq.Extensions.MaxByExtension;
 
 namespace FantasyCritic.Web.Controllers.API
 {
