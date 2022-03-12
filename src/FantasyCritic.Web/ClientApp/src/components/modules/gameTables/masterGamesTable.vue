@@ -102,8 +102,8 @@
         {{ data.item.addedTimestamp | date }}
       </template>
       <template #cell(tags)="data">
-        <span v-for="(tag, index) in data.item.tags">
-          <masterGameTagBadge :tagName="data.item.tags[index]" short="true"></masterGameTagBadge>
+        <span v-for="tag in data.item.tags" v-bind:key="tag">
+          <masterGameTagBadge :tagName="tag" short="true"></masterGameTagBadge>
         </span>
       </template>
     </b-table>
