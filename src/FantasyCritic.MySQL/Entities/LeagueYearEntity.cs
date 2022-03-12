@@ -65,7 +65,7 @@ namespace FantasyCritic.MySQL.Entities
         public Instant? DraftStartedTimestamp { get; set; }
         public Guid? WinningUserID { get; set; }
 
-        public LeagueYear ToDomain(League league, SupportedYear year, IEnumerable<EligibilityOverride> eligibilityOverrides, 
+        public LeagueYear ToDomain(League league, SupportedYear year, IEnumerable<EligibilityOverride> eligibilityOverrides,
             IEnumerable<TagOverride> tagOverrides, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
             Maybe<FantasyCriticUser> winningUser)
         {

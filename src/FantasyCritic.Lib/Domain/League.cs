@@ -42,7 +42,7 @@ namespace FantasyCritic.Lib.Domain
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((League) obj);
+            return Equals((League)obj);
         }
 
         public override int GetHashCode()

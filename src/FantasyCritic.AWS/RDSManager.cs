@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -33,7 +33,7 @@ namespace FantasyCritic.AWS
 
                 CreateDBSnapshotRequest request = new CreateDBSnapshotRequest(snapName, _instanceName);
                 await rdsClient.CreateDBSnapshotAsync(request, CancellationToken.None);
-            }       
+            }
         }
 
         public async Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentSnapshots()

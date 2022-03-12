@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FantasyCritic.Lib.Domain;
@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Royale
 {
     public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     {
-        public RoyalePublisherGame(Guid publisherID, RoyaleYearQuarter yearQuarter, MasterGameYear masterGame, Instant timestamp, 
+        public RoyalePublisherGame(Guid publisherID, RoyaleYearQuarter yearQuarter, MasterGameYear masterGame, Instant timestamp,
             decimal amountSpent, decimal advertisingMoney, decimal? fantasyPoints)
         {
             PublisherID = publisherID;
@@ -167,7 +167,7 @@ namespace FantasyCritic.Lib.Royale
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((RoyalePublisherGame) obj);
+            return Equals((RoyalePublisherGame)obj);
         }
 
         public override int GetHashCode()

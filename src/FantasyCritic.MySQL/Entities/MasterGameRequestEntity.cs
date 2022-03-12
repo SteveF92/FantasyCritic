@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +18,7 @@ namespace FantasyCritic.MySQL.Entities
         {
 
         }
-        
+
         public MasterGameRequestEntity(MasterGameRequest domain)
         {
             RequestID = domain.RequestID;
@@ -64,7 +64,7 @@ namespace FantasyCritic.MySQL.Entities
         public Instant? ResponseTimestamp { get; set; }
         public string ResponseNote { get; set; }
         public Guid? MasterGameID { get; set; }
-        
+
         public bool Hidden { get; set; }
 
         public MasterGameRequest ToDomain(FantasyCriticUser user, Maybe<MasterGame> masterGame)

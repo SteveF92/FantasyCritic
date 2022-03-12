@@ -135,7 +135,7 @@ namespace FantasyCritic.Lib.Interfaces
         Task DeleteLeague(League league);
         Task DeleteLeagueActions(Publisher publisher);
         Task<bool> LeagueHasBeenStarted(Guid leagueID);
-        
+
         Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets();
         Task SaveProcessedActionResults(FinalizedActionProcessingResults actionProcessingResults);
         Task UpdateSystemWideValues(SystemWideValues systemWideValues);

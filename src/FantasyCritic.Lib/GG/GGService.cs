@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -71,7 +71,7 @@ namespace FantasyCritic.Lib.GG
                 {
                     return Maybe<GGGame>.None;
                 }
-                
+
                 var typedData = internalSection.ToObject<GGGameResponse>();
                 if (typedData is null)
                 {

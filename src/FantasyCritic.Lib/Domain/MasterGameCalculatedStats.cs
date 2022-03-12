@@ -1,4 +1,4 @@
-﻿namespace FantasyCritic.Lib.Domain
+namespace FantasyCritic.Lib.Domain
 {
     public class MasterGameCalculatedStats
     {
@@ -23,8 +23,8 @@
             LinearRegressionHypeFactor = cachedMasterGameYear.LinearRegressionHypeFactor;
         }
 
-        public MasterGameCalculatedStats(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame, 
-            double? adjustedPercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageWinningBid, 
+        public MasterGameCalculatedStats(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame,
+            double? adjustedPercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageWinningBid,
             double hypeFactor, double dateAdjustedHypeFactor, double peakHypeFactor, double linearRegressionHypeFactor)
         {
             MasterGame = masterGame;
@@ -63,6 +63,6 @@
         public double DateAdjustedHypeFactor { get; }
         public double PeakHypeFactor { get; }
         public double LinearRegressionHypeFactor { get; }
-        
+
     }
 }

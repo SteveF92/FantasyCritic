@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Domain
     public class MasterGame : IEquatable<MasterGame>
     {
         public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
-            LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, Maybe<string> ggToken, decimal? criticScore, 
+            LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, Maybe<string> ggToken, decimal? criticScore,
             string notes, string boxartFileName, string ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate,
             bool doNotRefreshAnything, bool eligibilityChanged, bool delayContention, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
@@ -149,7 +149,7 @@ namespace FantasyCritic.Lib.Domain
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((MasterGame) obj);
+            return Equals((MasterGame)obj);
         }
 
         public override int GetHashCode()

@@ -1,4 +1,4 @@
-﻿using CSharpFunctionalExtensions;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Identity;
 using System;
 using System.Collections.Generic;

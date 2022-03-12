@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,7 +28,7 @@ namespace FantasyCritic.Test
             IClock fakeClock = new FakeClock(nowTime);
             var fakeToday = fakeClock.GetToday();
 
-            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "", 
+            MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
                 new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, null, new LocalDate(2018, 7, 13),
                 null, null, 84.8095m, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
                 fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());

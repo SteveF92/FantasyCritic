@@ -93,7 +93,7 @@ namespace FantasyCritic.Lib.Scheduling.Lib.Cron
 
             return FieldByKind[(int)kind];
         }
-        
+
         public void Format(CrontabField field, TextWriter writer, bool noNames)
         {
             if (field == null)
@@ -159,7 +159,7 @@ namespace FantasyCritic.Lib.Scheduling.Lib.Cron
             else
             {
                 var index = value - _minValue;
-                writer.Write((string) _names[index]);
+                writer.Write((string)_names[index]);
             }
         }
 

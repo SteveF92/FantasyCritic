@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -257,7 +257,7 @@ namespace FantasyCritic.MySQL
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
                     await connection.ExecuteAsync(editSQL, entity, transaction);
-                    await connection.ExecuteAsync(deleteTagsSQL, new {masterGame.MasterGameID}, transaction);
+                    await connection.ExecuteAsync(deleteTagsSQL, new { masterGame.MasterGameID }, transaction);
                     await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
                     await transaction.CommitAsync();
                 }
@@ -602,13 +602,13 @@ namespace FantasyCritic.MySQL
         {
             List<MasterGameYearEntity> masterGameYearEntities = calculatedStats.Select(x => new MasterGameYearEntity(x)).ToList();
 
-            var excludeFields = new List<string>() {"DoNotRefreshDate", "DoNotRefreshAnything"};
+            var excludeFields = new List<string>() { "DoNotRefreshDate", "DoNotRefreshAnything" };
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync("delete from tbl_caching_mastergameyear where Year = @year", new {year}, transaction);
+                    await connection.ExecuteAsync("delete from tbl_caching_mastergameyear where Year = @year", new { year }, transaction);
                     await connection.BulkInsertAsync<MasterGameYearEntity>(masterGameYearEntities, "tbl_caching_mastergameyear", 500, transaction, excludeFields);
                     await transaction.CommitAsync();
                 }

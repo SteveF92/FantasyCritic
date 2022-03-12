@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,7 @@ namespace FantasyCritic.MySQL.Entities
     {
         public DropRequestEntity()
         {
-            
+
         }
 
         public DropRequestEntity(DropRequest domain)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using FantasyCritic.Lib.Domain;
@@ -37,7 +37,7 @@ namespace FantasyCritic.Lib.Royale
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((RoyaleYearQuarter) obj);
+            return Equals((RoyaleYearQuarter)obj);
         }
 
         public override int GetHashCode()

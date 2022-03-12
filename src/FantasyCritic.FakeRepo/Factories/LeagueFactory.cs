@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,10 +17,10 @@ namespace FantasyCritic.FakeRepo.Factories
         public static List<League> GetLeagues()
         {
             var users = UserFactory.GetUsers();
-            League league = new League(Guid.Parse("68227dc3-f5e1-4403-870a-e4d03cfc25d5"), "The Original Memers", users.Single(x => x.Id == Guid.Parse("9142b786-f614-483f-92ca-1ef489508641")), 
-                new List<int>(){2019}, true, false, false, 0);
+            League league = new League(Guid.Parse("68227dc3-f5e1-4403-870a-e4d03cfc25d5"), "The Original Memers", users.Single(x => x.Id == Guid.Parse("9142b786-f614-483f-92ca-1ef489508641")),
+                new List<int>() { 2019 }, true, false, false, 0);
 
-            return new List<League>(){league};
+            return new List<League>() { league };
         }
 
         public static List<LeagueYear> GetLeagueYears()
@@ -31,7 +31,7 @@ namespace FantasyCritic.FakeRepo.Factories
             {
                 var eligibilityOverrides = new List<EligibilityOverride>();
                 var tagOverrides = new List<TagOverride>();
-                LeagueYear year = new LeagueYear(league, GetSupportedYear(2019), new LeagueOptions(12, 6, 1, 2, 2, -1, 0, false, false, 0, new List<LeagueTagStatus>(), new List<SpecialGameSlot>(), DraftSystem.Flexible, PickupSystem.SecretBidding, 
+                LeagueYear year = new LeagueYear(league, GetSupportedYear(2019), new LeagueOptions(12, 6, 1, 2, 2, -1, 0, false, false, 0, new List<LeagueTagStatus>(), new List<SpecialGameSlot>(), DraftSystem.Flexible, PickupSystem.SecretBidding,
                     ScoringSystem.GetScoringSystem("Standard"), TradingSystem.Standard, TiebreakSystem.LowestProjectedPoints, true), PlayStatus.DraftFinal, eligibilityOverrides, tagOverrides, Instant.FromUtc(2019, 1, 5, 12, 0, 0), Maybe<FantasyCriticUser>.None);
                 leagueYears.Add(year);
             }

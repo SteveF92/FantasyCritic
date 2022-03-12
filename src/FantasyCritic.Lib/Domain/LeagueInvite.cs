@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +15,7 @@ namespace FantasyCritic.Lib.Domain
             InviteID = inviteID;
             League = league;
             EmailAddress = emailAddress;
-            User = Maybe<FantasyCriticUser>.None; 
+            User = Maybe<FantasyCriticUser>.None;
         }
 
         public LeagueInvite(Guid inviteID, League league, FantasyCriticUser user)

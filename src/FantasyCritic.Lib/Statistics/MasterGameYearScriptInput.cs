@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Lib.Statistics

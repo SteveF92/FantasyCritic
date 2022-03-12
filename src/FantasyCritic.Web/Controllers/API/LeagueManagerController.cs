@@ -657,7 +657,7 @@ namespace FantasyCritic.Web.Controllers.API
             }
 
             var editValues = request.ToDomain(publisher.Value);
-            
+
             Result result = await _publisherService.EditPublisher(editValues);
             if (result.IsFailure)
             {

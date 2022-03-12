@@ -28,7 +28,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly EmailSendingService _emailSendingService;
 
-        public RegisterModel(FantasyCriticUserManager userManager,SignInManager<FantasyCriticUser> signInManager,
+        public RegisterModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager,
             ILogger<RegisterModel> logger, EmailSendingService emailSendingService)
         {
             _userManager = userManager;

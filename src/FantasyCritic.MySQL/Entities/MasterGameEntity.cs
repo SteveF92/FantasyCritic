@@ -68,8 +68,8 @@ namespace FantasyCritic.MySQL.Entities
 
         public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
         {
-            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate, 
-                AnnouncementDate, ReleaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore,Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp, 
+            return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
+                AnnouncementDate, ReleaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
                 DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, subGames, tags);
         }
     }

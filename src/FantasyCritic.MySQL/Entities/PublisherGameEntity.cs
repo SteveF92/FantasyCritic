@@ -56,7 +56,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public PublisherGame ToDomain(Maybe<MasterGameYear> masterGame)
         {
-            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick, 
+            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick,
                 ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, SlotNumber, DraftPosition, OverallDraftPosition, BidAmount, AcquiredInTradeID);
             return domain;
         }

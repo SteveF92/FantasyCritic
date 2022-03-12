@@ -105,7 +105,7 @@ namespace FantasyCritic.Web.Models.Responses
         public DateTime? ReleaseDate { get; }
         public decimal? FantasyPoints { get; }
         public decimal? CriticScore { get; }
-        
+
         public MasterGameYearViewModel MasterGame { get; }
         public int? OverallDraftPosition { get; }
         public uint? BidAmount { get; }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +11,8 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGameRequest
     {
-        public MasterGameRequest(Guid requestID, FantasyCriticUser user, Instant requestTimestamp, string requestNote, 
-            string gameName, int? steamID, int? openCriticID, Maybe<string> ggToken, LocalDate? releaseDate, string estimatedReleaseDate, 
+        public MasterGameRequest(Guid requestID, FantasyCriticUser user, Instant requestTimestamp, string requestNote,
+            string gameName, int? steamID, int? openCriticID, Maybe<string> ggToken, LocalDate? releaseDate, string estimatedReleaseDate,
             bool answered, Instant? responseTimestamp, string responseNote, Maybe<MasterGame> masterGame, bool hidden)
         {
             RequestID = requestID;

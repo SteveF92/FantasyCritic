@@ -65,6 +65,6 @@ namespace FantasyCritic.Web.Models.Responses
         public bool Archived { get; }
         public bool UserIsInLeague { get; }
         public bool UserIsFollowingLeague { get; }
-        public int NumberOfFollowers{ get; }
+        public int NumberOfFollowers { get; }
     }
 }

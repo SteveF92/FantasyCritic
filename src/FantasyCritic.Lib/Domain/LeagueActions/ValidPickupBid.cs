@@ -1,4 +1,4 @@
-﻿namespace FantasyCritic.Lib.Domain.LeagueActions
+namespace FantasyCritic.Lib.Domain.LeagueActions
 {
     public class ValidPickupBid
     {

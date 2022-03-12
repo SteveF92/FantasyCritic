@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +8,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class PossibleMasterGameYear
     {
-        public PossibleMasterGameYear(MasterGameYear masterGame, bool taken, bool alreadyOwned, bool isEligible, bool isEligibleInOpenSlot, 
+        public PossibleMasterGameYear(MasterGameYear masterGame, bool taken, bool alreadyOwned, bool isEligible, bool isEligibleInOpenSlot,
             bool isReleased, bool willRelease, bool hasScore)
         {
             MasterGame = masterGame;

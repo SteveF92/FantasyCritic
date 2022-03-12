@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NodaTime;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions

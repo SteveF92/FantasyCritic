@@ -59,9 +59,9 @@ namespace FantasyCritic.MySQL
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync($"delete from tbl_user where UserID = @{nameof(FantasyCriticUserEntity.UserID)}", new
-                    {
-                        UserID = user.Id
-                    });
+                {
+                    UserID = user.Id
+                });
             }
 
             _userCache = null;
@@ -293,7 +293,7 @@ namespace FantasyCritic.MySQL
             user.UserName = userName;
             return Task.CompletedTask;
         }
-        
+
         public async Task<IList<string>> GetRolesAsync(FantasyCriticUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -641,7 +641,7 @@ namespace FantasyCritic.MySQL
                 var userResults = await connection.QueryAsync<FantasyCriticUserEntity, ExternalLoginEntity, Tuple<FantasyCriticUserEntity, ExternalLoginEntity>>(
                     sql, (user, externalLogin) => new Tuple<FantasyCriticUserEntity, ExternalLoginEntity>(user, externalLogin), queryObject, splitOn: "LoginProvider");
                 List<FantasyCriticUserWithExternalLogins> domainResults = new List<FantasyCriticUserWithExternalLogins>();
-                foreach(var userEntity in userResults)
+                foreach (var userEntity in userResults)
                 {
                     List<UserLoginInfo> userLogins = new List<UserLoginInfo>()
                     {

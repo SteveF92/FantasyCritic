@@ -32,7 +32,7 @@ namespace FantasyCritic.Lib.OpenCritic
             {
                 var gameResponse = await _client.GetStringAsync($"game/{openCriticGameID}");
                 if (string.IsNullOrWhiteSpace(gameResponse))
-                { 
+                {
                     return Maybe<OpenCriticGame>.None;
                 }
                 JObject parsedGameResponse = JObject.Parse(gameResponse);

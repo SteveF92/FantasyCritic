@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -24,7 +24,7 @@ namespace FantasyCritic.Lib.Services
             _gameAcquisitionService = gameAcquisitionService;
         }
 
-        public FinalizedActionProcessingResults ProcessActions(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids, 
+        public FinalizedActionProcessingResults ProcessActions(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> currentPublisherStates, Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
         {
             var flatBids = allActiveBids.SelectMany(x => x.Value);
@@ -52,7 +52,7 @@ namespace FantasyCritic.Lib.Services
             return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults);
         }
 
-        private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, 
+        private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests,
             IEnumerable<Publisher> currentPublisherStates, Instant processingTime)
         {
             List<Publisher> updatedPublisherStates = currentPublisherStates.ToList();
@@ -336,7 +336,7 @@ namespace FantasyCritic.Lib.Services
             return winningBids;
         }
 
-        private static ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, IReadOnlyList<Publisher> publishers, 
+        private static ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, IReadOnlyList<Publisher> publishers,
             Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
         {
             Dictionary<Guid, Publisher> publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
@@ -372,7 +372,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             var updatedPublishers = publisherDictionary.Values.ToList();
-            ActionProcessingResults bidProcessingResults = ActionProcessingResults.GetResultsSetFromBidResults(successBids, failedBids, 
+            ActionProcessingResults bidProcessingResults = ActionProcessingResults.GetResultsSetFromBidResults(successBids, failedBids,
                 leagueActions, updatedPublishers, gamesToAdd, conditionalDroppedGames);
             return bidProcessingResults;
         }

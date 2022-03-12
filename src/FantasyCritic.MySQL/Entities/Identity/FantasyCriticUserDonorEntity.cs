@@ -1,4 +1,4 @@
-﻿using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

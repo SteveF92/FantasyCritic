@@ -1,4 +1,4 @@
-﻿using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Interfaces;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -133,7 +133,7 @@ namespace FantasyCritic.MySQL
             string sql = "select * from tbl_royale_publisher where Year = @year and Quarter = @quarter";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var entities = await connection.QueryAsync<RoyalePublisherEntity>(sql, new {year, quarter} );
+                var entities = await connection.QueryAsync<RoyalePublisherEntity>(sql, new { year, quarter });
 
                 List<RoyalePublisher> domainPublishers = new List<RoyalePublisher>();
                 foreach (var entity in entities)
@@ -209,7 +209,7 @@ namespace FantasyCritic.MySQL
                 {
                     await connection.ExecuteAsync(gameAddSQL, entity, transaction);
                     await connection.ExecuteAsync(budgetDescreaseSQL,
-                        new {amountSpent = game.AmountSpent, publisherID = game.PublisherID}, transaction);
+                        new { amountSpent = game.AmountSpent, publisherID = game.PublisherID }, transaction);
                     await transaction.CommitAsync();
                 }
             }
@@ -231,7 +231,7 @@ namespace FantasyCritic.MySQL
             string sql = "select * from tbl_royale_supportedquarter where Year = @year and Quarter = @quarter;";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var entity = await connection.QuerySingleOrDefaultAsync<RoyaleYearQuarterEntity>(sql, new {year, quarter});
+                var entity = await connection.QuerySingleOrDefaultAsync<RoyaleYearQuarterEntity>(sql, new { year, quarter });
                 if (entity is null)
                 {
                     return Maybe<RoyaleYearQuarter>.None;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterGameWithEligibilityFactors
     {
-        public MasterGameWithEligibilityFactors(MasterGame masterGame, LeagueOptions options, bool? overridenEligibility, 
+        public MasterGameWithEligibilityFactors(MasterGame masterGame, LeagueOptions options, bool? overridenEligibility,
             IReadOnlyList<MasterGameTag> tagOverrides, LocalDate dateAcquired)
         {
             MasterGame = masterGame;

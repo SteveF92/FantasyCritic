@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CSharpFunctionalExtensions;
 using NodaTime;
 
@@ -6,7 +6,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
 {
     public class DropRequest : IEquatable<DropRequest>
     {
-        public DropRequest(Guid dropRequestID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, 
+        public DropRequest(Guid dropRequestID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame,
             Instant timestamp, bool? successful, Guid? processSetID)
         {
             DropRequestID = dropRequestID;
@@ -38,7 +38,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((DropRequest) obj);
+            return Equals((DropRequest)obj);
         }
 
         public override int GetHashCode()

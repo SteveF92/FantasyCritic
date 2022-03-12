@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class Publisher : IEquatable<Publisher>
     {
-        public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, Maybe<string> publisherIcon, int draftPosition, 
+        public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, Maybe<string> publisherIcon, int draftPosition,
             IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped,
             bool autoDraft)
         {
@@ -86,7 +86,7 @@ namespace FantasyCritic.Lib.Domain
         public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate, bool ineligiblePointsShouldCount)
         {
             var score = GetPublisherSlots()
-                .Sum(x => x.GetProjectedOrRealFantasyPoints(ineligiblePointsShouldCount || x.SlotIsValid(LeagueYear), 
+                .Sum(x => x.GetProjectedOrRealFantasyPoints(ineligiblePointsShouldCount || x.SlotIsValid(LeagueYear),
                     LeagueYear.Options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
 
             return score;
@@ -176,7 +176,7 @@ namespace FantasyCritic.Lib.Domain
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Publisher) obj);
+            return Equals((Publisher)obj);
         }
 
         public override int GetHashCode()
@@ -188,7 +188,7 @@ namespace FantasyCritic.Lib.Domain
 
         public void AcquireGame(PublisherGame game, uint bidAmount)
         {
-            PublisherGames = PublisherGames.Concat(new []{ game }).ToList();
+            PublisherGames = PublisherGames.Concat(new[] { game }).ToList();
             Budget -= bidAmount;
         }
 

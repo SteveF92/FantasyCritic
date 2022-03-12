@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -50,7 +50,7 @@ namespace FantasyCritic.MySQL.Entities.Trades
             IEnumerable<MasterGameYearWithCounterPick> counterPartyMasterGames, IEnumerable<TradeVote> votes)
         {
             return new Trade(TradeID, proposer, counterParty, proposerMasterGames, counterPartyMasterGames,
-                ProposerBudgetSendAmount, CounterPartyBudgetSendAmount, Message, ProposedTimestamp, AcceptedTimestamp, CompletedTimestamp, 
+                ProposerBudgetSendAmount, CounterPartyBudgetSendAmount, Message, ProposedTimestamp, AcceptedTimestamp, CompletedTimestamp,
                 votes, TradeStatus.FromValue(Status));
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Domain.Calculations
 {
     public class YearCalculatedStatsSet
     {
-        public YearCalculatedStatsSet(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> publisherGameCalculatedStats, 
+        public YearCalculatedStatsSet(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> publisherGameCalculatedStats,
             IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers)
         {
             PublisherGameCalculatedStats = publisherGameCalculatedStats;

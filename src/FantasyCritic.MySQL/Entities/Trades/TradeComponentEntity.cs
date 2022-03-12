@@ -1,4 +1,4 @@
-﻿using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using System;
 using System.Collections.Generic;

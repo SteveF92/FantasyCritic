@@ -1,4 +1,4 @@
-﻿using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using System;
 using System.Collections.Generic;

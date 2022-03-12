@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,7 +49,7 @@ namespace FantasyCritic.Lib.Services
 
             if (request.MasterGame.HasValue)
             {
-                var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, false, currentDate, 
+                var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame.Value, leagueYear.Year, false, currentDate,
                     dateOfPotentialAcquisition, request.CounterPick, request.CounterPickedGameIsManualWillNotRelease, drafting);
                 claimErrors.AddRange(masterGameErrors);
             }
@@ -211,7 +211,7 @@ namespace FantasyCritic.Lib.Services
             var currentDate = _clock.GetToday();
             var dateOfPotentialAcquisition = currentDate;
 
-            IReadOnlyList<ClaimError> masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate, 
+            IReadOnlyList<ClaimError> masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate,
                 dateOfPotentialAcquisition, request.PublisherGame.CounterPick, false, false);
             associationErrors.AddRange(masterGameErrors);
 
@@ -280,12 +280,12 @@ namespace FantasyCritic.Lib.Services
             return claimErrors;
         }
 
-        private IReadOnlyList<ClaimError> GetGenericSlotMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool dropping, 
+        private IReadOnlyList<ClaimError> GetGenericSlotMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool dropping,
             LocalDate currentDate, LocalDate dateOfPotentialAcquisition, bool counterPick, bool counterPickedGameIsManualWillNotRelease, bool drafting)
         {
             MasterGameWithEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame, dateOfPotentialAcquisition);
             List<ClaimError> claimErrors = new List<ClaimError>();
-            
+
             bool manuallyEligible = eligibilityFactors.OverridenEligibility.HasValue && eligibilityFactors.OverridenEligibility.Value;
             bool released = masterGame.IsReleased(currentDate);
             if (released)
@@ -375,7 +375,7 @@ namespace FantasyCritic.Lib.Services
             return claimResult;
         }
 
-        public async Task<ClaimResult> MakePickupBid(Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame, 
+        public async Task<ClaimResult> MakePickupBid(Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame,
             bool counterPick, uint bidAmount, LeagueOptions leagueOptions)
         {
             if (bidAmount < leagueOptions.MinimumBidAmount)
@@ -412,7 +412,7 @@ namespace FantasyCritic.Lib.Services
                 counterPickedGameIsManualWillNotRelease = gameBeingCounterPickedOptions.Single().Value.ManualWillNotRelease;
             }
 
-            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, counterPick, 
+            var claimRequest = new ClaimGameDomainRequest(publisher, masterGame.GameName, counterPick,
                 counterPickedGameIsManualWillNotRelease, false, false, masterGame, null, null);
 
             Instant nextBidTime = _clock.GetNextBidTime();
@@ -441,7 +441,7 @@ namespace FantasyCritic.Lib.Services
             }
 
             var nextPriority = pickupBids.Count + 1;
-            PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, 
+            PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick,
                 bidAmount, nextPriority, _clock.GetCurrentInstant(), null, null, Maybe<string>.None, null);
             await _fantasyCriticRepo.CreatePickupBid(currentBid);
 
@@ -500,7 +500,7 @@ namespace FantasyCritic.Lib.Services
 
             DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, publisher.LeagueYear, masterGame, _clock.GetCurrentInstant(), null, null);
             var publishersInLeague = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
-            var otherPublishers = publishersInLeague.Except(new List<Publisher>(){publisher});
+            var otherPublishers = publishersInLeague.Except(new List<Publisher>() { publisher });
 
             var dropResult = CanDropGame(dropRequest, publisher.LeagueYear, publisher, otherPublishers);
             if (dropResult.Result.IsFailure)

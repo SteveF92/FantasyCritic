@@ -1,4 +1,4 @@
-﻿using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System;

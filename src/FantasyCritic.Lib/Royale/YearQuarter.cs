@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using NodaTime;
@@ -61,7 +61,7 @@ namespace FantasyCritic.Lib.Royale
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((YearQuarter) obj);
+            return Equals((YearQuarter)obj);
         }
 
         public override int GetHashCode()

@@ -32,7 +32,7 @@ namespace FantasyCritic.Lib.Services
         private readonly InterLeagueService _interLeagueService;
         private readonly ActionProcessingService _actionProcessingService;
 
-        public FantasyCriticService(GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService, 
+        public FantasyCriticService(GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
             PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock, ActionProcessingService actionProcessingService)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -175,7 +175,7 @@ namespace FantasyCritic.Lib.Services
             var tagOverrides = await GetTagOverrides(league, parameters.Year);
             var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
-            LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.PlayStatus, eligibilityOverrides, 
+            LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.PlayStatus, eligibilityOverrides,
                 tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser);
 
             var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
@@ -680,7 +680,7 @@ namespace FantasyCritic.Lib.Services
 
             Trade trade = new Trade(Guid.NewGuid(), proposer, counterParty, proposerPublisherGamesWithMasterGames,
                 counterPartyPublisherGamesWithMasterGames,
-                proposerBudgetSendAmount, counterPartyBudgetSendAmount, message, _clock.GetCurrentInstant(), null, null, 
+                proposerBudgetSendAmount, counterPartyBudgetSendAmount, message, _clock.GetCurrentInstant(), null, null,
                 new List<TradeVote>(), TradeStatus.Proposed);
 
             var tradeError = trade.GetTradeError();

@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 
 namespace FantasyCritic.Lib.OpenCritic

@@ -1,4 +1,4 @@
-﻿using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Domain.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;

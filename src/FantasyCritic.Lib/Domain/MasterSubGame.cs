@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Domain
 {
     public class MasterSubGame
     {
-        public MasterSubGame(Guid masterSubGameID, Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, 
+        public MasterSubGame(Guid masterSubGameID, Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate,
             LocalDate? maximumReleaseDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore)
         {
             MasterSubGameID = masterSubGameID;

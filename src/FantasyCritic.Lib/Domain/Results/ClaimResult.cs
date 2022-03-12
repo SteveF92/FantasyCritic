@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FantasyCritic.Lib.Domain.Results
@@ -17,7 +17,7 @@ namespace FantasyCritic.Lib.Domain.Results
         }
 
         public ClaimResult(ClaimError error, int? bestSlotNumber)
-        : this (new List<ClaimError>(){error}, bestSlotNumber)
+        : this(new List<ClaimError>() { error }, bestSlotNumber)
         {
 
         }

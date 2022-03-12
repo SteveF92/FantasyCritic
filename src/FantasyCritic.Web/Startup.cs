@@ -233,7 +233,8 @@ namespace FantasyCritic.Web
 
             services
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => {
+                .AddCookie(options =>
+                {
                     options.Cookie.Name = "FantasyCriticCookie";
                     options.LoginPath = "/Identity/Account/Login";
                     options.LogoutPath = "/Identity/Account/Logout";

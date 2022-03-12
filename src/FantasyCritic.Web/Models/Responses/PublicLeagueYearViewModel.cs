@@ -18,7 +18,7 @@ namespace FantasyCritic.Web.Models.Responses
 
         public Guid LeagueID { get; }
         public string LeagueName { get; }
-        public int NumberOfFollowers{ get; }
+        public int NumberOfFollowers { get; }
         public string PlayStatus { get; }
     }
 }

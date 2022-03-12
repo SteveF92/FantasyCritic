@@ -21,7 +21,7 @@ namespace FantasyCritic.Lib.Identity
         private readonly PatreonService _patreonService;
 
         public FantasyCriticUserManager(IFantasyCriticUserStore store, IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<FantasyCriticUser> passwordHasher,
-            IEnumerable<IUserValidator<FantasyCriticUser>> userValidators, IEnumerable<IPasswordValidator<FantasyCriticUser>> passwordValidators, ILookupNormalizer keyNormalizer, 
+            IEnumerable<IUserValidator<FantasyCriticUser>> userValidators, IEnumerable<IPasswordValidator<FantasyCriticUser>> passwordValidators, ILookupNormalizer keyNormalizer,
             IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<FantasyCriticUser>> logger, IClock clock, PatreonService patreonService)
             : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {
@@ -35,9 +35,9 @@ namespace FantasyCritic.Lib.Identity
             var existingAccountWithEmail = await _userStore.FindByEmailAsync(user.Email, CancellationToken.None);
             if (existingAccountWithEmail is not null)
             {
-                return IdentityResult.Failed(new IdentityError(){Code = "Email Taken", Description = "An account with that email address already exists." });
+                return IdentityResult.Failed(new IdentityError() { Code = "Email Taken", Description = "An account with that email address already exists." });
             }
-            
+
             int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
             var now = _clock.GetCurrentInstant();
             var fullUser = new FantasyCriticUser(user.Id, user.UserName, null, openUserNumber, user.Email,

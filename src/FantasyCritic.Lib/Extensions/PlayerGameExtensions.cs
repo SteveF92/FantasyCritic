@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -47,7 +47,7 @@ namespace FantasyCritic.Lib.Extensions
             return containsGame;
         }
 
-        public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear, 
+        public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear,
             IEnumerable<Publisher> publishersInLeagueYear, bool counterPick, Maybe<MasterGame> masterGame, bool gameCouldBeDropped)
         {
             if (!counterPick || masterGame.HasNoValue)

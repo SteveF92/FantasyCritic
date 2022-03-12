@@ -22,7 +22,7 @@ namespace FantasyCritic.Web.Areas.Identity.Pages.Account
         private readonly SignInManager<FantasyCriticUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<FantasyCriticUser> signInManager, 
+        public LoginModel(SignInManager<FantasyCriticUser> signInManager,
             ILogger<LoginModel> logger,
             UserManager<FantasyCriticUser> userManager)
         {

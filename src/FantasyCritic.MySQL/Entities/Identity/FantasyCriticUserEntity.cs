@@ -44,7 +44,7 @@ namespace FantasyCritic.MySQL.Entities.Identity
 
         public FantasyCriticUser ToDomain()
         {
-            FantasyCriticUser domain = new FantasyCriticUser(UserID, DisplayName, PatreonDonorNameOverride, DisplayNumber, EmailAddress, NormalizedEmailAddress, EmailConfirmed, 
+            FantasyCriticUser domain = new FantasyCriticUser(UserID, DisplayName, PatreonDonorNameOverride, DisplayNumber, EmailAddress, NormalizedEmailAddress, EmailConfirmed,
                 SecurityStamp, PasswordHash, TwoFactorEnabled, AuthenticatorKey, LastChangedCredentials, IsDeleted);
             return domain;
         }

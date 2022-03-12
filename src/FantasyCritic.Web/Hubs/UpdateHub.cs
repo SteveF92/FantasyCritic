@@ -34,7 +34,7 @@ namespace FantasyCritic.Web.Hubs
                 _logger.Error($"SignalR disconnected with error: {Context.ConnectionId}");
                 _logger.Error(ex);
             }
-            
+
             await base.OnDisconnectedAsync(ex);
         }
 
@@ -63,7 +63,7 @@ namespace FantasyCritic.Web.Hubs
                 _logger.Error(e);
                 throw;
             }
-            
+
         }
     }
 }

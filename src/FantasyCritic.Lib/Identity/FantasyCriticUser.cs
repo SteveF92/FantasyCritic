@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Identity
 
         }
 
-        public FantasyCriticUser(Guid userID, string displayName, string patreonDonorNameOverride, int displayNumber, string emailAddress, string normalizedEmailAddress, 
+        public FantasyCriticUser(Guid userID, string displayName, string patreonDonorNameOverride, int displayNumber, string emailAddress, string normalizedEmailAddress,
             bool emailConfirmed, string securityStamp, string passwordHash, bool twoFactorEnabled, string authenticatorKey, Instant lastChangedCredentials, bool isDeleted)
         {
             Id = userID;
@@ -54,7 +54,7 @@ namespace FantasyCritic.Lib.Identity
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((FantasyCriticUser) obj);
+            return Equals((FantasyCriticUser)obj);
         }
 
         public override int GetHashCode()

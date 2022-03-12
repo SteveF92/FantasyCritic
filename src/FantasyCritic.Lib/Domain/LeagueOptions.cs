@@ -17,7 +17,7 @@ namespace FantasyCritic.Lib.Domain
         private readonly Dictionary<int, SpecialGameSlot> _specialSlotDictionary;
 
         public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
-            bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, 
+            bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
             DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, bool publicLeague)
         {
             StandardGames = standardGames;
@@ -282,7 +282,7 @@ namespace FantasyCritic.Lib.Domain
                 return Maybe<string>.None;
             }
 
-            string finalString = string.Join("\n", differences.Select(x => $"• {x}"));
+            string finalString = string.Join("\n", differences.Select(x => $"â€¢ {x}"));
             return finalString;
         }
     }

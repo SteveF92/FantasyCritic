@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -258,7 +258,7 @@ namespace FantasyCritic.FakeRepo
 
         public Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
         {
-            return Task.FromResult<IReadOnlyList<SupportedYear>> (new List<SupportedYear>()
+            return Task.FromResult<IReadOnlyList<SupportedYear>>(new List<SupportedYear>()
             {
                 new SupportedYear(2019, true, true, true, new LocalDate(2018, 12, 7), false)
             });

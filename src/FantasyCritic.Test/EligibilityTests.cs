@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,10 +43,10 @@ namespace FantasyCritic.Test
         {
             return new MasterGame(Guid.NewGuid(), name, releaseDate.ToISOString(), releaseDate, releaseDate, null, null, null,
                 releaseDate, null, null, null, "", null, null, null, false, false, false, false, Instant.MinValue,
-                new List<MasterSubGame>(), new List<MasterGameTag>(){ tag });
+                new List<MasterSubGame>(), new List<MasterGameTag>() { tag });
         }
 
-        private static MasterGame CreateComplexMasterGame(string name, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate, 
+        private static MasterGame CreateComplexMasterGame(string name, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
             LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, IEnumerable<MasterGameTag> tags)
         {
             return new MasterGame(Guid.NewGuid(), name, "TBA", minimumReleaseDate, maximumReleaseDate,
@@ -437,7 +437,7 @@ namespace FantasyCritic.Test
             {
                 new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
                 new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),  
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
             };
 
             var slotTags = new List<LeagueTagStatus>()
@@ -502,7 +502,7 @@ namespace FantasyCritic.Test
 
             var slotTags = new List<LeagueTagStatus>()
             {
-                
+
             };
 
             var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -526,7 +526,7 @@ namespace FantasyCritic.Test
             {
                 new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
                 new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),  
+                new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
             };
 
             var slotTags = new List<LeagueTagStatus>()

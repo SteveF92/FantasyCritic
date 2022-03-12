@@ -1,4 +1,4 @@
-﻿using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.MySQL.Entities.Identity

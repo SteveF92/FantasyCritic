@@ -1,4 +1,4 @@
-﻿namespace FantasyCritic.Lib.Domain.Results
+namespace FantasyCritic.Lib.Domain.Results
 {
     public class ClaimError
     {

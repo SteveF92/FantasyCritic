@@ -22,7 +22,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager
         [Range(1, 50)]
         public int GamesToDraft { get; set; }
         [Required]
-        [Range(0,5)]
+        [Range(0, 5)]
         public int CounterPicks { get; set; }
         [Required]
         [Range(0, 5)]

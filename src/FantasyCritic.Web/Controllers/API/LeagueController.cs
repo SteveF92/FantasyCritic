@@ -90,7 +90,7 @@ namespace FantasyCritic.Web.Controllers.API
                     openYears = openYears.Concat(betaYears).Distinct();
                 }
             }
-            
+
             var openYearInts = openYears.Select(x => x.Year);
             LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYearInts, DraftSystem.GetAllPossibleValues(),
                 PickupSystem.GetAllPossibleValues(), TiebreakSystem.GetAllPossibleValues(),
@@ -576,7 +576,7 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 return BadRequest();
             }
-            
+
             var mostRecentYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, league.Years.Max());
             if (mostRecentYear.HasNoValue)
             {
@@ -854,7 +854,7 @@ namespace FantasyCritic.Web.Controllers.API
             {
                 conditionalDropPublisherGame = publisher.Value.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGameID.Value);
             }
-            
+
             ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(publisher.Value, masterGame.Value, conditionalDropPublisherGame, request.CounterPick, request.BidAmount, leagueYear.Value.Options);
             var viewModel = new PickupBidResultViewModel(bidResult);
 

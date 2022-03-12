@@ -23,7 +23,7 @@ namespace FantasyCritic.Lib.Scheduling.Lib.Cron
         {
             Debug.Assert(expression != null);
 
-            var fields = expression.Split((char[]) Separators, StringSplitOptions.RemoveEmptyEntries);
+            var fields = expression.Split((char[])Separators, StringSplitOptions.RemoveEmptyEntries);
 
             if (fields.Length != 5)
             {
@@ -125,7 +125,7 @@ namespace FantasyCritic.Lib.Scheduling.Lib.Cron
 
             day = _days.Next(day);
 
-            RetryDayMonth:
+        RetryDayMonth:
 
             if (day == nil)
             {

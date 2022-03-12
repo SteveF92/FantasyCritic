@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -69,7 +69,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var masterGame in matchingMasterGames)
             {
                 var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots, publisherMasterGames, 
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots, publisherMasterGames,
                     myPublisherMasterGames, eligibilityFactors, currentDate);
                 possibleMasterGames.Add(possibleMasterGame);
             }
@@ -97,7 +97,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var masterGame in matchingMasterGames)
             {
                 var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots, 
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
                     publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate);
 
                 if (!possibleMasterGame.IsAvailable)
@@ -111,7 +111,7 @@ namespace FantasyCritic.Lib.Services
             return possibleMasterGames;
         }
 
-        public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGamesForSlot(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, 
+        public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGamesForSlot(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear,
             int year, IEnumerable<LeagueTagStatus> leagueTagRequirements)
         {
             HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
@@ -132,7 +132,7 @@ namespace FantasyCritic.Lib.Services
             foreach (var masterGame in matchingMasterGames)
             {
                 var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots, 
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
                     publisherMasterGames, myPublisherMasterGames, eligibilityFactors, leagueTagRequirements, currentDate);
 
                 if (!possibleMasterGame.IsAvailable)
@@ -146,7 +146,7 @@ namespace FantasyCritic.Lib.Services
             return possibleMasterGames;
         }
 
-        public async Task<IReadOnlyList<PossibleMasterGameYear>> GetQueuedPossibleGames(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, 
+        public async Task<IReadOnlyList<PossibleMasterGameYear>> GetQueuedPossibleGames(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear,
             IEnumerable<QueuedGame> queuedGames)
         {
             HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
@@ -170,7 +170,7 @@ namespace FantasyCritic.Lib.Services
                 var masterGame = masterGameYearDictionary[queuedGame.MasterGame.MasterGameID];
 
                 var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
-                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots, 
+                PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
                     publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate);
                 possibleMasterGames.Add(possibleMasterGame);
             }
@@ -178,8 +178,8 @@ namespace FantasyCritic.Lib.Services
             return possibleMasterGames;
         }
 
-        public static PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, IReadOnlyList<PublisherSlot> openNonCounterPickSlots, 
-            HashSet<MasterGame> publisherStandardMasterGames, HashSet<MasterGame> myPublisherMasterGames, 
+        public static PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, IReadOnlyList<PublisherSlot> openNonCounterPickSlots,
+            HashSet<MasterGame> publisherStandardMasterGames, HashSet<MasterGame> myPublisherMasterGames,
             MasterGameWithEligibilityFactors eligibilityFactors, LocalDate currentDate)
         {
             bool isEligible = SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);
@@ -194,8 +194,8 @@ namespace FantasyCritic.Lib.Services
             return possibleMasterGame;
         }
 
-        public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, IReadOnlyList<PublisherSlot> openNonCounterPickSlots, 
-            HashSet<MasterGame> publisherStandardMasterGames, HashSet<MasterGame> myPublisherMasterGames, 
+        public PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, IReadOnlyList<PublisherSlot> openNonCounterPickSlots,
+            HashSet<MasterGame> publisherStandardMasterGames, HashSet<MasterGame> myPublisherMasterGames,
             MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<LeagueTagStatus> tagsForSlot, LocalDate currentDate)
         {
             var tagsToUse = eligibilityFactors.TagOverrides.Any() ? eligibilityFactors.TagOverrides : masterGame.MasterGame.Tags;

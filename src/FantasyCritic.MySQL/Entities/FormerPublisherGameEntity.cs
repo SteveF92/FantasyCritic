@@ -16,8 +16,8 @@ namespace FantasyCritic.MySQL.Entities
 
         }
 
-        public FormerPublisherGameEntity(Guid publisherGameID, Guid publisherID, string gameName, Instant timestamp, bool counterPick, 
-            decimal? manualCriticScore, bool manualWillNotRelease, decimal? fantasyPoints, Guid? masterGameID, int? draftPosition, 
+        public FormerPublisherGameEntity(Guid publisherGameID, Guid publisherID, string gameName, Instant timestamp, bool counterPick,
+            decimal? manualCriticScore, bool manualWillNotRelease, decimal? fantasyPoints, Guid? masterGameID, int? draftPosition,
             int? overallDraftPosition, uint? bidAmount, Guid? acquiredInTradeID, Instant removedTimestamp, string removedNote)
         {
             PublisherGameID = publisherGameID;
@@ -78,7 +78,7 @@ namespace FantasyCritic.MySQL.Entities
 
         public FormerPublisherGame ToDomain(Maybe<MasterGameYear> masterGame)
         {
-            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick, 
+            PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick,
                 ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, 0, DraftPosition, OverallDraftPosition, BidAmount, AcquiredInTradeID);
             return new FormerPublisherGame(domain, RemovedTimestamp, RemovedNote);
         }

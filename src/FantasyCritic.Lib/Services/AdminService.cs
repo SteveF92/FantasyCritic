@@ -1,4 +1,4 @@
-﻿using CsvHelper;
+using CsvHelper;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -435,7 +435,7 @@ namespace FantasyCritic.Lib.Services
                     double? adjustedPercentCounterPick = null;
                     if (leaguesWithGame >= 3)
                     {
-                        adjustedPercentCounterPick = (double)leaguesWithCounterPickGame / (double) leaguesWithGame;
+                        adjustedPercentCounterPick = (double)leaguesWithCounterPickGame / (double)leaguesWithGame;
                     }
 
                     var bidsForGame = bidsByGame[masterGame];
@@ -447,10 +447,10 @@ namespace FantasyCritic.Lib.Services
                     }
 
                     var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
-                    double percentageGamesWithHigherBidTotal = gamesWithMoreBidTotal.Count() / (double) cleanMasterGames.Count;
+                    double percentageGamesWithHigherBidTotal = gamesWithMoreBidTotal.Count() / (double)cleanMasterGames.Count;
                     double bidPercentile = 100 - (percentageGamesWithHigherBidTotal * 100);
                     double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.OverallDraftPosition);
-                    double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Select(x => (double) x.BidAmount).DefaultIfEmpty(0.0).Average();
+                    double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Select(x => (double)x.BidAmount).DefaultIfEmpty(0.0).Average();
 
                     double notNullAverageDraftPosition = averageDraftPosition ?? 0;
 
@@ -503,8 +503,8 @@ namespace FantasyCritic.Lib.Services
 
                     linearRegressionHypeFactor = FixDouble(linearRegressionHypeFactor);
 
-                    calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame, 
-                        adjustedPercentCounterPick, numberOfBids, (int) totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor, 
+                    calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
+                        adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
                         dateAdjustedHypeFactor, peakHypeFactor, linearRegressionHypeFactor));
                 }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -27,7 +27,7 @@ namespace FantasyCritic.Lib.Services
         private readonly GameSearchingService _gameSearchingService;
 
         public DraftService(GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
-            PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, 
+            PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo,
             GameSearchingService gameSearchingService, IClock clock)
         {
             _fantasyCriticRepo = fantasyCriticRepo;
@@ -309,7 +309,7 @@ namespace FantasyCritic.Lib.Services
                     .OrderByDescending(x => x.AdjustedPercentCounterPick);
                 foreach (var possibleGame in possibleGames)
                 {
-                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame, 
+                    var request = new ClaimGameDomainRequest(nextPublisher.Value, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame,
                         draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
                     var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, updatedPublishers, true);
                     if (autoDraftResult.Success)

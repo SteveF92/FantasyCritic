@@ -4,7 +4,7 @@ namespace FantasyCritic.Lib.Domain.Requests
 {
     public class ClaimGameDomainRequest
     {
-        public ClaimGameDomainRequest(Publisher publisher, string gameName, bool counterPick, bool counterPickedGameIsManualWillNotRelease, 
+        public ClaimGameDomainRequest(Publisher publisher, string gameName, bool counterPick, bool counterPickedGameIsManualWillNotRelease,
             bool managerOverride, bool autoDraft, Maybe<MasterGame> masterGame, int? draftPosition, int? overallDraftPosition)
         {
             Publisher = publisher;

@@ -1,4 +1,4 @@
-﻿using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace FantasyCritic.Lib.Royale
 {
     public class RoyalePublisher
     {
-        public RoyalePublisher(Guid publisherID, RoyaleYearQuarter yearQuarter, FantasyCriticUser user, 
+        public RoyalePublisher(Guid publisherID, RoyaleYearQuarter yearQuarter, FantasyCriticUser user,
             string publisherName, Maybe<string> publisherIcon, IEnumerable<RoyalePublisherGame> publisherGames, decimal budget)
         {
             PublisherID = publisherID;

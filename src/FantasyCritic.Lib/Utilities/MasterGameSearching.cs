@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +10,7 @@ namespace FantasyCritic.Lib.Utilities
 {
     public static class MasterGameSearching
     {
-        public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames) 
+        public static IReadOnlyList<MasterGame> SearchMasterGames(string gameName, IEnumerable<MasterGame> masterGames)
         {
             var substringMatches = masterGames
                 .Select(x => new Tuple<MasterGame, int>(x, GetAbsoluteSubsequenceInCommon(gameName, x.GameName)));
@@ -42,7 +42,7 @@ namespace FantasyCritic.Lib.Utilities
 
         private static int GetAbsoluteSubsequenceInCommon(string source, string target)
         {
-            var longestCommon = source.ToLowerInvariant().LongestCommonSubsequence(target.ToLowerInvariant()); 
+            var longestCommon = source.ToLowerInvariant().LongestCommonSubsequence(target.ToLowerInvariant());
             int result = longestCommon.Length;
             return result;
         }

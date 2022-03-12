@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
@@ -105,7 +105,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
         {
             Timestamp = timestamp;
             Publisher = action.Publisher;
-            
+
             if (!action.CounterPick)
             {
                 ActionType = "Pickup Successful";
@@ -167,7 +167,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
                 ActionType = "Drop Failed";
                 Description = $"Tried to drop game '{action.MasterGame.GameName}'. Failure reason: {result.Result.Error}";
             }
-            
+
             ManagerAction = false;
             ActionInternalID = Guid.NewGuid();
         }

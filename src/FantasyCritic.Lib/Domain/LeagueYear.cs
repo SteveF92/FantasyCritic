@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,8 +19,8 @@ namespace FantasyCritic.Lib.Domain
         private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverridesDictionary;
         private readonly IReadOnlyDictionary<MasterGame, TagOverride> _tagOverridesDictionary;
 
-        public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus, 
-            IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides, 
+        public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus,
+            IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
             Instant? draftStartedTimestamp, Maybe<FantasyCriticUser> winningUser)
         {
             League = league;
@@ -110,7 +110,7 @@ namespace FantasyCritic.Lib.Domain
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((LeagueYear) obj);
+            return Equals((LeagueYear)obj);
         }
 
         public override int GetHashCode()

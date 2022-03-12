@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain.Results;
 using NodaTime;
@@ -20,7 +20,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             Priority = priority;
             Timestamp = timestamp;
             Successful = successful;
-            ProcessSetID = processSetID;    
+            ProcessSetID = processSetID;
             Outcome = outcome;
             ProjectedPointsAtTimeOfBid = projectedPointsAtTimeOfBid;
         }
@@ -53,7 +53,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((PickupBid) obj);
+            return Equals((PickupBid)obj);
         }
 
         public override int GetHashCode()

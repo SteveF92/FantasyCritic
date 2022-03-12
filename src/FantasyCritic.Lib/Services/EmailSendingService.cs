@@ -1,4 +1,4 @@
-﻿using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Email.EmailModels;
 using FantasyCritic.Lib.Enums;
@@ -30,9 +30,9 @@ namespace FantasyCritic.Lib.Services
         private readonly string _baseAddress;
         private readonly IClock _clock;
 
-        public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender, 
+        public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender,
             InterLeagueService interLeagueService, FantasyCriticService fantasyCriticService,
-            GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService, 
+            GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
             EmailSendingServiceConfiguration configuration, IClock clock)
         {
             _userManager = userManager;

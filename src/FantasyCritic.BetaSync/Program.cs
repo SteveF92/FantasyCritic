@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Configuration;
@@ -101,7 +101,7 @@ namespace FantasyCritic.BetaSync
 
             AdminServiceConfiguration configuration = new AdminServiceConfiguration(true);
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var realHypeConstantsEnvironments = new List<string>(){ "STAGING", "PRODUCTION" };
+            var realHypeConstantsEnvironments = new List<string>() { "STAGING", "PRODUCTION" };
             if (realHypeConstantsEnvironments.Contains(environment?.ToUpper()))
             {
                 configuration = new AdminServiceConfiguration(false);

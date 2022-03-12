@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +16,7 @@ namespace FantasyCritic.Lib.Domain.Trades
     {
         public Trade(Guid tradeID, Publisher proposer, Publisher counterParty, IEnumerable<MasterGameYearWithCounterPick> proposerMasterGames,
             IEnumerable<MasterGameYearWithCounterPick> counterPartyMasterGames, uint proposerBudgetSendAmount, uint counterPartyBudgetSendAmount,
-            string message, Instant proposedTimestamp, Instant? acceptedTimestamp, Instant? completedTimestamp, 
+            string message, Instant proposedTimestamp, Instant? acceptedTimestamp, Instant? completedTimestamp,
             IEnumerable<TradeVote> tradeVotes, TradeStatus status)
         {
             TradeID = tradeID;

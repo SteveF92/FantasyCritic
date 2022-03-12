@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -57,7 +57,7 @@ namespace FantasyCritic.BetaSync
             }
         }
 
-        internal async Task UpdateMasterGames(IEnumerable<MasterGameTag> productionTags, IEnumerable<MasterGame> productionMasterGames, 
+        internal async Task UpdateMasterGames(IEnumerable<MasterGameTag> productionTags, IEnumerable<MasterGame> productionMasterGames,
             IEnumerable<MasterGameTag> betaTags, IEnumerable<MasterGame> betaMasterGames, IEnumerable<MasterGameHasTagEntity> productionGamesHaveTagEntities)
         {
             var tagsOnBetaNotOnProduction = betaTags.Except(productionTags).ToList();

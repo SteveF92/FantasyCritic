@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +16,7 @@ namespace FantasyCritic.Lib.Utilities
             var tomorrow = clock.GetToday().PlusDays(1);
             if (range.minimumReleaseDate < tomorrow)
             {
-                return new (tomorrow, range.maximumReleaseDate);
+                return new(tomorrow, range.maximumReleaseDate);
             }
 
             return range;
@@ -46,7 +46,7 @@ namespace FantasyCritic.Lib.Utilities
                 bool hasSubYear = _recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart);
                 if (hasSubYear)
                 {
-                    return (new LocalDate(yearPart.Value, subYearPart.minimumDate.Month, subYearPart.minimumDate.Day), 
+                    return (new LocalDate(yearPart.Value, subYearPart.minimumDate.Month, subYearPart.minimumDate.Day),
                         new LocalDate(yearPart.Value, subYearPart.maximumDate.Month, subYearPart.maximumDate.Day));
                 }
 
@@ -63,11 +63,11 @@ namespace FantasyCritic.Lib.Utilities
             {
                 return result;
             }
-            
+
             return null;
         }
 
-        private static readonly Dictionary<string, (LocalDate minimumDate, LocalDate maximumDate)> _recognizedSubYears = 
+        private static readonly Dictionary<string, (LocalDate minimumDate, LocalDate maximumDate)> _recognizedSubYears =
             new Dictionary<string, (LocalDate minimumDate, LocalDate maximumDate)>()
         {
             {"early", (new LocalDate(1, 1, 1), new LocalDate(1, 6, 30))},

@@ -85,7 +85,7 @@ namespace FantasyCritic.Web.Controllers.API
             var vm = new MasterGameViewModel(masterGame, currentDate);
 
             _logger.LogInformation($"Created master game: {masterGame.MasterGameID}");
-            return CreatedAtAction("MasterGame", "Game", new {id = masterGame.MasterGameID}, vm);
+            return CreatedAtAction("MasterGame", "Game", new { id = masterGame.MasterGameID }, vm);
         }
 
         [HttpPost]
@@ -300,7 +300,7 @@ namespace FantasyCritic.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessActions() 
+        public async Task<IActionResult> ProcessActions()
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
             if (!systemWideSettings.ActionProcessingMode)
