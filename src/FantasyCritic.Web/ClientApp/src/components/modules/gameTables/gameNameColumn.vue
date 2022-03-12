@@ -6,7 +6,7 @@
       <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || gameSlot.dropped" :gameSlot="gameSlot"></slotTypeBadge>
       <span class="master-game-popover" v-if="game">
         <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
-        <span v-if="!game.linked">{{game.gameName}}</span>
+        <span v-if="!game.linked">{{ game.gameName }}</span>
       </span>
     </span>
 
@@ -51,12 +51,12 @@ export default {
       return {
         html: true,
         title: () => {
-          return "Ineligible Game";
+          return 'Ineligible Game';
         },
         content: () => {
           let eligibilityErrorsList = '';
-          this.gameSlot.eligibilityErrors.forEach(error => {
-            eligibilityErrorsList += `<li>${error}</li>`
+          this.gameSlot.eligibilityErrors.forEach((error) => {
+            eligibilityErrorsList += `<li>${error}</li>`;
           });
 
           let eligibilityErrorsListElement = `<h5>Errors</h5><ul>${eligibilityErrorsList}</ul>`;
@@ -66,124 +66,127 @@ export default {
             pointsText = 'Until you take action, the points the game received will still count.';
           }
 
-          let mainText = `This game is currently ineligible based on your league rules. ${pointsText} <br/> <br/>` +
+          let mainText =
+            `This game is currently ineligible based on your league rules. ${pointsText} <br/> <br/>` +
             'The intention is for the league to discuss what should happen. If you manually mark the game as eligible or change your ' +
             'league rules, this will disappear. <br/> <br/>' +
             'You could also choose to remove the game. The manager can use "Remove Publisher Game" to do that.';
           if (this.hasSpecialSlots) {
-            mainText = `This game is not eligible for this slot. ${pointsText} <br/> <br/>` +
+            mainText =
+              `This game is not eligible for this slot. ${pointsText} <br/> <br/>` +
               'You can either move this game for a different slot, or, if your league disagrees with this the tags this game has, you can override the tags for this game.';
           }
 
           let fullText = `${mainText}<br/><br/>${eligibilityErrorsListElement}`;
           return fullText;
         }
-      }
+      };
     },
     gameDropBlockedText() {
       return {
         html: true,
         title: () => {
-          return "Locked!";
+          return 'Locked!';
         },
         content: () => {
           return 'This game was counter picked, so it cannot be dropped.';
         }
-      }
+      };
     },
     counterPickedText() {
       return {
         html: true,
         title: () => {
-          return "Counter Picked!";
+          return 'Counter Picked!';
         },
         content: () => {
           return 'This game was counter picked!';
         }
-      }
+      };
     },
     unlinkedText() {
       return {
         html: true,
         title: () => {
-          return "Not Linked to Master Game";
+          return 'Not Linked to Master Game';
         },
         content: () => {
           return 'This is a "custom game" that has not been linked to a master game. The league manager can link it using "associate game" in the sidebar.';
         }
-      }
+      };
     },
     delayContentionText() {
       return {
         html: true,
         title: () => {
-          return "Delay in Contention";
+          return 'Delay in Contention';
         },
         content: () => {
-          return 'There are very credible reports that this game has been delayed and therefore will not release this year. The game is still counted as a "will release" ' +
-            'game for drop purposes, but it cannot be counter picked, just like a "will not release" game cannot be counter picked.';
+          return (
+            'There are very credible reports that this game has been delayed and therefore will not release this year. The game is still counted as a "will release" ' +
+            'game for drop purposes, but it cannot be counter picked, just like a "will not release" game cannot be counter picked.'
+          );
         }
-      }
+      };
     },
     needsMoreReviewsText() {
       return {
         html: true,
         title: () => {
-          return "Needs more reviews";
+          return 'Needs more reviews';
         },
         content: () => {
           return 'This game has released, and has an Open Critic page, but there are not enough reviews yet.';
         }
-      }
+      };
     },
     manuallyScoredText() {
       return {
         html: true,
         title: () => {
-          return "Manually Scored";
+          return 'Manually Scored';
         },
         content: () => {
           return 'This game was manually scored by the league manager.';
         }
-      }
+      };
     },
     willNotReleaseText() {
       return {
         html: true,
         title: () => {
           if (this.supportedYear.finished) {
-            return "Did Not Release";
+            return 'Did Not Release';
           }
           if (this.game.manualWillNotRelease) {
-            return "Will Not Release (League Override)";
+            return 'Will Not Release (League Override)';
           }
-          return "Will Not Release";
+          return 'Will Not Release';
         },
         content: () => {
           if (this.supportedYear.finished) {
-            return "This game did not release in the league year.";
+            return 'This game did not release in the league year.';
           }
           if (this.game.manualWillNotRelease) {
             return 'This game has been marked as "Will Not Release" manually by the league manager.';
           }
-          return "This game will not release this year.";
+          return 'This game will not release this year.';
         }
-      }
+      };
     },
     emptyCounterpickText() {
       return {
         html: true,
         title: () => {
-          return "Warning!";
+          return 'Warning!';
         },
         content: () => {
-          return 'If you do not fill this slot by the end of the year, it will count as -15 points. <br/> <br/>' +
-            'See the FAQ for a full explanation.';
+          return 'If you do not fill this slot by the end of the year, it will count as -15 points. <br/> <br/>' + 'See the FAQ for a full explanation.';
         }
-      }
+      };
     }
   },
-  methods:{
+  methods: {
     holdGame() {
       this.$store.commit('holdGame', this.gameSlot);
     },
@@ -194,33 +197,33 @@ export default {
 };
 </script>
 <style scoped>
-  .game-name-column {
-    display: inline-flex;
-    justify-content: space-between;
-    width: 100%;
-  }
+.game-name-column {
+  display: inline-flex;
+  justify-content: space-between;
+  width: 100%;
+}
 
-  .game-name-side {
-    display: inline-flex;
-    justify-content: flex-start;
-  }
+.game-name-side {
+  display: inline-flex;
+  justify-content: flex-start;
+}
 
-  .game-status {
-    color: #B1B1B1;
-    font-style: italic;
-    margin-left: auto;
-  }
+.game-status {
+  color: #b1b1b1;
+  font-style: italic;
+  margin-left: auto;
+}
 
-  .move-button {
-    font-size: 12px;
-    padding: 3px;
-    height: 25px;
-    border-radius: 4px;
-    color: #ffffff;
-    text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
-  }
+.move-button {
+  font-size: 12px;
+  padding: 3px;
+  height: 25px;
+  border-radius: 4px;
+  color: #ffffff;
+  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
 
-  .lock-icon {
-    margin-left: 5px;
-  }
+.lock-icon {
+  margin-left: 5px;
+}
 </style>
