@@ -2,24 +2,20 @@
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
       <div v-if="forbidden">
-        <div class="alert alert-danger" role="alert">
-          You do not have permission to view this league.
-        </div>
+        <div class="alert alert-danger" role="alert">You do not have permission to view this league.</div>
       </div>
 
-      <div v-if="league && !league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">
-        You are viewing a private league.
-      </div>
+      <div v-if="league && !league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">You are viewing a private league.</div>
 
       <div v-if="league && leagueYear">
-        <h1>League History: {{league.leagueName}} (Year {{year}})</h1>
+        <h1>League History: {{ league.leagueName }} (Year {{ year }})</h1>
         <hr />
         <div v-if="leagueYear && leagueYear.managerMessages && leagueYear.managerMessages.length > 0">
           <h2>Manager's Messages</h2>
           <div class="alert alert-info" v-for="message in leagueYear.managerMessages">
             <b-button class="delete-button" variant="warning" v-if="league.isManager" v-on:click="deleteMessage(message)">Delete</b-button>
-            <h5>{{message.timestamp | dateTime}}</h5>
-            <div class="preserve-whitespace">{{message.messageText}}</div>
+            <h5>{{ message.timestamp | dateTime }}</h5>
+            <div class="preserve-whitespace">{{ message.messageText }}</div>
           </div>
           <hr />
         </div>
@@ -28,7 +24,7 @@
           <h2>Detailed Bid/Drop Results</h2>
           <div v-for="leagueActionSet in leagueActionSets" class="history-table">
             <collapseCard>
-              <div slot="header">{{leagueActionSet.processTime | longDate}}</div>
+              <div slot="header">{{ leagueActionSet.processTime | longDate }}</div>
               <div slot="body">
                 <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
               </div>
@@ -38,30 +34,22 @@
 
         <div v-if="trades && trades.length > 0">
           <h2>Trades</h2>
-          <tradeSummary v-for="trade in trades" v-bind:key="trade.tradeID" :trade="trade"
-                        :league="league" :leagueYear="leagueYear" :publisher="leagueYear.userPublisher">
-          </tradeSummary>
+          <tradeSummary v-for="trade in trades" v-bind:key="trade.tradeID" :trade="trade" :league="league" :leagueYear="leagueYear" :publisher="leagueYear.userPublisher"></tradeSummary>
         </div>
 
         <h2>Full Actions History</h2>
         <div class="history-table">
-          <b-table :sort-by.sync="sortBy"
-                   :sort-desc.sync="sortDesc"
-                   :items="leagueActions"
-                   :fields="actionFields"
-                   bordered
-                   striped
-                   responsive>
+          <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="leagueActions" :fields="actionFields" bordered striped responsive>
             <template #cell(timestamp)="data">
-              {{data.item.timestamp | dateTime}}
+              {{ data.item.timestamp | dateTime }}
             </template>
             <template #cell(description)="data">
               <span class="preserve-whitespace">
-                {{data.item.description}}
+                {{ data.item.description }}
               </span>
             </template>
             <template #cell(managerAction)="data">
-              {{data.item.managerAction | yesNo}}
+              {{ data.item.managerAction | yesNo }}
             </template>
           </b-table>
         </div>
@@ -90,7 +78,7 @@ export default {
         { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
         { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
         { key: 'description', label: 'Description', thClass: 'bg-primary' },
-        { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' },
+        { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' }
       ],
       sortBy: 'timestamp',
       sortDesc: true,
@@ -113,48 +101,47 @@ export default {
     fetchLeagueActions() {
       axios
         .get('/api/League/GetLeagueActions?leagueID=' + this.leagueid + '&year=' + this.year)
-        .then(response => {
+        .then((response) => {
           this.leagueActions = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     fetchLeagueActionSets() {
       axios
         .get('/api/League/GetLeagueActionSets?leagueID=' + this.leagueid + '&year=' + this.year)
-        .then(response => {
+        .then((response) => {
           this.leagueActionSets = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     fetchTrades() {
       axios
         .get('/api/League/TradeHistory?leagueID=' + this.leagueid + '&year=' + this.year)
-        .then(response => {
+        .then((response) => {
           this.trades = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     fetchLeague() {
       axios
         .get('/api/League/GetLeague/' + this.leagueid)
-        .then(response => {
+        .then((response) => {
           this.league = response.data;
         })
-        .catch(returnedError => {
+        .catch((returnedError) => {
           this.error = returnedError;
-          this.forbidden = (returnedError.response.status === 403);
+          this.forbidden = returnedError.response.status === 403;
         });
     },
     fetchLeagueYear() {
       let queryURL = '/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year;
       axios
         .get(queryURL)
-        .then(response => {
+        .then((response) => {
           this.leagueYear = response.data;
           this.selectedYear = this.leagueYear.year;
         })
-        .catch(returnedError => {
-        });
+        .catch((returnedError) => {});
     },
     deleteMessage(message) {
       var model = {
@@ -164,11 +151,10 @@ export default {
       };
       axios
         .post('/api/leagueManager/DeleteManagerMessage', model)
-        .then(response => {
+        .then((response) => {
           this.fetchLeagueYear();
         })
-        .catch(response => {
-        });
+        .catch((response) => {});
     }
   },
   mounted() {
@@ -181,11 +167,11 @@ export default {
 };
 </script>
 <style scoped>
-  .history-table {
-    margin-left: 15px;
-    margin-right: 15px;
-  }
-  .delete-button{
-      float:right;
-  }
+.history-table {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+.delete-button {
+  float: right;
+}
 </style>

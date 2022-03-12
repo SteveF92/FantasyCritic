@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export default {
   state: {
@@ -8,7 +8,7 @@ export default {
     desiredPositions: null,
     moveMode: false,
     heldSlot: null,
-    moveGameError: ""
+    moveGameError: ''
   },
   getters: {
     publisherID: (state) => state.publisherID,
@@ -35,10 +35,11 @@ export default {
           publisherID: context.getters.publisherID,
           slotStates: context.getters.desiredPositions
         };
-        axios.post("/api/League/ReorderPublisherGames", request)
+        axios
+          .post('/api/League/ReorderPublisherGames', request)
           .then((response) => {
             if (response.status === 200) {
-              context.commit("completeMoveMode");
+              context.commit('completeMoveMode');
               resolve();
             }
           })
@@ -83,9 +84,9 @@ export default {
       state.heldSlot = null;
     },
     setDesiredPositions(state) {
-      let standardSlotsOnly = state.editableGameSlots.filter(x => !x.counterPick);
+      let standardSlotsOnly = state.editableGameSlots.filter((x) => !x.counterPick);
       state.desiredPositions = {};
-      standardSlotsOnly.forEach(slot => {
+      standardSlotsOnly.forEach((slot) => {
         if (slot.publisherGame) {
           state.desiredPositions[slot.slotNumber] = slot.publisherGame.publisherGameID;
         } else {

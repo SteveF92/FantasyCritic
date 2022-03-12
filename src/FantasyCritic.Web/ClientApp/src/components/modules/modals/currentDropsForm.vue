@@ -9,7 +9,7 @@
       </thead>
       <tbody>
         <tr v-for="drop in currentDrops">
-          <td>{{drop.masterGame.gameName}}</td>
+          <td>{{ drop.masterGame.gameName }}</td>
           <td class="select-cell">
             <b-button variant="danger" size="sm" v-on:click="cancelDrop(drop)">Cancel</b-button>
           </td>
@@ -24,11 +24,9 @@ import Vue from 'vue';
 import axios from 'axios';
 
 export default {
-  props: ['publisher','currentDrops'],
+  props: ['publisher', 'currentDrops'],
   data() {
-    return {
-        
-    };
+    return {};
   },
   methods: {
     cancelDrop(dropRequest) {
@@ -37,15 +35,13 @@ export default {
       };
       axios
         .post('/api/league/DeleteDropRequest', model)
-        .then(response => {
+        .then((response) => {
           var dropInfo = {
             gameName: dropRequest.masterGame.gameName
           };
           this.$emit('dropCancelled', dropInfo);
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     }
   }
 };

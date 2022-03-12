@@ -5,18 +5,21 @@
       <hr />
       <div class="alert alert-danger" v-show="errorInfo">
         <h2>Error!</h2>
-        <p>{{errorInfo}}</p>
+        <p>{{ errorInfo }}</p>
       </div>
 
       <div v-if="possibleLeagueOptions && leagueYearSettings && leagueYear">
         <div class="text-well league-options">
-          <leagueYearSettings :year="year" :possibleLeagueOptions="possibleLeagueOptions" :editMode="true" :currentNumberOfPlayers="activePlayersInLeague"
-                              :freshSettings="freshSettings" v-model="leagueYearSettings"></leagueYearSettings>
+          <leagueYearSettings
+            :year="year"
+            :possibleLeagueOptions="possibleLeagueOptions"
+            :editMode="true"
+            :currentNumberOfPlayers="activePlayersInLeague"
+            :freshSettings="freshSettings"
+            v-model="leagueYearSettings"></leagueYearSettings>
         </div>
 
-        <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">
-          Some of your settings are invalid.
-        </div>
+        <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">Some of your settings are invalid.</div>
 
         <div class="form-group">
           <b-button class="col-10 offset-1" variant="primary" v-on:click="postRequest" :disabled="!leagueYearIsValid">Confirm Settings</b-button>
@@ -44,11 +47,16 @@ export default {
   },
   computed: {
     leagueYearIsValid() {
-      let valid = this.leagueYearSettings &&
-          this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 &&
-          this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 50 &&
-          this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20 &&
-          this.leagueYearSettings.counterPicksToDraft >= 0 && this.leagueYearSettings.counterPicksToDraft <= 20;
+      let valid =
+        this.leagueYearSettings &&
+        this.leagueYearSettings.standardGames >= 1 &&
+        this.leagueYearSettings.standardGames <= 50 &&
+        this.leagueYearSettings.gamesToDraft >= 1 &&
+        this.leagueYearSettings.gamesToDraft <= 50 &&
+        this.leagueYearSettings.counterPicks >= 0 &&
+        this.leagueYearSettings.counterPicks <= 20 &&
+        this.leagueYearSettings.counterPicksToDraft >= 0 &&
+        this.leagueYearSettings.counterPicksToDraft <= 20;
       return valid;
     },
     activePlayersInLeague() {
@@ -63,32 +71,29 @@ export default {
     fetchLeagueOptions() {
       axios
         .get('/api/League/LeagueOptions')
-        .then(response => {
+        .then((response) => {
           this.possibleLeagueOptions = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     fetchLeagueYear() {
       axios
         .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
-        .then(response => {
+        .then((response) => {
           this.leagueYear = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     fetchCurrentLeagueYearOptions() {
       axios
         .get('/api/League/GetLeagueYearOptions?leagueID=' + this.leagueid + '&year=' + this.year)
-        .then(response => {
+        .then((response) => {
           this.leagueYearSettings = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     postRequest() {
-      axios
-        .post('/api/leagueManager/EditLeagueYearSettings', this.leagueYearSettings)
-        .then(this.responseHandler)
-        .catch(this.catchHandler);
+      axios.post('/api/leagueManager/EditLeagueYearSettings', this.leagueYearSettings).then(this.responseHandler).catch(this.catchHandler);
     },
     responseHandler(response) {
       this.$router.push({ name: 'league', params: { leagueid: this.leagueid, year: this.year } });
@@ -111,7 +116,7 @@ export default {
 };
 </script>
 <style scoped>
-  .league-options{
-    margin-bottom: 10px;
-  }
+.league-options {
+  margin-bottom: 10px;
+}
 </style>

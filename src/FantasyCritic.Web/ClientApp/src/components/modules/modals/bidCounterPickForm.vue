@@ -1,7 +1,7 @@
 <template>
   <b-modal id="bidCounterPickForm" ref="bidCounterPickFormRef" size="lg" title="Make a Counter Pick Bid" hide-footer @hidden="clearData" @show="getPossibleCounterPicks">
     <div v-if="errorInfo" class="alert alert-danger" role="alert">
-      {{errorInfo}}
+      {{ errorInfo }}
     </div>
     <p>
       You can use this form to place a bid on a game.
@@ -9,9 +9,7 @@
       Bids are processed on Saturday Nights. See the FAQ for more info.
     </p>
 
-    <div class="alert alert-danger" v-show="publisherSlotsAreFilled">
-      You have already filled all of your counter pick slots!
-    </div>
+    <div class="alert alert-danger" v-show="publisherSlotsAreFilled">You have already filled all of your counter pick slots!</div>
 
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="search-results">
@@ -23,22 +21,20 @@
             </option>
           </b-form-select>
 
-          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{leagueYear.userPublisher.budget | money}})</label>
+          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ leagueYear.userPublisher.budget | money }})</label>
 
           <ValidationProvider rules="required|integer" v-slot="{ errors }">
             <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />
             <span class="text-danger">{{ errors[0] }}</span>
           </ValidationProvider>
 
-          <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">
-            Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.
-          </div>
+          <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.</div>
 
-          <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || counterPickInvalid">{{bidButtonText}}</b-button>
+          <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || counterPickInvalid">{{ bidButtonText }}</b-button>
           <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
             <h3 class="alert-heading">Error!</h3>
             <ul>
-              <li v-for="error in bidResult.errors">{{error}}</li>
+              <li v-for="error in bidResult.errors">{{ error }}</li>
             </ul>
           </div>
         </ValidationObserver>
@@ -77,11 +73,11 @@ export default {
     publisherSlotsAreFilled() {
       let userGames = this.leagueYear.userPublisher.games;
       let counterPickSlots = this.leagueYear.counterPicks;
-      let counterPicks = _.filter(userGames, { 'counterPick': true });
+      let counterPicks = _.filter(userGames, { counterPick: true });
       return counterPicks.length >= counterPickSlots;
     },
     droppableGames() {
-      return _.filter(this.publisher.games, { 'counterPick': false });
+      return _.filter(this.publisher.games, { counterPick: false });
     },
     bidButtonText() {
       return 'Place Counter Pick Bid';
@@ -100,12 +96,12 @@ export default {
       this.isBusy = true;
       axios
         .get('/api/league/PossibleCounterPicks?publisherID=' + this.publisher.publisherID)
-        .then(response => {
+        .then((response) => {
           this.possibleCounterPicks = response.data;
           this.isBusy = false;
           this.counterPicking = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -119,7 +115,7 @@ export default {
 
       axios
         .post('/api/league/MakePickupBid', request)
-        .then(response => {
+        .then((response) => {
           this.bidResult = response.data;
           if (!this.bidResult.success) {
             return;
@@ -132,7 +128,7 @@ export default {
           this.$emit('gameBid', bidInfo);
           this.clearData();
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -153,38 +149,38 @@ export default {
 };
 </script>
 <style scoped>
-  .add-game-button {
-    margin-top: 20px;
-    width: 100%;
-  }
+.add-game-button {
+  margin-top: 20px;
+  width: 100%;
+}
 
-  .bid-error {
-    margin-top: 10px;
-  }
+.bid-error {
+  margin-top: 10px;
+}
 
-  .game-search-input {
-    margin-bottom: 15px;
-  }
+.game-search-input {
+  margin-bottom: 15px;
+}
 
-  .override-checkbox {
-    margin-left: 10px;
-    margin-top: 8px;
-  }
+.override-checkbox {
+  margin-left: 10px;
+  margin-top: 8px;
+}
 
-  .search-results {
-    margin-top: 20px;
-  }
+.search-results {
+  margin-top: 20px;
+}
 
-  .spinner {
-    margin-top: 20px;
-    text-align: center;
-  }
+.spinner {
+  margin-top: 20px;
+  text-align: center;
+}
 
-  .search-tags {
-    display: flex;
-    padding: 5px;
-    background: rgba(50, 50, 50, 0.7);
-    border-radius: 5px;
-    justify-content: space-around;
-  }
+.search-tags {
+  display: flex;
+  padding: 5px;
+  background: rgba(50, 50, 50, 0.7);
+  border-radius: 5px;
+  justify-content: space-around;
+}
 </style>

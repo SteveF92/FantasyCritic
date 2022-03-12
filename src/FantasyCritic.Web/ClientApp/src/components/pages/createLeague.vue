@@ -5,7 +5,7 @@
       <hr />
       <div class="alert alert-danger" v-show="errorInfo">
         <h2>Error!</h2>
-        <p>{{errorInfo}}</p>
+        <p>{{ errorInfo }}</p>
       </div>
       <template v-if="possibleLeagueOptions">
         <div class="alert alert-warning" v-if="possibleLeagueOptions.openYears.length === 0">
@@ -27,9 +27,7 @@
             <hr />
             <div class="form-group">
               <label for="intialYear" class="control-label">Year to Play</label>
-              <p>
-                The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the December before the new year begins.
-              </p>
+              <p>The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the December before the new year begins.</p>
               <select class="form-control" v-model="initialYear" id="initialYear">
                 <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear">{{ initialYear }}</option>
               </select>
@@ -62,13 +60,9 @@
             </div>
 
             <hr />
-            <div class="alert alert-info disclaimer">
-              Reminder: All of these settings can always be changed later.
-            </div>
+            <div class="alert alert-info disclaimer">Reminder: All of these settings can always be changed later.</div>
 
-            <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">
-              Can't create league. Some of your settings are invalid.
-            </div>
+            <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">Can't create league. Some of your settings are invalid.</div>
 
             <div class="form-group">
               <b-button class="col-10 offset-1" variant="primary" v-on:click="postRequest" :disabled="!leagueYearIsValid">Create League</b-button>
@@ -104,10 +98,14 @@ export default {
       return this.leagueName && this.initialYear;
     },
     leagueYearIsValid() {
-      let valid = this.leagueYearSettings &&
-          this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 &&
-          this.leagueYearSettings.gamesToDraft >= 1 && this.leagueYearSettings.gamesToDraft <= 50 &&
-          this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
+      let valid =
+        this.leagueYearSettings &&
+        this.leagueYearSettings.standardGames >= 1 &&
+        this.leagueYearSettings.standardGames <= 50 &&
+        this.leagueYearSettings.gamesToDraft >= 1 &&
+        this.leagueYearSettings.gamesToDraft <= 50 &&
+        this.leagueYearSettings.counterPicks >= 0 &&
+        this.leagueYearSettings.counterPicks <= 20;
 
       let allValid = this.readyToSetupLeagueYear && valid;
       if (allValid) {
@@ -120,10 +118,10 @@ export default {
     fetchLeagueOptions() {
       axios
         .get('/api/League/LeagueOptions')
-        .then(response => {
+        .then((response) => {
           this.possibleLeagueOptions = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     postRequest() {
       let selectedLeagueOptions = {
@@ -155,10 +153,10 @@ export default {
 
       axios
         .post('/api/leagueManager/createLeague', selectedLeagueOptions)
-        .then(response => {
+        .then((response) => {
           this.$router.push({ name: 'home' });
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response.data;
           window.scroll({
             top: 0,

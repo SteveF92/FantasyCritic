@@ -8,15 +8,9 @@
         </div>
       </div>
       <div class="row" v-if="publicLeagues && publicLeagues.length > 0">
-        <b-table :sort-by.sync="sortBy"
-                 :sort-desc.sync="sortDesc"
-                 :items="publicLeagues"
-                 :fields="leagueFields"
-                 bordered
-                 striped
-                 responsive>
+        <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="publicLeagues" :fields="leagueFields" bordered striped responsive>
           <template #cell(leagueName)="data">
-            <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear }}">{{data.item.leagueName}}</router-link>
+            <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
           </template>
         </b-table>
       </div>
@@ -38,7 +32,7 @@ export default {
       leagueFields: [
         { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' },
-        { key: 'playStatus', label: 'Play Status', sortable: true, thClass:'bg-primary' },
+        { key: 'playStatus', label: 'Play Status', sortable: true, thClass: 'bg-primary' }
       ],
       sortBy: 'numberOfFollowers',
       sortDesc: true
@@ -48,30 +42,26 @@ export default {
     fetchSupportedYears() {
       axios
         .get('/api/game/SupportedYears')
-        .then(response => {
+        .then((response) => {
           let supportedYears = response.data;
-          let openYears = _.filter(supportedYears, { 'openForPlay': true });
-          let finishedYears = _.filter(supportedYears, { 'finished': true });
+          let openYears = _.filter(supportedYears, { openForPlay: true });
+          let finishedYears = _.filter(supportedYears, { finished: true });
           this.supportedYears = openYears.concat(finishedYears).map(function (v) {
             return v.year;
           });
           this.selectedYear = this.supportedYears[0];
           this.fetchPublicLeaguesForYear(this.selectedYear);
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     fetchPublicLeaguesForYear(year) {
       axios
         .get('/api/league/PublicLeagues/' + year)
-        .then(response => {
+        .then((response) => {
           this.publicLeagues = response.data;
         })
-        .catch(response => {
-
-        });
-    },
+        .catch((response) => {});
+    }
   },
   mounted() {
     this.fetchSupportedYears();
@@ -79,11 +69,11 @@ export default {
 };
 </script>
 <style scoped>
-  .header {
-    max-width: 80%;
-  }
-  .year-selector {
-    position: absolute;
-    right: 0px;
-  }
+.header {
+  max-width: 80%;
+}
+.year-selector {
+  position: absolute;
+  right: 0px;
+}
 </style>

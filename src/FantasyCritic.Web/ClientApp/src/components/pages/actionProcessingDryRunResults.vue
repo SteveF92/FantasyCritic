@@ -5,7 +5,6 @@
 
       <div v-if="dryRunResults && dryRunResults.length === 0" class="alert alert-info">No actioned games.</div>
       <div v-if="dryRunResults && dryRunResults.length !== 0">
-
         <h2>Drops</h2>
         <b-button v-b-toggle.drop-collapse variant="primary">Toggle Collapse</b-button>
         <b-collapse id="drop-collapse" class="mt-2">
@@ -29,18 +28,12 @@
         <b-collapse id="action-collapse" class="mt-2">
           <div class="row">
             <div class="history-table">
-              <b-table :sort-by.sync="sortBy"
-                       :sort-desc.sync="sortDesc"
-                       :items="dryRunResults.leagueActions"
-                       :fields="actionFields"
-                       bordered
-                       striped
-                       responsive>
+              <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="dryRunResults.leagueActions" :fields="actionFields" bordered striped responsive>
                 <template #cell(timestamp)="data">
-                  {{data.item.timestamp | dateTime}}
+                  {{ data.item.timestamp | dateTime }}
                 </template>
                 <template #cell(managerAction)="data">
-                  {{data.item.managerAction | yesNo}}
+                  {{ data.item.managerAction | yesNo }}
                 </template>
               </b-table>
             </div>
@@ -77,7 +70,7 @@ export default {
         { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
         { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
         { key: 'description', label: 'Description', thClass: 'bg-primary' },
-        { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' },
+        { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' }
       ],
       sortBy: 'timestamp',
       sortDesc: true
@@ -91,12 +84,10 @@ export default {
     fetchActionedGames() {
       axios
         .get('/api/admin/ActionProcessingDryRun')
-        .then(response => {
+        .then((response) => {
           this.dryRunResults = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     }
   },
   mounted() {
@@ -105,8 +96,8 @@ export default {
 };
 </script>
 <style scoped>
-  .spinner {
-    display: flex;
-    justify-content: space-around;
-  }
+.spinner {
+  display: flex;
+  justify-content: space-around;
+}
 </style>

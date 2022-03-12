@@ -2,56 +2,58 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
 // Set brand colors
-$primary: #D6993A;
+$primary: #d6993a;
 $secondary: #414141;
 $success: #45621d;
-$info: #3AACD6;
-$warning: #D96B36;
-$danger: #AA1E1E;
+$info: #3aacd6;
+$warning: #d96b36;
+$danger: #aa1e1e;
 
 $card-bg: #414141;
-$modal-content-bg: #D4D4D4;
+$modal-content-bg: #d4d4d4;
 
 $table-bg: #222222;
 $table-accent-bg: #333333;
 $alert-bg-level: 0;
 
 $grid-breakpoints: (
-    "xs" : 0,
-    "sm": 576px,
-    "md": 768px,
-    "lg": 992px,
-    "xl": 1550px
+  'xs': 0,
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1550px
 );
 
-.table-striped > tbody > tr:nth-child(2n) > td.b-table-sticky-column, .table-striped > tbody > tr:nth-child(2n) > th {
-    background-color: $table-bg;
+.table-striped > tbody > tr:nth-child(2n) > td.b-table-sticky-column,
+.table-striped > tbody > tr:nth-child(2n) > th {
+  background-color: $table-bg;
 }
 
-.table-striped > tbody > tr:nth-child(2n+1) > td.b-table-sticky-column, .table-striped > tbody > tr:nth-child(2n+1) > th {
-    background-color: $table-accent-bg;
+.table-striped > tbody > tr:nth-child(2n + 1) > td.b-table-sticky-column,
+.table-striped > tbody > tr:nth-child(2n + 1) > th {
+  background-color: $table-accent-bg;
 }
 
 .table tbody tr > td.success {
-    background-color: $success;
+  background-color: $success;
 }
 
 tr.table-success td {
-    background-color: $success !important;
+  background-color: $success !important;
 }
 
 .table tbody tr > td.danger {
-    background-color: $danger;
+  background-color: $danger;
 }
 
 tr.table-danger td {
-    background-color: $danger !important;
+  background-color: $danger !important;
 }
 
 .table tbody tr > td.warning {
-    background-color: $warning;
+  background-color: $warning;
 }
 
 tr.table-warning td {
-    background-color: $warning !important;
+  background-color: $warning !important;
 }

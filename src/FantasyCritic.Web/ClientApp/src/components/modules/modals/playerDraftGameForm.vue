@@ -57,11 +57,11 @@
           <h3 class="alert-heading" v-if="draftResult.overridable">Warning!</h3>
           <h3 class="alert-heading" v-if="!draftResult.overridable">Error!</h3>
           <ul>
-            <li v-for="error in draftResult.errors">{{error}}</li>
+            <li v-for="error in draftResult.errors">{{ error }}</li>
           </ul>
 
           <div class="form-check" v-if="draftResult.overridable">
-            <span >
+            <span>
               <label v-show="!isManager" class="form-check-label">Your league manager can override these warnings.</label>
               <label v-show="isManager" class="form-check-label">
                 <span class="text-white">You as league manager can override these warnings.</span>
@@ -106,7 +106,7 @@ export default {
   },
   computed: {
     formIsValid() {
-      return (this.draftUnlistedGame || this.draftMasterGame);
+      return this.draftUnlistedGame || this.draftMasterGame;
     }
   },
   props: ['leagueYear', 'userPublisher', 'isManager', 'year'],
@@ -116,12 +116,12 @@ export default {
       this.isBusy = true;
       axios
         .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.searched = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -130,12 +130,12 @@ export default {
       this.isBusy = true;
       axios
         .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -147,12 +147,12 @@ export default {
       let urlEncodedSlot = encodeURI(base64Slot);
       axios
         .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&slotInfo=' + urlEncodedSlot)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -161,12 +161,12 @@ export default {
       this.isBusy = true;
       axios
         .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.showingQueuedGames = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -198,7 +198,7 @@ export default {
 
       axios
         .post('/api/league/DraftGame', request)
-        .then(response => {
+        .then((response) => {
           this.draftResult = response.data;
           if (!this.draftResult.success) {
             this.isBusy = false;
@@ -211,9 +211,7 @@ export default {
           this.$emit('gameDrafted', draftInfo);
           this.clearData();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     clearDataExceptSearch() {
       this.isBusy = false;
@@ -238,13 +236,13 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button{
+.add-game-button {
   width: 100%;
 }
-.draft-error{
+.draft-error {
   margin-top: 10px;
 }
-.game-search-input{
+.game-search-input {
   margin-bottom: 15px;
 }
 .override-checkbox {

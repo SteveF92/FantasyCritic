@@ -2,8 +2,11 @@
   <div>
     <form class="form-horizontal" hide-footer>
       <b-modal id="manuallyScorePublisherGame" ref="manuallyScorePublisherGameRef" title="Manually Score Publisher Game" hide-footer @hidden="clearData">
-        <div class="alert alert-warning">Warning! This feature is intended to deal with exceptional circumstances.
-        See the <a href="/faq#scoring" class="text-secondary" target="_blank">FAQ</a> page for more info.</div>
+        <div class="alert alert-warning">
+          Warning! This feature is intended to deal with exceptional circumstances. See the
+          <a href="/faq#scoring" class="text-secondary" target="_blank">FAQ</a>
+          page for more info.
+        </div>
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
           <b-form-select v-model="manuallyScoreGamePublisher">
@@ -22,10 +25,8 @@
           <div v-if="manuallyScoreGame">
             <div v-if="manuallyScoreGame.manualCriticScore" class="form-check">
               <span>
-                <label class="form-check-label">
-                  Remove Manual Score?
-                </label>
-                <input class="form-check-input remove-manual-score-checkbox" type="checkbox" v-model="removeManualScore">
+                <label class="form-check-label">Remove Manual Score?</label>
+                <input class="form-check-input remove-manual-score-checkbox" type="checkbox" v-model="removeManualScore" />
               </span>
             </div>
             <div v-if="!removeManualScore">
@@ -36,10 +37,10 @@
         </div>
 
         <div v-if="manuallyScoreGame && (manualScore || removeManualScore)">
-          <b-button variant="primary" class="add-game-button" v-on:click="manuallyScorePublisherGame">{{buttonText}}</b-button>
+          <b-button variant="primary" class="add-game-button" v-on:click="manuallyScorePublisherGame">{{ buttonText }}</b-button>
           <div v-if="errorInfo" class="alert alert-danger manuallyScore-error">
             <h3 class="alert-heading">Error!</h3>
-            <p>{{errorInfo}}</p>
+            <p>{{ errorInfo }}</p>
           </div>
         </div>
       </b-modal>
@@ -87,13 +88,13 @@ export default {
       };
       axios
         .post('/api/leagueManager/ManuallyScorePublisherGame', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.manuallyScorePublisherGameRef.hide();
           this.$emit('gameManuallyScored', manualScoreInfo);
           this.manuallyScoreGamePublisher = null;
           this.manuallyScoreGame = null;
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -104,13 +105,13 @@ export default {
       };
       axios
         .post('/api/leagueManager/RemoveManualPublisherGameScore', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.manuallyScorePublisherGameRef.hide();
           this.$emit('manualScoreRemoved', this.manuallyScoreGame.gameName);
           this.manuallyScoreGamePublisher = null;
           this.manuallyScoreGame = null;
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -131,7 +132,6 @@ export default {
 };
 </script>
 <style scoped>
-
 .add-game-button {
   width: 100%;
 }

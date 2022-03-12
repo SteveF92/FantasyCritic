@@ -5,7 +5,7 @@
         <label for="messageText" class="control-label">Message</label>
         <textarea class="form-control" v-model="messageText" rows="3"></textarea>
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" v-model="isPublic">
+          <input type="checkbox" class="form-check-input" v-model="isPublic" />
           <label class="form-check-label" for="isPublic">Show message to users not in league? (only applies in public leagues)</label>
         </div>
       </div>
@@ -17,39 +17,36 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  export default {
-    data() {
-      return {
-        messageText: null,
-        isPublic: false
+import axios from 'axios';
+export default {
+  data() {
+    return {
+      messageText: null,
+      isPublic: false
+    };
+  },
+  props: ['league', 'leagueYear'],
+  computed: {},
+  methods: {
+    postNewMessage() {
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.leagueYear.year,
+        message: this.messageText,
+        isPublic: this.isPublic
       };
+      axios
+        .post('/api/leagueManager/PostNewManagerMessage', model)
+        .then((response) => {
+          this.$refs.managerMessageFormRef.hide();
+          this.$emit('managerMessagePosted');
+          this.clearData();
+        })
+        .catch((response) => {});
     },
-    props: ['league','leagueYear'],
-    computed: {
-
-    },
-    methods: {
-      postNewMessage() {
-        var model = {
-          leagueID: this.league.leagueID,
-          year: this.leagueYear.year,
-          message: this.messageText,
-          isPublic: this.isPublic
-        };
-        axios
-          .post('/api/leagueManager/PostNewManagerMessage', model)
-          .then(response => {
-            this.$refs.managerMessageFormRef.hide();
-            this.$emit('managerMessagePosted');
-            this.clearData();
-          })
-          .catch(response => {
-          });
-      },
-      clearData() {
-        this.messageText = null;
-      }
+    clearData() {
+      this.messageText = null;
     }
-  };
+  }
+};
 </script>

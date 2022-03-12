@@ -282,5 +282,5 @@ export const routes = [
     props: (route) => ({
       publisherid: route.params.publisherid
     })
-  },
+  }
 ];

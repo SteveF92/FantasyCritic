@@ -8,30 +8,27 @@
       <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
       <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
         <div class="text-well">
-          <p>
-            If you see an issue with a game on the site, for example an incorrect release date, you can send me a note and I'll get it fixed.
-          </p>
+          <p>If you see an issue with a game on the site, for example an incorrect release date, you can send me a note and I'll get it fixed.</p>
           <p>
             However, if this is a "debateable" correction, like whether or not a game is "Remake" or a "Partial Remake", please come to the "eligibility-debates" channel in our
-            <a href="https://discord.gg/dNa7DD3">Discord <font-awesome-icon icon="external-link-alt" size="sm" /></a> so the community can discuss it.
+            <a href="https://discord.gg/dNa7DD3">
+              Discord
+              <font-awesome-icon icon="external-link-alt" size="sm" />
+            </a>
+            so the community can discuss it.
           </p>
-          <p v-show="masterGame">
-            You can also use this form to let me know about a missing link to OpenCritic, so scores can populate, or GG|, so the game will have an image to represent it.
-          </p>
+          <p v-show="masterGame">You can also use this form to let me know about a missing link to OpenCritic, so scores can populate, or GG|, so the game will have an image to represent it.</p>
         </div>
         <hr />
         <div v-if="masterGame && masterGame.numberOutstandingCorrections" class="alert alert-warning">
-          There are {{masterGame.numberOutstandingCorrections}} correction(s) currently submitted that I have not reviewed.
-          You may not need to submit anything.
+          There are {{ masterGame.numberOutstandingCorrections }} correction(s) currently submitted that I have not reviewed. You may not need to submit anything.
         </div>
         <p v-show="!masterGame">
-          <strong>
-            You can suggest a correction by clicking a link on a master game's page.
-          </strong>
+          <strong>You can suggest a correction by clicking a link on a master game's page.</strong>
         </p>
         <div class="row" v-if="masterGame">
           <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0 text-well">
-            <h2 v-if="masterGame">{{masterGame.gameName}}</h2>
+            <h2 v-if="masterGame">{{ masterGame.gameName }}</h2>
             <masterGameDetails :masterGame="masterGame"></masterGameDetails>
 
             <ValidationObserver v-slot="{ invalid }">
@@ -84,18 +81,17 @@
                     <span><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
                   </td>
                   <td>
-                    <span> {{request.requestNote}} </span>
+                    <span>{{ request.requestNote }}</span>
                   </td>
                   <td>
-                    <span v-show="request.responseNote"> {{request.responseNote}} </span>
+                    <span v-show="request.responseNote">{{ request.responseNote }}</span>
                     <span v-show="!request.responseNote">&lt;Pending&gt;</span>
                   </td>
                   <td>
-                    <span v-show="request.responseTimestamp"> {{request.responseTimestamp | dateTime}} </span>
+                    <span v-show="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
                     <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
                   </td>
                   <td class="select-cell">
-
                     <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
                     <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
                   </td>
@@ -113,7 +109,7 @@ import axios from 'axios';
 import vueSlider from 'vue-slider-component';
 import Popper from 'vue-popperjs';
 import MasterGamePopover from '@/components/modules/masterGamePopover';
-import MasterGameDetails  from '@/components/modules/masterGameDetails';
+import MasterGameDetails from '@/components/modules/masterGameDetails';
 
 export default {
   data() {
@@ -127,10 +123,10 @@ export default {
       openCriticLink: '',
       ggLink: '',
       piecewiseStyle: {
-        'backgroundColor': '#ccc',
-        'visibility': 'visible',
-        'width': '12px',
-        'height': '20px'
+        backgroundColor: '#ccc',
+        visibility: 'visible',
+        width: '12px',
+        height: '20px'
       }
     };
   },
@@ -138,18 +134,16 @@ export default {
     MasterGamePopover,
     MasterGameDetails,
     vueSlider,
-    'popper': Popper,
+    popper: Popper
   },
   methods: {
     fetchMyRequests() {
       axios
         .get('/api/game/MyMasterGameChangeRequests')
-        .then(response => {
+        .then((response) => {
           this.myRequests = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     sendMasterGameChangeRequestRequest() {
       if (!this.requestNote && this.openCriticLink) {
@@ -163,7 +157,7 @@ export default {
       };
       axios
         .post('/api/game/CreateMasterGameChangeRequest', request)
-        .then(response => {
+        .then((response) => {
           this.showSent = true;
           window.scroll({
             top: 0,
@@ -173,7 +167,7 @@ export default {
           this.clearData();
           this.fetchMyRequests();
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response;
         });
     },
@@ -188,13 +182,11 @@ export default {
       };
       axios
         .post('/api/game/DeleteMasterGameChangeRequest', model)
-        .then(response => {
+        .then((response) => {
           this.showDeleted = true;
           this.fetchMyRequests();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     dismissRequest(request) {
       let model = {
@@ -202,20 +194,18 @@ export default {
       };
       axios
         .post('/api/game/DismissMasterGameChangeRequest', model)
-        .then(response => {
+        .then((response) => {
           this.fetchMyRequests();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     fetchMasterGame(masterGameID) {
       axios
         .get('/api/game/MasterGame/' + masterGameID)
-        .then(response => {
+        .then((response) => {
           this.masterGame = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     }
   },
   mounted() {
@@ -229,32 +219,32 @@ export default {
 };
 </script>
 <style scoped>
-  .select-cell {
-    text-align: center;
-  }
-  .eligibility-explanation {
-    margin-bottom: 50px;
-    max-width: 1300px;
-  }
+.select-cell {
+  text-align: center;
+}
+.eligibility-explanation {
+  margin-bottom: 50px;
+  max-width: 1300px;
+}
 
-  .eligibility-section {
-    margin-bottom: 10px;
-  }
+.eligibility-section {
+  margin-bottom: 10px;
+}
 
-  .eligibility-description {
-    margin-top: 25px;
-  }
+.eligibility-description {
+  margin-top: 25px;
+}
 
-  .checkbox-label {
-    padding-left: 25px;
-  }
+.checkbox-label {
+  padding-left: 25px;
+}
 
-  label {
-    font-size: 18px;
-  }
+label {
+  font-size: 18px;
+}
 </style>
 <style>
-  .vue-slider-piecewise-label {
-    color: white !important;
-  }
+.vue-slider-piecewise-label {
+  color: white !important;
+}
 </style>

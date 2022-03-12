@@ -5,7 +5,10 @@
       <br />
       <br />
       On mobile your keyboard probably has emoji built in, on desktop you can go to:
-      <a href="https://emojipedia.org/" target="_blank">Emojipedia <font-awesome-icon icon="external-link-alt" size="sm" /></a>
+      <a href="https://emojipedia.org/" target="_blank">
+        Emojipedia
+        <font-awesome-icon icon="external-link-alt" size="sm" />
+      </a>
     </div>
     <div class="form-horizontal">
       <div class="form-group">
@@ -43,7 +46,7 @@ export default {
       };
       axios
         .post('/api/league/changePublisherIcon', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.changePublisherIconRef.hide();
           let actionInfo = {
             oldName: this.publisher.publisherIcon,
@@ -52,8 +55,7 @@ export default {
           };
           this.$emit('publisherIconChanged', actionInfo);
         })
-        .catch(response => {
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.newPublisherIcon = this.publisher.publisherIcon;

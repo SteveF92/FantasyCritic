@@ -7,7 +7,7 @@
       </div>
       <hr />
       <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
-      <div v-if="linkSuccessType" class="alert alert-success">Game has been linked to {{linkSuccessType}}</div>
+      <div v-if="linkSuccessType" class="alert alert-success">Game has been linked to {{ linkSuccessType }}</div>
 
       <div v-if="activeRequests && activeRequests.length === 0" class="alert alert-info">No active requests.</div>
 
@@ -30,22 +30,29 @@
           <tbody>
             <tr v-for="request in activeRequests">
               <td><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></td>
-              <td>{{request.requesterDisplayName}}</td>
-              <td>{{request.requestNote}}</td>
+              <td>{{ request.requesterDisplayName }}</td>
+              <td>{{ request.requestNote }}</td>
               <td>
-                <a v-if="request.openCriticID" :href="openCriticLink(request.openCriticID)" target="_blank"><strong>OpenCritic Link <font-awesome-icon icon="external-link-alt" /></strong></a>
+                <a v-if="request.openCriticID" :href="openCriticLink(request.openCriticID)" target="_blank">
+                  <strong>
+                    OpenCritic Link
+                    <font-awesome-icon icon="external-link-alt" />
+                  </strong>
+                </a>
               </td>
               <td>
-                <a v-if="request.ggToken" :href="ggLink(request.ggToken)" target="_blank"><strong>GG| Link <font-awesome-icon icon="external-link-alt" /></strong></a>
+                <a v-if="request.ggToken" :href="ggLink(request.ggToken)" target="_blank">
+                  <strong>
+                    GG| Link
+                    <font-awesome-icon icon="external-link-alt" />
+                  </strong>
+                </a>
               </td>
               <td class="select-cell">
                 <b-button variant="info" size="sm" v-on:click="createResponse(request)">Respond</b-button>
               </td>
               <td class="select-cell">
-                <b-button variant="info"
-                          :to="{ name: 'masterGameEditor',
-                          params: { mastergameid: request.masterGame.masterGameID },
-                          query: { changeRequestID: request.requestID }}">
+                <b-button variant="info" :to="{ name: 'masterGameEditor', params: { mastergameid: request.masterGame.masterGameID }, query: { changeRequestID: request.requestID } }">
                   Edit Game
                 </b-button>
               </td>
@@ -93,7 +100,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -112,9 +118,7 @@ export default {
       generatedSQL: ''
     };
   },
-  computed: {
-
-  },
+  computed: {},
   components: {
     MasterGamePopover
   },
@@ -122,12 +126,10 @@ export default {
     fetchMyRequests() {
       axios
         .get('/api/admin/ActiveMasterGameChangeRequests')
-        .then(response => {
+        .then((response) => {
           this.activeRequests = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     editGame(request) {
       let query = {
@@ -149,10 +151,10 @@ export default {
       };
       axios
         .post('/api/admin/CompleteMasterGameChangeRequest', request)
-        .then(response => {
+        .then((response) => {
           this.showResponded = true;
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response;
         });
     },
@@ -170,10 +172,10 @@ export default {
 
       axios
         .post('/api/admin/LinkGameToOpenCritic', linkRequest)
-        .then(response => {
-          this.linkSuccessType = "Open Critic";
+        .then((response) => {
+          this.linkSuccessType = 'Open Critic';
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response;
         });
     },
@@ -185,15 +187,15 @@ export default {
 
       axios
         .post('/api/admin/LinkGameToGG', linkRequest)
-        .then(response => {
-          this.linkSuccessType = "GG|";
+        .then((response) => {
+          this.linkSuccessType = 'GG|';
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response;
         });
     },
     generateSQL(request) {
-      this.generatedSQL = 'select * from tbl_mastergame where MasterGameID = \'' + request.masterGame.masterGameID + '\';';
+      this.generatedSQL = "select * from tbl_mastergame where MasterGameID = '" + request.masterGame.masterGameID + "';";
     }
   },
   mounted() {
@@ -202,7 +204,7 @@ export default {
 };
 </script>
 <style scoped>
-  .select-cell {
-    text-align: center;
-  }
+.select-cell {
+  text-align: center;
+}
 </style>

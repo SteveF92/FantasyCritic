@@ -1,21 +1,21 @@
 @media only screen and (max-width: 576px) {
-    .footer-logo {
-        display: none;
-    }
+  .footer-logo {
+    display: none;
+  }
 }
 
 #vue-app {
-    margin-bottom: 215px; /* Margin bottom by footer height */
+  margin-bottom: 215px; /* Margin bottom by footer height */
 }
 
 .footer {
-    position: absolute;
-    background-color: black;
-    bottom: 0;
-    width: 100%;
-    line-height: 30px; /* Vertically center the text there */
-    padding-top: 10px;
-    height: 215px;
+  position: absolute;
+  background-color: black;
+  bottom: 0;
+  width: 100%;
+  line-height: 30px; /* Vertically center the text there */
+  padding-top: 10px;
+  height: 215px;
 }
 
 /* Custom page CSS
@@ -23,10 +23,10 @@
 /* Not required for template or sticky footer method. */
 
 .container {
-    width: auto;
-    max-width: 1200px;
-    padding-left: 45px;
-    padding-right: 45px;
-    background-color: black;
-    padding-bottom: 25px;
+  width: auto;
+  max-width: 1200px;
+  padding-left: 45px;
+  padding-right: 45px;
+  background-color: black;
+  padding-bottom: 25px;
 }

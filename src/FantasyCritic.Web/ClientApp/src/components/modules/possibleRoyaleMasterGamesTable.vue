@@ -8,18 +8,18 @@
       </template>
       <template #cell(masterGame.maximumReleaseDate)="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
-          <span>{{data.item.masterGame.estimatedReleaseDate}}</span>
+          <span>{{ data.item.masterGame.estimatedReleaseDate }}</span>
           <span v-show="data.item.masterGame.isReleased">(Released)</span>
         </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
-        {{data.item.masterGame.dateAdjustedHypeFactor | score(1)}}
+        {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
       </template>
       <template #cell(status)="data">
         <statusBadge :possibleMasterGame="data.item"></statusBadge>
       </template>
       <template #cell(cost)="data">
-        {{data.item.cost | money}}
+        {{ data.item.cost | money }}
       </template>
       <template #cell(select)="data">
         <b-button size="sm" variant="info" v-on:click="selectGame(data.item)">Select</b-button>
@@ -45,7 +45,7 @@ export default {
         { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary' },
         { key: 'status', label: 'Status', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'select', label: '', thClass: 'bg-primary' }
-      ],
+      ]
     };
   },
   components: {
@@ -67,26 +67,26 @@ export default {
 };
 </script>
 <style scoped>
-  .fake-link {
-    text-decoration: underline;
-    cursor: pointer;
-  }
+.fake-link {
+  text-decoration: underline;
+  cursor: pointer;
+}
 
-  .popper {
-    background: #415262;
-  }
+.popper {
+  background: #415262;
+}
 
-  .release-date{
-    font-weight: bold;
-  }
+.release-date {
+  font-weight: bold;
+}
 
-  .select-cell {
-    text-align: center;
-  }
+.select-cell {
+  text-align: center;
+}
 
-  @media only screen and (max-width: 450px) {
-    .no-mobile {
-      display: none;
-    }
+@media only screen and (max-width: 450px) {
+  .no-mobile {
+    display: none;
   }
+}
 </style>

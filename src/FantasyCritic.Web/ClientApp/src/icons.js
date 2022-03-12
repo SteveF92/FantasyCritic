@@ -52,22 +52,9 @@ import {
   faCaretLeft
 } from '@fortawesome/free-solid-svg-icons';
 
-import {
-  faCircle as regCircle,
-  faSquare as regSquare,
-} from '@fortawesome/free-regular-svg-icons';
+import { faCircle as regCircle, faSquare as regSquare } from '@fortawesome/free-regular-svg-icons';
 
-import {
-  faFontAwesome,
-  faMicrosoft,
-  faVuejs,
-  faTwitter,
-  faReddit,
-  faGithub,
-  faFacebook,
-  faDiscord,
-  faPatreon
-} from '@fortawesome/free-brands-svg-icons';
+import { faFontAwesome, faMicrosoft, faVuejs, faTwitter, faReddit, faGithub, faFacebook, faDiscord, faPatreon } from '@fortawesome/free-brands-svg-icons';
 
 library.add(
   faEnvelope,
@@ -132,8 +119,4 @@ library.add(
   faCaretLeft
 );
 
-export {
-  FontAwesomeIcon,
-  FontAwesomeLayers,
-  FontAwesomeLayersText
-};
+export { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText };

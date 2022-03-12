@@ -32,13 +32,11 @@ export default {
       };
       axios
         .post('/api/royale/createRoyalePublisher', model)
-        .then(response => {
+        .then((response) => {
           let publisherid = response.data;
           this.$router.push({ name: 'royalePublisher', params: { publisherid: publisherid } });
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.publisherName = '';

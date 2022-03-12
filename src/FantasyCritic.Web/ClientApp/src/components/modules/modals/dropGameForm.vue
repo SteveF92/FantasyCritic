@@ -1,7 +1,7 @@
 <template>
   <b-modal id="dropGameForm" ref="dropGameFormRef" size="lg" title="Drop a Game" hide-footer @hidden="clearData">
     <div v-if="errorInfo" class="alert alert-danger" role="alert">
-      {{errorInfo}}
+      {{ errorInfo }}
     </div>
     <p>
       You can use this form to request to drop a game.
@@ -27,7 +27,7 @@
       <div v-if="dropResult && !dropResult.success" class="alert bid-error alert-danger">
         <h3 class="alert-heading">Error!</h3>
         <ul>
-          <li v-for="error in dropResult.errors">{{error}}</li>
+          <li v-for="error in dropResult.errors">{{ error }}</li>
         </ul>
       </div>
     </form>
@@ -49,10 +49,10 @@ export default {
   },
   computed: {
     formIsValid() {
-      return (this.dropMasterGame);
+      return this.dropMasterGame;
     },
     droppableGames() {
-      return _.filter(this.publisher.games, { 'counterPick': false });
+      return _.filter(this.publisher.games, { counterPick: false });
     }
   },
   props: ['publisher'],
@@ -65,21 +65,21 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/league/MakeDropRequest', request)
-        .then(response => {
+        .then((response) => {
           this.isBusy = false;
           this.dropResult = response.data;
           if (!this.dropResult.success) {
             return;
           }
-            
+
           var dropInfo = {
-            gameName: this.gameToDrop.gameName,
+            gameName: this.gameToDrop.gameName
           };
           this.$emit('dropRequestMade', dropInfo);
           this.$refs.dropGameFormRef.hide();
           this.clearData();
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
           this.errorInfo = response.response.data;
         });
@@ -87,7 +87,6 @@ export default {
     clearData() {
       this.dropResult = null;
       this.gameToDrop = null;
-        
     }
   }
 };

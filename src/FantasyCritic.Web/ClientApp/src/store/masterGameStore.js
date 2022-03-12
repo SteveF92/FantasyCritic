@@ -12,10 +12,10 @@ export default {
   actions: {
     getAllTags(context) {
       context.commit('setBusy', true);
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         axios
           .get('/api/Game/GetMasterGameTags')
-          .then(response => {
+          .then((response) => {
             context.commit('setTags', response.data);
             context.commit('setBusy', false);
             resolve();

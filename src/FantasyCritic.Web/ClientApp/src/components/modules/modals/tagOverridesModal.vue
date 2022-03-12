@@ -9,7 +9,7 @@
       </thead>
       <tbody>
         <tr v-for="tagOverride in tagOverrides">
-          <td>{{tagOverride.masterGame.gameName}}</td>
+          <td>{{ tagOverride.masterGame.gameName }}</td>
           <td>
             <span v-for="(tag, index) in tagOverride.tags">
               <masterGameTagBadge :tagName="tagOverride.tags[index]"></masterGameTagBadge>
@@ -31,4 +31,3 @@ export default {
   props: ['tagOverrides']
 };
 </script>
-

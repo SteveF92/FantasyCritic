@@ -24,18 +24,18 @@ export default {
 </script>
 
 <style scoped>
-  .faq-icon {
-    float: left;
-  }
+.faq-icon {
+  float: left;
+}
 
-  .collapsed > .when-opened,
-  :not(.collapsed) > .when-closed {
-    display: none;
-  }
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+  display: none;
+}
 
-  .faq-button {
-    width: 100%;
-    cursor: pointer;
-    font-weight: bold;
-  }
+.faq-button {
+  width: 100%;
+  cursor: pointer;
+  font-weight: bold;
+}
 </style>

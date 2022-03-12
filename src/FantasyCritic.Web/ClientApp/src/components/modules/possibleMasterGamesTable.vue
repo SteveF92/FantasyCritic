@@ -2,24 +2,18 @@
   <div>
     <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
 
-    <b-table :sort-by.sync="sortBy"
-             :sort-desc.sync="sortDesc"
-             :items="gameRows"
-             :fields="gameFields"
-             :per-page="perPage"
-             :current-page="currentPage"
-             bordered small responsive striped>
+    <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="gameRows" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
       <template #cell(masterGame.gameName)="data">
         <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
       <template #cell(masterGame.maximumReleaseDate)="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
-          <span>{{data.item.masterGame.estimatedReleaseDate}}</span>
+          <span>{{ data.item.masterGame.estimatedReleaseDate }}</span>
           <span v-show="data.item.masterGame.isReleased">(Released)</span>
         </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
-        {{data.item.masterGame.dateAdjustedHypeFactor | score(1)}}
+        {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
       </template>
       <template #cell(status)="data">
         <statusBadge :possibleMasterGame="data.item"></statusBadge>
@@ -42,10 +36,10 @@ export default {
       perPage: 10,
       currentPage: 1,
       gameFieldsInternal: [
-        { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass:'bg-primary' },
+        { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'status', label: 'Status', thClass: ['bg-primary','lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'status', label: 'Status', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'select', label: '', thClass: 'bg-primary' }
       ],
       sortBy: 'dateAdjustedHypeFactor',
@@ -81,26 +75,26 @@ export default {
 };
 </script>
 <style scoped>
-  .fake-link {
-    text-decoration: underline;
-    cursor: pointer;
-  }
+.fake-link {
+  text-decoration: underline;
+  cursor: pointer;
+}
 
-  .popper {
-    background: #415262;
-  }
+.popper {
+  background: #415262;
+}
 
-  .release-date{
-    font-weight: bold;
-  }
+.release-date {
+  font-weight: bold;
+}
 
-  .select-cell {
-    text-align: center;
-  }
+.select-cell {
+  text-align: center;
+}
 
-  @media only screen and (max-width: 450px) {
-    .no-mobile {
-      display: none;
-    }
+@media only screen and (max-width: 450px) {
+  .no-mobile {
+    display: none;
   }
+}
 </style>

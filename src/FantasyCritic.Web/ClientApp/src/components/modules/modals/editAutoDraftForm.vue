@@ -11,7 +11,7 @@
       <b-form-checkbox class="mb-2 mr-sm-2 mb-sm-0" v-model="isAutoDraft">Auto Draft</b-form-checkbox>
     </b-form>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Auto Draft" v-on:click="setAutoDraft"/>
+      <input type="submit" class="btn btn-primary" value="Set Auto Draft" v-on:click="setAutoDraft" />
     </div>
   </b-modal>
 </template>
@@ -33,7 +33,7 @@ export default {
       };
       axios
         .post('/api/league/setAutoDraft', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.editAutoDraftFormRef.hide();
           let actionInfo = {
             autoDraft: this.isAutoDraft,
@@ -41,8 +41,7 @@ export default {
           };
           this.$emit('autoDraftSet', actionInfo);
         })
-        .catch(response => {
-        });
+        .catch((response) => {});
     }
   },
   mounted() {

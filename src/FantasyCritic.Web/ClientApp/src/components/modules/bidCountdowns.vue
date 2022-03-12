@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import FlipCountdown from 'vue2-flip-countdown'
+import FlipCountdown from 'vue2-flip-countdown';
 import moment from 'moment';
 
 export default {
@@ -56,11 +56,11 @@ export default {
       this.$emit('publicBidRevealTimeElapsed');
     }
   }
-}
+};
 </script>
 <style>
-  .flip-clock {
-    border-radius: 25px;
-    padding: 10px;
-  }
+.flip-clock {
+  border-radius: 25px;
+  padding: 10px;
+}
 </style>

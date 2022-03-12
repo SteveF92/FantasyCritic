@@ -1,7 +1,7 @@
 <template>
   <span>
     <span v-if="masterGame">
-      <popper ref="gamePopoverRef" trigger="click" :options="{ modifiers: { offset: { offset: '0,0px' } }}">
+      <popper ref="gamePopoverRef" trigger="click" :options="{ modifiers: { offset: { offset: '0,0px' } } }">
         <span class="popper">
           <masterGameSummary :masterGame="masterGame"></masterGameSummary>
 
@@ -11,7 +11,7 @@
         </span>
 
         <span slot="reference" class="fake-link" :class="{ 'text-primary': !currentlyIneligible }">
-          {{masterGame.gameName}}
+          {{ masterGame.gameName }}
         </span>
       </popper>
     </span>
@@ -33,7 +33,7 @@ export default {
     };
   },
   components: {
-    'popper': Popper,
+    popper: Popper,
     MasterGameSummary
   },
   props: ['masterGame', 'currentlyIneligible'],
@@ -45,9 +45,9 @@ export default {
 };
 </script>
 <style scoped>
-  .close-button {
-    position: absolute;
-    right: 5px;
-    top: 0px;
-  }
+.close-button {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+}
 </style>

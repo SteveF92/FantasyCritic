@@ -3,7 +3,9 @@
     <p class="text-black">
       You can purchase up to 25 games, provided you have the money.
       <br />
-      You currently have <strong>{{ownedGamesCount}}</strong> game(s).
+      You currently have
+      <strong>{{ ownedGamesCount }}</strong>
+      game(s).
     </p>
 
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
@@ -17,29 +19,34 @@
         </div>
 
         <h3 class="text-black" v-if="searchedTop">Top games</h3>
-        <possibleRoyaleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="purchaseRoyaleGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleRoyaleMasterGamesTable>
+        <possibleRoyaleMasterGamesTable
+          v-if="possibleMasterGames.length > 0"
+          v-model="purchaseRoyaleGame"
+          :possibleGames="possibleMasterGames"
+          v-on:input="newGameSelected"></possibleRoyaleMasterGamesTable>
 
-        <div v-show="searched && !purchaseRoyaleGame && possibleMasterGames.length === 0" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+        <div
+          v-show="searched && !purchaseRoyaleGame && possibleMasterGames.length === 0"
+          class="alert"
+          v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
-            <span class="col-12 col-md-7" >No games were found.</span>
+            <span class="col-12 col-md-7">No games were found.</span>
           </div>
         </div>
 
-        <label v-if="purchaseRoyaleGame" for="purchaseRoyaleGame" class="control-label">Selected Game: {{purchaseRoyaleGame.masterGame.gameName}}</label>
+        <label v-if="purchaseRoyaleGame" for="purchaseRoyaleGame" class="control-label">Selected Game: {{ purchaseRoyaleGame.masterGame.gameName }}</label>
       </div>
     </form>
 
     <div class="form-horizontal">
       <div>
-        <b-button variant="primary" class="add-game-button" v-on:click="addGame" v-if="formIsValid" :disabled="isBusy">
-          Purchase Game for {{purchaseRoyaleGame.cost | money}}
-        </b-button>
+        <b-button variant="primary" class="add-game-button" v-on:click="addGame" v-if="formIsValid" :disabled="isBusy">Purchase Game for {{ purchaseRoyaleGame.cost | money }}</b-button>
       </div>
       <div v-if="purchaseResult && !purchaseResult.success" class="alert purchase-error" v-bind:class="{ 'alert-danger': !purchaseResult.overridable, 'alert-warning': purchaseResult.overridable }">
         <h3 class="alert-heading" v-if="purchaseResult.overridable">Warning!</h3>
         <h3 class="alert-heading" v-if="!purchaseResult.overridable">Error!</h3>
         <ul>
-          <li v-for="error in purchaseResult.errors">{{error}}</li>
+          <li v-for="error in purchaseResult.errors">{{ error }}</li>
         </ul>
       </div>
     </div>
@@ -85,13 +92,12 @@ export default {
       let apiString = '';
       if (this.searchGameName) {
         apiString = '/api/royale/PossibleMasterGames?gameName=' + this.searchGameName + '&publisherID=' + this.userRoyalePublisher.publisherID;
-      }
-      else {
+      } else {
         apiString = '/api/royale/PossibleMasterGames?publisherID=' + this.userRoyalePublisher.publisherID;
       }
       axios
         .get(apiString)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.searched = true;
           this.showingUnlistedField = false;
@@ -100,9 +106,7 @@ export default {
             this.searchedTop = true;
           }
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     addGame() {
       this.isBusy = true;
@@ -114,12 +118,12 @@ export default {
 
       var request = {
         publisherID: this.userRoyalePublisher.publisherID,
-        masterGameID: masterGameID,
+        masterGameID: masterGameID
       };
 
       axios
         .post('/api/royale/PurchaseGame', request)
-        .then(response => {
+        .then((response) => {
           this.purchaseResult = response.data;
           if (!this.purchaseResult.success) {
             this.isBusy = false;
@@ -136,9 +140,7 @@ export default {
           this.clearData();
           this.$refs.royalePurchaseGameFormRef.hide();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.isBusy = false;
@@ -148,7 +150,6 @@ export default {
       this.possibleMasterGames = [];
       this.searched = false;
       this.searchGame();
-
     },
     newGameSelected() {
       this.purchaseResult = null;
@@ -160,13 +161,13 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button{
+.add-game-button {
   width: 100%;
 }
-.purchase-error{
+.purchase-error {
   margin-top: 10px;
 }
-.game-search-input{
+.game-search-input {
   margin-bottom: 15px;
 }
 .text-black {

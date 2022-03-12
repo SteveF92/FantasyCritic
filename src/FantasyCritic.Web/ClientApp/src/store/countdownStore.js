@@ -15,7 +15,7 @@ export default {
       return new Promise(function (resolve, reject) {
         axios
           .get('/api/General/BidTimes')
-          .then(response => {
+          .then((response) => {
             context.commit('setBidTimes', response.data);
             context.commit('setBidsBusy', false);
             resolve();

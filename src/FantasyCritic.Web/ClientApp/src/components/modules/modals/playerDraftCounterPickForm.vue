@@ -1,6 +1,5 @@
 <template>
-  <b-modal id="playerDraftCounterPickForm" ref="playerDraftCounterPickFormRef" title="Select Counter-Pick" hide-footer
-           @hidden="clearData" @show="getPossibleCounterPicks">
+  <b-modal id="playerDraftCounterPickForm" ref="playerDraftCounterPickFormRef" title="Select Counter-Pick" hide-footer @hidden="clearData" @show="getPossibleCounterPicks">
     <form class="form-horizontal" v-on:submit.prevent="selectCounterPick" hide-footer>
       <div class="form-group">
         <label for="selectedCounterPick" class="control-label">Game</label>
@@ -14,7 +13,7 @@
       <div v-if="draftResult && !draftResult.success" class="alert bid-error alert-danger">
         <h3 class="alert-heading">Error!</h3>
         <ul>
-          <li v-for="error in draftResult.errors">{{error}}</li>
+          <li v-for="error in draftResult.errors">{{ error }}</li>
         </ul>
       </div>
 
@@ -54,7 +53,7 @@ export default {
 
       axios
         .post('/api/league/DraftGame', request)
-        .then(response => {
+        .then((response) => {
           this.draftResult = response.data;
           this.isBusy = false;
           if (!this.draftResult.success) {
@@ -67,19 +66,19 @@ export default {
           this.$emit('counterPickDrafted', draftInfo);
           this.selectedCounterPick = null;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
     getPossibleCounterPicks() {
       axios
         .get('/api/league/PossibleCounterPicks?publisherID=' + this.userPublisher.publisherID)
-        .then(response => {
+        .then((response) => {
           this.possibleCounterPicks = response.data;
           this.isBusy = false;
           this.counterPicking = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -95,7 +94,7 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button{
+.add-game-button {
   width: 100%;
 }
 </style>

@@ -45,17 +45,13 @@
           </thead>
           <tbody>
             <tr v-for="request in activeRequests">
-              <td>{{request.gameName}}</td>
-              <td>{{request.requesterDisplayName}}</td>
+              <td>{{ request.gameName }}</td>
+              <td>{{ request.requesterDisplayName }}</td>
               <td class="select-cell">
                 <b-button variant="info" size="sm" v-on:click="assignGame(request)">Assign Game</b-button>
               </td>
               <td class="select-cell">
-                <b-button variant="info"
-                          :to="{ name: 'masterGameCreator',
-                          query: { requestID: request.requestID }}">
-                  Create Game
-                </b-button>
+                <b-button variant="info" :to="{ name: 'masterGameCreator', query: { requestID: request.requestID } }">Create Game</b-button>
               </td>
             </tr>
           </tbody>
@@ -77,19 +73,15 @@ export default {
       responseNote: ''
     };
   },
-  computed: {
-
-  },
+  computed: {},
   methods: {
     fetchMyRequests() {
       axios
         .get('/api/admin/ActiveMasterGameRequests')
-        .then(response => {
+        .then((response) => {
           this.activeRequests = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     assignGame(request) {
       this.requestSelected = request;
@@ -103,10 +95,10 @@ export default {
       };
       axios
         .post('/api/admin/CompleteMasterGameRequest', request)
-        .then(response => {
+        .then((response) => {
           this.showResponded = true;
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response;
         });
     }
@@ -117,7 +109,7 @@ export default {
 };
 </script>
 <style scoped>
-  .select-cell {
-    text-align: center;
-  }
+.select-cell {
+  text-align: center;
+}
 </style>

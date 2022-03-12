@@ -32,10 +32,14 @@
       </div>
       <div class="col-md-6 col-sm-12">
         <p class="welcome-message">
-          Fantasy Critic is like fantasy football...but for video games! You and several friends will create your own virtual video game “Publishers”,
-          and then you will assemble a roster of the games you believe will review the best. Similar to fantasy football, the players will alternate
-          picking games in a snake draft style to start the year. At the end of the year, the winner is the team with the best lineup of video games
-          based on scores from <a href="https://opencritic.com/" target="_blank">opencritic.com <font-awesome-icon icon="external-link-alt" size="sm" /></a>.
+          Fantasy Critic is like fantasy football...but for video games! You and several friends will create your own virtual video game “Publishers”, and then you will assemble a roster of the games
+          you believe will review the best. Similar to fantasy football, the players will alternate picking games in a snake draft style to start the year. At the end of the year, the winner is the
+          team with the best lineup of video games based on scores from
+          <a href="https://opencritic.com/" target="_blank">
+            opencritic.com
+            <font-awesome-icon icon="external-link-alt" size="sm" />
+          </a>
+          .
         </p>
       </div>
     </div>
@@ -47,11 +51,11 @@
         <img class="critic-royale-logo" src="/img/critic-royale-logo.svg" />
       </div>
       <div class="col-md-6 col-sm-12">
+        <h1 class="welcome-heading">Critics Royale!</h1>
         <p class="welcome-message">
-          <h1 class="welcome-heading">Critics Royale!</h1>
-          Don't have a league to join? Want to start playing in the middle of the year? Our new "Critics Royale" mode is structured similar to Daily Fantasy Sports, allowing you to compete on your own against
-          the entire site for a leaderboard position. Instead of drafting, you're given a 'budget' which you use to select your games.
-          Your goal is to spend that money wisely and put together the best lineup of games that you can.
+          Don't have a league to join? Want to start playing in the middle of the year? Our new "Critics Royale" mode is structured similar to Daily Fantasy Sports, allowing you to compete on your own
+          against the entire site for a leaderboard position. Instead of drafting, you're given a 'budget' which you use to select your games. Your goal is to spend that money wisely and put together
+          the best lineup of games that you can.
         </p>
       </div>
     </div>
@@ -197,139 +201,137 @@ export default {
 };
 </script>
 <style scoped>
+@media only screen and (max-width: 679px) {
+  .full-welcome {
+    display: none;
+  }
+}
 
-  @media only screen and (max-width: 679px) {
-    .full-welcome {
-      display: none;
-    }
+@media only screen and (min-width: 680px) {
+  .minimal-welcome {
+    display: none;
   }
+}
 
-  @media only screen and (min-width: 680px) {
-    .minimal-welcome {
-      display: none;
-    }
+@media only screen and (max-width: 992px) {
+  .computer-image-area {
+    display: none;
   }
+}
 
-  @media only screen and (max-width: 992px) {
-    .computer-image-area {
-      display: none;
-    }
-  }
+.hero-message-area {
+  display: flex; /* establish flex container */
+  flex-direction: column; /* make main axis vertical */
+  justify-content: center; /* center items vertically, in this case */
+  align-items: center; /* center items horizontally, in this case */
+}
+.hero-message {
+}
+.hero-message-header {
+}
+.hero-message-details {
+}
 
-  .hero-message-area {
-    display: flex; /* establish flex container */
-    flex-direction: column; /* make main axis vertical */
-    justify-content: center; /* center items vertically, in this case */
-    align-items: center; /* center items horizontally, in this case */
-  }
-  .hero-message {
+.registration-area {
+  padding-top: 35px;
+  padding-bottom: 35px;
+  display: flex; /* establish flex container */
+  flex-direction: column; /* make main axis vertical */
+  align-items: center; /* center items horizontally, in this case */
+}
 
-  }
-  .hero-message-header {
-  }
-  .hero-message-details {
-  }
+.registration-box {
+  width: 100%;
+  max-width: 500px;
+}
 
-  .registration-area {
-    padding-top: 35px;
-    padding-bottom: 35px;
-    display: flex; /* establish flex container */
-    flex-direction: column; /* make main axis vertical */
-    align-items: center; /* center items horizontally, in this case */
-  }
+.welcome-area {
+  background-color: #4a4a4a;
+}
 
-  .registration-box {
-    width: 100%;
-    max-width: 500px;
-  }
+.welcome-heading {
+  text-align: center;
+}
 
-  .welcome-area {
-    background-color: #4A4A4A;
-  }
+.welcome-message {
+  max-width: 700px;
+}
 
-  .welcome-heading {
-    text-align: center;
-  }
+.computer-image-area {
+  text-align: center;
+}
 
-  .welcome-message {
-    max-width: 700px;
-  }
+.computer-image {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 
-  .computer-image-area{
-    text-align: center;
-  }
+.get-started-area {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .computer-image {
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
+.starting-step {
+  display: flex; /* establish flex container */
+  flex-direction: row; /* make main axis vertical */
+  margin-bottom: 25px;
+}
 
-  .get-started-area {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.starting-step-text {
+  margin-left: 10px;
+}
+.step-number-text {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-family: monospace;
+  font-size: 17px;
+}
 
-  .starting-step {
-    display: flex; /* establish flex container */
-    flex-direction: row; /* make main axis vertical */
-    margin-bottom: 25px;
-  }
+.features-area {
+  background-color: #414141;
+  padding-bottom: 15px;
+}
 
-  .starting-step-text{
-    margin-left: 10px;
-  }
-  .step-number-text {
-    font-weight: bold;
-    text-transform: uppercase;
-    font-family: monospace;
-    font-size: 17px;
-  }
+.features-heading {
+  text-align: center;
+}
 
-  .features-area {
-    background-color: #414141;
-    padding-bottom: 15px;
-  }
-
-  .features-heading {
-    text-align: center;
-  }
-
-  /*.feature-highlights {
+/*.feature-highlights {
     width: 50%;
     min-width: 300px;
     display: flex;
     flex-wrap: wrap;
   }*/
 
-  .feature-highlight {
-    margin: 2px;
-    display: flex; /* establish flex container */
-    align-items: center; /* center items horizontally, in this case */
-  }
+.feature-highlight {
+  margin: 2px;
+  display: flex; /* establish flex container */
+  align-items: center; /* center items horizontally, in this case */
+}
 
-  .feature-description {
-    font-weight: bold;
-    padding-left: 7px;
-    vertical-align: middle;
-  }
+.feature-description {
+  font-weight: bold;
+  padding-left: 7px;
+  vertical-align: middle;
+}
 
-  .faq-button {
-    text-align: center;
-  }
+.faq-button {
+  text-align: center;
+}
 
-  .tweet-section {
-    margin-top: 15px;
-  }
+.tweet-section {
+  margin-top: 15px;
+}
 
-  .critic-royale-logo-area{
-    display: flex;
-    justify-content: center;
-  }
+.critic-royale-logo-area {
+  display: flex;
+  justify-content: center;
+}
 
-  .critic-royale-logo {
-    height: 250px;
-    margin: 10px;
-  }
+.critic-royale-logo {
+  height: 250px;
+  margin: 10px;
+}
 </style>

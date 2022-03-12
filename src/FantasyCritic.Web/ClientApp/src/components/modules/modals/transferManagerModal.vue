@@ -16,38 +16,36 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  export default {
-    data() {
-      return {
-        newManager: null
-      };
-    },
-    props: ['league'],
-    computed: {
-      players() {
-        return this.league.players;
-      }
-    },
-    methods: {
-      promoteNewManager() {
-        var model = {
-          leagueID: this.league.leagueID,
-          newManagerUserID: this.newManager.userID
-        };
-        axios
-          .post('/api/leagueManager/PromoteNewLeagueManager', model)
-          .then(response => {
-            this.$refs.transferManagerFormRef.hide();
-            this.$emit('managerTransferred');
-          })
-          .catch(response => {
-
-          });
-      },
-      clearData() {
-        this.newManager = null;
-      }
+import axios from 'axios';
+export default {
+  data() {
+    return {
+      newManager: null
+    };
+  },
+  props: ['league'],
+  computed: {
+    players() {
+      return this.league.players;
     }
-  };
+  },
+  methods: {
+    promoteNewManager() {
+      var model = {
+        leagueID: this.league.leagueID,
+        newManagerUserID: this.newManager.userID
+      };
+      axios
+        .post('/api/leagueManager/PromoteNewLeagueManager', model)
+        .then((response) => {
+          this.$refs.transferManagerFormRef.hide();
+          this.$emit('managerTransferred');
+        })
+        .catch((response) => {});
+    },
+    clearData() {
+      this.newManager = null;
+    }
+  }
+};
 </script>

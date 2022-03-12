@@ -38,7 +38,7 @@ export default {
   computed: {
     playersWithoutPublishers() {
       let playersToReturn = [];
-      let userIDsWithPublishers = this.leagueYear.publishers.map(x => x.userID);
+      let userIDsWithPublishers = this.leagueYear.publishers.map((x) => x.userID);
       for (const player of this.leagueYear.players) {
         if (userIDsWithPublishers.includes(player.user.userID)) {
           continue;
@@ -58,7 +58,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/createPublisherForUser', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.createPublisherForUserFormRef.hide();
           let actionInfo = {
             publisherName: this.publisherName
@@ -66,9 +66,7 @@ export default {
           this.$emit('publisherCreated', actionInfo);
           this.clearData();
         })
-        .catch(response => {
-            
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.publisherName = '';

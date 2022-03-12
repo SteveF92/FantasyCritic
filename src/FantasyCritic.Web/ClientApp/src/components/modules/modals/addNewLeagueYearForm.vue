@@ -5,7 +5,7 @@
         <div class="form-group">
           <label for="selectedYear" class="control-label">New Year to Play</label>
           <select class="form-control" v-model="selectedYear" id="selectedYear">
-            <option v-for="possibleYear in availableYears" v-bind:value="possibleYear">{{ possibleYear }}</option>
+            <option v-for="possibleYear in availableYears" v-bind:value="possibleYear" v-bind:key="possibleYear">{{ possibleYear }}</option>
           </select>
         </div>
       </div>
@@ -36,11 +36,11 @@ export default {
       };
       axios
         .post('/api/leagueManager/AddNewLeagueYear', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.addNewLeagueYearRef.hide();
           this.$emit('newYearAdded', this.selectedYear);
         })
-        .catch(response => {
+        .catch((response) => {
           this.error = response;
         });
     }
@@ -51,13 +51,11 @@ export default {
     }
     axios
       .get('/api/LeagueManager/AvailableYears/' + this.league.leagueID)
-      .then(response => {
+      .then((response) => {
         this.availableYears = response.data;
       })
-      .catch(returnedError => (this.error = returnedError));
+      .catch((returnedError) => (this.error = returnedError));
   }
 };
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

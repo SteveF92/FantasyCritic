@@ -9,8 +9,8 @@
       </thead>
       <tbody>
         <tr v-for="eligibilityOverride in eligibilityOverrides">
-          <td>{{eligibilityOverride.masterGame.gameName}}</td>
-          <td>{{eligibilityOverride.eligible | yesNo}}</td>
+          <td>{{ eligibilityOverride.masterGame.gameName }}</td>
+          <td>{{ eligibilityOverride.eligible | yesNo }}</td>
         </tr>
       </tbody>
     </table>
@@ -18,9 +18,7 @@
 </template>
 
 <script>
-
 export default {
   props: ['eligibilityOverrides']
 };
 </script>
-

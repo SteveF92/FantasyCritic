@@ -9,8 +9,8 @@
       <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0 text-well">
         <p>
           <strong>
-            If there's a game you want to see added to the site, you can fill out this form and I'll look into adding the game.
-            You can check back on this page to see the status of previous requests, as well.
+            If there's a game you want to see added to the site, you can fill out this form and I'll look into adding the game. You can check back on this page to see the status of previous requests,
+            as well.
           </strong>
         </p>
 
@@ -25,9 +25,8 @@
         </b-form-checkbox>
         <br />
         <div class="alert alert-info">
-          The reason I ask this question is because having an obscure game on the list that is not drafted by anyone doesn't do much for the site,
-          other than requiring effort to make sure the game's info is up to date (for example, release date changes).
-          Please don't request a game "just for the sake of having it on the site".
+          The reason I ask this question is because having an obscure game on the list that is not drafted by anyone doesn't do much for the site, other than requiring effort to make sure the game's
+          info is up to date (for example, release date changes). Please don't request a game "just for the sake of having it on the site".
         </div>
 
         <ValidationObserver v-slot="{ invalid }" v-if="validReason">
@@ -106,14 +105,14 @@
             <tr v-for="request in myRequests">
               <td>
                 <span v-if="request.masterGame"><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
-                <span v-show="!request.masterGame"> {{request.gameName}} </span>
+                <span v-show="!request.masterGame">{{ request.gameName }}</span>
               </td>
               <td>
-                <span v-show="request.responseNote"> {{request.responseNote}} </span>
+                <span v-show="request.responseNote">{{ request.responseNote }}</span>
                 <span v-show="!request.responseNote">&lt;Pending&gt;</span>
               </td>
               <td>
-                <span v-show="request.responseTimestamp"> {{request.responseTimestamp | dateTime}} </span>
+                <span v-show="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
                 <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
               </td>
               <td class="select-cell">
@@ -155,7 +154,7 @@ export default {
   },
   components: {
     MasterGamePopover,
-    'popper': Popper,
+    popper: Popper
   },
   computed: {
     validReason() {
@@ -166,12 +165,10 @@ export default {
     fetchMyRequests() {
       axios
         .get('/api/game/MyMasterGameRequests')
-        .then(response => {
+        .then((response) => {
           this.myRequests = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     sendMasterGameRequestRequest() {
       let request = {
@@ -189,7 +186,7 @@ export default {
 
       axios
         .post('/api/game/CreateMasterGameRequest', request)
-        .then(response => {
+        .then((response) => {
           this.showSent = true;
           window.scroll({
             top: 0,
@@ -199,7 +196,7 @@ export default {
           this.clearData();
           this.fetchMyRequests();
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response;
         });
     },
@@ -219,13 +216,11 @@ export default {
       };
       axios
         .post('/api/game/DeleteMasterGameRequest', model)
-        .then(response => {
+        .then((response) => {
           this.showDeleted = true;
           this.fetchMyRequests();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     dismissRequest(request) {
       let model = {
@@ -233,12 +228,10 @@ export default {
       };
       axios
         .post('/api/game/DismissMasterGameRequest', model)
-        .then(response => {
+        .then((response) => {
           this.fetchMyRequests();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     }
   },
   mounted() {
@@ -247,32 +240,32 @@ export default {
 };
 </script>
 <style scoped>
-  .select-cell {
-    text-align: center;
-  }
-  .eligibility-explanation {
-    margin-bottom: 50px;
-    max-width: 1300px;
-  }
+.select-cell {
+  text-align: center;
+}
+.eligibility-explanation {
+  margin-bottom: 50px;
+  max-width: 1300px;
+}
 
-  .eligibility-section {
-    margin-bottom: 10px;
-  }
+.eligibility-section {
+  margin-bottom: 10px;
+}
 
-  .eligibility-description {
-    margin-top: 25px;
-  }
+.eligibility-description {
+  margin-top: 25px;
+}
 
-  .checkbox-label {
-    padding-left: 25px;
-  }
+.checkbox-label {
+  padding-left: 25px;
+}
 
-  label {
-    font-size: 18px;
-  }
+label {
+  font-size: 18px;
+}
 </style>
 <style>
-  .vue-slider-piecewise-label {
-    color: white !important;
-  }
+.vue-slider-piecewise-label {
+  color: white !important;
+}
 </style>

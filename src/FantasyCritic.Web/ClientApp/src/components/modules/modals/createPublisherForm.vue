@@ -7,7 +7,7 @@
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Create Publisher" v-on:click="createPublisher" :disabled="!publisherName"/>
+      <input type="submit" class="btn btn-primary" value="Create Publisher" v-on:click="createPublisher" :disabled="!publisherName" />
     </div>
   </b-modal>
 </template>
@@ -32,7 +32,7 @@ export default {
       };
       axios
         .post('/api/league/createPublisher', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.createPublisherRef.hide();
           let actionInfo = {
             message: this.publisherName + ' created.',
@@ -41,9 +41,7 @@ export default {
           this.$emit('actionTaken', actionInfo);
           this.publisherName = '';
         })
-        .catch(response => {
-            
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.publisherName = '';

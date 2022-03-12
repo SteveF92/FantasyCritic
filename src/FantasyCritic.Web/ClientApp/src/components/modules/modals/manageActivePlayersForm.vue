@@ -1,8 +1,8 @@
 <template>
   <b-modal id="manageActivePlayers" ref="manageActivePlayersRef" title="Manage Active Players" @show="setData">
-    <h4 class="text-black">Active Players for {{leagueYear.year}}</h4>
+    <h4 class="text-black">Active Players for {{ leagueYear.year }}</h4>
     <div class="alert alert-danger" v-show="errorInfo">
-      {{errorInfo}}
+      {{ errorInfo }}
     </div>
     <table class="table table-bordered table-striped table-sm" v-if="showTable">
       <thead>
@@ -13,9 +13,9 @@
       </thead>
       <tbody>
         <tr v-for="(value, name) in internalPlayerActive">
-          <td>{{value.displayName}}</td>
+          <td>{{ value.displayName }}</td>
           <td>
-            <input type="checkbox" v-model="value.active" :disabled="value.manager">
+            <input type="checkbox" v-model="value.active" :disabled="value.manager" />
           </td>
         </tr>
       </tbody>
@@ -43,7 +43,7 @@ export default {
       return this.league.leagueManager.userID === user.userID;
     },
     userIsActive(user) {
-      let matchingPlayer = _.find(this.leagueYear.players, function(item){
+      let matchingPlayer = _.find(this.leagueYear.players, function (item) {
         return item.user && item.user.userID === user.userID;
       });
 
@@ -52,7 +52,7 @@ export default {
     setCurrentActivePlayers() {
       this.internalPlayerActive = {};
       let outerScope = this;
-      this.league.players.forEach(function(player) {
+      this.league.players.forEach(function (player) {
         let playerIsActive = outerScope.userIsActive(player);
         let playerIsManager = outerScope.userIsManager(player);
         outerScope.internalPlayerActive[player.userID] = {
@@ -67,7 +67,7 @@ export default {
       let playerStatus = {};
       let playerActiveDict = this.internalPlayerActive;
 
-      Object.keys(playerActiveDict).forEach(function(key) {
+      Object.keys(playerActiveDict).forEach(function (key) {
         playerStatus[key] = playerActiveDict[key].active;
       });
 
@@ -79,11 +79,11 @@ export default {
 
       axios
         .post('/api/leagueManager/SetPlayerActiveStatus', model)
-        .then(response => {
+        .then((response) => {
           this.$emit('activePlayersEdited');
           this.$refs.manageActivePlayersRef.hide();
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -97,14 +97,14 @@ export default {
 };
 </script>
 <style scoped>
-  .email-form {
-    margin-bottom: 10px;
-  }
-  .text-black{
-    color:black !important;
-  }
-  .display-number-label {
-    font-size: 35px;
-    margin-right:3px;
-  }
+.email-form {
+  margin-bottom: 10px;
+}
+.text-black {
+  color: black !important;
+}
+.display-number-label {
+  font-size: 35px;
+  margin-right: 3px;
+}
 </style>

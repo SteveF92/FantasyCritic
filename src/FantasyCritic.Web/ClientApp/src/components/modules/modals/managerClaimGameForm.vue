@@ -46,10 +46,8 @@
       </div>
       <div class="form-check">
         <span>
-          <label class="form-check-label">
-            CounterPick
-          </label>
-          <input class="form-check-input override-checkbox" type="checkbox" v-model="claimCounterPick">
+          <label class="form-check-label">CounterPick</label>
+          <input class="form-check-input override-checkbox" type="checkbox" v-model="claimCounterPick" />
         </span>
       </div>
       <div>
@@ -59,15 +57,13 @@
         <h3 class="alert-heading" v-if="claimResult.overridable">Warning!</h3>
         <h3 class="alert-heading" v-if="!claimResult.overridable">Error!</h3>
         <ul>
-          <li v-for="error in claimResult.errors">{{error}}</li>
+          <li v-for="error in claimResult.errors">{{ error }}</li>
         </ul>
 
         <div class="form-check" v-if="claimResult.overridable">
           <span>
-            <label class="text-white">
-              Do you want to override these warnings?
-            </label>
-            <input class="form-check-input override-checkbox" type="checkbox" v-model="claimOverride">
+            <label class="text-white">Do you want to override these warnings?</label>
+            <input class="form-check-input override-checkbox" type="checkbox" v-model="claimOverride" />
           </span>
         </div>
       </div>
@@ -102,7 +98,7 @@ export default {
   },
   computed: {
     formIsValid() {
-      return ((this.claimUnlistedGame || this.claimMasterGame) && this.claimPublisher);
+      return (this.claimUnlistedGame || this.claimMasterGame) && this.claimPublisher;
     }
   },
   props: ['publishers', 'year'],
@@ -112,12 +108,12 @@ export default {
       this.isBusy = true;
       axios
         .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publishers[0].leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.searched = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -144,7 +140,7 @@ export default {
 
       axios
         .post('/api/leagueManager/ManagerClaimGame', request)
-        .then(response => {
+        .then((response) => {
           this.claimResult = response.data;
           if (!this.claimResult.success) {
             return;
@@ -157,9 +153,7 @@ export default {
           this.$emit('gameClaimed', claimInfo);
           this.clearData();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     showUnlistedField() {
       this.showingUnlistedField = true;
@@ -187,13 +181,13 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button{
+.add-game-button {
   width: 100%;
 }
-.claim-error{
+.claim-error {
   margin-top: 10px;
 }
-.game-search-input{
+.game-search-input {
   margin-bottom: 15px;
 }
 .override-checkbox {

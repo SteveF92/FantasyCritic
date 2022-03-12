@@ -1,8 +1,6 @@
 <template>
   <b-modal id="manageTagOverridesModal" ref="tagOverridesModalRef" size="lg" title="Manage Tag Overrides" @hidden="clearData" hide-footer>
-    <div class="alert alert-info">
-      This option will allow you to override the tags of a game to whatever you want, if you disagree with how the site has classified something.
-    </div>
+    <div class="alert alert-info">This option will allow you to override the tags of a game to whatever you want, if you disagree with how the site has classified something.</div>
     <div v-if="leagueYear.tagOverrides.length > 0">
       <table class="table table-bordered table-striped">
         <thead>
@@ -14,7 +12,7 @@
         </thead>
         <tbody>
           <tr v-for="tagOverride in leagueYear.tagOverrides">
-            <td>{{tagOverride.masterGame.gameName}}</td>
+            <td>{{ tagOverride.masterGame.gameName }}</td>
             <td>
               <span v-for="(tag, index) in tagOverride.tags">
                 <masterGameTagBadge :tagName="tagOverride.tags[index]"></masterGameTagBadge>
@@ -39,7 +37,7 @@
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="overrideMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
 
-        <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{overrideMasterGame.gameName}}</label>
+        <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
       </div>
     </form>
     <div v-if="overrideMasterGame">
@@ -49,7 +47,7 @@
     <br />
     <div v-if="errorInfo" class="alert alert-danger">
       <h3 class="alert-heading">Error!</h3>
-      <p class="text-white">{{errorInfo}}</p>
+      <p class="text-white">{{ errorInfo }}</p>
     </div>
   </b-modal>
 </template>
@@ -77,7 +75,7 @@ export default {
   },
   computed: {
     formIsValid() {
-      return (this.overrideMasterGame);
+      return this.overrideMasterGame;
     }
   },
   props: ['leagueYear'],
@@ -91,13 +89,13 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetGameTagOverride', model)
-        .then(response => {
+        .then((response) => {
           var gameInfo = {
             gameName: tagOverride.masterGame.gameName
           };
           this.$emit('gameTagsReset', gameInfo);
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -106,12 +104,10 @@ export default {
       this.possibleMasterGames = [];
       axios
         .get('/api/league/PossibleMasterGames?gameName=' + this.overrideGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     setTags(masterGame) {
       let tagNames = _.map(this.chosenTags, 'name');
@@ -124,14 +120,14 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetGameTagOverride', model)
-        .then(response => {
+        .then((response) => {
           var gameInfo = {
             gameName: masterGame.gameName
           };
           this.$emit('gameEligibilitySet', gameInfo);
           this.clearData();
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -149,19 +145,19 @@ export default {
 };
 </script>
 <style scoped>
-  .select-cell {
-    text-align: center;
-  }
-  .game-search-input {
-    margin-bottom: 15px;
-  }
+.select-cell {
+  text-align: center;
+}
+.game-search-input {
+  margin-bottom: 15px;
+}
 
-  .eligibility-set-buttons {
-    display: flex;
-    justify-content: space-around;
-  }
-  .set-tags-button{
-      margin-top: 10px;
-      width: 100%;
-  }
+.eligibility-set-buttons {
+  display: flex;
+  justify-content: space-around;
+}
+.set-tags-button {
+  margin-top: 10px;
+  width: 100%;
+}
 </style>

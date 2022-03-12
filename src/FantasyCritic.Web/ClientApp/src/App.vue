@@ -11,8 +11,7 @@
           </main>
         </div>
       </div>
-      <footerModule>
-      </footerModule>
+      <footerModule></footerModule>
     </div>
   </div>
 </template>
@@ -33,12 +32,12 @@ export default {
 </script>
 
 <style lang="scss">
-  @import './scss/custom-bootstrap.scss';
-  @import '../node_modules/bootstrap/scss/bootstrap.scss';
+@import './scss/custom-bootstrap.scss';
+@import '../node_modules/bootstrap/scss/bootstrap.scss';
 </style>
 
 <style>
-  @import './css/site.css';
-  @import './css/footer.css';
-  @import './css/modal.css';
+@import './css/site.css';
+@import './css/footer.css';
+@import './css/modal.css';
 </style>

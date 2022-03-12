@@ -5,50 +5,50 @@
         <tbody>
           <tr>
             <th class="bg-primary">Total Standard Games</th>
-            <td>{{leagueYearOptions.standardGames}}</td>
+            <td>{{ leagueYearOptions.standardGames }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Games to Draft</th>
-            <td>{{leagueYearOptions.gamesToDraft}}</td>
+            <td>{{ leagueYearOptions.gamesToDraft }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Pickup Games</th>
-            <td>{{leagueYearOptions.standardGames - leagueYearOptions.gamesToDraft}}</td>
+            <td>{{ leagueYearOptions.standardGames - leagueYearOptions.gamesToDraft }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Total Counter Picks</th>
-            <td>{{leagueYearOptions.counterPicks}}</td>
+            <td>{{ leagueYearOptions.counterPicks }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Counter Picks to Draft</th>
-            <td>{{leagueYearOptions.counterPicksToDraft}}</td>
+            <td>{{ leagueYearOptions.counterPicksToDraft }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Minimum Bid Amount</th>
-            <td>{{leagueYearOptions.minimumBidAmount}}</td>
+            <td>{{ leagueYearOptions.minimumBidAmount }}</td>
           </tr>
           <tr>
             <th class="bg-primary">"Any Unreleased" Droppable Games</th>
-            <td v-show="!leagueYearOptions.unlimitedFreeDroppableGames">{{leagueYearOptions.freeDroppableGames}}</td>
+            <td v-show="!leagueYearOptions.unlimitedFreeDroppableGames">{{ leagueYearOptions.freeDroppableGames }}</td>
             <td v-show="leagueYearOptions.unlimitedFreeDroppableGames">Unlimited</td>
           </tr>
           <tr>
             <th class="bg-primary">"Will not Release" Droppable Games</th>
-            <td v-show="!leagueYearOptions.unlimitedWillNotReleaseDroppableGames">{{leagueYearOptions.willNotReleaseDroppableGames}}</td>
+            <td v-show="!leagueYearOptions.unlimitedWillNotReleaseDroppableGames">{{ leagueYearOptions.willNotReleaseDroppableGames }}</td>
             <td v-show="leagueYearOptions.unlimitedWillNotReleaseDroppableGames">Unlimited</td>
           </tr>
           <tr>
             <th class="bg-primary">"Will Release" Droppable Games</th>
-            <td v-show="!leagueYearOptions.unlimitedWillReleaseDroppableGames">{{leagueYearOptions.willReleaseDroppableGames}}</td>
+            <td v-show="!leagueYearOptions.unlimitedWillReleaseDroppableGames">{{ leagueYearOptions.willReleaseDroppableGames }}</td>
             <td v-show="leagueYearOptions.unlimitedWillReleaseDroppableGames">Unlimited</td>
           </tr>
           <tr>
             <th class="bg-primary">Drop Only Drafted Games</th>
-            <td>{{leagueYearOptions.dropOnlyDraftGames | yesNo }}</td>
+            <td>{{ leagueYearOptions.dropOnlyDraftGames | yesNo }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Counter Picks Block Drops</th>
-            <td>{{leagueYearOptions.counterPicksBlockDrops | yesNo }}</td>
+            <td>{{ leagueYearOptions.counterPicksBlockDrops | yesNo }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Bidding System</th>
@@ -79,11 +79,11 @@
 
           <tr>
             <th class="bg-primary">Public League</th>
-            <td>{{league.publicLeague | yesNo}}</td>
+            <td>{{ league.publicLeague | yesNo }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Test League</th>
-            <td>{{league.testLeague | yesNo}}</td>
+            <td>{{ league.testLeague | yesNo }}</td>
           </tr>
         </tbody>
       </table>
@@ -110,18 +110,18 @@ export default {
     fetchPossibleLeagueOptions() {
       axios
         .get('/api/League/LeagueOptions')
-        .then(response => {
+        .then((response) => {
           this.possibleLeagueOptions = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     fetchLeagueYearOptions() {
       axios
         .get('/api/League/GetLeagueYearOptions?leagueID=' + this.league.leagueID + '&year=' + this.leagueYear.year)
-        .then(response => {
+        .then((response) => {
           this.leagueYearOptions = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     }
   },
   mounted() {
@@ -130,6 +130,4 @@ export default {
   }
 };
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

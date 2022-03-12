@@ -7,7 +7,7 @@
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Change Name" v-on:click="changePublisherName" :disabled="!newPublisherName"/>
+      <input type="submit" class="btn btn-primary" value="Change Name" v-on:click="changePublisherName" :disabled="!newPublisherName" />
     </div>
   </b-modal>
 </template>
@@ -30,12 +30,11 @@ export default {
       };
       axios
         .post('/api/royale/changePublisherName', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.changeRoyalePublisherNameRef.hide();
           this.$emit('publisherNameChanged');
         })
-        .catch(response => {
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.newPublisherName = this.userRoyalePublisher.publisherName;

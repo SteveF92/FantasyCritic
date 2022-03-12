@@ -14,13 +14,15 @@
       <div class="form-group">
         <b-form-checkbox v-model="testLeague" :disabled="initialTestLeague">
           <span class="checkbox-label">Test League</span>
-          <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.
-          If you want to change a test league into a regular league, you'll need to contact me.</p>
+          <p>
+            If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site. If you want to change a test league into a regular league, you'll
+            need to contact me.
+          </p>
         </b-form-checkbox>
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Change Settings" v-on:click="changeleagueName" :disabled="!newleagueName"/>
+      <input type="submit" class="btn btn-primary" value="Change Settings" v-on:click="changeleagueName" :disabled="!newleagueName" />
     </div>
   </b-modal>
 </template>
@@ -49,13 +51,12 @@ export default {
       };
       axios
         .post('/api/leagueManager/ChangeLeagueOptions', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.changeLeagueOptionsFormRef.hide();
           this.$emit('leagueOptionsChanged');
           this.newleagueName = '';
         })
-        .catch(response => {
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.newleagueName = this.league.leagueName;

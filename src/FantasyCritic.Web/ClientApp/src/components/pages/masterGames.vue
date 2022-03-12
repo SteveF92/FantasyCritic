@@ -51,7 +51,7 @@
           <span class="checkbox-label">Show only unreleased games</span>
         </b-form-checkbox>
       </div>
-      
+
       <div v-if="showGames">
         <masterGamesTable :masterGames="gamesToShow"></masterGamesTable>
       </div>
@@ -80,7 +80,7 @@ export default {
       flatMasterGameYears: null,
       possibleMasterGameYears: null,
       myLeaguesForYear: [],
-      selectedLeague: ""
+      selectedLeague: ''
     };
   },
   components: {
@@ -97,30 +97,30 @@ export default {
           return this.flatMasterGameYears;
         }
 
-        return _.filter(this.flatMasterGameYears, { 'isReleased': false });
+        return _.filter(this.flatMasterGameYears, { isReleased: false });
       }
 
       if (this.possibleMasterGameYears) {
         let filteredGames = this.possibleMasterGameYears;
-        if (this.eligibilityFilter === "eligibleOnly") {
-          filteredGames = _.filter(filteredGames, { 'isEligible': true });
-        } else if (this.eligibilityFilter === "eligibleInOpenSlotOnly") {
-          filteredGames = _.filter(filteredGames, { 'isEligibleInOpenSlot': true });
-        } else if (this.eligibilityFilter === "ineligibleOnly") {
-          filteredGames = _.filter(filteredGames, { 'isEligible': false });
+        if (this.eligibilityFilter === 'eligibleOnly') {
+          filteredGames = _.filter(filteredGames, { isEligible: true });
+        } else if (this.eligibilityFilter === 'eligibleInOpenSlotOnly') {
+          filteredGames = _.filter(filteredGames, { isEligibleInOpenSlot: true });
+        } else if (this.eligibilityFilter === 'ineligibleOnly') {
+          filteredGames = _.filter(filteredGames, { isEligible: false });
         }
 
-        if (this.takenStatusFilter === "taken") {
-          filteredGames = _.filter(filteredGames, { 'taken': true });
-        } else if (this.takenStatusFilter === "notTaken") {
-          filteredGames = _.filter(filteredGames, { 'taken': false });
+        if (this.takenStatusFilter === 'taken') {
+          filteredGames = _.filter(filteredGames, { taken: true });
+        } else if (this.takenStatusFilter === 'notTaken') {
+          filteredGames = _.filter(filteredGames, { taken: false });
         }
 
         if (this.unreleasedOnlyFilter) {
-          filteredGames = _.filter(filteredGames, { 'isReleased': false })
+          filteredGames = _.filter(filteredGames, { isReleased: false });
         }
-        
-        let flattenedGames = filteredGames.map(v => v.masterGame);
+
+        let flattenedGames = filteredGames.map((v) => v.masterGame);
         return flattenedGames;
       }
 
@@ -137,10 +137,10 @@ export default {
     fetchSupportedYears() {
       axios
         .get('/api/game/SupportedYears')
-        .then(response => {
+        .then((response) => {
           let supportedYears = response.data;
-          let openYears = _.filter(supportedYears, { 'openForPlay': true });
-          let finishedYears = _.filter(supportedYears, { 'finished': true });
+          let openYears = _.filter(supportedYears, { openForPlay: true });
+          let finishedYears = _.filter(supportedYears, { finished: true });
           this.supportedYears = openYears.concat(finishedYears).map(function (v) {
             return v.year;
           });
@@ -148,9 +148,7 @@ export default {
           this.fetchGamesForYear();
           this.fetchMyLeaguesForYear();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     fetchGamesForYear() {
       this.isBusy = true;
@@ -160,35 +158,29 @@ export default {
       if (!this.selectedLeague) {
         axios
           .get('/api/game/MasterGameYear/' + this.selectedYear)
-          .then(response => {
+          .then((response) => {
             this.flatMasterGameYears = response.data;
             this.isBusy = false;
           })
-          .catch(response => {
-
-          });
+          .catch((response) => {});
       } else {
         axios
           .get(`/api/game/MasterGameYearInLeagueContext/${this.selectedYear}?leagueID=${this.selectedLeague.leagueID}`)
-          .then(response => {
+          .then((response) => {
             this.possibleMasterGameYears = response.data;
             this.isBusy = false;
           })
-          .catch(response => {
-
-          });
+          .catch((response) => {});
       }
     },
     fetchMyLeaguesForYear() {
       axios
         .get('/api/League/MyLeagues?year=' + this.selectedYear)
-        .then(response => {
+        .then((response) => {
           let allLeaguesForYear = response.data;
-          this.myLeaguesForYear = _.filter(allLeaguesForYear, { 'testLeague': false })
+          this.myLeaguesForYear = _.filter(allLeaguesForYear, { testLeague: false });
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     changeYear() {
       this.fetchGamesForYear();
@@ -206,54 +198,54 @@ export default {
 };
 </script>
 <style scoped>
-  .header-row {
-    width: 100%;
-  }
+.header-row {
+  width: 100%;
+}
 
-  .header-flex {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
+.header-flex {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
 
-  .selector-area{
-    display: flex;
-    align-items: flex-start;
-  }
+.selector-area {
+  display: flex;
+  align-items: flex-start;
+}
 
-  .year-selector {
-    width: 100px;
-  }
+.year-selector {
+  width: 100px;
+}
 
-  .request-button {
-    width: 100%;
-    margin-bottom: 15px;
-  }
+.request-button {
+  width: 100%;
+  margin-bottom: 15px;
+}
 
-  .league-label {
-    margin-right: 10px;
-  }
+.league-label {
+  margin-right: 10px;
+}
 
-  .league-selector {
-    width: 250px;
-  }
+.league-selector {
+  width: 250px;
+}
 
-  .special-selectors {
-    margin: 10px;
-    flex-wrap: wrap;
-  }
+.special-selectors {
+  margin: 10px;
+  flex-wrap: wrap;
+}
 
-  .special-selectors div {
-      margin-right: 10px;
-  }
+.special-selectors div {
+  margin-right: 10px;
+}
 
-  .spinner {
-    display: flex;
-    justify-content: space-around;
-  }
+.spinner {
+  display: flex;
+  justify-content: space-around;
+}
 
-  .clear-league-filter-button {
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
+.clear-league-filter-button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 </style>

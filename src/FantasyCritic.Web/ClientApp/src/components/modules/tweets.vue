@@ -17,13 +17,13 @@ export default {
 </script>
 
 <style scoped>
-  .tweet-area {
-    display: flex; /* establish flex container */
-    justify-content: center; /* center items vertically, in this case */
-    align-items: center; /* center items horizontally, in this case */
-  }
+.tweet-area {
+  display: flex; /* establish flex container */
+  justify-content: center; /* center items vertically, in this case */
+  align-items: center; /* center items horizontally, in this case */
+}
 
-  .tweet-timeline {
-    width: 600px;
-  }
+.tweet-timeline {
+  width: 600px;
+}
 </style>

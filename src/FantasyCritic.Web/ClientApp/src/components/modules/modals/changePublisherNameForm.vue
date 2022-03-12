@@ -7,7 +7,7 @@
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Change Name" v-on:click="changePublisherName" :disabled="!newPublisherName"/>
+      <input type="submit" class="btn btn-primary" value="Change Name" v-on:click="changePublisherName" :disabled="!newPublisherName" />
     </div>
   </b-modal>
 </template>
@@ -30,7 +30,7 @@ export default {
       };
       axios
         .post('/api/league/changePublisherName', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.changePublisherNameRef.hide();
           let actionInfo = {
             oldName: this.publisher.publisherName,
@@ -39,8 +39,7 @@ export default {
           };
           this.$emit('publisherNameChanged', actionInfo);
         })
-        .catch(response => {
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.newPublisherName = this.publisher.publisherName;

@@ -1,12 +1,14 @@
 <template>
   <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData">
-    <div class="alert alert-info">This form will allow you to draft a game for another player. You can use this if you are running a draft off of one computer, for example. If you are just
-    looking to draft your own games, you should use "Draft Game" under "Player Actions"</div>
+    <div class="alert alert-info">
+      This form will allow you to draft a game for another player. You can use this if you are running a draft off of one computer, for example. If you are just looking to draft your own games, you
+      should use "Draft Game" under "Player Actions"
+    </div>
     <div v-if="nextPublisherUp">
       <div class="form-group">
-        <label for="nextPublisherUp" class="control-label">Select the next game for publisher: </label>
+        <label for="nextPublisherUp" class="control-label">Select the next game for publisher:</label>
         <label>
-          <strong>{{nextPublisherUp.publisherName}} (Display Name: {{nextPublisherUp.playerName}})</strong>
+          <strong>{{ nextPublisherUp.publisherName }} (Display Name: {{ nextPublisherUp.playerName }})</strong>
         </label>
       </div>
       <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
@@ -29,7 +31,6 @@
             <searchSlotTypeBadge v-for="specialSlot in leagueYear.slotInfo.specialSlots" :gameSlot="specialSlot" v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
           </span>
         </div>
-
 
         <div v-if="!draftMasterGame">
           <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
@@ -64,15 +65,13 @@
           <h3 class="alert-heading" v-if="draftResult.overridable">Warning!</h3>
           <h3 class="alert-heading" v-if="!draftResult.overridable">Error!</h3>
           <ul>
-            <li v-for="error in draftResult.errors">{{error}}</li>
+            <li v-for="error in draftResult.errors">{{ error }}</li>
           </ul>
 
           <div class="form-check" v-if="draftResult.overridable">
             <span>
-              <label class="text-white">
-                Do you want to override these warnings?
-              </label>
-              <input class="form-check-input override-checkbox" type="checkbox" v-model="draftOverride">
+              <label class="text-white">Do you want to override these warnings?</label>
+              <input class="form-check-input override-checkbox" type="checkbox" v-model="draftOverride" />
             </span>
           </div>
         </div>
@@ -110,22 +109,22 @@ export default {
   },
   computed: {
     formIsValid() {
-      return (this.draftUnlistedGame || this.draftMasterGame);
-    },
+      return this.draftUnlistedGame || this.draftMasterGame;
+    }
   },
-  props: ['leagueYear','nextPublisherUp', 'year'],
+  props: ['leagueYear', 'nextPublisherUp', 'year'],
   methods: {
     searchGame() {
       this.clearDataExceptSearch();
       this.isBusy = true;
       axios
         .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.searched = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -134,12 +133,12 @@ export default {
       this.isBusy = true;
       axios
         .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -151,12 +150,12 @@ export default {
       let urlEncodedSlot = encodeURI(base64Slot);
       axios
         .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&slotInfo=' + urlEncodedSlot)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -188,7 +187,7 @@ export default {
 
       axios
         .post('/api/leagueManager/ManagerDraftGame', request)
-        .then(response => {
+        .then((response) => {
           this.draftResult = response.data;
           if (!this.draftResult.success) {
             this.isBusy = false;
@@ -202,9 +201,7 @@ export default {
           this.$emit('gameDrafted', draftInfo);
           this.clearData();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     clearDataExceptSearch() {
       this.isBusy = false;
@@ -230,13 +227,13 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button{
+.add-game-button {
   width: 100%;
 }
-.draft-error{
+.draft-error {
   margin-top: 10px;
 }
-.game-search-input{
+.game-search-input {
   margin-bottom: 15px;
 }
 .override-checkbox {

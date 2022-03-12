@@ -1,11 +1,10 @@
 <template>
-  <b-modal id="managerDraftCounterPickForm" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" hide-footer
-           @hidden="clearData" @show="getPossibleCounterPicks">
+  <b-modal id="managerDraftCounterPickForm" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" hide-footer @hidden="clearData" @show="getPossibleCounterPicks">
     <div v-if="nextPublisherUp">
       <div class="form-group">
-        <label for="nextPublisherUp" class="control-label">Select the next counter pick for publisher: </label>
+        <label for="nextPublisherUp" class="control-label">Select the next counter pick for publisher:</label>
         <label>
-          <strong>{{nextPublisherUp.publisherName}} (Display Name: {{nextPublisherUp.playerName}})</strong>
+          <strong>{{ nextPublisherUp.publisherName }} (Display Name: {{ nextPublisherUp.playerName }})</strong>
         </label>
       </div>
       <form class="form-horizontal" v-on:submit.prevent="selectCounterPick" hide-footer>
@@ -21,7 +20,7 @@
         <div v-if="draftResult && !draftResult.success" class="alert bid-error alert-danger">
           <h3 class="alert-heading">Error!</h3>
           <ul>
-            <li v-for="error in draftResult.errors">{{error}}</li>
+            <li v-for="error in draftResult.errors">{{ error }}</li>
           </ul>
         </div>
 
@@ -61,7 +60,7 @@ export default {
 
       axios
         .post('/api/leagueManager/ManagerDraftGame', request)
-        .then(response => {
+        .then((response) => {
           this.draftResult = response.data;
           this.isBusy = false;
           if (!this.draftResult.success) {
@@ -75,19 +74,19 @@ export default {
           this.$emit('counterPickDrafted', draftInfo);
           this.selectedCounterPick = null;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
     getPossibleCounterPicks() {
       axios
         .get('/api/league/PossibleCounterPicks?publisherID=' + this.nextPublisherUp.publisherID)
-        .then(response => {
+        .then((response) => {
           this.possibleCounterPicks = response.data;
           this.isBusy = false;
           this.counterPicking = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -99,13 +98,13 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button{
+.add-game-button {
   width: 100%;
 }
-.draft-error{
+.draft-error {
   margin-top: 10px;
 }
-.game-search-input{
+.game-search-input {
   margin-bottom: 15px;
 }
 .override-checkbox {

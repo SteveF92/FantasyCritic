@@ -2,7 +2,9 @@
   <div>
     <form class="form-horizontal" hide-footer>
       <b-modal id="removePublisherGame" size="lg" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer @hidden="clearData">
-        <div class="alert alert-warning">Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be removing games from player's rosters.</div>
+        <div class="alert alert-warning">
+          Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be removing games from player's rosters.
+        </div>
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
           <b-form-select v-model="removeGamePublisher">
@@ -24,7 +26,7 @@
           <b-button variant="primary" class="add-game-button" v-on:click="removePublisherGame">Remove Game</b-button>
           <div v-if="errorInfo" class="alert alert-danger remove-error">
             <h3 class="alert-heading">Error!</h3>
-            <p class="text-white">{{errorInfo}}</p>
+            <p class="text-white">{{ errorInfo }}</p>
           </div>
         </div>
       </b-modal>
@@ -56,13 +58,13 @@ export default {
       };
       axios
         .post('/api/leagueManager/RemovePublisherGame', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.removePublisherGameRef.hide();
           this.$emit('gameRemoved', removeInfo);
           this.removeGamePublisher = null;
           this.removeGame = null;
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -74,7 +76,6 @@ export default {
 };
 </script>
 <style scoped>
-
 .add-game-button {
   width: 100%;
 }

@@ -29,7 +29,7 @@
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
 
-        <label v-if="associateMasterGame" for="associateMasterGame" class="control-label">Selected Game: {{associateMasterGame.gameName}}</label>
+        <label v-if="associateMasterGame" for="associateMasterGame" class="control-label">Selected Game: {{ associateMasterGame.gameName }}</label>
       </div>
     </form>
 
@@ -38,19 +38,20 @@
         <input type="submit" class="btn btn-primary add-game-button" value="Associate game" />
       </div>
 
-      <div v-if="associateResult && !associateResult.success" class="alert associate-error" v-bind:class="{ 'alert-danger': !associateResult.overridable, 'alert-warning': associateResult.overridable }">
+      <div
+        v-if="associateResult && !associateResult.success"
+        class="alert associate-error"
+        v-bind:class="{ 'alert-danger': !associateResult.overridable, 'alert-warning': associateResult.overridable }">
         <h3 class="alert-heading" v-if="associateResult.overridable">Warning!</h3>
         <h3 class="alert-heading" v-if="!associateResult.overridable">Error!</h3>
         <ul>
-          <li v-for="error in associateResult.errors">{{error}}</li>
+          <li v-for="error in associateResult.errors">{{ error }}</li>
         </ul>
 
         <div class="form-check" v-if="associateResult.overridable">
           <span>
-            <label class="text-white">
-              Do you want to override these warnings?
-            </label>
-            <input class="form-check-input override-checkbox" type="checkbox" v-model="associateOverride">
+            <label class="text-white">Do you want to override these warnings?</label>
+            <input class="form-check-input override-checkbox" type="checkbox" v-model="associateOverride" />
           </span>
         </div>
       </div>
@@ -84,12 +85,10 @@ export default {
       this.associateResult = null;
       axios
         .get('/api/league/PossibleMasterGames?gameName=' + this.associateGameName + '&year=' + this.year + '&leagueid=' + this.publishers[0].leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     associateGame() {
       var request = {
@@ -101,7 +100,7 @@ export default {
 
       axios
         .post('/api/leagueManager/ManagerAssociateGame', request)
-        .then(response => {
+        .then((response) => {
           this.associateResult = response.data;
           if (!this.associateResult.success) {
             return;
@@ -116,9 +115,7 @@ export default {
           this.associateOverride = false;
           this.possibleMasterGames = [];
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.associateResult = null;
@@ -138,13 +135,13 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button{
+.add-game-button {
   width: 100%;
 }
-.associate-error{
+.associate-error {
   margin-top: 10px;
 }
-.game-search-input{
+.game-search-input {
   margin-bottom: 15px;
 }
 .override-checkbox {

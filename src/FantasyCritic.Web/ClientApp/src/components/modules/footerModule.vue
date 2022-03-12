@@ -80,9 +80,9 @@
   </footer>
 </template>
 <style scoped>
-  .fc-plus-nav {
-    height: 24px;
-    padding-bottom: 3px;
-    margin-right: 3px;
-  }
+.fc-plus-nav {
+  height: 24px;
+  padding-bottom: 3px;
+  margin-right: 3px;
+}
 </style>

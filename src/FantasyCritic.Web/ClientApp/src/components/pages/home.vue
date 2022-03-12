@@ -3,20 +3,28 @@
     <div class="alert alert-warning" v-show="userInfo && !userInfo.emailConfirmed">
       <div>Your email address has not been confirmed. You cannot accept league invites via email until you do so.</div>
       <div>Check your email account for an email from us.</div>
-      <span>If you are having issues, check out our <a href="/faq#technical" class="text-secondary" target="_blank">FAQ</a> page.</span>
+      <span>
+        If you are having issues, check out our
+        <a href="/faq#technical" class="text-secondary" target="_blank">FAQ</a>
+        page.
+      </span>
     </div>
 
     <div class="col-md-10 offset-md-1 col-sm-12">
       <div class="text-well welcome-area" v-if="userInfo">
         <div class="row welcome-header">
-          <h1>Welcome {{userInfo.displayName}}!</h1>
+          <h1>Welcome {{ userInfo.displayName }}!</h1>
         </div>
         <div class="row main-buttons" v-if="activeRoyaleYearQuarter">
           <b-button variant="primary" :to="{ name: 'createLeague' }" class="main-button">Create a League</b-button>
-          <b-button variant="primary" v-if="!userRoyalePublisher" :to="{ name: 'criticsRoyale', params: {year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter }}" class="main-button">
+          <b-button
+            variant="primary"
+            v-if="!userRoyalePublisher"
+            :to="{ name: 'criticsRoyale', params: { year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter } }"
+            class="main-button">
             Play Critics Royale
           </b-button>
-          <b-button variant="primary" v-if="userRoyalePublisher" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID }}" class="main-button">
+          <b-button variant="primary" v-if="userRoyalePublisher" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }" class="main-button">
             Critics Royale
           </b-button>
           <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
@@ -52,7 +60,7 @@
                 </div>
               </b-tab>
               <b-tab title="Archived Leagues" v-if="myArchivedLeagues && myArchivedLeagues.length > 0" title-item-class="tab-header">
-                <leagueTable :leagues="myArchivedLeagues" :leagueIcon="'archive'" :userID="userInfo.userID"  :showUnArchive="true"></leagueTable>
+                <leagueTable :leagues="myArchivedLeagues" :leagueIcon="'archive'" :userID="userInfo.userID" :showUnArchive="true"></leagueTable>
               </b-tab>
               <b-tab title="Test Leagues" v-if="myTestLeagues && myTestLeagues.length > 0" title-item-class="tab-header">
                 <leagueTable :leagues="myTestLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>
@@ -82,16 +90,9 @@
             <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
 
             <div class="row" v-if="publicLeagues && publicLeagues.length > 0">
-              <b-table :sort-by.sync="sortBy"
-                       :sort-desc.sync="sortDesc"
-                       :items="publicLeagues"
-                       :fields="publicLeagueFields"
-                       bordered
-                       striped
-                       responsive
-                       small>
+              <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
                 <template #cell(leagueName)="data">
-                  <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear }}">{{data.item.leagueName}}</router-link>
+                  <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
                 </template>
               </b-table>
             </div>
@@ -124,7 +125,7 @@ export default {
       userRoyalePublisher: null,
       publicLeagueFields: [
         { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'numberOfFollowers', label: 'Followers', sortable: true, thClass: 'bg-primary' },
+        { key: 'numberOfFollowers', label: 'Followers', sortable: true, thClass: 'bg-primary' }
       ],
       sortBy: 'numberOfFollowers',
       sortDesc: true,
@@ -162,85 +163,76 @@ export default {
     async fetchMyLeagues() {
       axios
         .get('/api/League/MyLeagues')
-        .then(response => {
+        .then((response) => {
           this.myLeagues = response.data;
           this.fetchingLeagues = false;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     async fetchInvitedLeagues() {
       axios
         .get('/api/League/MyInvites')
-        .then(response => {
+        .then((response) => {
           this.invitedLeagues = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     async fetchFollowedLeagues() {
       axios
         .get('/api/League/FollowedLeagues')
-        .then(response => {
+        .then((response) => {
           this.myFollowedLeagues = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     async fetchSupportedYears() {
       axios
         .get('/api/game/SupportedYears')
-        .then(response => {
+        .then((response) => {
           let supportedYears = response.data;
-          let openYears = _.filter(supportedYears, { 'openForPlay': true });
-          let finishedYears = _.filter(supportedYears, { 'finished': true });
+          let openYears = _.filter(supportedYears, { openForPlay: true });
+          let finishedYears = _.filter(supportedYears, { finished: true });
           this.supportedYears = openYears.concat(finishedYears).map(function (v) {
             return v.year;
           });
           this.selectedYear = this.supportedYears[0];
           this.fetchPublicLeaguesForYear(this.selectedYear);
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     async fetchActiveRoyaleYearQuarter() {
       axios
         .get('/api/royale/ActiveRoyaleQuarter')
-        .then(response => {
+        .then((response) => {
           this.activeRoyaleYearQuarter = response.data;
           this.fetchUserRoyalePublisher();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     async fetchPublicLeaguesForYear(year) {
       axios
         .get('/api/league/PublicLeagues/' + year + '?count=10')
-        .then(response => {
+        .then((response) => {
           this.publicLeagues = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     async fetchGameNews() {
       axios
         .get('/api/league/MyGameNews/')
-        .then(response => {
+        .then((response) => {
           this.gameNews = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     async fetchUserRoyalePublisher() {
       this.userRoyalePublisher = null;
       axios
         .get('/api/royale/GetUserRoyalePublisher/' + this.activeRoyaleYearQuarter.year + '/' + this.activeRoyaleYearQuarter.quarter)
-        .then(response => {
+        .then((response) => {
           this.userRoyalePublisher = response.data;
         })
-        .catch(response => {
-        });
+        .catch((response) => {});
     }
   },
   async mounted() {
@@ -249,37 +241,37 @@ export default {
 };
 </script>
 <style scoped>
-  .welcome-area{
-    margin-top: 10px;
-    margin-bottom: 20px;
-  }
-  .welcome-header {
-    justify-content: center;
-    text-align: center;
-  }
+.welcome-area {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.welcome-header {
+  justify-content: center;
+  text-align: center;
+}
 
-  .main-buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-  }
+.main-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
 
-  .main-button{
-    margin-top: 5px;
-    min-width: 200px;
-  }
+.main-button {
+  margin-top: 5px;
+  min-width: 200px;
+}
 
-  div >>> div.card {
-    background: rgba(50, 50, 50, 0.8);
-  }
+div >>> div.card {
+  background: rgba(50, 50, 50, 0.8);
+}
 
-  div >>> .tab-header a{
-    border-radius: 0px;
-    font-weight: bolder;
-    color: white;
-  }
+div >>> .tab-header a {
+  border-radius: 0px;
+  font-weight: bolder;
+  color: white;
+}
 
-  div >>> .tab-header .active{
-    background-color: #414141;
-  }
+div >>> .tab-header .active {
+  background-color: #414141;
+}
 </style>

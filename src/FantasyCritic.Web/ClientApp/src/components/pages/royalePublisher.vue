@@ -3,14 +3,14 @@
     <div v-if="publisher">
       <div class="publisher-header">
         <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
-          {{publisher.publisherIcon}}
+          {{ publisher.publisherIcon }}
         </div>
-        <h1 class="publisher-name">{{publisher.publisherName}}</h1>
-        <h4>Player Name: {{publisher.playerName}}</h4>
+        <h1 class="publisher-name">{{ publisher.publisherName }}</h1>
+        <h4>Player Name: {{ publisher.playerName }}</h4>
         <h4>
           Year/Quarter:
-          <router-link :to="{ name: 'criticsRoyale', params: {year: publisher.yearQuarter.year, quarter: publisher.yearQuarter.quarter }}">
-            {{publisher.yearQuarter.year}}-Q{{publisher.yearQuarter.quarter}}
+          <router-link :to="{ name: 'criticsRoyale', params: { year: publisher.yearQuarter.year, quarter: publisher.yearQuarter.quarter } }">
+            {{ publisher.yearQuarter.year }}-Q{{ publisher.yearQuarter.quarter }}
           </router-link>
         </h4>
       </div>
@@ -18,18 +18,14 @@
       <div v-if="publisher.quartersWon" class="won-quarters">
         <span v-for="quarter in publisher.quartersWon" class="badge badge-success">
           <font-awesome-icon icon="crown" class="quarter-winner-crown" />
-          {{quarter.year}}-Q{{quarter.quarter}} Winner
+          {{ quarter.year }}-Q{{ quarter.quarter }} Winner
         </span>
       </div>
 
       <div class="row">
         <div class="col-md-12 col-lg-8">
-          <h2>
-            Total Points: {{publisher.totalFantasyPoints}}
-          </h2>
-          <h4>
-            Remaining Budget: {{publisher.budget | money}}
-          </h4>
+          <h2>Total Points: {{ publisher.totalFantasyPoints }}</h2>
+          <h4>Remaining Budget: {{ publisher.budget | money }}</h4>
         </div>
 
         <div class="col-md-12 col-lg-4">
@@ -46,13 +42,13 @@
       </div>
 
       <hr />
-      <div class="alert alert-danger" v-if="errorInfo">{{errorInfo}}</div>
+      <div class="alert alert-danger" v-if="errorInfo">{{ errorInfo }}</div>
 
       <h1>Games</h1>
       <b-table striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" v-if="publisher.publisherGames.length !== 0" :tbody-tr-class="publisherGameRowClass">
         <template #cell(masterGame.gameName)="data">
           <span class="master-game-popover">
-            <masterGamePopover :masterGame="data.item.masterGame" :currentlyIneligible="data.item.currentlyIneligible"> </masterGamePopover>
+            <masterGamePopover :masterGame="data.item.masterGame" :currentlyIneligible="data.item.currentlyIneligible"></masterGamePopover>
           </span>
 
           <span v-if="data.item.currentlyIneligible" class="game-ineligible">
@@ -61,7 +57,7 @@
           </span>
         </template>
         <template #cell(masterGame.maximumReleaseDate)="data">
-          {{getReleaseDate(data.item.masterGame)}}
+          {{ getReleaseDate(data.item.masterGame) }}
         </template>
         <template #cell(amountSpent)="data">
           {{ data.item.amountSpent | money }}
@@ -84,12 +80,8 @@
         </template>
       </b-table>
       <div v-else class="alert alert-info">
-        <template v-if="userIsPublisher">
-          You have not bought any games yet!
-        </template>
-        <template v-else>
-          This publisher has not bought any games yet.
-        </template>
+        <template v-if="userIsPublisher">You have not bought any games yet!</template>
+        <template v-else>This publisher has not bought any games yet.</template>
       </div>
     </div>
 
@@ -97,14 +89,18 @@
 
     <b-modal id="setAdvertisingMoneyModal" ref="setAdvertisingMoneyModalRef" title="Set Advertising Budget" @ok="setBudget">
       <div v-if="gameToModify">
-        <p>How much money do you want to allocate to <strong>{{gameToModify.masterGame.gameName}}</strong>?</p>
+        <p>
+          How much money do you want to allocate to
+          <strong>{{ gameToModify.masterGame.gameName }}</strong>
+          ?
+        </p>
         <p>Each dollar allocated will increase your fantasy points received by 5%</p>
         <p>You can spend up to $10 for a bonus of 50%.</p>
         <p>You can adjust this up until the game (or reviews) come out.</p>
         <div class="form-group row">
           <label for="advertisingBudgetToSet" class="col-sm-2 col-form-label">Budget</label>
           <div class="col-sm-10">
-            <input class="form-control" v-model="advertisingBudgetToSet">
+            <input class="form-control" v-model="advertisingBudgetToSet" />
           </div>
         </div>
       </div>
@@ -142,9 +138,7 @@ export default {
         { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
         { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
       ],
-      userPublisherFields: [
-        { key: 'sellGame', label: '', thClass: 'bg-primary', label: 'Sell' }
-      ]
+      userPublisherFields: [{ key: 'sellGame', label: '', thClass: 'bg-primary', label: 'Sell' }]
     };
   },
   components: {
@@ -159,7 +153,7 @@ export default {
       return this.$store.getters.isAuthenticated;
     },
     userIsPublisher() {
-      return this.isAuth && (this.publisher.userID === this.$store.getters.userInfo.userID);
+      return this.isAuth && this.publisher.userID === this.$store.getters.userInfo.userID;
     },
     allFields() {
       let conditionalFields = [];
@@ -172,13 +166,15 @@ export default {
       return {
         html: true,
         title: () => {
-          return "What does this mean?";
+          return 'What does this mean?';
         },
         content: () => {
-          return 'This game\'s status has changed since you purchased it, and it is currently ineligible based on the royale rules. Any points the game receives will NOT count. <br/> <br/>' +
-            'You can drop the game for a full refund.';
+          return (
+            "This game's status has changed since you purchased it, and it is currently ineligible based on the royale rules. Any points the game receives will NOT count. <br/> <br/>" +
+            'You can drop the game for a full refund.'
+          );
         }
-      }
+      };
     },
     isPlusUser() {
       return this.$store.getters.isPlusUser;
@@ -191,10 +187,10 @@ export default {
     fetchPublisher() {
       axios
         .get('/api/Royale/GetRoyalePublisher/' + this.publisherid)
-        .then(response => {
+        .then((response) => {
           this.publisher = response.data;
         })
-        .catch(returnedError => (this.error = returnedError));
+        .catch((returnedError) => (this.error = returnedError));
     },
     gamePurchased(purchaseInfo) {
       this.fetchPublisher();
@@ -235,7 +231,7 @@ export default {
 
       axios
         .post('/api/royale/SellGame', request)
-        .then(response => {
+        .then((response) => {
           this.fetchPublisher();
           let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
           let toast = this.$toasted.show(message, {
@@ -244,8 +240,8 @@ export default {
             duration: 5000
           });
         })
-        .catch(response => {
-          this.errorInfo = 'You can\'t sell that game. ' + response.response.data;
+        .catch((response) => {
+          this.errorInfo = "You can't sell that game. " + response.response.data;
         });
     },
     setGameToSetBudget(publisherGame) {
@@ -262,13 +258,13 @@ export default {
 
       axios
         .post('/api/royale/SetAdvertisingMoney', request)
-        .then(response => {
+        .then((response) => {
           this.fetchPublisher();
           this.advertisingBudgetToSet = 0;
         })
-        .catch(response => {
+        .catch((response) => {
           this.advertisingBudgetToSet = 0;
-          this.errorInfo = 'You can\'t set that budget. ' + response.response.data;
+          this.errorInfo = "You can't set that budget. " + response.response.data;
         });
     },
     getReleaseDate(game) {
@@ -293,71 +289,71 @@ export default {
     this.fetchPublisher();
   },
   watch: {
-    '$route'(to, from) {
+    $route(to, from) {
       this.fetchPublisher();
     }
   }
 };
 </script>
 <style scoped>
-  .publisher-header {
-    margin-top: 10px;
-    border: 2px;
-    border-color: #D6993A;
-    border-style: solid;
-    background-color: #414141;
-    padding-left: 5px;
-  }
+.publisher-header {
+  margin-top: 10px;
+  border: 2px;
+  border-color: #d6993a;
+  border-style: solid;
+  background-color: #414141;
+  padding-left: 5px;
+}
 
-  .publisher-name {
-    display: block;
-    max-width: 100%;
-    word-wrap: break-word;
-  }
+.publisher-name {
+  display: block;
+  max-width: 100%;
+  word-wrap: break-word;
+}
 
-  .publisher-icon {
-    font-size: 75px;
-    padding: 5px;
-    float: left;
-  }
+.publisher-icon {
+  font-size: 75px;
+  padding: 5px;
+  float: left;
+}
 
-  .top-area{
-    margin-top: 10px;
-    margin-bottom: 20px;
-  }
+.top-area {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
 
-  .main-buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-  }
+.main-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
 
-  .main-button{
-    margin-top: 5px;
-    min-width: 200px;
-  }
+.main-button {
+  margin-top: 5px;
+  min-width: 200px;
+}
 
-  .won-quarters {
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
+.won-quarters {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 
-  .won-quarters span {
-      margin: 5px;
-  }
+.won-quarters span {
+  margin: 5px;
+}
 
-  .game-ineligible {
-    float: right;
-    color: white;
-    font-style: italic;
-    padding-left: 5px;
-  }
+.game-ineligible {
+  float: right;
+  color: white;
+  font-style: italic;
+  padding-left: 5px;
+}
 
-  .master-game-popover {
-    float: left;
-  }
+.master-game-popover {
+  float: left;
+}
 
-  .quarter-winner-crown {
-    color: #D6993A;
-  }
+.quarter-winner-crown {
+  color: #d6993a;
+}
 </style>

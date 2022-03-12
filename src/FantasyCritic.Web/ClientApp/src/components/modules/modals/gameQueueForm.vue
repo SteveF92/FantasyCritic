@@ -30,15 +30,13 @@
     <div v-if="queueResult && !queueResult.success" class="alert bid-error alert-danger">
       <h3 class="alert-heading">Error!</h3>
       <ul>
-        <li v-for="error in queueResult.errors">{{error}}</li>
+        <li v-for="error in queueResult.errors">{{ error }}</li>
       </ul>
     </div>
 
     <hr />
     <h3 class="text-black">Current Watchlist</h3>
-    <label>
-      Drag and drop to change order.
-    </label>
+    <label>Drag and drop to change order.</label>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
@@ -53,12 +51,12 @@
       <draggable v-model="desiredQueueRanks" tag="tbody" handle=".handle">
         <tr v-for="queuedGame in desiredQueueRanks" :key="queuedGame.rank">
           <td scope="row" class="handle"><font-awesome-icon icon="bars" size="lg" /></td>
-          <td>{{queuedGame.masterGame.gameName}}</td>
+          <td>{{ queuedGame.masterGame.gameName }}</td>
           <td>
-            <span>{{queuedGame.masterGame.estimatedReleaseDate}}</span>
+            <span>{{ queuedGame.masterGame.estimatedReleaseDate }}</span>
             <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
           </td>
-          <td>{{queuedGame.rank}}</td>
+          <td>{{ queuedGame.rank }}</td>
           <td>
             <statusBadge :possibleMasterGame="queuedGame"></statusBadge>
           </td>
@@ -90,7 +88,7 @@ export default {
     StatusBadge,
     SearchSlotTypeBadge
   },
-  props: ['leagueYear','publisher', 'year'],
+  props: ['leagueYear', 'publisher', 'year'],
   data() {
     return {
       queuedGames: null,
@@ -107,13 +105,11 @@ export default {
     fetchQueuedGames() {
       axios
         .get('/api/league/CurrentQueuedGames/' + this.publisher.publisherID)
-        .then(response => {
+        .then((response) => {
           this.queuedGames = response.data;
           this.desiredQueueRanks = this.queuedGames;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     searchGame() {
       this.clearDataExceptSearch();
@@ -121,11 +117,11 @@ export default {
 
       axios
         .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publisher.leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -135,12 +131,12 @@ export default {
 
       axios
         .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.publisher.leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.showingTopAvailable = true;
           this.isBusy = false;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -152,12 +148,12 @@ export default {
       let urlEncodedSlot = encodeURI(base64Slot);
       axios
         .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&slotInfo=' + urlEncodedSlot)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
         });
     },
@@ -169,12 +165,12 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/league/AddGameToQueue', request)
-        .then(response => {
+        .then((response) => {
           this.queueResult = response.data;
           this.isBusy = false;
           this.fetchQueuedGames();
         })
-        .catch(response => {
+        .catch((response) => {
           this.isBusy = false;
           this.errorInfo = response.response.data;
         });
@@ -189,12 +185,10 @@ export default {
       };
       axios
         .post('/api/league/SetQueueRankings', model)
-        .then(response => {
+        .then((response) => {
           this.fetchQueuedGames();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     removeQueuedGame(game) {
       var model = {
@@ -203,12 +197,10 @@ export default {
       };
       axios
         .post('/api/league/DeleteQueuedGame', model)
-        .then(response => {
+        .then((response) => {
           this.fetchQueuedGames();
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     clearAllData() {
       this.clearQueueData();
@@ -232,8 +224,7 @@ export default {
   },
   watch: {
     queuedGames(newValue, oldValue) {
-      if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array &&
-          oldValue.length !== newValue.length)) {
+      if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array && oldValue.length !== newValue.length)) {
         this.clearQueueData();
       }
     },
@@ -244,15 +235,15 @@ export default {
 };
 </script>
 <style scoped>
-  .select-cell {
-    text-align: center;
-  }
+.select-cell {
+  text-align: center;
+}
 
-  .search-tags {
-    display: flex;
-    padding: 5px;
-    background: rgba(50, 50, 50, 0.7);
-    border-radius: 5px;
-    justify-content: space-around;
-  }
+.search-tags {
+  display: flex;
+  padding: 5px;
+  background: rgba(50, 50, 50, 0.7);
+  border-radius: 5px;
+  justify-content: space-around;
+}
 </style>

@@ -1,13 +1,13 @@
 <template>
   <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData">
     <div class="alert alert-danger" v-show="errorInfo">
-      {{errorInfo}}
+      {{ errorInfo }}
     </div>
     <div>
       <h3 class="text-black">Invite Link</h3>
       <label>This is the easiest way to invite players. Just send one link to anyone you want to invite.</label>
       <div v-for="inviteLink in inviteLinks" class="invite-link">
-        <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly>
+        <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly />
         <b-button variant="info" size="sm" v-clipboard:copy="inviteLink.fullInviteLink" v-clipboard:success="inviteLinkCopied">Copy</b-button>
         <b-button variant="danger" size="sm" v-on:click="deleteInviteLink(inviteLink)">Delete</b-button>
       </div>
@@ -27,7 +27,7 @@
             </ValidationProvider>
           </div>
         </div>
-        
+
         <h3 class="text-black">OR</h3>
         <div class="form-horizontal">
           <div class="form-group">
@@ -35,7 +35,7 @@
             <input v-model="inviteDisplayName" id="inviteDisplayName" name="inviteDisplayName" type="text" class="form-control input" />
           </div>
           <div class="form-group">
-          <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
+            <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
             <ValidationProvider rules="min_value:1000|max_value:9999" v-slot="{ errors }" name="Display Number">
               <input v-model="inviteDisplayNumber" id="inviteDisplayNumber" name="inviteDisplayNumber" type="number" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
@@ -66,7 +66,7 @@ export default {
   computed: {
     valuesEntered() {
       return this.inviteEmail || (this.inviteDisplayName && this.inviteDisplayNumber);
-    },
+    }
   },
 
   props: ['league'],
@@ -80,7 +80,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/InvitePlayer', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.invitePlayerRef.hide();
           let inviteName = this.inviteEmail;
           if (this.inviteDisplayName) {
@@ -89,7 +89,7 @@ export default {
           this.$emit('playerInvited', inviteName);
           this.inviteEmail = '';
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response.data;
         });
     },
@@ -99,10 +99,10 @@ export default {
       };
       axios
         .post('/api/leagueManager/CreateInviteLink', model)
-        .then(response => {
+        .then((response) => {
           this.fetchInviteLinks();
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response.data;
         });
     },
@@ -116,22 +116,20 @@ export default {
       };
       axios
         .post('/api/leagueManager/DeleteInviteLink', model)
-        .then(response => {
+        .then((response) => {
           this.fetchInviteLinks();
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorInfo = error.response.data;
         });
     },
     fetchInviteLinks() {
       axios
         .get('/api/leagueManager/InviteLinks/' + this.league.leagueID)
-        .then(response => {
+        .then((response) => {
           this.inviteLinks = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     clearData() {
       this.inviteEmail = '';
@@ -146,17 +144,17 @@ export default {
 };
 </script>
 <style scoped>
-  .email-form {
-    margin-bottom: 10px;
-  }
-  .text-black{
-    color:black !important;
-  }
-  .display-number-label {
-    font-size: 35px;
-    margin-right:3px;
-  }
-  .invite-link {
-    display: flex;
-  }
+.email-form {
+  margin-bottom: 10px;
+}
+.text-black {
+  color: black !important;
+}
+.display-number-label {
+  font-size: 35px;
+  margin-right: 3px;
+}
+.invite-link {
+  display: flex;
+}
 </style>

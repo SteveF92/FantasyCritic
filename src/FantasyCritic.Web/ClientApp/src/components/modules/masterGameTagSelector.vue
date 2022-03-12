@@ -1,22 +1,28 @@
 <template>
   <div>
-    <multiselect v-if="tagOptions" v-model="internalValue" tag-placeholder="Add this as new tag"
-                 placeholder="Search or add a tag" label="readableName"
-                 track-by="name" :options="tagOptions" :multiple="true"
-                 @input="handleInput">
+    <multiselect
+      v-if="tagOptions"
+      v-model="internalValue"
+      tag-placeholder="Add this as new tag"
+      placeholder="Search or add a tag"
+      label="readableName"
+      track-by="name"
+      :options="tagOptions"
+      :multiple="true"
+      @input="handleInput">
       <template slot="tag" slot-scope="{ option }">
-          <masterGameTagBadge :tagName="option.name"></masterGameTagBadge>
-      </template>             
+        <masterGameTagBadge :tagName="option.name"></masterGameTagBadge>
+      </template>
     </multiselect>
   </div>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
+import Multiselect from 'vue-multiselect';
 import MasterGameTagBadge from '@/components/modules/masterGameTagBadge';
 
 export default {
-  props: ['value','includeSystem'],
+  props: ['value', 'includeSystem'],
   components: {
     Multiselect,
     MasterGameTagBadge
@@ -24,15 +30,15 @@ export default {
   data() {
     return {
       internalValue: []
-    }
+    };
   },
   computed: {
     tagOptions() {
       if (this.includeSystem) {
         return this.$store.getters.allTags;
       }
-      return _.filter(this.$store.getters.allTags, x => !x.systemTagOnly);
-    },
+      return _.filter(this.$store.getters.allTags, (x) => !x.systemTagOnly);
+    }
   },
   methods: {
     handleInput(e) {
@@ -50,7 +56,7 @@ export default {
       this.updateInternal();
     }
   }
-}
+};
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

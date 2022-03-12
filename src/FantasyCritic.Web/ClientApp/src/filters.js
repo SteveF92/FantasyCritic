@@ -25,12 +25,12 @@ Vue.filter('money', function (value) {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2 
+    maximumFractionDigits: 2
   });
   return formatter.format(value);
 });
 
-Vue.filter('dateTime', function(value) {
+Vue.filter('dateTime', function (value) {
   if (value) {
     return moment(String(value)).local().format('MMMM Do, YYYY, h:mm:ss a');
   }
@@ -65,7 +65,7 @@ Vue.filter('approvedRejected', function (value) {
   return 'Rejected';
 });
 
-Vue.filter('percent', function(value, decimals) {
+Vue.filter('percent', function (value, decimals) {
   if (!value) value = 0;
   if (!decimals) decimals = 0;
 
@@ -77,9 +77,8 @@ Vue.filter('thousands', function (value) {
   return new Intl.NumberFormat().format(value);
 });
 
-
 Vue.filter('selectTextFromPossibleOptions', function (value, possibleOptions) {
-  let matchingValue = _.filter(possibleOptions, x => x.value === value)[0];
+  let matchingValue = _.filter(possibleOptions, (x) => x.value === value)[0];
   if (matchingValue) {
     return matchingValue.text;
   }

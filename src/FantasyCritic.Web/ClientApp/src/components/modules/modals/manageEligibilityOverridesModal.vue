@@ -1,11 +1,11 @@
 <template>
   <b-modal id="manageEligibilityOverridesModal" ref="eligibilityOverridesModalRef" size="lg" title="Manage Eligibility Overrides" @hidden="clearData" hide-footer>
-    <div class="alert alert-info">
-      This option will allow you to manually allow or ban a specific game in your league, no matter what your other settings are.
-    </div>
+    <div class="alert alert-info">This option will allow you to manually allow or ban a specific game in your league, no matter what your other settings are.</div>
     <div class="alert alert-warning" v-if="leagueYear.hasSpecialSlots">
-      Warning! Because your league uses 'special roster slots', you should consider using the 'tag override' option, instead of this option. If you set a game as 'eligible' here,
-      it will be eligible in <em>any</em> slot in your league.
+      Warning! Because your league uses 'special roster slots', you should consider using the 'tag override' option, instead of this option. If you set a game as 'eligible' here, it will be eligible
+      in
+      <em>any</em>
+      slot in your league.
     </div>
     <div v-if="leagueYear.eligibilityOverrides.length > 0">
       <table class="table table-bordered table-striped">
@@ -18,8 +18,8 @@
         </thead>
         <tbody>
           <tr v-for="eligibilityOverride in leagueYear.eligibilityOverrides">
-            <td>{{eligibilityOverride.masterGame.gameName}}</td>
-            <td>{{eligibilityOverride.eligible | yesNo}}</td>
+            <td>{{ eligibilityOverride.masterGame.gameName }}</td>
+            <td>{{ eligibilityOverride.eligible | yesNo }}</td>
             <td class="select-cell">
               <b-button variant="danger" v-on:click="resetEligibility(eligibilityOverride)">Reset</b-button>
             </td>
@@ -39,7 +39,7 @@
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="overrideMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
 
-        <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{overrideMasterGame.gameName}}</label>
+        <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
       </div>
     </form>
     <div class="eligibility-set-buttons" v-if="overrideMasterGame">
@@ -49,7 +49,7 @@
     <br />
     <div v-if="errorInfo" class="alert alert-danger">
       <h3 class="alert-heading">Error!</h3>
-      <p class="text-white">{{errorInfo}}</p>
+      <p class="text-white">{{ errorInfo }}</p>
     </div>
   </b-modal>
 </template>
@@ -71,7 +71,7 @@ export default {
   },
   computed: {
     formIsValid() {
-      return (this.overrideMasterGame);
+      return this.overrideMasterGame;
     }
   },
   props: ['leagueYear'],
@@ -85,13 +85,13 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetGameEligibilityOverride', model)
-        .then(response => {
+        .then((response) => {
           var gameInfo = {
             gameName: eligibilityOverride.masterGame.gameName
           };
           this.$emit('gameEligiblityReset', gameInfo);
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -100,12 +100,10 @@ export default {
       this.possibleMasterGames = [];
       axios
         .get('/api/league/PossibleMasterGames?gameName=' + this.overrideGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
-        .then(response => {
+        .then((response) => {
           this.possibleMasterGames = response.data;
         })
-        .catch(response => {
-
-        });
+        .catch((response) => {});
     },
     setEligibility(masterGame, eligible) {
       var model = {
@@ -116,7 +114,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetGameEligibilityOverride', model)
-        .then(response => {
+        .then((response) => {
           var gameInfo = {
             gameName: masterGame.gameName,
             eligible
@@ -124,7 +122,7 @@ export default {
           this.$emit('gameEligibilitySet', gameInfo);
           this.clearData();
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -141,15 +139,15 @@ export default {
 };
 </script>
 <style scoped>
-  .select-cell {
-    text-align: center;
-  }
-  .game-search-input {
-    margin-bottom: 15px;
-  }
+.select-cell {
+  text-align: center;
+}
+.game-search-input {
+  margin-bottom: 15px;
+}
 
-  .eligibility-set-buttons {
-    display: flex;
-    justify-content: space-around;
-  }
+.eligibility-set-buttons {
+  display: flex;
+  justify-content: space-around;
+}
 </style>

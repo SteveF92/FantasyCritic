@@ -54,12 +54,12 @@ export default {
       };
       axios
         .post('/api/leagueManager/ManuallySetWillNotRelease', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.manuallyScorePublisherGameRef.hide();
           this.$emit('gameWillNotReleaseSet');
           this.clearData();
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },
@@ -71,7 +71,6 @@ export default {
 };
 </script>
 <style scoped>
-
 .add-game-button {
   width: 100%;
 }

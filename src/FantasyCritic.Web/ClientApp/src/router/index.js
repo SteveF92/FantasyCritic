@@ -21,30 +21,32 @@ router.beforeEach(function (toRoute, fromRoute, next) {
 
   var getPrereqs = function () {
     var prereqs = [];
-    prereqs.push(new Promise(function (resolve, reject) {
-      if (!store.getters.allTags && !store.getters.masterGamesIsBusy) {
-        store.dispatch("getAllTags")
-          .then(() => {
+    prereqs.push(
+      new Promise(function (resolve, reject) {
+        if (!store.getters.allTags && !store.getters.masterGamesIsBusy) {
+          store.dispatch('getAllTags').then(() => {
             resolve();
           });
-      } else {
-        resolve();
-      }
-    }));
+        } else {
+          resolve();
+        }
+      })
+    );
 
-    prereqs.push(new Promise(function (resolve, reject) {
-      if (!store.getters.bidTimes && !store.getters.bidTimesIsBusy) {
-        store.dispatch("getBidTimes")
-          .then(() => {
+    prereqs.push(
+      new Promise(function (resolve, reject) {
+        if (!store.getters.bidTimes && !store.getters.bidTimesIsBusy) {
+          store.dispatch('getBidTimes').then(() => {
             resolve();
           });
-      } else {
-        resolve();
-      }
-    }));
+        } else {
+          resolve();
+        }
+      })
+    );
 
     return prereqs;
-  }
+  };
 
   Promise.all(getPrereqs());
 
@@ -58,7 +60,8 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     return;
   }
 
-  store.dispatch('getUserInfo')
+  store
+    .dispatch('getUserInfo')
     .then(() => {
       if (store.getters.isAuthenticated) {
         if (toRoute.meta.publicOnly) {

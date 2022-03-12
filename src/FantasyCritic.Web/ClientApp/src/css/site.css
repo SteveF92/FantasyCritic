@@ -1,232 +1,241 @@
 [v-cloak] {
-    display: none;
+  display: none;
 }
 
 html {
-    position: relative;
-    min-height: 100%;
-    min-width: 375px;
-    width: auto !important;
-    width: 375px;
-    overflow-y: scroll;
+  position: relative;
+  min-height: 100%;
+  min-width: 375px;
+  width: auto !important;
+  width: 375px;
+  overflow-y: scroll;
 }
 
 body {
-    background-color: black;
-    color: white;
-    background-image: url("/img/bg-geo-texture.png");
-    background-repeat: repeat;
-    padding-right: 0 !important;
+  background-color: black;
+  color: white;
+  background-image: url('/img/bg-geo-texture.png');
+  background-repeat: repeat;
+  padding-right: 0 !important;
 }
 
 .main-content {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .table {
-    color: white;
+  color: white;
 }
 
-h1, h2, h3, h4, h5 {
-    font-weight: bold;
-    text-transform: uppercase;
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 h2 {
-    color: #D6993A;
+  color: #d6993a;
 }
 
 .alert h2 {
-    color: white;
+  color: white;
 }
 
 label {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 hr {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    border: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    border-color: white;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-color: white;
 }
 
 .shadowed {
-    background: rgba(0, 0, 0, 0.39);
-    padding: 10px;
+  background: rgba(0, 0, 0, 0.39);
+  padding: 10px;
 }
 
-a.btn, input.btn, button.btn {
-    border-radius: 0;
-    height: 40px;
-    color: white;
-    border: none;
-    font-weight: bold;
-    text-transform: uppercase;
+a.btn,
+input.btn,
+button.btn {
+  border-radius: 0;
+  height: 40px;
+  color: white;
+  border: none;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 div.alert {
-    border-radius: 0;
-    color: white;
-    border: none;
-    font-weight: bold;
+  border-radius: 0;
+  color: white;
+  border: none;
+  font-weight: bold;
 }
 
 .text-danger {
-    font-weight: bold;
+  font-weight: bold;
 }
 
-.text-black{
-    color:black !important;
+.text-black {
+  color: black !important;
 }
 
 .custom-select {
-    border-radius: 0;
-    border: none;
-    height: 40px;
+  border-radius: 0;
+  border: none;
+  height: 40px;
 }
 
 .fake-link {
-    cursor: pointer !important;
+  cursor: pointer !important;
 }
 
 .fake-link:hover {
-    text-decoration: underline !important;
+  text-decoration: underline !important;
 }
 
 .fake-button {
-    cursor: pointer !important;
+  cursor: pointer !important;
 }
 
 .toasted.primary.default {
-    background: #3AACD6;
-    color: white;
-    font-weight: bold;
-    padding: 5px;
+  background: #3aacd6;
+  color: white;
+  font-weight: bold;
+  padding: 5px;
 }
 
 .fb-icon {
-    color: #3b5998;
+  color: #3b5998;
 }
 
 .twitter-icon {
-    color: #00acee;
+  color: #00acee;
 }
 
 .github-icon {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 .reddit-icon {
-    color: #ff4500;
+  color: #ff4500;
 }
 
 .discord-icon {
-    color: #738adb;
+  color: #738adb;
 }
 
 .patreon-icon {
-    color: #FF424D;
+  color: #ff424d;
 }
 
 .text-well {
- padding: 20px;
- background: rgba(50, 50, 50, 0.7);
- border-radius: 5px;
+  padding: 20px;
+  background: rgba(50, 50, 50, 0.7);
+  border-radius: 5px;
 }
 
 @media only screen and (max-width: 992px) {
-    .lg-screen-minimum {
-        display: none;
-    }
+  .lg-screen-minimum {
+    display: none;
+  }
 }
 @media only screen and (max-width: 768px) {
-    .md-screen-minimum{
-        display: none;
-    }
+  .md-screen-minimum {
+    display: none;
+  }
 }
 @media only screen and (max-width: 576px) {
-    .sm-screen-minimum {
-        display: none;
-    }
+  .sm-screen-minimum {
+    display: none;
+  }
 }
 
 .right-button {
-    text-align: right;
-    margin-right: 10px;
+  text-align: right;
+  margin-right: 10px;
 }
 
 .toggle .v-switch-core {
-    background-color: #414141 !important;
+  background-color: #414141 !important;
 }
 .toggle .v-switch-core .v-switch-button {
-    background-color: white !important;
+  background-color: white !important;
 }
 .toggle-on .v-switch-core {
-    background-color: #D6993A !important;
+  background-color: #d6993a !important;
 }
 
-.pagination-dark li a, .pagination-dark li span, .pagination-dark li button {
-    background-color: #444444 !important;
-    font-weight: bold;
+.pagination-dark li a,
+.pagination-dark li span,
+.pagination-dark li button {
+  background-color: #444444 !important;
+  font-weight: bold;
 }
 
 .pagination-dark li.active button {
-    background-color: #D6993A !important;
-    font-weight: bold;
+  background-color: #d6993a !important;
+  font-weight: bold;
 }
 
 .datepicker__title {
-    background-color: #D6993A;
-    font-weight: bolder;
+  background-color: #d6993a;
+  font-weight: bolder;
 }
 
-svg, img.critic-royale-nav {
-    margin-right: 4px;
+svg,
+img.critic-royale-nav {
+  margin-right: 4px;
 }
 
 .btn {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .modal-submit-button {
-    width: 100%;
+  width: 100%;
 }
 
 .bg-primary {
-    color: black;
+  color: black;
 }
 
 .projected-text {
-    font-style: italic;
+  font-style: italic;
 }
 
 /*This fixes an issue with VueBootstrap responsive sortable tables*/
 .table-responsive table thead th span.sr-only {
-    display: none;
+  display: none;
 }
 
 .preserve-whitespace {
-    white-space: pre-line;
+  white-space: pre-line;
 }
 
 .nested-list {
-    list-style: none;
+  list-style: none;
 }
 
 .tag-badge {
-    font-size: 13px;
-    color: #fff;
-    text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
-    min-width: 50px;
+  font-size: 13px;
+  color: #fff;
+  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+  min-width: 50px;
 }
 
 .long-tag-list span {
-    margin-right: 1px;
+  margin-right: 1px;
 }
 
 .collapsed > .collapse-opened,
 :not(.collapsed) > .collapse-closed {
-    display: none;
+  display: none;
 }

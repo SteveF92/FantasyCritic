@@ -33,13 +33,13 @@
         </div>
 
         <div>
-          <input type="submit" class="btn btn-primary modal-submit-button" value="Edit Publisher" v-on:click="makeEditRequest"/>
+          <input type="submit" class="btn btn-primary modal-submit-button" value="Edit Publisher" v-on:click="makeEditRequest" />
         </div>
       </div>
       <br />
       <div v-if="errorInfo" class="alert alert-danger">
         <h3 class="alert-heading">Error!</h3>
-        <p class="text-white">{{errorInfo}}</p>
+        <p class="text-white">{{ errorInfo }}</p>
       </div>
     </div>
   </b-modal>
@@ -86,11 +86,11 @@ export default {
       };
       axios
         .post('/api/leagueManager/EditPublisher', model)
-        .then(response => {
+        .then((response) => {
           this.$refs.managerEditPublishersFormRef.hide();
           this.$emit('publishersEdited');
         })
-        .catch(response => {
+        .catch((response) => {
           this.errorInfo = response.response.data;
         });
     },

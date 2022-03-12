@@ -8,9 +8,7 @@
         <b-button variant="info" size="sm" v-on:click="generateSQL(masterGame)">Generate SQL</b-button>
       </div>
       <hr />
-      <div v-if="responseInfo" class="alert alert-success">
-        Master Game edited successfully!
-      </div>
+      <div v-if="responseInfo" class="alert alert-success">Master Game edited successfully!</div>
       <div v-if="generatedSQL">
         <h3>Generated SQL</h3>
         <div class="row">
@@ -23,12 +21,12 @@
         </div>
       </div>
       <div v-if="masterGame">
-        <h2>{{masterGame.gameName}}</h2>
-        <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID }}"><strong>View full details</strong></router-link>
+        <h2>{{ masterGame.gameName }}</h2>
+        <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID } }"><strong>View full details</strong></router-link>
         <div class="row" v-if="changeRequest">
           <div class="text-well">
             <h2>Request Note</h2>
-            <p>{{changeRequest.requestNote}}</p>
+            <p>{{ changeRequest.requestNote }}</p>
           </div>
         </div>
         <hr />
@@ -137,145 +135,144 @@
   </div>
 </template>
 <script>
-  import axios from 'axios';
-  import Popper from 'vue-popperjs';
-  import moment from 'moment';
-  import MasterGameTagSelector from '@/components/modules/masterGameTagSelector';
+import axios from 'axios';
+import Popper from 'vue-popperjs';
+import moment from 'moment';
+import MasterGameTagSelector from '@/components/modules/masterGameTagSelector';
 
-  export default {
-    props: ['mastergameid'],
-    data() {
-      return {
-        masterGame: null,
-        changeRequest: null,
-        tags: [],
-        responseInfo: null,
-        generatedSQL: null
-      };
+export default {
+  props: ['mastergameid'],
+  data() {
+    return {
+      masterGame: null,
+      changeRequest: null,
+      tags: [],
+      responseInfo: null,
+      generatedSQL: null
+    };
+  },
+  components: {
+    popper: Popper,
+    MasterGameTagSelector
+  },
+  methods: {
+    async fetchMasterGame() {
+      await axios
+        .get('/api/game/MasterGame/' + this.mastergameid)
+        .then((response) => {
+          this.masterGame = response.data;
+          if (this.masterGame.maximumReleaseDate === '9999-12-31') {
+            this.masterGame.maximumReleaseDate = null;
+          }
+        })
+        .catch((returnedError) => (this.error = returnedError));
     },
-    components: {
-      'popper': Popper,
-      MasterGameTagSelector
+    async fetchChangeRequest() {
+      let changeRequestID = this.$route.query.changeRequestID;
+      if (!changeRequestID) {
+        return;
+      }
+      await axios
+        .get('/api/admin/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID)
+        .then((response) => {
+          this.changeRequest = response.data;
+        })
+        .catch((returnedError) => (this.error = returnedError));
     },
-    methods: {
-      async fetchMasterGame() {
-        await axios
-          .get('/api/game/MasterGame/' + this.mastergameid)
-          .then(response => {
-            this.masterGame = response.data;
-            if (this.masterGame.maximumReleaseDate === '9999-12-31') {
-              this.masterGame.maximumReleaseDate = null;
-            }
-          })
-          .catch(returnedError => (this.error = returnedError));
-      },
-      async fetchChangeRequest() {
-        let changeRequestID = this.$route.query.changeRequestID;
-        if (!changeRequestID) {
-          return;
-        }
-        await axios
-          .get('/api/admin/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID)
-          .then(response => {
-            this.changeRequest = response.data;
-          })
-          .catch(returnedError => (this.error = returnedError));
-      },
-      async parseEstimatedReleaseDate() {
-        await axios
-          .get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate)
-          .then(response => {
-            this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
-            this.masterGame.maximumReleaseDate = response.data.maximumReleaseDate;
-          })
-          .catch(returnedError => (this.error = returnedError));
-      },
-      propagateDate() {
-        this.masterGame.maximumReleaseDate = this.masterGame.releaseDate;
-        this.masterGame.minimumReleaseDate = this.masterGame.releaseDate;
-        this.masterGame.estimatedReleaseDate = this.masterGame.releaseDate;
-      },
-      populateTags() {
-        let allTags = this.$store.getters.allTags;
-        let masterGameTagNames = this.masterGame.tags;
-        let matchingTags = _.filter(allTags, x => masterGameTagNames.includes(x.name));
-        this.tags = matchingTags;
-      },
-      clearDates() {
-        this.masterGame.releaseDate = null;
-        this.masterGame.minimumReleaseDate = null;
-        this.masterGame.maximumReleaseDate = null;
-        this.masterGame.estimatedReleaseDate = null;
-        this.masterGame.internationalReleaseDate = null;
-        this.masterGame.announcementDate = null;
-        this.masterGame.earlyAccessReleaseDate = null;
-      },
-      sendEditMasterGameRequest() {
-        let tagNames = _.map(this.tags, 'name');
+    async parseEstimatedReleaseDate() {
+      await axios
+        .get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate)
+        .then((response) => {
+          this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
+          this.masterGame.maximumReleaseDate = response.data.maximumReleaseDate;
+        })
+        .catch((returnedError) => (this.error = returnedError));
+    },
+    propagateDate() {
+      this.masterGame.maximumReleaseDate = this.masterGame.releaseDate;
+      this.masterGame.minimumReleaseDate = this.masterGame.releaseDate;
+      this.masterGame.estimatedReleaseDate = this.masterGame.releaseDate;
+    },
+    populateTags() {
+      let allTags = this.$store.getters.allTags;
+      let masterGameTagNames = this.masterGame.tags;
+      let matchingTags = _.filter(allTags, (x) => masterGameTagNames.includes(x.name));
+      this.tags = matchingTags;
+    },
+    clearDates() {
+      this.masterGame.releaseDate = null;
+      this.masterGame.minimumReleaseDate = null;
+      this.masterGame.maximumReleaseDate = null;
+      this.masterGame.estimatedReleaseDate = null;
+      this.masterGame.internationalReleaseDate = null;
+      this.masterGame.announcementDate = null;
+      this.masterGame.earlyAccessReleaseDate = null;
+    },
+    sendEditMasterGameRequest() {
+      let tagNames = _.map(this.tags, 'name');
 
-        let request = this.masterGame;
-        request.tags = tagNames;
+      let request = this.masterGame;
+      request.tags = tagNames;
 
-        axios
-          .post('/api/admin/EditMasterGame', request)
-          .then(response => {
-            this.responseInfo = response.data;
-            window.scroll({
-              top: 0,
-              left: 0,
-              behavior: 'smooth'
-            });
-            
-          })
-          .catch(error => {
-            this.errorInfo = error.response;
+      axios
+        .post('/api/admin/EditMasterGame', request)
+        .then((response) => {
+          this.responseInfo = response.data;
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
           });
-      },
-      generateSQL(request) {
-        this.generatedSQL = 'select * from tbl_mastergame where MasterGameID = \'' + this.masterGame.masterGameID + '\';';
-      }
+        })
+        .catch((error) => {
+          this.errorInfo = error.response;
+        });
     },
-    async mounted() {
-      await this.fetchMasterGame();
-      await this.fetchChangeRequest();
-      this.parseEstimatedReleaseDate();
-      this.populateTags();
-    },
-    watch: {
-      '$route'(to, from) {
-        this.fetchMasterGame();
-      }
+    generateSQL(request) {
+      this.generatedSQL = "select * from tbl_mastergame where MasterGameID = '" + this.masterGame.masterGameID + "';";
     }
-  };
+  },
+  async mounted() {
+    await this.fetchMasterGame();
+    await this.fetchChangeRequest();
+    this.parseEstimatedReleaseDate();
+    this.populateTags();
+  },
+  watch: {
+    $route(to, from) {
+      this.fetchMasterGame();
+    }
+  }
+};
 </script>
 <style scoped>
-  .select-cell {
-    text-align: center;
-  }
+.select-cell {
+  text-align: center;
+}
 
-  .eligibility-explanation {
-    margin-bottom: 50px;
-    max-width: 1300px;
-  }
+.eligibility-explanation {
+  margin-bottom: 50px;
+  max-width: 1300px;
+}
 
-  .eligibility-section {
-    margin-bottom: 30px;
-  }
+.eligibility-section {
+  margin-bottom: 30px;
+}
 
-  .eligibility-description {
-    margin-top: 25px;
-  }
+.eligibility-description {
+  margin-top: 25px;
+}
 
-  .checkbox-label {
-    padding-left: 25px;
-  }
+.checkbox-label {
+  padding-left: 25px;
+}
 
-  label {
-    font-size: 18px;
-  }
+label {
+  font-size: 18px;
+}
 </style>
 <style>
-  .vue-slider-piecewise-label {
-    color: white !important;
-  }
+.vue-slider-piecewise-label {
+  color: white !important;
+}
 </style>

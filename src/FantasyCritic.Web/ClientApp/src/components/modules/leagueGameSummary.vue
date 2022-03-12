@@ -2,8 +2,7 @@
   <div class="container-fluid">
     <span class="view-mode-toggle-section" v-show="leagueYear.hasSpecialSlots">
       <label class="view-mode-label">View Mode</label>
-      <toggle-button class="toggle" v-model="draftOrderView" :sync="true"
-                     :labels="{checked: 'Draft Order', unchecked: 'Slot Order'}" :css-colors="true" :font-size="13" :width="107" :height="28" />
+      <toggle-button class="toggle" v-model="draftOrderView" :sync="true" :labels="{ checked: 'Draft Order', unchecked: 'Slot Order' }" :css-colors="true" :font-size="13" :width="107" :height="28" />
     </span>
     <div class="row league-summary">
       <div class="col-xl-6 col-lg-12" v-for="publisher in publishers">
@@ -48,14 +47,14 @@ export default {
 };
 </script>
 <style scoped>
-  .view-mode-toggle-section {
-    display: flex;
-    justify-content: flex-end;
-  }
-  .view-mode-label {
-    margin-right: 3px;
-  }
-  .view-mode-toggle {
-    width: 100px;
-  }
+.view-mode-toggle-section {
+  display: flex;
+  justify-content: flex-end;
+}
+.view-mode-label {
+  margin-right: 3px;
+}
+.view-mode-toggle {
+  width: 100px;
+}
 </style>
