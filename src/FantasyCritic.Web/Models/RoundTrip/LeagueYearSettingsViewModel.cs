@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Amazon.RDS.Model;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Identity;
