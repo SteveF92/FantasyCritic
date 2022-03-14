@@ -116,15 +116,18 @@ public class Trade
 
     public IReadOnlyList<Publisher> GetUpdatedPublishers()
     {
-        Proposer.ObtainBudget(CounterPartyBudgetSendAmount);
-        Proposer.SpendBudget(ProposerBudgetSendAmount);
-        CounterParty.ObtainBudget(ProposerBudgetSendAmount);
-        CounterParty.SpendBudget(CounterPartyBudgetSendAmount);
-        return new List<Publisher>()
+        var publisherStateSet = new PublisherStateSet(new List<Publisher>()
         {
             Proposer,
             CounterParty
-        };
+        });
+
+        publisherStateSet.ObtainBudgetForPublisher(Proposer, CounterPartyBudgetSendAmount);
+        publisherStateSet.SpendBudgetForPublisher(Proposer, ProposerBudgetSendAmount);
+        publisherStateSet.ObtainBudgetForPublisher(CounterParty, ProposerBudgetSendAmount);
+        publisherStateSet.SpendBudgetForPublisher(CounterParty, CounterPartyBudgetSendAmount);
+
+        return publisherStateSet.Publishers;
     }
 
     public IReadOnlyList<LeagueAction> GetActions(Instant actionTime)

@@ -15,8 +15,9 @@ public class ActionProcessingService
     }
 
     public FinalizedActionProcessingResults ProcessActions(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
-        IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> currentPublisherStates, Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
+        IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> publishers, Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
+        var publisherStateSet = new PublisherStateSet(publishers);
         var flatBids = allActiveBids.SelectMany(x => x.Value);
         var invalidBids = flatBids.Where(x => x.CounterPick && x.ConditionalDropPublisherGame.HasValue);
         if (invalidBids.Any())
@@ -28,11 +29,11 @@ public class ActionProcessingService
         Guid processSetID = Guid.NewGuid();
         if (!allActiveBids.Any() && !allActiveDrops.Any())
         {
-            var emptyResults = ActionProcessingResults.GetEmptyResultsSet(currentPublisherStates);
+            var emptyResults = ActionProcessingResults.GetEmptyResultsSet(publisherStateSet);
             return new FinalizedActionProcessingResults(processSetID, processingTime, processName, emptyResults);
         }
 
-        ActionProcessingResults dropResults = ProcessDrops(allActiveDrops, currentPublisherStates, processingTime);
+        ActionProcessingResults dropResults = ProcessDrops(allActiveDrops, publisherStateSet, processingTime);
         if (!allActiveBids.Any())
         {
             return new FinalizedActionProcessingResults(processSetID, processingTime, processName, dropResults);
@@ -42,10 +43,8 @@ public class ActionProcessingService
         return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults);
     }
 
-    private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests,
-        IEnumerable<Publisher> currentPublisherStates, Instant processingTime)
+    private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, PublisherStateSet publisherStateSet, Instant processingTime)
     {
-        List<Publisher> updatedPublisherStates = currentPublisherStates.ToList();
         List<FormerPublisherGame> gamesToDelete = new List<FormerPublisherGame>();
         List<LeagueAction> leagueActions = new List<LeagueAction>();
         List<DropRequest> successDrops = new List<DropRequest>();
@@ -55,8 +54,8 @@ public class ActionProcessingService
         {
             foreach (var dropRequest in leagueYearGroup.Value)
             {
-                var affectedPublisher = updatedPublisherStates.Single(x => x.PublisherID == dropRequest.Publisher.PublisherID);
-                var publishersInLeague = updatedPublisherStates.Where(x => x.LeagueYear.Equals(affectedPublisher.LeagueYear));
+                var affectedPublisher = publisherStateSet.GetPublisher(dropRequest.Publisher.PublisherID);
+                var publishersInLeague = publisherStateSet.GetPublishersInLeagueYear(affectedPublisher.LeagueYear.Key);
                 var otherPublishersInLeague = publishersInLeague.Except(new List<Publisher>() { affectedPublisher });
 
                 var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, leagueYearGroup.Key, affectedPublisher, otherPublishersInLeague);
@@ -67,7 +66,7 @@ public class ActionProcessingService
                     var formerPublisherGame = publisherGame.Value.GetFormerPublisherGame(processingTime, "Dropped by player");
                     gamesToDelete.Add(formerPublisherGame);
                     LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, processingTime);
-                    affectedPublisher.DropGame(publisherGame.Value);
+                    publisherStateSet.DropGameForPublisher(affectedPublisher, publisherGame.Value);
 
                     leagueActions.Add(leagueAction);
                 }
@@ -80,7 +79,7 @@ public class ActionProcessingService
             }
         }
 
-        ActionProcessingResults dropProcessingResults = ActionProcessingResults.GetResultsSetFromDropResults(successDrops, failedDrops, leagueActions, updatedPublisherStates, gamesToDelete);
+        ActionProcessingResults dropProcessingResults = ActionProcessingResults.GetResultsSetFromDropResults(successDrops, failedDrops, leagueActions, publisherStateSet, gamesToDelete);
         return dropProcessingResults;
     }
 
@@ -89,7 +88,7 @@ public class ActionProcessingService
     {
         IEnumerable<PickupBid> flatAllBids = allActiveBids.SelectMany(x => x.Value);
 
-        var currentPublisherStates = existingResults.UpdatedPublishers;
+        var publisherStateSet = existingResults.PublisherStateSet;
         var processedBids = new ProcessedBidSet();
         foreach (var leagueYear in allActiveBids)
         {
@@ -98,11 +97,11 @@ public class ActionProcessingService
                 continue;
             }
 
-            var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, currentPublisherStates, systemWideValues, processingTime);
+            var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, publisherStateSet, systemWideValues, processingTime);
             processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
         }
 
-        ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, currentPublisherStates, processingTime, masterGameYearDictionary);
+        ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, processingTime, masterGameYearDictionary);
         var newResults = existingResults.Combine(bidResults);
         var remainingBids = flatAllBids.Except(processedBids.ProcessedBids);
         if (remainingBids.Any())
@@ -117,7 +116,7 @@ public class ActionProcessingService
     }
 
     private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
-        IReadOnlyList<Publisher> currentPublisherStates, SystemWideValues systemWideValues, Instant processingTime)
+        PublisherStateSet publisherStateSet, SystemWideValues systemWideValues, Instant processingTime)
     {
         var gamesGroupedByPublisherAndGame = activeBidsForLeague.GroupBy(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
         var duplicateBidGroups = gamesGroupedByPublisherAndGame.Where(x => x.Count() > 1).ToList();
@@ -141,23 +140,23 @@ public class ActionProcessingService
         List<ValidPickupBid> validPickupBids = new List<ValidPickupBid>();
         foreach (var activeBid in nonDuplicateBids)
         {
-            var currentPublisherStatesForLeagueYear = currentPublisherStates.Where(x => x.LeagueYear.Key.Equals(leagueYear.Key)).ToList();
-            Publisher publisher = currentPublisherStatesForLeagueYear.Single(x => x.PublisherID == activeBid.Publisher.PublisherID);
-            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, currentPublisherStatesForLeagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
-            var gameRequest = new ClaimGameDomainRequest(publisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
+            var publishersInLeagueYear = publisherStateSet.GetPublishersInLeagueYear(leagueYear.Key);
+            Publisher bidPublisher = publisherStateSet.GetPublisher(activeBid.Publisher.PublisherID);
+            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, publishersInLeagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
+            var gameRequest = new ClaimGameDomainRequest(bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
 
             int? validConditionalDropSlot = null;
             if (activeBid.ConditionalDropPublisherGame.HasValue)
             {
-                var otherPublishersInLeague = currentPublisherStatesForLeagueYear.Except(new List<Publisher>() { publisher });
-                activeBid.ConditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, leagueYear, publisher, otherPublishersInLeague, processingTime);
+                var otherPublishersInLeague = publishersInLeagueYear.Except(new List<Publisher>() { bidPublisher });
+                activeBid.ConditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, leagueYear, bidPublisher, otherPublishersInLeague, processingTime);
                 if (activeBid.ConditionalDropResult.Result.IsSuccess)
                 {
                     validConditionalDropSlot = activeBid.ConditionalDropPublisherGame.Value.SlotNumber;
                 }
             }
 
-            var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, currentPublisherStatesForLeagueYear, null, validConditionalDropSlot, false, false);
+            var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersInLeagueYear, null, validConditionalDropSlot, false, false);
             if (claimResult.NoSpaceError)
             {
                 noSpaceLeftBids.Add(activeBid);
@@ -170,7 +169,7 @@ public class ActionProcessingService
                 continue;
             }
 
-            if (activeBid.BidAmount > publisher.Budget)
+            if (activeBid.BidAmount > bidPublisher.Budget)
             {
                 insufficientFundsBids.Add(activeBid);
             }
@@ -326,10 +325,9 @@ public class ActionProcessingService
         return winningBids;
     }
 
-    private static ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, IReadOnlyList<Publisher> publishers,
+    private static ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, PublisherStateSet publisherStateSet,
         Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
-        Dictionary<Guid, Publisher> publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
         List<PublisherGame> gamesToAdd = new List<PublisherGame>();
         List<LeagueAction> leagueActions = new List<LeagueAction>();
         foreach (var successBid in successBids)
@@ -338,8 +336,8 @@ public class ActionProcessingService
             PublisherGame newPublisherGame = new PublisherGame(successBid.PickupBid.Publisher.PublisherID, Guid.NewGuid(), successBid.PickupBid.MasterGame.GameName, processingTime,
                 successBid.PickupBid.CounterPick, null, false, null, masterGameYear, successBid.SlotNumber, null, null, successBid.PickupBid.BidAmount, null);
             gamesToAdd.Add(newPublisherGame);
-            var affectedPublisher = publisherDictionary[successBid.PickupBid.Publisher.PublisherID];
-            affectedPublisher.AcquireGame(newPublisherGame, successBid.PickupBid.BidAmount);
+            var affectedPublisher = publisherStateSet.GetPublisher(successBid.PickupBid.Publisher.PublisherID);
+            publisherStateSet.AcquireGameForPublisher(affectedPublisher, newPublisherGame, successBid.PickupBid.BidAmount);
 
             LeagueAction leagueAction = new LeagueAction(successBid.PickupBid, processingTime);
             leagueActions.Add(leagueAction);
@@ -355,15 +353,14 @@ public class ActionProcessingService
         var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame.HasValue && x.PickupBid.ConditionalDropResult.Result.IsSuccess);
         foreach (var successfulConditionalDrop in successfulConditionalDrops)
         {
-            var affectedPublisher = publisherDictionary[successfulConditionalDrop.PickupBid.Publisher.PublisherID];
-            affectedPublisher.DropGame(successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value);
+            var affectedPublisher = publisherStateSet.GetPublisher(successfulConditionalDrop.PickupBid.Publisher.PublisherID);
+            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value);
             var formerPublisherGame = successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value.GetFormerPublisherGame(processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
             conditionalDroppedGames.Add(formerPublisherGame);
         }
 
-        var updatedPublishers = publisherDictionary.Values.ToList();
         ActionProcessingResults bidProcessingResults = ActionProcessingResults.GetResultsSetFromBidResults(successBids, failedBids,
-            leagueActions, updatedPublishers, gamesToAdd, conditionalDroppedGames);
+            leagueActions, publisherStateSet, gamesToAdd, conditionalDroppedGames);
         return bidProcessingResults;
     }
 }

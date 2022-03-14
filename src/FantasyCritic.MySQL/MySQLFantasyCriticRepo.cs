@@ -2923,7 +2923,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 await MarkDropStatus(actionProcessingResults.Results.FailedDrops, false, actionProcessingResults.ProcessSetID, connection, transaction);
 
                 await AddLeagueActions(actionProcessingResults.Results.LeagueActions, connection, transaction);
-                await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.Results.UpdatedPublishers, connection, transaction);
+                await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.Results.PublisherStateSet.Publishers, connection, transaction);
 
                 var flatRemovedPublisherGames = actionProcessingResults.Results.RemovedPublisherGames.Select(x => x.PublisherGame).ToList();
                 await DeletePublisherGames(flatRemovedPublisherGames, connection, transaction);

@@ -29,12 +29,12 @@ public class Publisher : IEquatable<Publisher>
     public string PublisherName { get; }
     public Maybe<string> PublisherIcon { get; }
     public int DraftPosition { get; }
-    public IReadOnlyList<PublisherGame> PublisherGames { get; private set; }
+    public IReadOnlyList<PublisherGame> PublisherGames { get; }
     public IReadOnlyList<FormerPublisherGame> FormerPublisherGames { get; }
-    public uint Budget { get; private set; }
-    public int FreeGamesDropped { get; private set; }
-    public int WillNotReleaseGamesDropped { get; private set; }
-    public int WillReleaseGamesDropped { get; private set; }
+    public uint Budget { get; }
+    public int FreeGamesDropped { get; }
+    public int WillNotReleaseGamesDropped { get; }
+    public int WillReleaseGamesDropped { get; }
     public bool AutoDraft { get; }
 
     public decimal? AverageCriticScore
@@ -176,22 +176,6 @@ public class Publisher : IEquatable<Publisher>
 
     public override string ToString() => $"{PublisherID}|{PublisherName}";
 
-    public void AcquireGame(PublisherGame game, uint bidAmount)
-    {
-        PublisherGames = PublisherGames.Concat(new[] { game }).ToList();
-        Budget -= bidAmount;
-    }
-
-    public void SpendBudget(uint budget)
-    {
-        Budget -= budget;
-    }
-
-    public void ObtainBudget(uint budget)
-    {
-        Budget += budget;
-    }
-
     public Result CanDropGame(bool willRelease)
     {
         var leagueOptions = LeagueYear.Options;
@@ -217,41 +201,6 @@ public class Publisher : IEquatable<Publisher>
             return Result.Success();
         }
         return Result.Failure("Publisher cannot drop any more 'Will Not Release' games");
-    }
-
-    public void DropGame(PublisherGame publisherGame)
-    {
-        var leagueOptions = LeagueYear.Options;
-        if (publisherGame.WillRelease())
-        {
-            if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > WillReleaseGamesDropped)
-            {
-                WillReleaseGamesDropped++;
-                PublisherGames = PublisherGames.Where(x => x.PublisherGameID != publisherGame.PublisherGameID).ToList();
-                return;
-            }
-            if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
-            {
-                FreeGamesDropped++;
-                PublisherGames = PublisherGames.Where(x => x.PublisherGameID != publisherGame.PublisherGameID).ToList();
-                return;
-            }
-            throw new Exception("Publisher cannot drop any more 'Will Release' games");
-        }
-
-        if (leagueOptions.WillNotReleaseDroppableGames == -1 || leagueOptions.WillNotReleaseDroppableGames > WillNotReleaseGamesDropped)
-        {
-            WillNotReleaseGamesDropped++;
-            PublisherGames = PublisherGames.Where(x => x.PublisherGameID != publisherGame.PublisherGameID).ToList();
-            return;
-        }
-        if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
-        {
-            FreeGamesDropped++;
-            PublisherGames = PublisherGames.Where(x => x.PublisherGameID != publisherGame.PublisherGameID).ToList();
-            return;
-        }
-        throw new Exception("Publisher cannot drop any more 'Will Not Release' games");
     }
 
     public static Publisher GetFakePublisher(LeagueYear leagueYear)

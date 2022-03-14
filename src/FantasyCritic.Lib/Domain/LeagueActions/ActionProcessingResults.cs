@@ -4,14 +4,14 @@ public class ActionProcessingResults
 {
     private ActionProcessingResults(IEnumerable<SucceededPickupBid> successBids, IEnumerable<FailedPickupBid> failedBids,
         IEnumerable<DropRequest> successDrops, IEnumerable<DropRequest> failedDrops, IEnumerable<LeagueAction> leagueActions,
-        IEnumerable<Publisher> updatedPublishers, IEnumerable<PublisherGame> addedPublisherGames, IEnumerable<FormerPublisherGame> removedPublisherGames)
+        PublisherStateSet publisherStateSet, IEnumerable<PublisherGame> addedPublisherGames, IEnumerable<FormerPublisherGame> removedPublisherGames)
     {
         SuccessBids = successBids.ToList();
         FailedBids = failedBids.ToList();
         SuccessDrops = successDrops.ToList();
         FailedDrops = failedDrops.ToList();
         LeagueActions = leagueActions.ToList();
-        UpdatedPublishers = updatedPublishers.ToList();
+        PublisherStateSet = publisherStateSet;
         AddedPublisherGames = addedPublisherGames.ToList();
         RemovedPublisherGames = removedPublisherGames.ToList();
     }
@@ -21,28 +21,28 @@ public class ActionProcessingResults
     public IReadOnlyList<DropRequest> SuccessDrops { get; }
     public IReadOnlyList<DropRequest> FailedDrops { get; }
     public IReadOnlyList<LeagueAction> LeagueActions { get; }
-    public IReadOnlyList<Publisher> UpdatedPublishers { get; }
+    public PublisherStateSet PublisherStateSet { get; }
     public IReadOnlyList<PublisherGame> AddedPublisherGames { get; }
     public IReadOnlyList<FormerPublisherGame> RemovedPublisherGames { get; }
 
-    public static ActionProcessingResults GetEmptyResultsSet(IEnumerable<Publisher> publisherStates)
+    public static ActionProcessingResults GetEmptyResultsSet(PublisherStateSet publisherStateSet)
     {
         return new ActionProcessingResults(new List<SucceededPickupBid>(), new List<FailedPickupBid>(), new List<DropRequest>(),
-            new List<DropRequest>(), new List<LeagueAction>(), publisherStates, new List<PublisherGame>(), new List<FormerPublisherGame>());
+            new List<DropRequest>(), new List<LeagueAction>(), publisherStateSet, new List<PublisherGame>(), new List<FormerPublisherGame>());
     }
 
     public static ActionProcessingResults GetResultsSetFromDropResults(IEnumerable<DropRequest> successDrops, IEnumerable<DropRequest> failedDrops,
-        IEnumerable<LeagueAction> leagueActions, IEnumerable<Publisher> updatedPublishers, IEnumerable<FormerPublisherGame> droppedPublisherGames)
+        IEnumerable<LeagueAction> leagueActions, PublisherStateSet publisherStateSet, IEnumerable<FormerPublisherGame> droppedPublisherGames)
     {
         return new ActionProcessingResults(new List<SucceededPickupBid>(), new List<FailedPickupBid>(), successDrops,
-            failedDrops, leagueActions, updatedPublishers, new List<PublisherGame>(), droppedPublisherGames);
+            failedDrops, leagueActions, publisherStateSet, new List<PublisherGame>(), droppedPublisherGames);
     }
 
     public static ActionProcessingResults GetResultsSetFromBidResults(IEnumerable<SucceededPickupBid> successBids, IEnumerable<FailedPickupBid> simpleFailedBids,
-        IEnumerable<LeagueAction> leagueActions, IEnumerable<Publisher> updatedPublishers, IEnumerable<PublisherGame> gamesToAdd, IEnumerable<FormerPublisherGame> droppedPublisherGames)
+        IEnumerable<LeagueAction> leagueActions, PublisherStateSet publisherStateSet, IEnumerable<PublisherGame> gamesToAdd, IEnumerable<FormerPublisherGame> droppedPublisherGames)
     {
         return new ActionProcessingResults(successBids, simpleFailedBids, new List<DropRequest>(),
-            new List<DropRequest>(), leagueActions, updatedPublishers, gamesToAdd, droppedPublisherGames);
+            new List<DropRequest>(), leagueActions, publisherStateSet, gamesToAdd, droppedPublisherGames);
     }
 
     public ActionProcessingResults Combine(ActionProcessingResults subProcessingResults)
@@ -53,7 +53,7 @@ public class ActionProcessingResults
             SuccessDrops.Concat(subProcessingResults.SuccessDrops).DistinctBy(x => x.DropRequestID),
             FailedDrops.Concat(subProcessingResults.FailedDrops).DistinctBy(x => x.DropRequestID),
             LeagueActions.Concat(subProcessingResults.LeagueActions).DistinctBy(x => x.ActionInternalID),
-            subProcessingResults.UpdatedPublishers,
+            subProcessingResults.PublisherStateSet,
             AddedPublisherGames.Concat(subProcessingResults.AddedPublisherGames).DistinctBy(x => x.PublisherGameID),
             RemovedPublisherGames.Concat(subProcessingResults.RemovedPublisherGames).DistinctBy(x => x.PublisherGame.PublisherGameID));
     }
