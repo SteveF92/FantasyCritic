@@ -1,5 +1,5 @@
 Get-ChildItem C:\FantasyCritic\BuildArea\ -Recurse | Remove-Item -Recurse -Force
-dotnet publish FantasyCritic.Web/FantasyCritic.Web.csproj -c Release -o C:\FantasyCritic\BuildArea\
+dotnet publish src\FantasyCritic.Web/FantasyCritic.Web.csproj -c Release -o C:\FantasyCritic\BuildArea\
 Write-Output "Stopping site"
 Stop-Website "FantasyCritic"
 Write-Output "Deleting files"
