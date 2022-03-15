@@ -410,10 +410,8 @@ export default {
       }
 
       if (actionInfo.message) {
-        let toast = this.$toasted.show(actionInfo.message, {
-          theme: 'primary',
-          position: 'top-right',
-          duration: 5000
+        this.$bvToast.toast(actionInfo.message, {
+          autoHideDelay: 5000
         });
       }
     },

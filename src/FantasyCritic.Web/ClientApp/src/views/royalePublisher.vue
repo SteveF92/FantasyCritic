@@ -195,28 +195,22 @@ export default {
     gamePurchased(purchaseInfo) {
       this.fetchPublisher();
       let message = purchaseInfo.gameName + ' was purchased for ' + this.$options.filters.money(purchaseInfo.purchaseCost);
-      let toast = this.$toasted.show(message, {
-        theme: 'primary',
-        position: 'top-right',
-        duration: 5000
+      this.$bvToast.toast(message, {
+        autoHideDelay: 5000
       });
     },
     publisherNameChanged() {
       this.fetchPublisher();
       let message = 'Publisher name changed.';
-      let toast = this.$toasted.show(message, {
-        theme: 'primary',
-        position: 'top-right',
-        duration: 5000
+      this.$bvToast.toast(message, {
+        autoHideDelay: 5000
       });
     },
     publisherIconChanged() {
       this.fetchPublisher();
       let message = 'Publisher icon changed.';
-      let toast = this.$toasted.show(message, {
-        theme: 'primary',
-        position: 'top-right',
-        duration: 5000
+      this.$bvToast.toast(message, {
+        autoHideDelay: 5000
       });
     },
     setGameToSell(publisherGame) {
@@ -234,10 +228,8 @@ export default {
         .then((response) => {
           this.fetchPublisher();
           let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
-          let toast = this.$toasted.show(message, {
-            theme: 'primary',
-            position: 'top-right',
-            duration: 5000
+          this.$bvToast.toast(message, {
+            autoHideDelay: 5000
           });
         })
         .catch((response) => {
