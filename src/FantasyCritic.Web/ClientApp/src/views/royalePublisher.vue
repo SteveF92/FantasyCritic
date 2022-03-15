@@ -120,8 +120,10 @@ import RoyaleChangePublisherIconForm from '@/components/modals/royaleChangePubli
 import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal';
 
 import GlobalFunctions from '@/globalFunctions';
+import BasicMixin from '@/mixins/basicMixin';
 
 export default {
+  mixins: [BasicMixin],
   props: ['publisherid'],
   data() {
     return {
@@ -195,16 +197,12 @@ export default {
     gamePurchased(purchaseInfo) {
       this.fetchPublisher();
       let message = purchaseInfo.gameName + ' was purchased for ' + this.$options.filters.money(purchaseInfo.purchaseCost);
-      this.$bvToast.toast(message, {
-        autoHideDelay: 5000
-      });
+      this.makeToast(message);
     },
     publisherNameChanged() {
       this.fetchPublisher();
       let message = 'Publisher name changed.';
-      this.$bvToast.toast(message, {
-        autoHideDelay: 5000
-      });
+      this.makeToast(message);
     },
     publisherIconChanged() {
       this.fetchPublisher();
@@ -228,9 +226,7 @@ export default {
         .then((response) => {
           this.fetchPublisher();
           let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
-          this.$bvToast.toast(message, {
-            autoHideDelay: 5000
-          });
+          this.makeToast(message);
         })
         .catch((response) => {
           this.errorInfo = "You can't sell that game. " + response.response.data;

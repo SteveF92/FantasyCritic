@@ -194,8 +194,10 @@ import StartDraftModal from '@/components/modals/startDraftModal';
 import GameNews from '@/components/gameNews';
 import ActiveBids from '@/components/activeBids';
 import BidCountdowns from '@/components/bidCountdowns';
+import BasicMixin from '@/mixins/basicMixin';
 
 export default {
+  mixins: [BasicMixin],
   data() {
     return {
       errorInfo: '',
@@ -410,9 +412,7 @@ export default {
       }
 
       if (actionInfo.message) {
-        this.$bvToast.toast(actionInfo.message, {
-          autoHideDelay: 5000
-        });
+        this.makeToast(actionInfo.message);
       }
     },
     changeLeagueYear(newVal) {
