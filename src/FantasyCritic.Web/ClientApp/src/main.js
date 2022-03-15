@@ -19,6 +19,8 @@ import 'bootstrap/dist/js/bootstrap.bundle.js';
 import VueFlatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 
+import './registerServiceWorker';
+
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
@@ -79,7 +81,6 @@ Vue.component('font-awesome-layers', FontAwesomeLayers);
 Vue.component('font-awesome-layers-text', FontAwesomeLayersText);
 sync(store, router);
 
-import './registerServiceWorker';
 Vue.config.productionTip = false;
 
 new Vue({
