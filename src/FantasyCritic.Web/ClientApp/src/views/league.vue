@@ -160,7 +160,7 @@
               <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
                 <gameNews :gameNews="gameNews" mode="league" />
                 <br />
-                <div class="text-well">
+                <div>
                   <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" v-on:publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
                   <bidCountdowns v-if="!showPublicRevealCountdown" mode="NextBid"></bidCountdowns>
                 </div>

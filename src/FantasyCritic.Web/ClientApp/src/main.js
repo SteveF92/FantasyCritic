@@ -18,6 +18,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 import VueFlatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
+import vueAwesomeCountdown from 'vue-awesome-countdown';
 
 import './registerServiceWorker';
 
@@ -26,6 +27,7 @@ Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
 Vue.use(Toasted);
 Vue.use(VueFlatPickr);
+Vue.use(vueAwesomeCountdown, 'vac');
 
 //Vee-validate registration
 Vue.component('ValidationProvider', ValidationProvider);

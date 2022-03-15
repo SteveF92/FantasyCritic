@@ -4,26 +4,26 @@
       <h3>Bids are processing as we speak.</h3>
       <p>On a good day, bids process within 10 minutes. If it's been more than 20 minutes, check Twitter for updates.</p>
     </div>
-    <div v-if="!actionProcessing && nextPublicRevealTime">
-      <h2>Bids will be revealed in...</h2>
-      <flip-countdown :deadline="nextPublicRevealTime" @timeElapsed="publicBidRevealTimeElapsed"></flip-countdown>
-    </div>
-    <div v-if="!actionProcessing && nextBidTime">
-      <h2>Bids process in...</h2>
-      <flip-countdown :deadline="nextBidTime" @timeElapsed="nextBidTimeElapsed"></flip-countdown>
+    <div class="alert alert-primary">
+      <div v-if="!actionProcessing && nextPublicRevealTime">
+        <vac :end-time="nextPublicRevealTime">
+          <span slot="process" slot-scope="{ timeObj }" class="countdown">Bids will be revealed in {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
+        </vac>
+      </div>
+      <div v-if="!actionProcessing && nextBidTime">
+        <vac :end-time="nextBidTime">
+          <span slot="process" slot-scope="{ timeObj }" class="countdown">{{ `Bids process in ${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
+        </vac>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import FlipCountdown from 'vue2-flip-countdown';
 import moment from 'moment';
 
 export default {
   props: ['mode'],
-  components: {
-    FlipCountdown
-  },
   data() {
     return {
       forceActionProcessing: false
@@ -58,9 +58,9 @@ export default {
   }
 };
 </script>
-<style>
-.flip-clock {
-  border-radius: 25px;
-  padding: 10px;
+<style scoped>
+.countdown {
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>
