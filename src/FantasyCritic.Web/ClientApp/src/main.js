@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
-import Toasted from 'vue-toasted';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, email, min_value, max_value, min, max, integer } from 'vee-validate/dist/rules';
 import { messages } from 'vee-validate/dist/locale/en.json';
@@ -25,7 +24,6 @@ import './registerServiceWorker';
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
-Vue.use(Toasted);
 Vue.use(VueFlatPickr);
 Vue.use(vueAwesomeCountdown, 'vac');
 
