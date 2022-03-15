@@ -1,11 +1,10 @@
-import axios from 'axios';
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
 import Toasted from 'vue-toasted';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, email, min_value, max_value, min, max, integer } from 'vee-validate/dist/rules';
 import { messages } from 'vee-validate/dist/locale/en.json';
-import VueAnalytics from 'vue-analytics';
+import VueGtag from 'vue-gtag';
 import VueClipboard from 'vue-clipboard2';
 
 import App from './App.vue';
@@ -66,8 +65,10 @@ extend('password', {
   message: 'Entered passwords do not match'
 });
 
-Vue.use(VueAnalytics, {
-  id: 'UA-131370681-1',
+Vue.use(VueGtag, {
+  config: {
+    id: 'UA-131370681-1'
+  },
   router
 });
 
