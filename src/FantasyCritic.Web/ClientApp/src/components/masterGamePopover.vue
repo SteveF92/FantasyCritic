@@ -33,10 +33,8 @@ export default {
   }
 };
 </script>
-<style scoped>
-.close-button {
-  position: absolute;
-  right: 5px;
-  top: 0px;
+<style>
+.popover {
+  max-width: 500px;
 }
 </style>

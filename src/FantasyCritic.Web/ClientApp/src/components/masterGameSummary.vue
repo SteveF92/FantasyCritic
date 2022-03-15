@@ -132,8 +132,8 @@ export default {
   align-items: center;
   color: black;
   padding: 5px;
-  max-width: 500px;
   gap: 10px;
+  text-align: center;
 }
 
 .gg-image-area {
@@ -146,9 +146,6 @@ export default {
   display: block;
   margin: auto;
   border-radius: 5%;
-}
-
-.no-game-image {
 }
 
 .game-description {
