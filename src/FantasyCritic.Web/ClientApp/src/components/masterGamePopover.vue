@@ -1,26 +1,19 @@
 <template>
   <span>
     <span v-if="masterGame">
-      <popper ref="gamePopoverRef" trigger="click" :options="{ modifiers: { offset: { offset: '0,0px' } } }">
-        <span class="popper">
+      <b-popover :target="`mg-popover-${_uid}`" triggers="click blur">
+        <div class="mg-popover">
           <masterGameSummary :masterGame="masterGame"></masterGameSummary>
-
-          <span class="close-button fake-link" v-on:click="closePopover">
-            <font-awesome-icon icon="times" size="lg" :style="{ color: 'd6993a' }" />
-          </span>
-        </span>
-
-        <span slot="reference" class="fake-link" :class="{ 'text-primary': !currentlyIneligible }">
-          {{ masterGame.gameName }}
-        </span>
-      </popper>
+        </div>
+      </b-popover>
+      <a href="javascript:;" :class="{ 'text-white': currentlyIneligible }" :id="`mg-popover-${_uid}`">
+        {{ masterGame.gameName }}
+      </a>
     </span>
   </span>
 </template>
 
 <script>
-import Popper from 'vue-popperjs';
-import 'vue-popperjs/dist/vue-popper.css';
 import MasterGameSummary from '@/components/masterGameSummary';
 
 export default {
@@ -30,7 +23,6 @@ export default {
     };
   },
   components: {
-    popper: Popper,
     MasterGameSummary
   },
   props: ['masterGame', 'currentlyIneligible'],
