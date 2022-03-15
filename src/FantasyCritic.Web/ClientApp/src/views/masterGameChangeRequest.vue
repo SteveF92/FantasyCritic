@@ -106,8 +106,6 @@
 </template>
 <script>
 import axios from 'axios';
-import vueSlider from 'vue-slider-component';
-import Popper from 'vue-popperjs';
 import MasterGamePopover from '@/components/masterGamePopover';
 import MasterGameDetails from '@/components/masterGameDetails';
 
@@ -132,9 +130,7 @@ export default {
   },
   components: {
     MasterGamePopover,
-    MasterGameDetails,
-    vueSlider,
-    popper: Popper
+    MasterGameDetails
   },
   methods: {
     fetchMyRequests() {

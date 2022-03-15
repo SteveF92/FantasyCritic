@@ -121,8 +121,6 @@
 </template>
 <script>
 import axios from 'axios';
-import Popper from 'vue-popperjs';
-import moment from 'moment';
 import MasterGameTagSelector from '@/components/masterGameTagSelector';
 
 export default {
@@ -147,7 +145,6 @@ export default {
     };
   },
   components: {
-    popper: Popper,
     MasterGameTagSelector
   },
   computed: {

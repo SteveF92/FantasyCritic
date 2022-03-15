@@ -128,10 +128,7 @@
 </template>
 <script>
 import axios from 'axios';
-import vueSlider from 'vue-slider-component';
-import Popper from 'vue-popperjs';
 import MasterGamePopover from '@/components/masterGamePopover';
-import 'vue-slider-component/theme/antd.css';
 
 export default {
   data() {
@@ -153,8 +150,7 @@ export default {
     };
   },
   components: {
-    MasterGamePopover,
-    popper: Popper
+    MasterGamePopover
   },
   computed: {
     validReason() {

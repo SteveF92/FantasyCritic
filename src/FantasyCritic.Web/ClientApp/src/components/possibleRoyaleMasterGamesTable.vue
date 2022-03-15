@@ -72,10 +72,6 @@ export default {
   cursor: pointer;
 }
 
-.popper {
-  background: #415262;
-}
-
 .release-date {
   font-weight: bold;
 }

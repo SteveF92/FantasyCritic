@@ -262,9 +262,6 @@
   </div>
 </template>
 <script>
-import vueSlider from 'vue-slider-component';
-import Popper from 'vue-popperjs';
-import 'vue-slider-component/theme/antd.css';
 import { cloneDeep, tap, set } from 'lodash';
 import LeagueTagSelector from '@/components/leagueTagSelector';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector';
@@ -336,8 +333,6 @@ export default {
     };
   },
   components: {
-    vueSlider,
-    popper: Popper,
     LeagueTagSelector,
     SpecialGameSlotSelector
   },
