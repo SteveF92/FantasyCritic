@@ -65,12 +65,13 @@ extend('password', {
   message: 'Entered passwords do not match'
 });
 
-Vue.use(VueGtag, {
-  config: {
-    id: 'UA-131370681-1'
+Vue.use(
+  VueGtag,
+  {
+    config: { id: 'UA-131370681-1' }
   },
   router
-});
+);
 
 // Registration of global components
 Vue.component('font-awesome-icon', FontAwesomeIcon);
