@@ -29,7 +29,7 @@ public class PlayerWithPublisherViewModel
         PreviousYearWinner = previousYearWinner;
     }
 
-    public Guid InviteID { get; }
+    public Guid? InviteID { get; }
     public string InviteName { get; }
     public PlayerViewModel User { get; }
     public PublisherViewModel Publisher { get; }
