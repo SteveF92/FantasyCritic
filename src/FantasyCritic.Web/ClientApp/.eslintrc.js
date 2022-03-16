@@ -28,7 +28,6 @@ module.exports = {
     "vue/no-side-effects-in-computed-properties": ["off"],
     "vue/return-in-computed-property": ["off"],
     "vue/no-mutating-props": ["off"],
-    "vue/no-useless-template-attributes": ["off"],
   },
   globals: {
     "_": "writable"

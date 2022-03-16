@@ -7,7 +7,7 @@
       {{ tag.shortName }}
     </span>
     <b-popover :target="'popover-target' + _uid" triggers="hover" placement="right" custom-class="master-game-tag-popover">
-      <template #title class="popover-title">
+      <template #title>
         {{ tag.readableName }}
       </template>
       {{ tag.description }}
