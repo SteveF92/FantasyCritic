@@ -14,8 +14,8 @@
     </div>
     <div class="tag-flex-container">
       <div class="tag-flex-drag">
-        <draggable class="tag-drag-list" :list="banned" group="tags" @change="updateValue">
-          <div class="tag-drag-item" v-for="(element, index) in banned" :key="element">
+        <draggable class="tag-drag-list" :list="internalValue.banned" group="tags" @change="onChange">
+          <div class="tag-drag-item" v-for="element in internalValue.banned" :key="element">
             <font-awesome-icon icon="bars" />
             <masterGameTagBadge :tagName="element"></masterGameTagBadge>
           </div>
@@ -24,23 +24,14 @@
       </div>
 
       <div class="tag-flex-drag">
-        <draggable class="tag-drag-list" :list="allowed" group="tags" @change="updateValue">
-          <div class="tag-drag-item" v-for="(element, index) in allowed" :key="element">
+        <draggable class="tag-drag-list" :list="internalValue.allowed" group="tags" @change="onChange">
+          <div class="tag-drag-item" v-for="element in internalValue.allowed" :key="element">
             <font-awesome-icon icon="bars" />
             <masterGameTagBadge :tagName="element"></masterGameTagBadge>
           </div>
           <span slot="header" class="tag-header">Allowed Tags</span>
         </draggable>
       </div>
-
-      <!--<div class="tag-flex-drag">
-        <draggable class="tag-drag-list" :list="required" group="tags" @change="updateValue">
-          <div class="tag-drag-item" v-for="(element, index) in required" :key="element">
-            <masterGameTagBadge :tagName="element"></masterGameTagBadge>
-          </div>
-          <span slot="header" class="tag-header">Required Tags</span>
-        </draggable>
-      </div>-->
     </div>
   </div>
 </template>
@@ -57,10 +48,16 @@ export default {
   },
   data() {
     return {
-      allowed: [],
-      banned: [],
-      required: [],
-      initialValue: null
+      initialValue: {
+        banned: [],
+        allowed: [],
+        required: []
+      },
+      internalValue: {
+        banned: [],
+        allowed: [],
+        required: []
+      }
     };
   },
   computed: {
@@ -73,66 +70,51 @@ export default {
       }
       let recommendedAllowedTags = ['Reimagining'];
       let recommendedBannedTags = ['DirectorsCut', 'ReleasedInternationally', 'CurrentlyInEarlyAccess'];
-      let bannedIntersection = _.intersection(this.banned, recommendedAllowedTags);
-      let allowedIntersection = _.intersection(this.allowed, recommendedBannedTags);
+      let bannedIntersection = _.intersection(this.internalValue.banned, recommendedAllowedTags);
+      let allowedIntersection = _.intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showDanger() {
       let recommendedAllowedTags = ['NewGame', 'NewGamingFranchise', 'PlannedForEarlyAccess', 'WillReleaseInternationallyFirst'];
       let recommendedBannedTags = ['Port'];
-      let bannedIntersection = _.intersection(this.banned, recommendedAllowedTags);
-      let allowedIntersection = _.intersection(this.allowed, recommendedBannedTags);
+      let bannedIntersection = _.intersection(this.internalValue.banned, recommendedAllowedTags);
+      let allowedIntersection = _.intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showPortDanger() {
       let recommendedAllowedTags = [];
       let recommendedBannedTags = ['Port'];
-      let bannedIntersection = _.intersection(this.banned, recommendedAllowedTags);
-      let allowedIntersection = _.intersection(this.allowed, recommendedBannedTags);
+      let bannedIntersection = _.intersection(this.internalValue.banned, recommendedAllowedTags);
+      let allowedIntersection = _.intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     }
   },
   methods: {
-    handleInput(e) {
-      this.$emit('input', this.value);
-    },
-    updateValue() {
-      this.value.banned = _.cloneDeep(this.banned);
-      this.value.required = _.cloneDeep(this.required);
+    onChange() {
+      this.$emit('input', this.internalValue);
     },
     resetValues() {
-      this.value.banned = _.cloneDeep(this.initialValue.banned);
-      this.value.required = _.cloneDeep(this.initialValue.required);
-      this.updateInternal();
+      this.internalValue = _.cloneDeep(this.initialValue);
     },
-    updateInternal() {
-      this.allowed = [];
-      this.banned = [];
-      this.required = [];
-
+    initializeValues() {
       this.tagOptions.forEach((tag) => {
         if (this.value.banned.includes(tag.name)) {
-          this.banned.push(tag.name);
+          this.initialValue.banned.push(tag.name);
           return;
         }
         if (this.value.required.includes(tag.name)) {
-          this.required.push(tag.name);
+          this.initialValue.required.push(tag.name);
           return;
         }
 
-        this.allowed.push(tag.name);
+        this.initialValue.allowed.push(tag.name);
       });
+
+      this.internalValue = _.cloneDeep(this.initialValue);
     }
   },
   mounted() {
-    this.initialValue = _.cloneDeep(this.value);
-    this.updateInternal();
-  },
-  watch: {
-    value: function () {
-      this.initialValue = _.cloneDeep(this.value);
-      this.updateInternal();
-    }
+    this.initializeValues();
   }
 };
 </script>
