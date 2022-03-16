@@ -4,7 +4,7 @@
 
     <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="gameRows" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
       <template #cell(masterGame.gameName)="data">
-        <masterGamePopover ref="gamePopoverWrapperRef" :masterGame="data.item.masterGame"></masterGamePopover>
+        <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
       </template>
       <template #cell(masterGame.maximumReleaseDate)="data">
         <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
