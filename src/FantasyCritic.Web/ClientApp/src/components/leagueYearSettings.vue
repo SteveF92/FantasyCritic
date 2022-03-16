@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <div v-if="intendedNumberOfPlayersEverValid || editMode">
+    <div v-if="internalValue && (intendedNumberOfPlayersEverValid || editMode)">
       <div v-show="freshSettings">
         <hr />
         <label>Based on your number of players and selected game mode, we recommend the following settings. However, you are free to change this.</label>
