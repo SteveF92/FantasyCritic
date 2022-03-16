@@ -18,15 +18,9 @@
 
         <div class="form-group">
           <label for="gameMode" class="control-label">Game Mode</label>
-          <p>
-            This slider changes the recommended number of games per player. If you've played Fantasy Critic before, consider using Advanced.
-            <br />
-            If you're playing with people new to video games in general, consider using Beginner.
-          </p>
-          <div class="mode-slider">
-            <vue-slider v-model="gameMode" :data="gameModeOptions" :marks="gameModeMarks"></vue-slider>
-          </div>
-          <p>These modes only change the recommended settings. You are free to customize any value you want.</p>
+          <p>If you've played Fantasy Critic before, consider using Advanced. If you're playing with people new to video games in general, consider using Beginner.</p>
+          <b-form-select v-model="gameMode" :options="gameModeOptions"></b-form-select>
+          <p>These modes change the recommended number of games per player and a few other settings. This just provides a baseline, you are free to tweak anything you want.</p>
         </div>
       </div>
     </div>
@@ -274,62 +268,7 @@ export default {
       intendedNumberOfPlayersEverValid: false,
       updatingOptions: true,
       gameMode: 'Standard',
-      gameModeOptions: ['Beginner', 'Standard', 'Advanced'],
-      gameModeMarks: {
-        Beginner: {
-          label: 'Beginner',
-          style: {
-            width: '8px',
-            height: '8px',
-            display: 'block',
-            transform: 'translate(-2px, -2px)'
-          },
-          labelStyle: {
-            color: 'white',
-            fontWeight: 'bolder',
-            fontSize: '15px'
-          }
-        },
-        Standard: {
-          label: 'Standard',
-          style: {
-            width: '8px',
-            height: '8px',
-            display: 'block',
-            transform: 'translate(-2px, -2px)'
-          },
-          labelStyle: {
-            color: 'white',
-            fontWeight: 'bolder',
-            fontSize: '15px'
-          }
-        },
-        Advanced: {
-          label: 'Advanced',
-          style: {
-            width: '8px',
-            height: '8px',
-            display: 'block',
-            transform: 'translate(-2px, -2px)'
-          },
-          labelStyle: {
-            color: 'white',
-            fontWeight: 'bolder',
-            fontSize: '15px'
-          }
-        }
-      },
-      markStyle: {
-        width: '8px',
-        height: '8px',
-        display: 'block',
-        transform: 'translate(-2px, -2px)'
-      },
-      labelStyle: {
-        color: 'white',
-        fontWeight: 'bolder',
-        fontSize: '15px'
-      }
+      gameModeOptions: ['Beginner', 'Standard', 'Advanced']
     };
   },
   components: {
