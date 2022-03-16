@@ -82,7 +82,6 @@ export default {
       return this.$store.getters.moveMode;
     },
     userIsPublisher() {
-      return false;
       return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
     },
     iconIsValid() {

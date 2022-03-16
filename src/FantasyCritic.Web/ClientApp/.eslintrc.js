@@ -23,8 +23,6 @@ module.exports = {
     "vue/multi-word-component-names": ["off"],
     "vue/no-dupe-keys": ["off"],
     "no-dupe-keys": ["off"],
-    "no-unreachable": ["off"],
-    "no-sparse-arrays": ["off"],
     "vue/no-side-effects-in-computed-properties": ["off"],
     "vue/no-mutating-props": ["off"]
   },

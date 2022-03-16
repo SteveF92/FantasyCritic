@@ -195,7 +195,6 @@ export const routes = [
       mastergameid: route.params.mastergameid
     })
   },
-  ,
   {
     path: '/mastergameeditor/:mastergameid',
     component: MasterGameEditor,
