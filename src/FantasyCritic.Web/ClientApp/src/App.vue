@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import TopNavbar from '@/components/modules/topNavBar';
-import FooterModule from '@/components/modules/footerModule';
+import TopNavbar from '@/components/topNavBar';
+import FooterModule from '@/components/footerModule';
 
 export default {
   components: {

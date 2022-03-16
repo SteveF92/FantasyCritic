@@ -14,7 +14,7 @@ html {
 body {
   background-color: black;
   color: white;
-  background-image: url('/img/bg-geo-texture.png');
+  background-image: url('../assets/bg-geo-texture.png');
   background-repeat: repeat;
   padding-right: 0 !important;
 }

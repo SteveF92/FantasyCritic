@@ -1,12 +1,11 @@
 {
-  "name": "fantasy-critic",
+  "name": "fantasy-critic-client-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "check": "vue-cli-service lint --no-fix"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@microsoft/signalr": "^6.0.2",
@@ -44,16 +43,21 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/vue-fontawesome": "^2.0.6",
-    "@vue/cli-plugin-pwa": "^4.5.15",
-    "@vue/cli-service": "^4.5.15",
-    "eslint": "^8.11.0",
-    "eslint-config-prettier": "^8.5.0",
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-pwa": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-vuex": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "jquery": "^3.6.0",
-    "node-sass": "^7.0.0",
-    "popper.js": "^1.16.1",
-    "prettier": "^2.5.1",
-    "sass-loader": "^10.2.1",
+    "eslint-plugin-vue": "^8.0.3",
+    "prettier": "^2.4.1",
+    "sass": "^1.32.7",
+    "sass-loader": "^12.0.0",
     "vue-template-compiler": "^2.6.14"
   }
 }
