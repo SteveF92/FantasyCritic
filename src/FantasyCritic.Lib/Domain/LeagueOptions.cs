@@ -10,7 +10,7 @@ public class LeagueOptions
 
     public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
         bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, bool publicLeague)
+        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem)
     {
         StandardGames = standardGames;
         GamesToDraft = gamesToDraft;
@@ -29,7 +29,6 @@ public class LeagueOptions
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
         TiebreakSystem = tiebreakSystem;
-        PublicLeague = publicLeague;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
@@ -77,7 +76,6 @@ public class LeagueOptions
         ScoringSystem = parameters.ScoringSystem;
         TradingSystem = parameters.TradingSystem;
         TiebreakSystem = parameters.TiebreakSystem;
-        PublicLeague = league.PublicLeague;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
@@ -276,5 +274,13 @@ public class LeagueOptions
 
         string finalString = string.Join("\n", differences.Select(x => $"• {x}"));
         return finalString;
+    }
+
+    public LeagueOptions UpdateOptionsForYear(int requestYear)
+    {
+        var newScoringSystem = ScoringSystem.GetDefaultScoringSystem(requestYear);
+        LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
+            DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem, PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem);
+        return options;
     }
 }
