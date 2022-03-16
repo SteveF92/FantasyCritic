@@ -19,7 +19,6 @@ module.exports = {
     "vue/no-unused-vars": ["off"],
     "vue/valid-v-for": ["off"],
     "vue/require-v-for-key": ["off"],
-    "vue/no-unused-components": ["off"],
     "vue/multi-word-component-names": ["off"],
     "vue/no-dupe-keys": ["off"],
     "no-dupe-keys": ["off"]

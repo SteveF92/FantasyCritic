@@ -158,8 +158,7 @@ export default {
   props: ['trade', 'league', 'leagueYear', 'publisher', 'defaultVisible'],
   components: {
     MasterGamePopover,
-    CollapseCard,
-    GlobalFunctions
+    CollapseCard
   },
   data() {
     return {

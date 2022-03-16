@@ -44,11 +44,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
-import MasterGameSummary from '@/components/masterGameSummary';
-import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge';
 
 export default {
   data() {
@@ -60,11 +56,6 @@ export default {
       errorInfo: '',
       isBusy: false
     };
-  },
-  components: {
-    PossibleMasterGamesTable,
-    MasterGameSummary,
-    SearchSlotTypeBadge
   },
   computed: {
     formIsValid() {

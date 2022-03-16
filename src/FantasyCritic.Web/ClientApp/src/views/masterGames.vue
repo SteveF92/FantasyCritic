@@ -65,7 +65,6 @@
 
 <script>
 import axios from 'axios';
-import MasterGamePopover from '@/components/masterGamePopover';
 import MasterGamesTable from '@/components/gameTables/masterGamesTable';
 
 export default {
@@ -84,7 +83,6 @@ export default {
     };
   },
   components: {
-    MasterGamePopover,
     MasterGamesTable
   },
   computed: {

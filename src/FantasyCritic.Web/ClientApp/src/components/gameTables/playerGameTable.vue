@@ -87,9 +87,7 @@
 </template>
 
 <script>
-import SlotTypeBadge from '@/components/gameTables/slotTypeBadge';
 import GlobalFunctions from '@/globalFunctions';
-import MasterGamePopover from '@/components/masterGamePopover';
 import GameNameColumn from '@/components/gameTables/gameNameColumn';
 import { ToggleButton } from 'vue-js-toggle-button';
 
@@ -103,9 +101,7 @@ export default {
     };
   },
   components: {
-    MasterGamePopover,
     ToggleButton,
-    SlotTypeBadge,
     GameNameColumn
   },
   props: ['publisher', 'leagueYear'],

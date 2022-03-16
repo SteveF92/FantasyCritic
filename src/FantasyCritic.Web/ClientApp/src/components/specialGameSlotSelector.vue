@@ -23,13 +23,11 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable';
 import MasterGameTagSelector from '@/components/masterGameTagSelector';
 
 export default {
   props: ['value'],
   components: {
-    draggable,
     MasterGameTagSelector
   },
   data() {
