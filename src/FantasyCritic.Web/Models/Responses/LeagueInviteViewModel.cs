@@ -21,11 +21,6 @@ public class LeagueInviteViewModel
     public string InviteName { get; }
     public PlayerViewModel LeagueManager { get; }
 
-    public static LeagueInviteViewModel CreateWithEmailAddress(LeagueInvite invite)
-    {
-        return new LeagueInviteViewModel(invite.InviteID, invite.League, invite.EmailAddress);
-    }
-
     public static LeagueInviteViewModel CreateWithDisplayName(LeagueInvite invite, FantasyCriticUser user)
     {
         return new LeagueInviteViewModel(invite.InviteID, invite.League, user.UserName);
