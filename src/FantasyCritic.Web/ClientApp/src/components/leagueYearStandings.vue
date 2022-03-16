@@ -118,6 +118,8 @@ export default {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
         return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
       }
+
+      return null;
     }
   },
   methods: {

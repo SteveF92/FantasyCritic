@@ -26,8 +26,7 @@ module.exports = {
     "no-unreachable": ["off"],
     "no-sparse-arrays": ["off"],
     "vue/no-side-effects-in-computed-properties": ["off"],
-    "vue/return-in-computed-property": ["off"],
-    "vue/no-mutating-props": ["off"],
+    "vue/no-mutating-props": ["off"]
   },
   globals: {
     "_": "writable"

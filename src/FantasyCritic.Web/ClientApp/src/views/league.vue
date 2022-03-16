@@ -245,6 +245,7 @@ export default {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
         return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
       }
+      return null;
     },
     mostRecentManagerMessage() {
       if (!this.leagueYear || !this.leagueYear.managerMessages || this.leagueYear.managerMessages.length === 0) {
