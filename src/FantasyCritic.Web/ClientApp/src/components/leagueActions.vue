@@ -169,7 +169,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 import BidGameForm from '@/components/modals/bidGameForm';
@@ -308,14 +307,14 @@ export default {
       };
       this.$emit('actionTaken', actionInfo);
     },
-    tradeProposed(tradeInfo) {
+    tradeProposed() {
       let actionInfo = {
         message: 'Trade proposal has been made.',
         fetchLeagueYear: true
       };
       this.$emit('actionTaken', actionInfo);
     },
-    tradeActioned(tradeInfo) {
+    tradeActioned() {
       let actionInfo = {
         fetchLeagueYear: true
       };
@@ -328,7 +327,7 @@ export default {
       };
       this.$emit('actionTaken', actionInfo);
     },
-    publisherIconChanged(changeInfo) {
+    publisherIconChanged() {
       let actionInfo = {
         message: 'Publisher icon changed.',
         fetchLeagueYear: true
@@ -360,7 +359,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetDraftPause', model)
-        .then((response) => {
+        .then(() => {
           let pauseMessage = 'Draft has been paused.';
           if (!pauseInfo.pause) {
             pauseMessage = 'Draft has been un-paused.';
@@ -372,7 +371,7 @@ export default {
           };
           this.$emit('actionTaken', actionInfo);
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     resetDraft() {
       var model = {
@@ -381,7 +380,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/ResetDraft', model)
-        .then((response) => {
+        .then(() => {
           let actionInfo = {
             message: 'Draft has been reset.',
             fetchLeague: true,
@@ -389,7 +388,7 @@ export default {
           };
           this.$emit('actionTaken', actionInfo);
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     undoLastDraftAction() {
       var model = {
@@ -398,14 +397,14 @@ export default {
       };
       axios
         .post('/api/leagueManager/UndoLastDraftAction', model)
-        .then((response) => {
+        .then(() => {
           let actionInfo = {
             message: 'Last action was undone.',
             fetchLeagueYear: true
           };
           this.$emit('actionTaken', actionInfo);
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     playerInvited(inviteEmail) {
       let actionInfo = {

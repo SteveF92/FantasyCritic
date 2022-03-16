@@ -186,8 +186,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import axios from 'axios';
 import SiteCounts from '@/components/siteCounts';
 import HomeFaq from '@/components/homeFAQ';
 import Tweets from '@/components/tweets';
@@ -224,12 +222,6 @@ export default {
   flex-direction: column; /* make main axis vertical */
   justify-content: center; /* center items vertically, in this case */
   align-items: center; /* center items horizontally, in this case */
-}
-.hero-message {
-}
-.hero-message-header {
-}
-.hero-message-details {
 }
 
 .registration-area {
@@ -297,13 +289,6 @@ export default {
 .features-heading {
   text-align: center;
 }
-
-/*.feature-highlights {
-    width: 50%;
-    min-width: 300px;
-    display: flex;
-    flex-wrap: wrap;
-  }*/
 
 .feature-highlight {
   margin: 2px;

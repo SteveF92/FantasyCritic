@@ -164,7 +164,7 @@ export default {
         .then((response) => {
           this.myRequests = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     sendMasterGameRequestRequest() {
       let request = {
@@ -182,7 +182,7 @@ export default {
 
       axios
         .post('/api/game/CreateMasterGameRequest', request)
-        .then((response) => {
+        .then(() => {
           this.showSent = true;
           window.scroll({
             top: 0,
@@ -212,11 +212,11 @@ export default {
       };
       axios
         .post('/api/game/DeleteMasterGameRequest', model)
-        .then((response) => {
+        .then(() => {
           this.showDeleted = true;
           this.fetchMyRequests();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     dismissRequest(request) {
       let model = {
@@ -224,10 +224,10 @@ export default {
       };
       axios
         .post('/api/game/DismissMasterGameRequest', model)
-        .then((response) => {
+        .then(() => {
           this.fetchMyRequests();
         })
-        .catch((response) => {});
+        .catch(() => {});
     }
   },
   mounted() {

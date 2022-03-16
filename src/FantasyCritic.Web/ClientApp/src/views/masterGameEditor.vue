@@ -225,7 +225,7 @@ export default {
           this.errorInfo = error.response;
         });
     },
-    generateSQL(request) {
+    generateSQL() {
       this.generatedSQL = "select * from tbl_mastergame where MasterGameID = '" + this.masterGame.masterGameID + "';";
     }
   },
@@ -236,7 +236,7 @@ export default {
     this.populateTags();
   },
   watch: {
-    $route(to, from) {
+    $route() {
       this.fetchMasterGame();
     }
   }

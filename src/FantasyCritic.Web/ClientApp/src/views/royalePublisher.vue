@@ -109,7 +109,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import moment from 'moment';
 
@@ -223,7 +222,7 @@ export default {
 
       axios
         .post('/api/royale/SellGame', request)
-        .then((response) => {
+        .then(() => {
           this.fetchPublisher();
           let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
           this.makeToast(message);
@@ -246,7 +245,7 @@ export default {
 
       axios
         .post('/api/royale/SetAdvertisingMoney', request)
-        .then((response) => {
+        .then(() => {
           this.fetchPublisher();
           this.advertisingBudgetToSet = 0;
         })
@@ -277,7 +276,7 @@ export default {
     this.fetchPublisher();
   },
   watch: {
-    $route(to, from) {
+    $route() {
       this.fetchPublisher();
     }
   }

@@ -134,7 +134,7 @@ export default {
     this.fetchPublisher();
   },
   watch: {
-    $route(to, from) {
+    $route() {
       this.fetchPublisher();
     }
   }

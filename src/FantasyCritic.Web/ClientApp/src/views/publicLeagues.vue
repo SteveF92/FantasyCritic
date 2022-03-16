@@ -19,9 +19,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
-import moment from 'moment';
 
 export default {
   data() {
@@ -52,7 +50,7 @@ export default {
           this.selectedYear = this.supportedYears[0];
           this.fetchPublicLeaguesForYear(this.selectedYear);
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     fetchPublicLeaguesForYear(year) {
       axios
@@ -60,7 +58,7 @@ export default {
         .then((response) => {
           this.publicLeagues = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     }
   },
   mounted() {

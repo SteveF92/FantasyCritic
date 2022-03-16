@@ -146,7 +146,7 @@ export default {
           this.fetchGamesForYear();
           this.fetchMyLeaguesForYear();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     fetchGamesForYear() {
       this.isBusy = true;
@@ -160,7 +160,7 @@ export default {
             this.flatMasterGameYears = response.data;
             this.isBusy = false;
           })
-          .catch((response) => {});
+          .catch(() => {});
       } else {
         axios
           .get(`/api/game/MasterGameYearInLeagueContext/${this.selectedYear}?leagueID=${this.selectedLeague.leagueID}`)
@@ -168,7 +168,7 @@ export default {
             this.possibleMasterGameYears = response.data;
             this.isBusy = false;
           })
-          .catch((response) => {});
+          .catch(() => {});
       }
     },
     fetchMyLeaguesForYear() {
@@ -178,7 +178,7 @@ export default {
           let allLeaguesForYear = response.data;
           this.myLeaguesForYear = _.filter(allLeaguesForYear, { testLeague: false });
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     changeYear() {
       this.fetchGamesForYear();
