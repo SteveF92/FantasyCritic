@@ -20,8 +20,6 @@ module.exports = {
     "vue/valid-v-for": ["off"],
     "vue/require-v-for-key": ["off"],
     "vue/multi-word-component-names": ["off"],
-    "vue/no-dupe-keys": ["off"],
-    "no-dupe-keys": ["off"]
   },
   globals: {
     "_": "writable"

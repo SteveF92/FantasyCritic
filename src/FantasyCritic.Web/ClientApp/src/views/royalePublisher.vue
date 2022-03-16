@@ -140,7 +140,7 @@ export default {
         { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
         { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
       ],
-      userPublisherFields: [{ key: 'sellGame', label: '', thClass: 'bg-primary', label: 'Sell' }]
+      userPublisherFields: [{ key: 'sellGame', thClass: 'bg-primary', label: 'Sell' }]
     };
   },
   components: {

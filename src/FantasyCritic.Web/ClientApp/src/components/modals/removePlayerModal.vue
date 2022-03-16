@@ -81,7 +81,6 @@ export default {
     };
   },
   props: ['league', 'leagueYear'],
-  props: ['league', 'leagueYear'],
   computed: {
     publishers() {
       return this.leagueYear.publishers;
