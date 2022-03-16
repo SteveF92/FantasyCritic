@@ -117,7 +117,9 @@ export default {
       return this.$store.getters.isAdmin;
     },
     reversedMasterGameYears() {
-      return this.masterGameYears.reverse();
+      let tempMasterGameYears = _.cloneDeep(this.masterGameYears);
+      tempMasterGameYears.reverse();
+      return tempMasterGameYears;
     },
     peakHypeFactorText() {
       return {

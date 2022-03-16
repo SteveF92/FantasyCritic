@@ -22,8 +22,7 @@ module.exports = {
     "vue/no-unused-components": ["off"],
     "vue/multi-word-component-names": ["off"],
     "vue/no-dupe-keys": ["off"],
-    "no-dupe-keys": ["off"],
-    "vue/no-side-effects-in-computed-properties": ["off"]
+    "no-dupe-keys": ["off"]
   },
   globals: {
     "_": "writable"

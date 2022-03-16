@@ -108,9 +108,6 @@ export default {
         this.leagueYearSettings.counterPicks <= 20;
 
       let allValid = this.readyToSetupLeagueYear && valid;
-      if (allValid) {
-        this.leagueYearEverValid = true;
-      }
       return allValid;
     }
   },
@@ -180,6 +177,14 @@ export default {
       specialGameSlots: [],
       tags: { banned: [], allowed: [], required: [] }
     };
+  },
+  watch: {
+    leagueYearIsValid: function (newValue) {
+      let allValid = this.readyToSetupLeagueYear && newValue;
+      if (allValid) {
+        this.leagueYearEverValid = true;
+      }
+    }
   }
 };
 </script>
