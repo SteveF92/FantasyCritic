@@ -23,8 +23,7 @@ module.exports = {
     "vue/multi-word-component-names": ["off"],
     "vue/no-dupe-keys": ["off"],
     "no-dupe-keys": ["off"],
-    "vue/no-side-effects-in-computed-properties": ["off"],
-    "vue/no-mutating-props": ["off"]
+    "vue/no-side-effects-in-computed-properties": ["off"]
   },
   globals: {
     "_": "writable"

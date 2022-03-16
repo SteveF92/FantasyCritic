@@ -10,7 +10,7 @@
         <div class="form-group">
           <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
           <ValidationProvider rules="required|min_value:2|max_value:20|integer" v-slot="{ errors }">
-            <input v-model="intendedNumberOfPlayers" id="intendedNumberOfPlayers" name="Intended Number of Players" type="text" class="form-control input" />
+            <input v-model="intendedNumberOfPlayers" id="intendedNumberOfPlayers" name="Intended Number of Players" type="text" class="form-control input" @input="fullAutoUpdate()" />
             <span class="text-danger">{{ errors[0] }}</span>
           </ValidationProvider>
           <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
@@ -19,7 +19,7 @@
         <div class="form-group">
           <label for="gameMode" class="control-label">Game Mode</label>
           <p>If you've played Fantasy Critic before, consider using Advanced. If you're playing with people new to video games in general, consider using Beginner.</p>
-          <b-form-select v-model="gameMode" :options="gameModeOptions"></b-form-select>
+          <b-form-select v-model="gameMode" :options="gameModeOptions" @input="fullAutoUpdate()"></b-form-select>
           <p>These modes change the recommended number of games per player and a few other settings. This just provides a baseline, you are free to tweak anything you want.</p>
         </div>
       </div>
@@ -36,7 +36,7 @@
         <p>This is the total number of games that each player will have on their roster.</p>
 
         <ValidationProvider rules="required|min_value:1|max_value:50|integer" v-slot="{ errors }">
-          <input v-model="local.standardGames" @input="update('standardGames', $event.target.value)" id="standardGames" name="Total Number of Games" type="text" class="form-control input" />
+          <input v-model="internalValue.standardGames" id="standardGames" name="Total Number of Games" type="text" class="form-control input" @input="autoUpdateSpecialSlotOptions()" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
@@ -49,7 +49,7 @@
         </p>
 
         <ValidationProvider rules="required|min_value:1|max_value:50|integer" v-slot="{ errors }">
-          <input v-model="local.gamesToDraft" @input="update('gamesToDraft', $event.target.value)" id="gamesToDraft" name="Games to Draft" type="text" class="form-control input" />
+          <input v-model="internalValue.gamesToDraft" id="gamesToDraft" name="Games to Draft" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
@@ -62,7 +62,7 @@
         </p>
 
         <ValidationProvider rules="required|max_value:50|integer" v-slot="{ errors }">
-          <input v-model="local.counterPicks" @input="update('counterPicks', $event.target.value)" id="counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
+          <input v-model="internalValue.counterPicks" id="counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
@@ -75,13 +75,7 @@
         </p>
 
         <ValidationProvider rules="required|max_value:50|integer" v-slot="{ errors }">
-          <input
-            v-model="local.counterPicksToDraft"
-            @input="update('counterPicksToDraft', $event.target.value)"
-            id="counterPicksToDraft"
-            name="Counter picks to Draft"
-            type="text"
-            class="form-control input" />
+          <input v-model="internalValue.counterPicksToDraft" id="counterPicksToDraft" name="Counter picks to Draft" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
@@ -89,7 +83,7 @@
       <div class="form-group">
         <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
         <ValidationProvider rules="required|min_value:0|max_value:100|integer" v-slot="{ errors }">
-          <input v-model="local.minimumBidAmount" id="minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
+          <input v-model="internalValue.minimumBidAmount" id="minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
         <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
@@ -105,13 +99,13 @@
         If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding" option.
       </div>
       <label for="pickupSystem" class="control-label">Bidding System</label>
-      <b-form-select v-model="local.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
+      <b-form-select v-model="internalValue.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
 
       <hr />
       <h3>Trade Settings</h3>
       <div class="alert alert-info">New for 2022, you can allow players in your leagues to trade games with each other.</div>
       <label for="tradingSystem" class="control-label">Trading System</label>
-      <b-form-select v-model="local.tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
+      <b-form-select v-model="internalValue.tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
 
       <hr />
       <h3>Game Dropping Settings</h3>
@@ -137,31 +131,21 @@
           <tr>
             <th scope="row">Will Release</th>
             <td>
-              <ValidationProvider rules="required|max_value:100|integer" v-slot="{ errors }" v-if="!local.unlimitedWillReleaseDroppableGames">
-                <input
-                  v-model="local.willReleaseDroppableGames"
-                  @input="update('willReleaseDroppableGames', $event.target.value)"
-                  id="willReleaseDroppableGames"
-                  name="Will Release Droppable Games"
-                  type="text"
-                  class="form-control input drop-number" />
+              <ValidationProvider rules="required|max_value:100|integer" v-slot="{ errors }" v-if="!internalValue.unlimitedWillReleaseDroppableGames">
+                <input v-model="internalValue.willReleaseDroppableGames" id="willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
                 <span class="text-danger">{{ errors[0] }}</span>
               </ValidationProvider>
             </td>
             <td>
-              <b-form-checkbox
-                class="unlimited-checkbox"
-                v-model="local.unlimitedWillReleaseDroppableGames"
-                @input="update('unlimitedWillReleaseDroppableGames', local.unlimitedWillReleaseDroppableGames)"></b-form-checkbox>
+              <b-form-checkbox class="unlimited-checkbox" v-model="internalValue.unlimitedWillReleaseDroppableGames"></b-form-checkbox>
             </td>
           </tr>
           <tr>
             <th scope="row">Will Not Release</th>
             <td>
-              <ValidationProvider rules="required|max_value:100|integer" v-slot="{ errors }" v-if="!local.unlimitedWillNotReleaseDroppableGames">
+              <ValidationProvider rules="required|max_value:100|integer" v-slot="{ errors }" v-if="!internalValue.unlimitedWillNotReleaseDroppableGames">
                 <input
-                  v-model="local.willNotReleaseDroppableGames"
-                  @input="update('willNotReleaseDroppableGames', $event.target.value)"
+                  v-model="internalValue.willNotReleaseDroppableGames"
                   id="willNotReleaseDroppableGames"
                   name="Will Not Release Droppable Games"
                   type="text"
@@ -170,45 +154,33 @@
               </ValidationProvider>
             </td>
             <td>
-              <b-form-checkbox
-                class="unlimited-checkbox"
-                v-model="local.unlimitedWillNotReleaseDroppableGames"
-                @input="update('unlimitedWillNotReleaseDroppableGames', local.unlimitedWillNotReleaseDroppableGames)"></b-form-checkbox>
+              <b-form-checkbox class="unlimited-checkbox" v-model="internalValue.unlimitedWillNotReleaseDroppableGames"></b-form-checkbox>
             </td>
           </tr>
           <tr>
             <th scope="row">Any Unreleased</th>
             <td>
-              <ValidationProvider rules="required|max_value:100|integer" v-slot="{ errors }" v-if="!local.unlimitedFreeDroppableGames">
-                <input
-                  v-model="local.freeDroppableGames"
-                  @input="update('freeDroppableGames', $event.target.value)"
-                  id="freeDroppableGames"
-                  name="Unrestricted Droppable Games"
-                  type="text"
-                  class="form-control input drop-number" />
+              <ValidationProvider rules="required|max_value:100|integer" v-slot="{ errors }" v-if="!internalValue.unlimitedFreeDroppableGames">
+                <input v-model="internalValue.freeDroppableGames" id="freeDroppableGames" name="Unrestricted Droppable Games" type="text" class="form-control input drop-number" />
                 <span class="text-danger">{{ errors[0] }}</span>
               </ValidationProvider>
             </td>
             <td>
-              <b-form-checkbox
-                class="unlimited-checkbox"
-                v-model="local.unlimitedFreeDroppableGames"
-                @input="update('unlimitedFreeDroppableGames', local.unlimitedFreeDroppableGames)"></b-form-checkbox>
+              <b-form-checkbox class="unlimited-checkbox" v-model="internalValue.unlimitedFreeDroppableGames"></b-form-checkbox>
             </td>
           </tr>
         </tbody>
       </table>
 
       <div>
-        <b-form-checkbox v-model="local.dropOnlyDraftGames" @input="update('dropOnlyDraftGames', local.dropOnlyDraftGames)">
+        <b-form-checkbox v-model="internalValue.dropOnlyDraftGames">
           <span class="checkbox-label">Only allow drafted to be dropped</span>
           <p>If this is checked, pickup games will not be droppable, no matter what the above settings are. Counter picks are never droppable.</p>
         </b-form-checkbox>
       </div>
 
       <div>
-        <b-form-checkbox v-model="local.counterPicksBlockDrops" @input="update('counterPicksBlockDrops', local.counterPicksBlockDrops)">
+        <b-form-checkbox v-model="internalValue.counterPicksBlockDrops">
           <span class="checkbox-label">Counter Picks Block Drops</span>
           <p>If this is checked, counter picking a game will prevent the original player from dropping the game.</p>
         </b-form-checkbox>
@@ -223,7 +195,7 @@
         <br />
         All games have a number of tags associated with them. If you place a tag in the "Banned" column, any game with that tag will not be selectable.
       </div>
-      <leagueTagSelector v-model="local.tags" :gameMode="gameMode"></leagueTagSelector>
+      <leagueTagSelector v-model="internalValue.tags" :gameMode="gameMode"></leagueTagSelector>
 
       <hr />
       <h3>Special Game Slots</h3>
@@ -236,7 +208,7 @@
         <em>must</em>
         be a yearly installment. Then, every player must have exactly one 'Yearly Installment'.
       </div>
-      <specialGameSlotSelector v-model="local.specialGameSlots"></specialGameSlotSelector>
+      <specialGameSlotSelector v-model="internalValue.specialGameSlots"></specialGameSlotSelector>
 
       <hr />
       <h3 class="collapse-header" v-b-toggle.advanced-settings-collapse>
@@ -248,7 +220,7 @@
         <div class="alert alert-info">We recommend you keep these settings to the default options.</div>
         <div class="form-group">
           <label for="tiebreakSystem" class="control-label">Tiebreak System</label>
-          <b-form-select v-model="local.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
+          <b-form-select v-model="internalValue.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
           <p>This setting handles how ties on bids are handled. We recommend you stick with 'Lowest Projected Points', as it keeps leagues more competitive.</p>
         </div>
       </b-collapse>
@@ -256,52 +228,31 @@
   </div>
 </template>
 <script>
-import { cloneDeep, tap, set } from 'lodash';
 import LeagueTagSelector from '@/components/leagueTagSelector';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector';
 
 export default {
-  props: ['year', 'possibleLeagueOptions', 'editMode', 'value', 'currentNumberOfPlayers', 'freshSettings'],
+  props: ['value', 'year', 'possibleLeagueOptions', 'editMode', 'currentNumberOfPlayers', 'freshSettings'],
   data() {
     return {
-      intendedNumberOfPlayers: '',
+      intendedNumberOfPlayers: null,
       intendedNumberOfPlayersEverValid: false,
-      updatingOptions: true,
       gameMode: 'Standard',
-      gameModeOptions: ['Beginner', 'Standard', 'Advanced']
+      gameModeOptions: ['Beginner', 'Standard', 'Advanced'],
+      internalValue: null
     };
   },
   components: {
     LeagueTagSelector,
     SpecialGameSlotSelector
   },
-  computed: {
-    local() {
-      return this.value;
-    },
-    maxFreeDroppableGamesRule() {
-      return 'required|max_value:' + this.maxFreeDroppableGamesValue;
-    },
-    maxFreeDroppableGamesValue() {
-      if (this.value.unlimitedWillNotReleaseDroppableGames) {
-        return 100;
-      }
-
-      return this.value.willNotReleaseDroppableGames;
-    }
-  },
   methods: {
-    showDetailedDropOptions() {
-      this.shouldShowDetailedDropOptions = true;
+    updateInternalValue() {
+      this.$emit('input', this.internalValue);
     },
-    update(key, value) {
-      this.$emit(
-        'input',
-        tap(cloneDeep(this.local), (v) => set(v, key, value))
-      );
-    },
-    doneUpdatingOptions() {
-      this.updatingOptions = false;
+    fullAutoUpdate() {
+      this.autoUpdateOptions();
+      this.autoUpdateSpecialSlotOptions();
     },
     autoUpdateOptions() {
       if (!this.freshSettings) {
@@ -337,33 +288,31 @@ export default {
       let thisSizeLeagueGamesToDraft = Math.floor(thisSizeLeagueStandardGames * draftGameRatio);
       let thisSizeLeagueCounterPicksToDraft = Math.floor(thisSizeLeagueCounterPicks * draftGameRatio);
 
-      this.value.standardGames = Math.floor((averageSizeLeagueStandardGames + thisSizeLeagueStandardGames) / 2);
-      this.value.counterPicks = Math.floor((averageSizeLeagueCounterPicks + thisSizeLeagueCounterPicks) / 2);
-      this.value.gamesToDraft = Math.floor((averageSizeLeagueGamesToDraft + thisSizeLeagueGamesToDraft) / 2);
-      this.value.counterPicksToDraft = Math.floor((averageSizeLeagueCounterPicksToDraft + thisSizeLeagueCounterPicksToDraft) / 2);
+      this.internalValue.standardGames = Math.floor((averageSizeLeagueStandardGames + thisSizeLeagueStandardGames) / 2);
+      this.internalValue.counterPicks = Math.floor((averageSizeLeagueCounterPicks + thisSizeLeagueCounterPicks) / 2);
+      this.internalValue.gamesToDraft = Math.floor((averageSizeLeagueGamesToDraft + thisSizeLeagueGamesToDraft) / 2);
+      this.internalValue.counterPicksToDraft = Math.floor((averageSizeLeagueCounterPicksToDraft + thisSizeLeagueCounterPicksToDraft) / 2);
 
-      if (this.value.counterPicks === 0 || this.value.counterPicksToDraft === 0) {
-        this.value.counterPicks = 1;
-        this.value.counterPicksToDraft = 1;
+      if (this.internalValue.counterPicks === 0 || this.internalValue.counterPicksToDraft === 0) {
+        this.internalValue.counterPicks = 1;
+        this.internalValue.counterPicksToDraft = 1;
       }
 
       if (this.gameMode === 'Beginner') {
-        this.value.counterPicks = 0;
-        this.value.counterPicksToDraft = 0;
+        this.internalValue.counterPicks = 0;
+        this.internalValue.counterPicksToDraft = 0;
       }
 
-      this.value.minimumBidAmount = 0;
-      this.value.freeDroppableGames = 0;
-      this.value.willNotReleaseDroppableGames = 0;
-      this.value.willReleaseDroppableGames = 1;
-      this.value.unlimitedFreeDroppableGames = false;
-      this.value.unlimitedWillNotReleaseDroppableGames = true;
-      this.value.unlimitedWillReleaseDroppableGames = false;
+      this.internalValue.minimumBidAmount = 0;
+      this.internalValue.freeDroppableGames = 0;
+      this.internalValue.willNotReleaseDroppableGames = 0;
+      this.internalValue.willReleaseDroppableGames = 1;
+      this.internalValue.unlimitedFreeDroppableGames = false;
+      this.internalValue.unlimitedWillNotReleaseDroppableGames = true;
+      this.internalValue.unlimitedWillReleaseDroppableGames = false;
 
       let alwaysBannedTags = ['Port'];
-
       let standardBannedTags = ['CurrentlyInEarlyAccess', 'ReleasedInternationally', 'YearlyInstallment', 'DirectorsCut', 'PartialRemake', 'Remaster'];
-
       let advancedBannedTags = ['ExpansionPack'];
 
       let bannedTags = alwaysBannedTags;
@@ -374,28 +323,26 @@ export default {
         bannedTags = bannedTags.concat(advancedBannedTags);
       }
 
-      this.value.tags = {
+      this.internalValue.tags = {
         required: [],
         banned: bannedTags
       };
-
-      this.$emit('input', this.local);
     },
     autoUpdateSpecialSlotOptions() {
       if (!this.freshSettings) {
         return;
       }
 
-      if (!this.value.standardGames || this.value.standardGames > 50) {
+      if (!this.internalValue.standardGames || this.internalValue.standardGames > 50) {
         return;
       }
 
-      this.value.specialGameSlots = [];
+      this.internalValue.specialGameSlots = [];
       if (this.gameMode === 'Beginner') {
         return;
       }
 
-      let numberOfSpecialSlots = Math.floor(this.value.standardGames / 2);
+      let numberOfSpecialSlots = Math.floor(this.internalValue.standardGames / 2);
       if (numberOfSpecialSlots < 1) {
         return;
       }
@@ -410,14 +357,14 @@ export default {
 
       let slotIndex = 0;
       for (slotIndex = 0; slotIndex < numberNGFSlots; slotIndex++) {
-        this.value.specialGameSlots.push({
+        this.internalValue.specialGameSlots.push({
           specialSlotPosition: slotIndex,
           requiredTags: ['NewGamingFranchise']
         });
       }
 
       if (includeYearlyInstallmentSlot) {
-        this.value.specialGameSlots.push({
+        this.internalValue.specialGameSlots.push({
           specialSlotPosition: slotIndex,
           requiredTags: ['YearlyInstallment']
         });
@@ -425,7 +372,7 @@ export default {
       slotIndex++;
 
       if (includeExpansionPackSlot) {
-        this.value.specialGameSlots.push({
+        this.internalValue.specialGameSlots.push({
           specialSlotPosition: slotIndex,
           requiredTags: ['ExpansionPack']
         });
@@ -433,7 +380,7 @@ export default {
       slotIndex++;
 
       if (includeRemakeSlot) {
-        this.value.specialGameSlots.push({
+        this.internalValue.specialGameSlots.push({
           specialSlotPosition: slotIndex,
           requiredTags: ['Remake', 'PartialRemake', 'DirectorsCut']
         });
@@ -443,27 +390,20 @@ export default {
   },
   watch: {
     intendedNumberOfPlayers: function () {
-      this.updatingOptions = true;
-      this.autoUpdateOptions();
-      this.autoUpdateSpecialSlotOptions();
-      setTimeout(this.doneUpdatingOptions, 100);
-    },
-    gameMode: function () {
-      this.updatingOptions = true;
-      this.autoUpdateOptions();
-      this.autoUpdateSpecialSlotOptions();
-      setTimeout(this.doneUpdatingOptions, 100);
-    },
-    'local.standardGames': function () {
-      if (!this.updatingOptions) {
-        this.autoUpdateSpecialSlotOptions();
+      if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
+        this.intendedNumberOfPlayersEverValid = true;
       }
+    },
+    internalValue: function () {
+      this.updateInternalValue();
     }
   },
   mounted() {
     if (this.currentNumberOfPlayers && this.freshSettings) {
       this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
     }
+
+    this.internalValue = _.cloneDeep(this.value);
   }
 };
 </script>

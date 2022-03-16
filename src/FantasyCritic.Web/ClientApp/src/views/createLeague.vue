@@ -37,7 +37,7 @@
           <div v-if="readyToSetupLeagueYear">
             <hr />
             <div class="text-well">
-              <leagueYearSettings :year="initialYear" :possibleLeagueOptions="possibleLeagueOptions" :editMode="false" :freshSettings="true" v-model="leagueYearSettings"></leagueYearSettings>
+              <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :possibleLeagueOptions="possibleLeagueOptions" :editMode="false" :freshSettings="true"></leagueYearSettings>
             </div>
           </div>
 
@@ -178,7 +178,7 @@ export default {
       tiebreakSystem: 'LowestProjectedPoints',
       tradingSystem: 'Standard',
       specialGameSlots: [],
-      tags: {}
+      tags: { banned: [], allowed: [], required: [] }
     };
   }
 };
