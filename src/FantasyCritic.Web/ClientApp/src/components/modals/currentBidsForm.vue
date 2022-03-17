@@ -9,47 +9,47 @@
       <span class="checkbox-label">Change Priorities</span>
     </b-form-checkbox>
 
-    <table class="table table-sm table-bordered table-striped">
-      <thead>
-        <tr class="bg-primary">
-          <th scope="col" v-show="settingPriority"></th>
-          <th scope="col" class="game-column">Game</th>
-          <th scope="col">Bid Amount</th>
-          <th scope="col">Priority</th>
-          <th scope="col">Conditional Drop</th>
-          <th scope="col">Counter Pick Bid?</th>
-          <th scope="col" v-show="!settingPriority">Edit</th>
-          <th scope="col" v-show="!settingPriority">Cancel</th>
-        </tr>
-      </thead>
+    <b-table-simple responsive bordered>
+      <b-thead>
+        <b-tr class="bg-primary">
+          <b-th v-show="settingPriority"></b-th>
+          <b-th class="game-column">Game</b-th>
+          <b-th>Bid Amount</b-th>
+          <b-th>Priority</b-th>
+          <b-th>Conditional Drop</b-th>
+          <b-th>Counter Pick Bid?</b-th>
+          <b-th v-show="!settingPriority">Edit</b-th>
+          <b-th v-show="!settingPriority">Cancel</b-th>
+        </b-tr>
+      </b-thead>
       <draggable v-model="desiredBidPriorities" tag="tbody" v-if="settingPriority" handle=".handle">
-        <tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
-          <td scope="row" class="handle"><font-awesome-icon icon="bars" size="lg" /></td>
-          <td>{{ bid.masterGame.gameName }}</td>
-          <td>{{ bid.bidAmount | money }}</td>
-          <td>{{ bid.priority }}</td>
-          <td v-if="bid.conditionalDropPublisherGame">{{ bid.conditionalDropPublisherGame.gameName }}</td>
-          <td v-else>None</td>
-          <td>{{ bid.counterPick | yesNo }}</td>
-        </tr>
+        <b-tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
+          <b-td class="handle"><font-awesome-icon icon="bars" size="lg" /></b-td>
+          <b-td>{{ bid.masterGame.gameName }}</b-td>
+          <b-td>{{ bid.bidAmount | money }}</b-td>
+          <b-td>{{ bid.priority }}</b-td>
+          <b-td v-if="bid.conditionalDropPublisherGame">{{ bid.conditionalDropPublisherGame.gameName }}</b-td>
+          <b-td v-else>None</b-td>
+          <b-td>{{ bid.counterPick | yesNo }}</b-td>
+        </b-tr>
       </draggable>
-      <tbody v-if="!settingPriority">
-        <tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
-          <td>{{ bid.masterGame.gameName }}</td>
-          <td>{{ bid.bidAmount | money }}</td>
-          <td>{{ bid.priority }}</td>
-          <td v-if="bid.conditionalDropPublisherGame">{{ bid.conditionalDropPublisherGame.gameName }}</td>
-          <td v-else>None</td>
-          <td>{{ bid.counterPick | yesNo }}</td>
-          <td class="select-cell">
+      <b-tbody v-if="!settingPriority">
+        <b-tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
+          <b-td>{{ bid.masterGame.gameName }}</b-td>
+          <b-td>{{ bid.bidAmount | money }}</b-td>
+          <b-td>{{ bid.priority }}</b-td>
+          <b-td v-if="bid.conditionalDropPublisherGame">{{ bid.conditionalDropPublisherGame.gameName }}</b-td>
+          <b-td v-else>None</b-td>
+          <b-td>{{ bid.counterPick | yesNo }}</b-td>
+          <b-td class="select-cell">
             <b-button variant="info" size="sm" v-on:click="startEditingBid(bid)">Edit</b-button>
-          </td>
-          <td class="select-cell">
+          </b-td>
+          <b-td class="select-cell">
             <b-button variant="danger" size="sm" v-on:click="cancelBid(bid)">Cancel</b-button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </b-td>
+        </b-tr>
+      </b-tbody>
+    </b-table-simple>
     <div v-if="bidBeingEdited">
       <h3 for="bidBeingEdited" class="selected-game text-black">Edit Bid:</h3>
       <masterGameSummary :masterGame="bidBeingEdited.masterGame"></masterGameSummary>
