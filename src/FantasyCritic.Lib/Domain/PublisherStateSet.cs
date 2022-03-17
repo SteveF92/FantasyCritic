@@ -48,10 +48,12 @@ public class PublisherStateSet
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > publisherToEdit.WillReleaseGamesDropped)
             {
                 UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, publisherGame, 0, DropType.WillRelease);
+                return;
             }
             if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > publisherToEdit.FreeGamesDropped)
             {
                 UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, publisherGame, 0, DropType.Free);
+                return;
             }
             throw new Exception("Publisher cannot drop any more 'Will Release' games");
         }
@@ -59,10 +61,12 @@ public class PublisherStateSet
         if (leagueOptions.WillNotReleaseDroppableGames == -1 || leagueOptions.WillNotReleaseDroppableGames > publisherToEdit.WillNotReleaseGamesDropped)
         {
             UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, publisherGame, 0, DropType.WillNotRelease);
+            return;
         }
         if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > publisherToEdit.FreeGamesDropped)
         {
             UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, publisherGame, 0, DropType.Free);
+            return;
         }
         throw new Exception("Publisher cannot drop any more 'Will Not Release' games");
     }
