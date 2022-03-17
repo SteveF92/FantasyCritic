@@ -76,7 +76,7 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> leagueYears);
     Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear);
     Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear);
-    Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(LeagueYear leagueYear, IReadOnlyList<Publisher> allPublishersInLeagueYear);
+    Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(LeagueYear leagueYear);
     Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear);
     Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);
     Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
@@ -85,7 +85,7 @@ public interface IFantasyCriticRepo
     Task RemoveDropRequest(DropRequest dropRequest);
     Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher);
     Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear);
-    Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(LeagueYear leagueYear, IReadOnlyList<Publisher> allPublishersInLeagueYear);
+    Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(LeagueYear leagueYear);
     Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID);
 
     Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher);

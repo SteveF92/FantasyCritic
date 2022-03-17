@@ -340,10 +340,9 @@ public class FantasyCriticService
 
     public async Task<IReadOnlyList<LeagueActionProcessingSet>> GetLeagueActionProcessingSets(LeagueYear leagueYear)
     {
-        var publishersForLeagueYear = leagueYear.Publishers;
         var processSets = await _interLeagueService.GetActionProcessingSets();
-        var bidsForLeague = await _fantasyCriticRepo.GetProcessedPickupBids(leagueYear, publishersForLeagueYear);
-        var dropsForLeague = await _fantasyCriticRepo.GetProcessedDropRequests(leagueYear, publishersForLeagueYear);
+        var bidsForLeague = await _fantasyCriticRepo.GetProcessedPickupBids(leagueYear);
+        var dropsForLeague = await _fantasyCriticRepo.GetProcessedDropRequests(leagueYear);
         var bidsByProcessSet = bidsForLeague.ToLookup(x => x.ProcessSetID);
         var dropsByProcessSet = dropsForLeague.ToLookup(x => x.ProcessSetID);
 
