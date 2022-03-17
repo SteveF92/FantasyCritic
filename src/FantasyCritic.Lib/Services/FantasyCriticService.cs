@@ -357,17 +357,17 @@ public class FantasyCriticService
         return processingSets;
     }
 
-    public async Task<FinalizedActionProcessingResults> GetActionProcessingDryRun(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
+    public async Task<FinalizedActionProcessingResults> GetActionProcessingDryRun(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears)
     {
-        IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year, allLeagueYears, allPublishersForYear);
-        IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year, allLeagueYears, allPublishersForYear);
+        IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year, allLeagueYears);
+        IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year, allLeagueYears);
 
         var onlyLeaguesWithActions = leaguesAndBids
             .Where(x => x.Value.Any()).Select(x => x.Key)
             .Concat(leaguesAndDropRequests.Where(x => x.Value.Any()).Select(x => x.Key))
             .Distinct().Select(x => x.Key).ToHashSet();
 
-        var publishersInLeagues = allPublishersForYear.Where(x => onlyLeaguesWithActions.Contains(x.LeagueYearKey));
+        var publishersInLeagues = allLeagueYears.SelectMany(x => x.Publishers).Where(x => onlyLeaguesWithActions.Contains(x.LeagueYearKey));
 
         var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
@@ -380,8 +380,7 @@ public class FantasyCriticService
     {
         var now = _clock.GetCurrentInstant();
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
-        IReadOnlyList<Publisher> allPublishers = await GetAllPublishersForYear(year, allLeagueYears);
-        var results = await GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears, allPublishers);
+        var results = await GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears);
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
     }
 

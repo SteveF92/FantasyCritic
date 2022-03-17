@@ -504,9 +504,9 @@ public class GameAcquisitionService
         return _fantasyCriticRepo.GetActivePickupBids(publisher);
     }
 
-    public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActiveAcquisitionBids(SupportedYear supportedYear, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
+    public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActiveAcquisitionBids(SupportedYear supportedYear, IReadOnlyList<LeagueYear> allLeagueYears)
     {
-        return _fantasyCriticRepo.GetActivePickupBids(supportedYear.Year, allLeagueYears, allPublishersForYear);
+        return _fantasyCriticRepo.GetActivePickupBids(supportedYear.Year, allLeagueYears);
     }
 
     public Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher)
@@ -514,9 +514,9 @@ public class GameAcquisitionService
         return _fantasyCriticRepo.GetActiveDropRequests(publisher);
     }
 
-    public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(SupportedYear supportedYear, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
+    public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(SupportedYear supportedYear, IReadOnlyList<LeagueYear> allLeagueYears)
     {
-        return _fantasyCriticRepo.GetActiveDropRequests(supportedYear.Year, allLeagueYears, allPublishersForYear);
+        return _fantasyCriticRepo.GetActiveDropRequests(supportedYear.Year, allLeagueYears);
     }
 
     public Task<Maybe<PickupBid>> GetPickupBid(Guid bidID)
