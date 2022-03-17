@@ -21,38 +21,38 @@
         <h4 class="game-name">{{ masterGame.gameName }}</h4>
 
         <div v-if="masterGame.tags && masterGame.tags.length > 0" class="long-tag-list">
-          <strong>Tags:</strong>
+          <span class="detail-label">Tags:</span>
           <span v-for="tag in masterGame.tags" :key="tag">
             <masterGameTagBadge :tagName="tag"></masterGameTagBadge>
           </span>
         </div>
 
         <div>
-          <strong>Release Date:</strong>
+          <span class="detail-label">Release Date:</span>
           <span v-if="masterGame.releaseDate">{{ releaseDate }}</span>
           <span v-else>{{ masterGame.estimatedReleaseDate }} (Estimated)</span>
         </div>
         <div>
-          <strong>Percent Published:</strong>
+          <span class="detail-label">Percent Published:</span>
           {{ masterGame.eligiblePercentStandardGame | percent(1) }}
         </div>
         <div>
-          <strong>Percent Counterpicked:</strong>
+          <span class="detail-label">Percent Counterpicked:</span>
           {{ masterGame.adjustedPercentCounterPick | percent(1) }}
         </div>
         <div>
-          <strong>Average Draft Position:</strong>
+          <span class="detail-label">Average Draft Position:</span>
           <span v-show="masterGame.averageDraftPosition">{{ masterGame.averageDraftPosition | score(1) }}</span>
           <span v-show="!masterGame.averageDraftPosition">Undrafted</span>
         </div>
         <div>
-          <strong>Hype Factor:</strong>
+          <span class="detail-label">Hype Factor:</span>
           <span v-show="masterGame.dateAdjustedHypeFactor">{{ masterGame.dateAdjustedHypeFactor | score(1) }}</span>
           <span v-show="!masterGame.dateAdjustedHypeFactor">Unhyped...</span>
         </div>
         <div>
-          <strong v-if="!masterGame.criticScore">Projected Points:</strong>
-          <strong v-else>Pre-Release Projected Points:</strong>
+          <span v-if="!masterGame.criticScore" class="detail-label">Projected Points:</span>
+          <span v-else class="detail-label">Pre-Release Projected Points:</span>
           <span v-show="masterGame.projectedFantasyPoints">~{{ masterGame.projectedFantasyPoints | score(1) }}</span>
         </div>
         <div v-if="masterGame.openCriticID">
@@ -72,13 +72,13 @@
           </a>
         </div>
         <div>
-          <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID } }"><strong>View full details</strong></router-link>
+          <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID } }"><span>View full details</span></router-link>
         </div>
         <div>
-          <router-link class="text-primary" :to="{ name: 'masterGameChangeRequest', query: { mastergameid: masterGame.masterGameID } }"><strong>Suggest a correction</strong></router-link>
+          <router-link class="text-primary" :to="{ name: 'masterGameChangeRequest', query: { mastergameid: masterGame.masterGameID } }"><span>Suggest a correction</span></router-link>
         </div>
         <div v-if="isAdmin">
-          <router-link class="text-primary" :to="{ name: 'masterGameEditor', params: { mastergameid: masterGame.masterGameID } }"><strong>Edit Master Game</strong></router-link>
+          <router-link class="text-primary" :to="{ name: 'masterGameEditor', params: { mastergameid: masterGame.masterGameID } }"><span>Edit Master Game</span></router-link>
         </div>
       </div>
     </div>
@@ -122,6 +122,11 @@ export default {
 };
 </script>
 <style scoped>
+.detail-label {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
 .summary {
   display: flex;
   flex-direction: row;
