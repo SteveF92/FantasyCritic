@@ -5,9 +5,13 @@
         <span v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
           {{ publisher.publisherIcon }}
         </span>
-        <div class="publisher-name">
-          <router-link :to="{ name: 'publisher', params: { publisherid: publisher.publisherID } }">
+        <div>
+          <div class="publisher-name">
             {{ publisher.publisherName }}
+          </div>
+          <router-link v-show="!renderingSnapshot" :to="{ name: 'publisher', params: { publisherid: publisher.publisherID } }">
+            <font-awesome-icon icon="info-circle" />
+            Details
           </router-link>
         </div>
       </div>
@@ -158,9 +162,8 @@ export default {
 
 .publisher-name {
   font-weight: bold;
-  text-transform: uppercase;
-  font-size: 1.1em;
-  color: #d6993a;
+  font-size: 1.3em;
+  color: white;
   word-break: break-word;
 }
 
@@ -171,7 +174,7 @@ export default {
 }
 
 .player-name {
-  color: #d6993a;
+  color: white;
   font-weight: bold;
 }
 </style>
