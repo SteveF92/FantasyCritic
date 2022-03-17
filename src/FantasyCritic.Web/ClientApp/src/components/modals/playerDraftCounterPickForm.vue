@@ -25,7 +25,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 export default {
   data() {
@@ -66,7 +65,7 @@ export default {
           this.$emit('counterPickDrafted', draftInfo);
           this.selectedCounterPick = null;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -78,7 +77,7 @@ export default {
           this.isBusy = false;
           this.counterPicking = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },

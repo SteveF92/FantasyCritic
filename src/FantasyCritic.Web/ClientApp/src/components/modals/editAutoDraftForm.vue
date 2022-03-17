@@ -33,7 +33,7 @@ export default {
       };
       axios
         .post('/api/league/setAutoDraft', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.editAutoDraftFormRef.hide();
           let actionInfo = {
             autoDraft: this.isAutoDraft,
@@ -41,7 +41,7 @@ export default {
           };
           this.$emit('autoDraftSet', actionInfo);
         })
-        .catch((response) => {});
+        .catch(() => {});
     }
   },
   mounted() {

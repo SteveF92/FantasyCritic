@@ -84,7 +84,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -174,7 +173,7 @@ export default {
       };
       axios
         .post('/api/league/ProposeTrade', request)
-        .then((response) => {
+        .then(() => {
           this.$refs.proposeTradeFormRef.hide();
           this.$emit('tradeProposed');
           this.clearData();

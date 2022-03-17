@@ -84,7 +84,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import draggable from 'vuedraggable';
 import MasterGameSummary from '@/components/masterGameSummary';
@@ -129,11 +128,11 @@ export default {
       };
       axios
         .post('/api/league/SetBidPriorities', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.currentBidsFormRef.hide();
           this.$emit('bidPriorityEdited');
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     startEditingBid(bid) {
       this.bidBeingEdited = bid;
@@ -175,7 +174,7 @@ export default {
       };
       axios
         .post('/api/league/DeletePickupBid', model)
-        .then((response) => {
+        .then(() => {
           var bidInfo = {
             gameName: bid.masterGame.gameName,
             bidAmount: bid.bidAmount

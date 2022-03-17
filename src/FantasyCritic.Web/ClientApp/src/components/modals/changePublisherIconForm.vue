@@ -46,7 +46,7 @@ export default {
       };
       axios
         .post('/api/league/changePublisherIcon', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.changePublisherIconRef.hide();
           let actionInfo = {
             oldName: this.publisher.publisherIcon,
@@ -55,7 +55,7 @@ export default {
           };
           this.$emit('publisherIconChanged', actionInfo);
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.newPublisherIcon = this.publisher.publisherIcon;

@@ -181,7 +181,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import moment from 'moment';
 import * as signalR from '@microsoft/signalr';
@@ -312,7 +311,7 @@ export default {
           }
           this.$store.commit('cancelMoveMode');
         })
-        .catch((returnedError) => {
+        .catch(() => {
           this.errorInfo = 'Something went wrong with this league. Contact us on Twitter for support.';
         });
     },
@@ -325,7 +324,7 @@ export default {
         .then((response) => {
           this.currentBids = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     revealPublicBids() {
       this.fetchLeagueYear();
@@ -340,7 +339,7 @@ export default {
         .then((response) => {
           this.currentDrops = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     fetchGameNews() {
       this.gameNews = null;
@@ -350,7 +349,7 @@ export default {
         .then((response) => {
           this.gameNews = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     acceptInvite() {
       var model = {
@@ -358,11 +357,11 @@ export default {
       };
       axios
         .post('/api/league/AcceptInvite', model)
-        .then((response) => {
+        .then(() => {
           this.fetchLeague();
           this.fetchLeagueYear();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     declineInvite() {
       var model = {
@@ -370,10 +369,10 @@ export default {
       };
       axios
         .post('/api/league/DeclineInvite', model)
-        .then((response) => {
+        .then(() => {
           this.$router.push({ name: 'home' });
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     joinWithInviteLink() {
       var model = {
@@ -382,11 +381,11 @@ export default {
       };
       axios
         .post('/api/league/JoinWithInviteLink', model)
-        .then((response) => {
+        .then(() => {
           this.fetchLeague();
           this.fetchLeagueYear();
         })
-        .catch((response) => {
+        .catch(() => {
           this.errorInfo = 'Something went wrong joining the league';
         });
     },
@@ -397,12 +396,12 @@ export default {
       };
       await axios
         .post('/api/leagueManager/startDraft', model)
-        .then(async (response) => {
+        .then(async () => {
           await this.fetchLeague();
           await this.fetchLeagueYear();
           await this.startHubConnection();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     actionTaken(actionInfo) {
       if (actionInfo.fetchLeagueYear) {
@@ -429,10 +428,10 @@ export default {
       };
       axios
         .post('/api/league/FollowLeague', model)
-        .then((response) => {
+        .then(() => {
           this.fetchLeague();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     unfollowLeague() {
       var model = {
@@ -440,10 +439,10 @@ export default {
       };
       axios
         .post('/api/league/UnfollowLeague', model)
-        .then((response) => {
+        .then(() => {
           this.fetchLeague();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     getInviteCode() {
       let inviteCode = this.$route.query.inviteCode;
@@ -457,10 +456,10 @@ export default {
       };
       axios
         .post('/api/league/DismissManagerMessage', model)
-        .then((response) => {
+        .then(() => {
           this.fetchLeague();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     async startHubConnection() {
       if (!this.leagueYear.playStatus.draftIsActive) {
@@ -478,11 +477,11 @@ export default {
         await this.fetchLeagueYear();
       });
 
-      hubConnection.onreconnecting((e) => {
+      hubConnection.onreconnecting(() => {
         console.log('Reconnecting SignalR');
       });
 
-      hubConnection.on('DraftFinished', (data) => {
+      hubConnection.on('DraftFinished', () => {
         this.$refs.draftFinishedModalRef.show();
       });
 

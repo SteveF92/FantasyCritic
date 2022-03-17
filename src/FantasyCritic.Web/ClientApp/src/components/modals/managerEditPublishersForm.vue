@@ -46,7 +46,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 export default {
   data() {
@@ -86,7 +85,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/EditPublisher', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.managerEditPublishersFormRef.hide();
           this.$emit('publishersEdited');
         })

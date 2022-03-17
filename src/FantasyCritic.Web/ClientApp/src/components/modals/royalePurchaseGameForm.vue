@@ -54,7 +54,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable';
 
@@ -106,7 +105,7 @@ export default {
             this.searchedTop = true;
           }
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     addGame() {
       this.isBusy = true;
@@ -140,7 +139,7 @@ export default {
           this.clearData();
           this.$refs.royalePurchaseGameFormRef.hide();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.isBusy = false;

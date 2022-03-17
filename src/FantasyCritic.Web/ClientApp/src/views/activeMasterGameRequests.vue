@@ -81,7 +81,7 @@ export default {
         .then((response) => {
           this.activeRequests = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     assignGame(request) {
       this.requestSelected = request;
@@ -95,7 +95,7 @@ export default {
       };
       axios
         .post('/api/admin/CompleteMasterGameRequest', request)
-        .then((response) => {
+        .then(() => {
           this.showResponded = true;
         })
         .catch((error) => {

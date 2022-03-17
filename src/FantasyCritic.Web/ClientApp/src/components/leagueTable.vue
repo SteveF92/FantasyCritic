@@ -40,8 +40,8 @@ export default {
       };
       axios
         .post('/api/league/SetArchiveStatus', model)
-        .then((response) => {})
-        .catch((response) => {});
+        .then(() => {})
+        .catch(() => {});
     }
   }
 };

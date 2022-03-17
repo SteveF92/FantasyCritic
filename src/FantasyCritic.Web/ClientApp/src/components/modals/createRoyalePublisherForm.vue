@@ -12,7 +12,6 @@
   </b-modal>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -36,7 +35,7 @@ export default {
           let publisherid = response.data;
           this.$router.push({ name: 'royalePublisher', params: { publisherid: publisherid } });
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.publisherName = '';

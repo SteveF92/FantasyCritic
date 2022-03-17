@@ -48,7 +48,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -88,7 +87,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/ManuallyScorePublisherGame', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.manuallyScorePublisherGameRef.hide();
           this.$emit('gameManuallyScored', manualScoreInfo);
           this.manuallyScoreGamePublisher = null;
@@ -105,7 +104,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/RemoveManualPublisherGameScore', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.manuallyScorePublisherGameRef.hide();
           this.$emit('manualScoreRemoved', this.manuallyScoreGame.gameName);
           this.manuallyScoreGamePublisher = null;
@@ -123,7 +122,7 @@ export default {
     }
   },
   watch: {
-    manuallyScoreGame: function (val, oldVal) {
+    manuallyScoreGame: function (val) {
       if (val) {
         this.manualScore = val.criticScore;
       }

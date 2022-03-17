@@ -26,7 +26,6 @@
   </b-modal>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -79,7 +78,7 @@ export default {
 
       axios
         .post('/api/leagueManager/SetPlayerActiveStatus', model)
-        .then((response) => {
+        .then(() => {
           this.$emit('activePlayersEdited');
           this.$refs.manageActivePlayersRef.hide();
         })

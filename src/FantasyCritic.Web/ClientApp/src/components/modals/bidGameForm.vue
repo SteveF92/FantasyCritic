@@ -52,7 +52,7 @@
           <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
         </div>
         <div v-else>
-          <ValidationObserver v-slot="{ invalid }">
+          <ValidationObserver>
             <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
             <masterGameSummary :masterGame="bidMasterGame"></masterGameSummary>
             <hr />
@@ -96,7 +96,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import MasterGameSummary from '@/components/masterGameSummary';
@@ -153,7 +152,7 @@ export default {
           this.isBusy = false;
           this.searched = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -167,7 +166,7 @@ export default {
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -181,7 +180,7 @@ export default {
           this.isBusy = false;
           this.showingQueuedGames = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -198,7 +197,7 @@ export default {
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },

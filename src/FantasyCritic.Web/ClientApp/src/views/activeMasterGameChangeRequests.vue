@@ -129,7 +129,7 @@ export default {
         .then((response) => {
           this.activeRequests = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     editGame(request) {
       let query = {
@@ -151,7 +151,7 @@ export default {
       };
       axios
         .post('/api/admin/CompleteMasterGameChangeRequest', request)
-        .then((response) => {
+        .then(() => {
           this.showResponded = true;
         })
         .catch((error) => {
@@ -172,7 +172,7 @@ export default {
 
       axios
         .post('/api/admin/LinkGameToOpenCritic', linkRequest)
-        .then((response) => {
+        .then(() => {
           this.linkSuccessType = 'Open Critic';
         })
         .catch((error) => {
@@ -187,7 +187,7 @@ export default {
 
       axios
         .post('/api/admin/LinkGameToGG', linkRequest)
-        .then((response) => {
+        .then(() => {
           this.linkSuccessType = 'GG|';
         })
         .catch((error) => {

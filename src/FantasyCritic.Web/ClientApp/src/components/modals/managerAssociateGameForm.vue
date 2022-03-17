@@ -60,7 +60,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 export default {
@@ -88,7 +87,7 @@ export default {
         .then((response) => {
           this.possibleMasterGames = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     associateGame() {
       var request = {
@@ -115,7 +114,7 @@ export default {
           this.associateOverride = false;
           this.possibleMasterGames = [];
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.associateResult = null;

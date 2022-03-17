@@ -77,7 +77,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import MasterGameSummary from '@/components/masterGameSummary';
@@ -121,7 +120,7 @@ export default {
           this.isBusy = false;
           this.searched = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -135,7 +134,7 @@ export default {
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -152,7 +151,7 @@ export default {
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -166,7 +165,7 @@ export default {
           this.isBusy = false;
           this.showingQueuedGames = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -211,7 +210,7 @@ export default {
           this.$emit('gameDrafted', draftInfo);
           this.clearData();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearDataExceptSearch() {
       this.isBusy = false;

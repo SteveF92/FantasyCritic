@@ -51,7 +51,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import { ToggleButton } from 'vue-js-toggle-button';
 
@@ -129,7 +128,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/RescindInvite', model)
-        .then((response) => {
+        .then(() => {
           let actionInfo = {
             message: 'The invite to ' + inviteName + ' has been rescinded.',
             fetchLeague: true,
@@ -137,7 +136,7 @@ export default {
           };
           this.$emit('actionTaken', actionInfo);
         })
-        .catch((response) => {});
+        .catch(() => {});
     }
   }
 };

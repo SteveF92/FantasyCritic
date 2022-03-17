@@ -75,7 +75,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/FullDataRefresh')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Full Data Refresh';
         })
@@ -88,7 +88,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/RefreshCriticInfo')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Refresh Critic Scores';
         })
@@ -101,7 +101,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/RefreshGGInfo')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Refresh GG Info';
         })
@@ -114,7 +114,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/updateFantasyPoints')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Update Fantasy Points';
         })
@@ -127,7 +127,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/ProcessActions')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Process Actions';
         })
@@ -140,7 +140,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/TurnOnActionProcessingMode')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Action Processing Mode ON';
         })
@@ -153,7 +153,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/TurnOffActionProcessingMode')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Action Processing Mode OFF';
         })
@@ -166,7 +166,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/refreshCaches')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Refresh Caches';
         })
@@ -179,7 +179,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/refreshPatreonInfo')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Refresh Patreon Info';
         })
@@ -192,7 +192,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/snapshotDatabase')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Database snapshot started';
         })
@@ -222,7 +222,7 @@ export default {
       };
       axios
         .post('/api/admin/ResendConfirmationEmail', request)
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Recent Confirmation Email';
         })
@@ -235,7 +235,7 @@ export default {
       this.isBusy = true;
       axios
         .post('/api/admin/SendPublicBiddingEmails')
-        .then((response) => {
+        .then(() => {
           this.isBusy = false;
           this.jobSuccess = 'Send Public Bid Emails';
         })

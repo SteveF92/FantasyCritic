@@ -41,7 +41,7 @@ export default {
     }
   },
   methods: {
-    handleInput(e) {
+    handleInput() {
       this.$emit('input', this.internalValue);
     },
     updateInternal() {

@@ -87,7 +87,7 @@ export default {
         .then((response) => {
           this.dryRunResults = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     }
   },
   mounted() {

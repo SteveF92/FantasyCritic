@@ -33,7 +33,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -54,7 +53,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/ManuallySetWillNotRelease', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.manuallyScorePublisherGameRef.hide();
           this.$emit('gameWillNotReleaseSet');
           this.clearData();

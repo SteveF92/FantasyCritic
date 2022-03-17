@@ -241,7 +241,7 @@ export default {
       };
       axios
         .post(`/api/${endPoint}`, model)
-        .then((response) => {
+        .then(() => {
           this.$emit('tradeActioned');
         })
         .catch((response) => {
@@ -256,7 +256,7 @@ export default {
       };
       axios
         .post('/api/league/VoteOnTrade', model)
-        .then((response) => {
+        .then(() => {
           this.$emit('tradeActioned');
           this.comment = '';
         })
@@ -270,7 +270,7 @@ export default {
       };
       axios
         .post('/api/league/DeleteTradeVote', model)
-        .then((response) => {
+        .then(() => {
           this.$emit('tradeActioned');
         })
         .catch((response) => {

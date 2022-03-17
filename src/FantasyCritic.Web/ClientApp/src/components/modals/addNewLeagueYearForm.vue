@@ -16,7 +16,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -36,7 +35,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/AddNewLeagueYear', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.addNewLeagueYearRef.hide();
           this.$emit('newYearAdded', this.selectedYear);
         })

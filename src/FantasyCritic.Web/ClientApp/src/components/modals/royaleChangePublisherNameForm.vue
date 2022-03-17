@@ -30,11 +30,11 @@ export default {
       };
       axios
         .post('/api/royale/changePublisherName', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.changeRoyalePublisherNameRef.hide();
           this.$emit('publisherNameChanged');
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.newPublisherName = this.userRoyalePublisher.publisherName;

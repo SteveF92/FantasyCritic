@@ -58,7 +58,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import LeagueActionSet from '@/components/leagueActionSet';
 import CollapseCard from '@/components/collapseCard';

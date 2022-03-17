@@ -38,11 +38,11 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetAutoDraft', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.managerSetAutoDraftFormRef.hide();
           this.$emit('publishersAutoDraftSet');
         })
-        .catch((e) => {});
+        .catch(() => {});
     }
   },
   mounted() {

@@ -152,7 +152,7 @@ export default {
         .then((response) => {
           this.activeRoyaleYearQuarter = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     logout() {
       this.$store.dispatch('logout').then(() => {

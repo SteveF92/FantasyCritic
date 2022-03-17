@@ -130,7 +130,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm';
@@ -172,7 +171,7 @@ export default {
         .then((response) => {
           this.royaleYearQuarterOptions = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     async fetchRoyaleYearQuarter() {
       this.royaleYearQuarter = null;
@@ -181,7 +180,7 @@ export default {
         .then((response) => {
           this.royaleYearQuarter = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     async fetchRoyaleStandings() {
       this.royaleStandings = null;
@@ -190,7 +189,7 @@ export default {
         .then((response) => {
           this.royaleStandings = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     async fetchUserRoyalePublisher() {
       this.userPublisherBusy = true;
@@ -201,7 +200,7 @@ export default {
           this.userRoyalePublisher = response.data;
           this.userPublisherBusy = false;
         })
-        .catch((response) => {
+        .catch(() => {
           this.userPublisherBusy = false;
         });
     }
@@ -210,7 +209,7 @@ export default {
     await Promise.all([this.fetchRoyaleQuarters(), this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
   },
   watch: {
-    async $route(to, from) {
+    async $route() {
       await Promise.all([this.fetchRoyaleQuarters(), this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
     }
   }

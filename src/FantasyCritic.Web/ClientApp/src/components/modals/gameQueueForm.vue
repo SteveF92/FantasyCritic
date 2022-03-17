@@ -73,7 +73,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import draggable from 'vuedraggable';
 
@@ -109,7 +108,7 @@ export default {
           this.queuedGames = response.data;
           this.desiredQueueRanks = this.queuedGames;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     searchGame() {
       this.clearDataExceptSearch();
@@ -121,7 +120,7 @@ export default {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -136,7 +135,7 @@ export default {
           this.showingTopAvailable = true;
           this.isBusy = false;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -153,7 +152,7 @@ export default {
           this.isBusy = false;
           this.showingTopAvailable = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },
@@ -185,10 +184,10 @@ export default {
       };
       axios
         .post('/api/league/SetQueueRankings', model)
-        .then((response) => {
+        .then(() => {
           this.fetchQueuedGames();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     removeQueuedGame(game) {
       var model = {
@@ -197,10 +196,10 @@ export default {
       };
       axios
         .post('/api/league/DeleteQueuedGame', model)
-        .then((response) => {
+        .then(() => {
           this.fetchQueuedGames();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearAllData() {
       this.clearQueueData();

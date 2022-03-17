@@ -46,11 +46,11 @@ export default {
       };
       axios
         .post('/api/royale/changePublisherIcon', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.changeRoyalePublisherIconRef.hide();
           this.$emit('publisherIconChanged');
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.newPublisherIcon = this.userRoyalePublisher.publisherIcon;

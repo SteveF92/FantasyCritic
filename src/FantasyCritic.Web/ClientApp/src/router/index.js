@@ -22,7 +22,7 @@ router.beforeEach(function (toRoute, fromRoute, next) {
   var getPrereqs = function () {
     var prereqs = [];
     prereqs.push(
-      new Promise(function (resolve, reject) {
+      new Promise(function (resolve) {
         if (!store.getters.allTags && !store.getters.masterGamesIsBusy) {
           store.dispatch('getAllTags').then(() => {
             resolve();
@@ -34,7 +34,7 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     );
 
     prereqs.push(
-      new Promise(function (resolve, reject) {
+      new Promise(function (resolve) {
         if (!store.getters.bidTimes && !store.getters.bidTimesIsBusy) {
           store.dispatch('getBidTimes').then(() => {
             resolve();

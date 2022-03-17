@@ -50,7 +50,6 @@
   </b-modal>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -80,7 +79,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/InvitePlayer', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.invitePlayerRef.hide();
           let inviteName = this.inviteEmail;
           if (this.inviteDisplayName) {
@@ -99,7 +98,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/CreateInviteLink', model)
-        .then((response) => {
+        .then(() => {
           this.fetchInviteLinks();
         })
         .catch((error) => {
@@ -116,7 +115,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/DeleteInviteLink', model)
-        .then((response) => {
+        .then(() => {
           this.fetchInviteLinks();
         })
         .catch((error) => {
@@ -129,7 +128,7 @@ export default {
         .then((response) => {
           this.inviteLinks = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.inviteEmail = '';

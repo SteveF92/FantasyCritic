@@ -37,11 +37,11 @@ export default {
       };
       axios
         .post('/api/leagueManager/PromoteNewLeagueManager', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.transferManagerFormRef.hide();
           this.$emit('managerTransferred');
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.newManager = null;

@@ -85,7 +85,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetGameEligibilityOverride', model)
-        .then((response) => {
+        .then(() => {
           var gameInfo = {
             gameName: eligibilityOverride.masterGame.gameName
           };
@@ -103,7 +103,7 @@ export default {
         .then((response) => {
           this.possibleMasterGames = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     setEligibility(masterGame, eligible) {
       var model = {
@@ -114,7 +114,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetGameEligibilityOverride', model)
-        .then((response) => {
+        .then(() => {
           var gameInfo = {
             gameName: masterGame.gameName,
             eligible

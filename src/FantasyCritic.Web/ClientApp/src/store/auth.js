@@ -17,7 +17,7 @@ export default {
   actions: {
     getUserInfo(context) {
       context.commit('setBusy', true);
-      return new Promise(function (resolve, reject) {
+      return new Promise(function (resolve) {
         axios
           .get('/api/account/CurrentUser')
           .then((res) => {

@@ -10,9 +10,6 @@
   </b-modal>
 </template>
 <script>
-import Vue from 'vue';
-import axios from 'axios';
-
 export default {
   methods: {
     undoLastDraftAction() {

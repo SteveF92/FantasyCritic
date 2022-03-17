@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -35,13 +34,13 @@ export default {
       };
       axios
         .post('/api/league/DeleteDropRequest', model)
-        .then((response) => {
+        .then(() => {
           var dropInfo = {
             gameName: dropRequest.masterGame.gameName
           };
           this.$emit('dropCancelled', dropInfo);
         })
-        .catch((response) => {});
+        .catch(() => {});
     }
   }
 };

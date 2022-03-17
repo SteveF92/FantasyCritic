@@ -104,7 +104,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import _ from 'lodash';
 import Tweets from '@/components/tweets';
@@ -198,7 +197,7 @@ export default {
           this.selectedYear = this.supportedYears[0];
           this.fetchPublicLeaguesForYear(this.selectedYear);
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     async fetchActiveRoyaleYearQuarter() {
       axios
@@ -207,7 +206,7 @@ export default {
           this.activeRoyaleYearQuarter = response.data;
           this.fetchUserRoyalePublisher();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     async fetchPublicLeaguesForYear(year) {
       axios
@@ -215,7 +214,7 @@ export default {
         .then((response) => {
           this.publicLeagues = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     async fetchGameNews() {
       axios
@@ -223,7 +222,7 @@ export default {
         .then((response) => {
           this.gameNews = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     async fetchUserRoyalePublisher() {
       this.userRoyalePublisher = null;
@@ -232,7 +231,7 @@ export default {
         .then((response) => {
           this.userRoyalePublisher = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     }
   },
   async mounted() {

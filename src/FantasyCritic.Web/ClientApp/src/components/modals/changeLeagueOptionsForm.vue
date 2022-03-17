@@ -27,7 +27,6 @@
   </b-modal>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -51,12 +50,12 @@ export default {
       };
       axios
         .post('/api/leagueManager/ChangeLeagueOptions', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.changeLeagueOptionsFormRef.hide();
           this.$emit('leagueOptionsChanged');
           this.newleagueName = '';
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.newleagueName = this.league.leagueName;

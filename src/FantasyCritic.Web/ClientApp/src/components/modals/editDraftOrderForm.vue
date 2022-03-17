@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 import draggable from 'vuedraggable';
 
@@ -57,11 +56,11 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetDraftOrder', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.editDraftOrderFormRef.hide();
           this.$emit('draftOrderEdited');
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.desiredDraftOrder = this.leagueYear.publishers;

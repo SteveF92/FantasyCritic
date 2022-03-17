@@ -150,7 +150,7 @@ export default {
 
       axios
         .post('/api/leagueManager/createLeague', selectedLeagueOptions)
-        .then((response) => {
+        .then(() => {
           this.$router.push({ name: 'home' });
         })
         .catch((error) => {

@@ -13,7 +13,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
 import MinimalPlayerGameTable from '@/components/gameTables/minimalPlayerGameTable';
 import { ToggleButton } from 'vue-js-toggle-button';
 

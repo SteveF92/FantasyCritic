@@ -95,7 +95,7 @@ export default {
     postRequest() {
       axios.post('/api/leagueManager/EditLeagueYearSettings', this.leagueYearSettings).then(this.responseHandler).catch(this.catchHandler);
     },
-    responseHandler(response) {
+    responseHandler() {
       this.$router.push({ name: 'league', params: { leagueid: this.leagueid, year: this.year } });
     },
     catchHandler(returnedError) {

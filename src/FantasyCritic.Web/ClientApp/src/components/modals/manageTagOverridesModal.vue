@@ -89,7 +89,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetGameTagOverride', model)
-        .then((response) => {
+        .then(() => {
           var gameInfo = {
             gameName: tagOverride.masterGame.gameName
           };
@@ -107,7 +107,7 @@ export default {
         .then((response) => {
           this.possibleMasterGames = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     setTags(masterGame) {
       let tagNames = _.map(this.chosenTags, 'name');
@@ -120,7 +120,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/SetGameTagOverride', model)
-        .then((response) => {
+        .then(() => {
           var gameInfo = {
             gameName: masterGame.gameName
           };

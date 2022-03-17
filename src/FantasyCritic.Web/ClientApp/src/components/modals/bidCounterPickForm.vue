@@ -13,7 +13,7 @@
 
     <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
       <div class="search-results">
-        <ValidationObserver v-slot="{ invalid }">
+        <ValidationObserver>
           <h3 class="text-black">Available Counter Picks</h3>
           <b-form-select v-model="bidCounterPick">
             <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame">
@@ -92,7 +92,7 @@ export default {
           this.isBusy = false;
           this.counterPicking = true;
         })
-        .catch((response) => {
+        .catch(() => {
           this.isBusy = false;
         });
     },

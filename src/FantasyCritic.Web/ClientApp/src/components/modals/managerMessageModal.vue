@@ -37,12 +37,12 @@ export default {
       };
       axios
         .post('/api/leagueManager/PostNewManagerMessage', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.managerMessageFormRef.hide();
           this.$emit('managerMessagePosted');
           this.clearData();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.messageText = null;

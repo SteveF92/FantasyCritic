@@ -30,7 +30,7 @@ export default {
       };
       axios
         .post('/api/league/changePublisherName', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.changePublisherNameRef.hide();
           let actionInfo = {
             oldName: this.publisher.publisherName,
@@ -39,7 +39,7 @@ export default {
           };
           this.$emit('publisherNameChanged', actionInfo);
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.newPublisherName = this.publisher.publisherName;

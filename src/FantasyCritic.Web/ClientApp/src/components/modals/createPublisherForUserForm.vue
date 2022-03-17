@@ -23,7 +23,6 @@
   </b-modal>
 </template>
 <script>
-import Vue from 'vue';
 import axios from 'axios';
 
 export default {
@@ -58,7 +57,7 @@ export default {
       };
       axios
         .post('/api/leagueManager/createPublisherForUser', model)
-        .then((response) => {
+        .then(() => {
           this.$refs.createPublisherForUserFormRef.hide();
           let actionInfo = {
             publisherName: this.publisherName
@@ -66,7 +65,7 @@ export default {
           this.$emit('publisherCreated', actionInfo);
           this.clearData();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     clearData() {
       this.publisherName = '';
