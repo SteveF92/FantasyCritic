@@ -27,8 +27,6 @@
     "vue-js-toggle-button": "^1.3.3",
     "vue-multiselect": "^2.1.6",
     "vue-router": "^3.5.3",
-    "vue-server-renderer": "^2.6.14",
-    "vue-style-loader": "^4.1.3",
     "vue-tweet-embed": "^2.4.0",
     "vuedraggable": "^2.24.3",
     "vuex": "^3.6.2",
