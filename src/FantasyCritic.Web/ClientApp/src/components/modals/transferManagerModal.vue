@@ -4,7 +4,7 @@
     <div class="form-group">
       <label for="newManager" class="control-label">New Manager</label>
       <b-form-select v-model="newManager">
-        <option v-for="user in players" v-bind:value="user">
+        <option v-for="user in players" v-bind:value="user" :key="user.userID">
           {{ user.displayName }}
         </option>
       </b-form-select>

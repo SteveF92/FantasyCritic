@@ -34,7 +34,7 @@
           <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG" v-on:click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             v-for="specialSlot in leagueYear.slotInfo.specialSlots"
-            v-bind:key="specialSlot.overallSlotNumber"
+            :key="specialSlot.overallSlotNumber"
             :gameSlot="specialSlot"
             v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
         </span>
@@ -70,7 +70,7 @@
                 <font-awesome-icon icon="info-circle" v-b-popover.hover="'You can use this to drop a game only if your bid succeeds.'" />
               </label>
               <b-form-select v-model="conditionalDrop">
-                <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame">
+                <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
                   {{ publisherGame.gameName }}
                 </option>
               </b-form-select>
@@ -79,7 +79,7 @@
             <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
               <h3 class="alert-heading">Error!</h3>
               <ul>
-                <li v-for="error in bidResult.errors">{{ error }}</li>
+                <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
               </ul>
             </div>
           </ValidationObserver>

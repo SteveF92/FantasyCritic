@@ -14,7 +14,7 @@
       <div v-if="tag.examples && tag.examples.length > 0">
         <h6>Examples</h6>
         <ul>
-          <li v-for="example in tag.examples">{{ example }}</li>
+          <li v-for="example in tag.examples" :key="example">{{ example }}</li>
         </ul>
       </div>
     </b-popover>

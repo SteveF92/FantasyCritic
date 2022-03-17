@@ -5,7 +5,7 @@
     <div class="form-group">
       <label for="playerToRemove" class="control-label">Player</label>
       <b-form-select v-model="playerToCreatePublisherFor">
-        <option v-for="player in playersWithoutPublishers" v-bind:value="player">
+        <option v-for="player in playersWithoutPublishers" v-bind:value="player" :key="player.userID">
           {{ player.user.displayName }}
         </option>
       </b-form-select>

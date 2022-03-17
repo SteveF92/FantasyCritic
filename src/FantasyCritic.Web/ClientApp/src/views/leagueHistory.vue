@@ -12,7 +12,7 @@
         <hr />
         <div v-if="leagueYear && leagueYear.managerMessages && leagueYear.managerMessages.length > 0">
           <h2>Manager's Messages</h2>
-          <div class="alert alert-info" v-for="message in leagueYear.managerMessages">
+          <div class="alert alert-info" v-for="message in leagueYear.managerMessages" :key="message.messageID">
             <b-button class="delete-button" variant="warning" v-if="league.isManager" v-on:click="deleteMessage(message)">Delete</b-button>
             <h5>{{ message.timestamp | dateTime }}</h5>
             <div class="preserve-whitespace">{{ message.messageText }}</div>
@@ -22,7 +22,7 @@
 
         <div v-if="leagueActionSets && leagueActionSets.length > 0">
           <h2>Detailed Bid/Drop Results</h2>
-          <div v-for="leagueActionSet in leagueActionSets" class="history-table">
+          <div v-for="leagueActionSet in leagueActionSets" :key="leagueActionSet.processSetID" class="history-table">
             <collapseCard>
               <div slot="header">{{ leagueActionSet.processTime | longDate }}</div>
               <div slot="body">

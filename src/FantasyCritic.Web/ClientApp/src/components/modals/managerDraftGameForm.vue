@@ -28,7 +28,11 @@
           <span class="search-tags">
             <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL" v-on:click.native="getTopGames"></searchSlotTypeBadge>
             <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG" v-on:click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
-            <searchSlotTypeBadge v-for="specialSlot in leagueYear.slotInfo.specialSlots" :gameSlot="specialSlot" v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+            <searchSlotTypeBadge
+              v-for="specialSlot in leagueYear.slotInfo.specialSlots"
+              :key="specialSlot.overallSlotNumber"
+              :gameSlot="specialSlot"
+              v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
           </span>
         </div>
 
@@ -65,7 +69,7 @@
           <h3 class="alert-heading" v-if="draftResult.overridable">Warning!</h3>
           <h3 class="alert-heading" v-if="!draftResult.overridable">Error!</h3>
           <ul>
-            <li v-for="error in draftResult.errors">{{ error }}</li>
+            <li v-for="error in draftResult.errors" :key="error">{{ error }}</li>
           </ul>
 
           <div class="form-check" v-if="draftResult.overridable">

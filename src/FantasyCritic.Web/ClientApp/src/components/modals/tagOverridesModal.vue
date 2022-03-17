@@ -8,11 +8,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="tagOverride in tagOverrides">
+        <tr v-for="tagOverride in tagOverrides" :key="tagOverride.masterGame.masterGameID">
           <td>{{ tagOverride.masterGame.gameName }}</td>
           <td>
-            <span v-for="(tag, index) in tagOverride.tags">
-              <masterGameTagBadge :tagName="tagOverride.tags[index]"></masterGameTagBadge>
+            <span v-for="tag in tagOverride.tags" :key="tag">
+              <masterGameTagBadge :tagName="tag"></masterGameTagBadge>
             </span>
           </td>
         </tr>

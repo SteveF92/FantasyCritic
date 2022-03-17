@@ -66,7 +66,7 @@
           <tr>
             <th class="bg-primary">Banned Tags</th>
             <td>
-              <span v-for="tag in leagueYearOptions.tags.banned">
+              <span v-for="tag in leagueYearOptions.tags.banned" :key="tag">
                 <masterGameTagBadge :tagName="tag" short="true"></masterGameTagBadge>
               </span>
             </td>

@@ -92,7 +92,7 @@
           <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft && leagueYear.userPublisher" class="alert alert-warning">
             <h2>This year is not active yet!</h2>
             <ul>
-              <li v-for="error in leagueYear.playStatus.startDraftErrors">{{ error }}</li>
+              <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>
             </ul>
           </div>
 

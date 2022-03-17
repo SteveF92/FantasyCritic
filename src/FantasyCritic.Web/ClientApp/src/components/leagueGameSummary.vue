@@ -5,7 +5,7 @@
       <toggle-button class="toggle" v-model="draftOrderView" :sync="true" :labels="{ checked: 'Draft Order', unchecked: 'Slot Order' }" :css-colors="true" :font-size="13" :width="107" :height="28" />
     </span>
     <div class="row league-summary">
-      <div class="col-xl-6 col-lg-12" v-for="publisher in publishers">
+      <div class="col-xl-6 col-lg-12" v-for="publisher in publishers" :key="publisher.publisherID">
         <a :name="publisher.publisherID" />
         <minimalPlayerGameTable :publisher="publisher" :leagueYear="leagueYear"></minimalPlayerGameTable>
       </div>

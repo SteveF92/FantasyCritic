@@ -5,7 +5,7 @@
         <div class="form-group">
           <label for="counterParty" class="control-label">Publisher to trade with</label>
           <b-form-select v-model="counterParty">
-            <option v-for="publisher in otherPublishers" v-bind:value="publisher">
+            <option v-for="publisher in otherPublishers" v-bind:value="publisher" :key="publisher.publisherID">
               {{ publisher.publisherName }}
             </option>
           </b-form-select>
@@ -21,7 +21,7 @@
                   <div class="trade-game-row">
                     <label>{{ index + 1 }}</label>
                     <b-form-select v-model="item.game">
-                      <option v-for="publisherGame in publisher.games" v-bind:value="publisherGame">
+                      <option v-for="publisherGame in publisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
                         {{ getGameOptionName(publisherGame) }}
                       </option>
                     </b-form-select>
@@ -42,7 +42,7 @@
                   <div class="trade-game-row">
                     <label>{{ index + 1 }}</label>
                     <b-form-select v-model="item.game">
-                      <option v-for="publisherGame in counterParty.games" v-bind:value="publisherGame">
+                      <option v-for="publisherGame in counterParty.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
                         {{ getGameOptionName(publisherGame) }}
                       </option>
                     </b-form-select>

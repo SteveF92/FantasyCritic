@@ -14,7 +14,7 @@
       <div class="form-group">
         <label for="gameToDrop" class="control-label">Game</label>
         <b-form-select v-model="gameToDrop">
-          <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame">
+          <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>
@@ -27,7 +27,7 @@
       <div v-if="dropResult && !dropResult.success" class="alert bid-error alert-danger">
         <h3 class="alert-heading">Error!</h3>
         <ul>
-          <li v-for="error in dropResult.errors">{{ error }}</li>
+          <li v-for="error in dropResult.errors" :key="error">{{ error }}</li>
         </ul>
       </div>
     </form>

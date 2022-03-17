@@ -17,7 +17,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="eligibilityOverride in leagueYear.eligibilityOverrides">
+          <tr v-for="eligibilityOverride in leagueYear.eligibilityOverrides" :key="eligibilityOverride.masterGame.masterGameID">
             <td>{{ eligibilityOverride.masterGame.gameName }}</td>
             <td>{{ eligibilityOverride.eligible | yesNo }}</td>
             <td class="select-cell">

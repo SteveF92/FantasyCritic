@@ -23,7 +23,7 @@
         </tr>
       </thead>
       <draggable v-model="desiredBidPriorities" tag="tbody" v-if="settingPriority" handle=".handle">
-        <tr v-for="bid in desiredBidPriorities" :key="bid.priority">
+        <tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
           <td scope="row" class="handle"><font-awesome-icon icon="bars" size="lg" /></td>
           <td>{{ bid.masterGame.gameName }}</td>
           <td>{{ bid.bidAmount | money }}</td>
@@ -34,7 +34,7 @@
         </tr>
       </draggable>
       <tbody v-if="!settingPriority">
-        <tr v-for="bid in desiredBidPriorities">
+        <tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
           <td>{{ bid.masterGame.gameName }}</td>
           <td>{{ bid.bidAmount | money }}</td>
           <td>{{ bid.priority }}</td>
@@ -64,7 +64,7 @@
       <div class="form-group" v-if="!bidBeingEdited.counterPick">
         <label for="conditionalDrop" class="control-label">Conditional Drop</label>
         <b-form-select v-model="conditionalDrop">
-          <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame">
+          <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>
@@ -73,7 +73,7 @@
       <div v-if="editBidResult && !editBidResult.success" class="alert bid-error alert-danger">
         <h3 class="alert-heading">Error!</h3>
         <ul>
-          <li v-for="error in editBidResult.errors">{{ error }}</li>
+          <li v-for="error in editBidResult.errors" :key="error">{{ error }}</li>
         </ul>
       </div>
     </div>

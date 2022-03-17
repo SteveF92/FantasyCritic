@@ -8,7 +8,7 @@
             <h4>{{ trade.proposerPublisherName }}</h4>
             <h5>Player: {{ trade.proposerDisplayName }}</h5>
             <h5>{{ recievesVerbiage }}</h5>
-            <div v-for="game in trade.counterPartySendGames" class="component-row">
+            <div v-for="game in trade.counterPartySendGames" :key="game.masterGameYear.masterGameID" class="component-row">
               •
               <masterGamePopover :masterGame="game.masterGameYear"></masterGamePopover>
               <template v-if="game.counterPick">(Counter Pick)</template>
@@ -19,7 +19,7 @@
             <h4>{{ trade.counterPartyPublisherName }}</h4>
             <h5>Player: {{ trade.counterPartyDisplayName }}</h5>
             <h5>{{ recievesVerbiage }}</h5>
-            <div v-for="game in trade.proposerSendGames" class="component-row">
+            <div v-for="game in trade.proposerSendGames" :key="game.masterGameYear.masterGameID" class="component-row">
               •
               <masterGamePopover :masterGame="game.masterGameYear"></masterGamePopover>
               <template v-if="game.counterPick">(Counter Pick)</template>

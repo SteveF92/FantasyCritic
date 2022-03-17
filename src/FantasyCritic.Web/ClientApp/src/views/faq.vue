@@ -582,7 +582,7 @@
           </p>
 
           <div v-if="allTags">
-            <span v-for="tag in allTags">
+            <span v-for="tag in allTags" :key="tag">
               <masterGameTagBadge :tagName="tag.name"></masterGameTagBadge>
             </span>
           </div>

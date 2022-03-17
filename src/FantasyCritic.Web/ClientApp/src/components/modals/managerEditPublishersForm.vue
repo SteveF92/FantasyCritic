@@ -5,7 +5,7 @@
       <div class="form-group">
         <label for="editPublisher" class="control-label">Publisher to Edit</label>
         <b-form-select v-model="editPublisher" v-on:change="selectPublisher(editPublisher)">
-          <option v-for="publisher in publishers" v-bind:value="publisher">
+          <option v-for="publisher in publishers" v-bind:value="publisher" :key="publisher.publisherID">
             {{ publisher.publisherName }}
           </option>
         </b-form-select>

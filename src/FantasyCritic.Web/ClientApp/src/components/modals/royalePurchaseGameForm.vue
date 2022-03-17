@@ -46,7 +46,7 @@
         <h3 class="alert-heading" v-if="purchaseResult.overridable">Warning!</h3>
         <h3 class="alert-heading" v-if="!purchaseResult.overridable">Error!</h3>
         <ul>
-          <li v-for="error in purchaseResult.errors">{{ error }}</li>
+          <li v-for="error in purchaseResult.errors" :key="error">{{ error }}</li>
         </ul>
       </div>
     </div>

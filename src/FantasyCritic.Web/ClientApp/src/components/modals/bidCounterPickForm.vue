@@ -16,7 +16,7 @@
         <ValidationObserver>
           <h3 class="text-black">Available Counter Picks</h3>
           <b-form-select v-model="bidCounterPick">
-            <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame">
+            <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
               {{ publisherGame.gameName }}
             </option>
           </b-form-select>
@@ -34,7 +34,7 @@
           <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
             <h3 class="alert-heading">Error!</h3>
             <ul>
-              <li v-for="error in bidResult.errors">{{ error }}</li>
+              <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
             </ul>
           </div>
         </ValidationObserver>

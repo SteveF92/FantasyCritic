@@ -12,10 +12,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="player in internalPlayerActive">
-          <td>{{ player.displayName }}</td>
+        <tr v-for="(value, name) in internalPlayerActive" :key="name">
+          <td>{{ value.displayName }}</td>
           <td>
-            <input type="checkbox" v-model="player.active" :disabled="player.manager" />
+            <input type="checkbox" v-model="value.active" :disabled="value.manager" />
           </td>
         </tr>
       </tbody>

@@ -11,7 +11,7 @@
         <div class="form-group">
           <label for="selectedCounterPick" class="control-label">Game</label>
           <b-form-select v-model="selectedCounterPick">
-            <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame">
+            <option v-for="publisherGame in possibleCounterPicks" :key="publisherGame.publisherGameID" v-bind:value="publisherGame">
               {{ publisherGame.gameName }}
             </option>
           </b-form-select>
@@ -20,7 +20,7 @@
         <div v-if="draftResult && !draftResult.success" class="alert bid-error alert-danger">
           <h3 class="alert-heading">Error!</h3>
           <ul>
-            <li v-for="error in draftResult.errors">{{ error }}</li>
+            <li v-for="error in draftResult.errors" :key="error">{{ error }}</li>
           </ul>
         </div>
 

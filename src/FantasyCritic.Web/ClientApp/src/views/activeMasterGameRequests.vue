@@ -44,7 +44,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="request in activeRequests">
+            <tr v-for="request in activeRequests" :key="request.requestID">
               <td>{{ request.gameName }}</td>
               <td>{{ request.requesterDisplayName }}</td>
               <td class="select-cell">

@@ -28,7 +28,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="request in activeRequests">
+            <tr v-for="request in activeRequests" :key="request.requestID">
               <td><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></td>
               <td>{{ request.requesterDisplayName }}</td>
               <td>{{ request.requestNote }}</td>

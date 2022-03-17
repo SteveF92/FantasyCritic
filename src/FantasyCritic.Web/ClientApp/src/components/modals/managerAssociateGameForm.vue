@@ -4,14 +4,14 @@
     <div class="form-group">
       <label for="associatePublisher" class="control-label">Publisher</label>
       <b-form-select v-model="associatePublisher">
-        <option v-for="publisher in publishers" v-bind:value="publisher">
+        <option v-for="publisher in publishers" v-bind:value="publisher" :key="publisher.publisherID">
           {{ publisher.publisherName }}
         </option>
       </b-form-select>
       <div v-if="associatePublisher">
         <label for="associatePublisherGame" class="control-label">Game</label>
         <b-form-select v-model="associatePublisherGame">
-          <option v-for="publisherGame in associatePublisher.games" v-bind:value="publisherGame">
+          <option v-for="publisherGame in associatePublisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>
@@ -45,7 +45,7 @@
         <h3 class="alert-heading" v-if="associateResult.overridable">Warning!</h3>
         <h3 class="alert-heading" v-if="!associateResult.overridable">Error!</h3>
         <ul>
-          <li v-for="error in associateResult.errors">{{ error }}</li>
+          <li v-for="error in associateResult.errors" :key="error">{{ error }}</li>
         </ul>
 
         <div class="form-check" v-if="associateResult.overridable">

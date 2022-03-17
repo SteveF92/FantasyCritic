@@ -174,7 +174,7 @@
         <div class="text-well">
           <p>The following people are supporting us at the "Fantasy Critic Donor" tier on Patreon, and we thank them greatly for that:</p>
           <ul>
-            <li v-for="donor in donors">{{ donor }}</li>
+            <li v-for="donor in donors" :key="donor">{{ donor }}</li>
           </ul>
         </div>
       </template>

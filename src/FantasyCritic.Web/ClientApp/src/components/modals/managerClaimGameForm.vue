@@ -39,7 +39,7 @@
       <div class="form-group">
         <label for="claimPublisher" class="control-label">Publisher</label>
         <b-form-select v-model="claimPublisher">
-          <option v-for="publisher in publishers" v-bind:value="publisher">
+          <option v-for="publisher in publishers" v-bind:value="publisher" :key="publisher.publisherID">
             {{ publisher.publisherName }}
           </option>
         </b-form-select>
@@ -57,7 +57,7 @@
         <h3 class="alert-heading" v-if="claimResult.overridable">Warning!</h3>
         <h3 class="alert-heading" v-if="!claimResult.overridable">Error!</h3>
         <ul>
-          <li v-for="error in claimResult.errors">{{ error }}</li>
+          <li v-for="error in claimResult.errors" :key="error">{{ error }}</li>
         </ul>
 
         <div class="form-check" v-if="claimResult.overridable">

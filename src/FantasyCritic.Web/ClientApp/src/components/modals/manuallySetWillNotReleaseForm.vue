@@ -6,14 +6,14 @@
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
           <b-form-select v-model="manuallySetWillNotReleasePublisher">
-            <option v-for="publisher in leagueYear.publishers" v-bind:value="publisher">
+            <option v-for="publisher in leagueYear.publishers" v-bind:value="publisher" :key="publisher.publisherID">
               {{ publisher.publisherName }}
             </option>
           </b-form-select>
           <div v-if="manuallySetWillNotReleasePublisher">
             <label for="manuallySetWillNotReleaseGame" class="control-label">Game</label>
             <b-form-select v-model="manuallySetWillNotReleaseGame">
-              <option v-for="publisherGame in manuallySetWillNotReleasePublisher.games" v-bind:value="publisherGame">
+              <option v-for="publisherGame in manuallySetWillNotReleasePublisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
                 {{ publisherGame.gameName }}
               </option>
             </b-form-select>
