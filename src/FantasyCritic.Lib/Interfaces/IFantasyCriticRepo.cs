@@ -75,7 +75,7 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
     Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> leagueYears);
     Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear);
-    Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear);
+    Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears);
     Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(LeagueYear leagueYear);
     Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);
     Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
