@@ -22,14 +22,14 @@
       :sort-desc.sync="sortDesc"
       primary-key="overallSlotNumber"
       tbody-tr-class="btable-player-game-row">
-      <template #head(publisherGame.masterGame.projectedFantasyPoints)="data">
+      <template #head(publisherGame.masterGame.projectedFantasyPoints)>
         Projected
         <br />
         points
         <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
       </template>
 
-      <template #head(publisherGame.timestamp)="data">
+      <template #head(publisherGame.timestamp)>
         <span v-show="!sortOrderMode || !includeRemovedInSorted">Acquired</span>
         <span v-show="sortOrderMode && includeRemovedInSorted">Acquired/Dropped</span>
       </template>
