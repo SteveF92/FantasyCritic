@@ -465,21 +465,21 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
+    public async Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears)
     {
-        var processedBids = await GetPickupBids(year, allLeagueYears, allPublishersForYear, true);
+        var processedBids = await GetPickupBids(year, allLeagueYears, true);
         var list = processedBids.SelectMany(x => x.Value).ToList();
         return list;
     }
 
-    public async Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(LeagueYear leagueYear, IReadOnlyList<Publisher> allPublishersInLeagueYear)
+    public async Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(LeagueYear leagueYear)
     {
-        var publisherGameDictionary = allPublishersInLeagueYear
+        var publisherGameDictionary = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => x.MasterGame.HasValue)
             .ToLookup(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
 
-        var formerPublisherGameDictionary = allPublishersInLeagueYear
+        var formerPublisherGameDictionary = leagueYear.Publishers
             .SelectMany(x => x.FormerPublisherGames)
             .Where(x => x.PublisherGame.MasterGame.HasValue)
             .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame.Value.MasterGame.MasterGameID));
@@ -491,7 +491,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             year = leagueYear.Year
         };
 
-        var publisherDictionary = allPublishersInLeagueYear.ToDictionary(x => x.PublisherID);
+        var publisherDictionary = leagueYear.Publishers.ToDictionary(x => x.PublisherID);
 
         using (var connection = new MySqlConnection(_connectionString))
         {
@@ -509,9 +509,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear) => GetPickupBids(year, allLeagueYears, allPublishersForYear, false);
-
-    private async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear, bool processed)
+    private async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, bool processed)
     {
         var leagueDictionary = allLeagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
         var publisherDictionary = allPublishersForYear.ToDictionary(x => x.PublisherID, y => y);
@@ -553,7 +551,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(LeagueYear leagueYear, IReadOnlyList<Publisher> allPublishersInLeagueYear)
+    public async Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(LeagueYear leagueYear)
     {
         string sql = "select * from vw_league_droprequest where LeagueID = @leagueID and Year = @year and Successful IS NOT NULL";
         var queryObject = new
@@ -562,7 +560,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             year = leagueYear.Year
         };
 
-        var publisherDictionary = allPublishersInLeagueYear.ToDictionary(x => x.PublisherID);
+        var publisherDictionary = leagueYear.Publishers.ToDictionary(x => x.PublisherID);
 
         using (var connection = new MySqlConnection(_connectionString))
         {
@@ -1371,7 +1369,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task FullyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague)
+    public async Task FullyRemovePublisher(LeagueYear leagueYear, Publisher deletePublisher)
     {
         string deleteSQL = "delete from tbl_league_publisher where PublisherID = @publisherID;";
         string deleteQueueSQL = "delete from tbl_league_publisherqueue where PublisherID = @publisherID;";
@@ -1381,7 +1379,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         string deletePublisherDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @publisherID;";
         string fixDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
 
-        var remainingOrderedPublishers = publishersInLeague.Except(new List<Publisher> { deletePublisher }).OrderBy(x => x.DraftPosition).ToList();
+        var remainingOrderedPublishers = leagueYear.GetAllPublishersExcept(deletePublisher).OrderBy(x => x.DraftPosition).ToList();
         IEnumerable<SetDraftOrderEntity> setDraftOrderEntities = remainingOrderedPublishers.Select((publisher, index) => new SetDraftOrderEntity(publisher.PublisherID, index + 1));
 
         var deleteObject = new
@@ -3034,7 +3032,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears, IReadOnlyList<Publisher> allPublishersForYear)
+    public async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears)
     {
         var leagueDictionary = allLeagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
         var publisherDictionary = allPublishersForYear.ToDictionary(x => x.PublisherID, y => y);
