@@ -14,9 +14,9 @@ public class GameSearchingService
         _clock = clock;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetAllPossibleMasterGameYearsForLeagueYear(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetAllPossibleMasterGameYearsForLeagueYear(LeagueYear leagueYear, Publisher currentPublisher, int year)
     {
-        HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
+        HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => !x.CounterPick && x.MasterGame.HasValue)
             .Select(x => x.MasterGame.Value.MasterGame)
@@ -26,13 +26,13 @@ public class GameSearchingService
 
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = currentPublisher.GetPublisherSlots();
+        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
         foreach (var masterGame in masterGames)
         {
-            var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
+            var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
                 publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate);
             possibleMasterGames.Add(possibleMasterGame);
@@ -41,9 +41,9 @@ public class GameSearchingService
         return possibleMasterGames;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, LeagueYear leagueYear, Publisher currentPublisher, int year)
     {
-        HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
+        HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => !x.CounterPick && x.MasterGame.HasValue)
             .Select(x => x.MasterGame.Value.MasterGame)
@@ -54,13 +54,13 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
         IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames);
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = currentPublisher.GetPublisherSlots();
+        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
         foreach (var masterGame in matchingMasterGames)
         {
-            var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
+            var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots, publisherMasterGames,
                 myPublisherMasterGames, eligibilityFactors, currentDate);
             possibleMasterGames.Add(possibleMasterGame);
@@ -69,9 +69,9 @@ public class GameSearchingService
         return possibleMasterGames;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGames(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear, int year)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGames(LeagueYear leagueYear, Publisher currentPublisher, int year)
     {
-        HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
+        HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => !x.CounterPick && x.MasterGame.HasValue)
             .Select(x => x.MasterGame.Value.MasterGame)
@@ -82,13 +82,13 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
         IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = currentPublisher.GetPublisherSlots();
+        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
         foreach (var masterGame in matchingMasterGames)
         {
-            var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
+            var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
                 publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate);
 
@@ -103,10 +103,9 @@ public class GameSearchingService
         return possibleMasterGames;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGamesForSlot(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear,
-        int year, IEnumerable<LeagueTagStatus> leagueTagRequirements)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGamesForSlot(LeagueYear leagueYear, Publisher currentPublisher, int year, IEnumerable<LeagueTagStatus> leagueTagRequirements)
     {
-        HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
+        HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => !x.CounterPick && x.MasterGame.HasValue)
             .Select(x => x.MasterGame.Value.MasterGame)
@@ -117,13 +116,13 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
         IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = currentPublisher.GetPublisherSlots();
+        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
         foreach (var masterGame in matchingMasterGames)
         {
-            var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
+            var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
                 publisherMasterGames, myPublisherMasterGames, eligibilityFactors, leagueTagRequirements, currentDate);
 
@@ -138,10 +137,9 @@ public class GameSearchingService
         return possibleMasterGames;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetQueuedPossibleGames(Publisher currentPublisher, IReadOnlyList<Publisher> publishersInLeagueForYear,
-        IEnumerable<QueuedGame> queuedGames)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetQueuedPossibleGames(LeagueYear leagueYear, Publisher currentPublisher, IEnumerable<QueuedGame> queuedGames)
     {
-        HashSet<MasterGame> publisherMasterGames = publishersInLeagueForYear
+        HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => !x.CounterPick && x.MasterGame.HasValue)
             .Select(x => x.MasterGame.Value.MasterGame)
@@ -149,10 +147,10 @@ public class GameSearchingService
 
         HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
-        IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(currentPublisher.LeagueYear.Year);
-        var masterGamesForThisYear = masterGameYears.Where(x => x.Year == currentPublisher.LeagueYear.Year);
+        IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+        var masterGamesForThisYear = masterGameYears.Where(x => x.Year == leagueYear.Year);
         var masterGameYearDictionary = masterGamesForThisYear.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
-        var slots = currentPublisher.GetPublisherSlots();
+        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
 
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
@@ -161,7 +159,7 @@ public class GameSearchingService
         {
             var masterGame = masterGameYearDictionary[queuedGame.MasterGame.MasterGameID];
 
-            var eligibilityFactors = currentPublisher.LeagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
+            var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
                 publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate);
             possibleMasterGames.Add(possibleMasterGame);

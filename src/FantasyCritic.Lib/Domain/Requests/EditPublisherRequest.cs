@@ -2,8 +2,9 @@ namespace FantasyCritic.Lib.Domain.Requests;
 
 public class EditPublisherRequest
 {
-    public EditPublisherRequest(Publisher publisher, string newPublisherName, int budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped)
+    public EditPublisherRequest(LeagueYear leagueYear, Publisher publisher, string newPublisherName, int budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped)
     {
+        LeagueYear = leagueYear;
         Publisher = publisher;
         if (publisher.PublisherName != newPublisherName)
         {
@@ -27,6 +28,7 @@ public class EditPublisherRequest
         }
     }
 
+    public LeagueYear LeagueYear { get; }
     public Publisher Publisher { get; }
     public Maybe<string> NewPublisherName { get; }
     public int? Budget { get; }

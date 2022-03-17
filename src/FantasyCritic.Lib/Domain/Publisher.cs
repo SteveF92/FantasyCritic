@@ -4,12 +4,12 @@ namespace FantasyCritic.Lib.Domain;
 
 public class Publisher : IEquatable<Publisher>
 {
-    public Publisher(Guid publisherID, LeagueYear leagueYear, FantasyCriticUser user, string publisherName, Maybe<string> publisherIcon, int draftPosition,
+    public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, Maybe<string> publisherIcon, int draftPosition,
         IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped,
         bool autoDraft)
     {
         PublisherID = publisherID;
-        LeagueYear = leagueYear;
+        LeagueYearKey = leagueYearKey;
         User = user;
         PublisherName = publisherName;
         PublisherIcon = publisherIcon;
@@ -24,7 +24,7 @@ public class Publisher : IEquatable<Publisher>
     }
 
     public Guid PublisherID { get; }
-    public LeagueYear LeagueYear { get; }
+    public LeagueYearKey LeagueYearKey { get; }
     public FantasyCriticUser User { get; }
     public string PublisherName { get; }
     public Maybe<string> PublisherIcon { get; }
@@ -58,70 +58,68 @@ public class Publisher : IEquatable<Publisher>
         }
     }
 
-    public decimal TotalFantasyPoints
+    public decimal GetTotalFantasyPoints(SupportedYear year, LeagueOptions leagueOptions)
     {
-        get
+        var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints(year, leagueOptions) ?? 0m;
+        var score = PublisherGames.Sum(x => x.FantasyPoints);
+        if (!score.HasValue)
         {
-            var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints() ?? 0m;
-            var score = PublisherGames.Sum(x => x.FantasyPoints);
-            if (!score.HasValue)
-            {
-                return emptyCounterPickSlotPoints;
-            }
-
-            return score.Value + emptyCounterPickSlotPoints;
+            return emptyCounterPickSlotPoints;
         }
+
+        return score.Value + emptyCounterPickSlotPoints;
     }
 
-    public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate, bool ineligiblePointsShouldCount)
+    public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate, bool ineligiblePointsShouldCount, LeagueYear leagueYear)
     {
-        var score = GetPublisherSlots()
-            .Sum(x => x.GetProjectedOrRealFantasyPoints(ineligiblePointsShouldCount || x.SlotIsValid(LeagueYear),
-                LeagueYear.Options.ScoringSystem, systemWideValues, simpleProjections, currentDate));
+        var leagueOptions = leagueYear.Options;
+        var score = GetPublisherSlots(leagueOptions)
+            .Sum(x => x.GetProjectedOrRealFantasyPoints(ineligiblePointsShouldCount || x.SlotIsValid(leagueYear),
+                leagueOptions.ScoringSystem, systemWideValues, simpleProjections, currentDate));
 
         return score;
     }
 
-    private decimal? GetEmptyCounterPickSlotPoints()
+    private decimal? GetEmptyCounterPickSlotPoints(SupportedYear year, LeagueOptions leagueOptions)
     {
-        if (!SupportedYear.Year2022FeatureSupported(LeagueYear.Year))
+        if (!SupportedYear.Year2022FeatureSupported(year.Year))
         {
             return 0m;
         }
 
-        if (!LeagueYear.SupportedYear.Finished)
+        if (!year.Finished)
         {
             return null;
         }
 
-        var expectedNumberOfCounterPicks = LeagueYear.Options.CounterPicks;
+        var expectedNumberOfCounterPicks = leagueOptions.CounterPicks;
         var numberCounterPicks = PublisherGames.Count(x => x.CounterPick);
         var emptySlots = expectedNumberOfCounterPicks - numberCounterPicks;
         var points = emptySlots * -15m;
         return points;
     }
 
-    public IReadOnlyList<PublisherSlot> GetPublisherSlots()
+    public IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueOptions leagueOptions)
     {
         List<PublisherSlot> publisherSlots = new List<PublisherSlot>();
 
         int overallSlotNumber = 0;
         var standardGamesBySlot = PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
-        for (int standardGameIndex = 0; standardGameIndex < LeagueYear.Options.StandardGames; standardGameIndex++)
+        for (int standardGameIndex = 0; standardGameIndex < leagueOptions.StandardGames; standardGameIndex++)
         {
             Maybe<PublisherGame> standardGame = Maybe<PublisherGame>.None;
             if (standardGamesBySlot.TryGetValue(standardGameIndex, out var foundGame))
             {
                 standardGame = foundGame;
             }
-            Maybe<SpecialGameSlot> specialSlot = LeagueYear.Options.GetSpecialGameSlotByOverallSlotNumber(standardGameIndex);
+            Maybe<SpecialGameSlot> specialSlot = leagueOptions.GetSpecialGameSlotByOverallSlotNumber(standardGameIndex);
 
             publisherSlots.Add(new PublisherSlot(standardGameIndex, overallSlotNumber, false, specialSlot, standardGame));
             overallSlotNumber++;
         }
 
         var counterPicksBySlot = PublisherGames.Where(x => x.CounterPick).ToDictionary(x => x.SlotNumber);
-        for (int counterPickIndex = 0; counterPickIndex < LeagueYear.Options.CounterPicks; counterPickIndex++)
+        for (int counterPickIndex = 0; counterPickIndex < leagueOptions.CounterPicks; counterPickIndex++)
         {
             Maybe<PublisherGame> counterPick = Maybe<PublisherGame>.None;
             if (counterPicksBySlot.TryGetValue(counterPickIndex, out var foundGame))
@@ -176,9 +174,8 @@ public class Publisher : IEquatable<Publisher>
 
     public override string ToString() => $"{PublisherID}|{PublisherName}";
 
-    public Result CanDropGame(bool willRelease)
+    public Result CanDropGame(bool willRelease, LeagueOptions leagueOptions)
     {
-        var leagueOptions = LeagueYear.Options;
         if (willRelease)
         {
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > WillReleaseGamesDropped)
@@ -203,9 +200,9 @@ public class Publisher : IEquatable<Publisher>
         return Result.Failure("Publisher cannot drop any more 'Will Not Release' games");
     }
 
-    public static Publisher GetFakePublisher(LeagueYear leagueYear)
+    public static Publisher GetFakePublisher(LeagueYearKey leagueYearKey)
     {
-        return new Publisher(Guid.Empty, leagueYear, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
+        return new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
             Maybe<string>.None, 0, new List<PublisherGame>(),
             new List<FormerPublisherGame>(), 0, 0, 0, 0, false);
     }

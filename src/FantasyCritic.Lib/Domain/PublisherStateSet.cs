@@ -7,7 +7,7 @@ public class PublisherStateSet
     public PublisherStateSet(IEnumerable<Publisher> publishers)
     {
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
-        _leagueYearLookup = _publisherDictionary.Values.ToLookup(x => x.LeagueYear.Key);
+        _leagueYearLookup = _publisherDictionary.Values.ToLookup(x => x.LeagueYearKey);
     }
 
     public IReadOnlyList<Publisher> Publishers => _publisherDictionary.Values.ToList();
@@ -40,9 +40,8 @@ public class PublisherStateSet
         UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, Maybe<PublisherGame>.None, (int)budget, null);
     }
 
-    public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame)
+    public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame, LeagueOptions leagueOptions)
     {
-        var leagueOptions = publisherToEdit.LeagueYear.Options;
         if (publisherGame.WillRelease())
         {
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > publisherToEdit.WillReleaseGamesDropped)
@@ -75,7 +74,7 @@ public class PublisherStateSet
     {
         var updatedPublisher = GetUpdatedPublisher(publisherToEdit, addGame, removeGame, budgetChange, dropType);
         _publisherDictionary[updatedPublisher.PublisherID] = updatedPublisher;
-        _leagueYearLookup = _publisherDictionary.Values.ToLookup(x => x.LeagueYear.Key);
+        _leagueYearLookup = _publisherDictionary.Values.ToLookup(x => x.LeagueYearKey);
     }
 
     private static Publisher GetUpdatedPublisher(Publisher publisherToEdit, Maybe<PublisherGame> addGame, Maybe<PublisherGame> removeGame, int budgetChange, DropType? dropType)
@@ -109,7 +108,7 @@ public class PublisherStateSet
                 break;
         }
 
-        return new Publisher(publisherToEdit.PublisherID, publisherToEdit.LeagueYear, publisherToEdit.User, publisherToEdit.PublisherName, publisherToEdit.PublisherIcon, publisherToEdit.DraftPosition,
+        return new Publisher(publisherToEdit.PublisherID, publisherToEdit.LeagueYearKey, publisherToEdit.User, publisherToEdit.PublisherName, publisherToEdit.PublisherIcon, publisherToEdit.DraftPosition,
             newPublisherGames, publisherToEdit.FormerPublisherGames, newBudget, freeGamesDropped, willNotReleaseGamesDropped,
             willReleaseGamesDropped, publisherToEdit.AutoDraft);
     }

@@ -42,7 +42,7 @@ public interface IFantasyCriticRepo
     Task<Maybe<LeagueInviteLink>> GetInviteLinkByInviteCode(Guid inviteCode);
     Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user);
 
-    Task FullyRemovePublisher(Publisher deletePublisher, IEnumerable<Publisher> publishersInLeague);
+    Task FullyRemovePublisher(LeagueYear leagueYear, Publisher deletePublisher);
     Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
     Task TransferLeagueManager(League league, FantasyCriticUser newManager);
 

@@ -27,7 +27,7 @@ public class PublisherService
             draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
         }
 
-        Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear, user, publisherName, null, draftPosition, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, false);
+        Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear.Key, user, publisherName, null, draftPosition, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, false);
         await _fantasyCriticRepo.CreatePublisher(publisher);
         return publisher;
     }
@@ -100,40 +100,40 @@ public class PublisherService
             return Result.Failure("Budget cannot be set to under $0.");
         }
 
-        bool allowUnlimitedWillReleaseDrops = editValues.Publisher.LeagueYear.Options.WillReleaseDroppableGames == -1;
+        bool allowUnlimitedWillReleaseDrops = editValues.LeagueYear.Options.WillReleaseDroppableGames == -1;
         if (editValues.WillReleaseGamesDropped.HasValue)
         {
             if (allowUnlimitedWillReleaseDrops)
             {
                 return Result.Failure("Your league allows unlimited will release drops, so there is no reason to edit this.");
             }
-            if (editValues.WillReleaseGamesDropped.Value > editValues.Publisher.LeagueYear.Options.WillReleaseDroppableGames)
+            if (editValues.WillReleaseGamesDropped.Value > editValues.LeagueYear.Options.WillReleaseDroppableGames)
             {
                 return Result.Failure("Will release games dropped cannot be set to more than is allowed in the league.");
             }
         }
 
-        bool allowUnlimitedWillNotReleaseDrops = editValues.Publisher.LeagueYear.Options.WillNotReleaseDroppableGames == -1;
+        bool allowUnlimitedWillNotReleaseDrops = editValues.LeagueYear.Options.WillNotReleaseDroppableGames == -1;
         if (editValues.WillNotReleaseGamesDropped.HasValue)
         {
             if (allowUnlimitedWillNotReleaseDrops)
             {
                 return Result.Failure("Your league allows unlimited will not release drops, so there is no reason to edit this.");
             }
-            if (editValues.WillNotReleaseGamesDropped.Value > editValues.Publisher.LeagueYear.Options.WillNotReleaseDroppableGames)
+            if (editValues.WillNotReleaseGamesDropped.Value > editValues.LeagueYear.Options.WillNotReleaseDroppableGames)
             {
                 return Result.Failure("Will not release games dropped cannot be set to more than is allowed in the league.");
             }
         }
 
-        bool allowUnlimitedFreeDrops = editValues.Publisher.LeagueYear.Options.FreeDroppableGames == -1;
+        bool allowUnlimitedFreeDrops = editValues.LeagueYear.Options.FreeDroppableGames == -1;
         if (editValues.FreeGamesDropped.HasValue)
         {
             if (allowUnlimitedFreeDrops)
             {
                 return Result.Failure("Your league allows unlimited unrestricted drops, so there is no reason to edit this.");
             }
-            if (editValues.FreeGamesDropped.Value > editValues.Publisher.LeagueYear.Options.FreeDroppableGames)
+            if (editValues.FreeGamesDropped.Value > editValues.LeagueYear.Options.FreeDroppableGames)
             {
                 return Result.Failure("Unrestricted games dropped cannot be set to more than is allowed in the league.");
             }
@@ -144,10 +144,9 @@ public class PublisherService
         return Result.Success();
     }
 
-    public async Task FullyRemovePublisher(Publisher publisher)
+    public Task FullyRemovePublisher(LeagueYear leagueYear, Publisher publisher)
     {
-        var allPublishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(publisher.LeagueYear);
-        await _fantasyCriticRepo.FullyRemovePublisher(publisher, allPublishers);
+        return _fantasyCriticRepo.FullyRemovePublisher(leagueYear, publisher);
     }
 
     public async Task<Result> SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
@@ -184,11 +183,11 @@ public class PublisherService
         return queuedGames.OrderBy(x => x.Rank).ToList();
     }
 
-    public async Task<Result> ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
+    public async Task<Result> ReorderPublisherGames(LeagueYear leagueYear, Publisher publisher, Dictionary<int, Guid?> slotStates)
     {
         var requestedPositionsWithGames = slotStates.Where(x => x.Value.HasValue).ToList();
         var gameDictionary = publisher.PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.PublisherGameID);
-        var slotDictionary = publisher.GetPublisherSlots().Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
+        var slotDictionary = publisher.GetPublisherSlots(leagueYear.Options).Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
         foreach (var requestedSlotState in requestedPositionsWithGames)
         {
             var moveIntoSlotExists = slotDictionary.TryGetValue(requestedSlotState.Key, out var moveIntoSlot);
@@ -199,9 +198,9 @@ public class PublisherService
 
             var game = gameDictionary[requestedSlotState.Value.Value];
             var currentSlot = slotDictionary[game.SlotNumber];
-            var currentSlotIsValid = currentSlot.SlotIsValid(publisher.LeagueYear);
+            var currentSlotIsValid = currentSlot.SlotIsValid(leagueYear);
             var potentialNewSlot = moveIntoSlot.GetWithReplacedGame(game);
-            var potentialNewSlotIsValid = potentialNewSlot.SlotIsValid(publisher.LeagueYear);
+            var potentialNewSlotIsValid = potentialNewSlot.SlotIsValid(leagueYear);
             if (currentSlotIsValid && !potentialNewSlotIsValid)
             {
                 return Result.Failure("You cannot move a game into a slot that it is not eligible for.");

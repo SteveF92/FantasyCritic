@@ -55,7 +55,7 @@ public class ActionProcessingService
             foreach (var dropRequest in leagueYearGroup.Value)
             {
                 var affectedPublisher = publisherStateSet.GetPublisher(dropRequest.Publisher.PublisherID);
-                var publishersInLeague = publisherStateSet.GetPublishersInLeagueYear(affectedPublisher.LeagueYear.Key);
+                var publishersInLeague = publisherStateSet.GetPublishersInLeagueYear(leagueYearGroup.Key.Key);
                 var otherPublishersInLeague = publishersInLeague.Except(new List<Publisher>() { affectedPublisher });
 
                 var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, leagueYearGroup.Key, affectedPublisher, otherPublishersInLeague);
@@ -66,7 +66,7 @@ public class ActionProcessingService
                     var formerPublisherGame = publisherGame.Value.GetFormerPublisherGame(processingTime, "Dropped by player");
                     gamesToDelete.Add(formerPublisherGame);
                     LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, processingTime);
-                    publisherStateSet.DropGameForPublisher(affectedPublisher, publisherGame.Value);
+                    publisherStateSet.DropGameForPublisher(affectedPublisher, publisherGame.Value, leagueYearGroup.Key.Options);
 
                     leagueActions.Add(leagueAction);
                 }
@@ -143,7 +143,7 @@ public class ActionProcessingService
             var publishersInLeagueYear = publisherStateSet.GetPublishersInLeagueYear(leagueYear.Key);
             Publisher bidPublisher = publisherStateSet.GetPublisher(activeBid.Publisher.PublisherID);
             bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, publishersInLeagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
-            var gameRequest = new ClaimGameDomainRequest(bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
+            var gameRequest = new ClaimGameDomainRequest(leagueYear, bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
 
             int? validConditionalDropSlot = null;
             if (activeBid.ConditionalDropPublisherGame.HasValue)
@@ -262,7 +262,7 @@ public class ActionProcessingService
         if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.LowestProjectedPoints))
         {
             bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
-            var bestBidsByProjectedScore = bestBids.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
+            var bestBidsByProjectedScore = bestBids.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames, leagueYear)).ToList();
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();
@@ -288,7 +288,7 @@ public class ActionProcessingService
             }
 
             bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
-            var bestBidsByProjectedScore = bestBidsByBidTime.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames)).ToList();
+            var bestBidsByProjectedScore = bestBidsByBidTime.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames, leagueYear)).ToList();
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();
@@ -354,7 +354,7 @@ public class ActionProcessingService
         foreach (var successfulConditionalDrop in successfulConditionalDrops)
         {
             var affectedPublisher = publisherStateSet.GetPublisher(successfulConditionalDrop.PickupBid.Publisher.PublisherID);
-            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value);
+            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value, successfulConditionalDrop.PickupBid.LeagueYear.Options);
             var formerPublisherGame = successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value.GetFormerPublisherGame(processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
             conditionalDroppedGames.Add(formerPublisherGame);
         }

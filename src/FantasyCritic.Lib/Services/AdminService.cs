@@ -341,28 +341,41 @@ public class AdminService
             List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
             IReadOnlyList<MasterGame> cleanMasterGames = await _masterGameRepo.GetMasterGames();
             IReadOnlyList<MasterGameYear> cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
+
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+            var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
             IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears);
-            IReadOnlyList<Publisher> publishersInRealLeagues = allPublishers.Where(x => !x.LeagueYear.League.TestLeague).ToList();
-            IReadOnlyList<Publisher> publishersInCompleteLeagues = publishersInRealLeagues.Where(x => x.LeagueYear.PlayStatus.DraftFinished).ToList();
+            List<Publisher> publishersInCompleteLeagues = new List<Publisher>();
+            foreach (var publisher in allPublishers)
+            {
+                var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
+                if (leagueYear.League.TestLeague || !leagueYear.PlayStatus.DraftFinished)
+                {
+                    continue;
+                }
+
+                publishersInCompleteLeagues.Add(publisher);
+            }
+
+
             IReadOnlyList<PublisherGame> publisherGames = publishersInCompleteLeagues.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue).ToList();
             IReadOnlyList<PickupBid> processedBids = await _fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year, leagueYears, allPublishers);
             ILookup<MasterGame, PickupBid> bidsByGame = processedBids.ToLookup(x => x.MasterGame);
             IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
 
             var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame.Value.MasterGame.MasterGameID);
-            Dictionary<LeagueYear, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYear, HashSet<MasterGame>>();
-            Dictionary<LeagueYear, HashSet<MasterGame>> counterPicksByLeague = new Dictionary<LeagueYear, HashSet<MasterGame>>();
+            Dictionary<LeagueYearKey, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
+            Dictionary<LeagueYearKey, HashSet<MasterGame>> counterPicksByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
             foreach (var publisher in publishersInCompleteLeagues)
             {
-                if (!standardGamesByLeague.ContainsKey(publisher.LeagueYear))
+                if (!standardGamesByLeague.ContainsKey(publisher.LeagueYearKey))
                 {
-                    standardGamesByLeague[publisher.LeagueYear] = new HashSet<MasterGame>();
+                    standardGamesByLeague[publisher.LeagueYearKey] = new HashSet<MasterGame>();
                 }
 
-                if (!counterPicksByLeague.ContainsKey(publisher.LeagueYear))
+                if (!counterPicksByLeague.ContainsKey(publisher.LeagueYearKey))
                 {
-                    counterPicksByLeague[publisher.LeagueYear] = new HashSet<MasterGame>();
+                    counterPicksByLeague[publisher.LeagueYearKey] = new HashSet<MasterGame>();
                 }
 
                 foreach (var game in publisher.PublisherGames)
@@ -374,17 +387,18 @@ public class AdminService
 
                     if (game.CounterPick)
                     {
-                        counterPicksByLeague[publisher.LeagueYear].Add(game.MasterGame.Value.MasterGame);
+                        counterPicksByLeague[publisher.LeagueYearKey].Add(game.MasterGame.Value.MasterGame);
                     }
                     else
                     {
-                        standardGamesByLeague[publisher.LeagueYear].Add(game.MasterGame.Value.MasterGame);
+                        standardGamesByLeague[publisher.LeagueYearKey].Add(game.MasterGame.Value.MasterGame);
                     }
                 }
             }
 
             var masterGameCacheLookup = cachedMasterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
-            var allLeagueYears = publishersInCompleteLeagues.Select(x => x.LeagueYear).Distinct().ToList();
+            var completeLeagueYearKeys = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
+            var allLeagueYears = leagueYears.Where(x => completeLeagueYearKeys.Contains(x.Key)).ToList();
             double totalLeagueCount = allLeagueYears.Count();
 
             foreach (var masterGame in cleanMasterGames)

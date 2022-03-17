@@ -11,7 +11,7 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus,
         IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
-        Instant? draftStartedTimestamp, Maybe<FantasyCriticUser> winningUser)
+        Instant? draftStartedTimestamp, Maybe<FantasyCriticUser> winningUser, IEnumerable<Publisher> publishers)
     {
         League = league;
         SupportedYear = year;
@@ -23,6 +23,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         _tagOverridesDictionary = TagOverrides.ToDictionary(x => x.MasterGame);
         DraftStartedTimestamp = draftStartedTimestamp;
         WinningUser = winningUser;
+        Publishers = publishers.ToList();
     }
 
     public League League { get; }
@@ -34,6 +35,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public IReadOnlyList<TagOverride> TagOverrides { get; }
     public Instant? DraftStartedTimestamp { get; }
     public Maybe<FantasyCriticUser> WinningUser { get; }
+    public IReadOnlyList<Publisher> Publishers { get; }
 
     public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 

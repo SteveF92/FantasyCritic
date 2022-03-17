@@ -48,8 +48,8 @@ public class FinalizedActionProcessingResults
                 allBids.Add(failedBid.ToFlatBid(ProcessSetID));
             }
         }
-        var bidsByLeague = allBids.GroupToDictionary(x => x.Publisher.LeagueYear);
-        var dropsByLeague = allDrops.ToLookup(x => x.Publisher.LeagueYear);
+        var bidsByLeague = allBids.GroupToDictionary(x => x.LeagueYear);
+        var dropsByLeague = allDrops.ToLookup(x => x.LeagueYear);
 
         List<LeagueActionProcessingSet> leagueSets = new List<LeagueActionProcessingSet>();
         var leagueYears = bidsByLeague.Keys.ToList();

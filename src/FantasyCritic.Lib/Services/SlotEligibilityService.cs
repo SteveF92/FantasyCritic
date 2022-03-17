@@ -24,7 +24,7 @@ public static class SlotEligibilityService
         return false;
     }
 
-    public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick, int? validDropSlot, bool watchListing)
+    public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, LeagueOptions leagueOptions, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick, int? validDropSlot, bool watchListing)
     {
         string filledSpacesText = "User's game spaces are filled.";
         if (counterPick)
@@ -32,7 +32,7 @@ public static class SlotEligibilityService
             filledSpacesText = "User's counter pick spaces are filled.";
         }
 
-        var slots = publisher.GetPublisherSlots();
+        var slots = publisher.GetPublisherSlots(leagueOptions);
         var openSlots = slots.Where(x => x.CounterPick == counterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
         if (eligibilityFactors.HasNoValue)
         {
@@ -98,10 +98,10 @@ public static class SlotEligibilityService
         return new PublisherSlotAcquisitionResult(bestSlot.SlotNumber);
     }
 
-    public static int? GetTradeSlotResult(Publisher publisher, MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers)
+    public static int? GetTradeSlotResult(Publisher publisher, LeagueOptions leagueOptions, MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers)
     {
-        var slots = publisher.GetPublisherSlots();
-        var openSlots = slots.Where(x => openSlotNumbers.Contains(x.SlotNumber)).OrderBy(x => x.SlotNumber).ToList();
+        var slots = publisher.GetPublisherSlots(leagueOptions);
+        var openSlots = slots.Where(x => x.CounterPick == masterGameYearWithCounterPick.CounterPick && openSlotNumbers.Contains(x.SlotNumber)).OrderBy(x => x.SlotNumber).ToList();
         if (!openSlots.Any())
         {
             return null;

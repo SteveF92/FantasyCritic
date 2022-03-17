@@ -94,7 +94,7 @@ public class LeagueMemberService
             bool userRemovable = !league.LeagueManager.Equals(user);
             foreach (var leagueYear in leagueYears)
             {
-                var publishersForYear = allPublishers.Where(x => x.LeagueYear.Year == leagueYear.Year);
+                var publishersForYear = allPublishers.Where(x => x.LeagueYearKey.Year == leagueYear.Year);
                 if (!publishersForYear.Any(x => x.User.Equals(user)))
                 {
                     //User did not play in this year, safe to remove.
@@ -229,9 +229,9 @@ public class LeagueMemberService
             var deletePublisher = allPublishers.SingleOrDefault(x => x.User.Id == removeUser.Id);
             if (deletePublisher != null)
             {
-                _logger.Warn($"Deleting publisher: {deletePublisher.PublisherID} from league: {deletePublisher.LeagueYear.League.LeagueID} " +
-                             $"in year: {deletePublisher.LeagueYear.Year}");
-                await _fantasyCriticRepo.FullyRemovePublisher(deletePublisher, allPublishers);
+                _logger.Warn($"Deleting publisher: {deletePublisher.PublisherID} from league: {deletePublisher.LeagueYearKey.LeagueID} " +
+                             $"in year: {deletePublisher.LeagueYearKey.Year}");
+                await _fantasyCriticRepo.FullyRemovePublisher(leagueYear.Value, deletePublisher);
             }
         }
 

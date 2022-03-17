@@ -100,7 +100,7 @@ public class FantasyCriticService
             return Result.Failure("That scoring mode is no longer supported.");
         }
 
-        IReadOnlyList<Publisher> publishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+        IReadOnlyList<Publisher> publishers = leagueYear.Publishers;
 
         int maxStandardGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick)).DefaultIfEmpty(0).Max();
         int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).DefaultIfEmpty(0).Max();
@@ -163,7 +163,7 @@ public class FantasyCriticService
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.PlayStatus, eligibilityOverrides,
-            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser);
+            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers);
 
         var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
         var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.League.LeagueManager.Id);
@@ -178,10 +178,9 @@ public class FantasyCriticService
         return Result.Success();
     }
 
-    private static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(EditLeagueYearParameters parameters, Maybe<LeagueYear> leagueYear,
-        IReadOnlyList<Publisher> publishers)
+    private static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(EditLeagueYearParameters parameters, LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
     {
-        var slotCountShift = parameters.StandardGames - leagueYear.Value.Options.StandardGames;
+        var slotCountShift = parameters.StandardGames - leagueYear.Options.StandardGames;
         Dictionary<Guid, int> finalSlotAssignments = new Dictionary<Guid, int>();
         if (slotCountShift == 0)
         {
@@ -191,7 +190,7 @@ public class FantasyCriticService
         foreach (var publisher in publishers)
         {
             Dictionary<Guid, int> slotAssignmentsForPublisher = new Dictionary<Guid, int>();
-            var slots = publisher.GetPublisherSlots();
+            var slots = publisher.GetPublisherSlots(leagueYear.Options);
             var filledNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasValue).ToList();
 
             int normalSlotNumber = 0;
@@ -248,25 +247,27 @@ public class FantasyCriticService
         Dictionary<Guid, PublisherGameCalculatedStats> publisherGameCalculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
         IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
         IReadOnlyList<Publisher> allPublishersForYear = await _fantasyCriticRepo.GetAllPublishersForYear(year, leagueYears);
+        var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
 
         var currentDate = _clock.GetToday();
         Dictionary<LeagueYearKey, FantasyCriticUser> winningUsers = new Dictionary<LeagueYearKey, FantasyCriticUser>();
-        var publishersByLeagueYear = allPublishersForYear.GroupBy(x => x.LeagueYear.Key);
-        foreach (var publishersForLeagueYear in publishersByLeagueYear)
+        var publishersByYear = allPublishersForYear.GroupBy(x => x.LeagueYearKey.Year);
+        foreach (var publishersForYear in publishersByYear)
         {
             decimal highestPoints = 0m;
-            foreach (var publisher in publishersForLeagueYear)
+            foreach (var publisher in publishersForYear)
             {
+                var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
                 decimal totalPointsForPublisher = 0m;
-                var slots = publisher.GetPublisherSlots().Where(x => x.PublisherGame.HasValue).ToList();
+                var slots = publisher.GetPublisherSlots(leagueYear.Options).Where(x => x.PublisherGame.HasValue).ToList();
                 foreach (var publisherSlot in slots)
                 {
                     //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
                     var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(year);
-                    var gameIsEligible = publisherSlot.SlotIsValid(publisher.LeagueYear);
+                    var gameIsEligible = publisherSlot.SlotIsValid(leagueYear);
                     var pointsShouldCount = gameIsEligible || ineligiblePointsShouldCount;
 
-                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, publisher.LeagueYear.Options.ScoringSystem, currentDate);
+                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     publisherGameCalculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
                     if (fantasyPoints.HasValue)
@@ -275,10 +276,10 @@ public class FantasyCriticService
                     }
                 }
 
-                if (totalPointsForPublisher > highestPoints && publisher.LeagueYear.WinningUser.HasNoValue)
+                if (totalPointsForPublisher > highestPoints && leagueYear.WinningUser.HasNoValue)
                 {
                     highestPoints = totalPointsForPublisher;
-                    winningUsers[publisher.LeagueYear.Key] = publisher.User;
+                    winningUsers[publisher.LeagueYearKey] = publisher.User;
                 }
             }
         }
@@ -291,19 +292,18 @@ public class FantasyCriticService
         Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
 
         var currentDate = _clock.GetToday();
-        var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
-        foreach (var publisher in publishersInLeague)
+        foreach (var publisher in leagueYear.Publishers)
         {
-            var slots = publisher.GetPublisherSlots();
+            var slots = publisher.GetPublisherSlots(leagueYear.Options);
             var slotsThatHaveGames = slots.Where(x => x.PublisherGame.HasValue).ToList();
             foreach (var publisherSlot in slotsThatHaveGames)
             {
                 //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
                 var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
-                var gameIsEligible = publisherSlot.SlotIsValid(publisher.LeagueYear);
+                var gameIsEligible = publisherSlot.SlotIsValid(leagueYear);
                 var pointsShouldCount = gameIsEligible || ineligiblePointsShouldCount;
 
-                decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, publisher.LeagueYear.Options.ScoringSystem, currentDate);
+                decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
                 var stats = new PublisherGameCalculatedStats(fantasyPoints);
                 calculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
             }
@@ -373,7 +373,7 @@ public class FantasyCriticService
             .Concat(leaguesAndDropRequests.Where(x => x.Value.Any()).Select(x => x.Key))
             .Distinct().Select(x => x.Key).ToHashSet();
 
-        var publishersInLeagues = allPublishersForYear.Where(x => onlyLeaguesWithActions.Contains(x.LeagueYear.Key));
+        var publishersInLeagues = allPublishersForYear.Where(x => onlyLeaguesWithActions.Contains(x.LeagueYearKey));
 
         var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
@@ -591,10 +591,10 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, previousYear);
     }
 
-    public async Task<Result> ProposeTrade(Publisher proposer, Guid counterPartyPublisherID, IReadOnlyList<Guid> proposerPublisherGameIDs,
+    public async Task<Result> ProposeTrade(LeagueYear leagueYear, Publisher proposer, Guid counterPartyPublisherID, IReadOnlyList<Guid> proposerPublisherGameIDs,
         IReadOnlyList<Guid> counterPartyPublisherGameIDs, uint proposerBudgetSendAmount, uint counterPartyBudgetSendAmount, string message)
     {
-        if (proposer.LeagueYear.Options.TradingSystem.Equals(TradingSystem.NoTrades))
+        if (leagueYear.Options.TradingSystem.Equals(TradingSystem.NoTrades))
         {
             return Result.Failure("Trades are not enabled for this league year.");
         }
@@ -626,7 +626,7 @@ public class FantasyCriticService
         }
         var counterParty = counterPartyResult.Value;
 
-        if (!proposer.LeagueYear.Key.Equals(counterParty.LeagueYear.Key))
+        if (!leagueYear.Key.Equals(counterParty.LeagueYearKey))
         {
             return Result.Failure("That publisher is not in your league.");
         }
@@ -665,7 +665,7 @@ public class FantasyCriticService
             return Result.Failure("All games in a trade must be linked to a master game.");
         }
 
-        Trade trade = new Trade(Guid.NewGuid(), proposer, counterParty, proposerPublisherGamesWithMasterGames,
+        Trade trade = new Trade(Guid.NewGuid(), leagueYear, proposer, counterParty, proposerPublisherGamesWithMasterGames,
             counterPartyPublisherGamesWithMasterGames,
             proposerBudgetSendAmount, counterPartyBudgetSendAmount, message, _clock.GetCurrentInstant(), null, null,
             new List<TradeVote>(), TradeStatus.Proposed);

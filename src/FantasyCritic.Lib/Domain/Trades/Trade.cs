@@ -6,12 +6,13 @@ namespace FantasyCritic.Lib.Domain.Trades;
 
 public class Trade
 {
-    public Trade(Guid tradeID, Publisher proposer, Publisher counterParty, IEnumerable<MasterGameYearWithCounterPick> proposerMasterGames,
+    public Trade(Guid tradeID, LeagueYear leagueYear, Publisher proposer, Publisher counterParty, IEnumerable<MasterGameYearWithCounterPick> proposerMasterGames,
         IEnumerable<MasterGameYearWithCounterPick> counterPartyMasterGames, uint proposerBudgetSendAmount, uint counterPartyBudgetSendAmount,
         string message, Instant proposedTimestamp, Instant? acceptedTimestamp, Instant? completedTimestamp,
         IEnumerable<TradeVote> tradeVotes, TradeStatus status)
     {
         TradeID = tradeID;
+        LeagueYear = leagueYear;
         Proposer = proposer;
         CounterParty = counterParty;
         ProposerMasterGames = proposerMasterGames.ToList();
@@ -27,6 +28,7 @@ public class Trade
     }
 
     public Guid TradeID { get; }
+    public LeagueYear LeagueYear { get; }
     public Publisher Proposer { get; }
     public Publisher CounterParty { get; }
     public IReadOnlyList<MasterGameYearWithCounterPick> ProposerMasterGames { get; }
@@ -47,7 +49,7 @@ public class Trade
             return "One of the publishers involved in this trade no longer exists.";
         }
 
-        if (Proposer.LeagueYear.Options.TradingSystem.Equals(TradingSystem.NoTrades))
+        if (LeagueYear.Options.TradingSystem.Equals(TradingSystem.NoTrades))
         {
             return "Trades are not enabled for this league year.";
         }
@@ -77,8 +79,8 @@ public class Trade
             return $"{CounterParty.PublisherName} no longer has all of the games involved in this trade.";
         }
 
-        var totalNumberStandardGameSlotsForLeague = Proposer.LeagueYear.Options.StandardGames;
-        var totalNumberCounterPickSlotsForLeague = Proposer.LeagueYear.Options.CounterPicks;
+        var totalNumberStandardGameSlotsForLeague = LeagueYear.Options.StandardGames;
+        var totalNumberCounterPickSlotsForLeague = LeagueYear.Options.CounterPicks;
 
         var resultingProposerStandardGames = GetResultingGameCount(Proposer, ProposerMasterGames, CounterPartyMasterGames, false);
         var resultingCounterPartyStandardGames = GetResultingGameCount(CounterParty, CounterPartyMasterGames, ProposerMasterGames, false);
@@ -213,8 +215,8 @@ public class Trade
             newlyOpenCounterPartySlotNumbers.Add(new PotentialPublisherSlot(existingPublisherGame.SlotNumber, game.CounterPick));
         }
 
-        var alreadyOpenProposerSlotNumbers = Proposer.GetPublisherSlots().Where(x => x.PublisherGame.HasNoValue).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
-        var alreadyOpenCounterPartySlotNumbers = CounterParty.GetPublisherSlots().Where(x => x.PublisherGame.HasNoValue).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
+        var alreadyOpenProposerSlotNumbers = Proposer.GetPublisherSlots(LeagueYear.Options).Where(x => x.PublisherGame.HasNoValue).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
+        var alreadyOpenCounterPartySlotNumbers = CounterParty.GetPublisherSlots(LeagueYear.Options).Where(x => x.PublisherGame.HasNoValue).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
         var allOpenProposerSlotNumbers = alreadyOpenProposerSlotNumbers.Concat(newlyOpenProposerSlotNumbers).Distinct().OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
         var allOpenCounterPartySlotNumbers = alreadyOpenCounterPartySlotNumbers.Concat(newlyOpenCounterPartySlotNumbers).Distinct().OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
 
@@ -222,9 +224,9 @@ public class Trade
         foreach (var game in ProposerMasterGames)
         {
             var existingPublisherGame = proposerGameDictionary[game];
-            var eligibilityFactors = CounterParty.LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
+            var eligibilityFactors = LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
             var openSlotNumbers = allOpenCounterPartySlotNumbers.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
-            var slotResult = SlotEligibilityService.GetTradeSlotResult(CounterParty, game, eligibilityFactors, openSlotNumbers);
+            var slotResult = SlotEligibilityService.GetTradeSlotResult(CounterParty, LeagueYear.Options, game, eligibilityFactors, openSlotNumbers);
             if (!slotResult.HasValue)
             {
                 return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");
@@ -238,9 +240,9 @@ public class Trade
         foreach (var game in CounterPartyMasterGames)
         {
             var existingPublisherGame = counterPartyGameDictionary[game];
-            var eligibilityFactors = Proposer.LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
+            var eligibilityFactors = LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
             var openSlotNumbers = allOpenProposerSlotNumbers.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
-            var slotResult = SlotEligibilityService.GetTradeSlotResult(Proposer, game, eligibilityFactors, openSlotNumbers);
+            var slotResult = SlotEligibilityService.GetTradeSlotResult(Proposer, LeagueYear.Options, game, eligibilityFactors, openSlotNumbers);
             if (!slotResult.HasValue)
             {
                 return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");
