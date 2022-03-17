@@ -86,9 +86,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import axios from 'axios';
-import moment from 'moment';
 import MasterGameDetails from '@/components/masterGameDetails';
 
 export default {
@@ -159,7 +157,7 @@ export default {
     this.fetchMasterGameYears();
   },
   watch: {
-    $route(to, from) {
+    $route() {
       this.fetchMasterGame();
     }
   }

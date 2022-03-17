@@ -141,7 +141,7 @@ export default {
           this.leagueYear = response.data;
           this.selectedYear = this.leagueYear.year;
         })
-        .catch((returnedError) => {});
+        .catch(() => {});
     },
     deleteMessage(message) {
       var model = {
@@ -151,10 +151,10 @@ export default {
       };
       axios
         .post('/api/leagueManager/DeleteManagerMessage', model)
-        .then((response) => {
+        .then(() => {
           this.fetchLeagueYear();
         })
-        .catch((response) => {});
+        .catch(() => {});
     }
   },
   mounted() {

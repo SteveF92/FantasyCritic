@@ -139,7 +139,7 @@ export default {
         .then((response) => {
           this.myRequests = response.data;
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     sendMasterGameChangeRequestRequest() {
       if (!this.requestNote && this.openCriticLink) {
@@ -153,7 +153,7 @@ export default {
       };
       axios
         .post('/api/game/CreateMasterGameChangeRequest', request)
-        .then((response) => {
+        .then(() => {
           this.showSent = true;
           window.scroll({
             top: 0,
@@ -178,11 +178,11 @@ export default {
       };
       axios
         .post('/api/game/DeleteMasterGameChangeRequest', model)
-        .then((response) => {
+        .then(() => {
           this.showDeleted = true;
           this.fetchMyRequests();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     dismissRequest(request) {
       let model = {
@@ -190,10 +190,10 @@ export default {
       };
       axios
         .post('/api/game/DismissMasterGameChangeRequest', model)
-        .then((response) => {
+        .then(() => {
           this.fetchMyRequests();
         })
-        .catch((response) => {});
+        .catch(() => {});
     },
     fetchMasterGame(masterGameID) {
       axios
