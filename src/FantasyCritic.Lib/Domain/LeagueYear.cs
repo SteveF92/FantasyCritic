@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
@@ -8,6 +9,8 @@ public class LeagueYear : IEquatable<LeagueYear>
 {
     private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverridesDictionary;
     private readonly IReadOnlyDictionary<MasterGame, TagOverride> _tagOverridesDictionary;
+
+    private readonly Maybe<Publisher> _managerPublisher;
 
     public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus,
         IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
@@ -24,6 +27,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         DraftStartedTimestamp = draftStartedTimestamp;
         WinningUser = winningUser;
         Publishers = publishers.ToList();
+        _managerPublisher = Maybe.From(Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id));
     }
 
     public League League { get; }
@@ -88,6 +92,22 @@ public class LeagueYear : IEquatable<LeagueYear>
         }
 
         return tagOverride.Tags;
+    }
+
+    public Maybe<Publisher> GetManagerPublisher()
+    {
+        return _managerPublisher;
+    }
+
+    public Maybe<Publisher> GetUserPublisher(FantasyCriticUser user)
+    {
+        var userPublisher = Publishers.SingleOrDefault(x => x.User.Id == user.Id);
+        return Maybe<Publisher>.From(userPublisher);
+    }
+
+    public IReadOnlyList<Publisher> GetAllPublishersExcept(Publisher publisher)
+    {
+        return Publishers.Where(x => x.PublisherID != publisher.PublisherID).ToList();
     }
 
     public bool Equals(LeagueYear other)

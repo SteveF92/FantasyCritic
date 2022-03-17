@@ -286,7 +286,7 @@ public class DraftService
         }
         else if (draftPhase.Equals(DraftPhase.CounterPicks))
         {
-            var otherPublisherGames = updatedLeagueYear.Publishers.Where(x => x.PublisherID != nextPublisher.Value.PublisherID)
+            var otherPublisherGames = updatedLeagueYear.GetAllPublishersExcept(nextPublisher.Value)
                 .SelectMany(x => x.PublisherGames)
                 .Where(x => !x.CounterPick)
                 .Where(x => x.MasterGame.HasValue);
@@ -360,8 +360,7 @@ public class DraftService
 
     public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher)
     {
-        IReadOnlyList<Publisher> otherPublishers = leagueYear.Publishers.Where(x => x.PublisherID != nextDraftingPublisher.PublisherID).ToList();
-
+        IReadOnlyList<Publisher> otherPublishers = leagueYear.GetAllPublishersExcept(nextDraftingPublisher);
         IReadOnlyList<PublisherGame> gamesForYear = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
         IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick).ToList();
 
