@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
-import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
-import { required, email, min_value, max_value, min, max, integer } from 'vee-validate/dist/rules';
-import { messages } from 'vee-validate/dist/locale/en.json';
+import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
+import * as rules from 'vee-validate/dist/rules';
+import en from 'vee-validate/dist/locale/en.json';
 import VueGtag from 'vue-gtag';
 import VueClipboard from 'vue-clipboard2';
 
@@ -32,32 +32,25 @@ Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
 
 extend('required', {
-  ...required,
-  message: messages['required']
+  ...rules.required
 });
 extend('email', {
-  ...email,
-  message: messages['email']
+  ...rules.email
 });
 extend('min', {
-  ...min,
-  message: messages['min']
+  ...rules.min
 });
 extend('max', {
-  ...max,
-  message: messages['max']
+  ...rules.max
 });
 extend('min_value', {
-  ...min_value,
-  message: messages['min_value']
+  ...rules.min_value
 });
 extend('max_value', {
-  ...max_value,
-  message: messages['max_value']
+  ...rules.max_value
 });
 extend('integer', {
-  ...integer,
-  message: messages['integer']
+  ...rules.integer
 });
 extend('password', {
   params: ['target'],
@@ -65,6 +58,10 @@ extend('password', {
     return value === target;
   },
   message: 'Entered passwords do not match'
+});
+
+localize({
+  en
 });
 
 Vue.use(
