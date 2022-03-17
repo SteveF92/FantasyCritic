@@ -37,15 +37,14 @@
       <template #cell(simpleProjectedFantasyPoints)="data">{{ data.item.simpleProjectedFantasyPoints | score(2) }}</template>
       <template #cell(advancedProjectedFantasyPoints)="data">{{ data.item.advancedProjectedFantasyPoints | score(2) }}</template>
       <template #cell(totalFantasyPoints)="data">{{ data.item.totalFantasyPoints | score(2) }}</template>
-      <template #cell(budget)="data">
-        <span v-if="data.item.publisher">{{ data.item.publisher.budget | money }}</span>
-      </template>
-      <template #cell(totalFantasyPoints)="data">{{ data.item.totalFantasyPoints | score(2) }}</template>
       <template #cell(gamesReleased)="data">
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesReleased }}</span>
       </template>
       <template #cell(gamesWillRelease)="data">
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesWillRelease }}</span>
+      </template>
+      <template #cell(budget)="data">
+        <span v-if="data.item.publisher">{{ data.item.publisher.budget | money }}</span>
       </template>
     </b-table>
   </div>
