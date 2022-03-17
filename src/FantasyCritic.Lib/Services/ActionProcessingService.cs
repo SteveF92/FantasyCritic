@@ -156,7 +156,7 @@ public class ActionProcessingService
                 }
             }
 
-            var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, leagueYear, publishersInLeagueYear, null, validConditionalDropSlot, false, false);
+            var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, null, validConditionalDropSlot, false, false);
             if (claimResult.NoSpaceError)
             {
                 noSpaceLeftBids.Add(activeBid);

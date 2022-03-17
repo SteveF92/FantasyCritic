@@ -50,8 +50,6 @@ public interface IFantasyCriticRepo
     Task<Maybe<Publisher>> GetPublisher(LeagueYear leagueYear, FantasyCriticUser user);
     Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID);
     Task CreatePublisher(Publisher publisher);
-    Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear);
-    Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> usersInLeague);
     Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, IReadOnlyList<LeagueYear> allLeagueYears, bool includeDeleted = false);
     Task AddPublisherGame(PublisherGame publisherGame);
     Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);

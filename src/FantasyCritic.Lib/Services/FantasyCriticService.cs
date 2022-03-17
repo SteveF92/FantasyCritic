@@ -165,7 +165,7 @@ public class FantasyCriticService
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.PlayStatus, eligibilityOverrides,
             tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers);
 
-        var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+        var allPublishers = leagueYear.Publishers;
         var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.League.LeagueManager.Id);
 
         var differenceString = options.GetDifferenceString(leagueYear.Options);
@@ -321,7 +321,7 @@ public class FantasyCriticService
     {
         await _fantasyCriticRepo.ManuallySetWillNotRelease(publisherGame, willNotRelease);
 
-        var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+        var allPublishers = leagueYear.Publishers;
         var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.League.LeagueManager.Id);
 
         string description;
@@ -345,7 +345,7 @@ public class FantasyCriticService
 
     public async Task<IReadOnlyList<LeagueActionProcessingSet>> GetLeagueActionProcessingSets(LeagueYear leagueYear)
     {
-        var publishersForLeagueYear = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+        var publishersForLeagueYear = leagueYear.Publishers;
         var processSets = await _interLeagueService.GetActionProcessingSets();
         var bidsForLeague = await _fantasyCriticRepo.GetProcessedPickupBids(leagueYear, publishersForLeagueYear);
         var dropsForLeague = await _fantasyCriticRepo.GetProcessedDropRequests(leagueYear, publishersForLeagueYear);
@@ -407,7 +407,7 @@ public class FantasyCriticService
         foreach (var year in league.Years)
         {
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
-            var publishers = await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear.Value);
+            var publishers = leagueYear.Value.Publishers;
             foreach (var publisher in publishers)
             {
                 await _fantasyCriticRepo.DeleteLeagueActions(publisher);
@@ -512,7 +512,7 @@ public class FantasyCriticService
             await _fantasyCriticRepo.SetEligibilityOverride(leagueYear, masterGame, eligible.Value);
         }
 
-        var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+        var allPublishers = leagueYear.Publishers;
         var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.League.LeagueManager.Id);
 
         string description;
@@ -546,7 +546,7 @@ public class FantasyCriticService
     public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
     {
         await _fantasyCriticRepo.SetTagOverride(leagueYear, masterGame, requestedTags);
-        var allPublishers = await _publisherService.GetPublishersInLeagueForYear(leagueYear);
+        var allPublishers = leagueYear.Publishers;
         var managerPublisher = allPublishers.Single(x => x.User.Id == leagueYear.League.LeagueManager.Id);
 
         if (requestedTags.Any())

@@ -47,17 +47,6 @@ public class PublisherService
         return _fantasyCriticRepo.SetAutoDraft(publisher, autoDraft);
     }
 
-    public async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear)
-    {
-        var users = await _leagueMemberService.GetUsersInLeague(leagueYear.League);
-        return await _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear, users);
-    }
-
-    public Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> users)
-    {
-        return _fantasyCriticRepo.GetPublishersInLeagueForYear(leagueYear, users);
-    }
-
     public Task<Maybe<Publisher>> GetPublisher(LeagueYear leagueYear, FantasyCriticUser user)
     {
         return _fantasyCriticRepo.GetPublisher(leagueYear, user);
