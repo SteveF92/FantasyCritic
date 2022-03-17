@@ -76,7 +76,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="request in myRequests">
+                <tr v-for="request in myRequests" :key="request.requestID">
                   <td>
                     <span><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
                   </td>

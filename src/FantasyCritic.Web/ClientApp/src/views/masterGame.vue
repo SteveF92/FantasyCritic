@@ -34,7 +34,7 @@
             <masterGameDetails :masterGame="masterGame"></masterGameDetails>
           </div>
 
-          <div v-for="masterGameYear in reversedMasterGameYears" class="text-well master-game-year-section">
+          <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-year-section">
             <h2>Stats for {{ masterGameYear.year }}</h2>
             <ul>
               <li>Drafted or picked up in {{ masterGameYear.eligiblePercentStandardGame | percent(1) }} of leagues where it is eligible.</li>
@@ -66,10 +66,10 @@
 
       <div class="row" v-if="masterGame.subGames && masterGame.subGames.length > 0">
         <h2>Sub Games (Episodes)</h2>
-        <div v-for="subGame in masterGame.subGames">
+        <div v-for="subGame in masterGame.subGames" :key="subGame.masterGameID">
           <h3>{{ subGame.gameName }}</h3>
           <p>
-            <strong>Release Date:</strong>
+            <span class="detail-label">Release Date:</span>
             <span v-if="subGame.releaseDate">{{ releaseDate(subGame) }}</span>
             <span v-else>{{ subGame.estimatedReleaseDate }} (Estimated)</span>
           </p>
@@ -164,6 +164,11 @@ export default {
 };
 </script>
 <style scoped>
+.detail-label {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
 .master-game-section {
   margin-top: 20px;
   margin-bottom: 20px;

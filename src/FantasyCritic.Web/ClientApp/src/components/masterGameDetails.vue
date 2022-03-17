@@ -2,12 +2,12 @@
   <div v-if="masterGame">
     <ul>
       <li>
-        <strong>Release Date:</strong>
+        <span class="detail-label">Release Date:</span>
         <span v-if="masterGame.releaseDate">{{ formatDate(masterGame.releaseDate) }}</span>
         <span v-else>{{ masterGame.estimatedReleaseDate }} (Estimated)</span>
       </li>
       <li v-if="masterGame.minimumReleaseDate && !masterGame.releaseDate">
-        <strong>Minimum Release Date:</strong>
+        <span class="detail-label">Minimum Release Date:</span>
         <span v-if="masterGame.minimumReleaseDate">{{ formatDate(masterGame.minimumReleaseDate) }}</span>
         <font-awesome-icon
           color="white"
@@ -16,7 +16,7 @@
           v-b-popover.hover="'Minimum Release Date is our attempt at defining the \'earlist possible release date\' based on the above estimate from the makers of the game.'" />
       </li>
       <li v-if="masterGame.maximumReleaseDate && !masterGame.releaseDate">
-        <strong>Maximum Release Date:</strong>
+        <span class="detail-label">Maximum Release Date:</span>
         <span v-if="masterGame.maximumReleaseDate">{{ formatDate(masterGame.maximumReleaseDate) }}</span>
         <font-awesome-icon
           color="white"
@@ -25,26 +25,26 @@
           v-b-popover.hover="'Maximum Release Date is our attempt at defining the \'latest possible release date\' based on the above estimate from the makers of the game.'" />
       </li>
       <li v-if="masterGame.earlyAccessReleaseDate">
-        <strong>Early Access Release Date:</strong>
+        <span class="detail-label">Early Access Release Date:</span>
         <span v-if="masterGame.earlyAccessReleaseDate">{{ formatDate(masterGame.earlyAccessReleaseDate) }}</span>
       </li>
       <li v-if="masterGame.internationalReleaseDate">
-        <strong>International Release Date:</strong>
+        <span class="detail-label">International Release Date:</span>
         <span v-if="masterGame.internationalReleaseDate">{{ formatDate(masterGame.internationalReleaseDate) }}</span>
       </li>
       <li v-if="masterGame.announcementDate">
-        <strong>Announcement Date:</strong>
+        <span class="detail-label">Announcement Date:</span>
         <span v-if="masterGame.announcementDate">{{ formatDate(masterGame.announcementDate) }}</span>
       </li>
       <li v-if="masterGame.delayContention">
-        <strong>Delay In Contention:</strong>
+        <span class="detail-label">Delay In Contention:</span>
         There are very credible reports that this game has been delayed and therefore will not release this year. The game is still counted as a "will release" game for drop purposes, but it cannot be
         counter picked, just like a "will not release" game cannot be counter picked.
       </li>
       <li>
         <label v-if="masterGame.averagedScore">This is an episodic game. We have caluclated an average score.</label>
         <div>
-          <strong>Critic Score:</strong>
+          <span class="detail-label">Critic Score:</span>
           {{ masterGame.criticScore | score(2) }}
           <span v-if="masterGame.averagedScore">(Averaged Score)</span>
         </div>
@@ -59,8 +59,8 @@
     </ul>
     <div v-if="masterGame.tags && masterGame.tags.length > 0" class="long-tag-list">
       <h4>Tags</h4>
-      <span v-for="(tag, index) in masterGame.tags">
-        <masterGameTagBadge :tagName="masterGame.tags[index]"></masterGameTagBadge>
+      <span v-for="tag in masterGame.tags" :key="tag">
+        <masterGameTagBadge :tagName="tag"></masterGameTagBadge>
       </span>
     </div>
     <div v-show="masterGame.notes">
@@ -92,7 +92,12 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
+.detail-label {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
 .date-info {
   margin-left: 5px;
 }

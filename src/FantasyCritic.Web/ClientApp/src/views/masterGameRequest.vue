@@ -86,42 +86,42 @@
           </form>
         </ValidationObserver>
       </div>
-    </div>
-    <div v-if="myRequests.length !== 0">
-      <div class="row">
-        <h3>My Current Requests</h3>
-      </div>
-      <div class="row">
-        <table class="table table-sm table-responsive-sm table-bordered table-striped">
-          <thead>
-            <tr class="bg-primary">
-              <th scope="col" class="game-column">Game Name</th>
-              <th scope="col">Response</th>
-              <th scope="col">Response Time</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="request in myRequests">
-              <td>
-                <span v-if="request.masterGame"><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
-                <span v-show="!request.masterGame">{{ request.gameName }}</span>
-              </td>
-              <td>
-                <span v-show="request.responseNote">{{ request.responseNote }}</span>
-                <span v-show="!request.responseNote">&lt;Pending&gt;</span>
-              </td>
-              <td>
-                <span v-show="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
-                <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
-              </td>
-              <td class="select-cell">
-                <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
-                <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div v-if="myRequests.length !== 0">
+        <div class="row">
+          <h3>My Current Requests</h3>
+        </div>
+        <div class="row">
+          <table class="table table-sm table-responsive-sm table-bordered table-striped">
+            <thead>
+              <tr class="bg-primary">
+                <th scope="col" class="game-column">Game Name</th>
+                <th scope="col">Response</th>
+                <th scope="col">Response Time</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="request in myRequests" :key="request.requestID">
+                <td>
+                  <span v-if="request.masterGame"><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
+                  <span v-show="!request.masterGame">{{ request.gameName }}</span>
+                </td>
+                <td>
+                  <span v-show="request.responseNote">{{ request.responseNote }}</span>
+                  <span v-show="!request.responseNote">&lt;Pending&gt;</span>
+                </td>
+                <td>
+                  <span v-show="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
+                  <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
+                </td>
+                <td class="select-cell">
+                  <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
+                  <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

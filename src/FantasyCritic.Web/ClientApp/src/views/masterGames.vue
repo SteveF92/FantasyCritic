@@ -31,7 +31,7 @@
             <template #first>
               <option value="">-- none --</option>
             </template>
-            <option v-for="league in myLeaguesForYear" v-bind:value="league">
+            <option v-for="league in myLeaguesForYear" :key="league.leagueID" v-bind:value="league">
               {{ league.leagueName }}
             </option>
           </b-form-select>

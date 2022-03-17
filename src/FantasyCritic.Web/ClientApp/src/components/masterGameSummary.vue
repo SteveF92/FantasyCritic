@@ -22,8 +22,8 @@
 
         <div v-if="masterGame.tags && masterGame.tags.length > 0" class="long-tag-list">
           <strong>Tags:</strong>
-          <span v-for="(tag, index) in masterGame.tags">
-            <masterGameTagBadge :tagName="masterGame.tags[index]"></masterGameTagBadge>
+          <span v-for="tag in masterGame.tags" :key="tag">
+            <masterGameTagBadge :tagName="tag"></masterGameTagBadge>
           </span>
         </div>
 

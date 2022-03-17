@@ -16,7 +16,7 @@
       </div>
 
       <div v-if="publisher.quartersWon" class="won-quarters">
-        <span v-for="quarter in publisher.quartersWon" class="badge badge-success">
+        <span v-for="quarter in publisher.quartersWon" :key="`${quarter.year}-${quarter.quarter}`" class="badge badge-success">
           <font-awesome-icon icon="crown" class="quarter-winner-crown" />
           {{ quarter.year }}-Q{{ quarter.quarter }} Winner
         </span>
