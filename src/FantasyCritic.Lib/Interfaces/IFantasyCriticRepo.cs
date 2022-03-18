@@ -15,7 +15,7 @@ public interface IFantasyCriticRepo
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction);
 
     Task<IReadOnlyList<League>> GetAllLeagues(bool includeDeleted = false);
-    Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league);
+    Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
     Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year);
     Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
     Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange);
@@ -46,11 +46,7 @@ public interface IFantasyCriticRepo
     Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
     Task TransferLeagueManager(League league, FantasyCriticUser newManager);
 
-    Task<Maybe<Publisher>> GetPublisher(Guid publisherID);
-    Task<Maybe<Publisher>> GetPublisher(LeagueYear leagueYear, FantasyCriticUser user);
-    Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID);
     Task CreatePublisher(Publisher publisher);
-    Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, IReadOnlyList<LeagueYear> allLeagueYears, bool includeDeleted = false);
     Task AddPublisherGame(PublisherGame publisherGame);
     Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
     Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame);

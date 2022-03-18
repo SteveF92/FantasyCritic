@@ -9,6 +9,7 @@ public class LeagueYear : IEquatable<LeagueYear>
 {
     private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverridesDictionary;
     private readonly IReadOnlyDictionary<MasterGame, TagOverride> _tagOverridesDictionary;
+    private readonly IReadOnlyDictionary<Guid, Publisher> _publisherDictionary;
 
     private readonly Maybe<Publisher> _managerPublisher;
 
@@ -26,7 +27,8 @@ public class LeagueYear : IEquatable<LeagueYear>
         _tagOverridesDictionary = TagOverrides.ToDictionary(x => x.MasterGame);
         DraftStartedTimestamp = draftStartedTimestamp;
         WinningUser = winningUser;
-        Publishers = publishers.ToList();
+
+        _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
         _managerPublisher = Maybe.From(Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id));
     }
 
@@ -39,7 +41,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public IReadOnlyList<TagOverride> TagOverrides { get; }
     public Instant? DraftStartedTimestamp { get; }
     public Maybe<FantasyCriticUser> WinningUser { get; }
-    public IReadOnlyList<Publisher> Publishers { get; }
+    public IReadOnlyList<Publisher> Publishers => _publisherDictionary.Values.ToList();
 
     public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 
@@ -108,6 +110,28 @@ public class LeagueYear : IEquatable<LeagueYear>
     public IReadOnlyList<Publisher> GetAllPublishersExcept(Publisher publisher)
     {
         return Publishers.Where(x => x.PublisherID != publisher.PublisherID).ToList();
+    }
+
+    public Maybe<Publisher> GetPublisherByID(Guid publisherID)
+    {
+        bool hasPublisher = _publisherDictionary.TryGetValue(publisherID, out var publisher);
+        if (!hasPublisher)
+        {
+            return Maybe<Publisher>.None;
+        }
+
+        return publisher;
+    }
+
+    public Publisher GetPublisherByOrFakePublisher(Guid publisherID)
+    {
+        bool hasPublisher = _publisherDictionary.TryGetValue(publisherID, out var publisher);
+        if (!hasPublisher)
+        {
+            return Publisher.GetFakePublisher(Key);
+        }
+
+        return publisher;
     }
 
     public bool Equals(LeagueYear other)

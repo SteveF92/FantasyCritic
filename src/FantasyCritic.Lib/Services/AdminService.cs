@@ -287,7 +287,7 @@ public class AdminService
         foreach (var supportedYear in supportedYears)
         {
             var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
-            var publishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears);
+            var publishers = leagueYears.SelectMany(x => x.Publishers);
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
             var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue).ToList();
             allGamesWithPoints.AddRange(gamesWithPoints);
@@ -344,7 +344,7 @@ public class AdminService
 
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
             var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
-            IReadOnlyList<Publisher> allPublishers = await _fantasyCriticRepo.GetAllPublishersForYear(supportedYear.Year, leagueYears);
+            IReadOnlyList<Publisher> allPublishers = leagueYears.SelectMany(x => x.Publishers).ToList();
             List<Publisher> publishersInCompleteLeagues = new List<Publisher>();
             foreach (var publisher in allPublishers)
             {

@@ -71,12 +71,12 @@ public class LeagueMemberService
 
     public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(League league)
     {
-        return _fantasyCriticRepo.GetUsersInLeague(league);
+        return _fantasyCriticRepo.GetUsersInLeague(league.LeagueID);
     }
 
     public async Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league)
     {
-        var usersInLeague = await _fantasyCriticRepo.GetUsersInLeague(league);
+        var usersInLeague = await _fantasyCriticRepo.GetUsersInLeague(league.LeagueID);
 
         List<LeagueYear> leagueYears = new List<LeagueYear>();
         List<Publisher> allPublishers = new List<Publisher>();

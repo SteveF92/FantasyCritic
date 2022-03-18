@@ -54,11 +54,6 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetLeagueYears(year);
     }
 
-    public Task<IReadOnlyList<Publisher>> GetAllPublishersForYear(int year, IReadOnlyList<LeagueYear> allLeagueYears)
-    {
-        return _fantasyCriticRepo.GetAllPublishersForYear(year, allLeagueYears);
-    }
-
     public async Task<Result<League>> CreateLeague(LeagueCreationParameters parameters)
     {
         LeagueOptions options = new LeagueOptions(parameters);
@@ -243,7 +238,7 @@ public class FantasyCriticService
     {
         Dictionary<Guid, PublisherGameCalculatedStats> publisherGameCalculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
         IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
-        IReadOnlyList<Publisher> allPublishersForYear = await _fantasyCriticRepo.GetAllPublishersForYear(year, leagueYears);
+        IReadOnlyList<Publisher> allPublishersForYear = leagueYears.SelectMany(x => x.Publishers).ToList();
         var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
 
         var currentDate = _clock.GetToday();
@@ -428,7 +423,7 @@ public class FantasyCriticService
             await _fantasyCriticRepo.DeleteLeagueYear(leagueYear);
         }
 
-        var users = await _fantasyCriticRepo.GetUsersInLeague(league);
+        var users = await _fantasyCriticRepo.GetUsersInLeague(league.LeagueID);
         foreach (var user in users)
         {
             await _fantasyCriticRepo.RemovePlayerFromLeague(league, user);
@@ -609,7 +604,7 @@ public class FantasyCriticService
             return Result.Failure("You must receive something.");
         }
 
-        var counterPartyResult = await _publisherService.GetPublisher(counterPartyPublisherID);
+        var counterPartyResult = leagueYear.GetPublisherByID(counterPartyPublisherID);
         if (counterPartyResult.HasNoValue)
         {
             return Result.Failure("That publisher does not exist");

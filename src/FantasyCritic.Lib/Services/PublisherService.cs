@@ -47,21 +47,6 @@ public class PublisherService
         return _fantasyCriticRepo.SetAutoDraft(publisher, autoDraft);
     }
 
-    public Task<Maybe<Publisher>> GetPublisher(LeagueYear leagueYear, FantasyCriticUser user)
-    {
-        return _fantasyCriticRepo.GetPublisher(leagueYear, user);
-    }
-
-    public Task<Maybe<Publisher>> GetPublisher(Guid publisherID)
-    {
-        return _fantasyCriticRepo.GetPublisher(publisherID);
-    }
-
-    public Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherGameID)
-    {
-        return _fantasyCriticRepo.GetPublisherGame(publisherGameID);
-    }
-
     public async Task<Result> RemovePublisherGame(LeagueYearPublisherPair publisherPair, PublisherGame publisherGame)
     {
         var now = _clock.GetCurrentInstant();
