@@ -559,9 +559,9 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetManagerMessages(leagueYear);
     }
 
-    public Task DeleteManagerMessage(Guid messageID)
+    public Task<Result> DeleteManagerMessage(LeagueYear leagueYear, Guid messageID)
     {
-        return _fantasyCriticRepo.DeleteManagerMessage(messageID);
+        return _fantasyCriticRepo.DeleteManagerMessage(leagueYear, messageID);
     }
 
     public Task<Result> DismissManagerMessage(Guid messageID, Guid userID)

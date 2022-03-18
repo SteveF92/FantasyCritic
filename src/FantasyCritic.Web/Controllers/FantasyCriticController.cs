@@ -12,7 +12,23 @@ public abstract class FantasyCriticController : ControllerBase
         _userManager = userManager;
     }
 
-    protected async Task<Result<FantasyCriticUser>> GetCurrentUser()
+    protected async Task<(Maybe<FantasyCriticUser> ValidResult, Maybe<IActionResult> FailedResult)> GetCurrentUser()
+    {
+        if (!ModelState.IsValid)
+        {
+            return GetFailedResult<FantasyCriticUser>(BadRequest("Invalid request."));
+        }
+
+        var currentUserResult = await GetCurrentUserInternal();
+        if (currentUserResult.IsFailure)
+        {
+            return GetFailedResult<FantasyCriticUser>(BadRequest(currentUserResult.Error));
+        }
+
+        return (currentUserResult.Value, Maybe<IActionResult>.None);
+    }
+
+    private async Task<Result<FantasyCriticUser>> GetCurrentUserInternal()
     {
         var userID = User.Claims.SingleOrDefault(x => x.Type == "sub")?.Value;
         if (userID is null)
@@ -28,4 +44,6 @@ public abstract class FantasyCriticController : ControllerBase
 
         return Result.Success(currentUser);
     }
+
+    protected static (Maybe<T> ValidRecord, Maybe<IActionResult> FailedResult) GetFailedResult<T>(IActionResult failedResult) => (Maybe<T>.None, Maybe<IActionResult>.From(failedResult));
 }

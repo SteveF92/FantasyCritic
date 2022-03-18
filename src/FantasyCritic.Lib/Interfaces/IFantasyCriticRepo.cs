@@ -14,7 +14,6 @@ public interface IFantasyCriticRepo
     Task AddNewLeagueYear(League league, int year, LeagueOptions options);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction);
 
-    Task<IReadOnlyList<League>> GetAllLeagues(bool includeDeleted = false);
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
     Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year);
     Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
@@ -124,7 +123,7 @@ public interface IFantasyCriticRepo
     Task UpdateSystemWideValues(SystemWideValues systemWideValues);
     Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage domainMessage);
     Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear);
-    Task DeleteManagerMessage(Guid messageId);
+    Task<Result> DeleteManagerMessage(LeagueYear leagueYear, Guid messageID);
     Task<Result> DismissManagerMessage(Guid messageId, Guid userId);
     Task FinishYear(SupportedYear supportedYear);
     Task EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount);

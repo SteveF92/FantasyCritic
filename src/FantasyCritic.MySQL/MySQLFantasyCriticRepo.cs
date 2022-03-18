@@ -48,7 +48,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task<IReadOnlyList<League>> GetAllLeagues(bool includeDeleted = false)
+    private async Task<IReadOnlyList<League>> GetAllLeagues(bool includeDeleted = false)
     {
         using (var connection = new MySqlConnection(_connectionString))
         {
@@ -3140,12 +3140,26 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domainMessages;
     }
 
-    public async Task DeleteManagerMessage(Guid messageId)
+    public async Task<Result> DeleteManagerMessage(LeagueYear leagueYear, Guid messageId)
     {
+        string sql = "UPDATE tbl_league_managermessage SET Deleted = 1 WHERE MessageID = @messageId AND LeagueID = @leagueID AND Year = @year;";
+        var paramsObject = new
+        {
+            messageId,
+            leagueID = leagueYear.League.LeagueID,
+            year = leagueYear.Year
+        };
+
         using (var connection = new MySqlConnection(_connectionString))
         {
-            await connection.ExecuteAsync("UPDATE tbl_league_managermessage SET Deleted = 1 WHERE MessageID = @messageId;", new { messageId });
+            var rowsDeleted = await connection.ExecuteAsync(sql, paramsObject);
+            if (rowsDeleted != 1)
+            {
+                return Result.Failure("Invalid request");
+            }
         }
+
+        return Result.Success();
     }
 
     public async Task<Result> DismissManagerMessage(Guid messageId, Guid userId)
