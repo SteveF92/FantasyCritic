@@ -114,14 +114,15 @@ public class DraftService
         }
     }
 
-    public async Task UndoLastDraftAction(IReadOnlyList<Publisher> publishers)
+    public async Task UndoLastDraftAction(LeagueYear leagueYear)
     {
-        var publisherGames = publishers.SelectMany(x => x.PublisherGames);
+        var publisherGames = leagueYear.Publishers.SelectMany(x => x.PublisherGames);
         var newestGame = publisherGames.WhereMax(x => x.Timestamp).First();
 
-        var publisher = publishers.Single(x => x.PublisherGames.Select(y => y.PublisherGameID).Contains(newestGame.PublisherGameID));
+        var publisher = leagueYear.Publishers.Single(x => x.PublisherGames.Select(y => y.PublisherGameID).Contains(newestGame.PublisherGameID));
 
-        await _publisherService.RemovePublisherGame(publisher, newestGame);
+        var publisherPair = new LeagueYearPublisherPair(leagueYear, publisher);
+        await _publisherService.RemovePublisherGame(publisherPair, newestGame);
     }
 
     public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)

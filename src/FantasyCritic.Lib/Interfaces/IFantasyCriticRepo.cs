@@ -65,9 +65,9 @@ public interface IFantasyCriticRepo
     Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats);
     Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers);
 
-    Task FullyRemovePublisherGame(Publisher publisher, PublisherGame publisherGame);
+    Task FullyRemovePublisherGame(LeagueYearPublisherPair leagueYearPublisherPair, PublisherGame publisherGame);
 
-    Task<Result> ManagerRemovePublisherGame(Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
+    Task<Result> ManagerRemovePublisherGame(LeagueYearPublisherPair publisherPair, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
     Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
     Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease);
 

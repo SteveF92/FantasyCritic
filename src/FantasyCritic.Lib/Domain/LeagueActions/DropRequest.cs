@@ -51,4 +51,6 @@ public class DropRequest : IEquatable<DropRequest>
     {
         return new DropRequest(DropRequestID, Publisher, LeagueYear, MasterGame, Timestamp, success, processSetID);
     }
+
+    public LeagueYearPublisherPair GetLeagueYearPublisherPair() => new LeagueYearPublisherPair(LeagueYear, Publisher);
 }

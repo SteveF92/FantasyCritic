@@ -403,10 +403,11 @@ public class FantasyCriticService
             var publishers = leagueYear.Publishers;
             foreach (var publisher in publishers)
             {
+                var publisherPair = new LeagueYearPublisherPair(leagueYear, publisher);
                 await _fantasyCriticRepo.DeleteLeagueActions(publisher);
                 foreach (var game in publisher.PublisherGames)
                 {
-                    await _fantasyCriticRepo.FullyRemovePublisherGame(publisher, game);
+                    await _fantasyCriticRepo.FullyRemovePublisherGame(publisherPair, game);
                 }
 
                 var bids = await _fantasyCriticRepo.GetActivePickupBids(leagueYear, publisher);
