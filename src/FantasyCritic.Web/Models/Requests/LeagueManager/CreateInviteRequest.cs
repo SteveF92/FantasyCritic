@@ -10,21 +10,6 @@ public class CreateInviteRequest
     public string InviteDisplayName { get; set; }
     public int? InviteDisplayNumber { get; set; }
 
-    public bool IsValid()
-    {
-        if (IsDisplayNameInvite())
-        {
-            return true;
-        }
-
-        if (!string.IsNullOrWhiteSpace(InviteEmail))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     public bool IsDisplayNameInvite()
     {
         if (!string.IsNullOrWhiteSpace(InviteDisplayName) && InviteDisplayNumber != null)

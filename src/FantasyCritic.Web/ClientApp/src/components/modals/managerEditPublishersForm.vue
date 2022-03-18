@@ -77,6 +77,7 @@ export default {
       var model = {
         publisherID: this.editPublisher.publisherID,
         leagueID: this.leagueYear.leagueID,
+        year: this.leagueYear.year,
         publisherName: this.newPublisherName,
         budget: this.newBudget,
         freeGamesDropped: this.newFreeGamesDropped,

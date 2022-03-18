@@ -128,6 +128,7 @@ export default {
     removePublisher() {
       var model = {
         leagueID: this.leagueYear.leagueID,
+        year: this.leagueYear.year,
         publisherID: this.publisherToRemove.publisherID
       };
       axios
