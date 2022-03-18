@@ -55,10 +55,7 @@ public class ActionProcessingService
             foreach (var dropRequest in leagueYearGroup.Value)
             {
                 var affectedPublisher = publisherStateSet.GetPublisher(dropRequest.Publisher.PublisherID);
-                var publishersInLeague = publisherStateSet.GetPublishersInLeagueYear(leagueYearGroup.Key.Key);
-                var otherPublishersInLeague = publishersInLeague.Except(new List<Publisher>() { affectedPublisher });
-
-                var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, leagueYearGroup.Key, affectedPublisher, otherPublishersInLeague);
+                var dropResult = _gameAcquisitionService.CanDropGame(dropRequest, leagueYearGroup.Key, affectedPublisher);
                 if (dropResult.Result.IsSuccess)
                 {
                     successDrops.Add(dropRequest);
@@ -140,7 +137,6 @@ public class ActionProcessingService
         List<ValidPickupBid> validPickupBids = new List<ValidPickupBid>();
         foreach (var activeBid in nonDuplicateBids)
         {
-            var publishersInLeagueYear = publisherStateSet.GetPublishersInLeagueYear(leagueYear.Key);
             Publisher bidPublisher = publisherStateSet.GetPublisher(activeBid.Publisher.PublisherID);
             bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
             var gameRequest = new ClaimGameDomainRequest(leagueYear, bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
@@ -148,8 +144,7 @@ public class ActionProcessingService
             int? validConditionalDropSlot = null;
             if (activeBid.ConditionalDropPublisherGame.HasValue)
             {
-                var otherPublishersInLeague = publishersInLeagueYear.Except(new List<Publisher>() { bidPublisher });
-                activeBid.ConditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, leagueYear, bidPublisher, otherPublishersInLeague, processingTime);
+                activeBid.ConditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, leagueYear, bidPublisher, processingTime);
                 if (activeBid.ConditionalDropResult.Result.IsSuccess)
                 {
                     validConditionalDropSlot = activeBid.ConditionalDropPublisherGame.Value.SlotNumber;

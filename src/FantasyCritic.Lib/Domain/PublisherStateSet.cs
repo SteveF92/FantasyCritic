@@ -2,17 +2,13 @@ namespace FantasyCritic.Lib.Domain;
 public class PublisherStateSet
 {
     private readonly Dictionary<Guid, Publisher> _publisherDictionary;
-    private ILookup<LeagueYearKey, Publisher> _leagueYearLookup;
 
     public PublisherStateSet(IEnumerable<Publisher> publishers)
     {
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
-        _leagueYearLookup = _publisherDictionary.Values.ToLookup(x => x.LeagueYearKey);
     }
 
     public IReadOnlyList<Publisher> Publishers => _publisherDictionary.Values.ToList();
-
-    public IReadOnlyList<Publisher> GetPublishersInLeagueYear(LeagueYearKey key) => _leagueYearLookup[key].ToList();
 
     public Publisher GetPublisher(Guid publisherID)
     {
@@ -74,7 +70,6 @@ public class PublisherStateSet
     {
         var updatedPublisher = GetUpdatedPublisher(publisherToEdit, addGame, removeGame, budgetChange, dropType);
         _publisherDictionary[updatedPublisher.PublisherID] = updatedPublisher;
-        _leagueYearLookup = _publisherDictionary.Values.ToLookup(x => x.LeagueYearKey);
     }
 
     private static Publisher GetUpdatedPublisher(Publisher publisherToEdit, Maybe<PublisherGame> addGame, Maybe<PublisherGame> removeGame, int budgetChange, DropType? dropType)

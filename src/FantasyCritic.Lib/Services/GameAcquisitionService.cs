@@ -102,7 +102,7 @@ public class GameAcquisitionService
         return result;
     }
 
-    public DropResult CanDropGame(DropRequest request, LeagueYear leagueYear, Publisher publisher, IEnumerable<Publisher> otherPublishers)
+    public DropResult CanDropGame(DropRequest request, LeagueYear leagueYear, Publisher publisher)
     {
         List<ClaimError> dropErrors = new List<ClaimError>();
 
@@ -129,6 +129,7 @@ public class GameAcquisitionService
             return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."));
         }
 
+        var otherPublishers = leagueYear.GetAllPublishersExcept(publisher);
         bool gameWasCounterPicked = otherPublishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => x.CounterPick)
@@ -143,7 +144,7 @@ public class GameAcquisitionService
         return new DropResult(dropResult);
     }
 
-    public DropResult CanConditionallyDropGame(PickupBid request, LeagueYear leagueYear, Publisher publisher, IEnumerable<Publisher> otherPublishers, Instant? nextBidTime)
+    public DropResult CanConditionallyDropGame(PickupBid request, LeagueYear leagueYear, Publisher publisher, Instant? nextBidTime)
     {
         List<ClaimError> dropErrors = new List<ClaimError>();
 
@@ -177,6 +178,7 @@ public class GameAcquisitionService
             return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."));
         }
 
+        var otherPublishers = leagueYear.GetAllPublishersExcept(publisher);
         bool gameWasCounterPicked = otherPublishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => x.CounterPick)
@@ -482,10 +484,7 @@ public class GameAcquisitionService
         }
 
         DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, leagueYear, masterGame, _clock.GetCurrentInstant(), null, null);
-        var publishersInLeague = leagueYear.Publishers;
-        var otherPublishers = publishersInLeague.Except(new List<Publisher>() { publisher });
-
-        var dropResult = CanDropGame(dropRequest, leagueYear, publisher, otherPublishers);
+        var dropResult = CanDropGame(dropRequest, leagueYear, publisher);
         if (dropResult.Result.IsFailure)
         {
             return dropResult;
