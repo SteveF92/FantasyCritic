@@ -52,13 +52,12 @@ internal class LeagueYearEntity
     public string ScoringSystem { get; set; }
     public string TradingSystem { get; set; }
     public string PlayStatus { get; set; }
-    public Instant Timestamp { get; set; }
     public Instant? DraftStartedTimestamp { get; set; }
     public Guid? WinningUserID { get; set; }
 
     public LeagueYear ToDomain(League league, SupportedYear year, IEnumerable<EligibilityOverride> eligibilityOverrides,
         IEnumerable<TagOverride> tagOverrides, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-        Maybe<FantasyCriticUser> winningUser)
+        Maybe<FantasyCriticUser> winningUser, IEnumerable<Publisher> publishersInLeague)
     {
         DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
         PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
@@ -69,6 +68,6 @@ internal class LeagueYearEntity
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
             DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem);
 
-        return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides, tagOverrides, DraftStartedTimestamp, winningUser);
+        return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides, tagOverrides, DraftStartedTimestamp, winningUser, publishersInLeague);
     }
 }

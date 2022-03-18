@@ -12,8 +12,8 @@ public class TradeEntity
     public TradeEntity(Trade domain)
     {
         TradeID = domain.TradeID;
-        LeagueID = domain.Proposer.LeagueYear.League.LeagueID;
-        Year = domain.Proposer.LeagueYear.Year;
+        LeagueID = domain.LeagueYear.League.LeagueID;
+        Year = domain.LeagueYear.Year;
         ProposerPublisherID = domain.Proposer.PublisherID;
         CounterPartyPublisherID = domain.CounterParty.PublisherID;
         ProposerBudgetSendAmount = domain.ProposerBudgetSendAmount;
@@ -38,10 +38,10 @@ public class TradeEntity
     public Instant? CompletedTimestamp { get; set; }
     public string Status { get; set; }
 
-    public Trade ToDomain(Publisher proposer, Publisher counterParty, IEnumerable<MasterGameYearWithCounterPick> proposerMasterGames,
+    public Trade ToDomain(LeagueYear leagueYear, Publisher proposer, Publisher counterParty, IEnumerable<MasterGameYearWithCounterPick> proposerMasterGames,
         IEnumerable<MasterGameYearWithCounterPick> counterPartyMasterGames, IEnumerable<TradeVote> votes)
     {
-        return new Trade(TradeID, proposer, counterParty, proposerMasterGames, counterPartyMasterGames,
+        return new Trade(TradeID, leagueYear, proposer, counterParty, proposerMasterGames, counterPartyMasterGames,
             ProposerBudgetSendAmount, CounterPartyBudgetSendAmount, Message, ProposedTimestamp, AcceptedTimestamp, CompletedTimestamp,
             votes, TradeStatus.FromValue(Status));
     }
