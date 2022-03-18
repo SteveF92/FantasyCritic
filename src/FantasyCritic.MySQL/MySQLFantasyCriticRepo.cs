@@ -77,7 +77,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task<Maybe<LeagueYear>> GetLeagueYear(League requestLeague, int requestYear)
+    public async Task<LeagueYear> GetLeagueYear(League requestLeague, int requestYear)
     {
         var leagueTags = await GetLeagueYearTagEntities(requestLeague.LeagueID, requestYear);
         var specialGameSlots = await GetSpecialGameSlotEntities(requestLeague.LeagueID, requestYear);
@@ -98,7 +98,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             LeagueYearEntity yearEntity = await connection.QuerySingleOrDefaultAsync<LeagueYearEntity>(sql, queryObject);
             if (yearEntity == null)
             {
-                return Maybe<LeagueYear>.None;
+                throw new Exception($"League Year not found: {requestLeague.LeagueID} {requestYear}");
             }
 
             var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
@@ -220,7 +220,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task FullyRemovePublisherGame(PublisherGame publisherGame)
+    public async Task FullyRemovePublisherGame(Publisher publisher, PublisherGame publisherGame)
     {
         string sql = "delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;";
         using (var connection = new MySqlConnection(_connectionString))
@@ -234,13 +234,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                     await transaction.RollbackAsync();
                 }
 
-                await MakePublisherGameSlotsConsistent(publisherGame.PublisherID, connection, transaction);
+                await MakePublisherGameSlotsConsistent(publisher, connection, transaction);
                 await transaction.CommitAsync();
             }
         }
     }
 
-    public async Task<Result> ManagerRemovePublisherGame(PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction)
+    public async Task<Result> ManagerRemovePublisherGame(Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction)
     {
         string sql = "delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;";
         using (var connection = new MySqlConnection(_connectionString))
@@ -255,7 +255,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                     return Result.Failure("Removing game failed.");
                 }
 
-                await MakePublisherGameSlotsConsistent(publisherGame.PublisherID, connection, transaction);
+                await MakePublisherGameSlotsConsistent(publisher, connection, transaction);
                 await AddFormerPublisherGames(new List<FormerPublisherGame>() { formerPublisherGame }, connection, transaction);
                 await AddLeagueActions(new List<LeagueAction>() { leagueAction }, connection, transaction);
                 await transaction.CommitAsync();
@@ -406,7 +406,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             foreach (var bidEntity in bidEntities)
             {
                 var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
-                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear, publisherGameDictionary, formerPublisherGameDictionary);
+                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
                 var publisher = publisherDictionary[bidEntity.PublisherID];
                 PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
                 domainBids.Add(domain);
@@ -418,15 +418,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> leagueYears)
     {
-        var allPublishers = await GetAllPublishersForYear(year, leagueYears);
-        var publisherDictionary = allPublishers.ToDictionary(x => x.PublisherID);
+        var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
+        var allPublishersForYear = leagueYears.SelectMany(x => x.Publishers).ToList();
+        var publisherDictionary = allPublishersForYear.ToDictionary(x => x.PublisherID);
 
-        var publisherGameDictionary = allPublishers
+        var publisherGameDictionary = allPublishersForYear
             .SelectMany(x => x.PublisherGames)
             .Where(x => x.MasterGame.HasValue)
             .ToLookup(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
 
-        var formerPublisherGameDictionary = allPublishers
+        var formerPublisherGameDictionary = allPublishersForYear
             .SelectMany(x => x.FormerPublisherGames)
             .Where(x => x.PublisherGame.MasterGame.HasValue)
             .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame.Value.MasterGame.MasterGameID));
@@ -444,8 +445,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             {
                 var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
                 var publisher = publisherDictionary[bidEntity.PublisherID];
-                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, publisher.LeagueYear, publisherGameDictionary, formerPublisherGameDictionary);
-                PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, publisher.LeagueYear);
+                var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
+                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+                PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
                 domainBids.Add(domain);
             }
 
@@ -495,7 +497,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             foreach (var bidEntity in bidEntities)
             {
                 var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
-                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear, publisherGameDictionary, formerPublisherGameDictionary);
+                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
                 PickupBid domain = bidEntity.ToDomain(publisherDictionary[bidEntity.PublisherID], masterGame.Value, conditionalDropPublisherGame, leagueYear);
                 domainBids.Add(domain);
             }
@@ -506,7 +508,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears, bool processed)
     {
-        var leagueDictionary = allLeagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
+        var leagueYearDictionary = allLeagueYears.ToDictionary(x => x.Key);
+        var allPublishersForYear = allLeagueYears.SelectMany(x => x.Publishers).ToList();
         var publisherDictionary = allPublishersForYear.ToDictionary(x => x.PublisherID, y => y);
 
         var sql = "select * from vw_league_pickupbid where Year = @year and Successful is NULL and IsDeleted = 0";
@@ -535,8 +538,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             {
                 var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
                 var publisher = publisherDictionary[bidEntity.PublisherID];
-                var leagueYear = leagueDictionary[publisher.LeagueYear.League.LeagueID].Single(x => x.Year == year);
-                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear, publisherGameDictionary, formerPublisherGameDictionary);
+                var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
+                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
                 PickupBid domainPickup = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
                 pickupBidsByLeagueYear[leagueYear].Add(domainPickup);
             }
@@ -585,7 +588,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
             var publisher = await GetPublisher(dropRequestEntity.PublisherID);
             var masterGame = await _masterGameRepo.GetMasterGame(dropRequestEntity.MasterGameID);
-            var leagueYear = publisher.Value.LeagueYear;
+            var league = await GetLeagueByID(publisher.Value.LeagueYearKey.LeagueID);
+            var leagueYear = await GetLeagueYear(league.Value, publisher.Value.LeagueYearKey.Year);
 
             DropRequest domain = dropRequestEntity.ToDomain(publisher.Value, masterGame.Value, leagueYear);
             return domain;
@@ -838,7 +842,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
             var publisher = await GetPublisher(bidEntity.PublisherID);
             var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
-            var leagueYear = publisher.Value.LeagueYear;
+            var league = await GetLeagueByID(publisher.Value.LeagueYearKey.LeagueID);
+            var leagueYear = await GetLeagueYear(league.Value, publisher.Value.LeagueYearKey.Year);
 
             var publisherGameDictionary = publisher.Value.PublisherGames
                 .Where(x => x.MasterGame.HasValue)
@@ -848,7 +853,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 .Where(x => x.PublisherGame.MasterGame.HasValue)
                 .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame.Value.MasterGame.MasterGameID));
 
-            Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear, publisherGameDictionary, formerPublisherGameDictionary);
+            Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
 
             PickupBid domain = bidEntity.ToDomain(publisher.Value, masterGame.Value, conditionalDropPublisherGame, leagueYear);
             return domain;
@@ -1701,7 +1706,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var league = await GetLeagueByID(publisherEntity.LeagueID);
             var leagueYear = await GetLeagueYear(league.Value, publisherEntity.Year);
 
-            var domainPublisher = publisherEntity.ToDomain(leagueYear.Value, user, domainGames, domainFormerGames);
+            var domainPublisher = publisherEntity.ToDomain(leagueYear, user, domainGames, domainFormerGames);
             return domainPublisher;
         }
     }
@@ -1736,46 +1741,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             Maybe<MasterGameYear> masterGame = null;
             if (gameEntity.MasterGameID.HasValue)
             {
-                masterGame = await _masterGameRepo.GetMasterGameYear(gameEntity.MasterGameID.Value, publisher.Value.LeagueYear.Year);
-            }
-
-            PublisherGame publisherGame = gameEntity.ToDomain(masterGame);
-            return publisherGame;
-        }
-    }
-
-    public async Task<Maybe<PublisherGame>> GetPublisherGame(Guid publisherID, Guid masterGameID)
-    {
-        var query = new
-        {
-            publisherID,
-            masterGameID
-        };
-
-        using (var connection = new MySqlConnection(_connectionString))
-        {
-            PublisherGameEntity gameEntity = await connection.QueryFirstOrDefaultAsync<PublisherGameEntity>(
-                "select tbl_league_publishergame.* from tbl_league_publishergame " +
-                "join tbl_league_publisher on (tbl_league_publishergame.PublisherID = tbl_league_publisher.PublisherID) " +
-                "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
-                "where tbl_league_publisher.PublisherID = @publisherID and tbl_league_publishergame.MasterGameID = @masterGameID and IsDeleted = 0;",
-                query);
-
-            if (gameEntity is null)
-            {
-                return Maybe<PublisherGame>.None;
-            }
-
-            var publisher = await GetPublisher(gameEntity.PublisherID);
-            if (publisher.HasNoValue)
-            {
-                throw new Exception($"Publisher cannot be found: {gameEntity.PublisherID}");
-            }
-
-            Maybe<MasterGameYear> masterGame = null;
-            if (gameEntity.MasterGameID.HasValue)
-            {
-                masterGame = await _masterGameRepo.GetMasterGameYear(gameEntity.MasterGameID.Value, publisher.Value.LeagueYear.Year);
+                masterGame = await _masterGameRepo.GetMasterGameYear(gameEntity.MasterGameID.Value, publisher.Value.LeagueYearKey.Year);
             }
 
             PublisherGame publisherGame = gameEntity.ToDomain(masterGame);
@@ -1825,21 +1791,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task AddFormerPublisherGame(FormerPublisherGame formerPublisherGame)
-    {
-        FormerPublisherGameEntity entity = new FormerPublisherGameEntity(formerPublisherGame);
-
-        string sql =
-            "insert into tbl_league_formerpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-            "ManualWillNotRelease,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition,BidAmount,RemovedTimestamp,RemovedNote) VALUES " +
-            "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition,@BidAmount,@RemovedTimestamp,@RemovedNote);";
-        using (var connection = new MySqlConnection(_connectionString))
-        {
-            await connection.ExecuteAsync(sql, entity);
-        }
-    }
-
     public async Task CreateTrade(Trade trade)
     {
         var tradeEntity = new TradeEntity(trade);
@@ -1863,7 +1814,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear)
+    public async Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear)
     {
         string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @leagueID AND Year = @year;";
         string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
@@ -1891,11 +1842,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             List<Trade> domainTrades = new List<Trade>();
             foreach (var tradeEntity in tradeEntities)
             {
-                Publisher proposer = publishersInLeagueForYear.SingleOrDefault(x => x.PublisherID == tradeEntity.ProposerPublisherID) ??
-                                     Publisher.GetFakePublisher(leagueYear);
+                Publisher proposer = leagueYear.Publishers.SingleOrDefault(x => x.PublisherID == tradeEntity.ProposerPublisherID, Publisher.GetFakePublisher(leagueYear.Key));
 
-                Publisher counterParty = publishersInLeagueForYear.SingleOrDefault(x => x.PublisherID == tradeEntity.CounterPartyPublisherID) ??
-                                         Publisher.GetFakePublisher(leagueYear);
+                Publisher counterParty = leagueYear.Publishers.SingleOrDefault(
+                    x => x.PublisherID == tradeEntity.CounterPartyPublisherID,
+                    Publisher.GetFakePublisher(leagueYear.Key));
 
                 var components = componentLookup[tradeEntity.TradeID];
                 List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
@@ -1974,21 +1925,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             {
                 throw new Exception($"Trade has bad league: {tradeEntity.TradeID}|{tradeEntity.LeagueID}.");
             }
+
             var leagueYear = await GetLeagueYear(league.Value, tradeEntity.Year);
-            var publishersInLeagueForYear = await GetPublishersInLeagueForYear(leagueYear.Value);
-
-            Publisher proposer = publishersInLeagueForYear.SingleOrDefault(x => x.PublisherID == tradeEntity.ProposerPublisherID) ??
-                                 Publisher.GetFakePublisher(leagueYear.Value);
-
-            Publisher counterParty = publishersInLeagueForYear.SingleOrDefault(x => x.PublisherID == tradeEntity.CounterPartyPublisherID) ??
-                                     Publisher.GetFakePublisher(leagueYear.Value);
+            Publisher proposer = leagueYear.Publishers.SingleOrDefault(x => x.PublisherID == tradeEntity.ProposerPublisherID, Publisher.GetFakePublisher(leagueYear.Key));
+            Publisher counterParty = leagueYear.Publishers.SingleOrDefault(x => x.PublisherID == tradeEntity.CounterPartyPublisherID, Publisher.GetFakePublisher(leagueYear.Key));
 
             var components = componentLookup[tradeEntity.TradeID];
             List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
             List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
             foreach (var component in components)
             {
-                var masterGameYear = await _masterGameRepo.GetMasterGameYear(component.MasterGameID, leagueYear.Value.Year);
+                var masterGameYear = await _masterGameRepo.GetMasterGameYear(component.MasterGameID, leagueYear.Key.Year);
                 if (masterGameYear.HasNoValue)
                 {
                     throw new Exception($"Invalid master game when getting trade: {tradeEntity.TradeID}");
@@ -2099,25 +2046,21 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 await DeletePublisherGames(flatRemovedPublisherGames, connection, transaction);
                 await AddFormerPublisherGames(executedTrade.RemovedPublisherGames, connection, transaction);
                 await AddPublisherGames(executedTrade.AddedPublisherGames, connection, transaction);
-
-                var allPublisherIDsToAdjust = executedTrade.UpdatedPublishers.Select(x => x.PublisherID);
-                await MakePublisherGameSlotsConsistent(allPublisherIDsToAdjust, connection, transaction);
+                await MakePublisherGameSlotsConsistent(executedTrade.UpdatedPublishers, connection, transaction);
 
                 await transaction.CommitAsync();
             }
         }
     }
 
-    private Task MakePublisherGameSlotsConsistent(Guid publisherID, MySqlConnection connection, MySqlTransaction transaction)
+    private Task MakePublisherGameSlotsConsistent(Publisher publisher, MySqlConnection connection, MySqlTransaction transaction)
     {
-        return MakePublisherGameSlotsConsistent(new List<Guid>() { publisherID }, connection, transaction);
+        return MakePublisherGameSlotsConsistent(new List<Publisher>() { publisher }, connection, transaction);
     }
 
-    private async Task MakePublisherGameSlotsConsistent(IEnumerable<Guid> publisherIDs, MySqlConnection connection, MySqlTransaction transaction)
+    private async Task MakePublisherGameSlotsConsistent(IEnumerable<Publisher> publishers, MySqlConnection connection, MySqlTransaction transaction)
     {
-        var publishers = await GetPublishers(publisherIDs, connection, transaction);
-        var specialSlotPublisherIDs = Enumerable.ToHashSet(publishers.Where(x => x.LeagueYear.Options.HasSpecialSlots())
-            .Select(x => x.PublisherID));
+        var specialSlotPublisherIDs = publishers.Where(x => x.LeagueYear.Options.HasSpecialSlots()).Select(x => x.PublisherID).ToHashSet();
 
         int tempSlotNumber = 1000;
         var preRunUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
@@ -2178,7 +2121,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 if (!foundGame)
                 {
                     string error =
-                        $"Cannot figure out slots for LeagueID: {publisher.LeagueYear.League.LeagueID} PublisherID: {publisher.PublisherID} " +
+                        $"Cannot figure out slots for LeagueID: {publisher.LeagueYearKey.LeagueID} PublisherID: {publisher.PublisherID} " +
                         $"PublisherGameID: {publisherGame.PublisherGameID} GameName: {publisherGame.GameName}";
                     throw new Exception(error);
                 }
@@ -2685,7 +2628,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
+    public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, IEnumerable<MasterGameTag> requestedTags)
     {
         string deleteSQL = "DELETE from tbl_league_tagoverride where LeagueID = @leagueID AND Year = @year AND MasterGameID = @masterGameID;";
 
@@ -3006,9 +2949,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher)
+    public async Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(LeagueYear leagueYear, Publisher publisher)
     {
-        var leagueYear = publisher.LeagueYear;
         using (var connection = new MySqlConnection(_connectionString))
         {
             var dropEntities = await connection.QueryAsync<DropRequestEntity>("select * from tbl_league_droprequest where PublisherID = @publisherID and Successful is NULL",
@@ -3029,8 +2971,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears)
     {
-        var leagueDictionary = allLeagueYears.GroupBy(x => x.League.LeagueID).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
-        var publisherDictionary = allPublishersForYear.ToDictionary(x => x.PublisherID, y => y);
+        var leagueDictionary = allLeagueYears.ToDictionary(x => x.Key);
+        var publisherDictionary = allLeagueYears.SelectMany(x => x.Publishers).ToDictionary(x => x.PublisherID, y => y);
 
         using (var connection = new MySqlConnection(_connectionString))
         {
@@ -3042,7 +2984,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             {
                 var masterGame = await _masterGameRepo.GetMasterGame(dropEntity.MasterGameID);
                 var publisher = publisherDictionary[dropEntity.PublisherID];
-                var leagueYear = leagueDictionary[publisher.LeagueYear.League.LeagueID].Single(x => x.Year == year);
+                var leagueYear = leagueDictionary[publisher.LeagueYearKey];
 
                 DropRequest domainDrop = dropEntity.ToDomain(publisher, masterGame.Value, leagueYear);
                 dropRequestsByLeagueYear[leagueYear].Add(domainDrop);
@@ -3120,7 +3062,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
     {
         var mostRecentYear = await GetLeagueYear(league, league.Years.Max());
-        bool mostRecentYearNotStarted = mostRecentYear.HasValue && !mostRecentYear.Value.PlayStatus.PlayStarted;
+        bool mostRecentYearNotStarted = !mostRecentYear.PlayStatus.PlayStarted;
 
         var userAddObject = new
         {
@@ -3140,7 +3082,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                     {
                         leagueID = league.LeagueID,
                         userID = inviteUser.Id,
-                        activeYear = mostRecentYear.Value.Year
+                        activeYear = mostRecentYear.Year
                     };
                     await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);
                 }

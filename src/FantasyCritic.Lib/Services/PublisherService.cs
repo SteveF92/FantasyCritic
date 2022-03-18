@@ -68,7 +68,7 @@ public class PublisherService
         var formerPublisherGame = publisherGame.GetFormerPublisherGame(now, "Removed by league manager");
         RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisher, publisherGame);
         LeagueAction leagueAction = new LeagueAction(removeGameRequest, now);
-        var result = await _fantasyCriticRepo.ManagerRemovePublisherGame(publisherGame, formerPublisherGame, leagueAction);
+        var result = await _fantasyCriticRepo.ManagerRemovePublisherGame(publisher, publisherGame, formerPublisherGame, leagueAction);
         return result;
     }
 

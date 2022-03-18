@@ -406,7 +406,7 @@ public class FantasyCriticService
                 await _fantasyCriticRepo.DeleteLeagueActions(publisher);
                 foreach (var game in publisher.PublisherGames)
                 {
-                    await _fantasyCriticRepo.FullyRemovePublisherGame(game);
+                    await _fantasyCriticRepo.FullyRemovePublisherGame(publisher, game);
                 }
 
                 var bids = await _fantasyCriticRepo.GetActivePickupBids(leagueYear, publisher);
@@ -415,7 +415,7 @@ public class FantasyCriticService
                     await _fantasyCriticRepo.RemovePickupBid(bid);
                 }
 
-                var dropRequests = await _fantasyCriticRepo.GetActiveDropRequests(publisher);
+                var dropRequests = await _fantasyCriticRepo.GetActiveDropRequests(leagueYear, publisher);
                 foreach (var dropRequest in dropRequests)
                 {
                     await _fantasyCriticRepo.RemoveDropRequest(dropRequest);
@@ -675,15 +675,15 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetTrade(tradeID);
     }
 
-    public async Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear)
+    public async Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear)
     {
-        var trades = await _fantasyCriticRepo.GetTradesForLeague(leagueYear, publishersInLeagueForYear);
+        var trades = await _fantasyCriticRepo.GetTradesForLeague(leagueYear);
         return trades;
     }
 
-    public async Task<IReadOnlyList<Trade>> GetActiveTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear)
+    public async Task<IReadOnlyList<Trade>> GetActiveTradesForLeague(LeagueYear leagueYear)
     {
-        var allTrades = await GetTradesForLeague(leagueYear, publishersInLeagueForYear);
+        var allTrades = await GetTradesForLeague(leagueYear);
         var activeTrades = allTrades.Where(x => x.Status.IsActive).ToList();
         return activeTrades;
     }

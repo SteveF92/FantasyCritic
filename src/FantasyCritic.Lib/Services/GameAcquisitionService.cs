@@ -474,7 +474,7 @@ public class GameAcquisitionService
         }
 
         MasterGame masterGame = publisherGame.MasterGame.Value.MasterGame;
-        IReadOnlyList<DropRequest> dropRequests = await _fantasyCriticRepo.GetActiveDropRequests(publisher);
+        IReadOnlyList<DropRequest> dropRequests = await _fantasyCriticRepo.GetActiveDropRequests(leagueYear, publisher);
         bool alreadyDropping = dropRequests.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
         if (alreadyDropping)
         {
@@ -509,9 +509,9 @@ public class GameAcquisitionService
         return _fantasyCriticRepo.GetActivePickupBids(supportedYear.Year, allLeagueYears);
     }
 
-    public Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher)
+    public Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(LeagueYear leagueYear, Publisher publisher)
     {
-        return _fantasyCriticRepo.GetActiveDropRequests(publisher);
+        return _fantasyCriticRepo.GetActiveDropRequests(leagueYear, publisher);
     }
 
     public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(SupportedYear supportedYear, IReadOnlyList<LeagueYear> allLeagueYears)

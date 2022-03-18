@@ -65,8 +65,9 @@ public interface IFantasyCriticRepo
     Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats);
     Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers);
 
-    Task FullyRemovePublisherGame(PublisherGame publisherGame);
-    Task<Result> ManagerRemovePublisherGame(PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
+    Task FullyRemovePublisherGame(Publisher publisher, PublisherGame publisherGame);
+
+    Task<Result> ManagerRemovePublisherGame(Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
     Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
     Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease);
 
@@ -82,7 +83,7 @@ public interface IFantasyCriticRepo
 
     Task CreateDropRequest(DropRequest currentDropRequest);
     Task RemoveDropRequest(DropRequest dropRequest);
-    Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(Publisher publisher);
+    Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(LeagueYear leagueYear, Publisher publisher);
     Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears);
     Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(LeagueYear leagueYear);
     Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID);
@@ -108,7 +109,7 @@ public interface IFantasyCriticRepo
     Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible);
     Task<IReadOnlyList<TagOverride>> GetTagOverrides(League league, int year);
     Task<IReadOnlyList<MasterGameTag>> GetTagOverridesForGame(League league, int year, MasterGame masterGame);
-    Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags);
+    Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, IEnumerable<MasterGameTag> requestedTags);
 
     Task<SystemWideValues> GetSystemWideValues();
     Task<SystemWideSettings> GetSystemWideSettings();
@@ -133,7 +134,7 @@ public interface IFantasyCriticRepo
     Task EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount);
     Task<Maybe<FantasyCriticUser>> GetLeagueYearWinner(Guid leagueID, int year);
     Task CreateTrade(Trade trade);
-    Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear, IEnumerable<Publisher> publishersInLeagueForYear);
+    Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear);
     Task<Maybe<Trade>> GetTrade(Guid tradeID);
     Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp);
     Task AddTradeVote(TradeVote tradeVote);
