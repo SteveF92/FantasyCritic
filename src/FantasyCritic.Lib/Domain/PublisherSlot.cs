@@ -46,7 +46,9 @@ public class PublisherSlot
     {
         if (PublisherGame.HasNoValue)
         {
-            return systemWideValues.GetAveragePoints(!simpleProjections, CounterPick);
+            //TODO revert to commented version once major refactors are tested.
+            //return systemWideValues.GetAveragePoints(!simpleProjections, CounterPick);
+            return systemWideValues.GetAveragePoints(false, CounterPick);
         }
 
         if (PublisherGame.Value.MasterGame.HasNoValue)
@@ -56,7 +58,9 @@ public class PublisherSlot
                 return PublisherGame.Value.ManualCriticScore.Value;
             }
 
-            return systemWideValues.GetAveragePoints(!simpleProjections, CounterPick);
+            //TODO revert to commented version once major refactors are tested.
+            //return systemWideValues.GetAveragePoints(!simpleProjections, CounterPick);
+            return systemWideValues.GetAveragePoints(false, CounterPick);
         }
 
         decimal? fantasyPoints = CalculateFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);
