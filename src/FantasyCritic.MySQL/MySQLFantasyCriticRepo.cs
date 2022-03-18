@@ -225,7 +225,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task FullyRemovePublisherGame(LeagueYearPublisherPair leagueYearPublisherPair, PublisherGame publisherGame)
+    public async Task FullyRemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
     {
         string sql = "delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;";
         using (var connection = new MySqlConnection(_connectionString))
@@ -239,13 +239,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                     await transaction.RollbackAsync();
                 }
 
-                await MakePublisherGameSlotsConsistent(leagueYearPublisherPair, connection, transaction);
+                await MakePublisherGameSlotsConsistent(leagueYear, publisher, connection, transaction);
                 await transaction.CommitAsync();
             }
         }
     }
 
-    public async Task<Result> ManagerRemovePublisherGame(LeagueYearPublisherPair publisherPair, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction)
+    public async Task<Result> ManagerRemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction)
     {
         string sql = "delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;";
         using (var connection = new MySqlConnection(_connectionString))
@@ -260,7 +260,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                     return Result.Failure("Removing game failed.");
                 }
 
-                await MakePublisherGameSlotsConsistent(publisherPair, connection, transaction);
+                await MakePublisherGameSlotsConsistent(leagueYear, publisher, connection, transaction);
                 await AddFormerPublisherGames(new List<FormerPublisherGame>() { formerPublisherGame }, connection, transaction);
                 await AddLeagueActions(new List<LeagueAction>() { leagueAction }, connection, transaction);
                 await transaction.CommitAsync();
@@ -1941,9 +1941,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return MakePublisherGameSlotsConsistent(pairs, connection, transaction);
     }
 
-    private Task MakePublisherGameSlotsConsistent(LeagueYearPublisherPair publisherPair, MySqlConnection connection, MySqlTransaction transaction)
+    private Task MakePublisherGameSlotsConsistent(LeagueYear leagueYear, Publisher publisher, MySqlConnection connection, MySqlTransaction transaction)
     {
-        return MakePublisherGameSlotsConsistent(new List<LeagueYearPublisherPair>() { publisherPair }, connection, transaction);
+        return MakePublisherGameSlotsConsistent(new List<LeagueYearPublisherPair>() { new LeagueYearPublisherPair(leagueYear, publisher) }, connection, transaction);
     }
 
     private async Task MakePublisherGameSlotsConsistent(IEnumerable<LeagueYearPublisherPair> publisherPairs, MySqlConnection connection, MySqlTransaction transaction)

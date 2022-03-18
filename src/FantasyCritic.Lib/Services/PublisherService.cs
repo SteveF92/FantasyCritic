@@ -19,9 +19,10 @@ public class PublisherService
         _clock = clock;
     }
 
-    public async Task<Publisher> CreatePublisher(LeagueYear leagueYear, FantasyCriticUser user, string publisherName, IEnumerable<Publisher> existingPublishers)
+    public async Task<Publisher> CreatePublisher(LeagueYear leagueYear, FantasyCriticUser user, string publisherName)
     {
         int draftPosition = 1;
+        var existingPublishers = leagueYear.Publishers;
         if (existingPublishers.Any())
         {
             draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
@@ -47,13 +48,13 @@ public class PublisherService
         return _fantasyCriticRepo.SetAutoDraft(publisher, autoDraft);
     }
 
-    public async Task<Result> RemovePublisherGame(LeagueYearPublisherPair publisherPair, PublisherGame publisherGame)
+    public async Task<Result> RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
     {
         var now = _clock.GetCurrentInstant();
         var formerPublisherGame = publisherGame.GetFormerPublisherGame(now, "Removed by league manager");
-        RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisherPair.Publisher, publisherGame);
+        RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisher, publisherGame);
         LeagueAction leagueAction = new LeagueAction(removeGameRequest, now);
-        var result = await _fantasyCriticRepo.ManagerRemovePublisherGame(publisherPair, publisherGame, formerPublisherGame, leagueAction);
+        var result = await _fantasyCriticRepo.ManagerRemovePublisherGame(leagueYear, publisher, publisherGame, formerPublisherGame, leagueAction);
         return result;
     }
 

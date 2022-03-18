@@ -40,15 +40,14 @@ public static class PlayerGameExtensions
         return containsGame;
     }
 
-    public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear,
-        IEnumerable<Publisher> publishersInLeagueYear, bool counterPick, Maybe<MasterGame> masterGame, bool gameCouldBeDropped)
+    public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear, bool counterPick, Maybe<MasterGame> masterGame, bool gameCouldBeDropped)
     {
         if (!counterPick || masterGame.HasNoValue)
         {
             return false;
         }
 
-        var gameBeingCounterPickedOptions = publishersInLeagueYear.Select(x => x.GetPublisherGame(masterGame.Value))
+        var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame.Value))
             .Where(x => x.HasValue && !x.Value.CounterPick).ToList();
 
         if (gameBeingCounterPickedOptions.Count != 1)

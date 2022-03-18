@@ -121,8 +121,7 @@ public class DraftService
 
         var publisher = leagueYear.Publishers.Single(x => x.PublisherGames.Select(y => y.PublisherGameID).Contains(newestGame.PublisherGameID));
 
-        var publisherPair = new LeagueYearPublisherPair(leagueYear, publisher);
-        await _publisherService.RemovePublisherGame(publisherPair, newestGame);
+        await _publisherService.RemovePublisherGame(leagueYear, publisher, newestGame);
     }
 
     public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)

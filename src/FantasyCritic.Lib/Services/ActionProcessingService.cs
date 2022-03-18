@@ -142,7 +142,7 @@ public class ActionProcessingService
         {
             var publishersInLeagueYear = publisherStateSet.GetPublishersInLeagueYear(leagueYear.Key);
             Publisher bidPublisher = publisherStateSet.GetPublisher(activeBid.Publisher.PublisherID);
-            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, publishersInLeagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
+            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
             var gameRequest = new ClaimGameDomainRequest(leagueYear, bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
 
             int? validConditionalDropSlot = null;
