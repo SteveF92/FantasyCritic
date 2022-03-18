@@ -67,11 +67,11 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> CreateRoyalePublisher([FromBody] CreateRoyalePublisherRequest request)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         if (string.IsNullOrWhiteSpace(request.PublisherName))
         {
@@ -99,11 +99,11 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> ChangePublisherName([FromBody] ChangeRoyalePublisherNameRequest request)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         if (string.IsNullOrWhiteSpace(request.PublisherName))
         {
@@ -129,11 +129,11 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> ChangePublisherIcon([FromBody] ChangeRoyalePublisherIconRequest request)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         if (string.IsNullOrWhiteSpace(request.PublisherIcon))
         {
@@ -160,11 +160,11 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> GetUserRoyalePublisher(int year, int quarter)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         var yearQuarter = await _royaleService.GetYearQuarter(year, quarter);
         if (yearQuarter.HasNoValue)
@@ -239,11 +239,11 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
         if (publisher.HasNoValue)
@@ -279,11 +279,11 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> SellGame([FromBody] SellRoyaleGameRequest request)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
         if (publisher.HasNoValue)
@@ -323,11 +323,11 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> SetAdvertisingMoney([FromBody] SetAdvertisingMoneyRequest request)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
         if (publisher.HasNoValue)

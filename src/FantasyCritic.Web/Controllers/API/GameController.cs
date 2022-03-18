@@ -110,11 +110,11 @@ public class GameController : FantasyCriticController
     public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> MasterGameYearInLeagueContext(int year, Guid leagueID)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
         if (leagueYear.HasNoValue)
@@ -139,16 +139,12 @@ public class GameController : FantasyCriticController
     public async Task<IActionResult> CreateMasterGameRequest([FromBody] MasterGameRequestRequest request)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
 
         MasterGameRequest domainRequest = request.ToDomain(currentUser, _clock.GetCurrentInstant());
 
@@ -160,17 +156,12 @@ public class GameController : FantasyCriticController
     [Authorize]
     public async Task<IActionResult> CreateMasterGameChangeRequest([FromBody] MasterGameChangeRequestRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
         if (masterGame.HasNoValue)
@@ -187,17 +178,12 @@ public class GameController : FantasyCriticController
     [Authorize]
     public async Task<IActionResult> DeleteMasterGameRequest([FromBody] MasterGameRequestDeletionRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         Maybe<MasterGameRequest> maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
         if (maybeRequest.HasNoValue)
@@ -219,17 +205,12 @@ public class GameController : FantasyCriticController
     [Authorize]
     public async Task<IActionResult> DeleteMasterGameChangeRequest([FromBody] MasterGameChangeRequestDeletionRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         Maybe<MasterGameChangeRequest> maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
         if (maybeRequest.HasNoValue)
@@ -251,17 +232,12 @@ public class GameController : FantasyCriticController
     [Authorize]
     public async Task<IActionResult> DismissMasterGameRequest([FromBody] MasterGameRequestDismissRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         Maybe<MasterGameRequest> maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
         if (maybeRequest.HasNoValue)
@@ -283,17 +259,12 @@ public class GameController : FantasyCriticController
     [Authorize]
     public async Task<IActionResult> DismissMasterGameChangeRequest([FromBody] MasterGameChangeRequestDismissRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         Maybe<MasterGameChangeRequest> maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
         if (maybeRequest.HasNoValue)
@@ -315,11 +286,11 @@ public class GameController : FantasyCriticController
     public async Task<ActionResult<List<MasterGameRequestViewModel>>> MyMasterGameRequests()
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetMasterGameRequestsForUser(currentUser);
 
@@ -332,11 +303,11 @@ public class GameController : FantasyCriticController
     public async Task<ActionResult<List<MasterGameChangeRequestViewModel>>> MyMasterGameChangeRequests()
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return BadRequest(currentUserResult.FailedResult);
         }
-        var currentUser = currentUserResult.Value;
+        var currentUser = currentUserResult.ValidResult.Value;
 
         IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetMasterGameChangeRequestsForUser(currentUser);
 
