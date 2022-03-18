@@ -122,14 +122,13 @@ public class GameController : FantasyCriticController
             return BadRequest();
         }
 
-        var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-        var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
-        if (userPublisher is null)
+        var userPublisher = leagueYear.Value.GetUserPublisher(currentUser);
+        if (userPublisher.HasNoValue)
         {
             return BadRequest();
         }
 
-        var possibleMasterGames = await _gameSearchingService.GetAllPossibleMasterGameYearsForLeagueYear(userPublisher, publishersInLeague, year);
+        var possibleMasterGames = await _gameSearchingService.GetAllPossibleMasterGameYearsForLeagueYear(leagueYear.Value, userPublisher.Value, year);
         var currentDate = _clock.GetToday();
         var viewModels = possibleMasterGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).ToList();
         return viewModels;

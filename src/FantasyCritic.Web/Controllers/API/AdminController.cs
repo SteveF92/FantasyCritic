@@ -251,33 +251,34 @@ public class AdminController : FantasyCriticController
         var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
 
         IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticService.GetLeagueYears(currentYear.Year);
-        IReadOnlyList<Publisher> allPublishers = await _fantasyCriticService.GetAllPublishersForYear(currentYear.Year, allLeagueYears);
 
         var nextBidTime = _clock.GetNextBidTime();
-        var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears, allPublishers);
+        var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears);
         IEnumerable<LeagueAction> failingActions = actionResults.Results.LeagueActions.Where(x => x.IsFailed);
         var failingActionGames = failingActions.Select(x => x.MasterGameName).Distinct();
 
         var currentDate = _clock.GetToday();
-        var allBids = await _gameAcquisitionService.GetActiveAcquisitionBids(currentYear, allLeagueYears, allPublishers);
+        var allBids = await _gameAcquisitionService.GetActiveAcquisitionBids(currentYear, allLeagueYears);
         var distinctBids = allBids.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
         List<MasterGameViewModel> pickupGames = distinctBids
-            .Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingActionGames.Contains(x.MasterGame.GameName)))
+            .Select(x => new MasterGameViewModel(x.MasterGame, currentDate, failingActionGames.Contains(x.MasterGame.GameName)))
             .ToList();
 
-        var allDrops = await _gameAcquisitionService.GetActiveDropRequests(currentYear, allLeagueYears, allPublishers);
+        var allDrops = await _gameAcquisitionService.GetActiveDropRequests(currentYear, allLeagueYears);
         var distinctDrops = allDrops.SelectMany(x => x.Value).DistinctBy(x => x.MasterGame);
         List<MasterGameViewModel> dropGames = distinctDrops
-            .Select(x => new MasterGameViewModel(x.MasterGame, currentDate, error: failingActionGames.Contains(x.MasterGame.GameName)))
+            .Select(x => new MasterGameViewModel(x.MasterGame, currentDate, failingActionGames.Contains(x.MasterGame.GameName)))
             .ToList();
 
         pickupGames = pickupGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
         dropGames = dropGames.OrderByDescending(x => x.Error).ThenBy(x => x.MaximumReleaseDate).ToList();
-        var leagueActions = actionResults.Results.LeagueActions.Select(x => new LeagueActionViewModel(x, _clock));
+
+        var leagueYearDictionary = allLeagueYears.ToDictionary(x => x.Key);
+        var leagueActionViewModels = actionResults.Results.LeagueActions.Select(x => new LeagueActionViewModel(leagueYearDictionary[x.Publisher.LeagueYearKey], x)).ToList();
 
         var leagueActionSets = actionResults.GetLeagueActionSets(true);
         var leagueActionSetViewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));
-        ActionedGameSetViewModel fullSet = new ActionedGameSetViewModel(pickupGames, dropGames, leagueActions, leagueActionSetViewModels);
+        ActionedGameSetViewModel fullSet = new ActionedGameSetViewModel(pickupGames, dropGames, leagueActionViewModels, leagueActionSetViewModels);
         return Ok(fullSet);
     }
 
