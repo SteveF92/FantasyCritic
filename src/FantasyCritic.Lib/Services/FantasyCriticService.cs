@@ -400,7 +400,7 @@ public class FantasyCriticService
         foreach (var year in league.Years)
         {
             var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
-            var publishers = leagueYear.Value.Publishers;
+            var publishers = leagueYear.Publishers;
             foreach (var publisher in publishers)
             {
                 await _fantasyCriticRepo.DeleteLeagueActions(publisher);
@@ -409,7 +409,7 @@ public class FantasyCriticService
                     await _fantasyCriticRepo.FullyRemovePublisherGame(game);
                 }
 
-                var bids = await _fantasyCriticRepo.GetActivePickupBids(publisher);
+                var bids = await _fantasyCriticRepo.GetActivePickupBids(leagueYear, publisher);
                 foreach (var bid in bids)
                 {
                     await _fantasyCriticRepo.RemovePickupBid(bid);
@@ -424,7 +424,7 @@ public class FantasyCriticService
                 await _fantasyCriticRepo.DeletePublisher(publisher);
             }
 
-            await _fantasyCriticRepo.DeleteLeagueYear(leagueYear.Value);
+            await _fantasyCriticRepo.DeleteLeagueYear(leagueYear);
         }
 
         var users = await _fantasyCriticRepo.GetUsersInLeague(league);

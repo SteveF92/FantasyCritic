@@ -376,7 +376,7 @@ public class GameAcquisitionService
             return new ClaimResult(new List<ClaimError>() { new ClaimError("You do not have enough budget to make that bid.", false) }, null);
         }
 
-        IReadOnlyList<PickupBid> pickupBids = await _fantasyCriticRepo.GetActivePickupBids(publisher);
+        IReadOnlyList<PickupBid> pickupBids = await _fantasyCriticRepo.GetActivePickupBids(leagueYear, publisher);
         bool alreadyBidFor = pickupBids.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
         if (alreadyBidFor)
         {
@@ -499,9 +499,9 @@ public class GameAcquisitionService
         return dropResult;
     }
 
-    public Task<IReadOnlyList<PickupBid>> GetActiveAcquisitionBids(Publisher publisher)
+    public Task<IReadOnlyList<PickupBid>> GetActiveAcquisitionBids(LeagueYear leagueYear, Publisher publisher)
     {
-        return _fantasyCriticRepo.GetActivePickupBids(publisher);
+        return _fantasyCriticRepo.GetActivePickupBids(leagueYear);
     }
 
     public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActiveAcquisitionBids(SupportedYear supportedYear, IReadOnlyList<LeagueYear> allLeagueYears)

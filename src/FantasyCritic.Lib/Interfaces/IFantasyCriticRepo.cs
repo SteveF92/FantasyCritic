@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Interfaces;
 public interface IFantasyCriticRepo
 {
     Task<Maybe<League>> GetLeagueByID(Guid id);
-    Task<Maybe<LeagueYear>> GetLeagueYear(League requestLeague, int requestYear);
+    Task<LeagueYear> GetLeagueYear(League requestLeague, int requestYear);
     Task CreateLeague(League league, int initialYear, LeagueOptions options);
     Task AddNewLeagueYear(League league, int year, LeagueOptions options);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction);
@@ -72,7 +72,7 @@ public interface IFantasyCriticRepo
 
     Task CreatePickupBid(PickupBid currentBid);
     Task RemovePickupBid(PickupBid bid);
-    Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher);
+    Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear, Publisher publisher);
     Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActivePickupBids(int year, IReadOnlyList<LeagueYear> leagueYears);
     Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear);
     Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears);

@@ -99,7 +99,7 @@ public class DraftService
     {
         await _fantasyCriticRepo.StartDraft(leagueYear);
         var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
-        var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear.Value, 0, 0);
+        var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
         var draftComplete = await CompleteDraft(leagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
         return draftComplete;
     }
@@ -110,7 +110,7 @@ public class DraftService
         var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
         if (!pause)
         {
-            await AutoDraftForLeague(updatedLeagueYear.Value, 0, 0);
+            await AutoDraftForLeague(updatedLeagueYear, 0, 0);
         }
     }
 
@@ -233,7 +233,7 @@ public class DraftService
     {
         await Task.Delay(1000);
         var today = _clock.GetToday();
-        var updatedLeagueYear = (await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year)).Value;
+        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
         var nextPublisher = GetNextDraftPublisher(leagueYear);
         if (nextPublisher.HasNoValue)
         {

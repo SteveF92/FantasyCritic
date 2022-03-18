@@ -347,18 +347,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    public async Task<IReadOnlyList<PickupBid>> GetActivePickupBids(Publisher publisher)
+    public async Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear, Publisher publisher)
     {
-        var leagueYear = publisher.LeagueYear;
-        var publishersInLeague = await GetPublishersInLeagueForYear(leagueYear);
-
-        var publisherGameDictionary = publishersInLeague
-            .SelectMany(x => x.PublisherGames)
+        var publisherGameDictionary = publisher.PublisherGames
             .Where(x => x.MasterGame.HasValue)
             .ToLookup(x => (x.PublisherID, x.MasterGame.Value.MasterGame.MasterGameID));
 
-        var formerPublisherGameDictionary = publishersInLeague
-            .SelectMany(x => x.FormerPublisherGames)
+        var formerPublisherGameDictionary = publisher.FormerPublisherGames
             .Where(x => x.PublisherGame.MasterGame.HasValue)
             .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame.Value.MasterGame.MasterGameID));
 
@@ -374,7 +369,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             foreach (var bidEntity in bidEntities)
             {
                 var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
-                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear, publisherGameDictionary, formerPublisherGameDictionary);
+                Maybe<PublisherGame> conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
                 PickupBid domain = bidEntity.ToDomain(publisher, masterGame.Value, conditionalDropPublisherGame, leagueYear);
                 domainBids.Add(domain);
             }
@@ -3372,7 +3367,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return user;
     }
 
-    private async Task<Maybe<PublisherGame>> GetConditionalDropPublisherGame(PickupBidEntity bidEntity, LeagueYear leagueYear,
+    private async Task<Maybe<PublisherGame>> GetConditionalDropPublisherGame(PickupBidEntity bidEntity, int year,
         ILookup<(Guid PublisherID, Guid MasterGameID), PublisherGame> publisherGameLookup,
         ILookup<(Guid PublisherID, Guid MasterGameID), FormerPublisherGame> formerPublisherGameLookup)
     {
@@ -3393,7 +3388,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             return currentPublisherGames.WhereMax(x => x.Timestamp).FirstOrDefault();
         }
 
-        var conditionalDropGame = await _masterGameRepo.GetMasterGameYear(bidEntity.ConditionalDropMasterGameID.Value, leagueYear.Year);
+        var conditionalDropGame = await _masterGameRepo.GetMasterGameYear(bidEntity.ConditionalDropMasterGameID.Value, year);
         var fakePublisherGame = new PublisherGame(bidEntity.PublisherID, Guid.NewGuid(),
             conditionalDropGame.Value.MasterGame.GameName, bidEntity.Timestamp,
             false, null, false, null, conditionalDropGame.Value, 0, null, null, null, null);
