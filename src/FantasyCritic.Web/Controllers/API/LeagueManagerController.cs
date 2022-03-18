@@ -17,11 +17,9 @@ namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
 [Authorize]
-public class LeagueManagerController : FantasyCriticController
+public class LeagueManagerController : BaseLeagueController
 {
     private readonly FantasyCriticUserManager _userManager;
-    private readonly FantasyCriticService _fantasyCriticService;
-    private readonly InterLeagueService _interLeagueService;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly DraftService _draftService;
     private readonly PublisherService _publisherService;
@@ -32,11 +30,9 @@ public class LeagueManagerController : FantasyCriticController
 
     public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext,
-        EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService) : base(userManager)
+        EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService) : base(userManager, fantasyCriticService, interLeagueService)
     {
         _userManager = userManager;
-        _fantasyCriticService = fantasyCriticService;
-        _interLeagueService = interLeagueService;
         _leagueMemberService = leagueMemberService;
         _draftService = draftService;
         _publisherService = publisherService;
@@ -1846,95 +1842,4 @@ public class LeagueManagerController : FantasyCriticController
 
         return Ok();
     }
-
-    private async Task<(Maybe<LeagueYearRecord> LeagueYearRecord, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearUserIsManagerFor(Guid leagueID, int year, bool failIfActionProcessing)
-    {
-        if (!ModelState.IsValid)
-        {
-            return GetFailedResult<LeagueYearRecord>(BadRequest("Invalid request."));
-        }
-
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return GetFailedResult<LeagueYearRecord>(BadRequest(currentUserResult.Error));
-        }
-        var currentUser = currentUserResult.Value;
-
-        if (failIfActionProcessing)
-        {
-            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.ActionProcessingMode)
-            {
-                return GetFailedResult<LeagueYearRecord>(BadRequest("Site is in read-only mode while actions process."));
-            }
-        }
-
-        var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
-        if (leagueYear.HasNoValue)
-        {
-            return GetFailedResult<LeagueYearRecord>(BadRequest("League year does not exist."));
-        }
-
-        if (leagueYear.Value.League.LeagueManager.Id != currentUser.Id)
-        {
-            return GetFailedResult<LeagueYearRecord>(Forbid("You are not the manager of that league."));
-        }
-
-        return (new LeagueYearRecord(currentUser, leagueYear.Value), Maybe<IActionResult>.None);
-    }
-
-    private async Task<(Maybe<LeagueYearPublisherRecord> LeagueYearPublisherRecord, Maybe<IActionResult> FailedResult)> GetExistingPublisherAndLeagueYearUserIsManagerFor(Guid leagueID, int year, Guid publisherID, bool failIfActionProcessing)
-    {
-        var leagueYearRecord = await GetExistingLeagueYearUserIsManagerFor(leagueID, year, failIfActionProcessing);
-        if (leagueYearRecord.FailedResult.HasValue)
-        {
-            return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
-        }
-
-        var publisher = leagueYearRecord.LeagueYearRecord.Value.LeagueYear.GetPublisherByID(publisherID);
-        if (publisher.HasNoValue)
-        {
-            return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("Publisher does not exist in that league."));
-        }
-
-        return (new LeagueYearPublisherRecord(leagueYearRecord.LeagueYearRecord.Value.CurrentUser, leagueYearRecord.LeagueYearRecord.Value.LeagueYear, publisher.Value), Maybe<IActionResult>.None);
-    }
-
-    private async Task<(Maybe<LeagueYearPublisherRecord> LeagueYearPublisherRecord, Maybe<IActionResult> FailedResult)> GetExistingPublisherAndLeagueYearUserIsManagerFor(Guid leagueID, int year, FantasyCriticUser userForPublisher, bool failIfActionProcessing)
-    {
-        var leagueYearRecord = await GetExistingLeagueYearUserIsManagerFor(leagueID, year, failIfActionProcessing);
-        if (leagueYearRecord.FailedResult.HasValue)
-        {
-            return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
-        }
-
-        var publisher = leagueYearRecord.LeagueYearRecord.Value.LeagueYear.GetUserPublisher(userForPublisher);
-        if (publisher.HasNoValue)
-        {
-            return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("That user does not have a publisher in that league."));
-        }
-
-        return (new LeagueYearPublisherRecord(leagueYearRecord.LeagueYearRecord.Value.CurrentUser, leagueYearRecord.LeagueYearRecord.Value.LeagueYear, publisher.Value), Maybe<IActionResult>.None);
-    }
-
-    private async Task<(Maybe<LeagueYearPublisherGameRecord> LeagueYearPublisherGameRecord, Maybe<IActionResult> FailedResult)> GetExistingPublisherGameAndLeagueYearUserIsManagerFor(Guid leagueID, int year, Guid publisherID, Guid publisherGameID, bool failIfActionProcessing)
-    {
-        var leagueYearPublisherRecord = await GetExistingPublisherAndLeagueYearUserIsManagerFor(leagueID, year, publisherID, failIfActionProcessing);
-        if (leagueYearPublisherRecord.FailedResult.HasValue)
-        {
-            return (Maybe<LeagueYearPublisherGameRecord>.None, leagueYearPublisherRecord.FailedResult);
-        }
-
-        var publisherGame = leagueYearPublisherRecord.LeagueYearPublisherRecord.Value.Publisher.PublisherGames.SingleOrDefault(x => x.PublisherGameID == publisherGameID);
-        if (publisherGame is null)
-        {
-            return GetFailedResult<LeagueYearPublisherGameRecord>(BadRequest("That publisher game does not exist."));
-        }
-
-        return (new LeagueYearPublisherGameRecord(leagueYearPublisherRecord.LeagueYearPublisherRecord.Value.CurrentUser, leagueYearPublisherRecord.LeagueYearPublisherRecord.Value.LeagueYear,
-            leagueYearPublisherRecord.LeagueYearPublisherRecord.Value.Publisher, publisherGame), Maybe<IActionResult>.None);
-    }
-
-    private static (Maybe<T> ValidRecord, Maybe<IActionResult> FailedResult) GetFailedResult<T>(IActionResult failedResult) => (Maybe<T>.None, Maybe<IActionResult>.From(failedResult));
 }
