@@ -191,7 +191,7 @@ public class GameAcquisitionService
         return new DropResult(dropResult);
     }
 
-    public async Task<ClaimResult> CanAssociateGame(AssociateGameDomainRequest request)
+    public ClaimResult CanAssociateGame(AssociateGameDomainRequest request)
     {
         List<ClaimError> associationErrors = new List<ClaimError>();
         var basicErrors = GetBasicErrors(request.LeagueYear.League, request.Publisher);
@@ -350,7 +350,7 @@ public class GameAcquisitionService
 
     public async Task<ClaimResult> AssociateGame(AssociateGameDomainRequest request)
     {
-        ClaimResult claimResult = await CanAssociateGame(request);
+        ClaimResult claimResult = CanAssociateGame(request);
 
         if (!claimResult.Success)
         {
