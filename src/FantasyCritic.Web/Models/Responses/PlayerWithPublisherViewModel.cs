@@ -20,12 +20,12 @@ public class PlayerWithPublisherViewModel
         SupportedYear supportedYear, bool removable, bool previousYearWinner, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
     {
         User = new PlayerViewModel(leagueYear.League, user, removable);
-        Publisher = new PublisherViewModel(publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished, counterPickedPublisherGameIDs);
-        TotalFantasyPoints = publisher.TotalFantasyPoints;
+        Publisher = new PublisherViewModel(leagueYear, publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs);
+        TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
 
         var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
-        SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, true, currentDate, ineligiblePointsShouldCount);
-        AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, ineligiblePointsShouldCount);
+        SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, true, currentDate, ineligiblePointsShouldCount, leagueYear);
+        AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, ineligiblePointsShouldCount, leagueYear);
         PreviousYearWinner = previousYearWinner;
     }
 

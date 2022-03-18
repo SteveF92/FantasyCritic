@@ -29,12 +29,12 @@ public class LeagueYearViewModel
         HasSpecialSlots = leagueYear.Options.HasSpecialSlots();
         Publishers = publishers
             .OrderBy(x => x.DraftPosition)
-            .Select(x => new PublisherViewModel(x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished, counterPickedPublisherGameIDs))
+            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
             .ToList();
 
         if (userPublisher.HasValue)
         {
-            UserPublisher = new PublisherViewModel(userPublisher.Value, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, supportedYear.Finished, counterPickedPublisherGameIDs);
+            UserPublisher = new PublisherViewModel(leagueYear, userPublisher.Value, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs);
         }
 
         List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();

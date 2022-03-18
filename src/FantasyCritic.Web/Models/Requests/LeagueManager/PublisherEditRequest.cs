@@ -20,8 +20,8 @@ public class PublisherEditRequest
     [Required]
     public int WillReleaseGamesDropped { get; set; }
 
-    public EditPublisherRequest ToDomain(Publisher publisher)
+    public EditPublisherRequest ToDomain(LeagueYear leagueYear, Publisher publisher)
     {
-        return new EditPublisherRequest(publisher, PublisherName, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped);
+        return new EditPublisherRequest(leagueYear, publisher, PublisherName, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped);
     }
 }

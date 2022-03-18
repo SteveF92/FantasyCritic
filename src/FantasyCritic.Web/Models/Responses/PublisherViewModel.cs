@@ -2,44 +2,44 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class PublisherViewModel
 {
-    public PublisherViewModel(Publisher publisher, LocalDate currentDate, bool userIsInLeague,
-        bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
-        : this(publisher, currentDate, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues, yearFinished, counterPickedPublisherGameIDs)
+    public PublisherViewModel(LeagueYear leagueYear, Publisher publisher, LocalDate currentDate, bool userIsInLeague,
+        bool outstandingInvite, SystemWideValues systemWideValues, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
+        : this(leagueYear, publisher, currentDate, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues, counterPickedPublisherGameIDs)
     {
 
     }
 
-    public PublisherViewModel(Publisher publisher, LocalDate currentDate, Maybe<Publisher> nextDraftPublisher,
-        bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues, bool yearFinished, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
+    public PublisherViewModel(LeagueYear leagueYear, Publisher publisher, LocalDate currentDate, Maybe<Publisher> nextDraftPublisher,
+        bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
     {
         PublisherID = publisher.PublisherID;
-        LeagueID = publisher.LeagueYear.League.LeagueID;
+        LeagueID = leagueYear.League.LeagueID;
         UserID = publisher.User.Id;
         PublisherName = publisher.PublisherName;
         PublisherIcon = publisher.PublisherIcon.GetValueOrDefault();
-        LeagueName = publisher.LeagueYear.League.LeagueName;
+        LeagueName = leagueYear.League.LeagueName;
         PlayerName = publisher.User.UserName;
-        Year = publisher.LeagueYear.Year;
+        Year = leagueYear.Year;
         DraftPosition = publisher.DraftPosition;
         AutoDraft = publisher.AutoDraft;
 
         Games = publisher.PublisherGames
             .OrderBy(x => x.Timestamp)
-            .Select(x => new PublisherGameViewModel(x, currentDate, counterPickedPublisherGameIDs.Contains(x.PublisherGameID), publisher.LeagueYear.Options.CounterPicksBlockDrops))
+            .Select(x => new PublisherGameViewModel(x, currentDate, counterPickedPublisherGameIDs.Contains(x.PublisherGameID), leagueYear.Options.CounterPicksBlockDrops))
             .ToList();
         FormerGames = publisher.FormerPublisherGames
             .OrderBy(x => x.PublisherGame.Timestamp)
             .Select(x => new PublisherGameViewModel(x, currentDate))
             .ToList();
-        GameSlots = publisher.GetPublisherSlots()
-            .Select(x => new PublisherSlotViewModel(publisher.LeagueYear.Year, x, currentDate, publisher.LeagueYear, systemWideValues, counterPickedPublisherGameIDs))
+        GameSlots = publisher.GetPublisherSlots(leagueYear.Options)
+            .Select(x => new PublisherSlotViewModel(x, currentDate, leagueYear, systemWideValues, counterPickedPublisherGameIDs))
             .ToList();
 
         AverageCriticScore = publisher.AverageCriticScore;
-        TotalFantasyPoints = publisher.TotalFantasyPoints;
+        TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
 
-        var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(publisher.LeagueYear.Year);
-        TotalProjectedPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, ineligiblePointsShouldCount);
+        var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
+        TotalProjectedPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, ineligiblePointsShouldCount, leagueYear);
         Budget = publisher.Budget;
 
         if (nextDraftPublisher.HasValue && nextDraftPublisher.Value.PublisherID == publisher.PublisherID)
@@ -48,11 +48,11 @@ public class PublisherViewModel
         }
 
         UserIsInLeague = userIsInLeague;
-        PublicLeague = publisher.LeagueYear.Options.PublicLeague;
+        PublicLeague = leagueYear.Options.PublicLeague;
         OutstandingInvite = outstandingInvite;
 
         var dateToCheck = currentDate;
-        if (yearFinished)
+        if (leagueYear.SupportedYear.Finished)
         {
             dateToCheck = new LocalDate(Year, 12, 31);
         }
@@ -70,9 +70,9 @@ public class PublisherViewModel
         FreeGamesDropped = publisher.FreeGamesDropped;
         WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
         WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
-        FreeDroppableGames = publisher.LeagueYear.Options.FreeDroppableGames;
-        WillNotReleaseDroppableGames = publisher.LeagueYear.Options.WillNotReleaseDroppableGames;
-        WillReleaseDroppableGames = publisher.LeagueYear.Options.WillReleaseDroppableGames;
+        FreeDroppableGames = leagueYear.Options.FreeDroppableGames;
+        WillNotReleaseDroppableGames = leagueYear.Options.WillNotReleaseDroppableGames;
+        WillReleaseDroppableGames = leagueYear.Options.WillReleaseDroppableGames;
     }
 
     public Guid PublisherID { get; }

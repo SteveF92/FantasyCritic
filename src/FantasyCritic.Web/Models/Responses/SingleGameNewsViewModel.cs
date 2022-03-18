@@ -2,7 +2,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class SingleGameNewsViewModel
 {
-    public SingleGameNewsViewModel(MasterGameYear masterGame, IEnumerable<Publisher> publishers, IEnumerable<Publisher> standardGamePublishers, bool userMode, LocalDate currentDate)
+    public SingleGameNewsViewModel(MasterGameYear masterGame, IReadOnlyList<LeagueYearPublisherPair> publishersPairsThatHaveGame, bool userMode, LocalDate currentDate)
     {
         MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
         MasterGameID = masterGame.MasterGame.MasterGameID;
@@ -13,47 +13,47 @@ public class SingleGameNewsViewModel
 
         if (userMode)
         {
-            if (publishers.Count() == 1)
+            if (publishersPairsThatHaveGame.Count() == 1)
             {
-                var publisher = publishers.Single();
-                LeagueID = publisher.LeagueYear.League.LeagueID;
-                Year = publisher.LeagueYear.Year;
-                LeagueName = publisher.LeagueYear.League.LeagueName;
-                PublisherID = publisher.PublisherID;
-                PublisherName = publisher.PublisherName;
+                var publisherPair = publishersPairsThatHaveGame.Single();
+                LeagueID = publisherPair.LeagueYear.League.LeagueID;
+                Year = publisherPair.LeagueYear.Year;
+                LeagueName = publisherPair.LeagueYear.League.LeagueName;
+                PublisherID = publisherPair.Publisher.PublisherID;
+                PublisherName = publisherPair.Publisher.PublisherName;
             }
             else
             {
-                LeagueName = $"{publishers.Count()} Leagues";
+                LeagueName = $"{publishersPairsThatHaveGame.Count()} Leagues";
                 PublisherName = "Multiple";
             }
         }
         else
         {
-            if (publishers.Count() == 1)
+            if (publishersPairsThatHaveGame.Count() == 1)
             {
-                var publisher = publishers.Single();
-                LeagueID = publisher.LeagueYear.League.LeagueID;
-                Year = publisher.LeagueYear.Year;
-                LeagueName = publisher.LeagueYear.League.LeagueName;
-                PublisherID = publisher.PublisherID;
-                PublisherName = publisher.PublisherName;
+                var publisherPair = publishersPairsThatHaveGame.Single();
+                LeagueID = publisherPair.LeagueYear.League.LeagueID;
+                Year = publisherPair.LeagueYear.Year;
+                LeagueName = publisherPair.LeagueYear.League.LeagueName;
+                PublisherID = publisherPair.Publisher.PublisherID;
+                PublisherName = publisherPair.Publisher.PublisherName;
             }
-            else if (standardGamePublishers.Count() == 1)
+            else if (publishersPairsThatHaveGame.Count() == 2)
             {
-                var publisher = standardGamePublishers.Single();
-                var counterPickPublisher = publishers.Single(x => x.PublisherID != publisher.PublisherID);
-                LeagueID = publisher.LeagueYear.League.LeagueID;
-                Year = publisher.LeagueYear.Year;
-                LeagueName = publisher.LeagueYear.League.LeagueName;
-                PublisherID = publisher.PublisherID;
-                PublisherName = publisher.PublisherName;
-                CounterPickPublisherID = counterPickPublisher.PublisherID;
-                CounterPickPublisherName = counterPickPublisher.PublisherName;
+                var standardPublisherPair = publishersPairsThatHaveGame.Single(x => x.Publisher.PublisherGames.Where(x => !x.CounterPick).Where(x => x.MasterGame.HasValue).Any(x => x.MasterGame.Value.MasterGame.MasterGameID == masterGame.MasterGame.MasterGameID));
+                var counterPickPublisherPair = publishersPairsThatHaveGame.Single(x => x.Publisher.PublisherID != standardPublisherPair.Publisher.PublisherID);
+                LeagueID = standardPublisherPair.LeagueYear.League.LeagueID;
+                Year = standardPublisherPair.LeagueYear.Year;
+                LeagueName = standardPublisherPair.LeagueYear.League.LeagueName;
+                PublisherID = standardPublisherPair.Publisher.PublisherID;
+                PublisherName = standardPublisherPair.Publisher.PublisherName;
+                CounterPickPublisherID = counterPickPublisherPair.Publisher.PublisherID;
+                CounterPickPublisherName = counterPickPublisherPair.Publisher.PublisherName;
             }
             else
             {
-                throw new Exception($"Problem with upcoming games. Happened for Game: {masterGame.MasterGame.GameName} and publisherIDs: {string.Join('|', publishers.Select(x => x.PublisherID))}");
+                throw new Exception($"Problem with upcoming games. Happened for Game: {masterGame.MasterGame.GameName} and publisherIDs: {string.Join('|', publishersPairsThatHaveGame.Select(x => x.Publisher.PublisherID))}");
             }
         }
     }
