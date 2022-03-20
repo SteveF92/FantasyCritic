@@ -29,13 +29,13 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
             case { } status when Any.Equals(status):
                 break;
             case { } status when AnyYearNotFinished.Equals(status):
-                if (!leagueYear.SupportedYear.Finished)
+                if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
                 }
                 break;
             case { } status when YearNotFinishedDraftNotStarted.Equals(status):
-                if (!leagueYear.SupportedYear.Finished)
+                if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
                 }
@@ -45,7 +45,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 }
                 break;
             case { } status when YearNotFinishedDraftNotFinished.Equals(status):
-                if (!leagueYear.SupportedYear.Finished)
+                if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
                 }
@@ -55,7 +55,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 }
                 break;
             case { } status when DuringDraft.Equals(status):
-                if (!leagueYear.SupportedYear.Finished)
+                if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
                 }
@@ -65,7 +65,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 }
                 break;
             case { } status when ActiveDraft.Equals(status):
-                if (!leagueYear.SupportedYear.Finished)
+                if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
                 }
@@ -75,7 +75,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 }
                 break;
             case { } status when ActiveDraft.Equals(status):
-                if (!leagueYear.SupportedYear.Finished)
+                if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
                 }
@@ -85,7 +85,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 }
                 break;
             case { } status when YearNotFinishedDraftFinished.Equals(status):
-                if (!leagueYear.SupportedYear.Finished)
+                if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
                 }

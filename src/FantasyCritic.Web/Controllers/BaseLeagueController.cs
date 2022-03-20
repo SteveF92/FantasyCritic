@@ -41,8 +41,10 @@ public abstract class BaseLeagueController : FantasyCriticController
         bool isInLeague = false;
         Maybe<LeagueInvite> leagueInvite = Maybe<LeagueInvite>.None;
         bool isLeagueManager = false;
+        bool userIsAdmin = false;
         if (currentUserRecord.IsSuccess)
         {
+            userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
             isLeagueManager = league.Value.LeagueManager.Id == currentUserRecord.Value.Id;
             if (requiredRelationship.MustBeLeagueManager && !isLeagueManager)
             {
@@ -69,7 +71,6 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueRecord>(Forbid("You are not in that league."));
         }
 
-        bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
         LeagueUserRelationship relationship = new LeagueUserRelationship(leagueInvite, isInLeague, isLeagueManager, userIsAdmin);
         return (new LeagueRecord(currentUserRecord.ToMaybe(), league.Value, playersInLeague, relationship), Maybe<IActionResult>.None);
     }
@@ -115,8 +116,10 @@ public abstract class BaseLeagueController : FantasyCriticController
         bool isInvitedToLeague = false;
         bool isActiveInYear = false;
         bool isLeagueManager = false;
+        bool userIsAdmin = false;
         if (currentUserRecord.IsSuccess)
         {
+            userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
             isLeagueManager = leagueYear.Value.League.LeagueManager.Id == currentUserRecord.Value.Id;
             if (requiredRelationship.MustBeLeagueManager && !isLeagueManager)
             {
@@ -150,7 +153,6 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearRecord>(Forbid("You are set as active in that league year."));
         }
 
-        bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
         LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(isInvitedToLeague, isInLeague, isActiveInYear, isLeagueManager, userIsAdmin);
         return (new LeagueYearRecord(currentUserRecord.ToMaybe(), leagueYear.Value, activeUsers, inviteesToLeague, relationship), Maybe<IActionResult>.None);
     }
