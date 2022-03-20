@@ -15,6 +15,7 @@ public class LeagueUserRelationship
     public bool InOrInvitedToLeague => InvitedToLeague || InLeague;
     public bool LeagueManager { get; }
     public bool IsAdmin { get; }
+    public bool HasPermissionToViewLeague => InvitedToLeague || InLeague || IsAdmin;
 }
 
 public class LeagueYearUserRelationship
@@ -30,28 +31,31 @@ public class LeagueYearUserRelationship
 
     public bool InvitedToLeague { get; }
     public bool InLeague { get; }
-    public bool InOrInvitedToLeague => InvitedToLeague || InLeague;
     public bool ActiveInYear { get; }
     public bool LeagueManager { get; }
     public bool IsAdmin { get; }
+    public bool HasPermissionToViewLeague => InvitedToLeague || InLeague || IsAdmin;
 }
 
 public class PublisherUserRelationship
 {
     public PublisherUserRelationship(LeagueYearUserRelationship leagueYearRelationship, bool isPublisher)
     {
-        InOrInvitedToLeague = leagueYearRelationship.InOrInvitedToLeague;
+        InvitedToLeague = leagueYearRelationship.InvitedToLeague;
+        InLeague = leagueYearRelationship.InLeague;
         ActiveInYear = leagueYearRelationship.ActiveInYear;
         LeagueManager = leagueYearRelationship.LeagueManager;
         IsAdmin = leagueYearRelationship.IsAdmin;
         IsPublisher = isPublisher;
     }
 
-    public bool InOrInvitedToLeague { get; }
+    public bool InvitedToLeague { get; }
+    public bool InLeague { get; }
     public bool ActiveInYear { get; }
     public bool LeagueManager { get; }
     public bool IsPublisher { get; }
     public bool IsAdmin { get; }
+    public bool HasPermissionToViewLeague => InvitedToLeague || InLeague || IsAdmin;
 }
 
 public class RequiredRelationship
