@@ -237,7 +237,9 @@ export default {
     },
     sendGenericTradeRequest(endPoint) {
       var model = {
-        tradeID: this.trade.tradeID
+        tradeID: this.trade.tradeID,
+        leagueID: this.leagueYear.leagueID,
+        year: this.leagueYear.year
       };
       axios
         .post(`/api/${endPoint}`, model)
@@ -251,6 +253,8 @@ export default {
     vote(approved) {
       var model = {
         tradeID: this.trade.tradeID,
+        leagueID: this.leagueYear.leagueID,
+        year: this.leagueYear.year,
         approved,
         comment: this.comment
       };
@@ -266,7 +270,9 @@ export default {
     },
     deleteVote() {
       var model = {
-        tradeID: this.trade.tradeID
+        tradeID: this.trade.tradeID,
+        leagueID: this.leagueYear.leagueID,
+        year: this.leagueYear.year
       };
       axios
         .post('/api/league/DeleteTradeVote', model)

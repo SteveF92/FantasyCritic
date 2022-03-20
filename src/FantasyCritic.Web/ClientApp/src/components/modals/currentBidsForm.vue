@@ -142,6 +142,7 @@ export default {
     editBid() {
       var request = {
         bidID: this.bidBeingEdited.bidID,
+        publisherID: this.publisher.publisherID,
         bidAmount: this.bidAmount
       };
 
@@ -170,7 +171,8 @@ export default {
     },
     cancelBid(bid) {
       var model = {
-        bidID: bid.bidID
+        bidID: bid.bidID,
+        publisherID: this.publisher.publisherID
       };
       axios
         .post('/api/league/DeletePickupBid', model)

@@ -1291,7 +1291,6 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult.Value;
         }
-        var leagueYear = leagueYearRecord.ValidResult.Value.LeagueYear;
         var currentUser = leagueYearRecord.ValidResult.Value.CurrentUser.Value;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);

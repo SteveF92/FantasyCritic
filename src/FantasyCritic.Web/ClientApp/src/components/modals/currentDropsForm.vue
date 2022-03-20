@@ -30,6 +30,7 @@ export default {
   methods: {
     cancelDrop(dropRequest) {
       var model = {
+        publisherID: this.publisher.publisherID,
         dropRequestID: dropRequest.dropRequestID
       };
       axios
