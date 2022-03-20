@@ -270,4 +270,29 @@ public abstract class BaseLeagueController : FantasyCriticController
         return (new LeagueYearPublisherGameRecord(leagueYearPublisherRecord.ValidResult.Value.CurrentUser, leagueYearPublisherRecord.ValidResult.Value.LeagueYear,
             leagueYearPublisherRecord.ValidResult.Value.Publisher, publisherGame, leagueYearPublisherRecord.ValidResult.Value.Relationship), Maybe<IActionResult>.None);
     }
+
+    protected async Task<(Maybe<LeagueYearPublisherGameRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisherGame(Guid publisherID, Guid publisherGameID,
+        bool failIfActionProcessing, RequiredRelationship requiredRelationship)
+    {
+        Maybe<LeagueYearKey> leagueYearKey = await _fantasyCriticService.GetLeagueYearKeyForPublisherID(publisherID);
+        if (leagueYearKey.HasNoValue)
+        {
+            return GetFailedResult<LeagueYearPublisherGameRecord>(BadRequest("Publisher does not exist."));
+        }
+
+        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueYearKey.Value.LeagueID, leagueYearKey.Value.Year, publisherID, failIfActionProcessing, requiredRelationship);
+        if (leagueYearPublisherRecord.FailedResult.HasValue)
+        {
+            return (Maybe<LeagueYearPublisherGameRecord>.None, leagueYearPublisherRecord.FailedResult);
+        }
+
+        var publisherGame = leagueYearPublisherRecord.ValidResult.Value.Publisher.PublisherGames.SingleOrDefault(x => x.PublisherGameID == publisherGameID);
+        if (publisherGame is null)
+        {
+            return GetFailedResult<LeagueYearPublisherGameRecord>(BadRequest("That publisher game does not exist."));
+        }
+
+        return (new LeagueYearPublisherGameRecord(leagueYearPublisherRecord.ValidResult.Value.CurrentUser, leagueYearPublisherRecord.ValidResult.Value.LeagueYear,
+            leagueYearPublisherRecord.ValidResult.Value.Publisher, publisherGame, leagueYearPublisherRecord.ValidResult.Value.Relationship), Maybe<IActionResult>.None);
+    }
 }

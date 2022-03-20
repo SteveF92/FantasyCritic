@@ -62,6 +62,8 @@ public class RequiredRelationship
 {
     public static RequiredRelationship AllowAnonymous => new RequiredRelationship(false, false, false, false, false, true);
     public static RequiredRelationship LoggedIn => new RequiredRelationship(true, false, false, false, false, true);
+    public static RequiredRelationship InLeague => new RequiredRelationship(true, true, false, false, false, false);
+    public static RequiredRelationship InLeagueReadOnly => new RequiredRelationship(true, true, false, false, false, true);
     public static RequiredRelationship ActiveInYear => new RequiredRelationship(true, true, true, false, false, false);
     public static RequiredRelationship BePublisher => new RequiredRelationship(true, true, true, false, true, false);
     public static RequiredRelationship LeagueManager => new RequiredRelationship(true, true, true, true, false, false);
