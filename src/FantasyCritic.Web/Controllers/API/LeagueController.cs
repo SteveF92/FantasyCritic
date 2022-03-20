@@ -833,7 +833,7 @@ public class LeagueController : BaseLeagueController
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
 
-        List<Publisher> myPublishers = new List<Publisher>();
+        List<LeagueYearPublisherPair> myPublishers = new List<LeagueYearPublisherPair>();
         foreach (var year in activeYears)
         {
             IReadOnlyList<LeagueYear> activeLeagueYears = await _leagueMemberService.GetLeaguesYearsForUser(currentUser, year.Year);
@@ -851,7 +851,7 @@ public class LeagueController : BaseLeagueController
                     continue;
                 }
 
-                myPublishers.Add(userPublisher.Value);
+                myPublishers.Add(new LeagueYearPublisherPair(leagueYear, userPublisher.Value));
             }
         }
 
@@ -871,7 +871,7 @@ public class LeagueController : BaseLeagueController
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
 
-        List<Publisher> myPublishers = new List<Publisher>();
+        List<LeagueYearPublisherPair> myPublishers = new List<LeagueYearPublisherPair>();
         foreach (var year in activeYears)
         {
             IReadOnlyList<LeagueYear> activeLeagueYears = await _leagueMemberService.GetLeaguesYearsForUser(currentUser, year.Year);
@@ -889,7 +889,7 @@ public class LeagueController : BaseLeagueController
                     continue;
                 }
 
-                myPublishers.Add(userPublisher.Value);
+                myPublishers.Add(new LeagueYearPublisherPair(leagueYear, userPublisher.Value));
             }
         }
 
@@ -906,7 +906,6 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult.Value;
         }
-
         var leagueYear = leagueYearRecord.ValidResult.Value.LeagueYear;
         var league = leagueYear.League;
         var relationship = leagueYearRecord.ValidResult.Value.Relationship;
@@ -916,112 +915,68 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        var viewModels = GetGameNewsViewModel(leagueYear.Publishers, false, false).ToList();
+        var viewModels = GetGameNewsViewModel(leagueYear, false, false).ToList();
         return Ok(viewModels);
     }
 
     [AllowAnonymous]
-    public async Task<ActionResult<GameNewsViewModel>> LeagueGameNews(Guid leagueID, int year)
+    public async Task<IActionResult> LeagueGameNews(Guid leagueID, int year)
     {
-        Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
-        if (leagueYear.HasNoValue)
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, false, RequiredRelationship.AllowAnonymous);
+        if (leagueYearRecord.FailedResult.HasValue)
         {
-            throw new Exception("Something went really wrong, no options are set up for this league.");
+            return leagueYearRecord.FailedResult.Value;
         }
+        var leagueYear = leagueYearRecord.ValidResult.Value.LeagueYear;
+        var league = leagueYear.League;
+        var relationship = leagueYearRecord.ValidResult.Value.Relationship;
 
-        FantasyCriticUser currentUser = null;
-        if (!string.IsNullOrWhiteSpace(User.Identity.Name))
-        {
-            var currentUserResult = await GetCurrentUser();
-            if (currentUserResult.IsFailure)
-            {
-                return BadRequest(currentUserResult.Error);
-            }
-            currentUser = currentUserResult.Value;
-        }
-
-        var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
-        var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
-        bool userIsAdmin = false;
-
-        bool userIsInLeague = false;
-        bool userIsInvitedToLeague = false;
-        if (currentUser != null)
-        {
-            userIsInLeague = activeUsers.Any(x => x.Id == currentUser.Id);
-            userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
-            userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
-        }
-
-        if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !userIsAdmin)
+        if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
             return Forbid();
         }
 
-        var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value, activeUsers);
-        var supportedYear = (await _interLeagueService.GetSupportedYears()).SingleOrDefault(x => x.Year == year);
-        if (supportedYear is null)
-        {
-            return BadRequest();
-        }
-
-        var upcomingGames = GetGameNewsViewModel(publishersInLeague, false, false).ToList();
-        var recentGames = GetGameNewsViewModel(publishersInLeague, false, true).ToList();
-        return new GameNewsViewModel(upcomingGames, recentGames);
+        var upcomingGames = GetGameNewsViewModel(leagueYear, false, false).ToList();
+        var recentGames = GetGameNewsViewModel(leagueYear, false, true).ToList();
+        var vm = new GameNewsViewModel(upcomingGames, recentGames);
+        return Ok(vm);
     }
 
-    public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> PossibleMasterGames(string gameName, int year, Guid leagueID)
+    public async Task<IActionResult> PossibleMasterGames(string gameName, int year, Guid leagueID)
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, false, RequiredRelationship.ActiveInYear);
+        if (leagueYearRecord.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return leagueYearRecord.FailedResult.Value;
         }
-        var currentUser = currentUserResult.Value;
+        var leagueYear = leagueYearRecord.ValidResult.Value.LeagueYear;
+        var currentUser = leagueYearRecord.ValidResult.Value.CurrentUser.Value;
 
-        if (string.IsNullOrWhiteSpace(gameName))
-        {
-            return new List<PossibleMasterGameYearViewModel>();
-        }
-
-        var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
-        if (leagueYear.HasNoValue)
-        {
-            return BadRequest();
-        }
-
-        var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-        var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
-        if (userPublisher is null)
+        var userPublisher = leagueYear.GetUserPublisher(currentUser);
+        if (userPublisher.HasNoValue)
         {
             return BadRequest();
         }
 
         var currentDate = _clock.GetToday();
-        var matchingGames = await _gameSearchingService.SearchGames(gameName, userPublisher, publishersInLeague, year);
+        var matchingGames = await _gameSearchingService.SearchGames(gameName, leagueYear, userPublisher.Value, year);
         var viewModels = matchingGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(50).ToList();
 
-        return viewModels;
+        return Ok(viewModels);
     }
 
-    public async Task<ActionResult<List<PossibleMasterGameYearViewModel>>> TopAvailableGames(int year, Guid leagueID, string slotInfo)
+    public async Task<IActionResult> TopAvailableGames(int year, Guid leagueID, string slotInfo)
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, false, RequiredRelationship.ActiveInYear);
+        if (leagueYearRecord.FailedResult.HasValue)
         {
-            return BadRequest(currentUserResult.Error);
+            return leagueYearRecord.FailedResult.Value;
         }
-        var currentUser = currentUserResult.Value;
+        var leagueYear = leagueYearRecord.ValidResult.Value.LeagueYear;
+        var currentUser = leagueYearRecord.ValidResult.Value.CurrentUser.Value;
 
-        var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
-        if (leagueYear.HasNoValue)
-        {
-            return BadRequest();
-        }
-
-        var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value);
-        var userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Equals(currentUser));
-        if (userPublisher is null)
+        var userPublisher = leagueYear.GetUserPublisher(currentUser);
+        if (userPublisher.HasNoValue)
         {
             return BadRequest();
         }
@@ -1033,35 +988,36 @@ public class LeagueController : BaseLeagueController
             PublisherSingleSlotRequirementsViewModel slotInfoObject = JsonConvert.DeserializeObject<PublisherSingleSlotRequirementsViewModel>(slotInfoJSON);
             var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
             var leagueTagRequirements = slotInfoObject.GetLeagueTagStatus(tagDictionary);
-            topAvailableGames = await _gameSearchingService.GetTopAvailableGamesForSlot(userPublisher, publishersInLeague, year, leagueTagRequirements);
+            topAvailableGames = await _gameSearchingService.GetTopAvailableGamesForSlot(leagueYear, userPublisher.Value, leagueTagRequirements);
         }
         else
         {
-            topAvailableGames = await _gameSearchingService.GetTopAvailableGames(userPublisher, publishersInLeague, year);
+            topAvailableGames = await _gameSearchingService.GetTopAvailableGames(leagueYear, userPublisher.Value);
         }
 
         var currentDate = _clock.GetToday();
         var viewModels = topAvailableGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(100).ToList();
 
-        return viewModels;
+        return Ok(viewModels);
     }
 
-    public async Task<ActionResult<List<PublisherGameViewModel>>> PossibleCounterPicks(Guid publisherID)
+    public async Task<IActionResult> PossibleCounterPicks(Guid publisherID)
     {
-        var publisher = await _publisherService.GetPublisher(publisherID);
-        if (publisher.HasNoValue)
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, false, RequiredRelationship.ActiveInYear);
+        if (publisherRecord.FailedResult.HasValue)
         {
-            return BadRequest();
+            return publisherRecord.FailedResult.Value;
         }
+        var leagueYear = publisherRecord.ValidResult.Value.LeagueYear;
+        var publisher = publisherRecord.ValidResult.Value.Publisher;
 
-        var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(publisher.Value.LeagueYear);
-        var availableCounterPicks = _draftService.GetAvailableCounterPicks(publisher.Value.LeagueYear, publisher.Value, publishersInLeague);
+        var availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear, publisher);
         var currentDate = _clock.GetToday();
         var viewModels = availableCounterPicks
             .Select(x => new PublisherGameViewModel(x, currentDate, false, false))
             .OrderBy(x => x.GameName).ToList();
 
-        return viewModels;
+        return Ok(viewModels);
     }
 
     [HttpPost]
@@ -1584,6 +1540,11 @@ public class LeagueController : BaseLeagueController
         var inactiveTrades = trades.Where(x => !x.Status.IsActive);
         var viewModels = inactiveTrades.Select(x => new TradeViewModel(x, currentDate));
         return Ok(viewModels);
+    }
+
+    private IReadOnlyList<SingleGameNewsViewModel> GetGameNewsViewModel(LeagueYear leagueYear, bool userMode, bool recentReleases)
+    {
+        return GetGameNewsViewModel(leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)), userMode, recentReleases);
     }
 
     private IReadOnlyList<SingleGameNewsViewModel> GetGameNewsViewModel(IEnumerable<LeagueYearPublisherPair> publishers, bool userMode, bool recentReleases)

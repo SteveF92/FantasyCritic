@@ -69,7 +69,7 @@ public class GameSearchingService
         return possibleMasterGames;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGames(LeagueYear leagueYear, Publisher currentPublisher, int year)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGames(LeagueYear leagueYear, Publisher currentPublisher)
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
@@ -79,7 +79,7 @@ public class GameSearchingService
 
         HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
-        IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
+        IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
         IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
         var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
@@ -103,7 +103,7 @@ public class GameSearchingService
         return possibleMasterGames;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGamesForSlot(LeagueYear leagueYear, Publisher currentPublisher, int year, IEnumerable<LeagueTagStatus> leagueTagRequirements)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetTopAvailableGamesForSlot(LeagueYear leagueYear, Publisher currentPublisher, IEnumerable<LeagueTagStatus> leagueTagRequirements)
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
@@ -113,7 +113,7 @@ public class GameSearchingService
 
         HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
-        IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
+        IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
         IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
         var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);

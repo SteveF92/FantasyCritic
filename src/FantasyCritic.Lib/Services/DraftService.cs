@@ -253,7 +253,7 @@ public class DraftService
         if (draftPhase.Equals(DraftPhase.StandardGames))
         {
             var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.Value);
-            var availableGames = await _gameSearchingService.GetTopAvailableGames(updatedLeagueYear, nextPublisher.Value, leagueYear.Year);
+            var availableGames = await _gameSearchingService.GetTopAvailableGames(updatedLeagueYear, nextPublisher.Value);
             var availableGamesEligibleInRemainingSlots = new List<PossibleMasterGameYear>();
             var openSlots = nextPublisher.Value.GetPublisherSlots(leagueYear.Options).Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).ToList();
             foreach (var availableGame in availableGames)
@@ -358,9 +358,9 @@ public class DraftService
         return (null, null);
     }
 
-    public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher nextDraftingPublisher)
+    public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher publisherMakingCounterPick)
     {
-        IReadOnlyList<Publisher> otherPublishers = leagueYear.GetAllPublishersExcept(nextDraftingPublisher);
+        IReadOnlyList<Publisher> otherPublishers = leagueYear.GetAllPublishersExcept(publisherMakingCounterPick);
         IReadOnlyList<PublisherGame> gamesForYear = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
         IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick).ToList();
 
