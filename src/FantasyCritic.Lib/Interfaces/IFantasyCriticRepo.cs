@@ -10,6 +10,7 @@ public interface IFantasyCriticRepo
 {
     Task<Maybe<League>> GetLeagueByID(Guid id);
     Task<LeagueYear> GetLeagueYear(League requestLeague, int requestYear);
+    Task<Maybe<LeagueYearKey>> GetLeagueYearKeyForPublisherID(Guid publisherID);
     Task CreateLeague(League league, int initialYear, LeagueOptions options);
     Task AddNewLeagueYear(League league, int year, LeagueOptions options);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction);

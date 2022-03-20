@@ -192,6 +192,39 @@ public abstract class BaseLeagueController : FantasyCriticController
         return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.Value.CurrentUser, leagueYearRecord.ValidResult.Value.LeagueYear, publisher.Value, publisherRelationship), Maybe<IActionResult>.None);
     }
 
+    protected async Task<(Maybe<LeagueYearPublisherRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid publisherID,
+        bool failIfActionProcessing, RequiredRelationship requiredRelationship)
+    {
+        Maybe<LeagueYearKey> leagueYearKey = await _fantasyCriticService.GetLeagueYearKeyForPublisherID(publisherID);
+        if (leagueYearKey.HasNoValue)
+        {
+            return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("Publisher does not exist."));
+        }
+
+        var leagueYearRecord = await GetExistingLeagueYear(leagueYearKey.Value.LeagueID, leagueYearKey.Value.Year, failIfActionProcessing, requiredRelationship);
+        if (leagueYearRecord.FailedResult.HasValue)
+        {
+            return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
+        }
+
+        var publisher = leagueYearRecord.ValidResult.Value.LeagueYear.GetPublisherByID(publisherID);
+        if (publisher.HasNoValue)
+        {
+            return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("Publisher does not exist in that league."));
+        }
+
+        bool userIsPublisher = leagueYearRecord.ValidResult.Value.CurrentUser.HasValue &&
+                               leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
+        if (requiredRelationship.MustBePublisher)
+        {
+            return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("You are not that publisher."));
+        }
+
+        var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.Value.Relationship, userIsPublisher);
+
+        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.Value.CurrentUser, leagueYearRecord.ValidResult.Value.LeagueYear, publisher.Value, publisherRelationship), Maybe<IActionResult>.None);
+    }
+
     protected async Task<(Maybe<LeagueYearPublisherRecord> LeagueYearPublisherRecord, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, FantasyCriticUser userForPublisher,
         bool failIfActionProcessing, RequiredRelationship requiredRelationship)
     {

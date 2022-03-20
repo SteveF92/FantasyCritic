@@ -49,6 +49,11 @@ public class FantasyCriticService
         return options;
     }
 
+    public Task<Maybe<LeagueYearKey>> GetLeagueYearKeyForPublisherID(Guid publisherID)
+    {
+        return _fantasyCriticRepo.GetLeagueYearKeyForPublisherID(publisherID);
+    }
+
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
     {
         return _fantasyCriticRepo.GetLeagueYears(year);

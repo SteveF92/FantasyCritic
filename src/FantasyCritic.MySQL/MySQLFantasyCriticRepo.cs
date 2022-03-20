@@ -117,6 +117,26 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
+    public async Task<Maybe<LeagueYearKey>> GetLeagueYearKeyForPublisherID(Guid publisherID)
+    {
+        string sql = "select LeagueID, Year from tbl_league_publisher where PublisherID = @publisherID";
+        using (var connection = new MySqlConnection(_connectionString))
+        {
+            var queryObject = new
+            {
+                publisherID
+            };
+
+            LeagueYearKeyEntity entity = await connection.QuerySingleOrDefaultAsync<LeagueYearKeyEntity>(sql, queryObject);
+            if (entity is null)
+            {
+                return Maybe<LeagueYearKey>.None;
+            }
+
+            return new LeagueYearKey(entity.LeagueID, entity.Year);
+        }
+    }
+
     public async Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year, bool includeDeleted = false)
     {
         var allLeagueTags = await GetLeagueYearTagEntities(year);
@@ -314,7 +334,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<Maybe<FantasyCriticUser>> GetLeagueYearWinner(Guid leagueID, int year)
     {
-
         string sql = "select * from tbl_league_year where LeagueID = @leagueID and Year = @year";
         using (var connection = new MySqlConnection(_connectionString))
         {
