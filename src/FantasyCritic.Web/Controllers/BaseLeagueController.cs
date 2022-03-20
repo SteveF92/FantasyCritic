@@ -178,7 +178,7 @@ public abstract class BaseLeagueController : FantasyCriticController
 
         bool userIsPublisher = leagueYearRecord.ValidResult.Value.CurrentUser.HasValue &&
                                leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
-        if (requiredRelationship.MustBePublisher)
+        if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("You are not that publisher."));
         }
@@ -211,7 +211,7 @@ public abstract class BaseLeagueController : FantasyCriticController
 
         bool userIsPublisher = leagueYearRecord.ValidResult.Value.CurrentUser.HasValue &&
                                leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
-        if (requiredRelationship.MustBePublisher)
+        if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("You are not that publisher."));
         }
@@ -238,7 +238,7 @@ public abstract class BaseLeagueController : FantasyCriticController
 
         bool userIsPublisher = leagueYearRecord.ValidResult.Value.CurrentUser.HasValue &&
                                leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
-        if (requiredRelationship.MustBePublisher)
+        if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("You are not that publisher."));
         }
