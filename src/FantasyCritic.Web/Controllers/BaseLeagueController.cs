@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Helpers;
@@ -8,21 +9,18 @@ public abstract class BaseLeagueController : FantasyCriticController
 {
     protected readonly FantasyCriticService _fantasyCriticService;
     protected readonly InterLeagueService _interLeagueService;
+    protected readonly LeagueMemberService _leagueMemberService;
 
-    protected BaseLeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService) : base(userManager)
+    protected BaseLeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, LeagueMemberService leagueMemberService) : base(userManager)
     {
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
+        _leagueMemberService = leagueMemberService;
     }
 
-    protected async Task<(Maybe<LeagueRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeague(Guid leagueID, bool failIfActionProcessing, bool mustBeLeagueManager)
+    protected async Task<(Maybe<LeagueRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeague(Guid leagueID, bool failIfActionProcessing,
+        bool mustBeLoggedIn, bool mustBeInLeague, bool mustBeLeagueManager, bool allowIfAdmin)
     {
-        var currentUserRecord = await GetCurrentUser();
-        if (currentUserRecord.FailedResult.HasValue)
-        {
-            return (Maybe<LeagueRecord>.None, currentUserRecord.FailedResult);
-        }
-
         if (failIfActionProcessing)
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
@@ -32,28 +30,67 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
         }
 
+        var currentUserRecord = await GetCurrentUser();
+        if ((mustBeLoggedIn || mustBeInLeague || mustBeLeagueManager) && currentUserRecord.IsFailure)
+        {
+            return (Maybe<LeagueRecord>.None, Forbid("You must be logged in."));
+        }
+
         var league = await _fantasyCriticService.GetLeagueByID(leagueID);
         if (league.HasNoValue)
         {
             return GetFailedResult<LeagueRecord>(BadRequest("League does not exist."));
         }
 
-        if (mustBeLeagueManager && league.Value.LeagueManager.Id != currentUserRecord.ValidResult.Value.Id)
+        bool isInOrInvitedToLeague = false;
+        bool isLeagueManager = false;
+        if (currentUserRecord.IsSuccess)
         {
-            return GetFailedResult<LeagueRecord>(Forbid("You are not the manager of that league."));
+            isLeagueManager = league.Value.LeagueManager.Id == currentUserRecord.Value.Id;
+            if (mustBeLeagueManager && !isLeagueManager)
+            {
+                return GetFailedResult<LeagueRecord>(Forbid("You are not the manager of that league."));
+            }
+
+            if (isLeagueManager)
+            {
+                isInOrInvitedToLeague = true;
+            }
+            else
+            {
+                var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(league.Value);
+                isInOrInvitedToLeague = playersInLeague.Any(x => x.User.Id == currentUserRecord.Value.Id);
+                if (!isInOrInvitedToLeague)
+                {
+                    var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(league.Value);
+                    isInOrInvitedToLeague = inviteesToLeague.UserIsInvited(currentUserRecord.Value.Email);
+                }
+            }
         }
 
-        return (new LeagueRecord(currentUserRecord.ValidResult.Value, league.Value), Maybe<IActionResult>.None);
+        if (!isInOrInvitedToLeague && mustBeInLeague)
+        {
+            if (allowIfAdmin)
+            {
+                bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
+                if (!userIsAdmin)
+                {
+                    return GetFailedResult<LeagueRecord>(Forbid("You are not in that league."));
+                }
+            }
+            else
+            {
+                return GetFailedResult<LeagueRecord>(Forbid("You are not in that league."));
+            }
+        }
+
+        LeagueUserRelationship relationship = new LeagueUserRelationship(isInOrInvitedToLeague, isLeagueManager);
+        return (new LeagueRecord(currentUserRecord.ToMaybe(), league.Value, relationship), Maybe<IActionResult>.None);
     }
 
-    protected async Task<(Maybe<LeagueYearRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYear(Guid leagueID, int year, bool failIfActionProcessing, bool mustBeLeagueManager)
+    protected async Task<(Maybe<LeagueYearRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYear(Guid leagueID, int year, bool failIfActionProcessing,
+        bool mustBeLoggedIn, bool mustBeInLeague, bool mustBeActiveInYear, bool mustBeLeagueManager, bool allowIfAdmin)
     {
-        var currentUserRecord = await GetCurrentUser();
-        if (currentUserRecord.FailedResult.HasValue)
-        {
-            return (Maybe<LeagueYearRecord>.None, currentUserRecord.FailedResult);
-        }
-
         if (failIfActionProcessing)
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
@@ -63,23 +100,77 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
         }
 
+        var currentUserRecord = await GetCurrentUser();
+        if ((mustBeLoggedIn || mustBeInLeague || mustBeActiveInYear || mustBeLeagueManager) && currentUserRecord.IsFailure)
+        {
+            return (Maybe<LeagueYearRecord>.None, Forbid("You must be logged in."));
+        }
+
         var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
         if (leagueYear.HasNoValue)
         {
             return GetFailedResult<LeagueYearRecord>(BadRequest("League year does not exist."));
         }
 
-        if (mustBeLeagueManager && leagueYear.Value.League.LeagueManager.Id != currentUserRecord.ValidResult.Value.Id)
+        bool isInOrInvitedToLeague = false;
+        bool isActiveInYear = false;
+        bool isLeagueManager = false;
+        if (currentUserRecord.IsSuccess)
         {
-            return GetFailedResult<LeagueYearRecord>(Forbid("You are not the manager of that league."));
+            isLeagueManager = leagueYear.Value.League.LeagueManager.Id == currentUserRecord.Value.Id;
+            if (mustBeLeagueManager && !isLeagueManager)
+            {
+                return GetFailedResult<LeagueYearRecord>(Forbid("You are not the manager of that league."));
+            }
+
+            if (isLeagueManager)
+            {
+                isInOrInvitedToLeague = true;
+                isActiveInYear = true;
+            }
+            else
+            {
+                var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(leagueYear.Value.League);
+                isInOrInvitedToLeague = playersInLeague.Any(x => x.User.Id == currentUserRecord.Value.Id);
+                if (!isInOrInvitedToLeague)
+                {
+                    var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
+                    isInOrInvitedToLeague = inviteesToLeague.UserIsInvited(currentUserRecord.Value.Email);
+                }
+                var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
+                isActiveInYear = activeUsers.Any(x => x.Id == currentUserRecord.Value.Id);
+            }
         }
 
-        return (new LeagueYearRecord(currentUserRecord.ValidResult.Value, leagueYear.Value), Maybe<IActionResult>.None);
+        if (!isInOrInvitedToLeague && mustBeInLeague)
+        {
+            if (allowIfAdmin)
+            {
+                bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
+                if (!userIsAdmin)
+                {
+                    return GetFailedResult<LeagueYearRecord>(Forbid("You are not in that league."));
+                }
+            }
+            else
+            {
+                return GetFailedResult<LeagueYearRecord>(Forbid("You are not in that league."));
+            }
+        }
+
+        if (!isActiveInYear && mustBeActiveInYear)
+        {
+            return GetFailedResult<LeagueYearRecord>(Forbid("You are set as active in that league year."));
+        }
+
+        LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(isInOrInvitedToLeague, isActiveInYear, isLeagueManager);
+        return (new LeagueYearRecord(currentUserRecord.ToMaybe(), leagueYear.Value, relationship), Maybe<IActionResult>.None);
     }
 
-    protected async Task<(Maybe<LeagueYearPublisherRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, Guid publisherID, bool failIfActionProcessing, bool mustBeLeagueManager)
+    protected async Task<(Maybe<LeagueYearPublisherRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, Guid publisherID, bool failIfActionProcessing,
+        bool mustBeLoggedIn, bool mustBeInLeague, bool mustBeActiveInYear, bool mustBeLeagueManager, bool allowIfAdmin)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, failIfActionProcessing, mustBeLeagueManager);
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, failIfActionProcessing, mustBeLoggedIn, mustBeInLeague, mustBeActiveInYear, mustBeLeagueManager, allowIfAdmin);
         if (leagueYearRecord.FailedResult.HasValue)
         {
             return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
@@ -91,12 +182,13 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("Publisher does not exist in that league."));
         }
 
-        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.Value.CurrentUser, leagueYearRecord.ValidResult.Value.LeagueYear, publisher.Value), Maybe<IActionResult>.None);
+        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.Value.CurrentUser, leagueYearRecord.ValidResult.Value.LeagueYear, publisher.Value, leagueYearRecord.ValidResult.Value.Relationship), Maybe<IActionResult>.None);
     }
 
-    protected async Task<(Maybe<LeagueYearPublisherRecord> LeagueYearPublisherRecord, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, FantasyCriticUser userForPublisher, bool failIfActionProcessing, bool mustBeLeagueManager)
+    protected async Task<(Maybe<LeagueYearPublisherRecord> LeagueYearPublisherRecord, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, FantasyCriticUser userForPublisher, bool failIfActionProcessing,
+        bool mustBeLoggedIn, bool mustBeInLeague, bool mustBeActiveInYear, bool mustBeLeagueManager, bool allowIfAdmin)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, failIfActionProcessing, mustBeLeagueManager);
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, failIfActionProcessing, mustBeLoggedIn, mustBeInLeague, mustBeActiveInYear, mustBeLeagueManager, allowIfAdmin);
         if (leagueYearRecord.FailedResult.HasValue)
         {
             return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
@@ -108,12 +200,13 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("That user does not have a publisher in that league."));
         }
 
-        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.Value.CurrentUser, leagueYearRecord.ValidResult.Value.LeagueYear, publisher.Value), Maybe<IActionResult>.None);
+        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.Value.CurrentUser, leagueYearRecord.ValidResult.Value.LeagueYear, publisher.Value, leagueYearRecord.ValidResult.Value.Relationship), Maybe<IActionResult>.None);
     }
 
-    protected async Task<(Maybe<LeagueYearPublisherGameRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisherGame(Guid leagueID, int year, Guid publisherID, Guid publisherGameID, bool failIfActionProcessing, bool mustBeLeagueManager)
+    protected async Task<(Maybe<LeagueYearPublisherGameRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisherGame(Guid leagueID, int year, Guid publisherID, Guid publisherGameID, bool failIfActionProcessing,
+        bool mustBeLoggedIn, bool mustBeInLeague, bool mustBeActiveInYear, bool mustBeLeagueManager, bool allowIfAdmin)
     {
-        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueID, year, publisherID, failIfActionProcessing, mustBeLeagueManager);
+        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueID, year, publisherID, failIfActionProcessing, mustBeLoggedIn, mustBeInLeague, mustBeActiveInYear, mustBeLeagueManager, allowIfAdmin);
         if (leagueYearPublisherRecord.FailedResult.HasValue)
         {
             return (Maybe<LeagueYearPublisherGameRecord>.None, leagueYearPublisherRecord.FailedResult);
@@ -126,6 +219,6 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         return (new LeagueYearPublisherGameRecord(leagueYearPublisherRecord.ValidResult.Value.CurrentUser, leagueYearPublisherRecord.ValidResult.Value.LeagueYear,
-            leagueYearPublisherRecord.ValidResult.Value.Publisher, publisherGame), Maybe<IActionResult>.None);
+            leagueYearPublisherRecord.ValidResult.Value.Publisher, publisherGame, leagueYearPublisherRecord.ValidResult.Value.Relationship), Maybe<IActionResult>.None);
     }
 }

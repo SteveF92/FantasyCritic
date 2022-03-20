@@ -31,11 +31,11 @@ public class AccountController : FantasyCriticController
     public async Task<ActionResult> CurrentUser()
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.FailedResult.HasValue)
+        if (currentUserResult.IsFailure)
         {
-            return BadRequest(currentUserResult.FailedResult);
+            return BadRequest(currentUserResult.Error);
         }
-        var currentUser = currentUserResult.ValidResult.Value;
+        var currentUser = currentUserResult.Value;
 
         var roles = await _userManager.GetRolesAsync(currentUser);
         FantasyCriticUserViewModel vm = new FantasyCriticUserViewModel(currentUser, roles);

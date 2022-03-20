@@ -46,11 +46,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> CreateLeague([FromBody] CreateLeagueRequest request)
     {
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.FailedResult.HasValue)
+        if (currentUserResult.IsFailure)
         {
-            return BadRequest(currentUserResult.FailedResult);
+            return BadRequest(currentUserResult.Error);
         }
-        var currentUser = currentUserResult.ValidResult.Value;
+        var currentUser = currentUserResult.Value;
 
         if (string.IsNullOrWhiteSpace(request.LeagueName))
         {
@@ -90,12 +90,12 @@ public class LeagueManagerController : BaseLeagueController
     [HttpGet("{id}")]
     public async Task<IActionResult> AvailableYears(Guid id)
     {
-        var leagueRecord = await GetExistingLeague(id, false, true);
+        var leagueRecord = await GetExistingLeague(id);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
         }
-        var currentUser = leagueRecord.ValidResult.Value.CurrentUser;
+        var currentUser = leagueRecord.ValidResult.Value.CurrentUser.Value;
         var league = leagueRecord.ValidResult.Value.League;
 
         IReadOnlyList<SupportedYear> supportedYears = await _interLeagueService.GetSupportedYears();
