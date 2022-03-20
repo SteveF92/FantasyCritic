@@ -1,20 +1,16 @@
 <template>
   <div>
-    <div v-if="actionProcessing">
-      <h3>Bids are processing as we speak.</h3>
-      <p>On a good day, bids process within 10 minutes. If it's been more than 20 minutes, check Twitter for updates.</p>
-    </div>
     <div class="alert alert-primary">
-      <div v-if="!actionProcessing && nextPublicRevealTime">
-        <vac :end-time="nextPublicRevealTime">
-          <span slot="process" slot-scope="{ timeObj }" class="countdown">Bids will be revealed in {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
-        </vac>
-      </div>
-      <div v-if="!actionProcessing && nextBidTime">
-        <vac :end-time="nextBidTime">
-          <span slot="process" slot-scope="{ timeObj }" class="countdown">{{ `Bids process in ${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
-        </vac>
-      </div>
+      <template v-if="actionProcessing">
+        <h3>Bids are processing as we speak</h3>
+        On a good day, bids process within 10 minutes. If it's been more than 20 minutes, check Twitter for updates.
+      </template>
+      <vac v-if="!actionProcessing && nextPublicRevealTime" :end-time="nextPublicRevealTime">
+        <span slot="process" slot-scope="{ timeObj }" class="countdown">Bids will be revealed in {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
+      </vac>
+      <vac v-if="!actionProcessing && nextBidTime" :end-time="nextBidTime">
+        <span slot="process" slot-scope="{ timeObj }" class="countdown">{{ `Bids process in ${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
+      </vac>
     </div>
   </div>
 </template>
