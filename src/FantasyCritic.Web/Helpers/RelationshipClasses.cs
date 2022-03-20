@@ -1,28 +1,32 @@
 namespace FantasyCritic.Web.Helpers;
 public class LeagueUserRelationship
 {
-    public LeagueUserRelationship(bool inOrInvitedToLeague, bool leagueManager)
+    public LeagueUserRelationship(bool inOrInvitedToLeague, bool leagueManager, bool isAdmin)
     {
         InOrInvitedToLeague = inOrInvitedToLeague;
         LeagueManager = leagueManager;
+        IsAdmin = isAdmin;
     }
 
     public bool InOrInvitedToLeague { get; }
     public bool LeagueManager { get; }
+    public bool IsAdmin { get; }
 }
 
 public class LeagueYearUserRelationship
 {
-    public LeagueYearUserRelationship(bool inOrInvitedToLeague, bool activeInYear, bool leagueManager)
+    public LeagueYearUserRelationship(bool inOrInvitedToLeague, bool activeInYear, bool leagueManager, bool isAdmin)
     {
         InOrInvitedToLeague = inOrInvitedToLeague;
         ActiveInYear = activeInYear;
         LeagueManager = leagueManager;
+        IsAdmin = isAdmin;
     }
 
     public bool InOrInvitedToLeague { get; }
     public bool ActiveInYear { get; }
     public bool LeagueManager { get; }
+    public bool IsAdmin { get; }
 }
 
 public class PublisherUserRelationship
@@ -32,6 +36,7 @@ public class PublisherUserRelationship
         InOrInvitedToLeague = leagueYearRelationship.InOrInvitedToLeague;
         ActiveInYear = leagueYearRelationship.ActiveInYear;
         LeagueManager = leagueYearRelationship.LeagueManager;
+        IsAdmin = leagueYearRelationship.IsAdmin;
         IsPublisher = isPublisher;
     }
 
@@ -39,6 +44,7 @@ public class PublisherUserRelationship
     public bool ActiveInYear { get; }
     public bool LeagueManager { get; }
     public bool IsPublisher { get; }
+    public bool IsAdmin { get; }
 }
 
 public class RequiredRelationship

@@ -68,23 +68,16 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
         }
 
+        bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
         if (!isInOrInvitedToLeague && requiredRelationship.MustBeInOrInvitedToLeague)
         {
-            if (requiredRelationship.AllowIfAdmin)
-            {
-                bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
-                if (!userIsAdmin)
-                {
-                    return GetFailedResult<LeagueRecord>(Forbid("You are not in that league."));
-                }
-            }
-            else
+            if (!requiredRelationship.AllowIfAdmin || !userIsAdmin)
             {
                 return GetFailedResult<LeagueRecord>(Forbid("You are not in that league."));
             }
         }
 
-        LeagueUserRelationship relationship = new LeagueUserRelationship(isInOrInvitedToLeague, isLeagueManager);
+        LeagueUserRelationship relationship = new LeagueUserRelationship(isInOrInvitedToLeague, isLeagueManager, userIsAdmin);
         return (new LeagueRecord(currentUserRecord.ToMaybe(), league.Value, relationship), Maybe<IActionResult>.None);
     }
 
@@ -142,17 +135,10 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
         }
 
+        bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
         if (!isInOrInvitedToLeague && requiredRelationship.MustBeInOrInvitedToLeague)
         {
-            if (requiredRelationship.AllowIfAdmin)
-            {
-                bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
-                if (!userIsAdmin)
-                {
-                    return GetFailedResult<LeagueYearRecord>(Forbid("You are not in that league."));
-                }
-            }
-            else
+            if (!requiredRelationship.AllowIfAdmin || !userIsAdmin)
             {
                 return GetFailedResult<LeagueYearRecord>(Forbid("You are not in that league."));
             }
@@ -163,7 +149,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearRecord>(Forbid("You are set as active in that league year."));
         }
 
-        LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(isInOrInvitedToLeague, isActiveInYear, isLeagueManager);
+        LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(isInOrInvitedToLeague, isActiveInYear, isLeagueManager, userIsAdmin);
         return (new LeagueYearRecord(currentUserRecord.ToMaybe(), leagueYear.Value, relationship), Maybe<IActionResult>.None);
     }
 

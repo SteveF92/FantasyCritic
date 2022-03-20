@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Web.Helpers;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models.Requests.League;
 using FantasyCritic.Web.Models.Requests.League.Trades;
@@ -160,51 +161,23 @@ public class LeagueController : BaseLeagueController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetLeague(Guid id, Guid? inviteCode)
     {
-        Maybe<League> league = await _fantasyCriticService.GetLeagueByID(id);
-        if (league.HasNoValue)
+        var leagueRecord = await GetExistingLeague(id, false, RequiredRelationship.AllowAnonymous);
+        if (leagueRecord.FailedResult.HasValue)
         {
-            return NotFound();
+            return leagueRecord.FailedResult.Value;
         }
-
-        FantasyCriticUser currentUser = null;
-        if (!string.IsNullOrWhiteSpace(User.Identity.Name))
-        {
-            var currentUserResult = await GetCurrentUser();
-            if (currentUserResult.IsFailure)
-            {
-                return BadRequest(currentUserResult.Error);
-            }
-            currentUser = currentUserResult.Value;
-        }
-
-        var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(league.Value);
-        var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(league.Value);
-        var leagueFollowers = await _fantasyCriticService.GetLeagueFollowers(league.Value);
-
-        bool userIsInLeague = false;
-        bool userIsInvitedToLeague = false;
-        bool isManager = false;
-        bool userIsFollowingLeague = false;
-        bool userIsAdmin = false;
-        Maybe<LeagueInvite> leagueInvite = Maybe<LeagueInvite>.None;
-        if (currentUser != null)
-        {
-            userIsInLeague = playersInLeague.Any(x => x.User.Id == currentUser.Id);
-            userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
-            isManager = (league.Value.LeagueManager.Id == currentUser.Id);
-            userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Id);
-            leagueInvite = inviteesToLeague.GetMatchingInvite(currentUser.Email);
-            userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
-        }
+        var currentUser = leagueRecord.ValidResult.Value.CurrentUser.Value;
+        var league = leagueRecord.ValidResult.Value.League;
+        var relationship = leagueRecord.ValidResult.Value.Relationship;
 
         bool inviteCodeIsValid = false;
         if (inviteCode.HasValue)
         {
-            var activeLinks = await _leagueMemberService.GetActiveInviteLinks(league.Value);
+            var activeLinks = await _leagueMemberService.GetActiveInviteLinks(league);
             inviteCodeIsValid = activeLinks.Any(x => x.Active && x.InviteCode == inviteCode.Value);
         }
 
-        if (!userIsInLeague && !userIsInvitedToLeague && !league.Value.PublicLeague && !inviteCodeIsValid && !userIsAdmin)
+        if (!league.PublicLeague && !relationship.InOrInvitedToLeague && !relationship.IsAdmin && !inviteCodeIsValid)
         {
             return Forbid();
         }
