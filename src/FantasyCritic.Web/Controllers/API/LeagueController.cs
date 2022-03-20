@@ -26,8 +26,6 @@ namespace FantasyCritic.Web.Controllers.API;
 [Authorize]
 public class LeagueController : BaseLeagueController
 {
-    private readonly FantasyCriticUserManager _userManager;
-    private readonly LeagueMemberService _leagueMemberService;
     private readonly DraftService _draftService;
     private readonly GameSearchingService _gameSearchingService;
     private readonly PublisherService _publisherService;
@@ -38,10 +36,8 @@ public class LeagueController : BaseLeagueController
 
     public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock,
-        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService) : base(userManager, fantasyCriticService, interLeagueService)
+        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService) : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService)
     {
-        _userManager = userManager;
-        _leagueMemberService = leagueMemberService;
         _draftService = draftService;
         _gameSearchingService = gameSearchingService;
         _publisherService = publisherService;
