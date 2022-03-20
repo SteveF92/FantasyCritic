@@ -160,7 +160,7 @@ public class LeagueController : BaseLeagueController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetLeague(Guid id, Guid? inviteCode)
     {
-        var leagueRecord = await GetExistingLeague(id, false, RequiredRelationship.AllowAnonymous);
+        var leagueRecord = await GetExistingLeague(id, RequiredRelationship.AllowAnonymous);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -349,7 +349,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> AcceptInvite([FromBody] AcceptInviteRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, true, RequiredRelationship.LoggedIn);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LoggedIn);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -374,7 +374,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> JoinWithInviteLink([FromBody] JoinWithInviteLinkRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, true, RequiredRelationship.LoggedIn);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LoggedIn);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -784,7 +784,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> FollowLeague([FromBody] FollowLeagueRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, false, RequiredRelationship.LoggedIn);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LoggedIn);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -804,7 +804,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> UnfollowLeague([FromBody] FollowLeagueRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, false, RequiredRelationship.LoggedIn);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LoggedIn);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -1266,7 +1266,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> SetArchiveStatus([FromBody] SetArchiveStatusRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, false, RequiredRelationship.InLeague);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.InLeague);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;

@@ -18,21 +18,11 @@ public abstract class BaseLeagueController : FantasyCriticController
         _leagueMemberService = leagueMemberService;
     }
 
-    protected async Task<(Maybe<LeagueRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeague(Guid leagueID,
-        bool failIfActionProcessing, RequiredRelationship requiredRelationship)
+    protected async Task<(Maybe<LeagueRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeague(Guid leagueID, RequiredRelationship requiredRelationship)
     {
         if (!ModelState.IsValid)
         {
             return GetFailedResult<LeagueRecord>(BadRequest("Invalid request."));
-        }
-
-        if (failIfActionProcessing)
-        {
-            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-            if (systemWideSettings.ActionProcessingMode)
-            {
-                return GetFailedResult<LeagueRecord>(BadRequest("Site is in read-only mode while actions process."));
-            }
         }
 
         var currentUserRecord = await GetCurrentUser();

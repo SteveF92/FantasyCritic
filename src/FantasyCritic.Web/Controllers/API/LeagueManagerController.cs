@@ -87,7 +87,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpGet("{id}")]
     public async Task<IActionResult> AvailableYears(Guid id)
     {
-        var leagueRecord = await GetExistingLeague(id, false, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(id, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -112,7 +112,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> AddNewLeagueYear([FromBody] NewLeagueYearRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, true, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -160,7 +160,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> ChangeLeagueOptions([FromBody] ChangeLeagueOptionsRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, true, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -214,7 +214,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> InvitePlayer([FromBody] CreateInviteRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, true, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -262,7 +262,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> CreateInviteLink([FromBody] CreateInviteLinkRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, true, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -283,7 +283,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> DeleteInviteLink([FromBody] DeleteInviteLinkRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, true, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -305,7 +305,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpGet("{leagueID}")]
     public async Task<IActionResult> InviteLinks(Guid leagueID)
     {
-        var leagueRecord = await GetExistingLeague(leagueID, false, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(leagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -322,7 +322,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> RescindInvite([FromBody] DeleteInviteRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, true, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -346,7 +346,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> RemovePlayer([FromBody] PlayerRemoveRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, true, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
@@ -1018,7 +1018,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> PromoteNewLeagueManager([FromBody] PromoteNewLeagueManagerRequest request)
     {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, false, RequiredRelationship.LeagueManager);
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult.HasValue)
         {
             return leagueRecord.FailedResult.Value;
