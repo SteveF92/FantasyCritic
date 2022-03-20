@@ -166,7 +166,8 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult.Value;
         }
-        var currentUser = leagueRecord.ValidResult.Value.CurrentUser.Value;
+
+        var currentUser = leagueRecord.ValidResult.Value.CurrentUser;
         var league = leagueRecord.ValidResult.Value.League;
         var relationship = leagueRecord.ValidResult.Value.Relationship;
 
@@ -182,90 +183,69 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        bool hasBeenStarted = await _fantasyCriticService.LeagueHasBeenStarted(league.Value.LeagueID);
+        bool hasBeenStarted = await _fantasyCriticService.LeagueHasBeenStarted(league.LeagueID);
         bool neverStarted = !hasBeenStarted;
 
-        var leagueViewModel = new LeagueViewModel(league.Value, isManager, playersInLeague, leagueInvite, currentUser, neverStarted, userIsInLeague, userIsFollowingLeague);
+        bool userIsFollowingLeague = false;
+        if (currentUser.HasValue)
+        {
+            var leagueFollowers = await _fantasyCriticService.GetLeagueFollowers(league);
+            userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Value.Id);
+        }
+
+        var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, leagueRecord.ValidResult.Value.PlayersInLeague,
+            relationship.LeagueInvite, currentUser, neverStarted, relationship.InLeague, userIsFollowingLeague);
         return Ok(leagueViewModel);
     }
 
     [AllowAnonymous]
     public async Task<IActionResult> GetLeagueYear(Guid leagueID, int year, Guid? inviteCode)
     {
-        Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
-        if (leagueYear.HasNoValue)
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, true, RequiredRelationship.AllowAnonymous);
+        if (leagueYearRecord.FailedResult.HasValue)
         {
-            throw new Exception("Something went really wrong, no options are set up for this league.");
+            return leagueYearRecord.FailedResult.Value;
         }
-
-        FantasyCriticUser currentUser = null;
-        if (!string.IsNullOrWhiteSpace(User.Identity.Name))
-        {
-            var currentUserResult = await GetCurrentUser();
-            if (currentUserResult.IsFailure)
-            {
-                return BadRequest(currentUserResult.Error);
-            }
-            currentUser = currentUserResult.Value;
-        }
-
-        var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
-        var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
-
-        bool userIsInLeague = false;
-        bool userIsInvitedToLeague = false;
-        bool isManager = false;
-        bool userIsAdmin = false;
-        if (currentUser != null)
-        {
-            userIsInLeague = activeUsers.Any(x => x.Id == currentUser.Id);
-            userIsInvitedToLeague = inviteesToLeague.UserIsInvited(currentUser.Email);
-            isManager = (leagueYear.Value.League.LeagueManager.Id == currentUser.Id);
-            userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
-        }
+        var leagueYear = leagueYearRecord.ValidResult.Value.LeagueYear;
+        var league = leagueYear.League;
+        var currentUser = leagueYearRecord.ValidResult.Value.CurrentUser;
+        var relationship = leagueYearRecord.ValidResult.Value.Relationship;
 
         bool inviteCodeIsValid = false;
         if (inviteCode.HasValue)
         {
-            var activeLinks = await _leagueMemberService.GetActiveInviteLinks(leagueYear.Value.League);
+            var activeLinks = await _leagueMemberService.GetActiveInviteLinks(league);
             inviteCodeIsValid = activeLinks.Any(x => x.Active && x.InviteCode == inviteCode.Value);
         }
 
-        if (!userIsInLeague && !userIsInvitedToLeague && !leagueYear.Value.League.PublicLeague && !inviteCodeIsValid && !userIsAdmin)
+        if (!league.PublicLeague && !relationship.InOrInvitedToLeague && !relationship.IsAdmin && !inviteCodeIsValid)
         {
             return Forbid();
         }
 
-        var publishersInLeague = await _publisherService.GetPublishersInLeagueForYear(leagueYear.Value, activeUsers);
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var supportedYear = supportedYears.SingleOrDefault(x => x.Year == year);
-        if (supportedYear is null)
-        {
-            return BadRequest();
-        }
+        StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear, leagueYearRecord.ValidResult.Value.ActiveUsers);
+        Maybe<Publisher> nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear);
+        var draftPhase = _draftService.GetDraftPhase(leagueYear);
 
-        StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear.Value, publishersInLeague, activeUsers);
-        Maybe<Publisher> nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear.Value, publishersInLeague);
-        var draftPhase = _draftService.GetDraftPhase(leagueYear.Value, publishersInLeague);
-
-        Maybe<Publisher> userPublisher = Maybe<Publisher>.None;
-        if (userIsInLeague)
+        Maybe<Publisher> userPublisher =  Maybe<Publisher>.None;
+        if (currentUser.HasValue)
         {
-            userPublisher = publishersInLeague.SingleOrDefault(x => x.User.Id == currentUser.Id);
+            userPublisher = leagueYear.GetUserPublisher(currentUser.Value);
         }
 
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
-        IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear.Value);
+        IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear);
 
-        Maybe<FantasyCriticUser> previousYearWinner = await _fantasyCriticService.GetPreviousYearWinner(leagueYear.Value);
-        var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear.Value);
-        IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear.Value, publishersInLeague);
+        Maybe<FantasyCriticUser> previousYearWinner = await _fantasyCriticService.GetPreviousYearWinner(leagueYear);
+        var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear);
+        IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear);
 
-        IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear.Value, publishersInLeague);
+        IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear);
 
         var currentDate = _clock.GetToday();
-        var leagueViewModel = new LeagueYearViewModel(leagueYear.Value, supportedYear, publishersInLeague, userPublisher, currentDate,
-            startDraftResult, activeUsers, nextDraftPublisher, draftPhase, systemWideValues, inviteesToLeague, userIsInLeague, userIsInvitedToLeague, isManager,
+        var leagueViewModel = new LeagueYearViewModel(leagueYear, userPublisher, currentDate,
+            startDraftResult, leagueYearRecord.ValidResult.Value.ActiveUsers, nextDraftPublisher, draftPhase, systemWideValues,
+            leagueYearRecord.ValidResult.Value.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades);
         return Ok(leagueViewModel);
     }

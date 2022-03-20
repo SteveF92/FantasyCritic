@@ -30,7 +30,7 @@ public class DraftService
         _gameSearchingService = gameSearchingService;
     }
 
-    public async Task<StartDraftResult> GetStartDraftResult(LeagueYear leagueYear, IReadOnlyList<Publisher> publishersInLeague, IReadOnlyList<FantasyCriticUser> activeUsers)
+    public async Task<StartDraftResult> GetStartDraftResult(LeagueYear leagueYear, IReadOnlyList<FantasyCriticUser> activeUsers)
     {
         if (leagueYear.PlayStatus.PlayStarted)
         {
@@ -52,7 +52,7 @@ public class DraftService
             errors.Add("You cannot have more than 20 players in the league.");
         }
 
-        if (publishersInLeague.Count() != activeUsers.Count())
+        if (leagueYear.Publishers.Count() != activeUsers.Count())
         {
             errors.Add("Not every player has created a publisher.");
         }

@@ -2,9 +2,9 @@ namespace FantasyCritic.Web.Utilities;
 
 public static class GameUtilities
 {
-    public static IReadOnlySet<Guid> GetCounterPickedPublisherGameIDs(LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+    public static IReadOnlySet<Guid> GetCounterPickedPublisherGameIDs(LeagueYear leagueYear)
     {
-        var gamesWithMasterGame = publishers.SelectMany(x => x.PublisherGames)
+        var gamesWithMasterGame = leagueYear.Publishers.SelectMany(x => x.PublisherGames)
             .Where(x => x.MasterGame.HasValue)
             .ToList();
         var counterPicks = gamesWithMasterGame

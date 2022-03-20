@@ -20,7 +20,7 @@ public class LeagueViewModel
         NumberOfFollowers = league.NumberOfFollowers;
     }
 
-    public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUserRemovable> players, Maybe<LeagueInvite> outstandingInvite, FantasyCriticUser currentUser,
+    public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUserRemovable> players, Maybe<LeagueInvite> outstandingInvite, Maybe<FantasyCriticUser> currentUser,
         bool neverStarted, bool userIsInLeague, bool userIsFollowingLeague)
     {
         LeagueID = league.LeagueID;
@@ -31,9 +31,9 @@ public class LeagueViewModel
         Years = league.Years;
         ActiveYear = Years.Max();
 
-        if (outstandingInvite.HasValue)
+        if (outstandingInvite.HasValue && currentUser.HasValue)
         {
-            OutstandingInvite = LeagueInviteViewModel.CreateWithDisplayName(outstandingInvite.Value, currentUser);
+            OutstandingInvite = LeagueInviteViewModel.CreateWithDisplayName(outstandingInvite.Value, currentUser.Value);
         }
 
         Players = players.Select(x => new PlayerViewModel(league, x.User, x.Removable)).ToList();

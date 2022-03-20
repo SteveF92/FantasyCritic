@@ -1,29 +1,36 @@
 namespace FantasyCritic.Web.Helpers;
 public class LeagueUserRelationship
 {
-    public LeagueUserRelationship(bool inOrInvitedToLeague, bool leagueManager, bool isAdmin)
+    public LeagueUserRelationship(Maybe<LeagueInvite> leagueInvite, bool inLeague, bool leagueManager, bool isAdmin)
     {
-        InOrInvitedToLeague = inOrInvitedToLeague;
+        LeagueInvite = leagueInvite;
+        InLeague = inLeague;
         LeagueManager = leagueManager;
         IsAdmin = isAdmin;
     }
 
-    public bool InOrInvitedToLeague { get; }
+    public Maybe<LeagueInvite> LeagueInvite { get; }
+    public bool InvitedToLeague => LeagueInvite.HasValue;
+    public bool InLeague { get; }
+    public bool InOrInvitedToLeague => InvitedToLeague || InLeague;
     public bool LeagueManager { get; }
     public bool IsAdmin { get; }
 }
 
 public class LeagueYearUserRelationship
 {
-    public LeagueYearUserRelationship(bool inOrInvitedToLeague, bool activeInYear, bool leagueManager, bool isAdmin)
+    public LeagueYearUserRelationship(bool invitedToLeague, bool inLeague, bool activeInYear, bool leagueManager, bool isAdmin)
     {
-        InOrInvitedToLeague = inOrInvitedToLeague;
+        InvitedToLeague = invitedToLeague;
+        InLeague = inLeague;
         ActiveInYear = activeInYear;
         LeagueManager = leagueManager;
         IsAdmin = isAdmin;
     }
 
-    public bool InOrInvitedToLeague { get; }
+    public bool InvitedToLeague { get; }
+    public bool InLeague { get; }
+    public bool InOrInvitedToLeague => InvitedToLeague || InLeague;
     public bool ActiveInYear { get; }
     public bool LeagueManager { get; }
     public bool IsAdmin { get; }

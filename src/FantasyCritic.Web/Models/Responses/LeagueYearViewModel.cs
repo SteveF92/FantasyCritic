@@ -6,7 +6,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueYearViewModel
 {
-    public LeagueYearViewModel(LeagueYear leagueYear, SupportedYear supportedYear, IEnumerable<Publisher> publishers, Maybe<Publisher> userPublisher,
+    public LeagueYearViewModel(LeagueYear leagueYear, Maybe<Publisher> userPublisher,
         LocalDate currentDate, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
         DraftPhase draftPhase, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
@@ -15,7 +15,7 @@ public class LeagueYearViewModel
     {
         LeagueID = leagueYear.League.LeagueID;
         Year = leagueYear.Year;
-        SupportedYear = new SupportedYearViewModel(supportedYear);
+        SupportedYear = new SupportedYearViewModel(leagueYear.SupportedYear);
         StandardGames = leagueYear.Options.StandardGames;
         GamesToDraft = leagueYear.Options.GamesToDraft;
         CounterPicks = leagueYear.Options.CounterPicks;
@@ -24,10 +24,10 @@ public class LeagueYearViewModel
         TiebreakSystem = leagueYear.Options.TiebreakSystem.Value;
         ScoringSystem = leagueYear.Options.ScoringSystem.Name;
         TradingSystem = leagueYear.Options.TradingSystem.Value;
-        UnlinkedGameExists = publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
+        UnlinkedGameExists = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValue);
         UserIsActive = activeUsers.Any(x => x.Id == accessingUser.GetValueOrDefault(y => y.Id));
         HasSpecialSlots = leagueYear.Options.HasSpecialSlots();
-        Publishers = publishers
+        Publishers = leagueYear.Publishers
             .OrderBy(x => x.DraftPosition)
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
             .ToList();
@@ -41,8 +41,8 @@ public class LeagueYearViewModel
         bool allPublishersMade = true;
         foreach (var user in activeUsers)
         {
-            var publisher = publishers.SingleOrDefault(x => x.User.Id == user.Id);
-            if (publisher is null)
+            var publisher = leagueYear.GetUserPublisher(user);
+            if (publisher.HasNoValue)
             {
                 playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, false));
                 allPublishersMade = false;
@@ -50,8 +50,8 @@ public class LeagueYearViewModel
             else
             {
                 bool isPreviousYearWinner = previousYearWinner.HasValue && previousYearWinner.Value.Id == user.Id;
-                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
-                    userIsInLeague, userIsInvitedToLeague, supportedYear, false, isPreviousYearWinner, counterPickedPublisherGameIDs));
+                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher.Value, currentDate, systemWideValues,
+                    userIsInLeague, userIsInvitedToLeague, leagueYear.SupportedYear, false, isPreviousYearWinner, counterPickedPublisherGameIDs));
             }
         }
 

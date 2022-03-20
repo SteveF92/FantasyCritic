@@ -42,7 +42,9 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueRecord>(BadRequest("League does not exist."));
         }
 
-        bool isInOrInvitedToLeague = false;
+        var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(league.Value);
+        bool isInLeague = false;
+        Maybe<LeagueInvite> leagueInvite = Maybe<LeagueInvite>.None;
         bool isLeagueManager = false;
         if (currentUserRecord.IsSuccess)
         {
@@ -54,22 +56,21 @@ public abstract class BaseLeagueController : FantasyCriticController
 
             if (isLeagueManager)
             {
-                isInOrInvitedToLeague = true;
+                isInLeague = true;
             }
             else
             {
-                var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(league.Value);
-                isInOrInvitedToLeague = playersInLeague.Any(x => x.User.Id == currentUserRecord.Value.Id);
-                if (!isInOrInvitedToLeague)
+                isInLeague = playersInLeague.Any(x => x.User.Id == currentUserRecord.Value.Id);
+                if (!isInLeague)
                 {
                     var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(league.Value);
-                    isInOrInvitedToLeague = inviteesToLeague.UserIsInvited(currentUserRecord.Value.Email);
+                    leagueInvite = inviteesToLeague.GetMatchingInvite(currentUserRecord.Value.Email);
                 }
             }
         }
 
         bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
-        if (!isInOrInvitedToLeague && requiredRelationship.MustBeInOrInvitedToLeague)
+        if (!isInLeague && leagueInvite.HasNoValue && requiredRelationship.MustBeInOrInvitedToLeague)
         {
             if (!requiredRelationship.AllowIfAdmin || !userIsAdmin)
             {
@@ -77,8 +78,8 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
         }
 
-        LeagueUserRelationship relationship = new LeagueUserRelationship(isInOrInvitedToLeague, isLeagueManager, userIsAdmin);
-        return (new LeagueRecord(currentUserRecord.ToMaybe(), league.Value, relationship), Maybe<IActionResult>.None);
+        LeagueUserRelationship relationship = new LeagueUserRelationship(leagueInvite, isInLeague, isLeagueManager, userIsAdmin);
+        return (new LeagueRecord(currentUserRecord.ToMaybe(), league.Value, playersInLeague, relationship), Maybe<IActionResult>.None);
     }
 
     protected async Task<(Maybe<LeagueYearRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYear(Guid leagueID, int year,
@@ -105,7 +106,10 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearRecord>(BadRequest("League year does not exist."));
         }
 
-        bool isInOrInvitedToLeague = false;
+        var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
+        var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
+        bool isInLeague = false;
+        bool isInvitedToLeague = false;
         bool isActiveInYear = false;
         bool isLeagueManager = false;
         if (currentUserRecord.IsSuccess)
@@ -118,25 +122,23 @@ public abstract class BaseLeagueController : FantasyCriticController
 
             if (isLeagueManager)
             {
-                isInOrInvitedToLeague = true;
+                isInLeague = true;
                 isActiveInYear = true;
             }
             else
             {
                 var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(leagueYear.Value.League);
-                isInOrInvitedToLeague = playersInLeague.Any(x => x.User.Id == currentUserRecord.Value.Id);
-                if (!isInOrInvitedToLeague)
+                isInLeague = playersInLeague.Any(x => x.User.Id == currentUserRecord.Value.Id);
+                if (!isInLeague)
                 {
-                    var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
-                    isInOrInvitedToLeague = inviteesToLeague.UserIsInvited(currentUserRecord.Value.Email);
+                    isInvitedToLeague = inviteesToLeague.UserIsInvited(currentUserRecord.Value.Email);
                 }
-                var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
                 isActiveInYear = activeUsers.Any(x => x.Id == currentUserRecord.Value.Id);
             }
         }
 
         bool userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
-        if (!isInOrInvitedToLeague && requiredRelationship.MustBeInOrInvitedToLeague)
+        if (!isInLeague && !isInvitedToLeague && requiredRelationship.MustBeInOrInvitedToLeague)
         {
             if (!requiredRelationship.AllowIfAdmin || !userIsAdmin)
             {
@@ -149,8 +151,8 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearRecord>(Forbid("You are set as active in that league year."));
         }
 
-        LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(isInOrInvitedToLeague, isActiveInYear, isLeagueManager, userIsAdmin);
-        return (new LeagueYearRecord(currentUserRecord.ToMaybe(), leagueYear.Value, relationship), Maybe<IActionResult>.None);
+        LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(isInvitedToLeague, isInLeague, isActiveInYear, isLeagueManager, userIsAdmin);
+        return (new LeagueYearRecord(currentUserRecord.ToMaybe(), leagueYear.Value, activeUsers, inviteesToLeague, relationship), Maybe<IActionResult>.None);
     }
 
     protected async Task<(Maybe<LeagueYearPublisherRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, Guid publisherID,
