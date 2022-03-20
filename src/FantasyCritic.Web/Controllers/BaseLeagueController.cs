@@ -78,14 +78,14 @@ public abstract class BaseLeagueController : FantasyCriticController
     }
 
     protected async Task<(Maybe<LeagueYearRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYear(Guid leagueID, int year,
-        bool failIfActionProcessing, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
+        ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
         if (!ModelState.IsValid)
         {
             return GetFailedResult<LeagueYearRecord>(BadRequest("Invalid request."));
         }
 
-        if (failIfActionProcessing)
+        if (actionProcessingModeBehavior == ActionProcessingModeBehavior.Ban)
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
             if (systemWideSettings.ActionProcessingMode)
@@ -162,9 +162,9 @@ public abstract class BaseLeagueController : FantasyCriticController
     }
 
     protected async Task<(Maybe<LeagueYearPublisherRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, Guid publisherID,
-        bool failIfActionProcessing, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
+        ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, failIfActionProcessing, requiredRelationship, requiredYearStatus);
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
         if (leagueYearRecord.FailedResult.HasValue)
         {
             return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
@@ -189,7 +189,7 @@ public abstract class BaseLeagueController : FantasyCriticController
     }
 
     protected async Task<(Maybe<LeagueYearPublisherRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid publisherID,
-        bool failIfActionProcessing, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
+        ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
         Maybe<LeagueYearKey> leagueYearKey = await _fantasyCriticService.GetLeagueYearKeyForPublisherID(publisherID);
         if (leagueYearKey.HasNoValue)
@@ -197,7 +197,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("Publisher does not exist."));
         }
 
-        var leagueYearRecord = await GetExistingLeagueYear(leagueYearKey.Value.LeagueID, leagueYearKey.Value.Year, failIfActionProcessing, requiredRelationship, requiredYearStatus);
+        var leagueYearRecord = await GetExistingLeagueYear(leagueYearKey.Value.LeagueID, leagueYearKey.Value.Year, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
         if (leagueYearRecord.FailedResult.HasValue)
         {
             return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
@@ -222,9 +222,9 @@ public abstract class BaseLeagueController : FantasyCriticController
     }
 
     protected async Task<(Maybe<LeagueYearPublisherRecord> LeagueYearPublisherRecord, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, FantasyCriticUser userForPublisher,
-        bool failIfActionProcessing, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
+        ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, failIfActionProcessing, requiredRelationship, requiredYearStatus);
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
         if (leagueYearRecord.FailedResult.HasValue)
         {
             return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
@@ -249,9 +249,9 @@ public abstract class BaseLeagueController : FantasyCriticController
     }
 
     protected async Task<(Maybe<LeagueYearPublisherGameRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisherGame(Guid leagueID, int year, Guid publisherID, Guid publisherGameID,
-        bool failIfActionProcessing, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
+        ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
-        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueID, year, publisherID, failIfActionProcessing, requiredRelationship, requiredYearStatus);
+        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueID, year, publisherID, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
         if (leagueYearPublisherRecord.FailedResult.HasValue)
         {
             return (Maybe<LeagueYearPublisherGameRecord>.None, leagueYearPublisherRecord.FailedResult);
@@ -268,7 +268,7 @@ public abstract class BaseLeagueController : FantasyCriticController
     }
 
     protected async Task<(Maybe<LeagueYearPublisherGameRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisherGame(Guid publisherID, Guid publisherGameID,
-        bool failIfActionProcessing, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
+        ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
         Maybe<LeagueYearKey> leagueYearKey = await _fantasyCriticService.GetLeagueYearKeyForPublisherID(publisherID);
         if (leagueYearKey.HasNoValue)
@@ -276,7 +276,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearPublisherGameRecord>(BadRequest("Publisher does not exist."));
         }
 
-        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueYearKey.Value.LeagueID, leagueYearKey.Value.Year, publisherID, failIfActionProcessing, requiredRelationship, requiredYearStatus);
+        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueYearKey.Value.LeagueID, leagueYearKey.Value.Year, publisherID, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
         if (leagueYearPublisherRecord.FailedResult.HasValue)
         {
             return (Maybe<LeagueYearPublisherGameRecord>.None, leagueYearPublisherRecord.FailedResult);
