@@ -21,6 +21,11 @@ public abstract class BaseLeagueController : FantasyCriticController
     protected async Task<(Maybe<LeagueRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeague(Guid leagueID,
         bool failIfActionProcessing, RequiredRelationship requiredRelationship)
     {
+        if (!ModelState.IsValid)
+        {
+            return GetFailedResult<LeagueRecord>(BadRequest("Invalid request."));
+        }
+
         if (failIfActionProcessing)
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
@@ -85,6 +90,11 @@ public abstract class BaseLeagueController : FantasyCriticController
     protected async Task<(Maybe<LeagueYearRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYear(Guid leagueID, int year,
         bool failIfActionProcessing, RequiredRelationship requiredRelationship)
     {
+        if (!ModelState.IsValid)
+        {
+            return GetFailedResult<LeagueYearRecord>(BadRequest("Invalid request."));
+        }
+
         if (failIfActionProcessing)
         {
             var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
