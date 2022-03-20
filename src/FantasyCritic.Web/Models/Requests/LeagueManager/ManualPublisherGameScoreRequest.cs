@@ -9,9 +9,5 @@ public class ManualPublisherGameScoreRequest
     [Required]
     public Guid PublisherGameID { get; set; }
     [Required]
-    public Guid LeagueID { get; set; }
-    [Required]
-    public int Year { get; set; }
-    [Required]
     public decimal ManualCriticScore { get; set; }
 }
