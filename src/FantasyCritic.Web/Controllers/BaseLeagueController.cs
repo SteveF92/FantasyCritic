@@ -28,7 +28,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         var currentUserRecord = await GetCurrentUser();
         if ((requiredRelationship.MustBeLoggedIn || requiredRelationship.MustBeInOrInvitedToLeague || requiredRelationship.MustBeLeagueManager) && currentUserRecord.IsFailure)
         {
-            return (Maybe<LeagueRecord>.None, Forbid("You must be logged in."));
+            return (Maybe<LeagueRecord>.None, Unauthorized());
         }
 
         var league = await _fantasyCriticService.GetLeagueByID(leagueID);
@@ -48,7 +48,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             isLeagueManager = league.Value.LeagueManager.Id == currentUserRecord.Value.Id;
             if (requiredRelationship.MustBeLeagueManager && !isLeagueManager)
             {
-                return GetFailedResult<LeagueRecord>(Forbid("You are not the manager of that league."));
+                return GetFailedResult<LeagueRecord>(Forbid());
             }
 
             if (isLeagueManager)
@@ -68,7 +68,7 @@ public abstract class BaseLeagueController : FantasyCriticController
 
         if (!isInLeague && leagueInvite.HasNoValue && requiredRelationship.MustBeInOrInvitedToLeague)
         {
-            return GetFailedResult<LeagueRecord>(Forbid("You are not in that league."));
+            return GetFailedResult<LeagueRecord>(Forbid());
         }
 
         LeagueUserRelationship relationship = new LeagueUserRelationship(leagueInvite, isInLeague, isLeagueManager, userIsAdmin);
@@ -95,7 +95,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         var currentUserRecord = await GetCurrentUser();
         if ((requiredRelationship.MustBeLoggedIn || requiredRelationship.MustBeInOrInvitedToLeague || requiredRelationship.MustBeActiveInYear || requiredRelationship.MustBeLeagueManager) && currentUserRecord.IsFailure)
         {
-            return (Maybe<LeagueYearRecord>.None, Forbid("You must be logged in."));
+            return (Maybe<LeagueYearRecord>.None, Unauthorized());
         }
 
         var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
@@ -123,7 +123,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             isLeagueManager = leagueYear.Value.League.LeagueManager.Id == currentUserRecord.Value.Id;
             if (requiredRelationship.MustBeLeagueManager && !isLeagueManager)
             {
-                return GetFailedResult<LeagueYearRecord>(Forbid("You are not the manager of that league."));
+                return GetFailedResult<LeagueYearRecord>(Forbid());
             }
 
             if (isLeagueManager)
@@ -145,12 +145,12 @@ public abstract class BaseLeagueController : FantasyCriticController
 
         if (!isInLeague && !isInvitedToLeague && requiredRelationship.MustBeInOrInvitedToLeague)
         {
-            return GetFailedResult<LeagueYearRecord>(Forbid("You are not in that league."));
+            return GetFailedResult<LeagueYearRecord>(Forbid());
         }
 
         if (!isActiveInYear && requiredRelationship.MustBeActiveInYear)
         {
-            return GetFailedResult<LeagueYearRecord>(Forbid("You are set as active in that league year."));
+            return GetFailedResult<LeagueYearRecord>(Forbid());
         }
 
         LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(isInvitedToLeague, isInLeague, isActiveInYear, isLeagueManager, userIsAdmin);
@@ -176,7 +176,7 @@ public abstract class BaseLeagueController : FantasyCriticController
                                leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
-            return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("You are not that publisher."));
+            return GetFailedResult<LeagueYearPublisherRecord>(Forbid());
         }
 
         var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.Value.Relationship, userIsPublisher);
@@ -209,7 +209,7 @@ public abstract class BaseLeagueController : FantasyCriticController
                                leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
-            return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("You are not that publisher."));
+            return GetFailedResult<LeagueYearPublisherRecord>(Forbid());
         }
 
         var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.Value.Relationship, userIsPublisher);
@@ -236,7 +236,7 @@ public abstract class BaseLeagueController : FantasyCriticController
                                leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
-            return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("You are not that publisher."));
+            return GetFailedResult<LeagueYearPublisherRecord>(Forbid());
         }
 
         var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.Value.Relationship, userIsPublisher);
