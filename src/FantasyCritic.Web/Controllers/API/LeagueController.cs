@@ -299,9 +299,9 @@ public class LeagueController : BaseLeagueController
 
     [AllowAnonymous]
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetPublisher(Guid publisherID)
+    public async Task<IActionResult> GetPublisher(Guid id)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(id, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
         if (publisherRecord.FailedResult.HasValue)
         {
             return publisherRecord.FailedResult.Value;
