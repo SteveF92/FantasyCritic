@@ -167,11 +167,13 @@ public class ActionProcessingService
             if (activeBid.BidAmount > bidPublisher.Budget)
             {
                 insufficientFundsBids.Add(activeBid);
+                continue;
             }
 
             if (activeBid.BidAmount < leagueYear.Options.MinimumBidAmount)
             {
                 belowMinimumBids.Add(activeBid);
+                continue;
             }
 
             validPickupBids.Add(new ValidPickupBid(activeBid, claimResult.BestSlotNumber.Value));
@@ -226,9 +228,7 @@ public class ActionProcessingService
     private IReadOnlyList<SucceededPickupBid> GetWinnableBids(LeagueYear leagueYear, IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear, SystemWideValues systemWideValues, LocalDate currentDate)
     {
         List<SucceededPickupBid> winnableBids = new List<SucceededPickupBid>();
-
-        var enoughBudgetBids = activeBidsForLeagueYear.Where(x => x.PickupBid.BidAmount <= x.PickupBid.Publisher.Budget);
-        var groupedByGame = enoughBudgetBids.GroupBy(x => x.PickupBid.MasterGame);
+        var groupedByGame = activeBidsForLeagueYear.GroupBy(x => x.PickupBid.MasterGame);
         foreach (var gameGroup in groupedByGame)
         {
             var bestBid = GetWinningBidForGame(gameGroup.Key, leagueYear, gameGroup, systemWideValues, currentDate);
