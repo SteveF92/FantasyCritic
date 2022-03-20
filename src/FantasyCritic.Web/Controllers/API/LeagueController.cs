@@ -225,7 +225,7 @@ public class LeagueController : BaseLeagueController
         Maybe<Publisher> nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear);
         var draftPhase = _draftService.GetDraftPhase(leagueYear);
 
-        Maybe<Publisher> userPublisher =  Maybe<Publisher>.None;
+        Maybe<Publisher> userPublisher = Maybe<Publisher>.None;
         if (currentUser.HasValue)
         {
             userPublisher = leagueYear.GetUserPublisher(currentUser.Value);

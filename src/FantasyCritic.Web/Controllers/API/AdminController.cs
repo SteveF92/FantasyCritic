@@ -23,7 +23,6 @@ public class AdminController : FantasyCriticController
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly GameAcquisitionService _gameAcquisitionService;
-    private readonly FantasyCriticUserManager _userManager;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly EmailSendingService _emailSendingService;
 
@@ -38,7 +37,6 @@ public class AdminController : FantasyCriticController
         _interLeagueService = interLeagueService;
         _logger = logger;
         _gameAcquisitionService = gameAcquisitionService;
-        _userManager = userManager;
         _webHostEnvironment = webHostEnvironment;
         _emailSendingService = emailSendingService;
     }

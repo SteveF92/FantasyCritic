@@ -11,7 +11,6 @@ namespace FantasyCritic.Web.Controllers.API;
 [Authorize]
 public class AccountController : FantasyCriticController
 {
-    private readonly FantasyCriticUserManager _userManager;
     private readonly FantasyCriticRoleManager _roleManager;
     private readonly IEmailSender _emailSender;
     private readonly ILogger _logger;
@@ -21,7 +20,6 @@ public class AccountController : FantasyCriticController
         IEmailSender emailSender, ILogger<AccountController> logger, IClock clock) :
         base(userManager)
     {
-        _userManager = userManager;
         _roleManager = roleManager;
         _emailSender = emailSender;
         _logger = logger;

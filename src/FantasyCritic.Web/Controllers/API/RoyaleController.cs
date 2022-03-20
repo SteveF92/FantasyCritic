@@ -18,7 +18,6 @@ public class RoyaleController : FantasyCriticController
 {
     private readonly IClock _clock;
     private readonly ILogger<RoyaleController> _logger;
-    private readonly FantasyCriticUserManager _userManager;
     private readonly RoyaleService _royaleService;
     private readonly InterLeagueService _interLeagueService;
     private static readonly SemaphoreSlim _royaleSemaphore = new SemaphoreSlim(1, 1);
@@ -28,7 +27,6 @@ public class RoyaleController : FantasyCriticController
     {
         _clock = clock;
         _logger = logger;
-        _userManager = userManager;
         _royaleService = royaleService;
         _interLeagueService = interLeagueService;
     }
