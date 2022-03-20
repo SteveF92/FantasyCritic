@@ -3241,13 +3241,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var currentPublisherGames = publisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
         if (currentPublisherGames.Any())
         {
-            return currentPublisherGames.WhereMax(x => x.Timestamp).FirstOrDefault();
+            return currentPublisherGames.WhereMax(x => x.Timestamp).First();
         }
 
         var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
         if (formerPublisherGames.Any())
         {
-            return currentPublisherGames.WhereMax(x => x.Timestamp).FirstOrDefault();
+            return formerPublisherGames.WhereMax(x => x.PublisherGame.Timestamp).First().PublisherGame;
         }
 
         var conditionalDropGame = await _masterGameRepo.GetMasterGameYear(bidEntity.ConditionalDropMasterGameID.Value, year);
