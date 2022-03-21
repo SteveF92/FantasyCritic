@@ -39,6 +39,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\index.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.AWS\FantasyCritic.AWS.csproj" />
     <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />

@@ -39,7 +39,6 @@ namespace FantasyCritic.Web;
 public class Startup
 {
     private readonly IWebHostEnvironment _env;
-    private readonly string _spaPath;
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     public Startup(IConfiguration configuration, IWebHostEnvironment env)
@@ -51,12 +50,10 @@ public class Startup
         if (_env.IsDevelopment())
         {
             _logger.Info("Startup: Running in Development mode.");
-            _spaPath = "ClientApp";
         }
         else
         {
             _logger.Info("Startup: Running in Production mode.");
-            _spaPath = "ClientApp/dist";
         }
     }
 
@@ -287,8 +284,6 @@ public class Startup
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        _ = Arguments.TryGetOptions(System.Environment.GetCommandLineArgs(), false, out string mode, out ushort port, out bool https);
-
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
