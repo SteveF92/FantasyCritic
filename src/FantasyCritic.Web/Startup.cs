@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.IO;
-using VueCliMiddleware;
 using System.Text;
 using Dapper.NodaTime;
 using Duende.IdentityServer;
