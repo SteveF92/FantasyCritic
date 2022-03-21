@@ -122,7 +122,6 @@ public class Startup
         services.AddScoped<RoyaleService>();
         services.AddScoped<EmailSendingService>();
 
-
         services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 
         AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
@@ -283,12 +282,6 @@ public class Startup
 
         services.AddSignalR();
 
-        // In production, the Vue files will be served from this directory
-        services.AddSpaStaticFiles(configuration =>
-        {
-            configuration.RootPath = _spaPath;
-        });
-
         DapperNodaTimeSetup.Register();
     }
 
@@ -326,10 +319,6 @@ public class Startup
                 };
             }
         });
-        if (!env.IsDevelopment())
-        {
-            app.UseSpaStaticFiles();
-        }
 
         app.UseRouting();
 
@@ -345,40 +334,6 @@ public class Startup
 
             endpoints.MapRazorPages();
             endpoints.MapHub<UpdateHub>("/updatehub");
-        });
-
-        var spaStaticFileOptions = new StaticFileOptions
-        {
-            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(System.IO.Path.Combine(env.ContentRootPath, _spaPath))
-        };
-
-        app.UseSpa(spa =>
-        {
-            // To learn more about options for serving an Angular SPA from ASP.NET Core,
-            // see https://go.microsoft.com/fwlink/?linkid=864501
-
-            spa.Options.SourcePath = _spaPath;
-
-            if (env.IsDevelopment())
-            {
-                // run npm process with client app
-                if (mode == "start")
-                {
-                    spa.UseVueCli(npmScript: "serve", port: port, forceKill: true, https: https);
-                }
-
-                // if you just prefer to proxy requests from client app, use proxy to SPA dev server instead,
-                // app should be already running before starting a .NET client:
-                // run npm process with client app
-                if (mode == "attach")
-                {
-                    spa.UseProxyToSpaDevelopmentServer($"{(https ? "https" : "http")}://localhost:{port}"); // your Vue app port
-                }
-            }
-            else
-            {
-                spa.Options.DefaultPageStaticFileOptions = spaStaticFileOptions;
-            }
         });
     }
 }
