@@ -333,6 +333,7 @@ public class Startup
 
             endpoints.MapRazorPages();
             endpoints.MapHub<UpdateHub>("/updatehub");
+            endpoints.MapFallbackToFile("/index.html");
         });
     }
 }
