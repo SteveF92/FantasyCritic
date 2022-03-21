@@ -300,6 +300,12 @@ public class Startup
             .AddRedirectToWww()
         );
 
+        var options = new DefaultFilesOptions
+        {
+            DefaultFileNames = new List<string> { "index.html" }
+        };
+        app.UseDefaultFiles(options);
+
         app.UseStaticFiles(new StaticFileOptions
         {
             OnPrepareResponse = (context) =>
@@ -315,7 +321,6 @@ public class Startup
         });
 
         app.UseRouting();
-
         app.UseAuthentication();
         app.UseIdentityServer();
         app.UseAuthorization();
