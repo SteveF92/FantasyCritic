@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentEmail.Mailgun" Version="3.0.0" />
+    <PackageReference Include="FluentEmail.Mailgun" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>

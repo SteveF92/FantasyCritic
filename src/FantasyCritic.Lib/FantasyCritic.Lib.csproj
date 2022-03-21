@@ -48,10 +48,10 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog" Version="4.7.14" />
-    <PackageReference Include="NodaTime" Version="3.0.9" />
+    <PackageReference Include="NodaTime" Version="3.0.10" />
     <PackageReference Include="CsvHelper" Version="27.2.1" />
     <PackageReference Include="Patreon.Net" Version="1.0.1" />
-	<PackageReference Include="RazorLight" Version="2.0.0-beta1" />
+	<PackageReference Include="RazorLight" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

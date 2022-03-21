@@ -168,7 +168,7 @@ public class EmailSendingService
     {
         var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Email", "EmailTemplates");
         var engine = new RazorLightEngineBuilder()
-            .UseFilesystemProject(templateFilePath)
+            .UseFileSystemProject(templateFilePath)
             .UseMemoryCachingProvider()
             .Build();
         string htmlResult = await engine.CompileRenderAsync(template, model);
