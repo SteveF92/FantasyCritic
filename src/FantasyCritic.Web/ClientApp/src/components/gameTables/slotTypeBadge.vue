@@ -2,7 +2,7 @@
   <span>
     <span v-if="!gameSlot.dropped && gameSlot.specialSlot">
       <template v-if="gameSlot.specialSlot.requiredTags.length === 1">
-        <masterGameTagBadge :tagName="gameSlot.specialSlot.requiredTags[0]" short="true" class="slot-badge"></masterGameTagBadge>
+        <masterGameTagBadge :tagName="gameSlot.specialSlot.requiredTags[0]" short class="slot-badge"></masterGameTagBadge>
       </template>
       <template v-else>
         <span class="badge tag-badge slot-badge" v-bind:style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)" v-b-popover.hover.top="getFlexText(gameSlot.specialSlot.requiredTags)">FLX</span>

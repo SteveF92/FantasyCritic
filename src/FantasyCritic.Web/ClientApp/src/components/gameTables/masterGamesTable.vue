@@ -103,7 +103,7 @@
       </template>
       <template #cell(tags)="data">
         <span v-for="tag in data.item.tags" v-bind:key="tag">
-          <masterGameTagBadge :tagName="tag" short="true"></masterGameTagBadge>
+          <masterGameTagBadge :tagName="tag" short></masterGameTagBadge>
         </span>
       </template>
     </b-table>
