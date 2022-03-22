@@ -268,6 +268,22 @@ export default {
       this.fetchLeagueData();
       this.$store.dispatch('getBidTimes');
     },
+    actionTaken(actionInfo) {
+      if (actionInfo.fetchLeague || actionInfo.fetchLeagueYear) {
+        this.fetchLeagueData();
+      }
+
+      if (actionInfo.message) {
+        this.makeToast(actionInfo.message);
+      }
+    },
+    changeLeagueYear(newVal) {
+      var parameters = {
+        leagueid: this.leagueid,
+        year: newVal
+      };
+      this.$router.push({ name: 'league', params: parameters });
+    },
     acceptInvite() {
       var model = {
         leagueID: this.league.leagueID
@@ -316,25 +332,6 @@ export default {
           await this.startHubConnection();
         })
         .catch(() => {});
-    },
-    actionTaken(actionInfo) {
-      if (actionInfo.fetchLeagueData) {
-        this.fetchLeagueData();
-      }
-      if (actionInfo.fetchLeague) {
-        this.fetchLeague();
-      }
-
-      if (actionInfo.message) {
-        this.makeToast(actionInfo.message);
-      }
-    },
-    changeLeagueYear(newVal) {
-      var parameters = {
-        leagueid: this.leagueid,
-        year: newVal
-      };
-      this.$router.push({ name: 'league', params: parameters });
     },
     followLeague() {
       var model = {
