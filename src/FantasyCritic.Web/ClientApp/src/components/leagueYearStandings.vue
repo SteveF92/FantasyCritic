@@ -53,11 +53,13 @@
 import axios from 'axios';
 import { ToggleButton } from 'vue-js-toggle-button';
 
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
   components: {
     ToggleButton
   },
-  props: ['league', 'leagueYear'],
+  mixins: [LeagueMixin],
   data() {
     return {
       basicStandingFields: [
@@ -133,7 +135,7 @@ export default {
             fetchLeague: true,
             fetchLeagueYear: true
           };
-          this.$emit('actionTaken', actionInfo);
+          this.notifyAction(actionInfo);
         })
         .catch(() => {});
     }

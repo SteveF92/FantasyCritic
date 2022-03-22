@@ -32,10 +32,24 @@ let leagueMixin = {
     },
     draftOrderView() {
       return this.$store.getters.draftOrderView;
+    },
+    nextPublisherUp() {
+      if (!this.leagueYear || !this.leagueYear.publishers) {
+        return null;
+      }
+      let next = _.find(this.leagueYear.publishers, ['nextToDraft', true]);
+      return next;
+    },
+    userIsNextInDraft() {
+      if (this.nextPublisherUp && this.leagueYear && this.leagueYear.userPublisher) {
+        return this.nextPublisherUp.publisherID === this.leagueYear.userPublisher.publisherID;
+      }
+
+      return false;
     }
   },
   methods: {
-    actionTaken(actionInfo) {
+    notifyAction(actionInfo) {
       if (!actionInfo.fetchLeague && !actionInfo.fetchLeagueYear) {
         this.refreshLeagueData();
         return;

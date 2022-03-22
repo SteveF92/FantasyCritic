@@ -170,6 +170,7 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 import BidGameForm from '@/components/modals/bidGameForm';
 import BidCounterPickForm from '@/components/modals/bidCounterPickForm';
@@ -216,12 +217,6 @@ import TransferManagerModal from '@/components/modals/transferManagerModal';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {
-  data() {
-    return {
-      errorInfo: ''
-    };
-  },
-  props: ['league', 'leagueYear', 'leagueActions', 'currentBids', 'currentDrops', 'userIsNextInDraft', 'nextPublisherUp'],
   components: {
     BidGameForm,
     BidCounterPickForm,
@@ -263,10 +258,8 @@ export default {
     ProposeTradeForm,
     ActiveTradesModal
   },
+  mixins: [LeagueMixin],
   computed: {
-    isPlusUser() {
-      return this.$store.getters.isPlusUser;
-    },
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.leagueYear.userPublisher.publisherIcon);
     }
@@ -277,62 +270,62 @@ export default {
         message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     bidCanceled(bidInfo) {
       let actionInfo = {
         message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     bidEdited(bidInfo) {
       let actionInfo = {
         message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     dropRequestMade(dropInfo) {
       let actionInfo = {
         message: 'Drop Request for ' + dropInfo.gameName + ' was made.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     dropCancelled(dropInfo) {
       let actionInfo = {
         message: 'Drop Request for ' + dropInfo.gameName + ' was cancelled.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     tradeProposed() {
       let actionInfo = {
         message: 'Trade proposal has been made.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     tradeActioned() {
       let actionInfo = {
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     publisherNameChanged(changeInfo) {
       let actionInfo = {
         message: 'Publisher name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     publisherIconChanged() {
       let actionInfo = {
         message: 'Publisher icon changed.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     newYearAdded(year) {
       this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: year }, query: { freshSettings: true } });
@@ -342,14 +335,14 @@ export default {
         message: 'You have drafted: ' + draftInfo.gameName,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     counterPickDrafted(gameInfo) {
       let actionInfo = {
         message: 'You have selected ' + gameInfo.gameName + ' as a counter pick.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     setPause(pauseInfo) {
       var model = {
@@ -369,7 +362,7 @@ export default {
             fetchLeague: true,
             fetchLeagueYear: true
           };
-          this.$emit('actionTaken', actionInfo);
+          this.notifyAction(actionInfo);
         })
         .catch(() => {});
     },
@@ -386,7 +379,7 @@ export default {
             fetchLeague: true,
             fetchLeagueYear: true
           };
-          this.$emit('actionTaken', actionInfo);
+          this.notifyAction(actionInfo);
         })
         .catch(() => {});
     },
@@ -402,7 +395,7 @@ export default {
             message: 'Last action was undone.',
             fetchLeagueYear: true
           };
-          this.$emit('actionTaken', actionInfo);
+          this.notifyAction(actionInfo);
         })
         .catch(() => {});
     },
@@ -412,7 +405,7 @@ export default {
         fetchLeagueYear: true,
         fetchLeague: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     linkCopied() {
       let actionInfo = {
@@ -420,7 +413,7 @@ export default {
         fetchLeagueYear: false,
         fetchLeague: false
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     activePlayersEdited() {
       let actionInfo = {
@@ -428,63 +421,63 @@ export default {
         fetchLeagueYear: true,
         fetchLeague: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     gameClaimed(claimInfo) {
       let actionInfo = {
         message: claimInfo.gameName + ' added to ' + claimInfo.publisherName,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     managerGameDrafted(draftInfo) {
       let actionInfo = {
         message: draftInfo.gameName + ' drafted by ' + draftInfo.publisherName,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     managerCounterPickDrafted(draftInfo) {
       let actionInfo = {
         message: draftInfo.gameName + ' selected as a counter pick by ' + draftInfo.publisherName,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     gameAssociated(associateInfo) {
       let actionInfo = {
         message: associateInfo.gameName + ' sucessfully associated.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     gameRemoved(removeInfo) {
       let actionInfo = {
         message: removeInfo.gameName + ' removed from ' + removeInfo.publisherName,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     gameManuallyScored(manualScoreInfo) {
       let actionInfo = {
         message: manualScoreInfo.gameName + ' was given a score of ' + manualScoreInfo.score + '.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     manualScoreRemoved(gameName) {
       let actionInfo = {
         message: gameName + "'s manual score was removed.",
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     gameWillNotReleaseSet() {
       let actionInfo = {
         message: 'Will not release status updated.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     leagueOptionsChanged() {
       let actionInfo = {
@@ -492,14 +485,14 @@ export default {
         fetchLeague: true,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     draftOrderEdited() {
       let actionInfo = {
         message: 'Draft order has been changed.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     bidPriorityEdited() {
       let actionInfo = {
@@ -507,7 +500,7 @@ export default {
         fetchLeagueYear: true,
         fetchCurrentBids: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     gameEligibilitySet(gameInfo) {
       let message = '';
@@ -520,14 +513,14 @@ export default {
         message: message,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     gameEligiblityReset(gameInfo) {
       let actionInfo = {
         message: gameInfo.gameName + "'s eligibility was reset to normal.",
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     gameTagsSet(gameInfo) {
       let message = (message = gameInfo.gameName + " had it's tags overriden.");
@@ -535,7 +528,7 @@ export default {
         message: message,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     gameTagsReset(gameInfo) {
       let message = (message = gameInfo.gameName + " had it's tags reset.");
@@ -543,7 +536,7 @@ export default {
         message: message,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     autoDraftSet(autoDraftInfo) {
       let autoDraftStatus = 'off.';
@@ -554,21 +547,21 @@ export default {
         message: 'Auto draft set to ' + autoDraftStatus,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     publishersAutoDraftSet() {
       let actionInfo = {
         message: 'Auto draft changed.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     publishersEdited() {
       let actionInfo = {
         message: 'Publisher has been edited.',
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     publisherCreated(createdInfo) {
       let actionInfo = {
@@ -576,7 +569,7 @@ export default {
         fetchLeague: true,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     publisherRemoved(removeInfo) {
       let actionInfo = {
@@ -584,7 +577,7 @@ export default {
         fetchLeague: true,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     playerRemoved(removeInfo) {
       let actionInfo = {
@@ -592,7 +585,7 @@ export default {
         fetchLeague: true,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     managerTransferred() {
       let actionInfo = {
@@ -600,14 +593,14 @@ export default {
         fetchLeague: true,
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     },
     managerMessagePosted() {
       let actionInfo = {
         message: "New manager's message posted.",
         fetchLeagueYear: true
       };
-      this.$emit('actionTaken', actionInfo);
+      this.notifyAction(actionInfo);
     }
   }
 };

@@ -1,5 +1,8 @@
 let basicMixin = {
   computed: {
+    isPlusUser() {
+      return this.$store.getters.isPlusUser;
+    },
     isAuth() {
       return this.$store.getters.isAuthenticated;
     }

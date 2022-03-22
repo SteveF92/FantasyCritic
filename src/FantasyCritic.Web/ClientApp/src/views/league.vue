@@ -100,7 +100,7 @@
             <span>You need to create your publisher for this year.</span>
             <span v-show="league.isManager">You can't invite players or change any settings until you create your publisher.</span>
             <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
-            <createPublisherForm :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></createPublisherForm>
+            <createPublisherForm :leagueYear="leagueYear"></createPublisherForm>
           </div>
 
           <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite">
@@ -145,18 +145,10 @@
 
           <div class="row">
             <div class="col-xl-3 col-lg-4 col-md-12">
-              <leagueActions
-                ref="leagueActionsRef"
-                :league="league"
-                :leagueYear="leagueYear"
-                :currentBids="currentBids"
-                :currentDrops="currentDrops"
-                :userIsNextInDraft="userIsNextInDraft"
-                :nextPublisherUp="nextPublisherUp"
-                v-on:actionTaken="actionTaken"></leagueActions>
+              <leagueActions></leagueActions>
             </div>
             <div class="col-xl-9 col-lg-8 col-md-12">
-              <leagueYearStandings :league="league" :leagueYear="leagueYear" v-on:actionTaken="actionTaken"></leagueYearStandings>
+              <leagueYearStandings :league="league" :leagueYear="leagueYear"></leagueYearStandings>
               <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
                 <gameNews :gameNews="gameNews" mode="league" />
                 <br />
@@ -195,16 +187,6 @@ import BidCountdowns from '@/components/bidCountdowns';
 import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
-  mixins: [LeagueMixin],
-  props: {
-    leagueid: String,
-    year: String
-  },
-  data() {
-    return {
-      selectedYear: null
-    };
-  },
   components: {
     LeagueGameSummary,
     LeagueYearStandings,
@@ -215,21 +197,17 @@ export default {
     ActiveBids,
     BidCountdowns
   },
+  mixins: [LeagueMixin],
+  props: {
+    leagueid: String,
+    year: String
+  },
+  data() {
+    return {
+      selectedYear: null
+    };
+  },
   computed: {
-    nextPublisherUp() {
-      if (!this.leagueYear || !this.leagueYear.publishers) {
-        return null;
-      }
-      let next = _.find(this.leagueYear.publishers, ['nextToDraft', true]);
-      return next;
-    },
-    userIsNextInDraft() {
-      if (this.nextPublisherUp && this.leagueYear && this.leagueYear.userPublisher) {
-        return this.nextPublisherUp.publisherID === this.leagueYear.userPublisher.publisherID;
-      }
-
-      return false;
-    },
     topPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
         return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
@@ -262,6 +240,21 @@ export default {
     hasProposedTrade() {
       return _.some(this.leagueYear.activeTrades, (x) => x.waitingForUserResponse);
     }
+  },
+  watch: {
+    $route(to, from) {
+      if (to.path !== from.path) {
+        this.initializePage();
+      }
+    },
+    userIsNextInDraft: function (val, oldVal) {
+      if (val && val !== oldVal) {
+        document.getElementById('draft-notification-sound').play();
+      }
+    }
+  },
+  async mounted() {
+    this.initializePage();
   },
   methods: {
     revealPublicBids() {
@@ -395,21 +388,6 @@ export default {
     },
     refreshLeagueData() {
       this.$store.dispatch('refreshLeagueData');
-    }
-  },
-  async mounted() {
-    this.initializePage();
-  },
-  watch: {
-    $route(to, from) {
-      if (to.path !== from.path) {
-        this.initializePage();
-      }
-    },
-    userIsNextInDraft: function (val, oldVal) {
-      if (val && val !== oldVal) {
-        document.getElementById('draft-notification-sound').play();
-      }
     }
   }
 };

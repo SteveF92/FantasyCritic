@@ -13,15 +13,16 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       publisherName: '',
       errorInfo: ''
     };
   },
-  props: ['leagueYear'],
   methods: {
     createPublisher() {
       var model = {
@@ -37,7 +38,7 @@ export default {
             message: this.publisherName + ' created.',
             fetchLeagueYear: true
           };
-          this.$emit('actionTaken', actionInfo);
+          this.notifyAction(actionInfo);
           this.publisherName = '';
         })
         .catch(() => {});
