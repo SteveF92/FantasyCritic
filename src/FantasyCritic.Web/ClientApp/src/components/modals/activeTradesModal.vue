@@ -5,26 +5,19 @@
     </div>
     <div class="alert alert-info" v-show="activeTrades.length === 0" role="alert">There are no active trades for this league. To see past trades, check the League History page.</div>
 
-    <tradeSummary
-      v-for="activeTrade in activeTrades"
-      v-bind:key="activeTrade.tradeID"
-      :trade="activeTrade"
-      :league="league"
-      :leagueYear="leagueYear"
-      :publisher="publisher"
-      v-on:tradeActioned="tradeActioned"
-      defaultVisible></tradeSummary>
+    <tradeSummary v-for="activeTrade in activeTrades" v-bind:key="activeTrade.tradeID" :trade="activeTrade" defaultVisible></tradeSummary>
   </b-modal>
 </template>
 
 <script>
+import LeagueMixin from '@/mixins/leagueMixin';
 import TradeSummary from '@/components/tradeSummary';
 
 export default {
   components: {
     TradeSummary
   },
-  props: ['league', 'leagueYear', 'publisher'],
+  mixins: [LeagueMixin],
   data() {
     return {
       errorInfo: ''
@@ -34,12 +27,6 @@ export default {
     activeTrades() {
       return this.leagueYear.activeTrades;
     }
-  },
-  methods: {
-    tradeActioned(tradeInfo) {
-      this.$emit('tradeActioned', tradeInfo);
-    },
-    clearData() {}
   }
 };
 </script>

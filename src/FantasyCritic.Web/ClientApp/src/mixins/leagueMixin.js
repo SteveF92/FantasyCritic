@@ -18,6 +18,9 @@ let leagueMixin = {
     leagueYear() {
       return this.$store.getters.leagueYear;
     },
+    year() {
+      return this.leagueYear.year;
+    },
     currentBids() {
       return this.$store.getters.currentBids;
     },
@@ -27,11 +30,8 @@ let leagueMixin = {
     gameNews() {
       return this.$store.getters.gameNews;
     },
-    advancedProjections() {
-      return this.$store.getters.advancedProjections;
-    },
-    draftOrderView() {
-      return this.$store.getters.draftOrderView;
+    publishers() {
+      return this.leagueYear.publishers;
     },
     nextPublisherUp() {
       if (!this.leagueYear || !this.leagueYear.publishers) {
@@ -46,18 +46,27 @@ let leagueMixin = {
       }
 
       return false;
+    },
+    draftIsPaused() {
+      return this.leagueYear.playStatus.draftIsPaused;
+    },
+    isManager() {
+      return this.league && this.league.isManager;
+    },
+    advancedProjections() {
+      return this.$store.getters.advancedProjections;
+    },
+    draftOrderView() {
+      return this.$store.getters.draftOrderView;
     }
   },
   methods: {
-    notifyAction(actionInfo) {
-      if (!actionInfo.fetchLeague && !actionInfo.fetchLeagueYear) {
-        this.refreshLeagueData();
-        return;
-      }
+    notifyAction(message) {
+      this.refreshLeagueData();
 
       this.$store.dispatch('refreshLeagueData').then(() => {
-        if (actionInfo.message) {
-          this.makeToast(actionInfo.message);
+        if (message) {
+          this.makeToast(message);
         }
       });
     }

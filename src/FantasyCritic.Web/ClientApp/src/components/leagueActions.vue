@@ -107,63 +107,52 @@
       </div>
     </div>
     <div>
-      <leagueOptionsModal :league="league" :leagueYear="leagueYear"></leagueOptionsModal>
-      <eligibilityOverridesModal :eligibilityOverrides="leagueYear.eligibilityOverrides"></eligibilityOverridesModal>
-      <tagOverridesModal :tagOverrides="leagueYear.tagOverrides"></tagOverridesModal>
+      <leagueOptionsModal></leagueOptionsModal>
+      <eligibilityOverridesModal></eligibilityOverridesModal>
+      <tagOverridesModal></tagOverridesModal>
 
-      <div v-if="leagueYear.userPublisher">
-        <playerDraftGameForm
-          :leagueYear="leagueYear"
-          :userPublisher="leagueYear.userPublisher"
-          :isManager="league.isManager"
-          :year="leagueYear.year"
-          v-on:gameDrafted="gameDrafted"></playerDraftGameForm>
-        <playerDraftCounterPickForm :userPublisher="leagueYear.userPublisher" v-on:counterPickDrafted="counterPickDrafted"></playerDraftCounterPickForm>
+      <div v-if="userPublisher">
+        <playerDraftGameForm></playerDraftGameForm>
+        <playerDraftCounterPickForm></playerDraftCounterPickForm>
 
-        <bidGameForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:gameBid="gameBid"></bidGameForm>
-        <bidCounterPickForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:gameBid="gameBid"></bidCounterPickForm>
-        <currentBidsForm
-          :leagueYear="leagueYear"
-          :currentBids="currentBids"
-          :publisher="leagueYear.userPublisher"
-          v-on:bidEdited="bidEdited"
-          v-on:bidCanceled="bidCanceled"
-          v-on:bidPriorityEdited="bidPriorityEdited"></currentBidsForm>
+        <bidGameForm></bidGameForm>
+        <bidCounterPickForm></bidCounterPickForm>
+        <currentBidsForm></currentBidsForm>
 
-        <proposeTradeForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:tradeProposed="tradeProposed"></proposeTradeForm>
-        <activeTradesModal :league="league" :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" v-on:tradeActioned="tradeActioned"></activeTradesModal>
+        <proposeTradeForm></proposeTradeForm>
+        <activeTradesModal></activeTradesModal>
 
-        <dropGameForm :publisher="leagueYear.userPublisher" v-on:dropRequestMade="dropRequestMade"></dropGameForm>
-        <currentDropsForm :currentDrops="currentDrops" :publisher="leagueYear.userPublisher" v-on:dropCancelled="dropCancelled"></currentDropsForm>
-        <gameQueueForm :leagueYear="leagueYear" :publisher="leagueYear.userPublisher" :year="leagueYear.year"></gameQueueForm>
+        <dropGameForm></dropGameForm>
+        <currentDropsForm></currentDropsForm>
+        <gameQueueForm></gameQueueForm>
 
-        <changePublisherNameForm :publisher="leagueYear.userPublisher" v-on:publisherNameChanged="publisherNameChanged"></changePublisherNameForm>
-        <changePublisherIconForm :publisher="leagueYear.userPublisher" v-on:publisherIconChanged="publisherIconChanged"></changePublisherIconForm>
+        <changePublisherNameForm></changePublisherNameForm>
+        <changePublisherIconForm></changePublisherIconForm>
 
-        <addNewLeagueYearForm :league="league" :isManager="league.isManager" v-on:newYearAdded="newYearAdded"></addNewLeagueYearForm>
-        <invitePlayerForm :league="league" v-on:playerInvited="playerInvited" v-on:linkCopied="linkCopied"></invitePlayerForm>
-        <manageActivePlayersForm :league="league" :leagueYear="leagueYear" v-on:activePlayersEdited="activePlayersEdited"></manageActivePlayersForm>
-        <createPublisherForUserForm :leagueYear="leagueYear" v-on:publisherCreated="publisherCreated"></createPublisherForUserForm>
-        <editDraftOrderForm :leagueYear="leagueYear" v-on:draftOrderEdited="draftOrderEdited"></editDraftOrderForm>
-        <editAutoDraftForm :publisher="leagueYear.userPublisher" v-on:autoDraftSet="autoDraftSet"></editAutoDraftForm>
-        <managerDraftGameForm :leagueYear="leagueYear" :nextPublisherUp="nextPublisherUp" :year="leagueYear.year" v-on:gameDrafted="managerGameDrafted"></managerDraftGameForm>
-        <managerDraftCounterPickForm :nextPublisherUp="nextPublisherUp" v-on:counterPickDrafted="managerCounterPickDrafted"></managerDraftCounterPickForm>
-        <undoLastDraftActionModal v-on:undoLastDraftAction="undoLastDraftAction"></undoLastDraftActionModal>
-        <setPauseModal v-on:setPause="setPause" :paused="leagueYear.playStatus.draftIsPaused"></setPauseModal>
-        <resetDraftModal v-on:resetDraft="resetDraft"></resetDraftModal>
-        <managerClaimGameForm :publishers="leagueYear.publishers" :year="leagueYear.year" v-on:gameClaimed="gameClaimed"></managerClaimGameForm>
-        <managerAssociateGameForm :publishers="leagueYear.publishers" :year="leagueYear.year" v-on:gameAssociated="gameAssociated"></managerAssociateGameForm>
-        <managerEditPublishersForm v-on:publishersEdited="publishersEdited" :leagueYear="leagueYear"></managerEditPublishersForm>
-        <managerSetAutoDraftForm v-on:publishersAutoDraftSet="publishersAutoDraftSet" :leagueYear="leagueYear"></managerSetAutoDraftForm>
-        <removeGameForm :leagueYear="leagueYear" v-on:gameRemoved="gameRemoved"></removeGameForm>
-        <manuallyScoreGameForm :leagueYear="leagueYear" v-on:gameManuallyScored="gameManuallyScored" v-on:manualScoreRemoved="manualScoreRemoved"></manuallyScoreGameForm>
-        <manuallySetWillNotReleaseForm :leagueYear="leagueYear" v-on:gameWillNotReleaseSet="gameWillNotReleaseSet"></manuallySetWillNotReleaseForm>
-        <changeLeagueOptionsForm :league="league" v-on:leagueOptionsChanged="leagueOptionsChanged"></changeLeagueOptionsForm>
-        <manageEligibilityOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameEligibilitySet" v-on:gameEligiblityReset="gameEligiblityReset"></manageEligibilityOverridesModal>
-        <manageTagOverridesModal :leagueYear="leagueYear" v-on:gameEligibilitySet="gameTagsSet" v-on:gameTagsReset="gameTagsReset"></manageTagOverridesModal>
-        <removePlayerModal v-on:playerRemoved="playerRemoved" v-on:publisherRemoved="publisherRemoved" :league="league" :leagueYear="leagueYear"></removePlayerModal>
-        <transferManagerModal v-on:managerTransferred="managerTransferred" :league="league"></transferManagerModal>
-        <managerMessageModal v-on:managerMessagePosted="managerMessagePosted" :league="league" :leagueYear="leagueYear"></managerMessageModal>
+        <addNewLeagueYearForm></addNewLeagueYearForm>
+        <invitePlayerForm></invitePlayerForm>
+        <manageActivePlayersForm></manageActivePlayersForm>
+        <createPublisherForUserForm></createPublisherForUserForm>
+        <editDraftOrderForm></editDraftOrderForm>
+        <editAutoDraftForm></editAutoDraftForm>
+        <managerDraftGameForm></managerDraftGameForm>
+        <managerDraftCounterPickForm></managerDraftCounterPickForm>
+        <undoLastDraftActionModal></undoLastDraftActionModal>
+        <setPauseModal></setPauseModal>
+        <resetDraftModal></resetDraftModal>
+        <managerClaimGameForm></managerClaimGameForm>
+        <managerAssociateGameForm></managerAssociateGameForm>
+        <managerEditPublishersForm></managerEditPublishersForm>
+        <managerSetAutoDraftForm></managerSetAutoDraftForm>
+        <removeGameForm></removeGameForm>
+        <manuallyScoreGameForm></manuallyScoreGameForm>
+        <manuallySetWillNotReleaseForm></manuallySetWillNotReleaseForm>
+        <changeLeagueOptionsForm></changeLeagueOptionsForm>
+        <manageEligibilityOverridesModal></manageEligibilityOverridesModal>
+        <manageTagOverridesModal></manageTagOverridesModal>
+        <removePlayerModal></removePlayerModal>
+        <transferManagerModal></transferManagerModal>
+        <managerMessageModal></managerMessageModal>
       </div>
     </div>
   </div>
@@ -266,83 +255,34 @@ export default {
   },
   methods: {
     gameBid(bidInfo) {
-      let actionInfo = {
-        message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.');
     },
     bidCanceled(bidInfo) {
-      let actionInfo = {
-        message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.');
     },
     bidEdited(bidInfo) {
-      let actionInfo = {
-        message: 'Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.');
     },
     dropRequestMade(dropInfo) {
-      let actionInfo = {
-        message: 'Drop Request for ' + dropInfo.gameName + ' was made.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Drop Request for ' + dropInfo.gameName + ' was made.');
     },
     dropCancelled(dropInfo) {
-      let actionInfo = {
-        message: 'Drop Request for ' + dropInfo.gameName + ' was cancelled.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Drop Request for ' + dropInfo.gameName + ' was cancelled.');
     },
     tradeProposed() {
-      let actionInfo = {
-        message: 'Trade proposal has been made.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
-    },
-    tradeActioned() {
-      let actionInfo = {
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Trade proposal has been made.');
     },
     publisherNameChanged(changeInfo) {
-      let actionInfo = {
-        message: 'Publisher name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Publisher name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName);
     },
     publisherIconChanged() {
-      let actionInfo = {
-        message: 'Publisher icon changed.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
-    },
-    newYearAdded(year) {
-      this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: year }, query: { freshSettings: true } });
+      this.notifyAction('Publisher icon changed.');
     },
     gameDrafted(draftInfo) {
-      let actionInfo = {
-        message: 'You have drafted: ' + draftInfo.gameName,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('You have drafted: ' + draftInfo.gameName);
     },
     counterPickDrafted(gameInfo) {
-      let actionInfo = {
-        message: 'You have selected ' + gameInfo.gameName + ' as a counter pick.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('You have selected ' + gameInfo.gameName + ' as a counter pick.');
     },
     setPause(pauseInfo) {
       var model = {
@@ -357,12 +297,7 @@ export default {
           if (!pauseInfo.pause) {
             pauseMessage = 'Draft has been un-paused.';
           }
-          let actionInfo = {
-            message: pauseMessage,
-            fetchLeague: true,
-            fetchLeagueYear: true
-          };
-          this.notifyAction(actionInfo);
+          this.notifyAction(pauseMessage);
         })
         .catch(() => {});
     },
@@ -374,12 +309,7 @@ export default {
       axios
         .post('/api/leagueManager/ResetDraft', model)
         .then(() => {
-          let actionInfo = {
-            message: 'Draft has been reset.',
-            fetchLeague: true,
-            fetchLeagueYear: true
-          };
-          this.notifyAction(actionInfo);
+          this.notifyAction('Draft has been reset.');
         })
         .catch(() => {});
     },
@@ -391,116 +321,51 @@ export default {
       axios
         .post('/api/leagueManager/UndoLastDraftAction', model)
         .then(() => {
-          let actionInfo = {
-            message: 'Last action was undone.',
-            fetchLeagueYear: true
-          };
-          this.notifyAction(actionInfo);
+          this.notifyAction('Last action was undone.');
         })
         .catch(() => {});
     },
     playerInvited(inviteEmail) {
-      let actionInfo = {
-        message: 'Invite was sent to ' + inviteEmail,
-        fetchLeagueYear: true,
-        fetchLeague: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Invite was sent to ' + inviteEmail);
     },
     linkCopied() {
-      let actionInfo = {
-        message: 'Invite Link copied to clipboard.',
-        fetchLeagueYear: false,
-        fetchLeague: false
-      };
-      this.notifyAction(actionInfo);
+      this.makeToast('Invite Link copied to clipboard.');
     },
     activePlayersEdited() {
-      let actionInfo = {
-        message: 'Active players were changed.',
-        fetchLeagueYear: true,
-        fetchLeague: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Active players were changed.', true);
     },
     gameClaimed(claimInfo) {
-      let actionInfo = {
-        message: claimInfo.gameName + ' added to ' + claimInfo.publisherName,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(claimInfo.gameName + ' added to ' + claimInfo.publisherName);
     },
     managerGameDrafted(draftInfo) {
-      let actionInfo = {
-        message: draftInfo.gameName + ' drafted by ' + draftInfo.publisherName,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(draftInfo.gameName + ' drafted by ' + draftInfo.publisherName);
     },
     managerCounterPickDrafted(draftInfo) {
-      let actionInfo = {
-        message: draftInfo.gameName + ' selected as a counter pick by ' + draftInfo.publisherName,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(draftInfo.gameName + ' selected as a counter pick by ' + draftInfo.publisherName);
     },
     gameAssociated(associateInfo) {
-      let actionInfo = {
-        message: associateInfo.gameName + ' sucessfully associated.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(associateInfo.gameName + ' sucessfully associated.');
     },
     gameRemoved(removeInfo) {
-      let actionInfo = {
-        message: removeInfo.gameName + ' removed from ' + removeInfo.publisherName,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(removeInfo.gameName + ' removed from ' + removeInfo.publisherName);
     },
     gameManuallyScored(manualScoreInfo) {
-      let actionInfo = {
-        message: manualScoreInfo.gameName + ' was given a score of ' + manualScoreInfo.score + '.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(manualScoreInfo.gameName + ' was given a score of ' + manualScoreInfo.score + '.');
     },
     manualScoreRemoved(gameName) {
-      let actionInfo = {
-        message: gameName + "'s manual score was removed.",
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(gameName + "'s manual score was removed.");
     },
     gameWillNotReleaseSet() {
-      let actionInfo = {
-        message: 'Will not release status updated.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Will not release status updated.');
     },
     leagueOptionsChanged() {
-      let actionInfo = {
-        message: 'League options have been updated.',
-        fetchLeague: true,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('League options have been updated.');
     },
     draftOrderEdited() {
-      let actionInfo = {
-        message: 'Draft order has been changed.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Draft order has been changed.');
     },
     bidPriorityEdited() {
-      let actionInfo = {
-        message: 'Bid priority has been changed.',
-        fetchLeagueYear: true,
-        fetchCurrentBids: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Bid priority has been changed.');
     },
     gameEligibilitySet(gameInfo) {
       let message = '';
@@ -509,98 +374,45 @@ export default {
       } else {
         message = gameInfo.gameName + ' was marked as ineligible.';
       }
-      let actionInfo = {
-        message: message,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+
+      this.notifyAction(message);
     },
     gameEligiblityReset(gameInfo) {
-      let actionInfo = {
-        message: gameInfo.gameName + "'s eligibility was reset to normal.",
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(gameInfo.gameName + "'s eligibility was reset to normal.");
     },
     gameTagsSet(gameInfo) {
-      let message = (message = gameInfo.gameName + " had it's tags overriden.");
-      let actionInfo = {
-        message: message,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(gameInfo.gameName + " had it's tags overriden.");
     },
     gameTagsReset(gameInfo) {
-      let message = (message = gameInfo.gameName + " had it's tags reset.");
-      let actionInfo = {
-        message: message,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction(gameInfo.gameName + " had it's tags reset.");
     },
     autoDraftSet(autoDraftInfo) {
       let autoDraftStatus = 'off.';
       if (autoDraftInfo.autoDraft) {
         autoDraftStatus = 'on.';
       }
-      let actionInfo = {
-        message: 'Auto draft set to ' + autoDraftStatus,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Auto draft set to ' + autoDraftStatus);
     },
     publishersAutoDraftSet() {
-      let actionInfo = {
-        message: 'Auto draft changed.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Auto draft changed.');
     },
     publishersEdited() {
-      let actionInfo = {
-        message: 'Publisher has been edited.',
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Publisher has been edited.');
     },
     publisherCreated(createdInfo) {
-      let actionInfo = {
-        message: 'Publisher ' + createdInfo.publisherName + ' has been created.',
-        fetchLeague: true,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Publisher ' + createdInfo.publisherName + ' has been created.');
     },
     publisherRemoved(removeInfo) {
-      let actionInfo = {
-        message: 'Publisher ' + removeInfo.publisherName + ' has been removed from the league.',
-        fetchLeague: true,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Publisher ' + removeInfo.publisherName + ' has been removed from the league.');
     },
     playerRemoved(removeInfo) {
-      let actionInfo = {
-        message: 'Player ' + removeInfo.playerName + ' has been removed from the league.',
-        fetchLeague: true,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('Player ' + removeInfo.playerName + ' has been removed from the league.');
     },
     managerTransferred() {
-      let actionInfo = {
-        message: 'You have transferred league manager status.',
-        fetchLeague: true,
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction('You have transferred league manager status.');
     },
     managerMessagePosted() {
-      let actionInfo = {
-        message: "New manager's message posted.",
-        fetchLeagueYear: true
-      };
-      this.notifyAction(actionInfo);
+      this.notifyAction("New manager's message posted.");
     }
   }
 };

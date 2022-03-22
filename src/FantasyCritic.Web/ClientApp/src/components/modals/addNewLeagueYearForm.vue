@@ -17,32 +17,16 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       availableYears: [],
       selectedYear: '',
       error: ''
     };
-  },
-  props: ['league', 'isManager'],
-  methods: {
-    addNewLeagueYear() {
-      var model = {
-        leagueID: this.league.leagueID,
-        year: this.selectedYear
-      };
-      axios
-        .post('/api/leagueManager/AddNewLeagueYear', model)
-        .then(() => {
-          this.$refs.addNewLeagueYearRef.hide();
-          this.$emit('newYearAdded', this.selectedYear);
-        })
-        .catch((response) => {
-          this.error = response;
-        });
-    }
   },
   mounted() {
     if (!this.isManager) {
@@ -54,7 +38,23 @@ export default {
         this.availableYears = response.data;
       })
       .catch((returnedError) => (this.error = returnedError));
+  },
+  methods: {
+    addNewLeagueYear() {
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.selectedYear
+      };
+      axios
+        .post('/api/leagueManager/AddNewLeagueYear', model)
+        .then(() => {
+          this.$refs.addNewLeagueYearRef.hide();
+          this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: this.year }, query: { freshSettings: true } });
+        })
+        .catch((response) => {
+          this.error = response;
+        });
+    }
   }
 };
 </script>
-<style scoped></style>

@@ -150,15 +150,21 @@
 
 <script>
 import axios from 'axios';
+
+import LeagueMixin from '@/mixins/leagueMixin';
 import MasterGamePopover from '@/components/masterGamePopover';
 import CollapseCard from '@/components/collapseCard';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {
-  props: ['trade', 'league', 'leagueYear', 'publisher', 'defaultVisible'],
   components: {
     MasterGamePopover,
     CollapseCard
+  },
+  mixins: [LeagueMixin],
+  props: {
+    trade: Object,
+    defaultVisible: Boolean
   },
   data() {
     return {
@@ -221,21 +227,21 @@ export default {
   },
   methods: {
     acceptTrade() {
-      this.sendGenericTradeRequest('league/AcceptTrade');
+      this.sendGenericTradeRequest('league/AcceptTrade', 'You accepted a trade.');
     },
     rejectTrade() {
-      this.sendGenericTradeRequest('league/RejectTrade');
+      this.sendGenericTradeRequest('league/RejectTrade', 'You rejected a trade.');
     },
     rescindTrade() {
-      this.sendGenericTradeRequest('league/RescindTrade');
+      this.sendGenericTradeRequest('league/RescindTrade', 'You rescinded a trade.');
     },
     executeTrade() {
-      this.sendGenericTradeRequest('leagueManager/ExecuteTrade');
+      this.sendGenericTradeRequest('leagueManager/ExecuteTrade', 'Trade has been executed.');
     },
     managerRejectTrade() {
-      this.sendGenericTradeRequest('leagueManager/RejectTrade');
+      this.sendGenericTradeRequest('leagueManager/RejectTrade', 'Trade has been rejected.');
     },
-    sendGenericTradeRequest(endPoint) {
+    sendGenericTradeRequest(endPoint, message) {
       var model = {
         tradeID: this.trade.tradeID,
         leagueID: this.leagueYear.leagueID,
@@ -244,7 +250,7 @@ export default {
       axios
         .post(`/api/${endPoint}`, model)
         .then(() => {
-          this.$emit('tradeActioned');
+          this.notifyAction(message);
         })
         .catch((response) => {
           this.errorInfo = response.response.data;
@@ -261,7 +267,7 @@ export default {
       axios
         .post('/api/league/VoteOnTrade', model)
         .then(() => {
-          this.$emit('tradeActioned');
+          this.notifyAction('Voted on trade.');
           this.comment = '';
         })
         .catch((response) => {
@@ -277,7 +283,7 @@ export default {
       axios
         .post('/api/league/DeleteTradeVote', model)
         .then(() => {
-          this.$emit('tradeActioned');
+          this.notifyAction('Deleted vote on trade.');
         })
         .catch((response) => {
           this.errorInfo = response.response.data;
