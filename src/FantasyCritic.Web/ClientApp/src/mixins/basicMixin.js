@@ -1,4 +1,9 @@
 let basicMixin = {
+  computed: {
+    isAuth() {
+      return this.$store.getters.isAuthenticated;
+    }
+  },
   methods: {
     makeToast(message) {
       this.$bvToast.toast(message, {

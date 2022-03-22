@@ -85,7 +85,7 @@
               !
             </div>
           </div>
-          <div v-if="!leagueYear.userIsActive && league.userIsInLeague && !userShouldBeActive">
+          <div v-if="!leagueYear.userIsActive && league.userIsInLeague">
             <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
           </div>
 
@@ -193,25 +193,22 @@ import StartDraftModal from '@/components/modals/startDraftModal';
 import GameNews from '@/components/gameNews';
 import ActiveBids from '@/components/activeBids';
 import BidCountdowns from '@/components/bidCountdowns';
-import BasicMixin from '@/mixins/basicMixin';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
-  mixins: [BasicMixin],
+  mixins: [LeagueMixin],
+  props: {
+    leagueid: String,
+    year: String
+  },
   data() {
     return {
-      errorInfo: '',
-      league: null,
-      leagueYear: null,
+      selectedYear: null,
       currentBids: [],
       currentDrops: [],
-      gameNews: null,
-      forbidden: false,
-      advancedProjections: false,
-      inviteCode: null,
-      userShouldBeActive: false
+      gameNews: null
     };
   },
-  props: ['leagueid', 'year'],
   components: {
     LeagueGameSummary,
     LeagueYearStandings,
@@ -236,9 +233,6 @@ export default {
       }
 
       return false;
-    },
-    isAuth() {
-      return this.$store.getters.isAuthenticated;
     },
     topPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
@@ -277,49 +271,11 @@ export default {
     formatDate(date) {
       return moment(date).format('MMMM Do, YYYY');
     },
-    fetchLeague() {
-      let queryURL = '/api/League/GetLeague/' + this.leagueid;
-      if (this.inviteCode) {
-        queryURL += '?inviteCode=' + this.inviteCode;
-      }
-      axios
-        .get(queryURL)
-        .then((response) => {
-          this.league = response.data;
-          document.title = this.league.leagueName + ' - Fantasy Critic';
-        })
-        .catch((returnedError) => {
-          this.errorInfo = 'Something went wrong with this league. Contact us on Twitter for support.';
-          this.forbidden = returnedError.response.status === 403;
-        });
-    },
-    async fetchLeagueYear() {
-      let queryURL = '/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year;
-      if (this.inviteCode) {
-        queryURL += '&inviteCode=' + this.inviteCode;
-      }
-      await axios
-        .get(queryURL)
-        .then((response) => {
-          this.leagueYear = response.data;
-          this.selectedYear = this.leagueYear.year;
-          this.fetchCurrentBids();
-          this.fetchCurrentDropRequests();
-          this.fetchGameNews();
-          if (this.leagueYear.userIsActive) {
-            this.userShouldBeActive = true;
-          }
-          this.$store.commit('cancelMoveMode');
-        })
-        .catch(() => {
-          this.errorInfo = 'Something went wrong with this league. Contact us on Twitter for support.';
-        });
-    },
     fetchCurrentBids() {
       if (!this.leagueYear.userPublisher) {
         return;
       }
-      axios
+      return axios
         .get('/api/league/CurrentBids/' + this.leagueYear.userPublisher.publisherID)
         .then((response) => {
           this.currentBids = response.data;
@@ -327,14 +283,14 @@ export default {
         .catch(() => {});
     },
     revealPublicBids() {
-      this.fetchLeagueYear();
+      this.fetchLeagueData();
       this.$store.dispatch('getBidTimes');
     },
     fetchCurrentDropRequests() {
       if (!this.leagueYear.userPublisher) {
         return;
       }
-      axios
+      return axios
         .get('/api/league/CurrentDropRequests/' + this.leagueYear.userPublisher.publisherID)
         .then((response) => {
           this.currentDrops = response.data;
@@ -344,7 +300,7 @@ export default {
     fetchGameNews() {
       this.gameNews = null;
       let queryURL = '/api/League/LeagueGameNews?leagueID=' + this.leagueid + '&year=' + this.year;
-      axios
+      return axios
         .get(queryURL)
         .then((response) => {
           this.gameNews = response.data;
@@ -355,11 +311,10 @@ export default {
       var model = {
         leagueID: this.league.leagueID
       };
-      axios
+      return axios
         .post('/api/league/AcceptInvite', model)
         .then(() => {
-          this.fetchLeague();
-          this.fetchLeagueYear();
+          this.fetchLeagueData();
         })
         .catch(() => {});
     },
@@ -367,7 +322,7 @@ export default {
       var model = {
         inviteID: this.league.outstandingInvite.inviteID
       };
-      axios
+      return axios
         .post('/api/league/DeclineInvite', model)
         .then(() => {
           this.$router.push({ name: 'home' });
@@ -379,33 +334,31 @@ export default {
         leagueID: this.league.leagueID,
         inviteCode: this.inviteCode
       };
-      axios
+      return axios
         .post('/api/league/JoinWithInviteLink', model)
         .then(() => {
-          this.fetchLeague();
-          this.fetchLeagueYear();
+          this.fetchLeagueData();
         })
         .catch(() => {
           this.errorInfo = 'Something went wrong joining the league';
         });
     },
-    async startDraft() {
+    startDraft() {
       var model = {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year
       };
-      await axios
+      return axios
         .post('/api/leagueManager/startDraft', model)
         .then(async () => {
-          await this.fetchLeague();
-          await this.fetchLeagueYear();
+          await this.fetchLeagueData();
           await this.startHubConnection();
         })
         .catch(() => {});
     },
     actionTaken(actionInfo) {
-      if (actionInfo.fetchLeagueYear) {
-        this.fetchLeagueYear();
+      if (actionInfo.fetchLeagueData) {
+        this.fetchLeagueData();
       }
       if (actionInfo.fetchLeague) {
         this.fetchLeague();
@@ -426,10 +379,10 @@ export default {
       var model = {
         leagueID: this.league.leagueID
       };
-      axios
+      return axios
         .post('/api/league/FollowLeague', model)
         .then(() => {
-          this.fetchLeague();
+          this.fetchLeagueData();
         })
         .catch(() => {});
     },
@@ -437,31 +390,26 @@ export default {
       var model = {
         leagueID: this.league.leagueID
       };
-      axios
+      return axios
         .post('/api/league/UnfollowLeague', model)
         .then(() => {
-          this.fetchLeague();
+          this.fetchLeagueData();
         })
         .catch(() => {});
-    },
-    getInviteCode() {
-      let inviteCode = this.$route.query.inviteCode;
-      if (inviteCode) {
-        this.inviteCode = inviteCode;
-      }
     },
     dismissRecentManagerMessage() {
       var model = {
         messageID: this.mostRecentManagerMessage.messageID
       };
-      axios
+      return axios
         .post('/api/league/DismissManagerMessage', model)
         .then(() => {
-          this.fetchLeague();
+          this.fetchLeagueData();
         })
         .catch(() => {});
     },
     async startHubConnection() {
+      console.log('Doop');
       if (!this.leagueYear.playStatus.draftIsActive) {
         return;
       }
@@ -474,7 +422,7 @@ export default {
       hubConnection.invoke('Subscribe', this.leagueid, this.year).catch((err) => console.error(err.toString()));
 
       hubConnection.on('RefreshLeagueYear', async () => {
-        await this.fetchLeagueYear();
+        await this.fetchLeagueData();
       });
 
       hubConnection.onreconnecting(() => {
@@ -489,25 +437,28 @@ export default {
         await this.startHubConnection();
       });
     },
-    reloadPage() {
-      window.location.reload(false);
+    initializePage() {
+      this.selectedYear = this.year;
+      const inviteCode = this.$route.query.inviteCode;
+      const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
+      this.$store.dispatch('initializePage', leaguePageParams).then(async () => {
+        await this.startHubConnection();
+      });
+    },
+    fetchLeagueData() {
+      this.selectedYear = this.year;
+      const inviteCode = this.$route.query.inviteCode;
+      const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
+      this.$store.dispatch('fetchLeagueData', leaguePageParams);
     }
   },
   async mounted() {
-    this.$store.commit('setAdvancedProjections', false);
-    this.$store.commit('setDraftOrderView', false);
-    this.selectedYear = this.year;
-    this.getInviteCode();
-    this.fetchLeague();
-    await this.fetchLeagueYear();
-    await this.startHubConnection();
+    this.initializePage();
   },
   watch: {
     $route(to, from) {
       if (to.path !== from.path) {
-        this.$store.commit('setAdvancedProjections', false);
-        this.$store.commit('setDraftOrderView', false);
-        this.fetchLeagueYear();
+        this.initializePage();
       }
     },
     userIsNextInDraft: function (val, oldVal) {
