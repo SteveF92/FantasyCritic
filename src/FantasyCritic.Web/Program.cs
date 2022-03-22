@@ -36,7 +36,7 @@ public static class Program
             {
                 webBuilder
                     .UseStartup<Startup>()
-                    .UseIISIntegration();
+                    .UseIIS();
             })
             .ConfigureLogging(logging =>
             {
