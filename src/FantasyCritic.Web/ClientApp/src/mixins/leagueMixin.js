@@ -18,6 +18,15 @@ let leagueMixin = {
     leagueYear() {
       return this.$store.getters.leagueYear;
     },
+    currentBids() {
+      return this.$store.getters.currentBids;
+    },
+    currentDrops() {
+      return this.$store.getters.currentDrops;
+    },
+    gameNews() {
+      return this.$store.getters.gameNews;
+    },
     advancedProjections() {
       return this.$store.getters.advancedProjections;
     },

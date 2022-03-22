@@ -182,7 +182,6 @@
 
 <script>
 import axios from 'axios';
-import moment from 'moment';
 import * as signalR from '@microsoft/signalr';
 
 import LeagueGameSummary from '@/components/leagueGameSummary';
@@ -203,10 +202,7 @@ export default {
   },
   data() {
     return {
-      selectedYear: null,
-      currentBids: [],
-      currentDrops: [],
-      gameNews: null
+      selectedYear: null
     };
   },
   components: {
@@ -268,44 +264,9 @@ export default {
     }
   },
   methods: {
-    formatDate(date) {
-      return moment(date).format('MMMM Do, YYYY');
-    },
-    fetchCurrentBids() {
-      if (!this.leagueYear.userPublisher) {
-        return;
-      }
-      return axios
-        .get('/api/league/CurrentBids/' + this.leagueYear.userPublisher.publisherID)
-        .then((response) => {
-          this.currentBids = response.data;
-        })
-        .catch(() => {});
-    },
     revealPublicBids() {
       this.fetchLeagueData();
       this.$store.dispatch('getBidTimes');
-    },
-    fetchCurrentDropRequests() {
-      if (!this.leagueYear.userPublisher) {
-        return;
-      }
-      return axios
-        .get('/api/league/CurrentDropRequests/' + this.leagueYear.userPublisher.publisherID)
-        .then((response) => {
-          this.currentDrops = response.data;
-        })
-        .catch(() => {});
-    },
-    fetchGameNews() {
-      this.gameNews = null;
-      let queryURL = '/api/League/LeagueGameNews?leagueID=' + this.leagueid + '&year=' + this.year;
-      return axios
-        .get(queryURL)
-        .then((response) => {
-          this.gameNews = response.data;
-        })
-        .catch(() => {});
     },
     acceptInvite() {
       var model = {
@@ -409,7 +370,6 @@ export default {
         .catch(() => {});
     },
     async startHubConnection() {
-      console.log('Doop');
       if (!this.leagueYear.playStatus.draftIsActive) {
         return;
       }
