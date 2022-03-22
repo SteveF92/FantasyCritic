@@ -20,19 +20,22 @@
   </tr>
 </template>
 <script>
+import LeagueMixin from '@/mixins/leagueMixin';
 import GameNameColumn from '@/components/gameTables/gameNameColumn';
 
 export default {
   components: {
     GameNameColumn
   },
-  props: ['gameSlot', 'supportedYear', 'hasSpecialSlots'],
+  mixins: [LeagueMixin],
+  props: {
+    gameSlot: Object,
+    supportedYear: Object,
+    hasSpecialSlots: Object
+  },
   computed: {
     game() {
       return this.gameSlot.publisherGame;
-    },
-    advancedProjections() {
-      return this.$store.getters.advancedProjections;
     },
     emptySlotScore() {
       if (this.gameSlot.counterPick && this.yearFinished) {

@@ -62,6 +62,8 @@
 </template>
 <script>
 import html2canvas from 'html2canvas';
+
+import LeagueMixin from '@/mixins/leagueMixin';
 import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow';
 import GlobalFunctions from '@/globalFunctions';
 
@@ -69,19 +71,16 @@ export default {
   components: {
     MinimalPlayerGameSlotRow
   },
-  props: ['publisher', 'leagueYear'],
+  mixins: [LeagueMixin],
+  props: {
+    publisher: Object
+  },
   data() {
     return {
       renderingSnapshot: false
     };
   },
   computed: {
-    advancedProjections() {
-      return this.$store.getters.advancedProjections;
-    },
-    userIsPublisher() {
-      return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
-    },
     gameSlots() {
       if (!this.$store.getters.draftOrderView) {
         return this.publisher.gameSlots;
@@ -91,9 +90,6 @@ export default {
     },
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
-    },
-    isPlusUser() {
-      return this.$store.getters.isPlusUser;
     }
   },
   methods: {
@@ -200,8 +196,6 @@ export default {
 .type-column {
   width: 30px;
   text-align: center;
-}
-.game-column {
 }
 
 .score-column {

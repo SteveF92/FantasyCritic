@@ -116,7 +116,13 @@ import MasterGamePopover from '@/components/masterGamePopover';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
 
 export default {
-  props: ['masterGames'],
+  components: {
+    MasterGamePopover,
+    MasterGameTagBadge
+  },
+  props: {
+    masterGames: Array
+  },
   data() {
     return {
       gameFields: [
@@ -139,10 +145,6 @@ export default {
       filter: null,
       filterOn: []
     };
-  },
-  components: {
-    MasterGamePopover,
-    MasterGameTagBadge
   },
   computed: {
     sortOptions() {

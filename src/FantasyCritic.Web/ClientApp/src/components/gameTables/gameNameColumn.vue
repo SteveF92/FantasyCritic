@@ -36,7 +36,11 @@ export default {
     MasterGamePopover,
     SlotTypeBadge
   },
-  props: ['gameSlot', 'hasSpecialSlots', 'supportedYear'],
+  props: {
+    gameSlot: Object,
+    supportedYear: Object,
+    hasSpecialSlots: Object
+  },
   computed: {
     game() {
       return this.gameSlot.publisherGame;

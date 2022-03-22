@@ -23,9 +23,11 @@
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
 
 export default {
-  props: ['gameSlot'],
   components: {
     MasterGameTagBadge
+  },
+  props: {
+    gameSlot: Object
   },
   computed: {
     regularText() {

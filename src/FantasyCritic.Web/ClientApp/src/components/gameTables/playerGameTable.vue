@@ -92,6 +92,14 @@ import GameNameColumn from '@/components/gameTables/gameNameColumn';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
+  components: {
+    ToggleButton,
+    GameNameColumn
+  },
+  props: {
+    publisher: Object,
+    leagueYear: Object
+  },
   data() {
     return {
       sortOrderMode: false,
@@ -100,20 +108,12 @@ export default {
       sortDesc: false
     };
   },
-  components: {
-    ToggleButton,
-    GameNameColumn
-  },
-  props: ['publisher', 'leagueYear'],
   computed: {
     moveMode() {
       return this.$store.getters.moveMode;
     },
     userIsPublisher() {
       return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
-    },
-    isPlusUser() {
-      return this.$store.getters.isPlusUser;
     },
     tableItems() {
       if (!this.sortOrderMode) {
@@ -173,6 +173,14 @@ export default {
       };
     }
   },
+  watch: {
+    sortOrderMode: function () {
+      if (!this.sortOrderMode) {
+        this.sortBy = 'overallSlotNumber';
+        this.sortDesc = false;
+      }
+    }
+  },
   methods: {
     enterMoveMode() {
       this.$store.commit('enterMoveMode');
@@ -205,14 +213,6 @@ export default {
         specialSlot: null,
         dropped: true
       };
-    }
-  },
-  watch: {
-    sortOrderMode: function () {
-      if (!this.sortOrderMode) {
-        this.sortBy = 'overallSlotNumber';
-        this.sortDesc = false;
-      }
     }
   }
 };
