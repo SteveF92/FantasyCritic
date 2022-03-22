@@ -33,6 +33,20 @@ let leagueMixin = {
     draftOrderView() {
       return this.$store.getters.draftOrderView;
     }
+  },
+  methods: {
+    actionTaken(actionInfo) {
+      if (!actionInfo.fetchLeague && !actionInfo.fetchLeagueYear) {
+        this.refreshLeagueData();
+        return;
+      }
+
+      this.$store.dispatch('refreshLeagueData').then(() => {
+        if (actionInfo.message) {
+          this.makeToast(actionInfo.message);
+        }
+      });
+    }
   }
 };
 

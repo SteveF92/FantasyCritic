@@ -34,6 +34,18 @@ export default {
       context.commit('setInviteCode', leaguePageParams.inviteCode);
       return context.dispatch('fetchLeagueData', leaguePageParams);
     },
+    refreshLeagueData(context) {
+      const leaguePageParams = {
+        leagueID: context.getters.leagueYear.leagueID,
+        year: context.getters.leagueYear.year,
+        inviteCode: context.getters.inviteCode
+      };
+      let leaguePromise = context.dispatch('fetchLeague', leaguePageParams);
+      let leagueYearPromise = context.dispatch('fetchLeagueYear', leaguePageParams);
+      return Promise.all([leaguePromise, leagueYearPromise]).then(() => {
+        // All done
+      });
+    },
     fetchLeagueData(context, leaguePageParams) {
       let leaguePromise = context.dispatch('fetchLeague', leaguePageParams);
       let leagueYearPromise = context.dispatch('fetchLeagueYear', leaguePageParams);

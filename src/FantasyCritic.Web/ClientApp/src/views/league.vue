@@ -265,17 +265,8 @@ export default {
   },
   methods: {
     revealPublicBids() {
-      this.fetchLeagueData();
+      this.refreshLeagueData();
       this.$store.dispatch('getBidTimes');
-    },
-    actionTaken(actionInfo) {
-      if (actionInfo.fetchLeague || actionInfo.fetchLeagueYear) {
-        this.fetchLeagueData();
-      }
-
-      if (actionInfo.message) {
-        this.makeToast(actionInfo.message);
-      }
     },
     changeLeagueYear(newVal) {
       var parameters = {
@@ -291,7 +282,7 @@ export default {
       return axios
         .post('/api/league/AcceptInvite', model)
         .then(() => {
-          this.fetchLeagueData();
+          this.refreshLeagueData();
         })
         .catch(() => {});
     },
@@ -314,7 +305,7 @@ export default {
       return axios
         .post('/api/league/JoinWithInviteLink', model)
         .then(() => {
-          this.fetchLeagueData();
+          this.refreshLeagueData();
         })
         .catch(() => {
           this.errorInfo = 'Something went wrong joining the league';
@@ -328,7 +319,7 @@ export default {
       return axios
         .post('/api/leagueManager/startDraft', model)
         .then(async () => {
-          await this.fetchLeagueData();
+          await this.refreshLeagueData();
           await this.startHubConnection();
         })
         .catch(() => {});
@@ -340,7 +331,7 @@ export default {
       return axios
         .post('/api/league/FollowLeague', model)
         .then(() => {
-          this.fetchLeagueData();
+          this.refreshLeagueData();
         })
         .catch(() => {});
     },
@@ -351,7 +342,7 @@ export default {
       return axios
         .post('/api/league/UnfollowLeague', model)
         .then(() => {
-          this.fetchLeagueData();
+          this.refreshLeagueData();
         })
         .catch(() => {});
     },
@@ -362,7 +353,7 @@ export default {
       return axios
         .post('/api/league/DismissManagerMessage', model)
         .then(() => {
-          this.fetchLeagueData();
+          this.refreshLeagueData();
         })
         .catch(() => {});
     },
@@ -379,7 +370,7 @@ export default {
       hubConnection.invoke('Subscribe', this.leagueid, this.year).catch((err) => console.error(err.toString()));
 
       hubConnection.on('RefreshLeagueYear', async () => {
-        await this.fetchLeagueData();
+        await this.refreshLeagueData();
       });
 
       hubConnection.onreconnecting(() => {
@@ -402,11 +393,8 @@ export default {
         await this.startHubConnection();
       });
     },
-    fetchLeagueData() {
-      this.selectedYear = this.year;
-      const inviteCode = this.$route.query.inviteCode;
-      const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
-      this.$store.dispatch('fetchLeagueData', leaguePageParams);
+    refreshLeagueData() {
+      this.$store.dispatch('refreshLeagueData');
     }
   },
   async mounted() {
