@@ -1,7 +1,7 @@
 <template>
   <span>
     <span v-if="masterGame">
-      <b-popover :target="`mg-popover-${_uid}`" triggers="click blur">
+      <b-popover :target="`mg-popover-${_uid}`" triggers="click blur" custom-class="master-game-popover">
         <div class="mg-popover">
           <masterGameSummary :masterGame="masterGame"></masterGameSummary>
         </div>
@@ -33,8 +33,16 @@ export default {
   }
 };
 </script>
-<style>
-.popover {
-  max-width: 500px;
+<style scoped>
+@media only screen and (max-width: 600px) {
+  .master-game-popover {
+    max-width: 300px;
+  }
+}
+
+@media only screen and (min-width: 601px) {
+  .master-game-popover {
+    max-width: 500px;
+  }
 }
 </style>
