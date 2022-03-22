@@ -6,23 +6,29 @@
     <span v-if="short" class="badge tag-badge" :id="'popover-target' + _uid" v-bind:style="badgeColor">
       {{ tag.shortName }}
     </span>
-    <b-popover :target="'popover-target' + _uid" triggers="hover" placement="right" custom-class="master-game-tag-popover">
-      <template #title>
-        {{ tag.readableName }}
-      </template>
-      {{ tag.description }}
-      <div v-if="tag.examples && tag.examples.length > 0">
-        <h6>Examples</h6>
-        <ul>
-          <li v-for="example in tag.examples" :key="example">{{ example }}</li>
-        </ul>
-      </div>
-    </b-popover>
+    <template v-if="!noPopover">
+      <b-popover :target="'popover-target' + _uid" triggers="hover" placement="right" custom-class="master-game-tag-popover">
+        <template #title>
+          {{ tag.readableName }}
+        </template>
+        {{ tag.description }}
+        <div v-if="tag.examples && tag.examples.length > 0">
+          <h6>Examples</h6>
+          <ul>
+            <li v-for="example in tag.examples" :key="example">{{ example }}</li>
+          </ul>
+        </div>
+      </b-popover>
+    </template>
   </span>
 </template>
 <script>
 export default {
-  props: ['tagName', 'short'],
+  props: {
+    tagName: String,
+    short: Boolean,
+    noPopover: Boolean
+  },
   computed: {
     tag() {
       let allTags = this.$store.getters.allTags;
