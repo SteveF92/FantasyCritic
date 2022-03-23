@@ -34,7 +34,7 @@
 
         <div v-if="trades && trades.length > 0">
           <h2>Trades</h2>
-          <tradeSummary v-for="trade in trades" v-bind:key="trade.tradeID" :trade="trade" :league="league" :leagueYear="leagueYear" :publisher="leagueYear.userPublisher"></tradeSummary>
+          <tradeSummary v-for="trade in trades" v-bind:key="trade.tradeID" :trade="trade" :league="league" :leagueYear="leagueYear" :publisher="userPublisher"></tradeSummary>
         </div>
 
         <h2>Full Actions History</h2>
@@ -62,8 +62,16 @@ import axios from 'axios';
 import LeagueActionSet from '@/components/leagueActionSet';
 import CollapseCard from '@/components/collapseCard';
 import TradeSummary from '@/components/tradeSummary';
+import BasicMixin from '@/mixins/basicMixin';
 
 export default {
+  components: {
+    LeagueActionSet,
+    CollapseCard,
+    TradeSummary
+  },
+  mixins: [BasicMixin],
+  props: ['leagueid', 'year'],
   data() {
     return {
       errorInfo: '',
@@ -85,12 +93,11 @@ export default {
       lastID: 1
     };
   },
-  components: {
-    LeagueActionSet,
-    CollapseCard,
-    TradeSummary
+  computed: {
+    userPublisher() {
+      return _.filter(this.leagueYear.publishers, (x) => x.userID === this.userInfo.userID)[0];
+    }
   },
-  props: ['leagueid', 'year'],
   methods: {
     getCollapseID() {
       let thisID = this.lastID;

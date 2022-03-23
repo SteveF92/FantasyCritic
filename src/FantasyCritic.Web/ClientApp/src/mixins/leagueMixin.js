@@ -22,7 +22,7 @@ let leagueMixin = {
       return this.$store.getters.leagueYear;
     },
     userPublisher() {
-      return this.$store.getters.leagueYear.userPublisher;
+      return this.$store.getters.userPublisher;
     },
     currentBids() {
       return this.$store.getters.currentBids;
@@ -47,8 +47,8 @@ let leagueMixin = {
       return next;
     },
     userIsNextInDraft() {
-      if (this.nextPublisherUp && this.leagueYear && this.leagueYear.userPublisher) {
-        return this.nextPublisherUp.publisherID === this.leagueYear.userPublisher.publisherID;
+      if (this.nextPublisherUp && this.leagueYear && this.userPublisher) {
+        return this.nextPublisherUp.publisherID === this.userPublisher.publisherID;
       }
 
       return false;

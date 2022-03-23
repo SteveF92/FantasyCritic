@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="league-actions">
-      <div v-if="leagueYear.userPublisher">
+      <div v-if="userPublisher">
         <div class="publisher-section">
-          <div v-if="leagueYear.userPublisher.publisherIcon && iconIsValid" class="publisher-icon">
-            {{ leagueYear.userPublisher.publisherIcon }}
+          <div v-if="userPublisher.publisherIcon && iconIsValid" class="publisher-icon">
+            {{ userPublisher.publisherIcon }}
           </div>
           <div class="publisher-name-section">
-            <h2 class="publisher-name">{{ leagueYear.userPublisher.publisherName }}</h2>
-            <h5>{{ leagueYear.userPublisher.playerName }}</h5>
+            <h2 class="publisher-name">{{ userPublisher.publisherName }}</h2>
+            <h5>{{ userPublisher.playerName }}</h5>
           </div>
         </div>
         <hr />
@@ -24,12 +24,12 @@
           <li class="fake-link action" v-b-modal="'tagOverridesModal'">See Tag Overrides</li>
         </ul>
       </div>
-      <div v-if="leagueYear.userPublisher">
+      <div v-if="userPublisher">
         <div>
           <h4>Player Actions</h4>
           <ul class="actions-list">
             <li class="action">
-              <router-link :to="{ name: 'publisher', params: { publisherid: leagueYear.userPublisher.publisherID } }">
+              <router-link :to="{ name: 'publisher', params: { publisherid: userPublisher.publisherID } }">
                 <template v-if="leagueYear.hasSpecialSlots">My Publisher Details / Move Games</template>
                 <template v-else>My Publisher Details</template>
               </router-link>
@@ -249,7 +249,7 @@ export default {
   mixins: [LeagueMixin],
   computed: {
     iconIsValid() {
-      return GlobalFunctions.publisherIconIsValid(this.leagueYear.userPublisher.publisherIcon);
+      return GlobalFunctions.publisherIconIsValid(this.userPublisher.publisherIcon);
     }
   }
 };

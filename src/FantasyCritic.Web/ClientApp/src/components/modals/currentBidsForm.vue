@@ -54,7 +54,7 @@
       <h3 for="bidBeingEdited" class="selected-game text-black">Edit Bid:</h3>
       <masterGameSummary :masterGame="bidBeingEdited.masterGame"></masterGameSummary>
       <div class="form-group">
-        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ leagueYear.userPublisher.budget | money }})</label>
+        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
 
         <ValidationProvider rules="required|integer" v-slot="{ errors }">
           <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />

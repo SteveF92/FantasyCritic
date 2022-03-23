@@ -222,12 +222,6 @@ public class LeagueController : BaseLeagueController
         Maybe<Publisher> nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear);
         var draftPhase = _draftService.GetDraftPhase(leagueYear);
 
-        Maybe<Publisher> userPublisher = Maybe<Publisher>.None;
-        if (currentUser.HasValue)
-        {
-            userPublisher = leagueYear.GetUserPublisher(currentUser.Value);
-        }
-
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear);
 
@@ -248,7 +242,7 @@ public class LeagueController : BaseLeagueController
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
 
         var currentDate = _clock.GetToday();
-        var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, userPublisher, currentDate,
+        var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentDate,
             startDraftResult, leagueYearRecord.ValidResult.Value.ActiveUsers, nextDraftPublisher, draftPhase, systemWideValues,
             leagueYearRecord.ValidResult.Value.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades);

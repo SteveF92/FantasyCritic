@@ -57,7 +57,7 @@
             <masterGameSummary :masterGame="bidMasterGame"></masterGameSummary>
             <hr />
             <div class="form-group">
-              <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ leagueYear.userPublisher.budget | money }})</label>
+              <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
 
               <ValidationProvider rules="required|integer" v-slot="{ errors }">
                 <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />
@@ -130,7 +130,7 @@ export default {
       return !!this.bidMasterGame;
     },
     publisherSlotsAreFilled() {
-      let userGames = this.leagueYear.userPublisher.games;
+      let userGames = this.userPublisher.games;
       let standardGameSlots = this.leagueYear.standardGames;
       let userStandardGames = _.filter(userGames, { counterPick: false });
       return userStandardGames.length >= standardGameSlots;
@@ -204,7 +204,7 @@ export default {
     },
     bidGame() {
       var request = {
-        publisherID: this.leagueYear.userPublisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         masterGameID: this.bidMasterGame.masterGameID,
         bidAmount: this.bidAmount,
         counterPick: false

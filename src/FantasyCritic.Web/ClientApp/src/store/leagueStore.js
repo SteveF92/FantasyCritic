@@ -7,8 +7,8 @@ export default {
     errorInfoInternal: null,
     forbiddenInternal: false,
     inviteCodeInternal: false,
-    leagueInternal: null,
     leagueYearInternal: null,
+    userPublisherInternal: null,
     currentBidsInternal: null,
     currentDropsInternal: null,
     gameNewsInternal: null,
@@ -19,8 +19,8 @@ export default {
     errorInfo: (state) => state.errorInfoInternal,
     forbidden: (state) => state.forbiddenInternal,
     inviteCode: (state) => state.inviteCodeInternal,
-    league: (state) => state.leagueInternal,
     leagueYear: (state) => state.leagueYearInternal,
+    userPublisher: (state) => state.userPublisherInternal,
     currentBids: (state) => state.currentBidsInternal,
     currentDrops: (state) => state.currentDropsInternal,
     gameNews: (state) => state.gameNewsInternal,
@@ -50,8 +50,12 @@ export default {
       return axios
         .get(queryURL)
         .then((response) => {
-          context.commit('setLeagueYear', response.data);
-          if (context.getters.leagueYear.userPublisher) {
+          const leagueYearPayload = {
+            leagueYear: response.data,
+            userID: context.getters.userInfo.userID
+          };
+          context.commit('setLeagueYear', leagueYearPayload);
+          if (context.getters.userPublisher) {
             context.dispatch('fetchAdditionalLeagueData');
           }
           context.dispatch('fetchGameNews');
@@ -68,7 +72,7 @@ export default {
       });
     },
     fetchCurrentBids(context) {
-      const queryURL = '/api/league/CurrentBids/' + context.getters.leagueYear.userPublisher.publisherID;
+      const queryURL = '/api/league/CurrentBids/' + context.getters.userPublisher.publisherID;
       return axios
         .get(queryURL)
         .then((response) => {
@@ -77,7 +81,7 @@ export default {
         .catch(() => {});
     },
     fetchCurrentDropRequests(context) {
-      const queryURL = '/api/league/CurrentDropRequests/' + context.getters.leagueYear.userPublisher.publisherID;
+      const queryURL = '/api/league/CurrentDropRequests/' + context.getters.userPublisher.publisherID;
       return axios
         .get(queryURL)
         .then((response) => {
@@ -99,8 +103,13 @@ export default {
   },
   mutations: {
     clearLeagueSpecificData(state) {
-      state.leagueInternal = null;
+      state.errorInfoInternal = null;
+      state.forbiddenInternal = null;
+      state.inviteCodeInternal = null;
       state.leagueYearInternal = null;
+      state.userPublisherInternal = null;
+      state.currentBidsInternal = null;
+      state.currentDropsInternal = null;
     },
     setErrorInfo(state, errorInfo) {
       state.errorInfoInternal = errorInfo;
@@ -111,12 +120,11 @@ export default {
     setInviteCode(state, inviteCode) {
       state.inviteCodeInternal = inviteCode;
     },
-    setLeague(state, league) {
-      state.leagueInternal = league;
-      document.title = league.leagueName + ' - Fantasy Critic';
-    },
-    setLeagueYear(state, leagueYear) {
-      state.leagueYearInternal = leagueYear;
+    setLeagueYear(state, leagueYearPayload) {
+      state.leagueYearInternal = leagueYearPayload.leagueYear;
+      document.title = leagueYearPayload.leagueYear.league.leagueName + ' - Fantasy Critic';
+      let matchingPublishers = _.filter(leagueYearPayload.leagueYear.publishers, (x) => x.userID === leagueYearPayload.userID);
+      state.userPublisherInternal = matchingPublishers[0];
     },
     setCurrentBids(state, currentBids) {
       state.currentBidsInternal = currentBids;

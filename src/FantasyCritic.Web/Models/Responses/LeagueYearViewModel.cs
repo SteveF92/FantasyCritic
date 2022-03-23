@@ -6,7 +6,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueYearViewModel
 {
-    public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear, Maybe<Publisher> userPublisher,
+    public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear,
         LocalDate currentDate, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
         DraftPhase draftPhase, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
@@ -32,11 +32,6 @@ public class LeagueYearViewModel
             .OrderBy(x => x.DraftPosition)
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
             .ToList();
-
-        if (userPublisher.HasValue)
-        {
-            UserPublisher = new PublisherViewModel(leagueYear, userPublisher.Value, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs);
-        }
 
         List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
         bool allPublishersMade = true;
@@ -134,7 +129,6 @@ public class LeagueYearViewModel
     public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverrideViewModel> TagOverrides { get; }
     public PublisherSlotRequirementsViewModel SlotInfo { get; }
-    public PublisherViewModel UserPublisher { get; }
     public PlayStatusViewModel PlayStatus { get; }
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
     public IReadOnlyList<PublicBiddingMasterGameViewModel> PublicBiddingGames { get; }

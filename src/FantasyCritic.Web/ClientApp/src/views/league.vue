@@ -89,14 +89,14 @@
             <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
           </div>
 
-          <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft && leagueYear.userPublisher" class="alert alert-warning">
+          <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft && userPublisher" class="alert alert-warning">
             <h2>This year is not active yet!</h2>
             <ul>
               <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>
             </ul>
           </div>
 
-          <div v-if="leagueYear.userIsActive && !leagueYear.userPublisher" class="alert alert-info">
+          <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
             <span>You need to create your publisher for this year.</span>
             <span v-show="league.isManager">You can't invite players or change any settings until you create your publisher.</span>
             <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
