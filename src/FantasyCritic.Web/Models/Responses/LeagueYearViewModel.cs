@@ -47,7 +47,7 @@ public class LeagueYearViewModel
             {
                 bool isPreviousYearWinner = previousYearWinner.HasValue && previousYearWinner.Value.Id == user.Id;
                 playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher.Value, currentDate, systemWideValues,
-                    userIsInLeague, userIsInvitedToLeague, leagueYear.SupportedYear, false, isPreviousYearWinner, counterPickedPublisherGameIDs));
+                    userIsInLeague, userIsInvitedToLeague, false, isPreviousYearWinner));
             }
         }
 

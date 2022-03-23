@@ -17,10 +17,10 @@ public class PlayerWithPublisherViewModel
 
     public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, LocalDate currentDate,
         SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague,
-        SupportedYear supportedYear, bool removable, bool previousYearWinner, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
+        bool removable, bool previousYearWinner)
     {
         User = new PlayerViewModel(leagueYear.League, user, removable);
-        Publisher = new PublisherViewModel(leagueYear, publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs);
+        Publisher = new MinimalPublisherViewModel(leagueYear, publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues);
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
 
         var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
@@ -32,7 +32,7 @@ public class PlayerWithPublisherViewModel
     public Guid? InviteID { get; }
     public string InviteName { get; }
     public PlayerViewModel User { get; }
-    public PublisherViewModel Publisher { get; }
+    public MinimalPublisherViewModel Publisher { get; }
     public decimal TotalFantasyPoints { get; }
     public decimal SimpleProjectedFantasyPoints { get; }
     public decimal AdvancedProjectedFantasyPoints { get; }
