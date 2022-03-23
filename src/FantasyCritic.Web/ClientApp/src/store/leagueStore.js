@@ -110,6 +110,7 @@ export default {
       state.userPublisherInternal = null;
       state.currentBidsInternal = null;
       state.currentDropsInternal = null;
+      state.gameNewsInternal = null;
     },
     setErrorInfo(state, errorInfo) {
       state.errorInfoInternal = errorInfo;
