@@ -158,7 +158,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin';
 
 import BidGameForm from '@/components/modals/bidGameForm';
@@ -251,49 +250,6 @@ export default {
   computed: {
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.leagueYear.userPublisher.publisherIcon);
-    }
-  },
-  methods: {
-    setPause(pauseInfo) {
-      var model = {
-        leagueID: this.league.leagueID,
-        year: this.leagueYear.year,
-        pause: pauseInfo.pause
-      };
-      axios
-        .post('/api/leagueManager/SetDraftPause', model)
-        .then(() => {
-          let pauseMessage = 'Draft has been paused.';
-          if (!pauseInfo.pause) {
-            pauseMessage = 'Draft has been un-paused.';
-          }
-          this.notifyAction(pauseMessage);
-        })
-        .catch(() => {});
-    },
-    resetDraft() {
-      var model = {
-        leagueID: this.league.leagueID,
-        year: this.leagueYear.year
-      };
-      axios
-        .post('/api/leagueManager/ResetDraft', model)
-        .then(() => {
-          this.notifyAction('Draft has been reset.');
-        })
-        .catch(() => {});
-    },
-    undoLastDraftAction() {
-      var model = {
-        leagueID: this.league.leagueID,
-        year: this.leagueYear.year
-      };
-      axios
-        .post('/api/leagueManager/UndoLastDraftAction', model)
-        .then(() => {
-          this.notifyAction('Last action was undone.');
-        })
-        .catch(() => {});
     }
   }
 };

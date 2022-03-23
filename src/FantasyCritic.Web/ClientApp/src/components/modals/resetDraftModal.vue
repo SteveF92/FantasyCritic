@@ -12,7 +12,11 @@
   </b-modal>
 </template>
 <script>
+import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       resetConfirmation: ''
@@ -28,7 +32,16 @@ export default {
     resetDraft() {
       this.resetConfirmation = '';
       this.$refs.resetDraftModalRef.hide();
-      this.$emit('resetDraft');
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.leagueYear.year
+      };
+      axios
+        .post('/api/leagueManager/ResetDraft', model)
+        .then(() => {
+          this.notifyAction('Draft has been reset.');
+        })
+        .catch(() => {});
     },
     clearData() {
       this.resetConfirmation = '';

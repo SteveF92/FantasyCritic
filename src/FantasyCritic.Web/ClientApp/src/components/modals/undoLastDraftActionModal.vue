@@ -10,11 +10,24 @@
   </b-modal>
 </template>
 <script>
+import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
+  mixins: [LeagueMixin],
   methods: {
     undoLastDraftAction() {
       this.$refs.undoLastDraftActionModalRef.hide();
-      this.$emit('undoLastDraftAction');
+      var model = {
+        leagueID: this.league.leagueID,
+        year: this.leagueYear.year
+      };
+      axios
+        .post('/api/leagueManager/UndoLastDraftAction', model)
+        .then(() => {
+          this.notifyAction('Last action was undone.');
+        })
+        .catch(() => {});
     }
   }
 };
