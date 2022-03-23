@@ -34,7 +34,7 @@
         </b-tr>
       </draggable>
       <b-tbody v-if="!settingPriority">
-        <b-tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
+        <b-tr v-for="bid in currentBids" :key="bid.bidID">
           <b-td>{{ bid.masterGame.gameName }}</b-td>
           <b-td>{{ bid.bidAmount | money }}</b-td>
           <b-td>{{ bid.priority }}</b-td>
@@ -122,10 +122,8 @@ export default {
     this.clearData();
   },
   watch: {
-    currentBids(newValue, oldValue) {
-      if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array && oldValue.length !== newValue.length)) {
-        this.clearData();
-      }
+    settingPriority() {
+      this.desiredBidPriorities = this.currentBids;
     }
   },
   methods: {
