@@ -3,7 +3,7 @@ import BasicMixin from '@/mixins/basicMixin';
 let leagueMixin = {
   mixins: [BasicMixin],
   computed: {
-    errorInfo() {
+    leagueErrorInfo() {
       return this.$store.getters.errorInfo;
     },
     forbidden() {
@@ -20,9 +20,6 @@ let leagueMixin = {
     },
     userPublisher() {
       return this.$store.getters.leagueYear.userPublisher;
-    },
-    year() {
-      return this.leagueYear.year;
     },
     currentBids() {
       return this.$store.getters.currentBids;

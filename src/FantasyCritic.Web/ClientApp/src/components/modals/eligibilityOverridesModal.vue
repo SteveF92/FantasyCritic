@@ -16,3 +16,10 @@
     </table>
   </b-modal>
 </template>
+<script>
+import LeagueMixin from '@/mixins/leagueMixin';
+
+export default {
+  mixins: [LeagueMixin]
+};
+</script>

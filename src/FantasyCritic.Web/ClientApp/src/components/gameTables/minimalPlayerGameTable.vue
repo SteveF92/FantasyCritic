@@ -81,6 +81,9 @@ export default {
     };
   },
   computed: {
+    userIsPublisher() {
+      return this.userInfo && this.publisher.userID === this.userInfo.userID;
+    },
     gameSlots() {
       if (!this.$store.getters.draftOrderView) {
         return this.publisher.gameSlots;

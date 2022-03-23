@@ -5,8 +5,8 @@
         <div class="alert alert-danger" role="alert">You do not have permission to view this league.</div>
       </div>
       <div v-if="league">
-        <div v-if="errorInfo" class="alert alert-danger" role="alert">
-          {{ errorInfo }}
+        <div v-if="leagueErrorInfo" class="alert alert-danger" role="alert">
+          {{ leagueErrorInfo }}
         </div>
 
         <div class="row">
@@ -200,7 +200,7 @@ export default {
   mixins: [LeagueMixin],
   props: {
     leagueid: String,
-    year: String
+    year: Number
   },
   data() {
     return {
@@ -301,7 +301,7 @@ export default {
           this.refreshLeagueData();
         })
         .catch(() => {
-          this.errorInfo = 'Something went wrong joining the league';
+          this.$store.commit('setErrorInfo', 'Something went wrong joining the league');
         });
     },
     startDraft() {

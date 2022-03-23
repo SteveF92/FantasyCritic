@@ -31,7 +31,7 @@ export default {
   props: {
     gameSlot: Object,
     supportedYear: Object,
-    hasSpecialSlots: Object
+    hasSpecialSlots: Boolean
   },
   computed: {
     game() {

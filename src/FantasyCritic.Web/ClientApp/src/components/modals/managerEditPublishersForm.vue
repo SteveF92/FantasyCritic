@@ -47,7 +47,10 @@
 
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       editPublisher: null,
@@ -58,12 +61,6 @@ export default {
       newWillReleaseGamesDropped: null,
       errorInfo: null
     };
-  },
-  props: ['leagueYear'],
-  computed: {
-    publishers() {
-      return this.leagueYear.publishers;
-    }
   },
   methods: {
     selectPublisher(selectedPublisher) {

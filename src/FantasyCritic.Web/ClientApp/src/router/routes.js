@@ -141,10 +141,17 @@ export const routes = [
       title: 'League',
       isPublic: true
     },
-    props: (route) => ({
-      leagueid: route.params.leagueid,
-      year: route.params.year
-    })
+    props: (route) => {
+      let parsedYear = Number.parseInt(route.params.year, 10);
+      if (Number.isNaN(parsedYear)) {
+        parsedYear = 0;
+      }
+
+      return {
+        leagueid: route.params.leagueid,
+        year: parsedYear
+      };
+    }
   },
   {
     path: '/editLeague/:leagueid/:year',

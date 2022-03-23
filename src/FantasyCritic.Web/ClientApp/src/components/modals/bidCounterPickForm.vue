@@ -87,7 +87,7 @@ export default {
       this.clearData();
       this.isBusy = true;
       axios
-        .get('/api/league/PossibleCounterPicks?publisherID=' + this.publisher.publisherID)
+        .get('/api/league/PossibleCounterPicks?publisherID=' + this.userPublisher.publisherID)
         .then((response) => {
           this.possibleCounterPicks = response.data;
           this.isBusy = false;
