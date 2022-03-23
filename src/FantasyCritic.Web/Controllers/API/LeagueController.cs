@@ -181,9 +181,6 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        bool hasBeenStarted = await _fantasyCriticService.LeagueHasBeenStarted(league.LeagueID);
-        bool neverStarted = !hasBeenStarted;
-
         bool userIsFollowingLeague = false;
         if (currentUser.HasValue)
         {
@@ -192,7 +189,7 @@ public class LeagueController : BaseLeagueController
         }
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, leagueRecord.ValidResult.Value.PlayersInLeague,
-            relationship.LeagueInvite, currentUser, neverStarted, relationship.InLeague, userIsFollowingLeague);
+            relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
         return Ok(leagueViewModel);
     }
 
@@ -240,12 +237,22 @@ public class LeagueController : BaseLeagueController
 
         IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear);
 
+        bool userIsFollowingLeague = false;
+        if (currentUser.HasValue)
+        {
+            var leagueFollowers = await _fantasyCriticService.GetLeagueFollowers(league);
+            userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Value.Id);
+        }
+
+        var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, leagueYearRecord.ValidResult.Value.PlayersInLeague,
+            relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
+
         var currentDate = _clock.GetToday();
-        var leagueViewModel = new LeagueYearViewModel(leagueYear, userPublisher, currentDate,
+        var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, userPublisher, currentDate,
             startDraftResult, leagueYearRecord.ValidResult.Value.ActiveUsers, nextDraftPublisher, draftPhase, systemWideValues,
             leagueYearRecord.ValidResult.Value.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades);
-        return Ok(leagueViewModel);
+        return Ok(leagueYearViewModel);
     }
 
     [AllowAnonymous]

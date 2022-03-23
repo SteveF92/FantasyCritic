@@ -20,16 +20,17 @@ public class LeagueUserRelationship
 
 public class LeagueYearUserRelationship
 {
-    public LeagueYearUserRelationship(bool invitedToLeague, bool inLeague, bool activeInYear, bool leagueManager, bool isAdmin)
+    public LeagueYearUserRelationship(Maybe<LeagueInvite> leagueInvite, bool inLeague, bool activeInYear, bool leagueManager, bool isAdmin)
     {
-        InvitedToLeague = invitedToLeague;
+        LeagueInvite = leagueInvite;
         InLeague = inLeague;
         ActiveInYear = activeInYear;
         LeagueManager = leagueManager;
         IsAdmin = isAdmin;
     }
 
-    public bool InvitedToLeague { get; }
+    public Maybe<LeagueInvite> LeagueInvite { get; }
+    public bool InvitedToLeague => LeagueInvite.HasValue;
     public bool InLeague { get; }
     public bool ActiveInYear { get; }
     public bool LeagueManager { get; }

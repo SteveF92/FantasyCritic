@@ -54,11 +54,11 @@
           You have been invited to join this league.
           <b-button variant="primary" v-if="isAuth" v-on:click="joinWithInviteLink()" class="mx-2">Join League</b-button>
           <template v-else>
-            <b-button variant="primary" :to="{ name: 'login', query: { leagueid: league.leagueID, year: year, inviteCode: inviteCode } }">
+            <b-button variant="primary" :to="{ name: 'login', query: { leagueid: leagueYear.leagueID, year: year, inviteCode: inviteCode } }">
               <span>Log In</span>
               <font-awesome-icon class="full-nav" icon="sign-in-alt" />
             </b-button>
-            <b-button variant="primary" :to="{ name: 'register', query: { leagueid: league.leagueID, year: year, inviteCode: inviteCode } }">
+            <b-button variant="primary" :to="{ name: 'register', query: { leagueid: leagueYear.leagueID, year: year, inviteCode: inviteCode } }">
               <span>Sign Up</span>
               <font-awesome-icon class="full-nav" icon="user-plus" />
             </b-button>
@@ -258,7 +258,7 @@ export default {
   },
   methods: {
     revealPublicBids() {
-      this.refreshLeagueData();
+      this.refreshLeagueYear();
       this.$store.dispatch('getBidTimes');
     },
     changeLeagueYear(newVal) {
@@ -270,12 +270,12 @@ export default {
     },
     acceptInvite() {
       var model = {
-        leagueID: this.league.leagueID
+        leagueID: this.leagueYear.leagueID
       };
       axios
         .post('/api/league/AcceptInvite', model)
         .then(() => {
-          this.refreshLeagueData();
+          this.refreshLeagueYear();
         })
         .catch(() => {});
     },
@@ -292,13 +292,13 @@ export default {
     },
     joinWithInviteLink() {
       var model = {
-        leagueID: this.league.leagueID,
+        leagueID: this.leagueYear.leagueID,
         inviteCode: this.inviteCode
       };
       axios
         .post('/api/league/JoinWithInviteLink', model)
         .then(() => {
-          this.refreshLeagueData();
+          this.refreshLeagueYear();
         })
         .catch(() => {
           this.$store.commit('setErrorInfo', 'Something went wrong joining the league');
@@ -306,36 +306,36 @@ export default {
     },
     startDraft() {
       var model = {
-        leagueID: this.league.leagueID,
+        leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year
       };
       axios
         .post('/api/leagueManager/startDraft', model)
         .then(async () => {
-          await this.refreshLeagueData();
+          await this.refreshLeagueYear();
           await this.startHubConnection();
         })
         .catch(() => {});
     },
     followLeague() {
       var model = {
-        leagueID: this.league.leagueID
+        leagueID: this.leagueYear.leagueID
       };
       axios
         .post('/api/league/FollowLeague', model)
         .then(() => {
-          this.refreshLeagueData();
+          this.refreshLeagueYear();
         })
         .catch(() => {});
     },
     unfollowLeague() {
       var model = {
-        leagueID: this.league.leagueID
+        leagueID: this.leagueYear.leagueID
       };
       axios
         .post('/api/league/UnfollowLeague', model)
         .then(() => {
-          this.refreshLeagueData();
+          this.refreshLeagueYear();
         })
         .catch(() => {});
     },
@@ -346,7 +346,7 @@ export default {
       axios
         .post('/api/league/DismissManagerMessage', model)
         .then(() => {
-          this.refreshLeagueData();
+          this.refreshLeagueYear();
         })
         .catch(() => {});
     },
@@ -363,7 +363,7 @@ export default {
       hubConnection.invoke('Subscribe', this.leagueid, this.year).catch((err) => console.error(err.toString()));
 
       hubConnection.on('RefreshLeagueYear', async () => {
-        await this.refreshLeagueData();
+        await this.refreshLeagueYear();
       });
 
       hubConnection.onreconnecting(() => {
@@ -386,8 +386,8 @@ export default {
         await this.startHubConnection();
       });
     },
-    refreshLeagueData() {
-      this.$store.dispatch('refreshLeagueData');
+    refreshLeagueYear() {
+      this.$store.dispatch('refreshLeagueYear');
     }
   }
 };

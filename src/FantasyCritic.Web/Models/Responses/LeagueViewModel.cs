@@ -20,8 +20,8 @@ public class LeagueViewModel
         NumberOfFollowers = league.NumberOfFollowers;
     }
 
-    public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUserRemovable> players, Maybe<LeagueInvite> outstandingInvite, Maybe<FantasyCriticUser> currentUser,
-        bool neverStarted, bool userIsInLeague, bool userIsFollowingLeague)
+    public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUserRemovable> players, Maybe<LeagueInvite> outstandingInvite,
+        Maybe<FantasyCriticUser> currentUser, bool userIsInLeague, bool userIsFollowingLeague)
     {
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
@@ -37,7 +37,6 @@ public class LeagueViewModel
         }
 
         Players = players.Select(x => new PlayerViewModel(league, x.User, x.Removable)).ToList();
-        NeverStarted = neverStarted;
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
         UserIsInLeague = userIsInLeague;
@@ -53,7 +52,6 @@ public class LeagueViewModel
     public LeagueInviteViewModel OutstandingInvite { get; }
     public IReadOnlyList<int> Years { get; }
     public int ActiveYear { get; }
-    public bool NeverStarted { get; }
     public bool PublicLeague { get; }
     public bool TestLeague { get; }
     public bool Archived { get; }

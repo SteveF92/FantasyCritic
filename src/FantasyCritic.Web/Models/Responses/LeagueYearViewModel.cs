@@ -6,13 +6,14 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueYearViewModel
 {
-    public LeagueYearViewModel(LeagueYear leagueYear, Maybe<Publisher> userPublisher,
+    public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear, Maybe<Publisher> userPublisher,
         LocalDate currentDate, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
         DraftPhase draftPhase, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner,
         Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs, IEnumerable<Trade> activeTrades)
     {
+        League = leagueViewModel;
         LeagueID = leagueYear.League.LeagueID;
         Year = leagueYear.Year;
         SupportedYear = new SupportedYearViewModel(leagueYear.SupportedYear);
@@ -113,6 +114,7 @@ public class LeagueYearViewModel
         ActiveTrades = activeTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
     }
 
+    public LeagueViewModel League { get; }
     public Guid LeagueID { get; }
     public int Year { get; }
     public SupportedYearViewModel SupportedYear { get; }

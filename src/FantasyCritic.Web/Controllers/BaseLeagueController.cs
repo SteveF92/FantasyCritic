@@ -110,10 +110,11 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearRecord>(BadRequest(yearStatusValid.Error));
         }
 
+        var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(leagueYear.Value.League);
         var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
         bool isInLeague = false;
-        bool isInvitedToLeague = false;
+        Maybe<LeagueInvite> leagueInvite = Maybe<LeagueInvite>.None;
         bool isActiveInYear = false;
         bool isLeagueManager = false;
         bool userIsAdmin = false;
@@ -133,17 +134,16 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
             else
             {
-                var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(leagueYear.Value.League);
                 isInLeague = playersInLeague.Any(x => x.User.Id == currentUserRecord.Value.Id);
                 if (!isInLeague)
                 {
-                    isInvitedToLeague = inviteesToLeague.UserIsInvited(currentUserRecord.Value.Email);
+                    leagueInvite = inviteesToLeague.GetMatchingInvite(currentUserRecord.Value.Email);
                 }
                 isActiveInYear = activeUsers.Any(x => x.Id == currentUserRecord.Value.Id);
             }
         }
 
-        if (!isInLeague && !isInvitedToLeague && requiredRelationship.MustBeInOrInvitedToLeague)
+        if (!isInLeague && leagueInvite.HasNoValue && requiredRelationship.MustBeInOrInvitedToLeague)
         {
             return GetFailedResult<LeagueYearRecord>(Forbid());
         }
@@ -153,8 +153,8 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearRecord>(Forbid());
         }
 
-        LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(isInvitedToLeague, isInLeague, isActiveInYear, isLeagueManager, userIsAdmin);
-        return (new LeagueYearRecord(currentUserRecord.ToMaybe(), leagueYear.Value, activeUsers, inviteesToLeague, relationship), Maybe<IActionResult>.None);
+        LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(leagueInvite, isInLeague, isActiveInYear, isLeagueManager, userIsAdmin);
+        return (new LeagueYearRecord(currentUserRecord.ToMaybe(), leagueYear.Value, playersInLeague, activeUsers, inviteesToLeague, relationship), Maybe<IActionResult>.None);
     }
 
     protected async Task<(Maybe<LeagueYearPublisherRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, Guid publisherID,

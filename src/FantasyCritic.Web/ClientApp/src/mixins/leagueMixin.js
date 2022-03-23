@@ -13,7 +13,10 @@ let leagueMixin = {
       return this.$store.getters.inviteCode;
     },
     league() {
-      return this.$store.getters.league;
+      if (!this.$store.getters.leagueYear) {
+        return;
+      }
+      return this.$store.getters.leagueYear.league;
     },
     leagueYear() {
       return this.$store.getters.leagueYear;
@@ -65,7 +68,7 @@ let leagueMixin = {
   },
   methods: {
     notifyAction(message) {
-      this.$store.dispatch('refreshLeagueData').then(() => {
+      this.$store.dispatch('refreshLeagueYear').then(() => {
         if (message) {
           this.makeToast(message);
         }

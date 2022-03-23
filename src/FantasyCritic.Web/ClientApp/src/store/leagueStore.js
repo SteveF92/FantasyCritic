@@ -32,42 +32,15 @@ export default {
       context.commit('cancelMoveMode');
       context.commit('clearLeagueSpecificData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
-      return context.dispatch('fetchLeagueData', leaguePageParams);
+      return context.dispatch('fetchLeagueYear', leaguePageParams);
     },
-    refreshLeagueData(context) {
+    refreshLeagueYear(context) {
       const leaguePageParams = {
         leagueID: context.getters.leagueYear.leagueID,
         year: context.getters.leagueYear.year,
         inviteCode: context.getters.inviteCode
       };
-      let leaguePromise = context.dispatch('fetchLeague', leaguePageParams);
-      let leagueYearPromise = context.dispatch('fetchLeagueYear', leaguePageParams);
-      return Promise.all([leaguePromise, leagueYearPromise]).then(() => {
-        // All done
-      });
-    },
-    fetchLeagueData(context, leaguePageParams) {
-      let leaguePromise = context.dispatch('fetchLeague', leaguePageParams);
-      let leagueYearPromise = context.dispatch('fetchLeagueYear', leaguePageParams);
-      return Promise.all([leaguePromise, leagueYearPromise]).then(() => {
-        // All done
-      });
-    },
-    fetchLeague(context, leaguePageParams) {
-      let queryURL = '/api/League/GetLeague/' + leaguePageParams.leagueID;
-      if (leaguePageParams.inviteCode) {
-        queryURL += '?inviteCode=' + leaguePageParams.inviteCode;
-      }
-      return axios
-        .get(queryURL)
-        .then((response) => {
-          context.commit('setLeague', response.data);
-        })
-        .catch((returnedError) => {
-          context.commit('setErrorInfo', leagueErrorMessageText);
-          const forbidden = returnedError && returnedError.response && returnedError.response.status === 403;
-          context.commit('setForbidden', forbidden);
-        });
+      return context.dispatch('fetchLeagueYear', leaguePageParams);
     },
     fetchLeagueYear(context, leaguePageParams) {
       let queryURL = '/api/League/GetLeagueYear?leagueID=' + leaguePageParams.leagueID + '&year=' + leaguePageParams.year;
