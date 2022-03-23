@@ -65,12 +65,9 @@ export default {
           if (!this.draftResult.success) {
             return;
           }
+
           this.$refs.managerDraftCounterPickFormRef.hide();
-          var draftInfo = {
-            gameName: this.selectedCounterPick.gameName,
-            publisherName: this.nextPublisherUp.publisherName
-          };
-          this.$emit('counterPickDrafted', draftInfo);
+          this.notifyAction(this.selectedCounterPick.gameName + ' selected as a counter pick by ' + this.nextPublisherUp.publisherName);
           this.selectedCounterPick = null;
         })
         .catch(() => {

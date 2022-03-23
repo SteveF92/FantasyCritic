@@ -34,10 +34,7 @@ export default {
       axios
         .post('/api/league/DeleteDropRequest', model)
         .then(() => {
-          var dropInfo = {
-            gameName: dropRequest.masterGame.gameName
-          };
-          this.$emit('dropCancelled', dropInfo);
+          this.notifyAction('Drop Request for ' + dropRequest.masterGame.gameName + ' was cancelled.');
         })
         .catch(() => {});
     }

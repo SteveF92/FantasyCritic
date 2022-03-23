@@ -196,12 +196,9 @@ export default {
             this.isBusy = false;
             return;
           }
+
           this.$refs.managerDraftGameFormRef.hide();
-          var draftInfo = {
-            gameName,
-            publisherName: this.nextPublisherUp.publisherName
-          };
-          this.$emit('gameDrafted', draftInfo);
+          this.notifyAction(gameName + ' drafted by ' + this.nextPublisherUp.publisherName);
           this.clearData();
         })
         .catch(() => {});

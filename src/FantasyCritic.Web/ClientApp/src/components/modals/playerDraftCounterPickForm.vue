@@ -63,11 +63,9 @@ export default {
           if (!this.draftResult.success) {
             return;
           }
+
           this.$refs.playerDraftCounterPickFormRef.hide();
-          var draftInfo = {
-            gameName: this.selectedCounterPick.gameName
-          };
-          this.$emit('counterPickDrafted', draftInfo);
+          this.notifyAction('You have selected ' + this.selectedCounterPick.gameName + ' as a counter pick.');
           this.selectedCounterPick = null;
         })
         .catch(() => {

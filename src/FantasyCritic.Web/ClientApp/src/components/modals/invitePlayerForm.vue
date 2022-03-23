@@ -88,7 +88,7 @@ export default {
           if (this.inviteDisplayName) {
             inviteName = this.inviteDisplayName;
           }
-          this.$emit('playerInvited', inviteName);
+          this.notifyAction('Invite was sent to ' + inviteName);
           this.inviteEmail = '';
         })
         .catch((error) => {
@@ -109,7 +109,7 @@ export default {
         });
     },
     inviteLinkCopied() {
-      this.$emit('linkCopied');
+      this.makeToast('Invite Link copied to clipboard.');
     },
     deleteInviteLink(inviteLink) {
       var model = {

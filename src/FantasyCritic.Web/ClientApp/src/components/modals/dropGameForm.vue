@@ -72,10 +72,7 @@ export default {
             return;
           }
 
-          var dropInfo = {
-            gameName: this.gameToDrop.gameName
-          };
-          this.$emit('dropRequestMade', dropInfo);
+          this.notifyAction('Drop Request for ' + this.gameToDrop.gameName + ' was made.');
           this.$refs.dropGameFormRef.hide();
           this.clearData();
         })

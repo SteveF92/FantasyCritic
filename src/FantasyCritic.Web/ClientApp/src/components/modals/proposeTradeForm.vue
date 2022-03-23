@@ -176,7 +176,7 @@ export default {
         .post('/api/league/ProposeTrade', request)
         .then(() => {
           this.$refs.proposeTradeFormRef.hide();
-          this.$emit('tradeProposed');
+          this.notifyAction('You proposed a trade.');
           this.clearData();
         })
         .catch((response) => {

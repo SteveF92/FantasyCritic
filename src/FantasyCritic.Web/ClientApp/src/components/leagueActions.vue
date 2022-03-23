@@ -254,33 +254,6 @@ export default {
     }
   },
   methods: {
-    gameBid(bidInfo) {
-      this.notifyAction('Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.');
-    },
-    bidCanceled(bidInfo) {
-      this.notifyAction('Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was canceled.');
-    },
-    bidEdited(bidInfo) {
-      this.notifyAction('Bid for ' + bidInfo.gameName + ' for $' + bidInfo.bidAmount + ' was made.');
-    },
-    dropRequestMade(dropInfo) {
-      this.notifyAction('Drop Request for ' + dropInfo.gameName + ' was made.');
-    },
-    dropCancelled(dropInfo) {
-      this.notifyAction('Drop Request for ' + dropInfo.gameName + ' was cancelled.');
-    },
-    tradeProposed() {
-      this.notifyAction('Trade proposal has been made.');
-    },
-    publisherIconChanged() {
-      this.notifyAction();
-    },
-    gameDrafted(draftInfo) {
-      this.notifyAction('You have drafted: ' + draftInfo.gameName);
-    },
-    counterPickDrafted(gameInfo) {
-      this.notifyAction('You have selected ' + gameInfo.gameName + ' as a counter pick.');
-    },
     setPause(pauseInfo) {
       var model = {
         leagueID: this.league.leagueID,
@@ -322,12 +295,6 @@ export default {
         })
         .catch(() => {});
     },
-    playerInvited(inviteEmail) {
-      this.notifyAction('Invite was sent to ' + inviteEmail);
-    },
-    linkCopied() {
-      this.makeToast('Invite Link copied to clipboard.');
-    },
     activePlayersEdited() {
       this.notifyAction('Active players were changed.', true);
     },
@@ -336,9 +303,6 @@ export default {
     },
     managerGameDrafted(draftInfo) {
       this.notifyAction(draftInfo.gameName + ' drafted by ' + draftInfo.publisherName);
-    },
-    managerCounterPickDrafted(draftInfo) {
-      this.notifyAction(draftInfo.gameName + ' selected as a counter pick by ' + draftInfo.publisherName);
     },
     gameAssociated(associateInfo) {
       this.notifyAction(associateInfo.gameName + ' sucessfully associated.');

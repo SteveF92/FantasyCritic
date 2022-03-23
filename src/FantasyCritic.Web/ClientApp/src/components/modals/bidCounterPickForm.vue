@@ -112,12 +112,9 @@ export default {
           if (!this.bidResult.success) {
             return;
           }
+
           this.$refs.bidCounterPickFormRef.hide();
-          var bidInfo = {
-            gameName: this.bidCounterPick.masterGame.gameName,
-            bidAmount: this.bidAmount
-          };
-          this.$emit('gameBid', bidInfo);
+          this.notifyAction('Bid for ' + this.bidCounterPick.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
           this.clearData();
         })
         .catch((response) => {

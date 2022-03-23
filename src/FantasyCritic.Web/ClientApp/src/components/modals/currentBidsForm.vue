@@ -169,11 +169,7 @@ export default {
             return;
           }
           this.$refs.currentBidsFormRef.hide();
-          var bidInfo = {
-            gameName: this.bidBeingEdited.masterGame.gameName,
-            bidAmount: this.bidAmount
-          };
-          this.$emit('bidEdited', bidInfo);
+          this.notifyAction('Bid for ' + this.bidBeingEdited.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
           this.clearData();
         })
         .catch((response) => {
@@ -188,11 +184,7 @@ export default {
       axios
         .post('/api/league/DeletePickupBid', model)
         .then(() => {
-          var bidInfo = {
-            gameName: bid.masterGame.gameName,
-            bidAmount: bid.bidAmount
-          };
-          this.$emit('bidCanceled', bidInfo);
+          this.notifyAction('Bid for ' + bid.masterGame.gameName + ' for $' + bid.bidAmount + ' was canceled.');
         })
         .catch((response) => {
           this.errorInfo = response.response.data;

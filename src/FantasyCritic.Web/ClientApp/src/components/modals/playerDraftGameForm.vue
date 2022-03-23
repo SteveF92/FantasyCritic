@@ -208,11 +208,9 @@ export default {
             this.isBusy = false;
             return;
           }
+
           this.$refs.playerDraftGameFormRef.hide();
-          var draftInfo = {
-            gameName
-          };
-          this.$emit('gameDrafted', draftInfo);
+          this.notifyAction('You have drafted: ' + gameName);
           this.clearData();
         })
         .catch(() => {});
