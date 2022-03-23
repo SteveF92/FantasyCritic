@@ -87,13 +87,14 @@
 import axios from 'axios';
 import draggable from 'vuedraggable';
 import MasterGameSummary from '@/components/masterGameSummary';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   components: {
     draggable,
     MasterGameSummary
   },
-  props: ['leagueYear', 'publisher', 'currentBids'],
+  mixins: [LeagueMixin],
   data() {
     return {
       desiredBidPriorities: [],
@@ -112,9 +113,19 @@ export default {
   },
   computed: {
     droppableGames() {
-      let list = _.filter(this.publisher.games, { counterPick: false });
+      let list = _.filter(this.userPublisher.games, { counterPick: false });
       list.unshift(this.defaultCondtionalDrop);
       return list;
+    }
+  },
+  mounted() {
+    this.clearData();
+  },
+  watch: {
+    currentBids(newValue, oldValue) {
+      if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array && oldValue.length !== newValue.length)) {
+        this.clearData();
+      }
     }
   },
   methods: {
@@ -123,7 +134,7 @@ export default {
         return v.bidID;
       });
       var model = {
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         BidPriorities: desiredBidPriorityIDs
       };
       axios
@@ -142,7 +153,7 @@ export default {
     editBid() {
       var request = {
         bidID: this.bidBeingEdited.bidID,
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         bidAmount: this.bidAmount
       };
 
@@ -172,7 +183,7 @@ export default {
     cancelBid(bid) {
       var model = {
         bidID: bid.bidID,
-        publisherID: this.publisher.publisherID
+        publisherID: this.userPublisher.publisherID
       };
       axios
         .post('/api/league/DeletePickupBid', model)
@@ -192,16 +203,6 @@ export default {
       this.bidBeingEdited = null;
       this.conditionalDrop = null;
       this.bidAmount = null;
-    }
-  },
-  mounted() {
-    this.clearData();
-  },
-  watch: {
-    currentBids(newValue, oldValue) {
-      if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array && oldValue.length !== newValue.length)) {
-        this.clearData();
-      }
     }
   }
 };

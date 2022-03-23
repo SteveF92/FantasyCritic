@@ -18,6 +18,9 @@ let leagueMixin = {
     leagueYear() {
       return this.$store.getters.leagueYear;
     },
+    userPublisher() {
+      return this.$store.getters.leagueYear.userPublisher;
+    },
     year() {
       return this.leagueYear.year;
     },

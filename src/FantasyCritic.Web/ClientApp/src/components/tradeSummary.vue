@@ -209,9 +209,6 @@ export default {
       let alreadyVoted = votedUserIDs.includes(this.userInfo.userID);
       return this.isInLeagueButNotInvolved && !alreadyVoted;
     },
-    userInfo() {
-      return this.$store.getters.userInfo;
-    },
     header() {
       let finalHeader = `Trade between ${this.trade.proposerPublisherName} and ${this.trade.counterPartyPublisherName}`;
       if (this.trade.status === 'Proposed' || this.trade.status === 'Accepted') {

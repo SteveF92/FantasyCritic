@@ -272,11 +272,8 @@ export default {
     tradeProposed() {
       this.notifyAction('Trade proposal has been made.');
     },
-    publisherNameChanged(changeInfo) {
-      this.notifyAction('Publisher name changed from ' + changeInfo.oldName + ' to ' + changeInfo.newName);
-    },
     publisherIconChanged() {
-      this.notifyAction('Publisher icon changed.');
+      this.notifyAction();
     },
     gameDrafted(draftInfo) {
       this.notifyAction('You have drafted: ' + draftInfo.gameName);
@@ -398,9 +395,6 @@ export default {
     },
     publishersEdited() {
       this.notifyAction('Publisher has been edited.');
-    },
-    publisherCreated(createdInfo) {
-      this.notifyAction('Publisher ' + createdInfo.publisherName + ' has been created.');
     },
     publisherRemoved(removeInfo) {
       this.notifyAction('Publisher ' + removeInfo.publisherName + ' has been removed from the league.');

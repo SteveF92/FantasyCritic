@@ -28,6 +28,7 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   data() {
@@ -39,7 +40,7 @@ export default {
       initialTestLeague: false
     };
   },
-  props: ['league'],
+  mixins: [LeagueMixin],
   methods: {
     changeleagueName() {
       var model = {

@@ -15,13 +15,15 @@
 import axios from 'axios';
 
 export default {
+  props: {
+    royaleYearQuarter: Object
+  },
   data() {
     return {
       publisherName: '',
       errorInfo: ''
     };
   },
-  props: ['royaleYearQuarter'],
   methods: {
     createRoyalePublisher() {
       var model = {

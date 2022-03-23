@@ -5,6 +5,9 @@ let basicMixin = {
     },
     isAuth() {
       return this.$store.getters.isAuthenticated;
+    },
+    userInfo() {
+      return this.$store.getters.userInfo;
     }
   },
   methods: {

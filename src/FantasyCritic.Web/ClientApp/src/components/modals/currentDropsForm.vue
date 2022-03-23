@@ -21,16 +21,14 @@
 
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
-  props: ['publisher', 'currentDrops'],
-  data() {
-    return {};
-  },
+  mixins: [LeagueMixin],
   methods: {
     cancelDrop(dropRequest) {
       var model = {
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         dropRequestID: dropRequest.dropRequestID
       };
       axios

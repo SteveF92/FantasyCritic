@@ -13,6 +13,7 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   data() {
@@ -21,28 +22,23 @@ export default {
       errorInfo: ''
     };
   },
-  props: ['publisher'],
+  mixins: [LeagueMixin],
   methods: {
     changePublisherName() {
       var model = {
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         publisherName: this.newPublisherName
       };
       axios
         .post('/api/league/changePublisherName', model)
         .then(() => {
           this.$refs.changePublisherNameRef.hide();
-          let actionInfo = {
-            oldName: this.publisher.publisherName,
-            newName: this.newPublisherName,
-            fetchLeagueYear: true
-          };
-          this.$emit('publisherNameChanged', actionInfo);
+          this.notifyAction('Publisher name changed from ' + this.userPublisher.publisherName + ' to ' + this.newPublisherName);
         })
         .catch(() => {});
     },
     clearData() {
-      this.newPublisherName = this.publisher.publisherName;
+      this.newPublisherName = this.userPublisher.publisherName;
     }
   },
   mounted() {

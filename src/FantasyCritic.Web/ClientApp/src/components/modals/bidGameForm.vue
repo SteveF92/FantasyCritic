@@ -100,8 +100,15 @@ import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import MasterGameSummary from '@/components/masterGameSummary';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
+  components: {
+    PossibleMasterGamesTable,
+    MasterGameSummary,
+    SearchSlotTypeBadge
+  },
   data() {
     return {
       bidGameName: '',
@@ -118,11 +125,6 @@ export default {
       requestIsBusy: false
     };
   },
-  components: {
-    PossibleMasterGamesTable,
-    MasterGameSummary,
-    SearchSlotTypeBadge
-  },
   computed: {
     formIsValid() {
       return !!this.bidMasterGame;
@@ -134,13 +136,12 @@ export default {
       return userStandardGames.length >= standardGameSlots;
     },
     droppableGames() {
-      return _.filter(this.publisher.games, { counterPick: false });
+      return _.filter(this.userPublisher.games, { counterPick: false });
     },
     bidButtonText() {
       return 'Place Bid';
     }
   },
-  props: ['leagueYear', 'publisher'],
   methods: {
     searchGame() {
       this.clearDataExceptSearch();
@@ -174,7 +175,7 @@ export default {
       this.clearDataExceptSearch();
       this.isBusy = true;
       axios
-        .get('/api/league/CurrentQueuedGameYears/' + this.publisher.publisherID)
+        .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;

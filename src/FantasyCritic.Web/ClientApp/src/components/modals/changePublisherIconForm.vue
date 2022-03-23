@@ -24,6 +24,7 @@
 <script>
 import axios from 'axios';
 import GlobalFunctions from '@/globalFunctions';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   data() {
@@ -32,7 +33,7 @@ export default {
       errorInfo: ''
     };
   },
-  props: ['publisher'],
+  mixins: [LeagueMixin],
   computed: {
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.newPublisherIcon);
@@ -41,24 +42,19 @@ export default {
   methods: {
     changePublisherIcon() {
       var model = {
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         publisherIcon: this.newPublisherIcon
       };
       axios
         .post('/api/league/changePublisherIcon', model)
         .then(() => {
           this.$refs.changePublisherIconRef.hide();
-          let actionInfo = {
-            oldName: this.publisher.publisherIcon,
-            newName: this.newPublisherIcon,
-            fetchLeagueYear: true
-          };
-          this.$emit('publisherIconChanged', actionInfo);
+          this.notifyAction('Publisher icon changed.');
         })
         .catch(() => {});
     },
     clearData() {
-      this.newPublisherIcon = this.publisher.publisherIcon;
+      this.newPublisherIcon = this.userPublisher.publisherIcon;
     }
   },
   mounted() {

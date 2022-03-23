@@ -36,8 +36,10 @@
 
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       dropResult: null,
@@ -51,14 +53,13 @@ export default {
       return this.dropMasterGame;
     },
     droppableGames() {
-      return _.filter(this.publisher.games, { counterPick: false });
+      return _.filter(this.userPublisher.games, { counterPick: false });
     }
   },
-  props: ['publisher'],
   methods: {
     dropGame() {
       var request = {
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         publisherGameID: this.gameToDrop.publisherGameID
       };
       this.isBusy = true;

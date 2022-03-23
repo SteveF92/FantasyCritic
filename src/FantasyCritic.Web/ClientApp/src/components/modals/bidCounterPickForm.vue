@@ -45,8 +45,10 @@
 
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       bidCounterPick: null,
@@ -80,7 +82,6 @@ export default {
       return this.bidCounterPick && !this.bidCounterPick.masterGame;
     }
   },
-  props: ['leagueYear', 'publisher'],
   methods: {
     getPossibleCounterPicks() {
       this.clearData();

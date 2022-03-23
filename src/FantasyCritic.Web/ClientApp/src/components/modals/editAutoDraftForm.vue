@@ -17,18 +17,19 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       isAutoDraft: null
     };
   },
-  props: ['publisher'],
   methods: {
     setAutoDraft() {
       var model = {
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         autoDraft: this.isAutoDraft
       };
       axios
@@ -45,7 +46,7 @@ export default {
     }
   },
   mounted() {
-    this.isAutoDraft = this.publisher.autoDraft;
+    this.isAutoDraft = this.userPublisher.autoDraft;
   }
 };
 </script>

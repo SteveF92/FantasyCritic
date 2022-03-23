@@ -24,6 +24,7 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   data() {
@@ -33,7 +34,7 @@ export default {
       errorInfo: ''
     };
   },
-  props: ['leagueYear'],
+  mixins: [LeagueMixin],
   computed: {
     playersWithoutPublishers() {
       let playersToReturn = [];
@@ -59,10 +60,7 @@ export default {
         .post('/api/leagueManager/createPublisherForUser', model)
         .then(() => {
           this.$refs.createPublisherForUserFormRef.hide();
-          let actionInfo = {
-            publisherName: this.publisherName
-          };
-          this.$emit('publisherCreated', actionInfo);
+          this.notifyAction('Publisher ' + this.publisherName + ' has been created.');
           this.clearData();
         })
         .catch(() => {});

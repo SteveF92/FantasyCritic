@@ -24,12 +24,13 @@
 <script>
 import axios from 'axios';
 import draggable from 'vuedraggable';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   components: {
     draggable
   },
-  props: ['leagueYear'],
+  mixins: [LeagueMixin],
   data() {
     return {
       desiredDraftOrder: [],
@@ -44,6 +45,20 @@ export default {
         group: 'description',
         disabled: false
       };
+    }
+  },
+  mounted() {
+    this.clearData();
+  },
+  watch: {
+    isDragging(newValue) {
+      if (newValue) {
+        this.delayedDragging = true;
+        return;
+      }
+      this.$nextTick(() => {
+        this.delayedDragging = false;
+      });
     }
   },
   methods: {
@@ -78,20 +93,6 @@ export default {
         [array[i], array[j]] = [array[j], array[i]];
       }
       this.desiredDraftOrder = array;
-    }
-  },
-  mounted() {
-    this.clearData();
-  },
-  watch: {
-    isDragging(newValue) {
-      if (newValue) {
-        this.delayedDragging = true;
-        return;
-      }
-      this.$nextTick(() => {
-        this.delayedDragging = false;
-      });
     }
   }
 };
