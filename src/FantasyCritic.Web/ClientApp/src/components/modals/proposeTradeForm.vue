@@ -21,7 +21,7 @@
                   <div class="trade-game-row">
                     <label>{{ index + 1 }}</label>
                     <b-form-select v-model="item.game">
-                      <option v-for="publisherGame in publisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+                      <option v-for="publisherGame in userPublisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
                         {{ getGameOptionName(publisherGame) }}
                       </option>
                     </b-form-select>
@@ -58,7 +58,7 @@
           </div>
           <div class="row">
             <div class="col-6">
-              <label>Budget (Current Budget: ${{ publisher.budget }})</label>
+              <label>Budget (Current Budget: ${{ userPublisher.budget }})</label>
               <input v-model="proposerBudgetSendAmount" id="proposerBudgetSendAmount" name="proposerBudgetSendAmount" type="number" class="form-control input" />
             </div>
             <div class="col-6">

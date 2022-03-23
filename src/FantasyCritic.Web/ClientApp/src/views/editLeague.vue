@@ -33,6 +33,13 @@ import axios from 'axios';
 import LeagueYearSettings from '@/components/leagueYearSettings';
 
 export default {
+  components: {
+    LeagueYearSettings
+  },
+  props: {
+    leagueid: String,
+    year: Number
+  },
   data() {
     return {
       errorInfo: '',
@@ -41,9 +48,6 @@ export default {
       leagueYear: null,
       freshSettings: false
     };
-  },
-  components: {
-    LeagueYearSettings
   },
   computed: {
     leagueYearIsValid() {
@@ -66,7 +70,12 @@ export default {
       return this.leagueYear.players.length;
     }
   },
-  props: ['leagueid', 'year'],
+  mounted() {
+    this.freshSettings = this.$route.query.freshSettings;
+    this.fetchLeagueOptions();
+    this.fetchCurrentLeagueYearOptions();
+    this.fetchLeagueYear();
+  },
   methods: {
     fetchLeagueOptions() {
       axios
@@ -106,12 +115,6 @@ export default {
         behavior: 'smooth'
       });
     }
-  },
-  mounted() {
-    this.freshSettings = this.$route.query.freshSettings;
-    this.fetchLeagueOptions();
-    this.fetchCurrentLeagueYearOptions();
-    this.fetchLeagueYear();
   }
 };
 </script>

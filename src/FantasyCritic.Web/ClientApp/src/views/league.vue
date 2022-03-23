@@ -253,10 +253,21 @@ export default {
       }
     }
   },
-  async mounted() {
+  mounted() {
     this.initializePage();
   },
   methods: {
+    initializePage() {
+      this.selectedYear = this.year;
+      const inviteCode = this.$route.query.inviteCode;
+      const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
+      this.$store.dispatch('initializePage', leaguePageParams).then(async () => {
+        await this.startHubConnection();
+      });
+    },
+    refreshLeagueYear() {
+      this.$store.dispatch('refreshLeagueYear');
+    },
     revealPublicBids() {
       this.refreshLeagueYear();
       this.$store.dispatch('getBidTimes');
@@ -377,17 +388,6 @@ export default {
       hubConnection.onclose(async () => {
         await this.startHubConnection();
       });
-    },
-    initializePage() {
-      this.selectedYear = this.year;
-      const inviteCode = this.$route.query.inviteCode;
-      const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
-      this.$store.dispatch('initializePage', leaguePageParams).then(async () => {
-        await this.startHubConnection();
-      });
-    },
-    refreshLeagueYear() {
-      this.$store.dispatch('refreshLeagueYear');
     }
   }
 };

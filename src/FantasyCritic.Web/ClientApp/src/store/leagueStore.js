@@ -12,6 +12,9 @@ export default {
     currentBidsInternal: null,
     currentDropsInternal: null,
     gameNewsInternal: null,
+    leagueActionsInternal: null,
+    leagueActionSetsInternal: null,
+    historicalTradesInternal: null,
     advancedProjectionsInternal: false,
     draftOrderViewInternal: false
   },
@@ -24,6 +27,9 @@ export default {
     currentBids: (state) => state.currentBidsInternal,
     currentDrops: (state) => state.currentDropsInternal,
     gameNews: (state) => state.gameNewsInternal,
+    leagueActions: (state) => state.leagueActionsInternal,
+    leagueActionSets: (state) => state.leagueActionSetsInternal,
+    historicalTrades: (state) => state.historicalTradesInternal,
     advancedProjections: (state) => state.advancedProjectionsInternal,
     draftOrderView: (state) => state.draftOrderViewInternal
   },
@@ -32,7 +38,19 @@ export default {
       context.commit('cancelMoveMode');
       context.commit('clearLeagueSpecificData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
-      return context.dispatch('fetchLeagueYear', leaguePageParams);
+      return context.dispatch('fetchLeagueYear', leaguePageParams).then(() => {
+        if (context.getters.userPublisher) {
+          context.dispatch('fetchAdditionalLeagueData');
+        }
+        context.dispatch('fetchGameNews');
+      });
+    },
+    initializeHistoryPage(context, leaguePageParams) {
+      context.commit('cancelMoveMode');
+      context.commit('clearLeagueSpecificData');
+      return context.dispatch('fetchLeagueYear', leaguePageParams).then(() => {
+        context.dispatch('fetchHistoryData');
+      });
     },
     refreshLeagueYear(context) {
       const leaguePageParams = {
@@ -55,10 +73,6 @@ export default {
             userID: context.getters.userInfo.userID
           };
           context.commit('setLeagueYear', leagueYearPayload);
-          if (context.getters.userPublisher) {
-            context.dispatch('fetchAdditionalLeagueData');
-          }
-          context.dispatch('fetchGameNews');
         })
         .catch(() => {
           context.commit('setErrorInfo', leagueErrorMessageText);
@@ -68,6 +82,14 @@ export default {
       let currentBidsPromise = context.dispatch('fetchCurrentBids');
       let currentDropRequestsPromise = context.dispatch('fetchCurrentDropRequests');
       return Promise.all([currentBidsPromise, currentDropRequestsPromise]).then(() => {
+        // All done
+      });
+    },
+    fetchHistoryData(context) {
+      let leagueActionsPromise = context.dispatch('fetchLeagueActions');
+      let leagueActionSetsPromise = context.dispatch('fetchLeagueActionSets');
+      let historicalTradesPromise = context.dispatch('fetchHistoricalTrades');
+      return Promise.all([leagueActionsPromise, leagueActionSetsPromise, historicalTradesPromise]).then(() => {
         // All done
       });
     },
@@ -85,7 +107,6 @@ export default {
       return axios
         .get(queryURL)
         .then((response) => {
-          this.currentDrops = response.data;
           context.commit('setCurrentDrops', response.data);
         })
         .catch(() => {});
@@ -95,10 +116,36 @@ export default {
       return axios
         .get(queryURL)
         .then((response) => {
-          this.gameNews = response.data;
           context.commit('setGameNews', response.data);
         })
         .catch(() => {});
+    },
+    fetchLeagueActions(context) {
+      const queryURL = '/api/League/GetLeagueActions?leagueID=' + context.getters.leagueYear.leagueID + '&year=' + context.getters.leagueYear.year;
+      return axios
+        .get(queryURL)
+        .then((response) => {
+          context.commit('setLeagueActions', response.data);
+        })
+        .catch((returnedError) => (this.error = returnedError));
+    },
+    fetchLeagueActionSets(context) {
+      const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + context.getters.leagueYear.leagueID + '&year=' + context.getters.leagueYear.year;
+      return axios
+        .get(queryURL)
+        .then((response) => {
+          context.commit('setLeagueActionSets', response.data);
+        })
+        .catch((returnedError) => (this.error = returnedError));
+    },
+    fetchHistoricalTrades(context) {
+      const queryURL = '/api/League/TradeHistory?leagueID=' + context.getters.leagueYear.leagueID + '&year=' + context.getters.leagueYear.year;
+      return axios
+        .get(queryURL)
+        .then((response) => {
+          context.commit('setHistoricalTrades', response.data);
+        })
+        .catch((returnedError) => (this.error = returnedError));
     }
   },
   mutations: {
@@ -111,6 +158,10 @@ export default {
       state.currentBidsInternal = null;
       state.currentDropsInternal = null;
       state.gameNewsInternal = null;
+
+      state.leagueActionsInternal = null;
+      state.leagueActionSetsInternal = null;
+      state.historicalTradesInternal = null;
     },
     setErrorInfo(state, errorInfo) {
       state.errorInfoInternal = errorInfo;
@@ -135,6 +186,15 @@ export default {
     },
     setGameNews(state, gameNews) {
       state.gameNewsInternal = gameNews;
+    },
+    setLeagueActions(state, leagueActions) {
+      state.leagueActionsInternal = leagueActions;
+    },
+    setLeagueActionSets(state, leagueActionSets) {
+      state.leagueActionSetsInternal = leagueActionSets;
+    },
+    setHistoricalTrades(state, historicalTrades) {
+      state.historicalTradesInternal = historicalTrades;
     },
     setAdvancedProjections(state, advancedProjections) {
       state.advancedProjectionsInternal = advancedProjections;

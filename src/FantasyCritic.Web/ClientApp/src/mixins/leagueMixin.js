@@ -33,6 +33,15 @@ let leagueMixin = {
     gameNews() {
       return this.$store.getters.gameNews;
     },
+    leagueActions() {
+      return this.$store.getters.leagueActions;
+    },
+    leagueActionSets() {
+      return this.$store.getters.leagueActionSets;
+    },
+    historicalTrades() {
+      return this.$store.getters.historicalTrades;
+    },
     publishers() {
       return this.leagueYear.publishers;
     },
