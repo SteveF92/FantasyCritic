@@ -56,7 +56,7 @@ export default {
         .post('/api/leagueManager/ManuallySetWillNotRelease', model)
         .then(() => {
           this.$refs.manuallyScorePublisherGameRef.hide();
-          this.$emit('gameWillNotReleaseSet');
+          this.notifyAction('Will not release status updated.');
           this.clearData();
         })
         .catch((response) => {

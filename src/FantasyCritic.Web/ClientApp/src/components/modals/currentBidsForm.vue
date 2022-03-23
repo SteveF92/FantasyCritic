@@ -141,7 +141,7 @@ export default {
         .post('/api/league/SetBidPriorities', model)
         .then(() => {
           this.$refs.currentBidsFormRef.hide();
-          this.$emit('bidPriorityEdited');
+          this.notifyAction('Bid priority has been changed.');
         })
         .catch(() => {});
     },

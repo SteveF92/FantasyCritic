@@ -53,7 +53,7 @@ export default {
         .post('/api/leagueManager/ChangeLeagueOptions', model)
         .then(() => {
           this.$refs.changeLeagueOptionsFormRef.hide();
-          this.$emit('leagueOptionsChanged');
+          this.notifyAction('League options have been updated.');
           this.newleagueName = '';
         })
         .catch(() => {});

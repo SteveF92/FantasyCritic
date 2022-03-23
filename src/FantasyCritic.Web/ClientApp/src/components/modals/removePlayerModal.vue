@@ -111,10 +111,7 @@ export default {
       axios
         .post('/api/leagueManager/RemovePlayer', model)
         .then(() => {
-          let actionInfo = {
-            playerName: this.playerToRemove.user.displayName
-          };
-          this.$emit('playerRemoved', actionInfo);
+          this.notifyAction('Player ' + this.playerToRemove.user.displayName + ' has been removed from the league.');
           this.clearData();
         })
         .catch(() => {});
@@ -126,10 +123,7 @@ export default {
       axios
         .post('/api/leagueManager/RemovePublisher', model)
         .then(() => {
-          let actionInfo = {
-            publisherName: this.publisherToRemove.publisherName
-          };
-          this.$emit('publisherRemoved', actionInfo);
+          this.notifyAction('Publisher ' + this.publisherToRemove.publisherName + ' has been removed from the league.');
           this.clearData();
         })
         .catch(() => {});

@@ -39,7 +39,7 @@ export default {
         .post('/api/leagueManager/PostNewManagerMessage', model)
         .then(() => {
           this.$refs.managerMessageFormRef.hide();
-          this.$emit('managerMessagePosted');
+          this.notifyAction("New manager's message posted.");
           this.clearData();
         })
         .catch(() => {});

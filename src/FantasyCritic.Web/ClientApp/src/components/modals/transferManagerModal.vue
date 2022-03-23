@@ -41,7 +41,7 @@ export default {
         .post('/api/leagueManager/PromoteNewLeagueManager', model)
         .then(() => {
           this.$refs.transferManagerFormRef.hide();
-          this.$emit('managerTransferred');
+          this.notifyAction('You have transferred league manager status.');
         })
         .catch(() => {});
     },

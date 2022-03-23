@@ -75,8 +75,14 @@
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import MasterGameSummary from '@/components/masterGameSummary';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  components: {
+    PossibleMasterGamesTable,
+    MasterGameSummary
+  },
+  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: null,
@@ -91,16 +97,11 @@ export default {
       showingUnlistedField: false
     };
   },
-  components: {
-    PossibleMasterGamesTable,
-    MasterGameSummary
-  },
   computed: {
     formIsValid() {
       return (this.claimUnlistedGame || this.claimMasterGame) && this.claimPublisher;
     }
   },
-  props: ['publishers', 'year'],
   methods: {
     searchGame() {
       this.clearDataExceptSearch();
@@ -144,12 +145,9 @@ export default {
           if (!this.claimResult.success) {
             return;
           }
+
           this.$refs.claimGameFormRef.hide();
-          var claimInfo = {
-            gameName,
-            publisherName: this.claimPublisher.publisherName
-          };
-          this.$emit('gameClaimed', claimInfo);
+          this.notifyAction(gameName + ' added to ' + this.claimPublisher.publisherName);
           this.clearData();
         })
         .catch(() => {});

@@ -36,7 +36,7 @@ export default {
         .post('/api/leagueManager/SetAutoDraft', model)
         .then(() => {
           this.$refs.managerSetAutoDraftFormRef.hide();
-          this.$emit('publishersAutoDraftSet');
+          this.notifyAction('Auto draft changed.');
         })
         .catch(() => {});
     }

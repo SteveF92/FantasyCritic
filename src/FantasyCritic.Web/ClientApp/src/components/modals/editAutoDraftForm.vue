@@ -36,11 +36,11 @@ export default {
         .post('/api/league/setAutoDraft', model)
         .then(() => {
           this.$refs.editAutoDraftFormRef.hide();
-          let actionInfo = {
-            autoDraft: this.isAutoDraft,
-            fetchLeagueYear: true
-          };
-          this.$emit('autoDraftSet', actionInfo);
+          let autoDraftStatus = 'off.';
+          if (this.isAutoDraft) {
+            autoDraftStatus = 'on.';
+          }
+          this.notifyAction('Auto draft set to ' + autoDraftStatus);
         })
         .catch(() => {});
     }

@@ -91,10 +91,7 @@ export default {
       axios
         .post('/api/leagueManager/SetGameTagOverride', model)
         .then(() => {
-          var gameInfo = {
-            gameName: tagOverride.masterGame.gameName
-          };
-          this.$emit('gameTagsReset', gameInfo);
+          this.notifyAction(tagOverride.masterGame.gameName + " had it's tags reset.");
         })
         .catch((response) => {
           this.errorInfo = response.response.data;
@@ -122,10 +119,7 @@ export default {
       axios
         .post('/api/leagueManager/SetGameTagOverride', model)
         .then(() => {
-          var gameInfo = {
-            gameName: masterGame.gameName
-          };
-          this.$emit('gameEligibilitySet', gameInfo);
+          this.notifyAction(masterGame.gameName + " had it's tags overriden.");
           this.clearData();
         })
         .catch((response) => {

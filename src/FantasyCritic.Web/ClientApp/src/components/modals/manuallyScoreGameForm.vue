@@ -89,15 +89,11 @@ export default {
         publisherID: this.manuallyScoreGamePublisher.publisherID,
         manualCriticScore: this.manualScore
       };
-      var manualScoreInfo = {
-        gameName: this.manuallyScoreGame.gameName,
-        score: this.manualScore
-      };
       axios
         .post('/api/leagueManager/ManuallyScorePublisherGame', model)
         .then(() => {
           this.$refs.manuallyScorePublisherGameRef.hide();
-          this.$emit('gameManuallyScored', manualScoreInfo);
+          this.notifyAction(this.manuallyScoreGame.gameName + ' was given a score of ' + this.manualScore + '.');
           this.manuallyScoreGamePublisher = null;
           this.manuallyScoreGame = null;
         })
@@ -114,7 +110,7 @@ export default {
         .post('/api/leagueManager/RemoveManualPublisherGameScore', model)
         .then(() => {
           this.$refs.manuallyScorePublisherGameRef.hide();
-          this.$emit('manualScoreRemoved', this.manuallyScoreGame.gameName);
+          this.notifyAction(this.manuallyScoreGame.gameName + "'s manual score was removed.");
           this.manuallyScoreGamePublisher = null;
           this.manuallyScoreGame = null;
         })

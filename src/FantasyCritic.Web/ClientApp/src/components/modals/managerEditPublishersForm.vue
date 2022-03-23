@@ -86,7 +86,7 @@ export default {
         .post('/api/leagueManager/EditPublisher', model)
         .then(() => {
           this.$refs.managerEditPublishersFormRef.hide();
-          this.$emit('publishersEdited');
+          this.notifyAction('Publisher has been edited.');
         })
         .catch((response) => {
           this.errorInfo = response.response.data;

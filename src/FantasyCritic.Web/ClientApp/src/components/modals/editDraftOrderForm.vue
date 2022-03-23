@@ -73,7 +73,7 @@ export default {
         .post('/api/leagueManager/SetDraftOrder', model)
         .then(() => {
           this.$refs.editDraftOrderFormRef.hide();
-          this.$emit('draftOrderEdited');
+          this.notifyAction('Draft order has been changed.');
         })
         .catch(() => {});
     },

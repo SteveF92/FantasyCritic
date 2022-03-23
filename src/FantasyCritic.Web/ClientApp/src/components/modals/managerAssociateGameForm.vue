@@ -108,7 +108,7 @@ export default {
           }
 
           this.$refs.associateGameFormRef.hide();
-          this.$emit('gameAssociated', this.associateMasterGame);
+          this.notifyAction(this.associateMasterGame.gameName + ' sucessfully associated.');
           this.associateGameName = '';
           this.associatePublisher = null;
           this.associateMasterGame = null;

@@ -83,8 +83,8 @@ export default {
       axios
         .post('/api/leagueManager/SetPlayerActiveStatus', model)
         .then(() => {
-          this.$emit('activePlayersEdited');
           this.$refs.manageActivePlayersRef.hide();
+          this.notifyAction('Active players were changed.');
         })
         .catch((response) => {
           this.errorInfo = response.response.data;

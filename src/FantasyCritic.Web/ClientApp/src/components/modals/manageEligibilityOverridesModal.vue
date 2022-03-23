@@ -88,10 +88,7 @@ export default {
       axios
         .post('/api/leagueManager/SetGameEligibilityOverride', model)
         .then(() => {
-          var gameInfo = {
-            gameName: eligibilityOverride.masterGame.gameName
-          };
-          this.$emit('gameEligiblityReset', gameInfo);
+          this.notifyAction(eligibilityOverride.masterGame.gameName + "'s eligibility was reset to normal.");
         })
         .catch((response) => {
           this.errorInfo = response.response.data;
@@ -117,11 +114,13 @@ export default {
       axios
         .post('/api/leagueManager/SetGameEligibilityOverride', model)
         .then(() => {
-          var gameInfo = {
-            gameName: masterGame.gameName,
-            eligible
-          };
-          this.$emit('gameEligibilitySet', gameInfo);
+          let message = '';
+          if (eligible) {
+            message = masterGame.gameName + ' was marked as eligible.';
+          } else {
+            message = masterGame.gameName + ' was marked as ineligible.';
+          }
+          this.notifyAction(message);
           this.clearData();
         })
         .catch((response) => {

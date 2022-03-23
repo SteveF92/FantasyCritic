@@ -52,17 +52,12 @@ export default {
         publisherGameID: this.removeGame.publisherGameID,
         publisherID: this.removeGamePublisher.publisherID
       };
-      var removeInfo = {
-        gameName: this.removeGame.gameName,
-        publisherName: this.removeGamePublisher.publisherName
-      };
       axios
         .post('/api/leagueManager/RemovePublisherGame', model)
         .then(() => {
           this.$refs.removePublisherGameRef.hide();
-          this.$emit('gameRemoved', removeInfo);
-          this.removeGamePublisher = null;
-          this.removeGame = null;
+          this.notifyAction(this.removeGame.gameName + ' removed from ' + this.removeGamePublisher.publisherName);
+          this.clearData();
         })
         .catch((response) => {
           this.errorInfo = response.response.data;
