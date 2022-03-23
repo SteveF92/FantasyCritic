@@ -58,7 +58,12 @@ export default {
         year: context.getters.leagueYear.year,
         inviteCode: context.getters.inviteCode
       };
-      return context.dispatch('fetchLeagueYear', leaguePageParams);
+      return context.dispatch('fetchLeagueYear', leaguePageParams).then(() => {
+        if (context.getters.userPublisher) {
+          context.dispatch('fetchAdditionalLeagueData');
+        }
+        context.dispatch('fetchGameNews');
+      });
     },
     fetchLeagueYear(context, leaguePageParams) {
       let queryURL = '/api/League/GetLeagueYear?leagueID=' + leaguePageParams.leagueID + '&year=' + leaguePageParams.year;
