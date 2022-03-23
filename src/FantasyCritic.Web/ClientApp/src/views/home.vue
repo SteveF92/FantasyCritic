@@ -106,11 +106,19 @@
 <script>
 import axios from 'axios';
 import _ from 'lodash';
+
+import BasicMixin from '@/mixins/basicMixin';
 import Tweets from '@/components/tweets';
 import LeagueTable from '@/components/leagueTable';
 import GameNews from '@/components/gameNews';
 
 export default {
+  components: {
+    Tweets,
+    LeagueTable,
+    GameNews
+  },
+  mixins: [BasicMixin],
   data() {
     return {
       errorInfo: '',
@@ -131,11 +139,6 @@ export default {
       gameNews: null
     };
   },
-  components: {
-    Tweets,
-    LeagueTable,
-    GameNews
-  },
   computed: {
     myStandardLeagues() {
       let nonTest = _.filter(this.myLeagues, ['testLeague', false]);
@@ -147,20 +150,11 @@ export default {
     },
     myTestLeagues() {
       return _.filter(this.myLeagues, ['testLeague', true]);
-    },
-    userInfo() {
-      return this.$store.getters.userInfo;
-    },
-    isAdmin() {
-      return this.$store.getters.isAdmin;
-    },
-    isBetaTester() {
-      return this.$store.getters.isBetaTester;
     }
   },
   methods: {
-    async fetchMyLeagues() {
-      axios
+    fetchMyLeagues() {
+      return axios
         .get('/api/League/MyLeagues')
         .then((response) => {
           this.myLeagues = response.data;
@@ -168,24 +162,24 @@ export default {
         })
         .catch((returnedError) => (this.error = returnedError));
     },
-    async fetchInvitedLeagues() {
-      axios
+    fetchInvitedLeagues() {
+      return axios
         .get('/api/League/MyInvites')
         .then((response) => {
           this.invitedLeagues = response.data;
         })
         .catch((returnedError) => (this.error = returnedError));
     },
-    async fetchFollowedLeagues() {
-      axios
+    fetchFollowedLeagues() {
+      return axios
         .get('/api/League/FollowedLeagues')
         .then((response) => {
           this.myFollowedLeagues = response.data;
         })
         .catch((returnedError) => (this.error = returnedError));
     },
-    async fetchSupportedYears() {
-      axios
+    fetchSupportedYears() {
+      return axios
         .get('/api/game/SupportedYears')
         .then((response) => {
           let supportedYears = response.data;
@@ -199,8 +193,8 @@ export default {
         })
         .catch(() => {});
     },
-    async fetchActiveRoyaleYearQuarter() {
-      axios
+    fetchActiveRoyaleYearQuarter() {
+      return axios
         .get('/api/royale/ActiveRoyaleQuarter')
         .then((response) => {
           this.activeRoyaleYearQuarter = response.data;
@@ -208,25 +202,25 @@ export default {
         })
         .catch(() => {});
     },
-    async fetchPublicLeaguesForYear(year) {
-      axios
+    fetchPublicLeaguesForYear(year) {
+      return axios
         .get('/api/league/PublicLeagues/' + year + '?count=10')
         .then((response) => {
           this.publicLeagues = response.data;
         })
         .catch(() => {});
     },
-    async fetchGameNews() {
-      axios
+    fetchGameNews() {
+      return axios
         .get('/api/league/MyGameNews/')
         .then((response) => {
           this.gameNews = response.data;
         })
         .catch(() => {});
     },
-    async fetchUserRoyalePublisher() {
+    fetchUserRoyalePublisher() {
       this.userRoyalePublisher = null;
-      axios
+      return axios
         .get('/api/royale/GetUserRoyalePublisher/' + this.activeRoyaleYearQuarter.year + '/' + this.activeRoyaleYearQuarter.quarter)
         .then((response) => {
           this.userRoyalePublisher = response.data;
@@ -235,7 +229,8 @@ export default {
     }
   },
   async mounted() {
-    await Promise.all([this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()]);
+    const tasks = [this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()];
+    await Promise.all([tasks]);
   }
 };
 </script>

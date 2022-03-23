@@ -8,6 +8,18 @@ let basicMixin = {
     },
     userInfo() {
       return this.$store.getters.userInfo;
+    },
+    isAdmin() {
+      return this.$store.getters.isAdmin;
+    },
+    isBetaTester() {
+      return this.$store.getters.isBetaTester;
+    },
+    displayName() {
+      return this.$store.getters.userInfo.displayName;
+    },
+    authIsBusy() {
+      return this.$store.getters.authIsBusy;
     }
   },
   methods: {

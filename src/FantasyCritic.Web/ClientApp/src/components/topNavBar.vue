@@ -74,7 +74,7 @@
               <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="topnav-icon discord-icon" />
             </a>
           </li>
-          <template v-if="isAuth && hasUserInfo">
+          <template v-if="isAuth && userInfo">
             <li v-if="displayName" class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
                 {{ displayName }}
@@ -109,21 +109,11 @@
 
 <script>
 import axios from 'axios';
+import BasicMixin from '@/mixins/basicMixin';
 
 export default {
+  mixins: [BasicMixin],
   computed: {
-    isAuth() {
-      return this.$store.getters.isAuthenticated;
-    },
-    hasUserInfo() {
-      return this.$store.getters.userInfo;
-    },
-    displayName() {
-      return this.$store.getters.userInfo.displayName;
-    },
-    authIsBusy() {
-      return this.$store.getters.authIsBusy;
-    },
     activeRoyaleYear() {
       if (!this.activeRoyaleYearQuarter) {
         return;
@@ -135,9 +125,6 @@ export default {
         return;
       }
       return this.activeRoyaleYearQuarter.quarter;
-    },
-    isPlusUser() {
-      return this.$store.getters.isPlusUser;
     }
   },
   data() {
