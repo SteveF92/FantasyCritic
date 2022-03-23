@@ -272,7 +272,7 @@ export default {
       var model = {
         leagueID: this.league.leagueID
       };
-      return axios
+      axios
         .post('/api/league/AcceptInvite', model)
         .then(() => {
           this.refreshLeagueData();
@@ -283,7 +283,7 @@ export default {
       var model = {
         inviteID: this.league.outstandingInvite.inviteID
       };
-      return axios
+      axios
         .post('/api/league/DeclineInvite', model)
         .then(() => {
           this.$router.push({ name: 'home' });
@@ -295,7 +295,7 @@ export default {
         leagueID: this.league.leagueID,
         inviteCode: this.inviteCode
       };
-      return axios
+      axios
         .post('/api/league/JoinWithInviteLink', model)
         .then(() => {
           this.refreshLeagueData();
@@ -309,7 +309,7 @@ export default {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year
       };
-      return axios
+      axios
         .post('/api/leagueManager/startDraft', model)
         .then(async () => {
           await this.refreshLeagueData();
@@ -321,7 +321,7 @@ export default {
       var model = {
         leagueID: this.league.leagueID
       };
-      return axios
+      axios
         .post('/api/league/FollowLeague', model)
         .then(() => {
           this.refreshLeagueData();
@@ -332,7 +332,7 @@ export default {
       var model = {
         leagueID: this.league.leagueID
       };
-      return axios
+      axios
         .post('/api/league/UnfollowLeague', model)
         .then(() => {
           this.refreshLeagueData();
@@ -343,7 +343,7 @@ export default {
       var model = {
         messageID: this.mostRecentManagerMessage.messageID
       };
-      return axios
+      axios
         .post('/api/league/DismissManagerMessage', model)
         .then(() => {
           this.refreshLeagueData();
