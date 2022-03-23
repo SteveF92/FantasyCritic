@@ -65,8 +65,6 @@ let leagueMixin = {
   },
   methods: {
     notifyAction(message) {
-      this.refreshLeagueData();
-
       this.$store.dispatch('refreshLeagueData').then(() => {
         if (message) {
           this.makeToast(message);

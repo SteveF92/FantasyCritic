@@ -223,12 +223,9 @@ export default {
           if (!this.bidResult.success) {
             return;
           }
+
           this.$refs.bidGameFormRef.hide();
-          var bidInfo = {
-            gameName: this.bidMasterGame.gameName,
-            bidAmount: this.bidAmount
-          };
-          this.$emit('gameBid', bidInfo);
+          this.notifyAction('Bid for ' + this.bidMasterGame.gameName + ' for $' + this.bidAmount + ' was made.');
           this.clearData();
         })
         .catch((response) => {
