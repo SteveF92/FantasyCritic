@@ -34,8 +34,10 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       manuallySetWillNotReleasePublisher: null,
@@ -43,7 +45,6 @@ export default {
       errorInfo: ''
     };
   },
-  props: ['leagueYear'],
   methods: {
     manuallySetWillNotRelease(willNotRelease) {
       var model = {

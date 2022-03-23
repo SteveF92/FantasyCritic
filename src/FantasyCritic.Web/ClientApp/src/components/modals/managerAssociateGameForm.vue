@@ -62,7 +62,13 @@
 <script>
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
+  components: {
+    PossibleMasterGamesTable
+  },
+  mixins: [LeagueMixin],
   data() {
     return {
       associateGameName: '',
@@ -74,10 +80,6 @@ export default {
       possibleMasterGames: []
     };
   },
-  components: {
-    PossibleMasterGamesTable
-  },
-  props: ['publishers', 'year'],
   methods: {
     searchGame() {
       this.possibleMasterGames = [];

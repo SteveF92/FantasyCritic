@@ -26,7 +26,10 @@
 
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       selectedCounterPick: null,
@@ -35,7 +38,9 @@ export default {
       isBusy: false
     };
   },
-  props: ['userPublisher'],
+  mounted() {
+    this.getPossibleCounterPicks();
+  },
   methods: {
     selectCounterPick() {
       this.isBusy = true;
@@ -86,9 +91,6 @@ export default {
       this.possibleCounterPicks = [];
       this.selectedCounterPick = null;
     }
-  },
-  mounted() {
-    this.getPossibleCounterPicks();
   }
 };
 </script>

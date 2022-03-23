@@ -36,6 +36,9 @@ let leagueMixin = {
     publishers() {
       return this.leagueYear.publishers;
     },
+    players() {
+      return this.leagueYear.players;
+    },
     nextPublisherUp() {
       if (!this.leagueYear || !this.leagueYear.publishers) {
         return null;

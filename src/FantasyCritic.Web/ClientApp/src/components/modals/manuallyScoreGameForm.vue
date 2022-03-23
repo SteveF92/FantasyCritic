@@ -49,8 +49,10 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       manuallyScoreGamePublisher: null,
@@ -60,7 +62,6 @@ export default {
       errorInfo: ''
     };
   },
-  props: ['leagueYear'],
   computed: {
     buttonText() {
       if (this.removeManualScore) {
@@ -68,6 +69,13 @@ export default {
       }
 
       return 'Set Manual Score';
+    }
+  },
+  watch: {
+    manuallyScoreGame: function (val) {
+      if (val) {
+        this.manualScore = val.criticScore;
+      }
     }
   },
   methods: {
@@ -119,13 +127,6 @@ export default {
       this.manuallyScoreGame = null;
       this.manualScore = null;
       this.removeManualScore = false;
-    }
-  },
-  watch: {
-    manuallyScoreGame: function (val) {
-      if (val) {
-        this.manualScore = val.criticScore;
-      }
     }
   }
 };

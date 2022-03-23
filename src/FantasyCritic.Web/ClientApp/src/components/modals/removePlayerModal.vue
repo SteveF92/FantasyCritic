@@ -72,22 +72,16 @@
 
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       publisherToRemove: null,
       playerToRemove: null,
       removeConfirmation: ''
     };
-  },
-  props: ['league', 'leagueYear'],
-  computed: {
-    publishers() {
-      return this.leagueYear.publishers;
-    },
-    players() {
-      return this.leagueYear.players;
-    }
   },
   methods: {
     playerIsSafelyRemoveable(player) {

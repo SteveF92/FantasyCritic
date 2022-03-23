@@ -28,6 +28,8 @@ export default {
   components: {
     MasterGameTagBadge
   },
-  props: ['tagOverrides']
+  props: {
+    tagOverrides: Array
+  }
 };
 </script>

@@ -57,8 +57,15 @@ import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
 import MasterGameTagSelector from '@/components/masterGameTagSelector';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  components: {
+    PossibleMasterGamesTable,
+    MasterGameTagBadge,
+    MasterGameTagSelector
+  },
+  mixins: [LeagueMixin],
   data() {
     return {
       overrideGameName: '',
@@ -68,17 +75,11 @@ export default {
       chosenTags: []
     };
   },
-  components: {
-    PossibleMasterGamesTable,
-    MasterGameTagBadge,
-    MasterGameTagSelector
-  },
   computed: {
     formIsValid() {
       return this.overrideMasterGame;
     }
   },
-  props: ['leagueYear'],
   methods: {
     resetTags(tagOverride) {
       var model = {

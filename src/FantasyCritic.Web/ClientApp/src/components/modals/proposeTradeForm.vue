@@ -85,8 +85,10 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       counterParty: null,
@@ -100,7 +102,6 @@ export default {
       serverError: ''
     };
   },
-  props: ['leagueYear', 'publisher'],
   computed: {
     getTradeError() {
       if (this.proposerPublisherGames.length === 0 && this.counterPartyPublisherGames.length === 0) {
@@ -132,7 +133,7 @@ export default {
       return '';
     },
     otherPublishers() {
-      return _.filter(this.leagueYear.publishers, (x) => x.publisherID !== this.publisher.publisherID);
+      return _.filter(this.leagueYear.publishers, (x) => x.publisherID !== this.userPublisher.publisherID);
     }
   },
   methods: {
@@ -163,7 +164,7 @@ export default {
       }
 
       var request = {
-        proposerPublisherID: this.publisher.publisherID,
+        proposerPublisherID: this.userPublisher.publisherID,
         counterPartyPublisherID: this.counterParty.publisherID,
         proposerPublisherGameIDs: this.proposerPublisherGames.map((x) => x.game.publisherGameID),
         counterPartyPublisherGameIDs: this.counterPartyPublisherGames.map((x) => x.game.publisherGameID),

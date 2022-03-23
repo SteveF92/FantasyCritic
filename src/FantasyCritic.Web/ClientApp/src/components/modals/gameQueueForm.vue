@@ -83,6 +83,7 @@ import draggable from 'vuedraggable';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import StatusBadge from '@/components/statusBadge';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   components: {
@@ -91,7 +92,7 @@ export default {
     StatusBadge,
     SearchSlotTypeBadge
   },
-  props: ['leagueYear', 'publisher', 'year'],
+  mixins: [LeagueMixin],
   data() {
     return {
       queuedGames: null,
@@ -104,10 +105,23 @@ export default {
       isBusy: false
     };
   },
+  mounted() {
+    this.fetchQueuedGames();
+  },
+  watch: {
+    queuedGames(newValue, oldValue) {
+      if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array && oldValue.length !== newValue.length)) {
+        this.clearQueueData();
+      }
+    },
+    year() {
+      this.fetchQueuedGames();
+    }
+  },
   methods: {
     fetchQueuedGames() {
       axios
-        .get('/api/league/CurrentQueuedGames/' + this.publisher.publisherID)
+        .get('/api/league/CurrentQueuedGames/' + this.userPublisher.publisherID)
         .then((response) => {
           this.queuedGames = response.data;
           this.desiredQueueRanks = this.queuedGames;
@@ -119,7 +133,7 @@ export default {
       this.isBusy = true;
 
       axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.publisher.leagueID)
+        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
@@ -133,7 +147,7 @@ export default {
       this.isBusy = true;
 
       axios
-        .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.publisher.leagueID)
+        .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.showingTopAvailable = true;
@@ -162,7 +176,7 @@ export default {
     },
     addGameToQueue() {
       var request = {
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         masterGameID: this.gameToQueue.masterGameID
       };
       this.isBusy = true;
@@ -183,7 +197,7 @@ export default {
         return v.masterGame.masterGameID;
       });
       var model = {
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         QueueRanks: desiredMasterGameIDs
       };
       axios
@@ -195,7 +209,7 @@ export default {
     },
     removeQueuedGame(game) {
       var model = {
-        publisherID: this.publisher.publisherID,
+        publisherID: this.userPublisher.publisherID,
         masterGameID: game.masterGame.masterGameID
       };
       axios
@@ -220,19 +234,6 @@ export default {
       this.possibleMasterGames = [];
       this.showingTopAvailable = false;
       this.isBusy = false;
-    }
-  },
-  mounted() {
-    this.fetchQueuedGames();
-  },
-  watch: {
-    queuedGames(newValue, oldValue) {
-      if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array && oldValue.length !== newValue.length)) {
-        this.clearQueueData();
-      }
-    },
-    year() {
-      this.fetchQueuedGames();
     }
   }
 };

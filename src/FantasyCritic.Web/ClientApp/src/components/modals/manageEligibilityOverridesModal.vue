@@ -57,7 +57,13 @@
 <script>
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
+  components: {
+    PossibleMasterGamesTable
+  },
+  mixins: [LeagueMixin],
   data() {
     return {
       overrideGameName: '',
@@ -66,15 +72,11 @@ export default {
       errorInfo: ''
     };
   },
-  components: {
-    PossibleMasterGamesTable
-  },
   computed: {
     formIsValid() {
       return this.overrideMasterGame;
     }
   },
-  props: ['leagueYear'],
   methods: {
     resetEligibility(eligibilityOverride) {
       var model = {

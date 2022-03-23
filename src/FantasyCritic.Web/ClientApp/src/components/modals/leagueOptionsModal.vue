@@ -94,17 +94,22 @@
 <script>
 import axios from 'axios';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
-  props: ['league', 'leagueYear'],
   components: {
     MasterGameTagBadge
   },
+  mixins: [LeagueMixin],
   data() {
     return {
       possibleLeagueOptions: null,
       leagueYearOptions: null
     };
+  },
+  mounted() {
+    this.fetchPossibleLeagueOptions();
+    this.fetchLeagueYearOptions();
   },
   methods: {
     fetchPossibleLeagueOptions() {
@@ -123,11 +128,6 @@ export default {
         })
         .catch((returnedError) => (this.error = returnedError));
     }
-  },
-  mounted() {
-    this.fetchPossibleLeagueOptions();
-    this.fetchLeagueYearOptions();
   }
 };
 </script>
-<style scoped></style>

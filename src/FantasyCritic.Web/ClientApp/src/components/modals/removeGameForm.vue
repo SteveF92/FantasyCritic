@@ -35,8 +35,10 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       removeGamePublisher: null,
@@ -44,7 +46,6 @@ export default {
       errorInfo: ''
     };
   },
-  props: ['leagueYear'],
   methods: {
     removePublisherGame() {
       var model = {

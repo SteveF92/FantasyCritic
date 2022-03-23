@@ -85,8 +85,15 @@ import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import MasterGameSummary from '@/components/masterGameSummary';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
+  components: {
+    PossibleMasterGamesTable,
+    MasterGameSummary,
+    SearchSlotTypeBadge
+  },
   data() {
     return {
       searchGameName: null,
@@ -102,17 +109,11 @@ export default {
       showingQueuedGames: false
     };
   },
-  components: {
-    PossibleMasterGamesTable,
-    MasterGameSummary,
-    SearchSlotTypeBadge
-  },
   computed: {
     formIsValid() {
       return this.draftUnlistedGame || this.draftMasterGame;
     }
   },
-  props: ['leagueYear', 'userPublisher', 'isManager', 'year'],
   methods: {
     searchGame() {
       this.clearDataExceptSearch();

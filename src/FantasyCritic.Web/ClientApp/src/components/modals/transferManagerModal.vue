@@ -17,13 +17,15 @@
 
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       newManager: null
     };
   },
-  props: ['league'],
   computed: {
     players() {
       return this.league.players;

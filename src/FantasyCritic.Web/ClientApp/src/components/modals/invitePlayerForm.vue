@@ -51,8 +51,10 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       inviteEmail: '',
@@ -67,8 +69,9 @@ export default {
       return this.inviteEmail || (this.inviteDisplayName && this.inviteDisplayNumber);
     }
   },
-
-  props: ['league'],
+  mounted() {
+    this.fetchInviteLinks();
+  },
   methods: {
     invitePlayer() {
       var model = {
@@ -136,9 +139,6 @@ export default {
       this.inviteDisplayNumber = '';
       this.errorInfo = '';
     }
-  },
-  mounted() {
-    this.fetchInviteLinks();
   }
 };
 </script>

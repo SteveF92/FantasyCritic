@@ -15,15 +15,11 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   name: 'managerSetAutoDraftForm',
-  props: ['leagueYear'],
-  data() {
-    return {
-      publishers: null
-    };
-  },
+  mixins: [LeagueMixin],
   methods: {
     setAutoDraft() {
       let autoDraftSettings = {};
@@ -44,9 +40,6 @@ export default {
         })
         .catch(() => {});
     }
-  },
-  mounted() {
-    this.publishers = this.leagueYear.publishers;
   }
 };
 </script>

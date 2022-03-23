@@ -27,8 +27,10 @@
 </template>
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       showTable: false,
@@ -36,7 +38,9 @@ export default {
       errorInfo: ''
     };
   },
-  props: ['league', 'leagueYear'],
+  mounted() {
+    this.setCurrentActivePlayers();
+  },
   methods: {
     userIsManager(user) {
       return this.league.leagueManager.userID === user.userID;
@@ -89,9 +93,6 @@ export default {
     setData() {
       this.setCurrentActivePlayers();
     }
-  },
-  mounted() {
-    this.setCurrentActivePlayers();
   }
 };
 </script>
