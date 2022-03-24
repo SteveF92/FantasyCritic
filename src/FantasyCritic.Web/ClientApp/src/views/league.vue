@@ -198,10 +198,7 @@ export default {
     BidCountdowns
   },
   mixins: [LeagueMixin],
-  props: {
-    leagueid: String,
-    year: Number
-  },
+  props: ['leagueid', 'year'],
   data() {
     return {
       selectedYear: null

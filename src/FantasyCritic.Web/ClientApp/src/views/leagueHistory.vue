@@ -71,10 +71,7 @@ export default {
     TradeSummary
   },
   mixins: [LeagueMixin],
-  props: {
-    leagueid: String,
-    year: Number
-  },
+  props: ['leagueid', 'year'],
   data() {
     return {
       errorInfo: '',

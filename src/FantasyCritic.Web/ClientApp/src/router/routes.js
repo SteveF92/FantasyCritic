@@ -142,17 +142,7 @@ export const routes = [
       isPublic: true,
       delayScroll: true
     },
-    props: (route) => {
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
-      }
-
-      return {
-        leagueid: route.params.leagueid,
-        year: parsedYear
-      };
-    }
+    props: true
   },
   {
     path: '/editLeague/:leagueid/:year',
@@ -161,17 +151,7 @@ export const routes = [
     meta: {
       title: 'Edit League'
     },
-    props: (route) => {
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
-      }
-
-      return {
-        leagueid: route.params.leagueid,
-        year: parsedYear
-      };
-    }
+    props: true
   },
   {
     path: '/leagueHistory/:leagueid/:year',
@@ -181,17 +161,7 @@ export const routes = [
       title: 'League History',
       isPublic: true
     },
-    props: (route) => {
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
-      }
-
-      return {
-        leagueid: route.params.leagueid,
-        year: parsedYear
-      };
-    }
+    props: true
   },
   {
     path: '/publisher/:publisherid',
@@ -201,9 +171,7 @@ export const routes = [
       title: 'Publisher',
       isPublic: true
     },
-    props: (route) => ({
-      publisherid: route.params.publisherid
-    })
+    props: true
   },
   {
     path: '/mastergame/:mastergameid',
@@ -213,9 +181,7 @@ export const routes = [
       title: 'Master Game',
       isPublic: true
     },
-    props: (route) => ({
-      mastergameid: route.params.mastergameid
-    })
+    props: true
   },
   {
     path: '/mastergameeditor/:mastergameid',
@@ -225,9 +191,7 @@ export const routes = [
       title: 'Master Game Editor',
       isPublic: false
     },
-    props: (route) => ({
-      mastergameid: route.params.mastergameid
-    })
+    props: true
   },
   {
     path: '/adminConsole',
@@ -292,19 +256,9 @@ export const routes = [
         return;
       }
 
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        return;
-      }
-
-      let parsedQuarter = Number.parseInt(route.params.quarter, 10);
-      if (Number.isNaN(parsedQuarter)) {
-        return;
-      }
-
       return {
-        year: parsedYear,
-        quarter: parsedQuarter
+        year: route.params.year,
+        quarter: route.params.quarter
       };
     }
   },
@@ -316,8 +270,6 @@ export const routes = [
       title: 'Royale Publisher',
       isPublic: true
     },
-    props: (route) => ({
-      publisherid: route.params.publisherid
-    })
+    props: true
   }
 ];

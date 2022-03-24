@@ -139,10 +139,7 @@ export default {
     CreateRoyalePublisherForm
   },
   mixins: [BasicMixin],
-  props: {
-    year: Number,
-    quarter: Number
-  },
+  props: ['year', 'quarter'],
   data() {
     return {
       perPage: 10,
@@ -179,8 +176,8 @@ export default {
       if (!this.year || !this.quarter) {
         const mostRecentQuarter = this.royaleYearQuarterOptions[this.royaleYearQuarterOptions.length - 1];
         var parameters = {
-          year: mostRecentQuarter.year,
-          quarter: mostRecentQuarter.quarter
+          year: mostRecentQuarter.year.toString(),
+          quarter: mostRecentQuarter.quarter.toString()
         };
         this.$router.replace({ params: parameters });
         return;
