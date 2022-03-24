@@ -7,7 +7,7 @@ export default {
     isBusy: false
   },
   getters: {
-    isAuthenticated: (state) => !!state.userInfo,
+    isAuth: (state) => !!state.userInfo,
     userInfo: (state) => state.userInfo,
     authIsBusy: (state) => state.isBusy,
     isAdmin: (state) => state.userInfo && state.userInfo.roles.includes('Admin'),

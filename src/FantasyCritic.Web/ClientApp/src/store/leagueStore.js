@@ -34,36 +34,33 @@ export default {
     draftOrderView: (state) => state.draftOrderViewInternal
   },
   actions: {
-    initializePage(context, leaguePageParams) {
+    async initializePage(context, leaguePageParams) {
       context.commit('cancelMoveMode');
       context.commit('clearLeagueSpecificData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
-      return context.dispatch('fetchLeagueYear', leaguePageParams).then(() => {
-        if (context.getters.userPublisher) {
-          context.dispatch('fetchAdditionalLeagueData');
-        }
-        context.dispatch('fetchGameNews');
-      });
+      await context.dispatch('fetchLeagueYear', leaguePageParams);
+      if (context.getters.userPublisher) {
+        context.dispatch('fetchAdditionalLeagueData');
+      }
+      context.dispatch('fetchGameNews');
     },
-    initializeHistoryPage(context, leaguePageParams) {
+    async initializeHistoryPage(context, leaguePageParams) {
       context.commit('cancelMoveMode');
       context.commit('clearLeagueSpecificData');
-      return context.dispatch('fetchLeagueYear', leaguePageParams).then(() => {
-        context.dispatch('fetchHistoryData');
-      });
+      await context.dispatch('fetchLeagueYear', leaguePageParams);
+      context.dispatch('fetchHistoryData');
     },
-    refreshLeagueYear(context) {
+    async refreshLeagueYear(context) {
       const leaguePageParams = {
         leagueID: context.getters.leagueYear.leagueID,
         year: context.getters.leagueYear.year,
         inviteCode: context.getters.inviteCode
       };
-      return context.dispatch('fetchLeagueYear', leaguePageParams).then(() => {
-        if (context.getters.userPublisher) {
-          context.dispatch('fetchAdditionalLeagueData');
-        }
-        context.dispatch('fetchGameNews');
-      });
+      await context.dispatch('fetchLeagueYear', leaguePageParams);
+      if (context.getters.userPublisher) {
+        context.dispatch('fetchAdditionalLeagueData');
+      }
+      context.dispatch('fetchGameNews');
     },
     fetchLeagueYear(context, leaguePageParams) {
       let queryURL = '/api/League/GetLeagueYear?leagueID=' + leaguePageParams.leagueID + '&year=' + leaguePageParams.year;
@@ -86,17 +83,13 @@ export default {
     fetchAdditionalLeagueData(context) {
       let currentBidsPromise = context.dispatch('fetchCurrentBids');
       let currentDropRequestsPromise = context.dispatch('fetchCurrentDropRequests');
-      return Promise.all([currentBidsPromise, currentDropRequestsPromise]).then(() => {
-        // All done
-      });
+      return Promise.all([currentBidsPromise, currentDropRequestsPromise]);
     },
     fetchHistoryData(context) {
       let leagueActionsPromise = context.dispatch('fetchLeagueActions');
       let leagueActionSetsPromise = context.dispatch('fetchLeagueActionSets');
       let historicalTradesPromise = context.dispatch('fetchHistoricalTrades');
-      return Promise.all([leagueActionsPromise, leagueActionSetsPromise, historicalTradesPromise]).then(() => {
-        // All done
-      });
+      return Promise.all([leagueActionsPromise, leagueActionSetsPromise, historicalTradesPromise]);
     },
     fetchCurrentBids(context) {
       const queryURL = '/api/league/CurrentBids/' + context.getters.userPublisher.publisherID;

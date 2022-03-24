@@ -208,12 +208,6 @@ export default {
     };
   },
   computed: {
-    topPublisher() {
-      if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
-      }
-      return null;
-    },
     mostRecentManagerMessage() {
       if (!this.leagueYear || !this.leagueYear.managerMessages || this.leagueYear.managerMessages.length === 0) {
         return null;
@@ -242,9 +236,9 @@ export default {
     }
   },
   watch: {
-    $route(to, from) {
+    async $route(to, from) {
       if (to.path !== from.path) {
-        this.initializePage();
+        await this.initializePage();
       }
     },
     userIsNextInDraft: function (val, oldVal) {
@@ -257,13 +251,12 @@ export default {
     this.initializePage();
   },
   methods: {
-    initializePage() {
+    async initializePage() {
       this.selectedYear = this.year;
       const inviteCode = this.$route.query.inviteCode;
       const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
-      this.$store.dispatch('initializePage', leaguePageParams).then(async () => {
-        await this.startHubConnection();
-      });
+      await this.$store.dispatch('initializePage', leaguePageParams);
+      await this.startHubConnection();
     },
     refreshLeagueYear() {
       this.$store.dispatch('refreshLeagueYear');

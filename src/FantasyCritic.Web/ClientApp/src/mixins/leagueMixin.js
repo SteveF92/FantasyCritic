@@ -1,46 +1,31 @@
+import { mapGetters } from 'vuex';
 import BasicMixin from '@/mixins/basicMixin';
 
 let leagueMixin = {
   mixins: [BasicMixin],
   computed: {
-    leagueErrorInfo() {
-      return this.$store.getters.errorInfo;
-    },
-    forbidden() {
-      return this.$store.getters.forbidden;
-    },
-    inviteCode() {
-      return this.$store.getters.inviteCode;
-    },
+    ...mapGetters([
+      'forbidden',
+      'inviteCode',
+      'leagueYear',
+      'userPublisher',
+      'currentBids',
+      'currentDrops',
+      'gameNews',
+      'leagueActions',
+      'leagueActionSets',
+      'historicalTrades',
+      'advancedProjections',
+      'draftOrderView'
+    ]),
     league() {
       if (!this.$store.getters.leagueYear) {
         return;
       }
       return this.$store.getters.leagueYear.league;
     },
-    leagueYear() {
-      return this.$store.getters.leagueYear;
-    },
-    userPublisher() {
-      return this.$store.getters.userPublisher;
-    },
-    currentBids() {
-      return this.$store.getters.currentBids;
-    },
-    currentDrops() {
-      return this.$store.getters.currentDrops;
-    },
-    gameNews() {
-      return this.$store.getters.gameNews;
-    },
-    leagueActions() {
-      return this.$store.getters.leagueActions;
-    },
-    leagueActionSets() {
-      return this.$store.getters.leagueActionSets;
-    },
-    historicalTrades() {
-      return this.$store.getters.historicalTrades;
+    leagueErrorInfo() {
+      return this.$store.getters.errorInfo;
     },
     publishers() {
       return this.leagueYear.publishers;
@@ -68,20 +53,19 @@ let leagueMixin = {
     isManager() {
       return this.league && this.league.isManager;
     },
-    advancedProjections() {
-      return this.$store.getters.advancedProjections;
-    },
-    draftOrderView() {
-      return this.$store.getters.draftOrderView;
+    topPublisher() {
+      if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
+        return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
+      }
+      return null;
     }
   },
   methods: {
-    notifyAction(message) {
-      this.$store.dispatch('refreshLeagueYear').then(() => {
-        if (message) {
-          this.makeToast(message);
-        }
-      });
+    async notifyAction(message) {
+      await this.$store.dispatch('refreshLeagueYear');
+      if (message) {
+        this.makeToast(message);
+      }
     }
   }
 };
