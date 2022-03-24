@@ -109,7 +109,7 @@ export default {
         .then((response) => {
           context.commit('setLeagueActions', response.data);
         })
-        .catch((returnedError) => (this.error = returnedError));
+        .catch(() => context.commit('setErrorInfo', leagueErrorMessageText));
     },
     fetchLeagueActionSets(context) {
       const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
@@ -118,7 +118,7 @@ export default {
         .then((response) => {
           context.commit('setLeagueActionSets', response.data);
         })
-        .catch((returnedError) => (this.error = returnedError));
+        .catch(() => context.commit('setErrorInfo', leagueErrorMessageText));
     },
     fetchHistoricalTrades(context) {
       const queryURL = '/api/League/TradeHistory?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
@@ -127,7 +127,7 @@ export default {
         .then((response) => {
           context.commit('setHistoricalTrades', response.data);
         })
-        .catch((returnedError) => (this.error = returnedError));
+        .catch(() => context.commit('setErrorInfo', leagueErrorMessageText));
     }
   },
   mutations: {

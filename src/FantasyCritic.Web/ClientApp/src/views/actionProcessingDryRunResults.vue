@@ -61,6 +61,10 @@ import MasterGamesTable from '@/components/gameTables/masterGamesTable';
 import LeagueActionSet from '@/components/leagueActionSet';
 
 export default {
+  components: {
+    MasterGamesTable,
+    LeagueActionSet
+  },
   data() {
     return {
       dryRunResults: null,
@@ -76,9 +80,8 @@ export default {
       sortDesc: true
     };
   },
-  components: {
-    MasterGamesTable,
-    LeagueActionSet
+  mounted() {
+    this.fetchActionedGames();
   },
   methods: {
     fetchActionedGames() {
@@ -89,9 +92,6 @@ export default {
         })
         .catch(() => {});
     }
-  },
-  mounted() {
-    this.fetchActionedGames();
   }
 };
 </script>

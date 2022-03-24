@@ -108,6 +108,9 @@ import axios from 'axios';
 import MasterGamePopover from '@/components/masterGamePopover';
 
 export default {
+  components: {
+    MasterGamePopover
+  },
   data() {
     return {
       activeRequests: null,
@@ -118,9 +121,8 @@ export default {
       generatedSQL: ''
     };
   },
-  computed: {},
-  components: {
-    MasterGamePopover
+  mounted() {
+    this.fetchMyRequests();
   },
   methods: {
     fetchMyRequests() {
@@ -197,9 +199,6 @@ export default {
     generateSQL(request) {
       this.generatedSQL = "select * from tbl_mastergame where MasterGameID = '" + request.masterGame.masterGameID + "';";
     }
-  },
-  mounted() {
-    this.fetchMyRequests();
   }
 };
 </script>

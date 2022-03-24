@@ -131,6 +131,9 @@ import axios from 'axios';
 import MasterGamePopover from '@/components/masterGamePopover';
 
 export default {
+  components: {
+    MasterGamePopover
+  },
   data() {
     return {
       myRequests: [],
@@ -149,13 +152,13 @@ export default {
       nearCertainInterested: false
     };
   },
-  components: {
-    MasterGamePopover
-  },
   computed: {
     validReason() {
       return this.wantToPickup || this.nearCertainInterested;
     }
+  },
+  mounted() {
+    this.fetchMyRequests();
   },
   methods: {
     fetchMyRequests() {
@@ -229,9 +232,6 @@ export default {
         })
         .catch(() => {});
     }
-  },
-  mounted() {
-    this.fetchMyRequests();
   }
 };
 </script>

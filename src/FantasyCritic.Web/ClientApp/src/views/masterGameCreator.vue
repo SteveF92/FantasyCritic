@@ -124,6 +124,9 @@ import axios from 'axios';
 import MasterGameTagSelector from '@/components/masterGameTagSelector';
 
 export default {
+  components: {
+    MasterGameTagSelector
+  },
   data() {
     return {
       createdGame: null,
@@ -144,9 +147,6 @@ export default {
       tags: []
     };
   },
-  components: {
-    MasterGameTagSelector
-  },
   computed: {
     openCriticLink() {
       return 'https://opencritic.com/game/' + this.openCriticID + '/a';
@@ -158,8 +158,12 @@ export default {
       return `https://ggapp.io/games/${this.ggToken}`;
     }
   },
+  async mounted() {
+    await this.fetchRequest();
+    await this.parseEstimatedReleaseDate();
+  },
   methods: {
-    createMasterGame() {
+    async createMasterGame() {
       let tagNames = _.map(this.tags, 'name');
 
       let request = {
@@ -175,52 +179,52 @@ export default {
         tags: tagNames,
         notes: this.notes
       };
-      axios
-        .post('/api/admin/CreateMasterGame', request)
-        .then((response) => {
-          this.createdGame = response.data;
-          window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-          });
-          this.clearData();
-        })
-        .catch((error) => {
-          this.errorInfo = error.response;
+
+      try {
+        const response = await axios.post('/api/admin/CreateMasterGame', request);
+        this.createdGame = response.data;
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
         });
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     async parseEstimatedReleaseDate() {
-      await axios
-        .get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.estimatedReleaseDate)
-        .then((response) => {
-          this.minimumReleaseDate = response.data.minimumReleaseDate;
-          this.maximumReleaseDate = response.data.maximumReleaseDate;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+      try {
+        const response = await axios.get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.estimatedReleaseDate);
+        this.minimumReleaseDate = response.data.minimumReleaseDate;
+        this.maximumReleaseDate = response.data.maximumReleaseDate;
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     async fetchRequest() {
       let requestID = this.$route.query.requestID;
       if (!requestID) {
         return;
       }
-      await axios
-        .get('/api/admin/GetMasterGameRequest?requestID=' + requestID)
-        .then((response) => {
-          this.request = response.data;
-          this.gameName = this.request.gameName;
-          this.estimatedReleaseDate = this.request.estimatedReleaseDate;
-          if (this.request.releaseDate !== undefined) {
-            this.releaseDate = this.request.releaseDate;
-            this.minimumReleaseDate = this.request.releaseDate;
-            this.maximumReleaseDate = this.request.releaseDate;
-          }
-          this.steamID = this.request.steamID;
-          this.openCriticID = this.request.openCriticID;
-          this.ggToken = this.request.ggToken;
-          this.requestNote = this.request.requestNote;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+
+      try {
+        const response = await axios.get('/api/admin/GetMasterGameRequest?requestID=' + requestID);
+        this.request = response.data;
+        this.gameName = this.request.gameName;
+        this.estimatedReleaseDate = this.request.estimatedReleaseDate;
+        if (this.request.releaseDate !== undefined) {
+          this.releaseDate = this.request.releaseDate;
+          this.minimumReleaseDate = this.request.releaseDate;
+          this.maximumReleaseDate = this.request.releaseDate;
+        }
+        this.steamID = this.request.steamID;
+        this.openCriticID = this.request.openCriticID;
+        this.ggToken = this.request.ggToken;
+        this.requestNote = this.request.requestNote;
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     propagateDate() {
       this.maximumReleaseDate = this.releaseDate;
@@ -235,10 +239,6 @@ export default {
       this.internationalReleaseDate = null;
       this.earlyAccessReleaseDate = null;
     }
-  },
-  async mounted() {
-    await this.fetchRequest();
-    this.parseEstimatedReleaseDate();
   }
 };
 </script>

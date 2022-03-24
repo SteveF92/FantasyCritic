@@ -78,6 +78,9 @@ import axios from 'axios';
 import LeagueYearSettings from '@/components/leagueYearSettings';
 
 export default {
+  components: {
+    LeagueYearSettings
+  },
   data() {
     return {
       errorInfo: '',
@@ -89,9 +92,6 @@ export default {
       testLeague: false,
       leagueYearEverValid: false
     };
-  },
-  components: {
-    LeagueYearSettings
   },
   computed: {
     readyToSetupLeagueYear() {
@@ -109,6 +109,29 @@ export default {
 
       let allValid = this.readyToSetupLeagueYear && valid;
       return allValid;
+    }
+  },
+  mounted() {
+    this.fetchLeagueOptions();
+    this.leagueYearSettings = {
+      standardGames: '',
+      gamesToDraft: '',
+      counterPicks: '',
+      counterPicksToDraft: '',
+      initialYear: '',
+      pickupSystem: 'SecretBidding',
+      tiebreakSystem: 'LowestProjectedPoints',
+      tradingSystem: 'Standard',
+      specialGameSlots: [],
+      tags: { banned: [], allowed: [], required: [] }
+    };
+  },
+  watch: {
+    leagueYearIsValid: function (newValue) {
+      let allValid = this.readyToSetupLeagueYear && newValue;
+      if (allValid) {
+        this.leagueYearEverValid = true;
+      }
     }
   },
   methods: {
@@ -161,29 +184,6 @@ export default {
             behavior: 'smooth'
           });
         });
-    }
-  },
-  mounted() {
-    this.fetchLeagueOptions();
-    this.leagueYearSettings = {
-      standardGames: '',
-      gamesToDraft: '',
-      counterPicks: '',
-      counterPicksToDraft: '',
-      initialYear: '',
-      pickupSystem: 'SecretBidding',
-      tiebreakSystem: 'LowestProjectedPoints',
-      tradingSystem: 'Standard',
-      specialGameSlots: [],
-      tags: { banned: [], allowed: [], required: [] }
-    };
-  },
-  watch: {
-    leagueYearIsValid: function (newValue) {
-      let allValid = this.readyToSetupLeagueYear && newValue;
-      if (allValid) {
-        this.leagueYearEverValid = true;
-      }
     }
   }
 };

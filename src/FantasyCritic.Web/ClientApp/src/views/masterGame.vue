@@ -90,6 +90,9 @@ import axios from 'axios';
 import MasterGameDetails from '@/components/masterGameDetails';
 
 export default {
+  components: {
+    MasterGameDetails
+  },
   data() {
     return {
       masterGame: null,
@@ -97,9 +100,8 @@ export default {
       error: ''
     };
   },
-  props: ['mastergameid'],
-  components: {
-    MasterGameDetails
+  props: {
+    mastergameid: String
   },
   computed: {
     ggCoverArtLink() {
@@ -134,6 +136,15 @@ export default {
       };
     }
   },
+  mounted() {
+    this.fetchMasterGame();
+    this.fetchMasterGameYears();
+  },
+  watch: {
+    $route() {
+      this.fetchMasterGame();
+    }
+  },
   methods: {
     fetchMasterGame() {
       axios
@@ -150,15 +161,6 @@ export default {
           this.masterGameYears = response.data;
         })
         .catch((returnedError) => (this.error = returnedError));
-    }
-  },
-  mounted() {
-    this.fetchMasterGame();
-    this.fetchMasterGameYears();
-  },
-  watch: {
-    $route() {
-      this.fetchMasterGame();
     }
   }
 };

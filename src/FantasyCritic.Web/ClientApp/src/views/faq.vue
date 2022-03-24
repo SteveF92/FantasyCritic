@@ -996,6 +996,12 @@ export default {
       return this.$store.getters.allTags;
     }
   },
+  mounted() {
+    // From testing, without a brief timeout, it won't work.
+    if (this.$route.hash) {
+      setTimeout(() => this.scrollTo(this.$route.hash), TIMEOUT);
+    }
+  },
   methods: {
     getCollapseID() {
       let thisID = this.lastID;
@@ -1006,12 +1012,6 @@ export default {
       setTimeout(() => {
         location.href = hashtag;
       }, TIMEOUT);
-    }
-  },
-  mounted() {
-    // From testing, without a brief timeout, it won't work.
-    if (this.$route.hash) {
-      setTimeout(() => this.scrollTo(this.$route.hash), TIMEOUT);
     }
   }
 };

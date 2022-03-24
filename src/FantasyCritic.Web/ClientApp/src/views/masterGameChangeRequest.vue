@@ -110,6 +110,10 @@ import MasterGamePopover from '@/components/masterGamePopover';
 import MasterGameDetails from '@/components/masterGameDetails';
 
 export default {
+  components: {
+    MasterGamePopover,
+    MasterGameDetails
+  },
   data() {
     return {
       myRequests: [],
@@ -128,9 +132,13 @@ export default {
       }
     };
   },
-  components: {
-    MasterGamePopover,
-    MasterGameDetails
+  mounted() {
+    let masterGameID = this.$route.query.mastergameid;
+    if (masterGameID) {
+      this.fetchMasterGame(masterGameID);
+    }
+
+    this.fetchMyRequests();
   },
   methods: {
     fetchMyRequests() {
@@ -203,14 +211,6 @@ export default {
         })
         .catch((returnedError) => (this.error = returnedError));
     }
-  },
-  mounted() {
-    let masterGameID = this.$route.query.mastergameid;
-    if (masterGameID) {
-      this.fetchMasterGame(masterGameID);
-    }
-
-    this.fetchMyRequests();
   }
 };
 </script>
@@ -237,10 +237,5 @@ export default {
 
 label {
   font-size: 18px;
-}
-</style>
-<style>
-.vue-slider-piecewise-label {
-  color: white !important;
 }
 </style>

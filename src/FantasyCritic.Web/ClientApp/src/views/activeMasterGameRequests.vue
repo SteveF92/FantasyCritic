@@ -73,7 +73,9 @@ export default {
       responseNote: ''
     };
   },
-  computed: {},
+  mounted() {
+    this.fetchMyRequests();
+  },
   methods: {
     fetchMyRequests() {
       axios
@@ -102,9 +104,6 @@ export default {
           this.errorInfo = error.response;
         });
     }
-  },
-  mounted() {
-    this.fetchMyRequests();
   }
 };
 </script>

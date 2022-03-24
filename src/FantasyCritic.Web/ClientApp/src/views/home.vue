@@ -152,6 +152,10 @@ export default {
       return _.filter(this.myLeagues, ['testLeague', true]);
     }
   },
+  async mounted() {
+    const tasks = [this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()];
+    await Promise.all([tasks]);
+  },
   methods: {
     fetchMyLeagues() {
       return axios
@@ -227,10 +231,6 @@ export default {
         })
         .catch(() => {});
     }
-  },
-  async mounted() {
-    const tasks = [this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()];
-    await Promise.all([tasks]);
   }
 };
 </script>

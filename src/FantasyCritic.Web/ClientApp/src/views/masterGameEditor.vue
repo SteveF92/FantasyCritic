@@ -9,6 +9,7 @@
       </div>
       <hr />
       <div v-if="responseInfo" class="alert alert-success">Master Game edited successfully!</div>
+      <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
       <div v-if="generatedSQL">
         <h3>Generated SQL</h3>
         <div class="row">
@@ -139,9 +140,15 @@ import axios from 'axios';
 import MasterGameTagSelector from '@/components/masterGameTagSelector';
 
 export default {
-  props: ['mastergameid'],
+  components: {
+    MasterGameTagSelector
+  },
+  props: {
+    mastergameid: String
+  },
   data() {
     return {
+      errorInfo: null,
       masterGame: null,
       changeRequest: null,
       tags: [],
@@ -149,41 +156,50 @@ export default {
       generatedSQL: null
     };
   },
-  components: {
-    MasterGameTagSelector
+  async mounted() {
+    await this.fetchMasterGame();
+    await this.fetchChangeRequest();
+    this.parseEstimatedReleaseDate();
+    this.populateTags();
+  },
+  watch: {
+    $route() {
+      this.fetchMasterGame();
+    }
   },
   methods: {
     async fetchMasterGame() {
-      await axios
-        .get('/api/game/MasterGame/' + this.mastergameid)
-        .then((response) => {
-          this.masterGame = response.data;
-          if (this.masterGame.maximumReleaseDate === '9999-12-31') {
-            this.masterGame.maximumReleaseDate = null;
-          }
-        })
-        .catch((returnedError) => (this.error = returnedError));
+      try {
+        const response = await axios.get('/api/game/MasterGame/' + this.mastergameid);
+        this.masterGame = response.data;
+        if (this.masterGame.maximumReleaseDate === '9999-12-31') {
+          this.masterGame.maximumReleaseDate = null;
+        }
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     async fetchChangeRequest() {
       let changeRequestID = this.$route.query.changeRequestID;
       if (!changeRequestID) {
         return;
       }
-      await axios
-        .get('/api/admin/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID)
-        .then((response) => {
-          this.changeRequest = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+
+      try {
+        const response = await axios.get('/api/admin/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID);
+        this.changeRequest = response.data;
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     async parseEstimatedReleaseDate() {
-      await axios
-        .get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate)
-        .then((response) => {
-          this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
-          this.masterGame.maximumReleaseDate = response.data.maximumReleaseDate;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+      try {
+        const response = await axios.get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate);
+        this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
+        this.masterGame.maximumReleaseDate = response.data.maximumReleaseDate;
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     propagateDate() {
       this.masterGame.maximumReleaseDate = this.masterGame.releaseDate;
@@ -205,39 +221,26 @@ export default {
       this.masterGame.announcementDate = null;
       this.masterGame.earlyAccessReleaseDate = null;
     },
-    sendEditMasterGameRequest() {
+    async sendEditMasterGameRequest() {
       let tagNames = _.map(this.tags, 'name');
 
       let request = this.masterGame;
       request.tags = tagNames;
 
-      axios
-        .post('/api/admin/EditMasterGame', request)
-        .then((response) => {
-          this.responseInfo = response.data;
-          window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-          });
-        })
-        .catch((error) => {
-          this.errorInfo = error.response;
+      try {
+        const response = await axios.post('/api/admin/EditMasterGame', request);
+        this.responseInfo = response.data;
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
         });
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     generateSQL() {
       this.generatedSQL = "select * from tbl_mastergame where MasterGameID = '" + this.masterGame.masterGameID + "';";
-    }
-  },
-  async mounted() {
-    await this.fetchMasterGame();
-    await this.fetchChangeRequest();
-    this.parseEstimatedReleaseDate();
-    this.populateTags();
-  },
-  watch: {
-    $route() {
-      this.fetchMasterGame();
     }
   }
 };

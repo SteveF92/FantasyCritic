@@ -122,8 +122,17 @@ import GlobalFunctions from '@/globalFunctions';
 import BasicMixin from '@/mixins/basicMixin';
 
 export default {
+  components: {
+    RoyaleChangePublisherNameForm,
+    RoyaleChangePublisherIconForm,
+    RoyalePurchaseGameForm,
+    MasterGamePopover,
+    SellRoyaleGameModal
+  },
   mixins: [BasicMixin],
-  props: ['publisherid'],
+  props: {
+    publisherid: String
+  },
   data() {
     return {
       errorInfo: '',
@@ -142,17 +151,7 @@ export default {
       userPublisherFields: [{ key: 'sellGame', thClass: 'bg-primary', label: 'Sell' }]
     };
   },
-  components: {
-    RoyaleChangePublisherNameForm,
-    RoyaleChangePublisherIconForm,
-    RoyalePurchaseGameForm,
-    MasterGamePopover,
-    SellRoyaleGameModal
-  },
   computed: {
-    isAuth() {
-      return this.$store.getters.isAuthenticated;
-    },
     userIsPublisher() {
       return this.isAuth && this.publisher.userID === this.$store.getters.userInfo.userID;
     },
@@ -177,11 +176,16 @@ export default {
         }
       };
     },
-    isPlusUser() {
-      return this.$store.getters.isPlusUser;
-    },
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
+    }
+  },
+  mounted() {
+    this.fetchPublisher();
+  },
+  watch: {
+    $route() {
+      this.fetchPublisher();
     }
   },
   methods: {
@@ -270,14 +274,6 @@ export default {
       if (item.currentlyIneligible) {
         return 'table-warning';
       }
-    }
-  },
-  mounted() {
-    this.fetchPublisher();
-  },
-  watch: {
-    $route() {
-      this.fetchPublisher();
     }
   }
 };

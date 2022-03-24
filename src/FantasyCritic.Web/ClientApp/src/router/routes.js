@@ -286,10 +286,22 @@ export const routes = [
       title: 'Critics Royale',
       isPublic: true
     },
-    props: (route) => ({
-      year: route.params.year,
-      quarter: route.params.quarter
-    })
+    props: (route) => {
+      let parsedYear = Number.parseInt(route.params.year, 10);
+      if (Number.isNaN(parsedYear)) {
+        parsedYear = 0;
+      }
+
+      let parsedQuarter = Number.parseInt(route.params.quarter, 10);
+      if (Number.isNaN(parsedQuarter)) {
+        parsedQuarter = 0;
+      }
+
+      return {
+        leagueid: parsedQuarter,
+        year: parsedYear
+      };
+    }
   },
   {
     path: '/royalePublisher/:publisherid',

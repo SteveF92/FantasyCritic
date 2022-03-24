@@ -36,6 +36,9 @@ export default {
       sortDesc: true
     };
   },
+  mounted() {
+    this.fetchSupportedYears();
+  },
   methods: {
     fetchSupportedYears() {
       axios
@@ -60,9 +63,6 @@ export default {
         })
         .catch(() => {});
     }
-  },
-  mounted() {
-    this.fetchSupportedYears();
   }
 };
 </script>

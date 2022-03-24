@@ -131,13 +131,17 @@
 
 <script>
 import axios from 'axios';
-
+import BasicMixin from '@/mixins/basicMixin';
 import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm';
 
 export default {
-  props: ['year', 'quarter'],
   components: {
     CreateRoyalePublisherForm
+  },
+  mixins: [BasicMixin],
+  props: {
+    year: Number,
+    quarter: Number
   },
   data() {
     return {
@@ -159,50 +163,6 @@ export default {
   computed: {
     rows() {
       return this.royaleStandings.length;
-    },
-    isAuth() {
-      return this.$store.getters.isAuthenticated;
-    }
-  },
-  methods: {
-    async fetchRoyaleQuarters() {
-      axios
-        .get('/api/royale/RoyaleQuarters')
-        .then((response) => {
-          this.royaleYearQuarterOptions = response.data;
-        })
-        .catch(() => {});
-    },
-    async fetchRoyaleYearQuarter() {
-      this.royaleYearQuarter = null;
-      axios
-        .get('/api/royale/RoyaleQuarter/' + this.year + '/' + this.quarter)
-        .then((response) => {
-          this.royaleYearQuarter = response.data;
-        })
-        .catch(() => {});
-    },
-    async fetchRoyaleStandings() {
-      this.royaleStandings = null;
-      axios
-        .get('/api/royale/RoyaleStandings/' + this.year + '/' + this.quarter)
-        .then((response) => {
-          this.royaleStandings = response.data;
-        })
-        .catch(() => {});
-    },
-    async fetchUserRoyalePublisher() {
-      this.userPublisherBusy = true;
-      this.userRoyalePublisher = null;
-      axios
-        .get('/api/royale/GetUserRoyalePublisher/' + this.year + '/' + this.quarter)
-        .then((response) => {
-          this.userRoyalePublisher = response.data;
-          this.userPublisherBusy = false;
-        })
-        .catch(() => {
-          this.userPublisherBusy = false;
-        });
     }
   },
   async mounted() {
@@ -211,6 +171,47 @@ export default {
   watch: {
     async $route() {
       await Promise.all([this.fetchRoyaleQuarters(), this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
+    }
+  },
+  methods: {
+    fetchRoyaleQuarters() {
+      return axios
+        .get('/api/royale/RoyaleQuarters')
+        .then((response) => {
+          this.royaleYearQuarterOptions = response.data;
+        })
+        .catch(() => {});
+    },
+    fetchRoyaleYearQuarter() {
+      this.royaleYearQuarter = null;
+      return axios
+        .get('/api/royale/RoyaleQuarter/' + this.year + '/' + this.quarter)
+        .then((response) => {
+          this.royaleYearQuarter = response.data;
+        })
+        .catch(() => {});
+    },
+    fetchRoyaleStandings() {
+      this.royaleStandings = null;
+      return axios
+        .get('/api/royale/RoyaleStandings/' + this.year + '/' + this.quarter)
+        .then((response) => {
+          this.royaleStandings = response.data;
+        })
+        .catch(() => {});
+    },
+    fetchUserRoyalePublisher() {
+      this.userPublisherBusy = true;
+      this.userRoyalePublisher = null;
+      return axios
+        .get('/api/royale/GetUserRoyalePublisher/' + this.year + '/' + this.quarter)
+        .then((response) => {
+          this.userRoyalePublisher = response.data;
+          this.userPublisherBusy = false;
+        })
+        .catch(() => {
+          this.userPublisherBusy = false;
+        });
     }
   }
 };

@@ -66,8 +66,13 @@
 <script>
 import axios from 'axios';
 import MasterGamesTable from '@/components/gameTables/masterGamesTable';
+import BasicMixin from '@/mixins/basicMixin';
 
 export default {
+  components: {
+    MasterGamesTable
+  },
+  mixins: [BasicMixin],
   data() {
     return {
       isBusy: true,
@@ -82,13 +87,7 @@ export default {
       selectedLeague: ''
     };
   },
-  components: {
-    MasterGamesTable
-  },
   computed: {
-    isAuth() {
-      return this.$store.getters.isAuthenticated;
-    },
     gamesToShow() {
       if (this.flatMasterGameYears) {
         if (!this.unreleasedOnlyFilter) {
@@ -126,10 +125,10 @@ export default {
     },
     showGames() {
       return this.gamesToShow && !this.isBusy;
-    },
-    isPlusUser() {
-      return this.$store.getters.isPlusUser;
     }
+  },
+  mounted() {
+    this.fetchSupportedYears();
   },
   methods: {
     fetchSupportedYears() {
@@ -189,9 +188,6 @@ export default {
       this.takenStatusFilter = null;
       this.unreleasedOnlyFilter = false;
     }
-  },
-  mounted() {
-    this.fetchSupportedYears();
   }
 };
 </script>

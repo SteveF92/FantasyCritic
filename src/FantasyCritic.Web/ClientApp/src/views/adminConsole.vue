@@ -69,7 +69,6 @@ export default {
       resendConfirmationUserID: null
     };
   },
-  computed: {},
   methods: {
     fullRefresh() {
       this.isBusy = true;
