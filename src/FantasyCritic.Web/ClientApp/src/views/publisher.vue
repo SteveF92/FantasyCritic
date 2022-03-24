@@ -66,6 +66,12 @@ import PlayerGameTable from '@/components/gameTables/playerGameTable';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {
+  components: {
+    PlayerGameTable
+  },
+  props: {
+    publisherid: String
+  },
   data() {
     return {
       errorInfo: '',
@@ -73,10 +79,6 @@ export default {
       leagueYear: null
     };
   },
-  components: {
-    PlayerGameTable
-  },
-  props: ['publisherid'],
   computed: {
     moveMode() {
       return this.$store.getters.moveMode;
@@ -92,6 +94,14 @@ export default {
     },
     hasIneligibleGame() {
       return _.some(this.publisher.gameSlots, (x) => !x.gameMeetsSlotCriteria);
+    }
+  },
+  mounted() {
+    this.fetchPublisher();
+  },
+  watch: {
+    $route() {
+      this.fetchPublisher();
     }
   },
   methods: {
@@ -128,14 +138,6 @@ export default {
       }
 
       return notPublisherText;
-    }
-  },
-  mounted() {
-    this.fetchPublisher();
-  },
-  watch: {
-    $route() {
-      this.fetchPublisher();
     }
   }
 };
