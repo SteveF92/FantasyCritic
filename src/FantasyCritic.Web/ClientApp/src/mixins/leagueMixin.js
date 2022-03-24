@@ -1,31 +1,29 @@
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import BasicMixin from '@/mixins/basicMixin';
 
 let leagueMixin = {
   mixins: [BasicMixin],
   computed: {
-    ...mapGetters([
-      'forbidden',
-      'inviteCode',
-      'leagueYear',
-      'userPublisher',
-      'currentBids',
-      'currentDrops',
-      'gameNews',
-      'leagueActions',
-      'leagueActionSets',
-      'historicalTrades',
-      'advancedProjections',
-      'draftOrderView'
-    ]),
+    ...mapState({
+      leagueErrorInfo: (state) => state.league.errorInfo,
+      forbidden: (state) => state.league.forbidden,
+      inviteCode: (state) => state.league.inviteCode,
+      leagueYear: (state) => state.league.leagueYear,
+      userPublisher: (state) => state.league.userPublisher,
+      currentBids: (state) => state.league.currentBids,
+      currentDrops: (state) => state.league.currentDrops,
+      gameNews: (state) => state.league.gameNews,
+      leagueActions: (state) => state.league.leagueActions,
+      leagueActionSets: (state) => state.league.leagueActionSets,
+      historicalTrades: (state) => state.league.historicalTrades,
+      advancedProjections: (state) => state.league.advancedProjections,
+      draftOrderView: (state) => state.league.draftOrderView
+    }),
     league() {
-      if (!this.$store.getters.leagueYear) {
+      if (!this.leagueYear) {
         return;
       }
-      return this.$store.getters.leagueYear.league;
-    },
-    leagueErrorInfo() {
-      return this.$store.getters.errorInfo;
+      return this.leagueYear.league;
     },
     publishers() {
       return this.leagueYear.publishers;

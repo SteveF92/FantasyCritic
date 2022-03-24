@@ -259,10 +259,10 @@ export default {
       await this.startHubConnection();
     },
     refreshLeagueYear() {
-      this.$store.dispatch('refreshLeagueYear');
+      return this.$store.dispatch('refreshLeagueYear');
     },
-    revealPublicBids() {
-      this.refreshLeagueYear();
+    async revealPublicBids() {
+      await this.refreshLeagueYear();
       this.$store.dispatch('getBidTimes');
     },
     changeLeagueYear(newVal) {
@@ -355,6 +355,7 @@ export default {
         .catch(() => {});
     },
     async startHubConnection() {
+      console.log('wait');
       if (!this.leagueYear.playStatus.draftIsActive) {
         return;
       }

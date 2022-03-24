@@ -4,34 +4,19 @@ const leagueErrorMessageText = 'Something went wrong with this league. Contact u
 
 export default {
   state: {
-    errorInfoInternal: null,
-    forbiddenInternal: false,
-    inviteCodeInternal: false,
-    leagueYearInternal: null,
-    userPublisherInternal: null,
-    currentBidsInternal: null,
-    currentDropsInternal: null,
-    gameNewsInternal: null,
-    leagueActionsInternal: null,
-    leagueActionSetsInternal: null,
-    historicalTradesInternal: null,
-    advancedProjectionsInternal: false,
-    draftOrderViewInternal: false
-  },
-  getters: {
-    errorInfo: (state) => state.errorInfoInternal,
-    forbidden: (state) => state.forbiddenInternal,
-    inviteCode: (state) => state.inviteCodeInternal,
-    leagueYear: (state) => state.leagueYearInternal,
-    userPublisher: (state) => state.userPublisherInternal,
-    currentBids: (state) => state.currentBidsInternal,
-    currentDrops: (state) => state.currentDropsInternal,
-    gameNews: (state) => state.gameNewsInternal,
-    leagueActions: (state) => state.leagueActionsInternal,
-    leagueActionSets: (state) => state.leagueActionSetsInternal,
-    historicalTrades: (state) => state.historicalTradesInternal,
-    advancedProjections: (state) => state.advancedProjectionsInternal,
-    draftOrderView: (state) => state.draftOrderViewInternal
+    errorInfo: null,
+    forbidden: false,
+    inviteCode: false,
+    leagueYear: null,
+    userPublisher: null,
+    currentBids: null,
+    currentDrops: null,
+    gameNews: null,
+    leagueActions: null,
+    leagueActionSets: null,
+    historicalTrades: null,
+    advancedProjections: false,
+    draftOrderView: false
   },
   actions: {
     async initializePage(context, leaguePageParams) {
@@ -39,46 +24,45 @@ export default {
       context.commit('clearLeagueSpecificData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
       await context.dispatch('fetchLeagueYear', leaguePageParams);
-      if (context.getters.userPublisher) {
-        context.dispatch('fetchAdditionalLeagueData');
+      if (context.state.userPublisher) {
+        await context.dispatch('fetchAdditionalLeagueData');
       }
-      context.dispatch('fetchGameNews');
+      await context.dispatch('fetchGameNews');
     },
     async initializeHistoryPage(context, leaguePageParams) {
       context.commit('cancelMoveMode');
       context.commit('clearLeagueSpecificData');
       await context.dispatch('fetchLeagueYear', leaguePageParams);
-      context.dispatch('fetchHistoryData');
+      await context.dispatch('fetchHistoryData');
     },
     async refreshLeagueYear(context) {
       const leaguePageParams = {
-        leagueID: context.getters.leagueYear.leagueID,
-        year: context.getters.leagueYear.year,
-        inviteCode: context.getters.inviteCode
+        leagueID: context.state.leagueYear.leagueID,
+        year: context.state.leagueYear.year,
+        inviteCode: context.state.inviteCode
       };
       await context.dispatch('fetchLeagueYear', leaguePageParams);
-      if (context.getters.userPublisher) {
-        context.dispatch('fetchAdditionalLeagueData');
+      if (context.state.userPublisher) {
+        await context.dispatch('fetchAdditionalLeagueData');
       }
-      context.dispatch('fetchGameNews');
+      await context.dispatch('fetchGameNews');
     },
-    fetchLeagueYear(context, leaguePageParams) {
+    async fetchLeagueYear(context, leaguePageParams) {
       let queryURL = '/api/League/GetLeagueYear?leagueID=' + leaguePageParams.leagueID + '&year=' + leaguePageParams.year;
       if (leaguePageParams.inviteCode) {
         queryURL += '&inviteCode=' + leaguePageParams.inviteCode;
       }
-      return axios
-        .get(queryURL)
-        .then((response) => {
-          const leagueYearPayload = {
-            leagueYear: response.data,
-            userID: context.getters.userInfo.userID
-          };
-          context.commit('setLeagueYear', leagueYearPayload);
-        })
-        .catch(() => {
-          context.commit('setErrorInfo', leagueErrorMessageText);
-        });
+
+      try {
+        const response = await axios.get(queryURL);
+        const leagueYearPayload = {
+          leagueYear: response.data,
+          userID: context.getters.userInfo.userID
+        };
+        context.commit('setLeagueYear', leagueYearPayload);
+      } catch (err) {
+        context.commit('setErrorInfo', leagueErrorMessageText);
+      }
     },
     fetchAdditionalLeagueData(context) {
       let currentBidsPromise = context.dispatch('fetchCurrentBids');
@@ -92,7 +76,7 @@ export default {
       return Promise.all([leagueActionsPromise, leagueActionSetsPromise, historicalTradesPromise]);
     },
     fetchCurrentBids(context) {
-      const queryURL = '/api/league/CurrentBids/' + context.getters.userPublisher.publisherID;
+      const queryURL = '/api/league/CurrentBids/' + context.state.userPublisher.publisherID;
       return axios
         .get(queryURL)
         .then((response) => {
@@ -101,7 +85,7 @@ export default {
         .catch(() => {});
     },
     fetchCurrentDropRequests(context) {
-      const queryURL = '/api/league/CurrentDropRequests/' + context.getters.userPublisher.publisherID;
+      const queryURL = '/api/league/CurrentDropRequests/' + context.state.userPublisher.publisherID;
       return axios
         .get(queryURL)
         .then((response) => {
@@ -110,7 +94,7 @@ export default {
         .catch(() => {});
     },
     fetchGameNews(context) {
-      const queryURL = '/api/League/LeagueGameNews?leagueID=' + context.getters.leagueYear.leagueID + '&year=' + context.getters.leagueYear.year;
+      const queryURL = '/api/League/LeagueGameNews?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
       return axios
         .get(queryURL)
         .then((response) => {
@@ -119,7 +103,7 @@ export default {
         .catch(() => {});
     },
     fetchLeagueActions(context) {
-      const queryURL = '/api/League/GetLeagueActions?leagueID=' + context.getters.leagueYear.leagueID + '&year=' + context.getters.leagueYear.year;
+      const queryURL = '/api/League/GetLeagueActions?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
       return axios
         .get(queryURL)
         .then((response) => {
@@ -128,7 +112,7 @@ export default {
         .catch((returnedError) => (this.error = returnedError));
     },
     fetchLeagueActionSets(context) {
-      const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + context.getters.leagueYear.leagueID + '&year=' + context.getters.leagueYear.year;
+      const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
       return axios
         .get(queryURL)
         .then((response) => {
@@ -137,7 +121,7 @@ export default {
         .catch((returnedError) => (this.error = returnedError));
     },
     fetchHistoricalTrades(context) {
-      const queryURL = '/api/League/TradeHistory?leagueID=' + context.getters.leagueYear.leagueID + '&year=' + context.getters.leagueYear.year;
+      const queryURL = '/api/League/TradeHistory?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
       return axios
         .get(queryURL)
         .then((response) => {
@@ -148,57 +132,57 @@ export default {
   },
   mutations: {
     clearLeagueSpecificData(state) {
-      state.errorInfoInternal = null;
-      state.forbiddenInternal = null;
-      state.inviteCodeInternal = null;
-      state.leagueYearInternal = null;
-      state.userPublisherInternal = null;
-      state.currentBidsInternal = null;
-      state.currentDropsInternal = null;
-      state.gameNewsInternal = null;
+      state.errorInfo = null;
+      state.forbidden = null;
+      state.inviteCode = null;
+      state.leagueYear = null;
+      state.userPublisher = null;
+      state.currentBids = null;
+      state.currentDrops = null;
+      state.gameNews = null;
 
-      state.leagueActionsInternal = null;
-      state.leagueActionSetsInternal = null;
-      state.historicalTradesInternal = null;
+      state.leagueActions = null;
+      state.leagueActionSets = null;
+      state.historicalTrades = null;
     },
     setErrorInfo(state, errorInfo) {
-      state.errorInfoInternal = errorInfo;
+      state.errorInfo = errorInfo;
     },
     setForbidden(state, forbidden) {
-      state.forbiddenInternal = forbidden;
+      state.forbidden = forbidden;
     },
     setInviteCode(state, inviteCode) {
-      state.inviteCodeInternal = inviteCode;
+      state.inviteCode = inviteCode;
     },
     setLeagueYear(state, leagueYearPayload) {
-      state.leagueYearInternal = leagueYearPayload.leagueYear;
+      state.leagueYear = leagueYearPayload.leagueYear;
       document.title = leagueYearPayload.leagueYear.league.leagueName + ' - Fantasy Critic';
       let matchingPublishers = _.filter(leagueYearPayload.leagueYear.publishers, (x) => x.userID === leagueYearPayload.userID);
-      state.userPublisherInternal = matchingPublishers[0];
+      state.userPublisher = matchingPublishers[0];
     },
     setCurrentBids(state, currentBids) {
-      state.currentBidsInternal = currentBids;
+      state.currentBids = currentBids;
     },
     setCurrentDrops(state, currentDrops) {
-      state.currentDropsInternal = currentDrops;
+      state.currentDrops = currentDrops;
     },
     setGameNews(state, gameNews) {
-      state.gameNewsInternal = gameNews;
+      state.gameNews = gameNews;
     },
     setLeagueActions(state, leagueActions) {
-      state.leagueActionsInternal = leagueActions;
+      state.leagueActions = leagueActions;
     },
     setLeagueActionSets(state, leagueActionSets) {
-      state.leagueActionSetsInternal = leagueActionSets;
+      state.leagueActionSets = leagueActionSets;
     },
     setHistoricalTrades(state, historicalTrades) {
-      state.historicalTradesInternal = historicalTrades;
+      state.historicalTrades = historicalTrades;
     },
     setAdvancedProjections(state, advancedProjections) {
-      state.advancedProjectionsInternal = advancedProjections;
+      state.advancedProjections = advancedProjections;
     },
     setDraftOrderView(state, draftOrderView) {
-      state.draftOrderViewInternal = draftOrderView;
+      state.draftOrderView = draftOrderView;
     }
   }
 };
