@@ -1,13 +1,13 @@
 <template>
   <span>
-    <span v-if="!short" class="badge tag-badge" :id="'popover-target' + _uid" v-bind:style="badgeColor">
+    <span v-if="!short" class="badge tag-badge" :id="popoverID" v-bind:style="badgeColor">
       {{ tag.readableName }}
     </span>
-    <span v-if="short" class="badge tag-badge" :id="'popover-target' + _uid" v-bind:style="badgeColor">
+    <span v-if="short" class="badge tag-badge" :id="popoverID" v-bind:style="badgeColor">
       {{ tag.shortName }}
     </span>
     <template v-if="!noPopover">
-      <b-popover :target="'popover-target' + _uid" triggers="hover" placement="right" custom-class="master-game-tag-popover">
+      <b-popover v-if="popoverReady" :target="popoverID" triggers="hover" placement="right" custom-class="master-game-tag-popover">
         <template #title>
           {{ tag.readableName }}
         </template>
@@ -29,6 +29,11 @@ export default {
     short: Boolean,
     noPopover: Boolean
   },
+  data() {
+    return {
+      popoverReady: false
+    };
+  },
   computed: {
     tag() {
       let allTags = this.$store.getters.allTags;
@@ -39,7 +44,13 @@ export default {
       return {
         backgroundColor: '#' + this.tag.badgeColor
       };
+    },
+    popoverID() {
+      return `mg-badge-popover-${this._uid}`;
     }
+  },
+  mounted() {
+    setTimeout((this.popoverReady = true), 10);
   }
 };
 </script>
