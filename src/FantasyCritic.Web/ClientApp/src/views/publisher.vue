@@ -96,27 +96,27 @@ export default {
       return _.some(this.publisher.gameSlots, (x) => !x.gameMeetsSlotCriteria);
     }
   },
-  mounted() {
-    this.fetchPublisher();
+  async mounted() {
+    await this.fetchPageData();
   },
   watch: {
-    $route() {
-      this.fetchPublisher();
+    async $route() {
+      await this.fetchPageData();
     }
   },
   methods: {
-    fetchPublisher() {
-      axios
-        .get('/api/League/GetPublisher/' + this.publisherid)
-        .then((response) => {
-          this.publisher = response.data;
-          this.fetchLeagueYear();
-          this.$store.dispatch('initialize', this.publisher);
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchPageData() {
+      try {
+        const response = await axios.get('/api/League/GetPublisher/' + this.publisherid);
+        this.publisher = response.data;
+        await this.fetchLeagueYear();
+        this.$store.dispatch('initialize', this.publisher);
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     fetchLeagueYear() {
-      axios
+      return axios
         .get('/api/League/GetLeagueYear?leagueID=' + this.publisher.leagueID + '&year=' + this.publisher.year)
         .then((response) => {
           this.leagueYear = response.data;
