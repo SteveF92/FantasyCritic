@@ -133,7 +133,7 @@ export default {
     };
   },
   methods: {
-    async fetchActiveRoyaleYearQuarter() {
+    fetchActiveRoyaleYearQuarter() {
       axios
         .get('/api/royale/ActiveRoyaleQuarter')
         .then((response) => {
@@ -147,8 +147,8 @@ export default {
       });
     }
   },
-  async mounted() {
-    await this.fetchActiveRoyaleYearQuarter();
+  mounted() {
+    this.fetchActiveRoyaleYearQuarter();
   }
 };
 </script>
