@@ -2,7 +2,8 @@ import axios from 'axios';
 
 export default {
   state: {
-    publisherID: null,
+    publisher: null,
+    leagueYear: null,
     cleanGameSlots: null,
     editableGameSlots: null,
     desiredPositions: null,
@@ -11,7 +12,8 @@ export default {
     moveGameError: ''
   },
   getters: {
-    publisherID: (state) => state.publisherID,
+    publisher: (state) => state.publisher,
+    leagueYear: (state) => state.leagueYear,
     gameSlots: (state) => state.editableGameSlots,
     moveMode: (state) => state.moveMode,
     desiredPositions: (state) => state.desiredPositions,
@@ -19,11 +21,20 @@ export default {
     moveGameError: (state) => state.moveGameError
   },
   actions: {
-    initialize(context, publisher) {
-      context.commit('cancelMoveMode');
-      context.commit('setPublisherID', publisher.publisherID);
-      context.commit('initializeInternal', publisher.gameSlots);
-      context.commit('setDesiredPositions');
+    async initializePublisherPage(context, publisherID) {
+      try {
+        context.commit('cancelMoveMode');
+        const publisherResponse = await axios.get('/api/League/GetPublisher/' + publisherID);
+        const publisher = publisherResponse.data;
+        const leagueYearResponse = await axios.get('/api/League/GetLeagueYear?leagueID=' + publisher.leagueID + '&year=' + publisher.year);
+        const leagueYear = leagueYearResponse.data;
+
+        const initializeParams = { publisher, leagueYear };
+        context.commit('initializeInternal', initializeParams);
+        context.commit('setDesiredPositions');
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     moveGame(context, moveIntoSlot) {
       context.commit('moveGameInternal', moveIntoSlot);
@@ -32,7 +43,7 @@ export default {
     confirmPositions(context) {
       return new Promise(function (resolve, reject) {
         let request = {
-          publisherID: context.getters.publisherID,
+          publisherID: context.getters.publisher.publisherID,
           slotStates: context.getters.desiredPositions
         };
         axios
@@ -52,12 +63,11 @@ export default {
     }
   },
   mutations: {
-    setPublisherID(state, publisherID) {
-      state.publisherID = publisherID;
-    },
-    initializeInternal(state, initialGameSlots) {
-      state.cleanGameSlots = _.cloneDeep(initialGameSlots);
-      state.editableGameSlots = _.cloneDeep(initialGameSlots);
+    initializeInternal(state, intializeParams) {
+      state.publisher = intializeParams.publisher;
+      state.leagueYear = intializeParams.leagueYear;
+      state.cleanGameSlots = _.cloneDeep(state.publisher.gameSlots);
+      state.editableGameSlots = _.cloneDeep(state.publisher.gameSlots);
     },
     enterMoveMode(state) {
       state.moveMode = true;

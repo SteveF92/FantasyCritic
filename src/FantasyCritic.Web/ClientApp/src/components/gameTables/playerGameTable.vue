@@ -87,19 +87,18 @@
 </template>
 
 <script>
+import { ToggleButton } from 'vue-js-toggle-button';
+
 import GlobalFunctions from '@/globalFunctions';
 import GameNameColumn from '@/components/gameTables/gameNameColumn';
-import { ToggleButton } from 'vue-js-toggle-button';
+import PublisherMixin from '@/mixins/publisherMixin';
 
 export default {
   components: {
     ToggleButton,
     GameNameColumn
   },
-  props: {
-    publisher: Object,
-    leagueYear: Object
-  },
+  mixins: [PublisherMixin],
   data() {
     return {
       sortOrderMode: false,
@@ -109,12 +108,6 @@ export default {
     };
   },
   computed: {
-    moveMode() {
-      return this.$store.getters.moveMode;
-    },
-    userIsPublisher() {
-      return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
-    },
     tableItems() {
       if (!this.sortOrderMode) {
         return this.$store.getters.gameSlots;

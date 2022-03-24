@@ -53,39 +53,30 @@
         </template>
       </div>
 
-      <div v-if="leagueYear && publisher">
-        <playerGameTable :publisher="publisher" :leagueYear="leagueYear" v-on:gamesMoved="fetchPublisher"></playerGameTable>
-      </div>
+      <playerGameTable></playerGameTable>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
 import PlayerGameTable from '@/components/gameTables/playerGameTable';
 import GlobalFunctions from '@/globalFunctions';
+import PublisherMixin from '@/mixins/publisherMixin';
 
 export default {
   components: {
     PlayerGameTable
   },
+  mixins: [PublisherMixin],
   props: {
     publisherid: String
   },
   data() {
     return {
-      errorInfo: '',
-      publisher: null,
-      leagueYear: null
+      errorInfo: ''
     };
   },
   computed: {
-    moveMode() {
-      return this.$store.getters.moveMode;
-    },
-    userIsPublisher() {
-      return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
-    },
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
     },
@@ -96,32 +87,19 @@ export default {
       return _.some(this.publisher.gameSlots, (x) => !x.gameMeetsSlotCriteria);
     }
   },
-  async mounted() {
-    await this.fetchPageData();
-  },
   watch: {
-    async $route() {
-      await this.fetchPageData();
+    async $route(to, from) {
+      if (to.path !== from.path) {
+        await this.initializePage();
+      }
     }
   },
+  mounted() {
+    this.initializePage();
+  },
   methods: {
-    async fetchPageData() {
-      try {
-        const response = await axios.get('/api/League/GetPublisher/' + this.publisherid);
-        this.publisher = response.data;
-        await this.fetchLeagueYear();
-        this.$store.dispatch('initialize', this.publisher);
-      } catch (error) {
-        this.errorInfo = error;
-      }
-    },
-    fetchLeagueYear() {
-      return axios
-        .get('/api/League/GetLeagueYear?leagueID=' + this.publisher.leagueID + '&year=' + this.publisher.year)
-        .then((response) => {
-          this.leagueYear = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async initializePage() {
+      await this.$store.dispatch('initializePublisherPage', this.publisherid);
     },
     getDropStatus(dropped, droppable) {
       if (!droppable) {

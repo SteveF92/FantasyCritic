@@ -19,7 +19,7 @@ export default {
     draftOrderView: false
   },
   actions: {
-    async initializePage(context, leaguePageParams) {
+    async initializeLeaguePage(context, leaguePageParams) {
       context.commit('cancelMoveMode');
       context.commit('clearLeagueSpecificData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
