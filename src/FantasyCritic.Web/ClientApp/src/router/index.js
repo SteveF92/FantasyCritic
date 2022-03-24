@@ -9,10 +9,20 @@ Vue.use(VueRouter);
 let router = new VueRouter({
   scrollBehavior(to) {
     if (to.hash) {
-      return {
+      const smoothParams = {
         selector: to.hash,
         behavior: 'smooth'
       };
+
+      if (!to.meta.delayScroll) {
+        return smoothParams;
+      }
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(smoothParams);
+        }, 500);
+      });
     }
     return { x: 0, y: 0 }; // Go to the top of the page if no hash
   },

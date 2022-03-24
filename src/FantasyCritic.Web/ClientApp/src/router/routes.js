@@ -139,7 +139,8 @@ export const routes = [
     name: 'league',
     meta: {
       title: 'League',
-      isPublic: true
+      isPublic: true,
+      delayScroll: true
     },
     props: (route) => {
       let parsedYear = Number.parseInt(route.params.year, 10);
