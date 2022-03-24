@@ -355,7 +355,6 @@ export default {
         .catch(() => {});
     },
     async startHubConnection() {
-      console.log('wait');
       if (!this.leagueYear.playStatus.draftIsActive) {
         return;
       }

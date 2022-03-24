@@ -182,7 +182,7 @@ export default {
           year: mostRecentQuarter.year,
           quarter: mostRecentQuarter.quarter
         };
-        this.$router.replace({ name: 'criticsRoyale', params: parameters });
+        this.$router.replace({ params: parameters });
         return;
       }
 

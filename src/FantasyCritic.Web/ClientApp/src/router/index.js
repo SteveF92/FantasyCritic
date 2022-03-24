@@ -7,6 +7,15 @@ import { routes } from './routes';
 Vue.use(VueRouter);
 
 let router = new VueRouter({
+  scrollBehavior(to) {
+    if (to.hash) {
+      return {
+        selector: to.hash,
+        behavior: 'smooth'
+      };
+    }
+    return { x: 0, y: 0 }; // Go to the top of the page if no hash
+  },
   mode: 'history',
   routes
 });

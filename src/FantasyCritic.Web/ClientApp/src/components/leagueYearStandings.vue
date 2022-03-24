@@ -23,7 +23,7 @@
       </template>
       <template #cell(publisher)="data">
         <span v-if="data.item.publisher">
-          <a :href="'#' + data.item.publisher.publisherID">{{ data.item.publisher.publisherName }}</a>
+          <router-link :to="{ hash: `#${data.item.publisher.publisherID}` }">{{ data.item.publisher.publisherName }}</router-link>
           <span class="publisher-badge badge badge-pill badge-primary badge-info" v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraft">Auto Draft</span>
         </span>
         <span v-if="data.item.user && !data.item.publisher">&lt;Not Created&gt;</span>

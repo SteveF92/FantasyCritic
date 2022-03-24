@@ -6,15 +6,16 @@
 
       <h2>Contents</h2>
       <ul>
-        <li><a href="#general">General</a></li>
-        <li><a href="#league-creation">League Creation</a></li>
-        <li><a href="#drafting">Drafting</a></li>
-        <li><a href="#bidding-system">Bidding System</a></li>
-        <li><a href="#dropping-games">Dropping Games</a></li>
-        <li><a href="#scoring">Scoring</a></li>
-        <li><a href="#eligibility">Eligibility</a></li>
-        <li><a href="#winning">Winning</a></li>
+        <li><router-link :to="{ hash: '#general' }">General</router-link></li>
+        <li><router-link :to="{ hash: '#league-creation' }">League Creation</router-link></li>
+        <li><router-link :to="{ hash: '#drafting' }">Drafting</router-link></li>
+        <li><router-link :to="{ hash: '#bidding-system' }">Bidding System</router-link></li>
+        <li><router-link :to="{ hash: '#dropping-games' }">Dropping Games</router-link></li>
+        <li><router-link :to="{ hash: '#scoring' }">Scoring</router-link></li>
+        <li><router-link :to="{ hash: '#eligibility' }">Eligibility</router-link></li>
+        <li><router-link :to="{ hash: '#winning' }">Winning</router-link></li>
       </ul>
+
       <hr />
 
       <h2><a id="general">General</a></h2>
@@ -979,7 +980,6 @@
 <script>
 import CollapseCard from '@/components/collapseCard';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
-const TIMEOUT = 1;
 
 export default {
   components: {
@@ -996,22 +996,11 @@ export default {
       return this.$store.getters.allTags;
     }
   },
-  mounted() {
-    // From testing, without a brief timeout, it won't work.
-    if (this.$route.hash) {
-      setTimeout(() => this.scrollTo(this.$route.hash), TIMEOUT);
-    }
-  },
   methods: {
     getCollapseID() {
       let thisID = this.lastID;
       this.lastID = this.lastID + 1;
       return thisID;
-    },
-    scrollTo(hashtag) {
-      setTimeout(() => {
-        location.href = hashtag;
-      }, TIMEOUT);
     }
   }
 };
