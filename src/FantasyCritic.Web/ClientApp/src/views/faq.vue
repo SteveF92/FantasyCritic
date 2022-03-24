@@ -17,7 +17,7 @@
       </ul>
       <hr />
 
-      <h2><a name="general">General</a></h2>
+      <h2><a id="general">General</a></h2>
       <collapseCard>
         <div slot="header">Something about the site is broken!</div>
         <div slot="body">
@@ -78,7 +78,7 @@
         </div>
       </collapseCard>
 
-      <h2><a name="league-creation">League Creation</a></h2>
+      <h2><a id="league-creation">League Creation</a></h2>
       <collapseCard>
         <div slot="header">How many players can be in a league?</div>
         <div slot="body">Anywhere from 2 to 20. Somewhere between 4 and 10 is probably optimal, and I'd be apprehensive about going over 14, but you can do it.</div>
@@ -153,7 +153,7 @@
       </collapseCard>
       <br />
 
-      <h2><a name="drafting">Drafting</a></h2>
+      <h2><a id="drafting">Drafting</a></h2>
       <collapseCard>
         <div slot="header">How does the draft work?</div>
         <div slot="body">
@@ -213,7 +213,7 @@
       </collapseCard>
       <br />
 
-      <h2><a name="bidding-system">Bidding System</a></h2>
+      <h2><a id="bidding-system">Bidding System</a></h2>
       <collapseCard>
         <div slot="header">What is a “draft game” vs a “pickup game”?</div>
         <div slot="body">Draft games are chosen during the draft - turn by turn at the start of the year. Pickup games are chosen over the course of year (after the draft) by bidding on them.</div>
@@ -341,7 +341,7 @@
       </collapseCard>
       <br />
 
-      <h2><a name="dropping-games">Dropping Games</a></h2>
+      <h2><a id="dropping-games">Dropping Games</a></h2>
       <collapseCard>
         <div slot="header">How does the "dropping games" system work?</div>
         <div slot="body">
@@ -394,7 +394,7 @@
       </collapseCard>
       <br />
 
-      <h2><a name="scoring">Scoring</a></h2>
+      <h2><a id="scoring">Scoring</a></h2>
       <collapseCard>
         <div slot="header">How does scoring work?</div>
         <div slot="body">
@@ -572,17 +572,17 @@
       </collapseCard>
       <br />
 
-      <h2><a name="eligibility">Eligibility</a></h2>
+      <h2><a id="eligibility">Eligibility</a></h2>
       <collapseCard>
-        <div slot="header">How does the new "tags" system work?</div>
+        <div slot="header">How does the "tags" system work?</div>
         <div slot="body">
           <p>
-            New for 2021, chosing what games are eligible has been streamlined. All games now have one or more "tags", such as "Remake", "New Game", or "Yearly Installment". The league manager can
-            choose what tags are and are not allowed. Mouse over any tag to see a description of it.
+            All games have one or more "tags", such as "Remake", "New Game", or "Yearly Installment". The league manager can choose what tags are and are not allowed. Mouse over any tag to see a
+            description of it.
           </p>
 
           <div v-if="allTags">
-            <span v-for="tag in allTags" :key="tag">
+            <span v-for="tag in allTags" :key="tag.name">
               <masterGameTagBadge :tagName="tag.name"></masterGameTagBadge>
             </span>
           </div>
@@ -965,7 +965,7 @@
       </collapseCard>
       <br />
 
-      <h2><a name="winning">Winning</a></h2>
+      <h2><a id="winning">Winning</a></h2>
       <collapseCard>
         <div slot="header">What do I get if I win?</div>
         <div slot="body">
