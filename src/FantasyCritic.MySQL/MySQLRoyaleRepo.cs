@@ -208,7 +208,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         using (var connection = new MySqlConnection(_connectionString))
         {
-            var results = await connection.QueryAsync<RoyaleYearQuarterEntity>("select * from tbl_royale_supportedquarter;");
+            var results = await connection.QueryAsync<RoyaleYearQuarterEntity>("select * from tbl_royale_supportedquarter ORDER BY Year,Quarter;");
             return results.Select(x => x.ToDomain(supportedYears.Single(y => y.Year == x.Year))).ToList();
         }
     }

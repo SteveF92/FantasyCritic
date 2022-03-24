@@ -14,7 +14,7 @@
       <div class="navbar-collapse collapse">
         <ul class="navbar-nav">
           <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
-            <router-link :to="{ name: 'criticsRoyale', params: { year: activeRoyaleYear, quarter: activeRoyaleQuarter } }" class="nav-link" title="Critics Royale">
+            <router-link :to="{ name: 'criticsRoyale' }" class="nav-link" title="Critics Royale">
               <img class="topnav-image minimal-nav" src="@/assets/critics-royale-top-nav.svg" />
               <span class="full-nav">Royale</span>
             </router-link>
@@ -108,47 +108,16 @@
 </template>
 
 <script>
-import axios from 'axios';
 import BasicMixin from '@/mixins/basicMixin';
 
 export default {
   mixins: [BasicMixin],
-  computed: {
-    activeRoyaleYear() {
-      if (!this.activeRoyaleYearQuarter) {
-        return;
-      }
-      return this.activeRoyaleYearQuarter.year;
-    },
-    activeRoyaleQuarter() {
-      if (!this.activeRoyaleYearQuarter) {
-        return;
-      }
-      return this.activeRoyaleYearQuarter.quarter;
-    }
-  },
-  data() {
-    return {
-      activeRoyaleYearQuarter: null
-    };
-  },
   methods: {
-    fetchActiveRoyaleYearQuarter() {
-      axios
-        .get('/api/royale/ActiveRoyaleQuarter')
-        .then((response) => {
-          this.activeRoyaleYearQuarter = response.data;
-        })
-        .catch(() => {});
-    },
     logout() {
       this.$store.dispatch('logout').then(() => {
         this.$router.push({ name: 'login' });
       });
     }
-  },
-  mounted() {
-    this.fetchActiveRoyaleYearQuarter();
   }
 };
 </script>

@@ -51,7 +51,7 @@ router.beforeEach(function (toRoute, fromRoute, next) {
   Promise.all(getPrereqs());
 
   //If we are current, we're good to go
-  if (store.getters.isAuthenticated) {
+  if (store.getters.isAuth) {
     if (toRoute.meta.publicOnly) {
       next({ path: '/home' });
       return;
@@ -63,7 +63,7 @@ router.beforeEach(function (toRoute, fromRoute, next) {
   store
     .dispatch('getUserInfo')
     .then(() => {
-      if (store.getters.isAuthenticated) {
+      if (store.getters.isAuth) {
         if (toRoute.meta.publicOnly) {
           next({ path: '/home' });
           return;

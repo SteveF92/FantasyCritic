@@ -166,14 +166,28 @@ export default {
     }
   },
   async mounted() {
-    await Promise.all([this.fetchRoyaleQuarters(), this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
+    await this.initializePage();
   },
   watch: {
     async $route() {
-      await Promise.all([this.fetchRoyaleQuarters(), this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
+      await this.initializePage();
     }
   },
   methods: {
+    async initializePage() {
+      await this.fetchRoyaleQuarters();
+      if (!this.year || !this.quarter) {
+        const mostRecentQuarter = this.royaleYearQuarterOptions[this.royaleYearQuarterOptions.length - 1];
+        var parameters = {
+          year: mostRecentQuarter.year,
+          quarter: mostRecentQuarter.quarter
+        };
+        this.$router.replace({ name: 'criticsRoyale', params: parameters });
+        return;
+      }
+
+      await Promise.all([this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
+    },
     fetchRoyaleQuarters() {
       return axios
         .get('/api/royale/RoyaleQuarters')

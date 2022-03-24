@@ -279,7 +279,7 @@ export const routes = [
     }
   },
   {
-    path: '/criticsRoyale/:year/:quarter',
+    path: '/criticsRoyale/:year?/:quarter?',
     component: CriticsRoyale,
     name: 'criticsRoyale',
     meta: {
@@ -287,19 +287,23 @@ export const routes = [
       isPublic: true
     },
     props: (route) => {
+      if (!route.params.year || !route.params.quarter) {
+        return;
+      }
+
       let parsedYear = Number.parseInt(route.params.year, 10);
       if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
+        return;
       }
 
       let parsedQuarter = Number.parseInt(route.params.quarter, 10);
       if (Number.isNaN(parsedQuarter)) {
-        parsedQuarter = 0;
+        return;
       }
 
       return {
-        leagueid: parsedQuarter,
-        year: parsedYear
+        year: parsedYear,
+        quarter: parsedQuarter
       };
     }
   },
