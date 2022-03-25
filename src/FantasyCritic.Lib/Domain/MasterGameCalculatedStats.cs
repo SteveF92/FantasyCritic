@@ -49,15 +49,15 @@ public class MasterGameCalculatedStats
     public MasterGame MasterGame { get; }
     public int Year { get; }
 
-    public double PercentStandardGame { get; set; }
-    public double PercentCounterPick { get; set; }
-    public double EligiblePercentStandardGame { get; set; }
-    public double? AdjustedPercentCounterPick { get; set; }
-    public int NumberOfBids { get; set; }
-    public int TotalBidAmount { get; set; }
-    public double BidPercentile { get; set; }
-    public double? AverageDraftPosition { get; set; }
-    public double? AverageWinningBid { get; set; }
+    public double PercentStandardGame { get;}
+    public double PercentCounterPick { get; }
+    public double EligiblePercentStandardGame { get;}
+    public double? AdjustedPercentCounterPick { get;  }
+    public int NumberOfBids { get; }
+    public int TotalBidAmount { get; }
+    public double BidPercentile { get; }
+    public double? AverageDraftPosition { get; }
+    public double? AverageWinningBid { get; }
 
     public double HypeFactor { get; }
     public double DateAdjustedHypeFactor { get; }
