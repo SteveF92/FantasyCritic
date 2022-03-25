@@ -352,7 +352,7 @@ export default {
         .catch(() => {});
     },
     async startHubConnection() {
-      if (!this.leagueYear.playStatus.draftIsActive) {
+      if (!this.leagueYear || !this.leagueYear.playStatus.draftIsActive) {
         return;
       }
 
