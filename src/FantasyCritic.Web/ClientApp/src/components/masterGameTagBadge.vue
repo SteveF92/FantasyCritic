@@ -7,7 +7,7 @@
       {{ tag.shortName }}
     </span>
     <template v-if="!noPopover">
-      <b-popover v-if="popoverReady" :target="popoverID" triggers="hover" placement="right" custom-class="master-game-tag-popover">
+      <b-popover :target="popoverID" triggers="hover" placement="right" custom-class="master-game-tag-popover">
         <template #title>
           {{ tag.readableName }}
         </template>
@@ -29,11 +29,6 @@ export default {
     short: Boolean,
     noPopover: Boolean
   },
-  data() {
-    return {
-      popoverReady: false
-    };
-  },
   computed: {
     tag() {
       let allTags = this.$store.getters.allTags;
@@ -48,9 +43,6 @@ export default {
     popoverID() {
       return `mg-badge-popover-${this._uid}`;
     }
-  },
-  mounted() {
-    setTimeout((this.popoverReady = true), 10);
   }
 };
 </script>
