@@ -14,7 +14,7 @@
               </a>
             </div>
             <div v-else class="no-game-image-area">
-              <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
+              <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-10x no-game-image">
                 <font-awesome-icon :icon="['far', 'square']" />
                 <font-awesome-layers-text transform="shrink-14" value="No image found" />
               </font-awesome-layers>
