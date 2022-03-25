@@ -23,7 +23,7 @@ export default {
   actions: {
     async initializePublisherPage(context, publisherID) {
       try {
-        context.commit('cancelMoveMode');
+        context.commit('clearPublisherStoreData');
         const publisherResponse = await axios.get('/api/League/GetPublisher/' + publisherID);
         const publisher = publisherResponse.data;
         const leagueYearResponse = await axios.get('/api/League/GetLeagueYear?leagueID=' + publisher.leagueID + '&year=' + publisher.year);
@@ -68,6 +68,14 @@ export default {
       state.leagueYear = intializeParams.leagueYear;
       state.cleanGameSlots = _.cloneDeep(state.publisher.gameSlots);
       state.editableGameSlots = _.cloneDeep(state.publisher.gameSlots);
+    },
+    clearPublisherStoreData(state) {
+      state.publisher = null;
+      state.leagueYear = null;
+      state.moveMode = false;
+      state.desiredPositions = null;
+      state.heldSlot = null;
+      state.editableGameSlots = [];
     },
     enterMoveMode(state) {
       state.moveMode = true;

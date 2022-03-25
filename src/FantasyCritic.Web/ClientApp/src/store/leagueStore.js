@@ -20,8 +20,8 @@ export default {
   },
   actions: {
     async initializeLeaguePage(context, leaguePageParams) {
-      context.commit('cancelMoveMode');
-      context.commit('clearLeagueSpecificData');
+      context.commit('clearPublisherStoreData');
+      context.commit('clearLeagueStoreData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
       await context.dispatch('fetchLeagueYear', leaguePageParams);
       if (context.state.userPublisher) {
@@ -30,8 +30,8 @@ export default {
       await context.dispatch('fetchGameNews');
     },
     async initializeHistoryPage(context, leaguePageParams) {
-      context.commit('cancelMoveMode');
-      context.commit('clearLeagueSpecificData');
+      context.commit('clearPublisherStoreData');
+      context.commit('clearLeagueStoreData');
       await context.dispatch('fetchLeagueYear', leaguePageParams);
       await context.dispatch('fetchHistoryData');
     },
@@ -131,7 +131,7 @@ export default {
     }
   },
   mutations: {
-    clearLeagueSpecificData(state) {
+    clearLeagueStoreData(state) {
       state.errorInfo = null;
       state.forbidden = null;
       state.inviteCode = null;
