@@ -9,7 +9,7 @@ public class DropGameRequestViewModel
         DropRequestID = dropRequest.DropRequestID;
         PublisherID = dropRequest.Publisher.PublisherID;
         PublisherName = dropRequest.Publisher.PublisherName;
-        Timestamp = dropRequest.Timestamp.ToDateTimeUtc();
+        Timestamp = dropRequest.Timestamp;
         Successful = dropRequest.Successful;
         MasterGame = new MasterGameViewModel(dropRequest.MasterGame, currentDate);
     }
@@ -17,7 +17,7 @@ public class DropGameRequestViewModel
     public Guid DropRequestID { get; }
     public Guid PublisherID { get; }
     public string PublisherName { get; }
-    public DateTime Timestamp { get; }
+    public Instant Timestamp { get; }
     public bool? Successful { get; }
     public MasterGameViewModel MasterGame { get; }
 }

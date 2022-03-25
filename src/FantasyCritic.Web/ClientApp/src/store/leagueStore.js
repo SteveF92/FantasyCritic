@@ -9,8 +9,6 @@ export default {
     inviteCode: false,
     leagueYear: null,
     userPublisher: null,
-    currentBids: null,
-    currentDrops: null,
     gameNews: null,
     leagueActions: null,
     leagueActionSets: null,
@@ -24,9 +22,6 @@ export default {
       context.commit('clearLeagueStoreData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
       await context.dispatch('fetchLeagueYear', leaguePageParams);
-      if (context.state.userPublisher) {
-        await context.dispatch('fetchAdditionalLeagueData');
-      }
       await context.dispatch('fetchGameNews');
     },
     async initializeHistoryPage(context, leaguePageParams) {
@@ -42,9 +37,6 @@ export default {
         inviteCode: context.state.inviteCode
       };
       await context.dispatch('fetchLeagueYear', leaguePageParams);
-      if (context.state.userPublisher) {
-        await context.dispatch('fetchAdditionalLeagueData');
-      }
       await context.dispatch('fetchGameNews');
     },
     async fetchLeagueYear(context, leaguePageParams) {
@@ -64,34 +56,11 @@ export default {
         context.commit('setErrorInfo', leagueErrorMessageText);
       }
     },
-    fetchAdditionalLeagueData(context) {
-      let currentBidsPromise = context.dispatch('fetchCurrentBids');
-      let currentDropRequestsPromise = context.dispatch('fetchCurrentDropRequests');
-      return Promise.all([currentBidsPromise, currentDropRequestsPromise]);
-    },
     fetchHistoryData(context) {
       let leagueActionsPromise = context.dispatch('fetchLeagueActions');
       let leagueActionSetsPromise = context.dispatch('fetchLeagueActionSets');
       let historicalTradesPromise = context.dispatch('fetchHistoricalTrades');
       return Promise.all([leagueActionsPromise, leagueActionSetsPromise, historicalTradesPromise]);
-    },
-    fetchCurrentBids(context) {
-      const queryURL = '/api/league/CurrentBids/' + context.state.userPublisher.publisherID;
-      return axios
-        .get(queryURL)
-        .then((response) => {
-          context.commit('setCurrentBids', response.data);
-        })
-        .catch(() => {});
-    },
-    fetchCurrentDropRequests(context) {
-      const queryURL = '/api/league/CurrentDropRequests/' + context.state.userPublisher.publisherID;
-      return axios
-        .get(queryURL)
-        .then((response) => {
-          context.commit('setCurrentDrops', response.data);
-        })
-        .catch(() => {});
     },
     fetchGameNews(context) {
       const queryURL = '/api/League/LeagueGameNews?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
@@ -137,8 +106,6 @@ export default {
       state.inviteCode = null;
       state.leagueYear = null;
       state.userPublisher = null;
-      state.currentBids = null;
-      state.currentDrops = null;
       state.gameNews = null;
 
       state.leagueActions = null;
@@ -159,12 +126,6 @@ export default {
       document.title = leagueYearPayload.leagueYear.league.leagueName + ' - Fantasy Critic';
       let matchingPublishers = _.filter(leagueYearPayload.leagueYear.publishers, (x) => x.userID === leagueYearPayload.userID);
       state.userPublisher = matchingPublishers[0];
-    },
-    setCurrentBids(state, currentBids) {
-      state.currentBids = currentBids;
-    },
-    setCurrentDrops(state, currentDrops) {
-      state.currentDrops = currentDrops;
     },
     setGameNews(state, gameNews) {
       state.gameNews = gameNews;

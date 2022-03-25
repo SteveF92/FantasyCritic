@@ -232,20 +232,30 @@ public class LeagueController : BaseLeagueController
         IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear);
 
         bool userIsFollowingLeague = false;
+        var userPublisher = Maybe<Publisher>.None;
         if (currentUser.HasValue)
         {
             var leagueFollowers = await _fantasyCriticService.GetLeagueFollowers(league);
             userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Value.Id);
+            userPublisher = leagueYear.GetUserPublisher(currentUser.Value);
+        }
+
+        var currentDate = _clock.GetToday();
+        var privatePublisherData = Maybe<PrivatePublisherDataViewModel>.None;
+        if (userPublisher.HasValue)
+        {
+            var bids = await _gameAcquisitionService.GetActiveAcquisitionBids(leagueYear, userPublisher.Value);
+            var dropRequests = await _gameAcquisitionService.GetActiveDropRequests(leagueYear, userPublisher.Value);
+            privatePublisherData = new PrivatePublisherDataViewModel(bids, dropRequests, currentDate);
         }
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, leagueYearRecord.ValidResult.Value.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
 
-        var currentDate = _clock.GetToday();
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentDate,
             startDraftResult, leagueYearRecord.ValidResult.Value.ActiveUsers, nextDraftPublisher, draftPhase, systemWideValues,
             leagueYearRecord.ValidResult.Value.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
-            currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades);
+            currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades, privatePublisherData);
         return Ok(leagueYearViewModel);
     }
 
@@ -639,23 +649,6 @@ public class LeagueController : BaseLeagueController
         return Ok();
     }
 
-    [HttpGet("{publisherID}")]
-    public async Task<IActionResult> CurrentBids(Guid publisherID)
-    {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
-        if (publisherRecord.FailedResult.HasValue)
-        {
-            return publisherRecord.FailedResult.Value;
-        }
-        var leagueYear = publisherRecord.ValidResult.Value.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Value.Publisher;
-
-        var bids = await _gameAcquisitionService.GetActiveAcquisitionBids(leagueYear, publisher);
-        var currentDate = _clock.GetToday();
-        var viewModels = bids.Select(x => new PickupBidViewModel(x, currentDate)).OrderBy(x => x.Priority);
-        return Ok(viewModels);
-    }
-
     [HttpPost]
     public async Task<IActionResult> SetBidPriorities([FromBody] BidPriorityOrderRequest request)
     {
@@ -1041,24 +1034,6 @@ public class LeagueController : BaseLeagueController
         }
 
         return Ok();
-    }
-
-    [HttpGet("{publisherID}")]
-    public async Task<IActionResult> CurrentDropRequests(Guid publisherID)
-    {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
-        if (publisherRecord.FailedResult.HasValue)
-        {
-            return publisherRecord.FailedResult.Value;
-        }
-        var leagueYear = publisherRecord.ValidResult.Value.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Value.Publisher;
-
-        var dropRequests = await _gameAcquisitionService.GetActiveDropRequests(leagueYear, publisher);
-
-        var currentDate = _clock.GetToday();
-        var viewModels = dropRequests.Select(x => new DropGameRequestViewModel(x, currentDate));
-        return Ok(viewModels);
     }
 
     [HttpGet("{publisherID}")]

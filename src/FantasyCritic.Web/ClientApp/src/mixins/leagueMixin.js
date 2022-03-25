@@ -10,8 +10,6 @@ let leagueMixin = {
       inviteCode: (state) => state.league.inviteCode,
       leagueYear: (state) => state.league.leagueYear,
       userPublisher: (state) => state.league.userPublisher,
-      currentBids: (state) => state.league.currentBids,
-      currentDrops: (state) => state.league.currentDrops,
       gameNews: (state) => state.league.gameNews,
       leagueActions: (state) => state.league.leagueActions,
       leagueActionSets: (state) => state.league.leagueActionSets,
@@ -56,6 +54,20 @@ let leagueMixin = {
         return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
       }
       return null;
+    },
+    currentBids() {
+      if (!this.leagueYear || !this.leagueYear.privatePublisherData) {
+        return [];
+      }
+
+      return this.leagueYear.privatePublisherData.myActiveBids;
+    },
+    currentDrops() {
+      if (!this.leagueYear || !this.leagueYear.privatePublisherData) {
+        return [];
+      }
+
+      return this.leagueYear.privatePublisherData.myActiveDrops;
     }
   },
   methods: {
