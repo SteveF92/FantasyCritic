@@ -13,10 +13,12 @@
                 </strong>
               </a>
             </div>
-            <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
-              <font-awesome-icon :icon="['far', 'square']" />
-              <font-awesome-layers-text transform="shrink-14" value="No image found" />
-            </font-awesome-layers>
+            <div v-else class="no-game-image-area">
+              <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-8x no-game-image">
+                <font-awesome-icon :icon="['far', 'square']" />
+                <font-awesome-layers-text transform="shrink-14" value="No image found" />
+              </font-awesome-layers>
+            </div>
           </div>
         </div>
 
@@ -48,11 +50,11 @@
               <template v-if="masterGameYear.year >= 2022 && masterGameYear.peakHypeFactor > masterGameYear.dateAdjustedHypeFactor">
                 <li v-show="masterGameYear.peakHypeFactor">
                   Peak Hype Factor: {{ masterGameYear.peakHypeFactor | score(1) }}
-                  <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.focus.top="peakHypeFactorText" />
+                  <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.top="peakHypeFactorText" />
                 </li>
                 <li v-show="!masterGameYear.peakHypeFactor">
                   Peak Hype Factor: Unhyped...
-                  <font-awesome-icon color="white" icon="info-circle" v-b-popover.hover.focus.top="peakHypeFactorText" />
+                  <font-awesome-icon color="white" icon="info-circle" v-b-popover.hover.top="peakHypeFactorText" />
                 </li>
               </template>
 
@@ -185,6 +187,12 @@ export default {
 }
 
 .gg-image-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.no-game-image-area {
   display: flex;
   flex-direction: column;
   align-items: center;
