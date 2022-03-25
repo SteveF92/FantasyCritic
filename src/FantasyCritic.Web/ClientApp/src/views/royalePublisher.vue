@@ -53,7 +53,7 @@
 
           <span v-if="data.item.currentlyIneligible" class="game-ineligible">
             Ineligible
-            <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover="inEligibleText" />
+            <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.focus="inEligibleText" />
           </span>
         </template>
         <template #cell(masterGame.maximumReleaseDate)="data">

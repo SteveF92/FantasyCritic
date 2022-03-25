@@ -12,10 +12,14 @@
           <div class="manager" v-if="data.item.leagueManager">Manager: {{ data.item.leagueManager.displayName }}</div>
         </div>
         <div v-show="showArchive" class="archive-button-section">
-          <font-awesome-icon class="archive-button fake-link" icon="archive" v-on:click="setArchive(data.item, true)" v-b-popover.hover.rightbottom="'Archive this league (only affects you)'" />
+          <font-awesome-icon class="archive-button fake-link" icon="archive" v-on:click="setArchive(data.item, true)" v-b-popover.hover.focus.rightbottom="'Archive this league (only affects you)'" />
         </div>
         <div v-show="showUnArchive" class="archive-button-section">
-          <font-awesome-icon class="archive-button fake-link" icon="thumbtack" v-on:click="setArchive(data.item, false)" v-b-popover.hover.rightbottom="'Un-Archive this league (only affects you)'" />
+          <font-awesome-icon
+            class="archive-button fake-link"
+            icon="thumbtack"
+            v-on:click="setArchive(data.item, false)"
+            v-b-popover.hover.focus.rightbottom="'Un-Archive this league (only affects you)'" />
         </div>
       </div>
     </template>

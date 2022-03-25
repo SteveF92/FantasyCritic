@@ -4,14 +4,14 @@
       <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="games" :fields="gamesFields" bordered striped responsive small>
         <template #cell(gameName)="data">
           <span class="game-name-column">
-            <span v-if="data.item.counterPick" class="badge tag-badge counter-pick-badge" v-b-popover.hover="counterPickText">CP</span>
+            <span v-if="data.item.counterPick" class="badge tag-badge counter-pick-badge" v-b-popover.hover.focus="counterPickText">CP</span>
             <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
             <font-awesome-icon
               class="bid-will-fail"
               v-if="data.item.eligibilityErrors && data.item.eligibilityErrors.length > 0"
               color="white"
               icon="exclamation-triangle"
-              v-b-popover.hover="bidWillFailText(data.item)" />
+              v-b-popover.hover.focus="bidWillFailText(data.item)" />
           </span>
         </template>
         <template #cell(maximumReleaseDate)="data">

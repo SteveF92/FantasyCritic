@@ -26,7 +26,7 @@
         Projected
         <br />
         points
-        <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.top="projectedPointsText" />
+        <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.focus.top="projectedPointsText" />
       </template>
 
       <template #head(publisherGame.timestamp)>

@@ -67,7 +67,7 @@
             <div class="form-group">
               <label for="conditionalDrop" class="control-label">
                 Conditional Drop (Optional)
-                <font-awesome-icon icon="info-circle" v-b-popover.hover="'You can use this to drop a game only if your bid succeeds.'" />
+                <font-awesome-icon icon="info-circle" v-b-popover.hover.focus="'You can use this to drop a game only if your bid succeeds.'" />
               </label>
               <b-form-select v-model="conditionalDrop">
                 <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">

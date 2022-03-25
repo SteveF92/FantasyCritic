@@ -18,7 +18,7 @@
     <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="standings" :fields="standingFields" bordered small responsive striped>
       <template #cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
-        <font-awesome-icon v-if="data.item.previousYearWinner" icon="crown" class="previous-year-winner" v-b-popover.hover="'Reigning Champion'" />
+        <font-awesome-icon v-if="data.item.previousYearWinner" icon="crown" class="previous-year-winner" v-b-popover.hover.focus="'Reigning Champion'" />
         <span v-if="!data.item.user">{{ data.item.inviteName }}</span>
       </template>
       <template #cell(publisher)="data">

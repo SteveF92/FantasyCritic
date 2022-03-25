@@ -13,7 +13,7 @@
           color="white"
           icon="info-circle"
           class="date-info"
-          v-b-popover.hover="'Minimum Release Date is our attempt at defining the \'earlist possible release date\' based on the above estimate from the makers of the game.'" />
+          v-b-popover.hover.focus="'Minimum Release Date is our attempt at defining the \'earlist possible release date\' based on the above estimate from the makers of the game.'" />
       </li>
       <li v-if="masterGame.maximumReleaseDate && !masterGame.releaseDate">
         <span class="detail-label">Maximum Release Date:</span>
@@ -22,7 +22,7 @@
           color="white"
           icon="info-circle"
           class="date-info"
-          v-b-popover.hover="'Maximum Release Date is our attempt at defining the \'latest possible release date\' based on the above estimate from the makers of the game.'" />
+          v-b-popover.hover.focus="'Maximum Release Date is our attempt at defining the \'latest possible release date\' based on the above estimate from the makers of the game.'" />
       </li>
       <li v-if="masterGame.earlyAccessReleaseDate">
         <span class="detail-label">Early Access Release Date:</span>

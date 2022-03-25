@@ -48,11 +48,11 @@
               <template v-if="masterGameYear.year >= 2022 && masterGameYear.peakHypeFactor > masterGameYear.dateAdjustedHypeFactor">
                 <li v-show="masterGameYear.peakHypeFactor">
                   Peak Hype Factor: {{ masterGameYear.peakHypeFactor | score(1) }}
-                  <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.top="peakHypeFactorText" />
+                  <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.focus.top="peakHypeFactorText" />
                 </li>
                 <li v-show="!masterGameYear.peakHypeFactor">
                   Peak Hype Factor: Unhyped...
-                  <font-awesome-icon color="white" icon="info-circle" v-b-popover.hover.top="peakHypeFactorText" />
+                  <font-awesome-icon color="white" icon="info-circle" v-b-popover.hover.focus.top="peakHypeFactorText" />
                 </li>
               </template>
 

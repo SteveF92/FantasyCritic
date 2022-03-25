@@ -11,19 +11,24 @@
     </span>
 
     <span class="game-info-side" v-if="game">
-      <font-awesome-icon v-if="!game.linked" color="white" size="lg" icon="question-circle" v-b-popover.hover="unlinkedText" />
-      <font-awesome-icon v-if="game.linked && !game.willRelease" color="white" size="lg" icon="calendar-times" v-b-popover.hover="willNotReleaseText" />
-      <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" color="white" size="lg" icon="balance-scale" v-b-popover.hover="delayContentionText" />
-      <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" color="white" size="lg" icon="crosshairs" v-b-popover.hover="counterPickedText" />
-      <font-awesome-icon v-if="game.dropBlocked" color="white" size="lg" icon="lock" v-b-popover.hover="gameDropBlockedText" />
-      <font-awesome-icon v-if="game.released && game.linked && !game.criticScore && !supportedYear.finished" color="white" size="lg" icon="hourglass-half" v-b-popover.hover="needsMoreReviewsText" />
-      <font-awesome-icon v-if="game.manualCriticScore" color="white" size="lg" icon="pen" v-b-popover.hover="manuallyScoredText" />
-      <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria" color="white" size="lg" icon="exclamation-triangle" v-b-popover.hover="inEligibleText" />
+      <font-awesome-icon v-if="!game.linked" color="white" size="lg" icon="question-circle" v-b-popover.hover.focus="unlinkedText" />
+      <font-awesome-icon v-if="game.linked && !game.willRelease" color="white" size="lg" icon="calendar-times" v-b-popover.hover.focus="willNotReleaseText" />
+      <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" color="white" size="lg" icon="balance-scale" v-b-popover.hover.focus="delayContentionText" />
+      <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" color="white" size="lg" icon="crosshairs" v-b-popover.hover.focus="counterPickedText" />
+      <font-awesome-icon v-if="game.dropBlocked" color="white" size="lg" icon="lock" v-b-popover.hover.focus="gameDropBlockedText" />
+      <font-awesome-icon
+        v-if="game.released && game.linked && !game.criticScore && !supportedYear.finished"
+        color="white"
+        size="lg"
+        icon="hourglass-half"
+        v-b-popover.hover.focus="needsMoreReviewsText" />
+      <font-awesome-icon v-if="game.manualCriticScore" color="white" size="lg" icon="pen" v-b-popover.hover.focus="manuallyScoredText" />
+      <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria" color="white" size="lg" icon="exclamation-triangle" v-b-popover.hover.focus="inEligibleText" />
     </span>
 
     <span v-if="gameSlot.counterPick && !game" class="game-status">
       Warning!
-      <font-awesome-icon color="white" size="lg" icon="exclamation-triangle" v-b-popover.hover="emptyCounterpickText" />
+      <font-awesome-icon color="white" size="lg" icon="exclamation-triangle" v-b-popover.hover.focus="emptyCounterpickText" />
     </span>
   </span>
 </template>

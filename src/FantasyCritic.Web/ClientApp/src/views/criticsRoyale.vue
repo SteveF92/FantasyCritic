@@ -58,8 +58,8 @@
             </template>
             <template #cell(playerName)="data">
               {{ data.item.playerName }}
-              <font-awesome-icon v-if="data.item.previousQuarterWinner" icon="crown" class="previous-quarter-winner" v-b-popover.hover="'Reigning Champion'" />
-              <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" icon="crown" class="onetime-winner" v-b-popover.hover="'Previous Champion'" />
+              <font-awesome-icon v-if="data.item.previousQuarterWinner" icon="crown" class="previous-quarter-winner" v-b-popover.hover.focus="'Reigning Champion'" />
+              <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" icon="crown" class="onetime-winner" v-b-popover.hover.focus="'Previous Champion'" />
             </template>
           </b-table>
           <b-pagination class="pagination-dark" v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
