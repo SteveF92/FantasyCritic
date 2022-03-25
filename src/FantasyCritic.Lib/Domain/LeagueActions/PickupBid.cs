@@ -20,6 +20,14 @@ public class PickupBid : IEquatable<PickupBid>
         ProcessSetID = processSetID;
         Outcome = outcome;
         ProjectedPointsAtTimeOfBid = projectedPointsAtTimeOfBid;
+        ConditionalDropResult = Maybe<DropResult>.None;
+    }
+
+    public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame,
+        bool counterPick, uint bidAmount, int priority, Instant timestamp, bool? successful, Guid? processSetID, Maybe<string> outcome, decimal? projectedPointsAtTimeOfBid, DropResult conditionalDropResult)
+    :this(bidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, bidAmount, priority, timestamp, successful, processSetID, outcome, projectedPointsAtTimeOfBid)
+    {
+        ConditionalDropResult = conditionalDropResult;
     }
 
     public Guid BidID { get; }
@@ -36,7 +44,14 @@ public class PickupBid : IEquatable<PickupBid>
     public Maybe<string> Outcome { get; }
     public decimal? ProjectedPointsAtTimeOfBid { get; }
 
-    public DropResult ConditionalDropResult { get; set; }
+    public Maybe<DropResult> ConditionalDropResult { get; }
+
+    public PickupBid WithConditionalDropResult(DropResult conditionalDropResult)
+    {
+        return new PickupBid(BidID, Publisher, LeagueYear, MasterGame, ConditionalDropPublisherGame, CounterPick,
+            BidAmount, Priority, Timestamp, Successful, ProcessSetID, Outcome, ProjectedPointsAtTimeOfBid,
+            conditionalDropResult);
+    }
 
     public bool Equals(PickupBid other)
     {

@@ -141,11 +141,13 @@ public class ActionProcessingService
             bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
             var gameRequest = new ClaimGameDomainRequest(leagueYear, bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
 
+            PickupBid pickupBidWithConditionalDropResult = activeBid;
             int? validConditionalDropSlot = null;
             if (activeBid.ConditionalDropPublisherGame.HasValue)
             {
-                activeBid.ConditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, leagueYear, bidPublisher, processingTime);
-                if (activeBid.ConditionalDropResult.Result.IsSuccess)
+                var conditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, leagueYear, bidPublisher, processingTime);
+                pickupBidWithConditionalDropResult = activeBid.WithConditionalDropResult(conditionalDropResult);
+                if (conditionalDropResult.Result.IsSuccess)
                 {
                     validConditionalDropSlot = activeBid.ConditionalDropPublisherGame.Value.SlotNumber;
                 }
@@ -154,29 +156,29 @@ public class ActionProcessingService
             var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, null, validConditionalDropSlot, false, false);
             if (claimResult.NoSpaceError)
             {
-                noSpaceLeftBids.Add(activeBid);
+                noSpaceLeftBids.Add(pickupBidWithConditionalDropResult);
                 continue;
             }
 
             if (!claimResult.Success)
             {
-                invalidGameBids.Add(new KeyValuePair<PickupBid, string>(activeBid, string.Join(" AND ", claimResult.Errors.Select(x => x.Error))));
+                invalidGameBids.Add(new KeyValuePair<PickupBid, string>(pickupBidWithConditionalDropResult, string.Join(" AND ", claimResult.Errors.Select(x => x.Error))));
                 continue;
             }
 
-            if (activeBid.BidAmount > bidPublisher.Budget)
+            if (pickupBidWithConditionalDropResult.BidAmount > bidPublisher.Budget)
             {
-                insufficientFundsBids.Add(activeBid);
+                insufficientFundsBids.Add(pickupBidWithConditionalDropResult);
                 continue;
             }
 
-            if (activeBid.BidAmount < leagueYear.Options.MinimumBidAmount)
+            if (pickupBidWithConditionalDropResult.BidAmount < leagueYear.Options.MinimumBidAmount)
             {
-                belowMinimumBids.Add(activeBid);
+                belowMinimumBids.Add(pickupBidWithConditionalDropResult);
                 continue;
             }
 
-            validPickupBids.Add(new ValidPickupBid(activeBid, claimResult.BestSlotNumber.Value));
+            validPickupBids.Add(new ValidPickupBid(pickupBidWithConditionalDropResult, claimResult.BestSlotNumber.Value));
         }
 
         var winnableBids = GetWinnableBids(leagueYear, validPickupBids, systemWideValues, currentDate);
@@ -201,11 +203,11 @@ public class ActionProcessingService
         foreach (var noSpaceLeftBid in noSpaceLeftBids)
         {
             FailedPickupBid failedBid;
-            if (noSpaceLeftBid.ConditionalDropPublisherGame.HasValue && noSpaceLeftBid.ConditionalDropResult.Result.IsFailure)
+            if (noSpaceLeftBid.ConditionalDropPublisherGame.HasValue && noSpaceLeftBid.ConditionalDropResult.Value.Result.IsFailure)
             {
                 failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available. Attempted to conditionally drop game: " +
                                                                 $"{noSpaceLeftBid.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName} " +
-                                                                $"but failed because: {noSpaceLeftBid.ConditionalDropResult.Result.Error}", systemWideValues, currentDate);
+                                                                $"but failed because: {noSpaceLeftBid.ConditionalDropResult.Value.Result.Error}", systemWideValues, currentDate);
             }
             else
             {
@@ -345,7 +347,7 @@ public class ActionProcessingService
         }
 
         List<FormerPublisherGame> conditionalDroppedGames = new List<FormerPublisherGame>();
-        var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame.HasValue && x.PickupBid.ConditionalDropResult.Result.IsSuccess);
+        var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame.HasValue && x.PickupBid.ConditionalDropResult.Value.Result.IsSuccess);
         foreach (var successfulConditionalDrop in successfulConditionalDrops)
         {
             var affectedPublisher = publisherStateSet.GetPublisher(successfulConditionalDrop.PickupBid.Publisher.PublisherID);
