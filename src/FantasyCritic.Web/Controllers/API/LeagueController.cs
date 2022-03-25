@@ -249,13 +249,17 @@ public class LeagueController : BaseLeagueController
             privatePublisherData = new PrivatePublisherDataViewModel(bids, dropRequests, currentDate);
         }
 
+        var upcomingGames = GetGameNewsViewModel(leagueYear, false, false).ToList();
+        var recentGames = GetGameNewsViewModel(leagueYear, false, true).ToList();
+        var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
+
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, leagueYearRecord.ValidResult.Value.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentDate,
             startDraftResult, leagueYearRecord.ValidResult.Value.ActiveUsers, nextDraftPublisher, draftPhase, systemWideValues,
             leagueYearRecord.ValidResult.Value.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
-            currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades, privatePublisherData);
+            currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades, privatePublisherData, gameNewsViewModel);
         return Ok(leagueYearViewModel);
     }
 
@@ -885,29 +889,6 @@ public class LeagueController : BaseLeagueController
 
         var viewModels = GetGameNewsViewModel(leagueYear, false, false).ToList();
         return Ok(viewModels);
-    }
-
-    [AllowAnonymous]
-    public async Task<IActionResult> LeagueGameNews(Guid leagueID, int year)
-    {
-        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
-        if (leagueYearRecord.FailedResult.HasValue)
-        {
-            return leagueYearRecord.FailedResult.Value;
-        }
-        var leagueYear = leagueYearRecord.ValidResult.Value.LeagueYear;
-        var league = leagueYear.League;
-        var relationship = leagueYearRecord.ValidResult.Value.Relationship;
-
-        if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
-        {
-            return Forbid();
-        }
-
-        var upcomingGames = GetGameNewsViewModel(leagueYear, false, false).ToList();
-        var recentGames = GetGameNewsViewModel(leagueYear, false, true).ToList();
-        var vm = new GameNewsViewModel(upcomingGames, recentGames);
-        return Ok(vm);
     }
 
     public async Task<IActionResult> PossibleMasterGames(string gameName, int year, Guid leagueID)

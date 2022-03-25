@@ -9,7 +9,6 @@ export default {
     inviteCode: false,
     leagueYear: null,
     userPublisher: null,
-    gameNews: null,
     leagueActions: null,
     leagueActionSets: null,
     historicalTrades: null,
@@ -22,7 +21,6 @@ export default {
       context.commit('clearLeagueStoreData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
       await context.dispatch('fetchLeagueYear', leaguePageParams);
-      await context.dispatch('fetchGameNews');
     },
     async initializeHistoryPage(context, leaguePageParams) {
       context.commit('clearPublisherStoreData');
@@ -37,7 +35,6 @@ export default {
         inviteCode: context.state.inviteCode
       };
       await context.dispatch('fetchLeagueYear', leaguePageParams);
-      await context.dispatch('fetchGameNews');
     },
     async fetchLeagueYear(context, leaguePageParams) {
       let queryURL = '/api/League/GetLeagueYear?leagueID=' + leaguePageParams.leagueID + '&year=' + leaguePageParams.year;
@@ -61,15 +58,6 @@ export default {
       let leagueActionSetsPromise = context.dispatch('fetchLeagueActionSets');
       let historicalTradesPromise = context.dispatch('fetchHistoricalTrades');
       return Promise.all([leagueActionsPromise, leagueActionSetsPromise, historicalTradesPromise]);
-    },
-    fetchGameNews(context) {
-      const queryURL = '/api/League/LeagueGameNews?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
-      return axios
-        .get(queryURL)
-        .then((response) => {
-          context.commit('setGameNews', response.data);
-        })
-        .catch(() => {});
     },
     fetchLeagueActions(context) {
       const queryURL = '/api/League/GetLeagueActions?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;

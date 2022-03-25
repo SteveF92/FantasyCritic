@@ -12,7 +12,7 @@ public class LeagueYearViewModel
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner,
         Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs,
-        IEnumerable<Trade> activeTrades, Maybe<PrivatePublisherDataViewModel> privatePublisherData)
+        IEnumerable<Trade> activeTrades, Maybe<PrivatePublisherDataViewModel> privatePublisherData, GameNewsViewModel gameNews)
     {
         League = leagueViewModel;
         LeagueID = leagueYear.League.LeagueID;
@@ -109,6 +109,7 @@ public class LeagueYearViewModel
 
         ActiveTrades = activeTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
         PrivatePublisherData = privatePublisherData.GetValueOrDefault();
+        GameNews = gameNews;
     }
 
     public LeagueViewModel League { get; }
@@ -136,4 +137,5 @@ public class LeagueYearViewModel
     public IReadOnlyList<PublicBiddingMasterGameViewModel> PublicBiddingGames { get; }
     public IReadOnlyList<TradeViewModel> ActiveTrades { get; }
     public PrivatePublisherDataViewModel PrivatePublisherData { get; }
+    public GameNewsViewModel GameNews { get; }
 }

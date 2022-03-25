@@ -10,7 +10,6 @@ let leagueMixin = {
       inviteCode: (state) => state.league.inviteCode,
       leagueYear: (state) => state.league.leagueYear,
       userPublisher: (state) => state.league.userPublisher,
-      gameNews: (state) => state.league.gameNews,
       leagueActions: (state) => state.league.leagueActions,
       leagueActionSets: (state) => state.league.leagueActionSets,
       historicalTrades: (state) => state.league.historicalTrades,
@@ -68,6 +67,13 @@ let leagueMixin = {
       }
 
       return this.leagueYear.privatePublisherData.myActiveDrops;
+    },
+    gameNews() {
+      if (!this.leagueYear || !this.leagueYear.gameNews) {
+        return [];
+      }
+
+      return this.leagueYear.gameNews;
     }
   },
   methods: {
