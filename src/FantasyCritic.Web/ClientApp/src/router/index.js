@@ -35,6 +35,9 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     document.title = toRoute.meta.title + ' - Fantasy Critic';
   }
 
+  store.commit('clearPublisherStoreData');
+  store.commit('clearLeagueStoreData');
+
   var getPrereqs = function () {
     var prereqs = [];
     prereqs.push(
