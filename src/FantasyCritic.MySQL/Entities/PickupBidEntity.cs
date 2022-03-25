@@ -16,7 +16,7 @@ public class PickupBidEntity
         PublisherID = domain.Publisher.PublisherID;
         MasterGameID = domain.MasterGame.MasterGameID;
         ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.Value.MasterGame.MasterGameID);
-        Counterpick = domain.CounterPick;
+        CounterPick = domain.CounterPick;
         Timestamp = domain.Timestamp;
         Priority = domain.Priority;
         BidAmount = domain.BidAmount;
@@ -32,7 +32,7 @@ public class PickupBidEntity
         PublisherID = domain.PickupBid.Publisher.PublisherID;
         MasterGameID = domain.PickupBid.MasterGame.MasterGameID;
         ConditionalDropMasterGameID = domain.PickupBid.ConditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.Value.MasterGame.MasterGameID);
-        Counterpick = domain.PickupBid.CounterPick;
+        CounterPick = domain.PickupBid.CounterPick;
         Timestamp = domain.PickupBid.Timestamp;
         Priority = domain.PickupBid.Priority;
         BidAmount = domain.PickupBid.BidAmount;
@@ -48,7 +48,7 @@ public class PickupBidEntity
         PublisherID = domain.Publisher.PublisherID;
         MasterGameID = domain.MasterGame.MasterGameID;
         ConditionalDropMasterGameID = conditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.Value.MasterGame.MasterGameID);
-        Counterpick = domain.CounterPick;
+        CounterPick = domain.CounterPick;
         Timestamp = domain.Timestamp;
         Priority = domain.Priority;
         BidAmount = bidAmount;
@@ -62,7 +62,7 @@ public class PickupBidEntity
     public Guid PublisherID { get; set; }
     public Guid MasterGameID { get; set; }
     public Guid? ConditionalDropMasterGameID { get; set; }
-    public bool Counterpick { get; set; }
+    public bool CounterPick { get; set; }
     public Instant Timestamp { get; set; }
     public int Priority { get; set; }
     public uint BidAmount { get; set; }
@@ -73,6 +73,6 @@ public class PickupBidEntity
 
     public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame, LeagueYear leagueYear)
     {
-        return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, Counterpick, BidAmount, Priority, Timestamp, Successful, ProcessSetID, Outcome.ToMaybe(), ProjectedPointsAtTimeOfBid);
+        return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, CounterPick, BidAmount, Priority, Timestamp, Successful, ProcessSetID, Outcome.ToMaybe(), ProjectedPointsAtTimeOfBid);
     }
 }
