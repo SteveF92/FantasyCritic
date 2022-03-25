@@ -4,7 +4,7 @@
       <div v-if="forbidden">
         <div class="alert alert-danger" role="alert">You do not have permission to view this league.</div>
       </div>
-      <div v-if="league">
+      <div v-if="leagueYear">
         <div v-if="leagueErrorInfo" class="alert alert-danger" role="alert">
           {{ leagueErrorInfo }}
         </div>
@@ -75,95 +75,93 @@
           </div>
         </div>
 
-        <div v-if="leagueYear">
-          <b-alert v-if="leagueYear.userIsActive && hasProposedTrade" show>Someone has proposed a trade with you. Please check 'See Active Trades' on the sidebar.</b-alert>
-          <b-alert v-if="leagueYear.userIsActive && hasActiveTrade" show>There are active trades under consideration. Please check 'See Active Trades' on the sidebar.</b-alert>
-          <div v-if="leagueYear.playStatus.playStarted && leagueYear.supportedYear.finished">
-            <div class="alert alert-success" role="alert">
-              This year is finished! The winner is
-              <strong>{{ topPublisher.publisherName }}</strong>
-              !
+        <b-alert v-if="leagueYear.userIsActive && hasProposedTrade" show>Someone has proposed a trade with you. Please check 'See Active Trades' on the sidebar.</b-alert>
+        <b-alert v-if="leagueYear.userIsActive && hasActiveTrade" show>There are active trades under consideration. Please check 'See Active Trades' on the sidebar.</b-alert>
+        <div v-if="leagueYear.playStatus.playStarted && leagueYear.supportedYear.finished">
+          <div class="alert alert-success" role="alert">
+            This year is finished! The winner is
+            <strong>{{ topPublisher.publisherName }}</strong>
+            !
+          </div>
+        </div>
+        <div v-if="!leagueYear.userIsActive && league.userIsInLeague">
+          <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
+        </div>
+
+        <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft && userPublisher" class="alert alert-warning">
+          <h2>This year is not active yet!</h2>
+          <ul>
+            <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>
+          </ul>
+        </div>
+
+        <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
+          <span>You need to create your publisher for this year.</span>
+          <span v-show="league.isManager">You can't invite players or change any settings until you create your publisher.</span>
+          <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
+          <createPublisherForm :leagueYear="leagueYear"></createPublisherForm>
+        </div>
+
+        <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite">
+          <div class="alert alert-success">
+            <span v-if="league.isManager">
+              Things are all set to get started!
+              <b-button variant="primary" v-b-modal="'startDraft'" class="mx-2">Start Drafting!</b-button>
+            </span>
+            <span v-if="!league.isManager">Things are all set to get started! Your league manager can choose when to begin the draft.</span>
+          </div>
+          <startDraftModal v-on:draftStarted="startDraft"></startDraftModal>
+        </div>
+
+        <div v-if="leagueYear.playStatus.draftIsPaused">
+          <div class="alert alert-danger">
+            <div v-show="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
+            <div v-show="league.isManager">The draft has been paused. You can undo games that have been drafted. Press 'Resume Draft' to go back to picking games.</div>
+          </div>
+        </div>
+        <div v-if="leagueYear.playStatus.draftIsActive && nextPublisherUp">
+          <div v-if="!userIsNextInDraft">
+            <div class="alert alert-info">
+              <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
+              <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft Counter-Picks!</div>
+              <div>
+                Next to draft:
+                <strong>{{ nextPublisherUp.publisherName }}</strong>
+              </div>
+              <div v-show="league.isManager">To select the next player's game for them, Select 'Select Next Game' under 'Draft Management' in the sidebar!</div>
             </div>
           </div>
-          <div v-if="!leagueYear.userIsActive && league.userIsInLeague">
-            <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
-          </div>
-
-          <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft && userPublisher" class="alert alert-warning">
-            <h2>This year is not active yet!</h2>
-            <ul>
-              <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>
-            </ul>
-          </div>
-
-          <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
-            <span>You need to create your publisher for this year.</span>
-            <span v-show="league.isManager">You can't invite players or change any settings until you create your publisher.</span>
-            <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
-            <createPublisherForm :leagueYear="leagueYear"></createPublisherForm>
-          </div>
-
-          <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite">
+          <div v-else>
             <div class="alert alert-success">
-              <span v-if="league.isManager">
-                Things are all set to get started!
-                <b-button variant="primary" v-b-modal="'startDraft'" class="mx-2">Start Drafting!</b-button>
-              </span>
-              <span v-if="!league.isManager">Things are all set to get started! Your league manager can choose when to begin the draft.</span>
+              <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
+              <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
+              <div><strong>It is your turn to draft!</strong></div>
+              <div v-show="!leagueYear.playStatus.draftingCounterPicks">Select 'Draft Game' under 'Player Actions' in the sidebar!</div>
+              <div v-show="leagueYear.playStatus.draftingCounterPicks">Select 'Draft Counterpick' under 'Player Actions' in the sidebar!</div>
             </div>
-            <startDraftModal v-on:draftStarted="startDraft"></startDraftModal>
           </div>
+        </div>
 
-          <div v-if="leagueYear.playStatus.draftIsPaused">
-            <div class="alert alert-danger">
-              <div v-show="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
-              <div v-show="league.isManager">The draft has been paused. You can undo games that have been drafted. Press 'Resume Draft' to go back to picking games.</div>
-            </div>
+        <div class="row">
+          <div class="col-xl-3 col-lg-4 col-md-12">
+            <leagueActions></leagueActions>
           </div>
-          <div v-if="leagueYear.playStatus.draftIsActive && nextPublisherUp">
-            <div v-if="!userIsNextInDraft">
-              <div class="alert alert-info">
-                <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
-                <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft Counter-Picks!</div>
-                <div>
-                  Next to draft:
-                  <strong>{{ nextPublisherUp.publisherName }}</strong>
-                </div>
-                <div v-show="league.isManager">To select the next player's game for them, Select 'Select Next Game' under 'Draft Management' in the sidebar!</div>
-              </div>
-            </div>
-            <div v-else>
-              <div class="alert alert-success">
-                <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
-                <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
-                <div><strong>It is your turn to draft!</strong></div>
-                <div v-show="!leagueYear.playStatus.draftingCounterPicks">Select 'Draft Game' under 'Player Actions' in the sidebar!</div>
-                <div v-show="leagueYear.playStatus.draftingCounterPicks">Select 'Draft Counterpick' under 'Player Actions' in the sidebar!</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-xl-3 col-lg-4 col-md-12">
-              <leagueActions></leagueActions>
-            </div>
-            <div class="col-xl-9 col-lg-8 col-md-12">
-              <leagueYearStandings :league="league" :leagueYear="leagueYear"></leagueYearStandings>
-              <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
-                <gameNews :gameNews="gameNews" mode="league" />
-                <br />
-                <div>
-                  <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" v-on:publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
-                  <bidCountdowns v-if="!showPublicRevealCountdown" mode="NextBid"></bidCountdowns>
-                </div>
-                <div v-if="leagueYear.publicBiddingGames">
-                  <h2>This week's bids</h2>
-                  <activeBids :games="leagueYear.publicBiddingGames" />
-                </div>
-              </div>
+          <div class="col-xl-9 col-lg-8 col-md-12">
+            <leagueYearStandings :league="league" :leagueYear="leagueYear"></leagueYearStandings>
+            <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
+              <gameNews :gameNews="gameNews" mode="league" />
               <br />
-              <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
+              <div>
+                <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" v-on:publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
+                <bidCountdowns v-if="!showPublicRevealCountdown" mode="NextBid"></bidCountdowns>
+              </div>
+              <div v-if="leagueYear.publicBiddingGames">
+                <h2>This week's bids</h2>
+                <activeBids :games="leagueYear.publicBiddingGames" />
+              </div>
             </div>
+            <br />
+            <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
           </div>
         </div>
       </div>
