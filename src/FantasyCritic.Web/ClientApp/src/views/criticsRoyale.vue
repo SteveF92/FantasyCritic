@@ -139,10 +139,13 @@ export default {
     CreateRoyalePublisherForm
   },
   mixins: [BasicMixin],
-  props: ['year', 'quarter'],
+  props: {
+    year: Number,
+    quarter: Number
+  },
   data() {
     return {
-      perPage: 10,
+      perPage: 101,
       currentPage: 1,
       userRoyalePublisher: null,
       royaleYearQuarter: null,

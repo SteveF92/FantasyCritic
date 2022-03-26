@@ -36,7 +36,10 @@ export default {
   components: {
     LeagueYearSettings
   },
-  props: ['leagueid', 'year'],
+  props: {
+    leagueid: String,
+    year: Number
+  },
   data() {
     return {
       errorInfo: '',

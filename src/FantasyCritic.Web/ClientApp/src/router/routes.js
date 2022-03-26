@@ -142,7 +142,17 @@ export const routes = [
       isPublic: true,
       delayScroll: true
     },
-    props: true
+    props: (route) => {
+      let parsedYear = Number.parseInt(route.params.year, 10);
+      if (Number.isNaN(parsedYear)) {
+        parsedYear = 0;
+      }
+
+      return {
+        leagueid: route.params.leagueid,
+        year: parsedYear
+      };
+    }
   },
   {
     path: '/editLeague/:leagueid/:year',
@@ -151,7 +161,17 @@ export const routes = [
     meta: {
       title: 'Edit League'
     },
-    props: true
+    props: (route) => {
+      let parsedYear = Number.parseInt(route.params.year, 10);
+      if (Number.isNaN(parsedYear)) {
+        parsedYear = 0;
+      }
+
+      return {
+        leagueid: route.params.leagueid,
+        year: parsedYear
+      };
+    }
   },
   {
     path: '/leagueHistory/:leagueid/:year',
@@ -161,7 +181,17 @@ export const routes = [
       title: 'League History',
       isPublic: true
     },
-    props: true
+    props: (route) => {
+      let parsedYear = Number.parseInt(route.params.year, 10);
+      if (Number.isNaN(parsedYear)) {
+        parsedYear = 0;
+      }
+
+      return {
+        leagueid: route.params.leagueid,
+        year: parsedYear
+      };
+    }
   },
   {
     path: '/publisher/:publisherid',
@@ -256,9 +286,19 @@ export const routes = [
         return;
       }
 
+      const parsedYear = Number.parseInt(route.params.year, 10);
+      if (Number.isNaN(parsedYear)) {
+        return;
+      }
+
+      const parsedQuarter = Number.parseInt(route.params.quarter, 10);
+      if (Number.isNaN(parsedQuarter)) {
+        return;
+      }
+
       return {
-        year: route.params.year,
-        quarter: route.params.quarter
+        year: parsedYear,
+        quarter: parsedQuarter
       };
     }
   },
