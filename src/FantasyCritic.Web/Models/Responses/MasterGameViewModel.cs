@@ -15,7 +15,12 @@ public class MasterGameViewModel
         ReleaseDate = masterGame.ReleaseDate;
 
         IsReleased = masterGame.IsReleased(currentDate);
+
+        DoNotRefreshDate = masterGame.DoNotRefreshDate;
+        DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
+        EligibilityChanged = masterGame.EligibilityChanged;
         DelayContention = masterGame.DelayContention;
+
         CriticScore = masterGame.CriticScore;
         AveragedScore = masterGame.AveragedScore;
         Notes = masterGame.Notes;
@@ -56,6 +61,9 @@ public class MasterGameViewModel
     public LocalDate? AnnouncementDate { get; }
     public LocalDate? ReleaseDate { get; }
     public bool IsReleased { get; }
+    public bool DoNotRefreshDate { get; }
+    public bool DoNotRefreshAnything { get; }
+    public bool EligibilityChanged { get; }
     public bool DelayContention { get; }
     public decimal? CriticScore { get; }
     public bool AveragedScore { get; }
