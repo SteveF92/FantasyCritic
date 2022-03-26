@@ -57,7 +57,7 @@ export default {
     ToggleButton
   },
   props: {
-    gameNews: Array,
+    gameNews: Object,
     mode: String
   },
   data() {
