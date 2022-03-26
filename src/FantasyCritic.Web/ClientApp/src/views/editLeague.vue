@@ -3,7 +3,7 @@
     <div class="col-md-10 offset-md-1 col-sm-12">
       <h1>Edit League Year Settings</h1>
       <hr />
-      <div class="alert alert-danger" v-show="errorInfo">
+      <div v-show="errorInfo" class="alert alert-danger">
         <h2>Error!</h2>
         <p>{{ errorInfo }}</p>
       </div>
@@ -11,18 +11,18 @@
       <div v-if="possibleLeagueOptions && leagueYearSettings && leagueYear">
         <div class="text-well league-options">
           <leagueYearSettings
+            v-model="leagueYearSettings"
             :year="year"
-            :possibleLeagueOptions="possibleLeagueOptions"
-            :editMode="true"
-            :currentNumberOfPlayers="activePlayersInLeague"
-            :freshSettings="freshSettings"
-            v-model="leagueYearSettings"></leagueYearSettings>
+            :possible-league-options="possibleLeagueOptions"
+            :edit-mode="true"
+            :current-number-of-players="activePlayersInLeague"
+            :fresh-settings="freshSettings"></leagueYearSettings>
         </div>
 
-        <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">Some of your settings are invalid.</div>
+        <div v-show="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
 
         <div class="form-group">
-          <b-button class="col-10 offset-1" variant="primary" v-on:click="postRequest" :disabled="!leagueYearIsValid">Confirm Settings</b-button>
+          <b-button class="col-10 offset-1" variant="primary" :disabled="!leagueYearIsValid" @click="postRequest">Confirm Settings</b-button>
         </div>
       </div>
     </div>

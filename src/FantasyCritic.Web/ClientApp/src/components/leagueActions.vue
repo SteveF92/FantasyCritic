@@ -16,12 +16,12 @@
       <div>
         <h4>Public Actions</h4>
         <ul class="actions-list">
-          <li class="fake-link action" v-if="leagueYear.playStatus.playStarted">
+          <li v-if="leagueYear.playStatus.playStarted" class="fake-link action">
             <router-link :to="{ name: 'leagueHistory', params: { leagueid: league.leagueID, year: leagueYear.year } }">See League History</router-link>
           </li>
-          <li class="fake-link action" v-b-modal="'leagueOptionsModal'">See League Options</li>
-          <li class="fake-link action" v-b-modal="'eligibilityOverridesModal'">See Eligibility Overrides</li>
-          <li class="fake-link action" v-b-modal="'tagOverridesModal'">See Tag Overrides</li>
+          <li v-b-modal="'leagueOptionsModal'" class="fake-link action">See League Options</li>
+          <li v-b-modal="'eligibilityOverridesModal'" class="fake-link action">See Eligibility Overrides</li>
+          <li v-b-modal="'tagOverridesModal'" class="fake-link action">See Tag Overrides</li>
         </ul>
       </div>
       <div v-if="userPublisher">
@@ -35,24 +35,24 @@
               </router-link>
             </li>
             <template v-if="!leagueYear.supportedYear.finished">
-              <li class="fake-link action" v-b-modal="'playerDraftGameForm'" v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
+              <li v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftGameForm'" class="fake-link action">
                 Draft Game
               </li>
-              <li class="fake-link action" v-b-modal="'playerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft">
+              <li v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftCounterPickForm'" class="fake-link action">
                 Draft Counterpick
               </li>
-              <li class="fake-link action" v-b-modal="'bidGameForm'" v-show="leagueYear.playStatus.draftFinished">Make a Bid</li>
-              <li class="fake-link action" v-b-modal="'bidCounterPickForm'" v-show="leagueYear.playStatus.draftFinished">Make a Counter Pick Bid</li>
-              <li class="fake-link action" v-b-modal="'currentBidsForm'" v-show="leagueYear.playStatus.draftFinished">My Current Bids</li>
-              <li class="fake-link action" v-b-modal="'proposeTradeForm'" v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'">Propose a Trade</li>
-              <li class="fake-link action" v-b-modal="'activeTradesModal'" v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'">Active Trades</li>
-              <li class="fake-link action" v-b-modal="'dropGameForm'" v-show="leagueYear.playStatus.draftFinished">Drop a Game</li>
-              <li class="fake-link action" v-b-modal="'currentDropsForm'" v-show="leagueYear.playStatus.draftFinished">My Pending Drops</li>
-              <li class="fake-link action" v-b-modal="'gameQueueForm'">Watchlist</li>
-              <li class="fake-link action" v-b-modal="'editAutoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">Set Auto Draft</li>
+              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'bidGameForm'" class="fake-link action">Make a Bid</li>
+              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'bidCounterPickForm'" class="fake-link action">Make a Counter Pick Bid</li>
+              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'currentBidsForm'" class="fake-link action">My Current Bids</li>
+              <li v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
+              <li v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
+              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'dropGameForm'" class="fake-link action">Drop a Game</li>
+              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'currentDropsForm'" class="fake-link action">My Pending Drops</li>
+              <li v-b-modal="'gameQueueForm'" class="fake-link action">Watchlist</li>
+              <li v-show="!leagueYear.playStatus.draftFinished" v-b-modal="'editAutoDraftForm'" class="fake-link action">Set Auto Draft</li>
             </template>
-            <li class="fake-link action" v-b-modal="'changePublisherNameForm'">Change Publisher Name</li>
-            <li class="fake-link action" v-b-modal="'changePublisherIconForm'" v-if="isPlusUser">Change Publisher Icon</li>
+            <li v-b-modal="'changePublisherNameForm'" class="fake-link action">Change Publisher Name</li>
+            <li v-if="isPlusUser" v-b-modal="'changePublisherIconForm'" class="fake-link action">Change Publisher Icon</li>
           </ul>
         </div>
 
@@ -60,18 +60,18 @@
           <div v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
             <h4>Draft Management</h4>
             <ul class="actions-list">
-              <li class="fake-link action" v-b-modal="'managerDraftGameForm'" v-show="!leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
+              <li v-show="!leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive" v-b-modal="'managerDraftGameForm'" class="fake-link action">
                 Draft Game for Next Player
               </li>
-              <li class="fake-link action" v-b-modal="'managerDraftCounterPickForm'" v-show="leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive">
+              <li v-show="leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive" v-b-modal="'managerDraftCounterPickForm'" class="fake-link action">
                 Draft Game for Next Player
               </li>
-              <li class="fake-link action" v-b-modal="'setPauseModal'">
+              <li v-b-modal="'setPauseModal'" class="fake-link action">
                 <span v-show="leagueYear.playStatus.draftIsActive">Pause Draft</span>
                 <span v-show="leagueYear.playStatus.draftIsPaused">Resume Draft</span>
               </li>
-              <li class="fake-link action" v-b-modal="'resetDraftModal'">Reset Draft</li>
-              <li class="fake-link action" v-b-modal="'undoLastDraftActionModal'" v-show="leagueYear.playStatus.draftIsPaused">Undo Last Drafted Game</li>
+              <li v-b-modal="'resetDraftModal'" class="fake-link action">Reset Draft</li>
+              <li v-show="leagueYear.playStatus.draftIsPaused" v-b-modal="'undoLastDraftActionModal'" class="fake-link action">Undo Last Drafted Game</li>
               <li v-show="!leagueYear.playStatus.draftIsPaused">
                 Undo Last Drafted Game
                 <br />
@@ -81,27 +81,27 @@
           </div>
           <h4>Manage League</h4>
           <ul class="actions-list">
-            <li class="fake-link action" v-b-modal="'invitePlayer'" v-show="!leagueYear.playStatus.playStarted">Invite a Player</li>
-            <li class="fake-link action" v-b-modal="'manageActivePlayers'" v-show="!leagueYear.playStatus.playStarted">Manage Active Players</li>
-            <li class="fake-link action" v-b-modal="'managerMessageForm'">Post new Message to League</li>
-            <li class="fake-link action" v-b-modal="'createPublisherForUserForm'">Create Publisher For User</li>
-            <li class="fake-link action" v-b-modal="'editDraftOrderForm'" v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted">Edit Draft Order</li>
-            <li class="fake-link action" v-b-modal="'managerEditPublishersForm'">Edit Publishers</li>
-            <li class="fake-link action" v-b-modal="'managerSetAutoDraftForm'" v-show="!leagueYear.playStatus.draftFinished">Edit Player Auto Draft</li>
-            <li class="fake-link action" v-b-modal="'claimGameForm'" v-show="leagueYear.playStatus.draftFinished">Add Publisher Game</li>
-            <li class="fake-link action" v-b-modal="'associateGameForm'" v-show="leagueYear.playStatus.draftFinished">Associate Unlinked Game</li>
-            <li class="fake-link action" v-b-modal="'removePublisherGame'" v-show="leagueYear.playStatus.draftFinished">Remove Publisher Game</li>
-            <li class="fake-link action" v-b-modal="'manuallyScorePublisherGame'" v-show="leagueYear.playStatus.draftFinished">Score a Game Manually</li>
-            <li class="fake-link action" v-b-modal="'manuallySetWillNotRelease'" v-show="leagueYear.playStatus.draftFinished">Override "Will not Release"</li>
+            <li v-show="!leagueYear.playStatus.playStarted" v-b-modal="'invitePlayer'" class="fake-link action">Invite a Player</li>
+            <li v-show="!leagueYear.playStatus.playStarted" v-b-modal="'manageActivePlayers'" class="fake-link action">Manage Active Players</li>
+            <li v-b-modal="'managerMessageForm'" class="fake-link action">Post new Message to League</li>
+            <li v-b-modal="'createPublisherForUserForm'" class="fake-link action">Create Publisher For User</li>
+            <li v-show="leagueYear.playStatus.readyToSetDraftOrder && !leagueYear.playStatus.playStarted" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
+            <li v-b-modal="'managerEditPublishersForm'" class="fake-link action">Edit Publishers</li>
+            <li v-show="!leagueYear.playStatus.draftFinished" v-b-modal="'managerSetAutoDraftForm'" class="fake-link action">Edit Player Auto Draft</li>
+            <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
+            <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'associateGameForm'" class="fake-link action">Associate Unlinked Game</li>
+            <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>
+            <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'manuallyScorePublisherGame'" class="fake-link action">Score a Game Manually</li>
+            <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'manuallySetWillNotRelease'" class="fake-link action">Override "Will not Release"</li>
             <li class="fake-link action">
               <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year } }">Change Year-Specific Options</router-link>
             </li>
-            <li class="fake-link action" v-b-modal="'manageEligibilityOverridesModal'">Override Game Eligibility</li>
-            <li class="fake-link action" v-b-modal="'manageTagOverridesModal'">Override Game Tags</li>
-            <li class="fake-link action" v-b-modal="'changeLeagueOptionsForm'">Change General League Options</li>
-            <li class="fake-link action" v-b-modal="'removePlayerForm'">Remove a Player</li>
-            <li class="fake-link action" v-b-modal="'transferManagerForm'">Promote new League Manager</li>
-            <li class="fake-link action" v-b-modal="'addNewLeagueYear'">Start New Year</li>
+            <li v-b-modal="'manageEligibilityOverridesModal'" class="fake-link action">Override Game Eligibility</li>
+            <li v-b-modal="'manageTagOverridesModal'" class="fake-link action">Override Game Tags</li>
+            <li v-b-modal="'changeLeagueOptionsForm'" class="fake-link action">Change General League Options</li>
+            <li v-b-modal="'removePlayerForm'" class="fake-link action">Remove a Player</li>
+            <li v-b-modal="'transferManagerForm'" class="fake-link action">Promote new League Manager</li>
+            <li v-b-modal="'addNewLeagueYear'" class="fake-link action">Start New Year</li>
           </ul>
         </div>
       </div>

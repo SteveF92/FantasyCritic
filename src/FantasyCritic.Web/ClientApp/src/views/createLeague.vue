@@ -3,12 +3,12 @@
     <div class="col-md-10 offset-md-1 col-sm-12">
       <h1>Create a league</h1>
       <hr />
-      <div class="alert alert-danger" v-show="errorInfo">
+      <div v-show="errorInfo" class="alert alert-danger">
         <h2>Error!</h2>
         <p>{{ errorInfo }}</p>
       </div>
       <template v-if="possibleLeagueOptions">
-        <div class="alert alert-warning" v-if="possibleLeagueOptions.openYears.length === 0">
+        <div v-if="possibleLeagueOptions.openYears.length === 0" class="alert alert-warning">
           Unfortunately, leagues cannot be created right now, as the current year is closed and the next year is not open yet. Check Twitter for updates.
         </div>
         <template v-else>
@@ -19,8 +19,8 @@
             <h2>Basic Settings</h2>
             <div class="form-group">
               <label for="leagueName" class="control-label">League Name</label>
-              <ValidationProvider rules="required" v-slot="{ errors }" name="League Name">
-                <input v-model="leagueName" id="leagueName" name="leagueName" type="text" class="form-control input" />
+              <ValidationProvider v-slot="{ errors }" rules="required" name="League Name">
+                <input id="leagueName" v-model="leagueName" name="leagueName" type="text" class="form-control input" />
                 <span class="text-danger">{{ errors[0] }}</span>
               </ValidationProvider>
             </div>
@@ -28,8 +28,8 @@
             <div class="form-group">
               <label for="intialYear" class="control-label">Year to Play</label>
               <p>The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the December before the new year begins.</p>
-              <select class="form-control" v-model="initialYear" id="initialYear">
-                <option v-for="initialYear in possibleLeagueOptions.openYears" v-bind:value="initialYear" :key="initialYear">{{ initialYear }}</option>
+              <select id="initialYear" v-model="initialYear" class="form-control">
+                <option v-for="possibleYear in possibleLeagueOptions.openYears" :key="possibleYear" :value="initialYear">{{ possibleYear }}</option>
               </select>
             </div>
           </div>
@@ -37,7 +37,7 @@
           <div v-if="readyToSetupLeagueYear">
             <hr />
             <div class="text-well">
-              <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :possibleLeagueOptions="possibleLeagueOptions" :editMode="false" :freshSettings="true"></leagueYearSettings>
+              <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :possible-league-options="possibleLeagueOptions" :edit-mode="false" :fresh-settings="true"></leagueYearSettings>
             </div>
           </div>
 
@@ -62,10 +62,10 @@
             <hr />
             <div class="alert alert-info disclaimer">Reminder: All of these settings can always be changed later.</div>
 
-            <div class="alert alert-warning disclaimer" v-show="!leagueYearIsValid">Can't create league. Some of your settings are invalid.</div>
+            <div v-show="!leagueYearIsValid" class="alert alert-warning disclaimer">Can't create league. Some of your settings are invalid.</div>
 
             <div class="form-group">
-              <b-button class="col-10 offset-1" variant="primary" v-on:click="postRequest" :disabled="!leagueYearIsValid">Create League</b-button>
+              <b-button class="col-10 offset-1" variant="primary" :disabled="!leagueYearIsValid" @click="postRequest">Create League</b-button>
             </div>
           </div>
         </template>
@@ -111,6 +111,14 @@ export default {
       return allValid;
     }
   },
+  watch: {
+    leagueYearIsValid: function (newValue) {
+      let allValid = this.readyToSetupLeagueYear && newValue;
+      if (allValid) {
+        this.leagueYearEverValid = true;
+      }
+    }
+  },
   mounted() {
     this.fetchLeagueOptions();
     this.leagueYearSettings = {
@@ -125,14 +133,6 @@ export default {
       specialGameSlots: [],
       tags: { banned: [], allowed: [], required: [] }
     };
-  },
-  watch: {
-    leagueYearIsValid: function (newValue) {
-      let allValid = this.readyToSetupLeagueYear && newValue;
-      if (allValid) {
-        this.leagueYearEverValid = true;
-      }
-    }
   },
   methods: {
     fetchLeagueOptions() {

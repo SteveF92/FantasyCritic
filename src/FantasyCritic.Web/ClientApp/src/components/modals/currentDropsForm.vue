@@ -11,7 +11,7 @@
         <tr v-for="drop in currentDrops" :key="drop.dropRequestID">
           <td>{{ drop.masterGame.gameName }}</td>
           <td class="select-cell">
-            <b-button variant="danger" size="sm" v-on:click="cancelDrop(drop)">Cancel</b-button>
+            <b-button variant="danger" size="sm" @click="cancelDrop(drop)">Cancel</b-button>
           </td>
         </tr>
       </tbody>

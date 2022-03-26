@@ -1,21 +1,21 @@
 <template>
   <div>
     <form class="form-horizontal" hide-footer>
-      <b-modal id="removePublisherGame" size="lg" ref="removePublisherGameRef" title="Remove Publisher Game" hide-footer @hidden="clearData">
+      <b-modal id="removePublisherGame" ref="removePublisherGameRef" size="lg" title="Remove Publisher Game" hide-footer @hidden="clearData">
         <div class="alert alert-warning">
           Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be removing games from player's rosters.
         </div>
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
           <b-form-select v-model="removeGamePublisher">
-            <option v-for="publisher in leagueYear.publishers" v-bind:value="publisher" :key="publisher.publisherID">
+            <option v-for="publisher in leagueYear.publishers" :key="publisher.publisherID" :value="publisher">
               {{ publisher.publisherName }}
             </option>
           </b-form-select>
           <div v-if="removeGamePublisher">
             <label for="removeGame" class="control-label">Game</label>
             <b-form-select v-model="removeGame">
-              <option v-for="publisherGame in removeGamePublisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+              <option v-for="publisherGame in removeGamePublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
                 {{ publisherGame.gameName }}
               </option>
             </b-form-select>
@@ -23,7 +23,7 @@
         </div>
 
         <div v-if="removeGame">
-          <b-button variant="primary" class="add-game-button" v-on:click="removePublisherGame">Remove Game</b-button>
+          <b-button variant="primary" class="add-game-button" @click="removePublisherGame">Remove Game</b-button>
           <div v-if="errorInfo" class="alert alert-danger remove-error">
             <h3 class="alert-heading">Error!</h3>
             <p class="text-white">{{ errorInfo }}</p>

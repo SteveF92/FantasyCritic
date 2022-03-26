@@ -1,13 +1,13 @@
 <template>
-  <tr v-bind:class="{ 'table-warning': gameSlot && !gameSlot.gameMeetsSlotCriteria }" class="minimal-game-row">
+  <tr :class="{ 'table-warning': gameSlot && !gameSlot.gameMeetsSlotCriteria }" class="minimal-game-row">
     <td>
-      <gameNameColumn :gameSlot="gameSlot" :hasSpecialSlots="hasSpecialSlots" :supportedYear="supportedYear"></gameNameColumn>
+      <gameNameColumn :game-slot="gameSlot" :has-special-slots="hasSpecialSlots" :supported-year="supportedYear"></gameNameColumn>
     </td>
     <template v-if="game">
       <td class="score-column">{{ game.criticScore | score }}</td>
       <template v-if="advancedProjections">
-        <td class="score-column" v-if="game.fantasyPoints || !game.willRelease">{{ game.fantasyPoints | score }}</td>
-        <td class="score-column projected-text" v-else>~{{ gameSlot.advancedProjectedFantasyPoints | score }}</td>
+        <td v-if="game.fantasyPoints || !game.willRelease" class="score-column">{{ game.fantasyPoints | score }}</td>
+        <td v-else class="score-column projected-text">~{{ gameSlot.advancedProjectedFantasyPoints | score }}</td>
       </template>
       <template v-else>
         <td class="score-column">{{ game.fantasyPoints | score }}</td>
@@ -29,9 +29,7 @@ export default {
   },
   mixins: [LeagueMixin],
   props: {
-    gameSlot: Object,
-    supportedYear: Object,
-    hasSpecialSlots: Boolean
+    gameSlot: Object
   },
   computed: {
     game() {

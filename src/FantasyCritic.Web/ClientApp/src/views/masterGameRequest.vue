@@ -29,13 +29,13 @@
           info is up to date (for example, release date changes). Please don't request a game "just for the sake of having it on the site".
         </div>
 
-        <ValidationObserver v-slot="{ invalid }" v-if="validReason">
+        <ValidationObserver v-if="validReason" v-slot="{ invalid }">
           <hr />
-          <form v-on:submit.prevent="sendMasterGameRequestRequest">
+          <form @submit.prevent="sendMasterGameRequestRequest">
             <div class="form-group">
               <label for="gameName" class="control-label">Game Name</label>
-              <ValidationProvider rules="required" v-slot="{ errors }">
-                <input v-model="gameName" id="gameName" name="Game Name" type="text" class="form-control input" />
+              <ValidationProvider v-slot="{ errors }" rules="required">
+                <input id="gameName" v-model="gameName" name="Game Name" type="text" class="form-control input" />
                 <span class="text-danger">{{ errors[0] }}</span>
               </ValidationProvider>
             </div>
@@ -50,20 +50,20 @@
               </div>
               <div v-if="!hasReleaseDate">
                 <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
-                <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
+                <input id="estimatedReleaseDate" v-model="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
               </div>
             </div>
             <div class="form-group">
               <label for="steamLink" class="control-label">Link to Steam Page (Optional)</label>
-              <input v-model="steamLink" id="steamLink" name="steamLink" class="form-control input" />
+              <input id="steamLink" v-model="steamLink" name="steamLink" class="form-control input" />
             </div>
             <div class="form-group">
               <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
-              <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
+              <input id="openCriticLink" v-model="openCriticLink" name="openCriticLink" class="form-control input" />
             </div>
             <div class="form-group">
               <label for="ggLink" class="control-label">Link to GG| Page (Optional)</label>
-              <input v-model="ggLink" id="ggLink" name="ggLink" class="form-control input" />
+              <input id="ggLink" v-model="ggLink" name="ggLink" class="form-control input" />
             </div>
 
             <div class="form-group">
@@ -75,7 +75,7 @@
                   <li>Is this game the start of a new franchise or part of an existing one?</li>
                 </ul>
               </div>
-              <input v-model="requestNote" id="requestNote" name="requestNote" class="form-control input" />
+              <input id="requestNote" v-model="requestNote" name="requestNote" class="form-control input" />
             </div>
 
             <div class="form-group">
@@ -103,7 +103,7 @@
             <tbody>
               <tr v-for="request in myRequests" :key="request.requestID">
                 <td>
-                  <span v-if="request.masterGame"><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
+                  <span v-if="request.masterGame"><masterGamePopover :master-game="request.masterGame"></masterGamePopover></span>
                   <span v-show="!request.masterGame">{{ request.gameName }}</span>
                 </td>
                 <td>
@@ -115,8 +115,8 @@
                   <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
                 </td>
                 <td class="select-cell">
-                  <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
-                  <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
+                  <span v-show="request.answered"><b-button variant="info" size="sm" @click="dismissRequest(request)">Dismiss Request</b-button></span>
+                  <span v-show="!request.answered"><b-button variant="danger" size="sm" @click="cancelRequest(request)">Cancel Request</b-button></span>
                 </td>
               </tr>
             </tbody>

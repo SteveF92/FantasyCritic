@@ -73,9 +73,9 @@ Vue.use(
 );
 
 // Registration of global components
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-Vue.component('font-awesome-layers', FontAwesomeLayers);
-Vue.component('font-awesome-layers-text', FontAwesomeLayersText);
+Vue.component('FontAwesomeIcon', FontAwesomeIcon);
+Vue.component('FontAwesomeLayers', FontAwesomeLayers);
+Vue.component('FontAwesomeLayersText', FontAwesomeLayersText);
 sync(store, router);
 
 Vue.config.productionTip = false;

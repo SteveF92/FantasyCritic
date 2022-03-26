@@ -4,32 +4,32 @@
       <h3 class="text-black">Add Game to Watchlist</h3>
       <label for="searchGameName" class="control-label">Game Name</label>
       <div class="input-group game-search-input">
-        <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
+        <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
         <span class="input-group-btn">
-          <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+          <b-button variant="info" @click="searchGame">Search Game</b-button>
         </span>
       </div>
     </div>
 
     <div v-if="!leagueYear.hasSpecialSlots">
-      <b-button variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+      <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
     </div>
     <div v-else>
       <h5 class="text-black">Search by Slot</h5>
       <span class="search-tags">
-        <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL" v-on:click.native="getTopGames"></searchSlotTypeBadge>
-        <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG" v-on:click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
+        <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" @click.native="getTopGames"></searchSlotTypeBadge>
+        <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.regularSlot" name="REG" @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
         <searchSlotTypeBadge
           v-for="specialSlot in leagueYear.slotInfo.specialSlots"
           :key="specialSlot.overallSlotNumber"
-          :gameSlot="specialSlot"
-          v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+          :game-slot="specialSlot"
+          @click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
       </span>
     </div>
 
-    <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
+    <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
 
-    <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possibleGames="possibleMasterGames" v-on:input="addGameToQueue"></possibleMasterGamesTable>
+    <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possible-games="possibleMasterGames" @input="addGameToQueue"></possibleMasterGamesTable>
 
     <div v-if="queueResult && !queueResult.success" class="alert bid-error alert-danger">
       <h3 class="alert-heading">Error!</h3>
@@ -62,16 +62,16 @@
           </td>
           <td>{{ queuedGame.rank }}</td>
           <td>
-            <statusBadge :possibleMasterGame="queuedGame"></statusBadge>
+            <statusBadge :possible-master-game="queuedGame"></statusBadge>
           </td>
           <td class="select-cell">
-            <b-button variant="danger" size="sm" v-on:click="removeQueuedGame(queuedGame)">Remove</b-button>
+            <b-button variant="danger" size="sm" @click="removeQueuedGame(queuedGame)">Remove</b-button>
           </td>
         </tr>
       </draggable>
     </table>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Rankings" v-on:click="setQueueRankings" />
+      <input type="submit" class="btn btn-primary" value="Set Rankings" @click="setQueueRankings" />
     </div>
   </b-modal>
 </template>
@@ -105,9 +105,6 @@ export default {
       isBusy: false
     };
   },
-  mounted() {
-    this.fetchQueuedGames();
-  },
   watch: {
     queuedGames(newValue, oldValue) {
       if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array && oldValue.length !== newValue.length)) {
@@ -117,6 +114,9 @@ export default {
     year() {
       this.fetchQueuedGames();
     }
+  },
+  mounted() {
+    this.fetchQueuedGames();
   },
   methods: {
     fetchQueuedGames() {

@@ -1,11 +1,11 @@
 <template>
   <div>
     <form class="form-horizontal" hide-footer>
-      <b-modal id="proposeTradeForm" size="lg" ref="proposeTradeFormRef" title="Propose Trade" @hidden="clearData">
+      <b-modal id="proposeTradeForm" ref="proposeTradeFormRef" size="lg" title="Propose Trade" @hidden="clearData">
         <div class="form-group">
           <label for="counterParty" class="control-label">Publisher to trade with</label>
           <b-form-select v-model="counterParty">
-            <option v-for="publisher in otherPublishers" v-bind:value="publisher" :key="publisher.publisherID">
+            <option v-for="publisher in otherPublishers" :key="publisher.publisherID" :value="publisher">
               {{ publisher.publisherName }}
             </option>
           </b-form-select>
@@ -21,17 +21,17 @@
                   <div class="trade-game-row">
                     <label>{{ index + 1 }}</label>
                     <b-form-select v-model="item.game">
-                      <option v-for="publisherGame in userPublisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+                      <option v-for="publisherGame in userPublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
                         {{ getGameOptionName(publisherGame) }}
                       </option>
                     </b-form-select>
 
-                    <div class="close-button fake-link" v-on:click="removeProposerGame(item.id)">
+                    <div class="close-button fake-link" @click="removeProposerGame(item.id)">
                       <font-awesome-icon icon="times" size="lg" :style="{ color: '#414141' }" />
                     </div>
                   </div>
                 </div>
-                <b-button variant="secondary" class="add-game-button" v-on:click="addGame(proposerPublisherGames)">Add Game</b-button>
+                <b-button variant="secondary" class="add-game-button" @click="addGame(proposerPublisherGames)">Add Game</b-button>
               </div>
             </div>
             <div class="col-6">
@@ -42,42 +42,42 @@
                   <div class="trade-game-row">
                     <label>{{ index + 1 }}</label>
                     <b-form-select v-model="item.game">
-                      <option v-for="publisherGame in counterParty.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+                      <option v-for="publisherGame in counterParty.games" :key="publisherGame.publisherGameID" :value="publisherGame">
                         {{ getGameOptionName(publisherGame) }}
                       </option>
                     </b-form-select>
 
-                    <div class="close-button fake-link" v-on:click="removeCounterPartyGame(item.id)">
+                    <div class="close-button fake-link" @click="removeCounterPartyGame(item.id)">
                       <font-awesome-icon icon="times" size="lg" :style="{ color: '#414141' }" />
                     </div>
                   </div>
                 </div>
-                <b-button variant="secondary" class="add-game-button" v-on:click="addGame(counterPartyPublisherGames)">Add Game</b-button>
+                <b-button variant="secondary" class="add-game-button" @click="addGame(counterPartyPublisherGames)">Add Game</b-button>
               </div>
             </div>
           </div>
           <div class="row">
             <div class="col-6">
               <label>Budget (Current Budget: ${{ userPublisher.budget }})</label>
-              <input v-model="proposerBudgetSendAmount" id="proposerBudgetSendAmount" name="proposerBudgetSendAmount" type="number" class="form-control input" />
+              <input id="proposerBudgetSendAmount" v-model="proposerBudgetSendAmount" name="proposerBudgetSendAmount" type="number" class="form-control input" />
             </div>
             <div class="col-6">
               <label>Budget (Current Budget: ${{ counterParty.budget }})</label>
-              <input v-model="counterPartyBudgetSendAmount" id="counterPartyBudgetSendAmount" name="counterPartyBudgetSendAmount" type="number" class="form-control input" />
+              <input id="counterPartyBudgetSendAmount" v-model="counterPartyBudgetSendAmount" name="counterPartyBudgetSendAmount" type="number" class="form-control input" />
             </div>
           </div>
 
           <div class="form-group">
             <label for="messageText" class="control-label">Message (All players will see this message.)</label>
-            <textarea class="form-control" v-model="message" rows="3"></textarea>
+            <textarea v-model="message" class="form-control" rows="3"></textarea>
           </div>
         </div>
 
-        <div class="alert alert-warning" v-show="clientError">{{ clientError }}</div>
-        <div class="alert alert-danger" v-show="serverError">{{ serverError }}</div>
+        <div v-show="clientError" class="alert alert-warning">{{ clientError }}</div>
+        <div v-show="serverError" class="alert alert-danger">{{ serverError }}</div>
 
         <div slot="modal-footer">
-          <input type="submit" v-show="counterParty" class="btn btn-primary" value="Propose Trade" v-on:click="proposeTrade" />
+          <input v-show="counterParty" type="submit" class="btn btn-primary" value="Propose Trade" @click="proposeTrade" />
         </div>
       </b-modal>
     </form>

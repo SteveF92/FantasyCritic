@@ -9,7 +9,7 @@
             </div>
 
             <div class="selector-area">
-              <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="changeYear" class="year-selector" />
+              <b-form-select v-model="selectedYear" :options="supportedYears" class="year-selector" @change="changeYear" />
             </div>
           </div>
         </div>
@@ -17,26 +17,26 @@
       <hr />
       <div class="row">
         <div class="col-12 col-lg-6">
-          <b-button variant="info" :to="{ name: 'masterGameRequest' }" v-show="isAuth" class="nav-link request-button">Request new Master Game</b-button>
+          <b-button v-show="isAuth" variant="info" :to="{ name: 'masterGameRequest' }" class="nav-link request-button">Request new Master Game</b-button>
         </div>
         <div class="col-12 col-lg-6">
-          <b-button variant="info" :to="{ name: 'masterGameChangeRequest' }" v-show="isAuth" class="nav-link request-button">Suggest a Correction</b-button>
+          <b-button v-show="isAuth" variant="info" :to="{ name: 'masterGameChangeRequest' }" class="nav-link request-button">Suggest a Correction</b-button>
         </div>
       </div>
 
       <div class="special-selectors text-well">
         <div v-if="isPlusUser">
           <label class="league-label">View Games for League</label>
-          <b-form-select v-model="selectedLeague" v-on:change="fetchGamesForYear" class="league-selector">
+          <b-form-select v-model="selectedLeague" class="league-selector" @change="fetchGamesForYear">
             <template #first>
               <option value="">-- none --</option>
             </template>
-            <option v-for="league in myLeaguesForYear" :key="league.leagueID" v-bind:value="league">
+            <option v-for="league in myLeaguesForYear" :key="league.leagueID" :value="league">
               {{ league.leagueName }}
             </option>
           </b-form-select>
           <br />
-          <b-button variant="info" v-show="selectedLeague && (eligibilityFilter || takenStatusFilter)" v-on:click="clearLeagueFilter" class="clear-league-filter-button">Clear League Filter</b-button>
+          <b-button v-show="selectedLeague && (eligibilityFilter || takenStatusFilter)" variant="info" class="clear-league-filter-button" @click="clearLeagueFilter">Clear League Filter</b-button>
           <b-form-group v-show="selectedLeague">
             <b-form-radio v-model="eligibilityFilter" value="eligibleOnly">Show only eligible games</b-form-radio>
             <b-form-radio v-model="eligibilityFilter" value="eligibleInOpenSlotOnly">Show only games eligible in open slot</b-form-radio>
@@ -53,7 +53,7 @@
       </div>
 
       <div v-if="showGames">
-        <masterGamesTable :masterGames="gamesToShow"></masterGamesTable>
+        <masterGamesTable :master-games="gamesToShow"></masterGamesTable>
       </div>
 
       <div v-else class="spinner">

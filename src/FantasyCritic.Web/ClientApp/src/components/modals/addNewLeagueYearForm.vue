@@ -4,13 +4,13 @@
       <div class="form-horizontal">
         <div class="form-group">
           <label for="selectedYear" class="control-label">New Year to Play</label>
-          <select class="form-control" v-model="selectedYear" id="selectedYear">
-            <option v-for="possibleYear in availableYears" v-bind:value="possibleYear" v-bind:key="possibleYear">{{ possibleYear }}</option>
+          <select id="selectedYear" v-model="selectedYear" class="form-control">
+            <option v-for="possibleYear in availableYears" :key="possibleYear" :value="possibleYear">{{ possibleYear }}</option>
           </select>
         </div>
       </div>
       <div slot="modal-footer">
-        <input type="submit" class="btn btn-primary" value="Start New Year" v-on:click="addNewLeagueYear" :disabled="!selectedYear" />
+        <input type="submit" class="btn btn-primary" value="Start New Year" :disabled="!selectedYear" @click="addNewLeagueYear" />
       </div>
     </b-modal>
   </div>

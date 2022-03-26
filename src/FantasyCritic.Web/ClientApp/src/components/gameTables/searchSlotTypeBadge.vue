@@ -10,10 +10,10 @@
     </span>
     <span v-if="!gameSlot.counterPick && !name">
       <template v-if="gameSlot.requiredTags.length === 1">
-        <masterGameTagBadge :tagName="gameSlot.requiredTags[0]" short no-popover class="flex-real-badge search-tag"></masterGameTagBadge>
+        <masterGameTagBadge :tag-name="gameSlot.requiredTags[0]" short no-popover class="flex-real-badge search-tag"></masterGameTagBadge>
       </template>
       <template v-else>
-        <span class="badge tag-badge flex-badge search-tag" v-bind:style="getMultiBadgeColor(gameSlot.requiredTags)">FLX</span>
+        <span class="badge tag-badge flex-badge search-tag" :style="getMultiBadgeColor(gameSlot.requiredTags)">FLX</span>
       </template>
     </span>
   </span>

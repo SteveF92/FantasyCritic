@@ -13,13 +13,13 @@
       </router-link>
       <div class="navbar-collapse collapse">
         <ul class="navbar-nav">
-          <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
+          <li class="nav-item" :class="{ 'optional-link': !isAuth }">
             <router-link :to="{ name: 'criticsRoyale' }" class="nav-link" title="Critics Royale">
               <img class="topnav-image minimal-nav" src="@/assets/critics-royale-top-nav.svg" />
               <span class="full-nav">Royale</span>
             </router-link>
           </li>
-          <li class="nav-item" v-bind:class="{ 'optional-link': isAuth }">
+          <li class="nav-item" :class="{ 'optional-link': isAuth }">
             <router-link :to="{ name: 'howtoplay' }" class="nav-link" title="How to Play">
               <font-awesome-icon class="topnav-icon minimal-nav" icon="book-open" size="lg" />
               <span class="full-nav">How to Play</span>
@@ -31,13 +31,13 @@
               <span class="full-nav">FAQ</span>
             </router-link>
           </li>
-          <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
+          <li class="nav-item" :class="{ 'optional-link': !isAuth }">
             <router-link :to="{ name: 'masterGames' }" class="nav-link" title="Games">
               <font-awesome-icon class="topnav-icon minimal-nav" icon="gamepad" size="lg" />
               <span class="full-nav">Games</span>
             </router-link>
           </li>
-          <li class="nav-item" v-bind:class="{ 'optional-link': isAuth }">
+          <li class="nav-item" :class="{ 'optional-link': isAuth }">
             <router-link :to="{ name: 'about' }" class="nav-link" title="About">
               <font-awesome-icon class="topnav-icon minimal-nav" icon="info-circle" size="lg" />
               <span class="full-nav">About</span>
@@ -49,7 +49,7 @@
               <span class="full-nav">Contact</span>
             </router-link>
           </li>
-          <li class="nav-item" v-bind:class="{ 'optional-link': !isAuth }">
+          <li class="nav-item" :class="{ 'optional-link': !isAuth }">
             <router-link :to="{ name: 'fantasyCriticPlus' }" class="nav-link" title="Fantasy Critic Plus">
               <img class="topnav-image fc-plus-icon minimal-nav" src="@/assets/plus.svg" />
               <span class="full-nav">Plus</span>
@@ -57,7 +57,7 @@
           </li>
         </ul>
       </div>
-      <div class="my-2 my-lg-0" v-if="!authIsBusy">
+      <div v-if="!authIsBusy" class="my-2 my-lg-0">
         <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link brand-nav" href="https://patreon.com/fantasycritic" target="_blank">

@@ -4,10 +4,10 @@
       <div class="row league-header">
         <h1 class="header">Public Leagues</h1>
         <div class="year-selector">
-          <b-form-select v-model="selectedYear" :options="supportedYears" v-on:change="fetchPublicLeaguesForYear" />
+          <b-form-select v-model="selectedYear" :options="supportedYears" @change="fetchPublicLeaguesForYear" />
         </div>
       </div>
-      <div class="row" v-if="publicLeagues && publicLeagues.length > 0">
+      <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
         <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="publicLeagues" :fields="leagueFields" bordered striped responsive>
           <template #cell(leagueName)="data">
             <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>

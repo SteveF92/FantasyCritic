@@ -15,7 +15,7 @@
           {{ data.item.timestamp | dateTime }}
         </template>
         <template #cell(masterGame)="data">
-          <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+          <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
         <template #cell(successful)="data">
           {{ data.item.successful | yesNo }}
@@ -34,13 +34,13 @@
           {{ data.item.timestamp | dateTime }}
         </template>
         <template #cell(masterGame)="data">
-          <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+          <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
         <template #cell(counterPick)="data">
           {{ data.item.counterPick | yesNo }}
         </template>
         <template #cell(conditionalDropPublisherGame)="data">
-          <masterGamePopover v-if="data.item.conditionalDropPublisherGame" :masterGame="data.item.conditionalDropPublisherGame.masterGame"></masterGamePopover>
+          <masterGamePopover v-if="data.item.conditionalDropPublisherGame" :master-game="data.item.conditionalDropPublisherGame.masterGame"></masterGamePopover>
           <span v-else>None</span>
         </template>
         <template #cell(projectedPointsAtTimeOfBid)="data">
@@ -57,9 +57,12 @@
 import MasterGamePopover from '@/components/masterGamePopover';
 
 export default {
-  props: ['leagueActionSet', 'mode'],
   components: {
     MasterGamePopover
+  },
+  props: {
+    leagueActionSet: Array,
+    mode: String
   },
   data() {
     return {

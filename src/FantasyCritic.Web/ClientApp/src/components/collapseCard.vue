@@ -19,7 +19,9 @@
 
 <script>
 export default {
-  props: ['defaultVisible']
+  props: {
+    defaultVisible: Boolean
+  }
 };
 </script>
 

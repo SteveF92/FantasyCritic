@@ -12,12 +12,12 @@
     <div v-for="specialGameSlot in internalValue" :key="specialGameSlot.specialSlotPosition" class="special-game-slot">
       <div class="special-slot-header">
         <h4>Special Slot {{ specialGameSlot.specialSlotPosition + 1 }}</h4>
-        <b-button variant="danger" size="sm" v-on:click="removeSlot(specialGameSlot)">Remove</b-button>
+        <b-button variant="danger" size="sm" @click="removeSlot(specialGameSlot)">Remove</b-button>
       </div>
       <masterGameTagSelector v-model="specialGameSlot.requiredTags" @input="handleInput"></masterGameTagSelector>
     </div>
     <div class="add-slot-button-row">
-      <b-button variant="primary" v-on:click="addSlot" class="add-slot-button">Add Special Slot</b-button>
+      <b-button variant="primary" class="add-slot-button" @click="addSlot">Add Special Slot</b-button>
     </div>
   </div>
 </template>
@@ -26,9 +26,11 @@
 import MasterGameTagSelector from '@/components/masterGameTagSelector';
 
 export default {
-  props: ['value'],
   components: {
     MasterGameTagSelector
+  },
+  props: {
+    value: Object
   },
   data() {
     return {
@@ -42,6 +44,14 @@ export default {
     showPortDanger() {
       return _.some(this.internalValue, (x) => _.some(x.requiredTags, (y) => y.name === 'Port'));
     }
+  },
+  watch: {
+    value() {
+      this.updateInternal();
+    }
+  },
+  mounted() {
+    this.updateInternal();
   },
   methods: {
     handleInput() {
@@ -94,14 +104,6 @@ export default {
         };
         this.internalValue.push(newInternalItem);
       });
-    }
-  },
-  mounted() {
-    this.updateInternal();
-  },
-  watch: {
-    value() {
-      this.updateInternal();
     }
   }
 };

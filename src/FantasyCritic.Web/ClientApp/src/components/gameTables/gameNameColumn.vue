@@ -1,34 +1,34 @@
 <template>
   <span class="game-name-column">
     <span class="game-name-side">
-      <b-button variant="danger" class="move-button" v-show="moveMode && game && !holdingGame && !gameSlot.counterPick" v-on:click="holdGame">Move</b-button>
-      <b-button variant="success" class="move-button" v-show="holdingGame && !gameSlot.counterPick" v-on:click="placeGame">Here</b-button>
-      <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || gameSlot.dropped" :gameSlot="gameSlot"></slotTypeBadge>
-      <span class="master-game-popover" v-if="game">
-        <masterGamePopover v-if="game.linked" :masterGame="game.masterGame" :currentlyIneligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
+      <b-button v-show="moveMode && game && !holdingGame && !gameSlot.counterPick" variant="danger" class="move-button" @click="holdGame">Move</b-button>
+      <b-button v-show="holdingGame && !gameSlot.counterPick" variant="success" class="move-button" @click="placeGame">Here</b-button>
+      <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || gameSlot.dropped" :game-slot="gameSlot"></slotTypeBadge>
+      <span v-if="game" class="master-game-popover">
+        <masterGamePopover v-if="game.linked" :master-game="game.masterGame" :currently-ineligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
         <span v-if="!game.linked">{{ game.gameName }}</span>
       </span>
     </span>
 
-    <span class="game-info-side" v-if="game">
-      <font-awesome-icon v-if="!game.linked" color="white" size="lg" icon="question-circle" v-b-popover.hover.focus="unlinkedText" />
-      <font-awesome-icon v-if="game.linked && !game.willRelease" color="white" size="lg" icon="calendar-times" v-b-popover.hover.focus="willNotReleaseText" />
-      <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" color="white" size="lg" icon="balance-scale" v-b-popover.hover.focus="delayContentionText" />
-      <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" color="white" size="lg" icon="crosshairs" v-b-popover.hover.focus="counterPickedText" />
-      <font-awesome-icon v-if="game.dropBlocked" color="white" size="lg" icon="lock" v-b-popover.hover.focus="gameDropBlockedText" />
+    <span v-if="game" class="game-info-side">
+      <font-awesome-icon v-if="!game.linked" v-b-popover.hover.focus="unlinkedText" color="white" size="lg" icon="question-circle" />
+      <font-awesome-icon v-if="game.linked && !game.willRelease" v-b-popover.hover.focus="willNotReleaseText" color="white" size="lg" icon="calendar-times" />
+      <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" v-b-popover.hover.focus="delayContentionText" color="white" size="lg" icon="balance-scale" />
+      <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" v-b-popover.hover.focus="counterPickedText" color="white" size="lg" icon="crosshairs" />
+      <font-awesome-icon v-if="game.dropBlocked" v-b-popover.hover.focus="gameDropBlockedText" color="white" size="lg" icon="lock" />
       <font-awesome-icon
         v-if="game.released && game.linked && !game.criticScore && !supportedYear.finished"
+        v-b-popover.hover.focus="needsMoreReviewsText"
         color="white"
         size="lg"
-        icon="hourglass-half"
-        v-b-popover.hover.focus="needsMoreReviewsText" />
-      <font-awesome-icon v-if="game.manualCriticScore" color="white" size="lg" icon="pen" v-b-popover.hover.focus="manuallyScoredText" />
-      <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria" color="white" size="lg" icon="exclamation-triangle" v-b-popover.hover.focus="inEligibleText" />
+        icon="hourglass-half" />
+      <font-awesome-icon v-if="game.manualCriticScore" v-b-popover.hover.focus="manuallyScoredText" color="white" size="lg" icon="pen" />
+      <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria" v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="exclamation-triangle" />
     </span>
 
     <span v-if="gameSlot.counterPick && !game" class="game-status">
       Warning!
-      <font-awesome-icon color="white" size="lg" icon="exclamation-triangle" v-b-popover.hover.focus="emptyCounterpickText" />
+      <font-awesome-icon v-b-popover.hover.focus="emptyCounterpickText" color="white" size="lg" icon="exclamation-triangle" />
     </span>
   </span>
 </template>

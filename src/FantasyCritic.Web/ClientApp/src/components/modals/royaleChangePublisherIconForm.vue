@@ -13,11 +13,11 @@
     <div class="form-horizontal">
       <div class="form-group">
         <label for="newPublisherIcon" class="control-label">Publisher Icon</label>
-        <input v-model="newPublisherIcon" id="newPublisherIcon" name="newPublisherIcon" type="text" class="form-control input" />
+        <input id="newPublisherIcon" v-model="newPublisherIcon" name="newPublisherIcon" type="text" class="form-control input" />
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Change Icon" v-on:click="changePublisherIcon" :disabled="!iconIsValid" />
+      <input type="submit" class="btn btn-primary" value="Change Icon" :disabled="!iconIsValid" @click="changePublisherIcon" />
     </div>
   </b-modal>
 </template>
@@ -26,6 +26,9 @@ import axios from 'axios';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {
+  props: {
+    userRoyalePublisher: Object
+  },
   data() {
     return {
       newPublisherIcon: '',
@@ -37,7 +40,9 @@ export default {
       return GlobalFunctions.publisherIconIsValid(this.newPublisherIcon);
     }
   },
-  props: ['userRoyalePublisher'],
+  mounted() {
+    this.clearData();
+  },
   methods: {
     changePublisherIcon() {
       var model = {
@@ -55,9 +60,6 @@ export default {
     clearData() {
       this.newPublisherIcon = this.userRoyalePublisher.publisherIcon;
     }
-  },
-  mounted() {
-    this.clearData();
   }
 };
 </script>

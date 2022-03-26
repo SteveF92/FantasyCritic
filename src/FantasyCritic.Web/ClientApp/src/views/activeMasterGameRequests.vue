@@ -12,14 +12,14 @@
         <h3>Respond to Request</h3>
         <div class="row">
           <div class="col-xl-8 col-lg-10 col-md-12 text-well">
-            <form v-on:submit.prevent="respondToRequest">
+            <form @submit.prevent="respondToRequest">
               <div class="form-group">
                 <label for="masterGameID" class="control-label">Master Game ID</label>
-                <input v-model="masterGameID" id="masterGameID" name="masterGameID" class="form-control input" />
+                <input id="masterGameID" v-model="masterGameID" name="masterGameID" class="form-control input" />
               </div>
               <div class="form-group">
                 <label for="responseNote" class="control-label">Response Note</label>
-                <input v-model="responseNote" id="responseNote" name="responseNote" class="form-control input" />
+                <input id="responseNote" v-model="responseNote" name="responseNote" class="form-control input" />
               </div>
               <div class="form-group">
                 <div class="col-md-offset-2 col-md-4">
@@ -33,7 +33,7 @@
       </div>
 
       <div v-if="activeRequests && activeRequests.length === 0" class="alert alert-info">No active requests.</div>
-      <div class="row" v-if="activeRequests && activeRequests.length !== 0">
+      <div v-if="activeRequests && activeRequests.length !== 0" class="row">
         <table class="table table-sm table-responsive-sm table-bordered table-striped">
           <thead>
             <tr class="bg-primary">
@@ -48,7 +48,7 @@
               <td>{{ request.gameName }}</td>
               <td>{{ request.requesterDisplayName }}</td>
               <td class="select-cell">
-                <b-button variant="info" size="sm" v-on:click="assignGame(request)">Assign Game</b-button>
+                <b-button variant="info" size="sm" @click="assignGame(request)">Assign Game</b-button>
               </td>
               <td class="select-cell">
                 <b-button variant="info" :to="{ name: 'masterGameCreator', query: { requestID: request.requestID } }">Create Game</b-button>

@@ -11,48 +11,48 @@
           <strong>{{ nextPublisherUp.publisherName }} (Display Name: {{ nextPublisherUp.playerName }})</strong>
         </label>
       </div>
-      <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
+      <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
         <label for="draftGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
+          <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+            <b-button variant="info" @click="searchGame">Search Game</b-button>
           </span>
         </div>
 
         <div v-if="!leagueYear.hasSpecialSlots">
-          <b-button variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
+          <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
         </div>
         <div v-else>
           <h5 class="text-black">Search by Slot</h5>
           <span class="search-tags">
-            <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL" v-on:click.native="getTopGames"></searchSlotTypeBadge>
-            <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG" v-on:click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
+            <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" @click.native="getTopGames"></searchSlotTypeBadge>
+            <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.regularSlot" name="REG" @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
             <searchSlotTypeBadge
               v-for="specialSlot in leagueYear.slotInfo.specialSlots"
               :key="specialSlot.overallSlotNumber"
-              :gameSlot="specialSlot"
-              v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+              :game-slot="specialSlot"
+              @click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
           </span>
         </div>
 
         <div v-if="!draftMasterGame">
-          <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
-          <h3 class="text-black" v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
-          <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
+          <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
+          <h3 v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
+          <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
         </div>
 
-        <div v-show="searched && !draftMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+        <div v-show="searched && !draftMasterGame" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
-            <span class="col-12 col-md-7" v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
-            <span class="col-12 col-md-7" v-show="possibleMasterGames.length === 0">No games were found.</span>
-            <b-button variant="primary" v-on:click="showUnlistedField" size="sm" class="col-12 col-md-5">Select unlisted game</b-button>
+            <span v-show="possibleMasterGames.length > 0" class="col-12 col-md-7">Don't see the game you are looking for?</span>
+            <span v-show="possibleMasterGames.length === 0" class="col-12 col-md-7">No games were found.</span>
+            <b-button variant="primary" size="sm" class="col-12 col-md-5" @click="showUnlistedField">Select unlisted game</b-button>
           </div>
 
           <div v-if="showingUnlistedField">
             <label for="draftUnlistedGame" class="control-label">Custom Game Name</label>
             <div class="input-group game-search-input">
-              <input v-model="draftUnlistedGame" id="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
+              <input id="draftUnlistedGame" v-model="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
             </div>
             <div>Enter the full name of the game you want.</div>
             <div>You as league manager can link this custom game with a "master game" later.</div>
@@ -61,21 +61,21 @@
       </form>
 
       <div v-if="draftMasterGame || draftUnlistedGame">
-        <h3 for="draftMasterGame" v-show="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
-        <masterGameSummary v-if="draftMasterGame" :masterGame="draftMasterGame"></masterGameSummary>
+        <h3 v-show="draftMasterGame" for="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
+        <masterGameSummary v-if="draftMasterGame" :master-game="draftMasterGame"></masterGameSummary>
         <hr />
-        <b-button variant="primary" v-on:click="addGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy">Add Game to Publisher</b-button>
-        <div v-if="draftResult && !draftResult.success" class="alert draft-error" v-bind:class="{ 'alert-danger': !draftResult.overridable, 'alert-warning': draftResult.overridable }">
-          <h3 class="alert-heading" v-if="draftResult.overridable">Warning!</h3>
-          <h3 class="alert-heading" v-if="!draftResult.overridable">Error!</h3>
+        <b-button v-if="formIsValid" variant="primary" class="add-game-button" :disabled="isBusy" @click="addGame">Add Game to Publisher</b-button>
+        <div v-if="draftResult && !draftResult.success" class="alert draft-error" :class="{ 'alert-danger': !draftResult.overridable, 'alert-warning': draftResult.overridable }">
+          <h3 v-if="draftResult.overridable" class="alert-heading">Warning!</h3>
+          <h3 v-if="!draftResult.overridable" class="alert-heading">Error!</h3>
           <ul>
             <li v-for="error in draftResult.errors" :key="error">{{ error }}</li>
           </ul>
 
-          <div class="form-check" v-if="draftResult.overridable">
+          <div v-if="draftResult.overridable" class="form-check">
             <span>
               <label class="text-white">Do you want to override these warnings?</label>
-              <input class="form-check-input override-checkbox" type="checkbox" v-model="draftOverride" />
+              <input v-model="draftOverride" class="form-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
         </div>
@@ -89,8 +89,15 @@ import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import MasterGameSummary from '@/components/masterGameSummary';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  components: {
+    PossibleMasterGamesTable,
+    MasterGameSummary,
+    SearchSlotTypeBadge
+  },
+  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: null,
@@ -105,17 +112,14 @@ export default {
       isBusy: false
     };
   },
-  components: {
-    PossibleMasterGamesTable,
-    MasterGameSummary,
-    SearchSlotTypeBadge
-  },
   computed: {
     formIsValid() {
       return this.draftUnlistedGame || this.draftMasterGame;
+    },
+    year() {
+      return this.leagueYear.year;
     }
   },
-  props: ['leagueYear', 'nextPublisherUp', 'year'],
   methods: {
     searchGame() {
       this.clearDataExceptSearch();

@@ -2,9 +2,9 @@
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div>
       <h1>Admin Console</h1>
-      <div class="alert alert-danger" v-show="errorInfo">{{ errorInfo }}</div>
-      <div class="alert alert-info" v-show="isBusy">Request is processing...</div>
-      <div class="alert alert-success" v-show="jobSuccess">'{{ jobSuccess }}' sucessfully run.</div>
+      <div v-show="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
+      <div v-show="isBusy" class="alert alert-info">Request is processing...</div>
+      <div v-show="jobSuccess" class="alert alert-success">'{{ jobSuccess }}' sucessfully run.</div>
 
       <h2>Requests</h2>
       <div>
@@ -15,32 +15,32 @@
 
       <h2>Data Actions</h2>
       <div>
-        <b-button variant="info" v-on:click="fullRefresh">Full Refresh</b-button>
-        <b-button variant="info" v-on:click="refreshCriticScores">Refresh Critic Scores</b-button>
-        <b-button variant="info" v-on:click="refreshGGInfo">Refresh GG Info</b-button>
-        <b-button variant="info" v-on:click="updateFantasyPoints">Update Fantasy Points</b-button>
-        <b-button variant="info" v-on:click="refreshCaches">Refresh Caches</b-button>
-        <b-button variant="info" v-on:click="refreshPatreonInfo">Refresh Patreon</b-button>
+        <b-button variant="info" @click="fullRefresh">Full Refresh</b-button>
+        <b-button variant="info" @click="refreshCriticScores">Refresh Critic Scores</b-button>
+        <b-button variant="info" @click="refreshGGInfo">Refresh GG Info</b-button>
+        <b-button variant="info" @click="updateFantasyPoints">Update Fantasy Points</b-button>
+        <b-button variant="info" @click="refreshCaches">Refresh Caches</b-button>
+        <b-button variant="info" @click="refreshPatreonInfo">Refresh Patreon</b-button>
       </div>
 
       <h2>Bids</h2>
       <div>
         <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Action Processing Dry Run</b-button>
-        <b-button variant="warning" v-on:click="turnOnActionProcessing">Turn on action processing mode</b-button>
-        <b-button variant="info" v-on:click="turnOffActionProcessing">Turn off action processing mode</b-button>
-        <b-button variant="danger" v-on:click="processActions">Process Actions</b-button>
+        <b-button variant="warning" @click="turnOnActionProcessing">Turn on action processing mode</b-button>
+        <b-button variant="info" @click="turnOffActionProcessing">Turn off action processing mode</b-button>
+        <b-button variant="danger" @click="processActions">Process Actions</b-button>
       </div>
 
       <h2>Other</h2>
       <div>
-        <b-button variant="info" v-on:click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
-        <b-button variant="danger" v-on:click="sendPublicBiddingEmails">Send Public Bidding Emails</b-button>
+        <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
+        <b-button variant="danger" @click="sendPublicBiddingEmails">Send Public Bidding Emails</b-button>
       </div>
 
       <h2>Database</h2>
       <div>
-        <b-button variant="info" v-on:click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
-        <b-button variant="warning" v-on:click="snapshotDatabase">Snapshot Database</b-button>
+        <b-button variant="info" @click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
+        <b-button variant="warning" @click="snapshotDatabase">Snapshot Database</b-button>
       </div>
     </div>
 
@@ -51,7 +51,7 @@
         <label for="resendConfirmationUserID" class="control-label">User ID</label>
         <input v-model="resendConfirmationUserID" type="text" class="form-control input" />
       </div>
-      <b-button variant="info" v-on:click="resendConfirmationEmail">Send Confirmation</b-button>
+      <b-button variant="info" @click="resendConfirmationEmail">Send Confirmation</b-button>
     </div>
   </div>
 </template>

@@ -26,29 +26,29 @@
         <p v-show="!masterGame">
           <strong>You can suggest a correction by clicking a link on a master game's page.</strong>
         </p>
-        <div class="row" v-if="masterGame">
+        <div v-if="masterGame" class="row">
           <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0 text-well">
             <h2 v-if="masterGame">{{ masterGame.gameName }}</h2>
-            <masterGameDetails :masterGame="masterGame"></masterGameDetails>
+            <masterGameDetails :master-game="masterGame"></masterGameDetails>
 
             <ValidationObserver v-slot="{ invalid }">
-              <form v-on:submit.prevent="sendMasterGameChangeRequestRequest">
+              <form @submit.prevent="sendMasterGameChangeRequestRequest">
                 <div class="form-group">
                   <label for="requestNote" class="control-label">What seems to be the issue?</label>
-                  <ValidationProvider rules="required" v-slot="{ errors }">
-                    <input v-model="requestNote" id="requestNote" name="Request Note" type="text" class="form-control input" />
+                  <ValidationProvider v-slot="{ errors }" rules="required">
+                    <input id="requestNote" v-model="requestNote" name="Request Note" type="text" class="form-control input" />
                     <span class="text-danger">{{ errors[0] }}</span>
                   </ValidationProvider>
                 </div>
 
                 <div class="form-group">
                   <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
-                  <input v-model="openCriticLink" id="openCriticLink" name="openCriticLink" class="form-control input" />
+                  <input id="openCriticLink" v-model="openCriticLink" name="openCriticLink" class="form-control input" />
                 </div>
 
                 <div class="form-group">
                   <label for="ggLink" class="control-label">Link to GG| Page (Optional)</label>
-                  <input v-model="ggLink" id="ggLink" name="ggLink" class="form-control input" />
+                  <input id="ggLink" v-model="ggLink" name="ggLink" class="form-control input" />
                 </div>
 
                 <div class="form-group">
@@ -78,7 +78,7 @@
               <tbody>
                 <tr v-for="request in myRequests" :key="request.requestID">
                   <td>
-                    <span><masterGamePopover :masterGame="request.masterGame"></masterGamePopover></span>
+                    <span><masterGamePopover :master-game="request.masterGame"></masterGamePopover></span>
                   </td>
                   <td>
                     <span>{{ request.requestNote }}</span>
@@ -92,8 +92,8 @@
                     <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
                   </td>
                   <td class="select-cell">
-                    <span v-show="request.answered"><b-button variant="info" size="sm" v-on:click="dismissRequest(request)">Dismiss Request</b-button></span>
-                    <span v-show="!request.answered"><b-button variant="danger" size="sm" v-on:click="cancelRequest(request)">Cancel Request</b-button></span>
+                    <span v-show="request.answered"><b-button variant="info" size="sm" @click="dismissRequest(request)">Dismiss Request</b-button></span>
+                    <span v-show="!request.answered"><b-button variant="danger" size="sm" @click="cancelRequest(request)">Cancel Request</b-button></span>
                   </td>
                 </tr>
               </tbody>

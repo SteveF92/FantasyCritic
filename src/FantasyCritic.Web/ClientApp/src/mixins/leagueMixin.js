@@ -28,6 +28,12 @@ let leagueMixin = {
     players() {
       return this.leagueYear.players;
     },
+    hasSpecialSlots() {
+      return this.leagueYear.hasSpecialSlots;
+    },
+    supportedYear() {
+      return this.leagueYear.supportedYear;
+    },
     nextPublisherUp() {
       if (!this.leagueYear || !this.leagueYear.publishers) {
         return null;

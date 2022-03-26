@@ -1,28 +1,28 @@
 <template>
   <b-modal id="claimGameForm" ref="claimGameFormRef" size="lg" title="Add Publisher Game" hide-footer @hidden="clearData">
     <div class="alert alert-warning">Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be adding games to player's rosters.</div>
-    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
         <label for="claimGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
+          <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+            <b-button variant="info" @click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
 
-        <div v-show="searched && !claimMasterGame" class="alert" v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+        <div v-show="searched && !claimMasterGame" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
-            <span class="col-12 col-md-7" v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
-            <span class="col-12 col-md-7" v-show="possibleMasterGames.length === 0">No games were found.</span>
-            <b-button variant="primary" v-on:click="showUnlistedField" size="sm" class="col-12 col-md-5">Select unlisted game.</b-button>
+            <span v-show="possibleMasterGames.length > 0" class="col-12 col-md-7">Don't see the game you are looking for?</span>
+            <span v-show="possibleMasterGames.length === 0" class="col-12 col-md-7">No games were found.</span>
+            <b-button variant="primary" size="sm" class="col-12 col-md-5" @click="showUnlistedField">Select unlisted game.</b-button>
           </div>
 
           <div v-if="showingUnlistedField">
             <label for="claimUnlistedGame" class="control-label">Custom Game Name</label>
             <div class="input-group game-search-input">
-              <input v-model="claimUnlistedGame" id="claimUnlistedGame" name="claimUnlistedGame" type="text" class="form-control input" />
+              <input id="claimUnlistedGame" v-model="claimUnlistedGame" name="claimUnlistedGame" type="text" class="form-control input" />
             </div>
             <div>Enter the full name of the game you want.</div>
             <div>You as league manager can link this custom game with a "master game" later.</div>
@@ -31,15 +31,15 @@
 
         <div v-if="claimMasterGame">
           <h3 for="claimMasterGame" class="selected-game text-black">Selected Game:</h3>
-          <masterGameSummary :masterGame="claimMasterGame"></masterGameSummary>
+          <masterGameSummary :master-game="claimMasterGame"></masterGameSummary>
         </div>
       </div>
     </form>
-    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="addGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent="addGame">
       <div class="form-group">
         <label for="claimPublisher" class="control-label">Publisher</label>
         <b-form-select v-model="claimPublisher">
-          <option v-for="publisher in publishers" v-bind:value="publisher" :key="publisher.publisherID">
+          <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">
             {{ publisher.publisherName }}
           </option>
         </b-form-select>
@@ -47,23 +47,23 @@
       <div class="form-check">
         <span>
           <label class="form-check-label">CounterPick</label>
-          <input class="form-check-input override-checkbox" type="checkbox" v-model="claimCounterPick" />
+          <input v-model="claimCounterPick" class="form-check-input override-checkbox" type="checkbox" />
         </span>
       </div>
       <div>
-        <input type="submit" class="btn btn-primary add-game-button" value="Add game to publisher" v-if="formIsValid" />
+        <input v-if="formIsValid" type="submit" class="btn btn-primary add-game-button" value="Add game to publisher" />
       </div>
-      <div v-if="claimResult && !claimResult.success" class="alert claim-error" v-bind:class="{ 'alert-danger': !claimResult.overridable, 'alert-warning': claimResult.overridable }">
-        <h3 class="alert-heading" v-if="claimResult.overridable">Warning!</h3>
-        <h3 class="alert-heading" v-if="!claimResult.overridable">Error!</h3>
+      <div v-if="claimResult && !claimResult.success" class="alert claim-error" :class="{ 'alert-danger': !claimResult.overridable, 'alert-warning': claimResult.overridable }">
+        <h3 v-if="claimResult.overridable" class="alert-heading">Warning!</h3>
+        <h3 v-if="!claimResult.overridable" class="alert-heading">Error!</h3>
         <ul>
           <li v-for="error in claimResult.errors" :key="error">{{ error }}</li>
         </ul>
 
-        <div class="form-check" v-if="claimResult.overridable">
+        <div v-if="claimResult.overridable" class="form-check">
           <span>
             <label class="text-white">Do you want to override these warnings?</label>
-            <input class="form-check-input override-checkbox" type="checkbox" v-model="claimOverride" />
+            <input v-model="claimOverride" class="form-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
       </div>

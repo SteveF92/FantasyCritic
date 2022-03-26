@@ -1,7 +1,7 @@
 <template>
-  <b-modal id="manageEligibilityOverridesModal" ref="eligibilityOverridesModalRef" size="lg" title="Manage Eligibility Overrides" @hidden="clearData" hide-footer>
+  <b-modal id="manageEligibilityOverridesModal" ref="eligibilityOverridesModalRef" size="lg" title="Manage Eligibility Overrides" hide-footer @hidden="clearData">
     <div class="alert alert-info">This option will allow you to manually allow or ban a specific game in your league, no matter what your other settings are.</div>
-    <div class="alert alert-warning" v-if="leagueYear.hasSpecialSlots">
+    <div v-if="leagueYear.hasSpecialSlots" class="alert alert-warning">
       Warning! Because your league uses 'special roster slots', you should consider using the 'tag override' option, instead of this option. If you set a game as 'eligible' here, it will be eligible
       in
       <em>any</em>
@@ -21,30 +21,30 @@
             <td>{{ eligibilityOverride.masterGame.gameName }}</td>
             <td>{{ eligibilityOverride.eligible | yesNo }}</td>
             <td class="select-cell">
-              <b-button variant="danger" v-on:click="resetEligibility(eligibilityOverride)">Reset</b-button>
+              <b-button variant="danger" @click="resetEligibility(eligibilityOverride)">Reset</b-button>
             </td>
           </tr>
         </tbody>
       </table>
       <hr />
     </div>
-    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
         <label for="overrideGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input v-model="overrideGameName" id="overrideGameName" name="overrideGameName" type="text" class="form-control input" />
+          <input id="overrideGameName" v-model="overrideGameName" name="overrideGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+            <b-button variant="info" @click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="overrideMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="overrideMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
 
         <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
       </div>
     </form>
-    <div class="eligibility-set-buttons" v-if="overrideMasterGame">
-      <b-button variant="danger" size="sm" v-on:click="setEligibility(overrideMasterGame, false)">Ban Game</b-button>
-      <b-button variant="success" size="sm" v-on:click="setEligibility(overrideMasterGame, true)">Allow Game</b-button>
+    <div v-if="overrideMasterGame" class="eligibility-set-buttons">
+      <b-button variant="danger" size="sm" @click="setEligibility(overrideMasterGame, false)">Ban Game</b-button>
+      <b-button variant="success" size="sm" @click="setEligibility(overrideMasterGame, true)">Allow Game</b-button>
     </div>
     <br />
     <div v-if="errorInfo" class="alert alert-danger">

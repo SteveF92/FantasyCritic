@@ -12,7 +12,7 @@
           <td>{{ tagOverride.masterGame.gameName }}</td>
           <td>
             <span v-for="tag in tagOverride.tags" :key="tag">
-              <masterGameTagBadge :tagName="tag"></masterGameTagBadge>
+              <masterGameTagBadge :tag-name="tag"></masterGameTagBadge>
             </span>
           </td>
         </tr>

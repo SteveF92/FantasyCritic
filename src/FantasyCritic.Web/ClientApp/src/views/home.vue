@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="alert alert-warning" v-show="userInfo && !userInfo.emailConfirmed">
+    <div v-show="userInfo && !userInfo.emailConfirmed" class="alert alert-warning">
       <div>Your email address has not been confirmed. You cannot accept league invites via email until you do so.</div>
       <div>Check your email account for an email from us.</div>
       <span>
@@ -11,20 +11,20 @@
     </div>
 
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <div class="text-well welcome-area" v-if="userInfo">
+      <div v-if="userInfo" class="text-well welcome-area">
         <div class="row welcome-header">
           <h1>Welcome {{ userInfo.displayName }}!</h1>
         </div>
-        <div class="row main-buttons" v-if="activeRoyaleYearQuarter">
+        <div v-if="activeRoyaleYearQuarter" class="row main-buttons">
           <b-button variant="primary" :to="{ name: 'createLeague' }" class="main-button">Create a League</b-button>
           <b-button
-            variant="primary"
             v-if="!userRoyalePublisher"
+            variant="primary"
             :to="{ name: 'criticsRoyale', params: { year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter } }"
             class="main-button">
             Play Critics Royale
           </b-button>
-          <b-button variant="primary" v-if="userRoyalePublisher" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }" class="main-button">
+          <b-button v-if="userRoyalePublisher" variant="primary" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }" class="main-button">
             Critics Royale
           </b-button>
           <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
@@ -34,11 +34,11 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card title="Leagues" class="homepage-section" v-if="userInfo">
+          <b-card v-if="userInfo" title="Leagues" class="homepage-section">
             <b-tabs pills>
               <b-tab title="My Leagues" title-item-class="tab-header">
                 <div v-if="myStandardLeagues && myStandardLeagues.length > 0">
-                  <leagueTable :leagues="myStandardLeagues" :leagueIcon="'user'" :userID="userInfo.userID" :showArchive="true"></leagueTable>
+                  <leagueTable :leagues="myStandardLeagues" :league-icon="'user'" :user-i-d="userInfo.userID" :show-archive="true"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not in any leagues! Why not create one?</label>
@@ -49,21 +49,21 @@
                   League Invites
                   <font-awesome-icon icon="exclamation-circle" size="lg" />
                 </template>
-                <leagueTable :leagues="invitedLeagues" :leagueIcon="'envelope'" :userID="userInfo.userID"></leagueTable>
+                <leagueTable :leagues="invitedLeagues" :league-icon="'envelope'" :user-i-d="userInfo.userID"></leagueTable>
               </b-tab>
               <b-tab title="Followed Leagues" title-item-class="tab-header">
                 <div v-if="myFollowedLeagues && myFollowedLeagues.length > 0">
-                  <leagueTable :leagues="myFollowedLeagues" :leagueIcon="'users'" :userID="userInfo.userID"></leagueTable>
+                  <leagueTable :leagues="myFollowedLeagues" :league-icon="'users'" :user-i-d="userInfo.userID"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not following any public leagues!</label>
                 </div>
               </b-tab>
-              <b-tab title="Archived Leagues" v-if="myArchivedLeagues && myArchivedLeagues.length > 0" title-item-class="tab-header">
-                <leagueTable :leagues="myArchivedLeagues" :leagueIcon="'archive'" :userID="userInfo.userID" :showUnArchive="true"></leagueTable>
+              <b-tab v-if="myArchivedLeagues && myArchivedLeagues.length > 0" title="Archived Leagues" title-item-class="tab-header">
+                <leagueTable :leagues="myArchivedLeagues" :league-icon="'archive'" :user-i-d="userInfo.userID" :show-un-archive="true"></leagueTable>
               </b-tab>
-              <b-tab title="Test Leagues" v-if="myTestLeagues && myTestLeagues.length > 0" title-item-class="tab-header">
-                <leagueTable :leagues="myTestLeagues" :leagueIcon="'atom'" :userID="userInfo.userID"></leagueTable>
+              <b-tab v-if="myTestLeagues && myTestLeagues.length > 0" title="Test Leagues" title-item-class="tab-header">
+                <leagueTable :leagues="myTestLeagues" :league-icon="'atom'" :user-i-d="userInfo.userID"></leagueTable>
               </b-tab>
             </b-tabs>
           </b-card>
@@ -80,7 +80,7 @@
       <div class="row">
         <div class="col-lg-8 col-md-12">
           <b-card class="homepage-section">
-            <gameNews :gameNews="gameNews" mode="user" />
+            <gameNews :game-news="gameNews" mode="user" />
           </b-card>
         </div>
 
@@ -89,7 +89,7 @@
           <b-card title="Popular Public Leagues" class="homepage-section">
             <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
 
-            <div class="row" v-if="publicLeagues && publicLeagues.length > 0">
+            <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
               <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
                 <template #cell(leagueName)="data">
                   <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>

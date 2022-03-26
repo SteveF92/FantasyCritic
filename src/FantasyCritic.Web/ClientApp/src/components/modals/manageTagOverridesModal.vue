@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="manageTagOverridesModal" ref="tagOverridesModalRef" size="lg" title="Manage Tag Overrides" @hidden="clearData" hide-footer>
+  <b-modal id="manageTagOverridesModal" ref="tagOverridesModalRef" size="lg" title="Manage Tag Overrides" hide-footer @hidden="clearData">
     <div class="alert alert-info">This option will allow you to override the tags of a game to whatever you want, if you disagree with how the site has classified something.</div>
     <div v-if="leagueYear.tagOverrides.length > 0">
       <table class="table table-bordered table-striped">
@@ -15,34 +15,34 @@
             <td>{{ tagOverride.masterGame.gameName }}</td>
             <td>
               <span v-for="tag in tagOverride.tags" :key="tag">
-                <masterGameTagBadge :tagName="tag"></masterGameTagBadge>
+                <masterGameTagBadge :tag-name="tag"></masterGameTagBadge>
               </span>
             </td>
             <td class="select-cell">
-              <b-button variant="danger" v-on:click="resetTags(tagOverride)">Reset</b-button>
+              <b-button variant="danger" @click="resetTags(tagOverride)">Reset</b-button>
             </td>
           </tr>
         </tbody>
       </table>
       <hr />
     </div>
-    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
         <label for="overrideGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input v-model="overrideGameName" id="overrideGameName" name="overrideGameName" type="text" class="form-control input" />
+          <input id="overrideGameName" v-model="overrideGameName" name="overrideGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+            <b-button variant="info" @click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="overrideMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="overrideMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
 
         <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
       </div>
     </form>
     <div v-if="overrideMasterGame">
       <masterGameTagSelector v-model="chosenTags"></masterGameTagSelector>
-      <b-button variant="info" class="set-tags-button" size="sm" v-on:click="setTags(overrideMasterGame)">Set Tags</b-button>
+      <b-button variant="info" class="set-tags-button" size="sm" @click="setTags(overrideMasterGame)">Set Tags</b-button>
     </div>
     <br />
     <div v-if="errorInfo" class="alert alert-danger">

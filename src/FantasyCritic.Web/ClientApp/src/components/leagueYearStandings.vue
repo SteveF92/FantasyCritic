@@ -5,9 +5,9 @@
       <span>
         <label class="projections-label">Advanced Projections</label>
         <toggle-button
+          v-model="advancedProjections"
           class="toggle"
           :class="{ 'toggle-on': advancedProjections }"
-          v-model="advancedProjections"
           :sync="true"
           :labels="{ checked: 'On', unchecked: 'Off' }"
           :css-colors="true"
@@ -18,19 +18,19 @@
     <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="standings" :fields="standingFields" bordered small responsive striped>
       <template #cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
-        <font-awesome-icon v-if="data.item.previousYearWinner" icon="crown" class="previous-year-winner" v-b-popover.hover.focus="'Reigning Champion'" />
+        <font-awesome-icon v-if="data.item.previousYearWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-year-winner" />
         <span v-if="!data.item.user">{{ data.item.inviteName }}</span>
       </template>
       <template #cell(publisher)="data">
         <span v-if="data.item.publisher">
           <router-link :to="{ hash: `#${data.item.publisher.publisherID}` }">{{ data.item.publisher.publisherName }}</router-link>
-          <span class="publisher-badge badge badge-pill badge-primary badge-info" v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraft">Auto Draft</span>
+          <span v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraft" class="publisher-badge badge badge-pill badge-primary badge-info">Auto Draft</span>
         </span>
         <span v-if="data.item.user && !data.item.publisher">&lt;Not Created&gt;</span>
         <span v-if="!data.item.user">
           &lt;Invite Sent&gt;
           <span v-if="league.isManager">
-            <b-button variant="danger" size="sm" v-on:click="rescindInvite(data.item.inviteID, data.item.inviteName)">Rescind Invite</b-button>
+            <b-button variant="danger" size="sm" @click="rescindInvite(data.item.inviteID, data.item.inviteName)">Rescind Invite</b-button>
           </span>
         </span>
       </template>

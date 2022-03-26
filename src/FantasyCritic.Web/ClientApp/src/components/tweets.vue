@@ -1,7 +1,7 @@
 <template>
   <div class="tweet-area">
     <div class="tweet-timeline">
-      <Timeline :id="'fantasy_critic'" :sourceType="'profile'" :options="{ theme: 'dark', tweetLimit: '3' }" />
+      <Timeline :id="'fantasy_critic'" :source-type="'profile'" :options="{ theme: 'dark', tweetLimit: '3' }" />
     </div>
   </div>
 </template>

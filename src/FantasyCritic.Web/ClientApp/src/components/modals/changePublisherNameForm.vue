@@ -3,11 +3,11 @@
     <div class="form-horizontal">
       <div class="form-group">
         <label for="newPublisherName" class="control-label">Publisher Name</label>
-        <input v-model="newPublisherName" id="newPublisherName" name="newPublisherName" type="text" class="form-control input" />
+        <input id="newPublisherName" v-model="newPublisherName" name="newPublisherName" type="text" class="form-control input" />
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Change Name" v-on:click="changePublisherName" :disabled="!newPublisherName" />
+      <input type="submit" class="btn btn-primary" value="Change Name" :disabled="!newPublisherName" @click="changePublisherName" />
     </div>
   </b-modal>
 </template>
@@ -16,13 +16,16 @@ import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       newPublisherName: '',
       errorInfo: ''
     };
   },
-  mixins: [LeagueMixin],
+  mounted() {
+    this.clearData();
+  },
   methods: {
     changePublisherName() {
       var model = {
@@ -40,9 +43,6 @@ export default {
     clearData() {
       this.newPublisherName = this.userPublisher.publisherName;
     }
-  },
-  mounted() {
-    this.clearData();
   }
 };
 </script>

@@ -9,7 +9,7 @@
       <hr />
       <div v-if="createdGame" class="alert alert-success">
         Master Game created: {{ createdGame.masterGameID }}
-        <b-button variant="info" size="sm" v-clipboard:copy="createdGame.masterGameID">Copy</b-button>
+        <b-button v-clipboard:copy="createdGame.masterGameID" variant="info" size="sm">Copy</b-button>
         <b-button class="warning" :to="{ name: 'masterGameEditor', params: { mastergameid: createdGame.masterGameID } }">Edit Master Game</b-button>
       </div>
       <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
@@ -40,7 +40,7 @@
         </ul>
         <hr />
       </div>
-      <div class="row" v-if="requestNote">
+      <div v-if="requestNote" class="row">
         <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
           <h2>Request Note</h2>
           <p>{{ requestNote }}</p>
@@ -50,11 +50,11 @@
       <div class="row">
         <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
           <ValidationObserver v-slot="{ invalid }">
-            <form v-on:submit.prevent="createMasterGame">
+            <form @submit.prevent="createMasterGame">
               <div class="form-group">
                 <label for="gameName" class="control-label">Game Name</label>
-                <ValidationProvider rules="required" v-slot="{ errors }">
-                  <input v-model="gameName" id="gameName" name="Game Name" type="text" class="form-control input" />
+                <ValidationProvider v-slot="{ errors }" rules="required">
+                  <input id="gameName" v-model="gameName" name="Game Name" type="text" class="form-control input" />
                   <span class="text-danger">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -64,13 +64,13 @@
                 <flat-pickr v-model="releaseDate" class="form-control"></flat-pickr>
               </div>
 
-              <b-button variant="info" size="sm" v-on:click="propagateDate">Propagate Date</b-button>
-              <b-button variant="info" size="sm" v-on:click="parseEstimatedReleaseDate">Parse Estimated</b-button>
-              <b-button variant="warning" size="sm" v-on:click="clearDates">Clear Dates</b-button>
+              <b-button variant="info" size="sm" @click="propagateDate">Propagate Date</b-button>
+              <b-button variant="info" size="sm" @click="parseEstimatedReleaseDate">Parse Estimated</b-button>
+              <b-button variant="warning" size="sm" @click="clearDates">Clear Dates</b-button>
 
               <div class="form-group">
                 <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
-                <input v-model="estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
+                <input id="estimatedReleaseDate" v-model="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
               </div>
               <div class="form-group">
                 <label for="minimumReleaseDate" class="control-label">Minimum Release Date</label>
@@ -91,20 +91,20 @@
 
               <div class="form-group">
                 <label for="openCriticID" class="control-label">Open Critic ID</label>
-                <input v-model="openCriticID" id="openCriticID" name="openCriticID" class="form-control input" />
+                <input id="openCriticID" v-model="openCriticID" name="openCriticID" class="form-control input" />
               </div>
 
               <div class="form-group">
                 <label for="ggToken" class="control-label">GG| Token</label>
-                <input v-model="ggToken" id="ggToken" name="ggToken" class="form-control input" />
+                <input id="ggToken" v-model="ggToken" name="ggToken" class="form-control input" />
               </div>
 
               <h3>Tags</h3>
-              <masterGameTagSelector v-model="tags" :includeSystem="true"></masterGameTagSelector>
+              <masterGameTagSelector v-model="tags" include-system></masterGameTagSelector>
 
               <div class="form-group">
                 <label for="notes" class="control-label">Other Notes</label>
-                <input v-model="notes" id="notes" name="notes" class="form-control input" />
+                <input id="notes" v-model="notes" name="notes" class="form-control input" />
               </div>
 
               <div class="form-group">

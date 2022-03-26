@@ -1,5 +1,5 @@
 <template>
-  <div :id="'publisher-' + publisher.publisherID" class="player-summary bg-secondary" v-bind:class="{ 'publisher-is-next': publisher.nextToDraft }">
+  <div :id="'publisher-' + publisher.publisherID" class="player-summary bg-secondary" :class="{ 'publisher-is-next': publisher.nextToDraft }">
     <div class="publisher-player-names">
       <div class="publisher-name-and-icon">
         <span v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
@@ -18,7 +18,7 @@
       <div class="player-name">
         Player: {{ publisher.playerName }}
         <div v-show="!renderingSnapshot">
-          <b-button variant="secondary" v-if="userIsPublisher && isPlusUser" size="sm" v-on:click="prepareSnapshot">
+          <b-button v-if="userIsPublisher && isPlusUser" variant="secondary" size="sm" @click="prepareSnapshot">
             <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
             <span>Share</span>
           </b-button>
@@ -34,18 +34,11 @@
         </tr>
       </thead>
       <tbody>
-        <minimalPlayerGameSlotRow
-          v-for="gameSlot in gameSlots"
-          :minimal="true"
-          :gameSlot="gameSlot"
-          :supportedYear="leagueYear.supportedYear"
-          :hasSpecialSlots="leagueYear.hasSpecialSlots"
-          :userIsPublisher="userIsPublisher"
-          v-bind:key="gameSlot.overallSlotNumber"></minimalPlayerGameSlotRow>
+        <minimalPlayerGameSlotRow v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber" :minimal="true" :game-slot="gameSlot"></minimalPlayerGameSlotRow>
         <tr class="minimal-game-row">
           <td id="total-description">
-            <span id="total-description-text" v-if="!advancedProjections">Total Fantasy Points</span>
-            <span id="total-description-text" v-else>Projected Fantasy Points</span>
+            <span v-if="!advancedProjections" id="total-description-text">Total Fantasy Points</span>
+            <span v-else id="total-description-text">Projected Fantasy Points</span>
           </td>
           <template v-if="!advancedProjections">
             <td id="total-column" class="bg-success" colspan="2">{{ publisher.totalFantasyPoints | score }}</td>
@@ -85,7 +78,7 @@ export default {
       return this.userInfo && this.publisher.userID === this.userInfo.userID;
     },
     gameSlots() {
-      if (!this.$store.getters.draftOrderView) {
+      if (!this.draftOrderView) {
         return this.publisher.gameSlots;
       }
 

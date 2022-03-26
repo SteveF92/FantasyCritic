@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="table-options">
-      <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" v-on:click="enterMoveMode">Move Games</b-button>
-      <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" v-on:click="cancelMoveMode">Cancel Movement</b-button>
-      <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" v-on:click="confirmPositions">Confirm Positions</b-button>
+      <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" @click="enterMoveMode">Move Games</b-button>
+      <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" @click="cancelMoveMode">Cancel Movement</b-button>
+      <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" @click="confirmPositions">Confirm Positions</b-button>
       <template v-if="!moveMode && isPlusUser">
         <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="includeRemovedInSorted">
           <span class="checkbox-label">Include Dropped Games</span>
         </b-form-checkbox>
-        <toggle-button class="toggle" v-model="sortOrderMode" :sync="true" :labels="{ checked: 'Sort Mode', unchecked: 'Slot Mode' }" :css-colors="true" :font-size="13" :width="107" :height="28" />
+        <toggle-button v-model="sortOrderMode" class="toggle" :sync="true" :labels="{ checked: 'Sort Mode', unchecked: 'Slot Mode' }" :css-colors="true" :font-size="13" :width="107" :height="28" />
       </template>
     </div>
 
@@ -26,7 +26,7 @@
         Projected
         <br />
         points
-        <font-awesome-icon color="black" size="lg" icon="info-circle" v-b-popover.hover.focus.top="projectedPointsText" />
+        <font-awesome-icon v-b-popover.hover.focus.top="projectedPointsText" color="black" size="lg" icon="info-circle" />
       </template>
 
       <template #head(publisherGame.timestamp)>
@@ -35,7 +35,7 @@
       </template>
 
       <template #cell(publisherGame.gameName)="data">
-        <gameNameColumn :gameSlot="data.item" :hasSpecialSlots="leagueYear.hasSpecialSlots" :supportedYear="leagueYear.supportedYear"></gameNameColumn>
+        <gameNameColumn :game-slot="data.item" :has-special-slots="leagueYear.hasSpecialSlots" :supported-year="leagueYear.supportedYear"></gameNameColumn>
       </template>
 
       <template #cell(publisherGame.masterGame.maximumReleaseDate)="data">

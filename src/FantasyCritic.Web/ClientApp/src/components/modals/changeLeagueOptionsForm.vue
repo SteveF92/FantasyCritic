@@ -3,7 +3,7 @@
     <div class="form-horizontal">
       <div class="form-group">
         <label for="newleagueName" class="control-label">League Name</label>
-        <input v-model="newleagueName" id="newleagueName" name="newleagueName" type="text" class="form-control input" />
+        <input id="newleagueName" v-model="newleagueName" name="newleagueName" type="text" class="form-control input" />
       </div>
       <div class="form-group">
         <b-form-checkbox v-model="publicLeague">
@@ -22,7 +22,7 @@
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Change Settings" v-on:click="changeleagueName" :disabled="!newleagueName" />
+      <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newleagueName" @click="changeleagueName" />
     </div>
   </b-modal>
 </template>
@@ -31,6 +31,7 @@ import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       newleagueName: '',
@@ -40,7 +41,12 @@ export default {
       initialTestLeague: false
     };
   },
-  mixins: [LeagueMixin],
+  mounted() {
+    this.newleagueName = this.league.leagueName;
+    this.publicLeague = this.league.publicLeague;
+    this.testLeague = this.league.testLeague;
+    this.initialTestLeague = this.league.testLeague;
+  },
   methods: {
     changeleagueName() {
       var model = {
@@ -61,12 +67,6 @@ export default {
     clearData() {
       this.newleagueName = this.league.leagueName;
     }
-  },
-  mounted() {
-    this.newleagueName = this.league.leagueName;
-    this.publicLeague = this.league.publicLeague;
-    this.testLeague = this.league.testLeague;
-    this.initialTestLeague = this.league.testLeague;
   }
 };
 </script>

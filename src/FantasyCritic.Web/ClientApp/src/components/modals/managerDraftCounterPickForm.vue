@@ -7,11 +7,11 @@
           <strong>{{ nextPublisherUp.publisherName }} (Display Name: {{ nextPublisherUp.playerName }})</strong>
         </label>
       </div>
-      <form class="form-horizontal" v-on:submit.prevent="selectCounterPick" hide-footer>
+      <form class="form-horizontal" hide-footer @submit.prevent="selectCounterPick">
         <div class="form-group">
           <label for="selectedCounterPick" class="control-label">Game</label>
           <b-form-select v-model="selectedCounterPick">
-            <option v-for="publisherGame in possibleCounterPicks" :key="publisherGame.publisherGameID" v-bind:value="publisherGame">
+            <option v-for="publisherGame in possibleCounterPicks" :key="publisherGame.publisherGameID" :value="publisherGame">
               {{ publisherGame.gameName }}
             </option>
           </b-form-select>
@@ -34,8 +34,10 @@
 
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       selectedCounterPick: null,
@@ -43,7 +45,6 @@ export default {
       draftResult: null
     };
   },
-  props: ['nextPublisherUp'],
   methods: {
     selectCounterPick() {
       var request = {

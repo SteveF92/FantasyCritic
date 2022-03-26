@@ -11,7 +11,7 @@
       :multiple="true"
       @input="handleInput">
       <template slot="tag" slot-scope="{ option }">
-        <masterGameTagBadge :tagName="option.name"></masterGameTagBadge>
+        <masterGameTagBadge :tag-name="option.name"></masterGameTagBadge>
       </template>
     </multiselect>
   </div>
@@ -22,10 +22,13 @@ import Multiselect from 'vue-multiselect';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
 
 export default {
-  props: ['value', 'includeSystem'],
   components: {
     Multiselect,
     MasterGameTagBadge
+  },
+  props: {
+    value: Object,
+    includeSystem: Boolean
   },
   data() {
     return {
@@ -40,20 +43,20 @@ export default {
       return _.filter(this.$store.getters.allTags, (x) => !x.systemTagOnly);
     }
   },
+  watch: {
+    value() {
+      this.updateInternal();
+    }
+  },
+  mounted() {
+    this.updateInternal();
+  },
   methods: {
     handleInput() {
       this.$emit('input', this.internalValue);
     },
     updateInternal() {
       this.internalValue = _.cloneDeep(this.value);
-    }
-  },
-  mounted() {
-    this.updateInternal();
-  },
-  watch: {
-    value() {
-      this.updateInternal();
     }
   }
 };

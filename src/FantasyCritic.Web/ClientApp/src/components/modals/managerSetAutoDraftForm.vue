@@ -3,13 +3,13 @@
     <div class="alert alert-info">You can use this form to turn on or turn off autodraft for one of your players.</div>
 
     <b-form-group class="form-checkbox-group stacked checkboxes">
-      <b-form-checkbox v-for="publisher in publishers" v-bind:data="publisher" v-bind:key="publisher.publisherID" v-model="publisher.autoDraft">
+      <b-form-checkbox v-for="publisher in publishers" :key="publisher.publisherID" v-model="publisher.autoDraft" :data="publisher">
         {{ publisher.publisherName }}
       </b-form-checkbox>
     </b-form-group>
 
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Auto Draft" v-on:click="setAutoDraft" />
+      <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
     </div>
   </b-modal>
 </template>
@@ -18,7 +18,7 @@ import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
-  name: 'managerSetAutoDraftForm',
+  name: 'ManagerSetAutoDraftForm',
   mixins: [LeagueMixin],
   methods: {
     setAutoDraft() {

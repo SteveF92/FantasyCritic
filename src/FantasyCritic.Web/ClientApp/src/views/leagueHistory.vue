@@ -12,8 +12,8 @@
         <hr />
         <div v-if="leagueYear && leagueYear.managerMessages && leagueYear.managerMessages.length > 0">
           <h2>Manager's Messages</h2>
-          <div class="alert alert-info" v-for="message in leagueYear.managerMessages" :key="message.messageID">
-            <b-button class="delete-button" variant="warning" v-if="league.isManager" v-on:click="deleteMessage(message)">Delete</b-button>
+          <div v-for="message in leagueYear.managerMessages" :key="message.messageID" class="alert alert-info">
+            <b-button v-if="league.isManager" class="delete-button" variant="warning" @click="deleteMessage(message)">Delete</b-button>
             <h5>{{ message.timestamp | dateTime }}</h5>
             <div class="preserve-whitespace">{{ message.messageText }}</div>
           </div>
@@ -26,7 +26,7 @@
             <collapseCard>
               <div slot="header">{{ leagueActionSet.processTime | longDate }}</div>
               <div slot="body">
-                <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
+                <leagueActionSet :league-action-set="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
               </div>
             </collapseCard>
           </div>
@@ -34,7 +34,7 @@
 
         <div v-if="historicalTrades && historicalTrades.length > 0">
           <h2>Trades</h2>
-          <tradeSummary v-for="trade in historicalTrades" v-bind:key="trade.tradeID" :trade="trade"></tradeSummary>
+          <tradeSummary v-for="trade in historicalTrades" :key="trade.tradeID" :trade="trade"></tradeSummary>
         </div>
 
         <h2>Full Actions History</h2>
@@ -87,9 +87,6 @@ export default {
       lastID: 1
     };
   },
-  mounted() {
-    this.initializePage();
-  },
   watch: {
     $route(to, from) {
       if (to.path !== from.path) {
@@ -101,6 +98,9 @@ export default {
         document.getElementById('draft-notification-sound').play();
       }
     }
+  },
+  mounted() {
+    this.initializePage();
   },
   methods: {
     initializePage() {

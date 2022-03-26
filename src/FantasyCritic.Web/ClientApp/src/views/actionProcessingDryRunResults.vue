@@ -9,7 +9,7 @@
         <b-button v-b-toggle.drop-collapse variant="primary">Toggle Collapse</b-button>
         <b-collapse id="drop-collapse" class="mt-2">
           <div class="row">
-            <masterGamesTable :masterGames="dryRunResults.dropActions"></masterGamesTable>
+            <masterGamesTable :master-games="dryRunResults.dropActions"></masterGamesTable>
           </div>
           <hr />
         </b-collapse>
@@ -18,7 +18,7 @@
         <b-button v-b-toggle.bid-collapse variant="primary">Toggle Collapse</b-button>
         <b-collapse id="bid-collapse" class="mt-2">
           <div class="row">
-            <masterGamesTable :masterGames="dryRunResults.pickupActions"></masterGamesTable>
+            <masterGamesTable :master-games="dryRunResults.pickupActions"></masterGamesTable>
           </div>
           <hr />
         </b-collapse>
@@ -44,7 +44,7 @@
         <b-button v-b-toggle.league-action-sets-collapse variant="primary">Toggle Collapse</b-button>
         <b-collapse id="league-action-sets-collapse" class="mt-2">
           <div v-for="leagueActionSet in dryRunResults.leagueActionSets" :key="`${leagueActionSet.leagueID}-${leagueActionSet.processSetID}`" class="row">
-            <leagueActionSet :leagueActionSet="leagueActionSet" :mode="'dryRunPage'"></leagueActionSet>
+            <leagueActionSet :league-action-set="leagueActionSet" :mode="'dryRunPage'"></leagueActionSet>
           </div>
         </b-collapse>
       </div>

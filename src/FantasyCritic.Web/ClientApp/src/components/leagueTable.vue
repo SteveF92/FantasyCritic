@@ -3,23 +3,23 @@
     <template #cell(leagueName)="data">
       <div class="row-flex">
         <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }">
-          <font-awesome-icon class="league-icon" :icon="leagueIcon" v-show="leagueIcon !== 'user'" />
-          <font-awesome-icon class="league-icon" icon="user-cog" v-show="leagueIcon === 'user' && data.item.leagueManager.userID === userID" />
-          <font-awesome-icon class="league-icon" icon="user" v-show="leagueIcon === 'user' && data.item.leagueManager.userID !== userID" />
+          <font-awesome-icon v-show="leagueIcon !== 'user'" class="league-icon" :icon="leagueIcon" />
+          <font-awesome-icon v-show="leagueIcon === 'user' && data.item.leagueManager.userID === userID" class="league-icon" icon="user-cog" />
+          <font-awesome-icon v-show="leagueIcon === 'user' && data.item.leagueManager.userID !== userID" class="league-icon" icon="user" />
         </router-link>
         <div>
           <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-link">{{ data.item.leagueName }}</router-link>
-          <div class="manager" v-if="data.item.leagueManager">Manager: {{ data.item.leagueManager.displayName }}</div>
+          <div v-if="data.item.leagueManager" class="manager">Manager: {{ data.item.leagueManager.displayName }}</div>
         </div>
         <div v-show="showArchive" class="archive-button-section">
-          <font-awesome-icon class="archive-button fake-link" icon="archive" v-on:click="setArchive(data.item, true)" v-b-popover.hover.focus.rightbottom="'Archive this league (only affects you)'" />
+          <font-awesome-icon v-b-popover.hover.focus.rightbottom="'Archive this league (only affects you)'" class="archive-button fake-link" icon="archive" @click="setArchive(data.item, true)" />
         </div>
         <div v-show="showUnArchive" class="archive-button-section">
           <font-awesome-icon
+            v-b-popover.hover.focus.rightbottom="'Un-Archive this league (only affects you)'"
             class="archive-button fake-link"
             icon="thumbtack"
-            v-on:click="setArchive(data.item, false)"
-            v-b-popover.hover.focus.rightbottom="'Un-Archive this league (only affects you)'" />
+            @click="setArchive(data.item, false)" />
         </div>
       </div>
     </template>
@@ -29,7 +29,13 @@
 import axios from 'axios';
 
 export default {
-  props: ['leagues', 'leagueIcon', 'userID', 'showArchive', 'showUnArchive'],
+  props: {
+    leagues: Array,
+    leagueIcon: String,
+    userID: String,
+    showArchive: Boolean,
+    showUnArchive: Boolean
+  },
   data() {
     return {
       leagueFields: [{ key: 'leagueName' }]

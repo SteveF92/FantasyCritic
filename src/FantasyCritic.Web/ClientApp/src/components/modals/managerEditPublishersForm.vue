@@ -4,8 +4,8 @@
     <div class="form-horizontal">
       <div class="form-group">
         <label for="editPublisher" class="control-label">Publisher to Edit</label>
-        <b-form-select v-model="editPublisher" v-on:change="selectPublisher(editPublisher)">
-          <option v-for="publisher in publishers" v-bind:value="publisher" :key="publisher.publisherID">
+        <b-form-select v-model="editPublisher" @change="selectPublisher(editPublisher)">
+          <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">
             {{ publisher.publisherName }}
           </option>
         </b-form-select>
@@ -13,27 +13,27 @@
       <div v-if="editPublisher">
         <div class="form-group">
           <label for="newPublisherName" class="control-label">Publisher Name</label>
-          <input v-model="newPublisherName" id="newPublisherName" name="newPublisherName" type="text" class="form-control input" />
+          <input id="newPublisherName" v-model="newPublisherName" name="newPublisherName" type="text" class="form-control input" />
         </div>
         <div class="form-group">
           <label for="newBudget" class="control-label">Budget</label>
-          <input v-model="newBudget" id="newBudget" name="newBudget" type="text" class="form-control input" />
+          <input id="newBudget" v-model="newBudget" name="newBudget" type="text" class="form-control input" />
         </div>
         <div class="form-group">
           <label for="newFreeGamesDropped" class="control-label">"Any Unreleased" Games Dropped</label>
-          <input v-model="newFreeGamesDropped" id="newFreeGamesDropped" name="newFreeGamesDropped" type="text" class="form-control input" />
+          <input id="newFreeGamesDropped" v-model="newFreeGamesDropped" name="newFreeGamesDropped" type="text" class="form-control input" />
         </div>
         <div class="form-group">
           <label for="newWillNotReleaseGamesDropped" class="control-label">Will not Release Games Dropped</label>
-          <input v-model="newWillNotReleaseGamesDropped" id="newWillNotReleaseGamesDropped" name="newWillNotReleaseGamesDropped" type="text" class="form-control input" />
+          <input id="newWillNotReleaseGamesDropped" v-model="newWillNotReleaseGamesDropped" name="newWillNotReleaseGamesDropped" type="text" class="form-control input" />
         </div>
         <div class="form-group">
           <label for="newWillReleaseGamesDropped" class="control-label">Will Release Games Dropped</label>
-          <input v-model="newWillReleaseGamesDropped" id="newWillReleaseGamesDropped" name="newWillReleaseGamesDropped" type="text" class="form-control input" />
+          <input id="newWillReleaseGamesDropped" v-model="newWillReleaseGamesDropped" name="newWillReleaseGamesDropped" type="text" class="form-control input" />
         </div>
 
         <div>
-          <input type="submit" class="btn btn-primary modal-submit-button" value="Edit Publisher" v-on:click="makeEditRequest" />
+          <input type="submit" class="btn btn-primary modal-submit-button" value="Edit Publisher" @click="makeEditRequest" />
         </div>
       </div>
       <br />

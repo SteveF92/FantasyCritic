@@ -4,14 +4,14 @@
       <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="games" :fields="gamesFields" bordered striped responsive small>
         <template #cell(gameName)="data">
           <span class="game-name-column">
-            <span v-if="data.item.counterPick" class="badge tag-badge counter-pick-badge" v-b-popover.hover.focus="counterPickText">CP</span>
-            <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+            <span v-if="data.item.counterPick" v-b-popover.hover.focus="counterPickText" class="badge tag-badge counter-pick-badge">CP</span>
+            <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
             <font-awesome-icon
-              class="bid-will-fail"
               v-if="data.item.eligibilityErrors && data.item.eligibilityErrors.length > 0"
+              v-b-popover.hover.focus="bidWillFailText(data.item)"
+              class="bid-will-fail"
               color="white"
-              icon="exclamation-triangle"
-              v-b-popover.hover.focus="bidWillFailText(data.item)" />
+              icon="exclamation-triangle" />
           </span>
         </template>
         <template #cell(maximumReleaseDate)="data">
@@ -27,9 +27,13 @@
 <script>
 import moment from 'moment';
 import MasterGamePopover from '@/components/masterGamePopover';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
-  props: ['games'],
+  components: {
+    MasterGamePopover
+  },
+  mixins: [LeagueMixin],
   data() {
     return {
       sortBy: 'maximumReleaseDate',
@@ -39,9 +43,6 @@ export default {
         { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' }
       ]
     };
-  },
-  components: {
-    MasterGamePopover
   },
   computed: {
     counterPickText() {
@@ -54,6 +55,9 @@ export default {
           return 'This game is being bid on as a counter pick.';
         }
       };
+    },
+    games() {
+      return this.leagueYear.publicBiddingGames;
     }
   },
   methods: {

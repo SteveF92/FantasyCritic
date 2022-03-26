@@ -1,6 +1,6 @@
 <template>
   <div>
-    <collapseCard defaultVisible>
+    <collapseCard default-visible>
       <div slot="header">Why should I play FantasyCritic?</div>
       <div slot="body">It’s a great catalyst for discussing video games with your friends, and gets everyone invested in checking out the year’s best video games.</div>
     </collapseCard>

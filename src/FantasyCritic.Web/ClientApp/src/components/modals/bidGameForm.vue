@@ -9,34 +9,34 @@
       Bids are processed on Saturday Nights. See the FAQ for more info.
     </p>
 
-    <div class="alert alert-warning" v-show="publisherSlotsAreFilled">
+    <div v-show="publisherSlotsAreFilled" class="alert alert-warning">
       Warning! You have already filled all of your game slots. You can still make bids, but you must drop a game first. You can use the conditional drop feature for this.
     </div>
 
-    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <label for="bidGameName" class="control-label">Game Name</label>
       <div class="input-group game-search-input">
-        <input v-model="bidGameName" id="bidGameName" name="bidGameName" type="text" class="form-control input" />
+        <input id="bidGameName" v-model="bidGameName" name="bidGameName" type="text" class="form-control input" />
         <span class="input-group-btn">
-          <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+          <b-button variant="info" @click="searchGame">Search Game</b-button>
         </span>
       </div>
 
       <div v-if="!leagueYear.hasSpecialSlots">
-        <b-button variant="secondary" v-on:click="getTopGames" class="show-top-button">Show Top Available Games</b-button>
-        <b-button variant="secondary" v-on:click="getQueuedGames" class="show-top-button">Show My Watchlist</b-button>
+        <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
+        <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
       </div>
       <div v-else>
-        <b-button variant="secondary" v-on:click="getQueuedGames" class="show-top-button">Show My Watchlist</b-button>
+        <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
         <h5 class="text-black">Search by Slot</h5>
         <span class="search-tags">
-          <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.overallSlot" name="ALL" v-on:click.native="getTopGames"></searchSlotTypeBadge>
-          <searchSlotTypeBadge :gameSlot="leagueYear.slotInfo.regularSlot" name="REG" v-on:click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" @click.native="getTopGames"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.regularSlot" name="REG" @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             v-for="specialSlot in leagueYear.slotInfo.specialSlots"
             :key="specialSlot.overallSlotNumber"
-            :gameSlot="specialSlot"
-            v-on:click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+            :game-slot="specialSlot"
+            @click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
         </span>
       </div>
 
@@ -46,36 +46,36 @@
 
       <div class="search-results">
         <div v-if="!bidMasterGame">
-          <h3 class="text-black" v-show="showingTopAvailable">Top Available Games</h3>
-          <h3 class="text-black" v-show="showingQueuedGames">Watchlist</h3>
-          <h3 class="text-black" v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0">Search Results</h3>
-          <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
+          <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
+          <h3 v-show="showingQueuedGames" class="text-black">Watchlist</h3>
+          <h3 v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
+          <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
         </div>
         <div v-else>
           <ValidationObserver>
             <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
-            <masterGameSummary :masterGame="bidMasterGame"></masterGameSummary>
+            <masterGameSummary :master-game="bidMasterGame"></masterGameSummary>
             <hr />
             <div class="form-group">
               <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
 
-              <ValidationProvider rules="required|integer" v-slot="{ errors }">
-                <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />
+              <ValidationProvider v-slot="{ errors }" rules="required|integer">
+                <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
                 <span class="text-danger">{{ errors[0] }}</span>
               </ValidationProvider>
             </div>
             <div class="form-group">
               <label for="conditionalDrop" class="control-label">
                 Conditional Drop (Optional)
-                <font-awesome-icon icon="info-circle" v-b-popover.hover.focus="'You can use this to drop a game only if your bid succeeds.'" />
+                <font-awesome-icon v-b-popover.hover.focus="'You can use this to drop a game only if your bid succeeds.'" icon="info-circle" />
               </label>
               <b-form-select v-model="conditionalDrop">
-                <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+                <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
                   {{ publisherGame.gameName }}
                 </option>
               </b-form-select>
             </div>
-            <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="requestIsBusy">{{ bidButtonText }}</b-button>
+            <b-button v-if="formIsValid" variant="primary" class="add-game-button" :disabled="requestIsBusy" @click="bidGame">{{ bidButtonText }}</b-button>
             <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
               <h3 class="alert-heading">Error!</h3>
               <ul>
@@ -86,7 +86,7 @@
         </div>
       </div>
 
-      <div class="alert alert-info" v-show="searched && !bidMasterGame && possibleMasterGames.length === 0">
+      <div v-show="searched && !bidMasterGame && possibleMasterGames.length === 0" class="alert alert-info">
         <div class="row">
           <span class="col-12 col-md-7">No games were found.</span>
         </div>
@@ -103,12 +103,12 @@ import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge';
 import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
-  mixins: [LeagueMixin],
   components: {
     PossibleMasterGamesTable,
     MasterGameSummary,
     SearchSlotTypeBadge
   },
+  mixins: [LeagueMixin],
   data() {
     return {
       bidGameName: '',

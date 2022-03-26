@@ -18,10 +18,10 @@
 
               <div class="selector-area">
                 <div v-if="!league.userIsInLeague && isAuth">
-                  <b-button v-if="!league.userIsFollowingLeague" variant="primary" v-on:click="followLeague">Follow</b-button>
-                  <b-button v-if="league.userIsFollowingLeague" variant="secondary" v-on:click="unfollowLeague">Unfollow</b-button>
+                  <b-button v-if="!league.userIsFollowingLeague" variant="primary" @click="followLeague">Follow</b-button>
+                  <b-button v-if="league.userIsFollowingLeague" variant="secondary" @click="unfollowLeague">Unfollow</b-button>
                 </div>
-                <b-form-select v-model="selectedYear" :options="league.years" v-on:change="changeLeagueYear" class="year-selector" />
+                <b-form-select v-model="selectedYear" :options="league.years" class="year-selector" @change="changeLeagueYear" />
               </div>
             </div>
           </div>
@@ -52,7 +52,7 @@
 
         <div v-if="inviteCode && !league.userIsInLeague && !leagueYear.playStatus.playStarted" class="alert alert-info">
           You have been invited to join this league.
-          <b-button variant="primary" v-if="isAuth" v-on:click="joinWithInviteLink()" class="mx-2">Join League</b-button>
+          <b-button v-if="isAuth" variant="primary" class="mx-2" @click="joinWithInviteLink()">Join League</b-button>
           <template v-else>
             <b-button variant="primary" :to="{ name: 'login', query: { leagueid: leagueYear.leagueID, year: year, inviteCode: inviteCode } }">
               <span>Log In</span>
@@ -69,8 +69,8 @@
           You have been invited to join this league. Do you wish to join?
           <div class="row">
             <div class="btn-toolbar">
-              <b-button variant="primary" v-on:click="acceptInvite" class="mx-2">Join</b-button>
-              <b-button variant="secondary" v-on:click="declineInvite" class="mx-2">Decline</b-button>
+              <b-button variant="primary" class="mx-2" @click="acceptInvite">Join</b-button>
+              <b-button variant="secondary" class="mx-2" @click="declineInvite">Decline</b-button>
             </div>
           </div>
         </div>
@@ -98,19 +98,19 @@
         <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
           <span>You need to create your publisher for this year.</span>
           <span v-show="league.isManager">You can't invite players or change any settings until you create your publisher.</span>
-          <b-button variant="primary" v-b-modal="'createPublisher'" class="mx-2">Create Publisher</b-button>
-          <createPublisherForm :leagueYear="leagueYear"></createPublisherForm>
+          <b-button v-b-modal="'createPublisher'" variant="primary" class="mx-2">Create Publisher</b-button>
+          <createPublisherForm :league-year="leagueYear"></createPublisherForm>
         </div>
 
         <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite">
           <div class="alert alert-success">
             <span v-if="league.isManager">
               Things are all set to get started!
-              <b-button variant="primary" v-b-modal="'startDraft'" class="mx-2">Start Drafting!</b-button>
+              <b-button v-b-modal="'startDraft'" variant="primary" class="mx-2">Start Drafting!</b-button>
             </span>
             <span v-if="!league.isManager">Things are all set to get started! Your league manager can choose when to begin the draft.</span>
           </div>
-          <startDraftModal v-on:draftStarted="startDraft"></startDraftModal>
+          <startDraftModal @draftStarted="startDraft"></startDraftModal>
         </div>
 
         <div v-if="leagueYear.playStatus.draftIsPaused">
@@ -147,26 +147,26 @@
             <leagueActions></leagueActions>
           </div>
           <div class="col-xl-9 col-lg-8 col-md-12">
-            <leagueYearStandings :league="league" :leagueYear="leagueYear"></leagueYearStandings>
+            <leagueYearStandings :league="league" :league-year="leagueYear"></leagueYearStandings>
             <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
-              <gameNews :gameNews="gameNews" mode="league" />
+              <gameNews :game-news="gameNews" mode="league" />
               <br />
               <div>
-                <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" v-on:publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
+                <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" @publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
                 <bidCountdowns v-if="!showPublicRevealCountdown" mode="NextBid"></bidCountdowns>
               </div>
               <div v-if="leagueYear.publicBiddingGames">
                 <h2>This week's bids</h2>
-                <activeBids :games="leagueYear.publicBiddingGames" />
+                <activeBids />
               </div>
             </div>
             <br />
-            <leagueGameSummary :leagueYear="leagueYear"></leagueGameSummary>
+            <leagueGameSummary></leagueGameSummary>
           </div>
         </div>
       </div>
     </div>
-    <audio src="/sounds/draft-notification.mp3" id="draft-notification-sound"></audio>
+    <audio id="draft-notification-sound" src="/sounds/draft-notification.mp3"></audio>
   </div>
 </template>
 

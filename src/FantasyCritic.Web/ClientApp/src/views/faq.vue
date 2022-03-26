@@ -584,7 +584,7 @@
 
           <div v-if="allTags">
             <span v-for="tag in allTags" :key="tag.name">
-              <masterGameTagBadge :tagName="tag.name"></masterGameTagBadge>
+              <masterGameTagBadge :tag-name="tag.name"></masterGameTagBadge>
             </span>
           </div>
         </div>
@@ -684,11 +684,11 @@
               <tr>
                 <td>Rune Factory 5</td>
                 <td>
-                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
                 </td>
                 <td>
-                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
-                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
                   This example is here as a baseline, as this is simply a game that was released in Japan before it was released in North America. The version of the game released in North America is
@@ -698,13 +698,13 @@
               <tr>
                 <td>The Legend of Heroes: Trails from Zero</td>
                 <td>
-                  <masterGameTagBadge tagName="Remaster"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
                   <br />
                   (For the PS4/Switch game)
                 </td>
                 <td>
-                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
-                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
                   This game has been released a number of times:
@@ -725,22 +725,22 @@
               <tr>
                 <td>Earthbound Beginnings</td>
                 <td>
-                  <masterGameTagBadge tagName="Port"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="Port"></masterGameTagBadge>
                 </td>
                 <td>
-                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
-                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>This is a port of Mother 1 for the Famicom to the Wii U. This version is not "enough of remake" to consider it a game that "has not been released internationally".</td>
               </tr>
               <tr>
                 <td>River City Girls Zero</td>
                 <td>
-                  <masterGameTagBadge tagName="Remaster"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
                 </td>
                 <td>
-                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
-                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
                   This game was originally released on the Super Famicom in 1994, now remastered for modern platforms. This version is not "enough of remake" to consider it a game that "has not been
@@ -750,11 +750,11 @@
               <tr>
                 <td>The Great Ace Attorney Chronicles</td>
                 <td>
-                  <masterGameTagBadge tagName="Remaster"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
                 </td>
                 <td>
-                  <masterGameTagBadge tagName="NewGame"></masterGameTagBadge>
-                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
                   This game is a compilation of two Nintendo 3DS games that never came out in North America, remastered for Nintendo Switch. It is not "enough of remake" to consider it a game that
@@ -764,11 +764,11 @@
               <tr>
                 <td>Bravely Default</td>
                 <td>
-                  <masterGameTagBadge tagName="DirectorsCut"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="DirectorsCut"></masterGameTagBadge>
                 </td>
                 <td>
-                  <masterGameTagBadge tagName="NewGamingFranchise"></masterGameTagBadge>
-                  <masterGameTagBadge tagName="ReleasedInternationally"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="NewGamingFranchise"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
                   Bravely Default was originally a Japan-only 3DS game called "Bravely Default: Flying Fairy", released in 2012. In 2013, an expanded version was released, again only in Japan, called
@@ -781,10 +781,10 @@
               <tr>
                 <td>Famicom Detective Club</td>
                 <td>
-                  <masterGameTagBadge tagName="Remake"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="Remake"></masterGameTagBadge>
                 </td>
                 <td>
-                  <masterGameTagBadge tagName="NewGamingFranchise"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="NewGamingFranchise"></masterGameTagBadge>
                 </td>
                 <td>
                   This was originally released as two seperate Famicom games, never released in North America. This game is "more of a remake" with respect to the original game, compared to the games
@@ -797,10 +797,10 @@
               <tr>
                 <td>Live A Live</td>
                 <td>
-                  <masterGameTagBadge tagName="Remake"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="Remake"></masterGameTagBadge>
                 </td>
                 <td>
-                  <masterGameTagBadge tagName="NewGamingFranchise"></masterGameTagBadge>
+                  <masterGameTagBadge tag-name="NewGamingFranchise"></masterGameTagBadge>
                 </td>
                 <td>
                   This was originally a Super Famicom game, never released in North America. Like Famicom Dective Club, this game is "more of a remake" with respect to the original game, compared to

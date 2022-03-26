@@ -5,7 +5,7 @@
     <div class="form-group">
       <label for="playerToRemove" class="control-label">Player</label>
       <b-form-select v-model="playerToCreatePublisherFor">
-        <option v-for="player in playersWithoutPublishers" v-bind:value="player" :key="player.userID">
+        <option v-for="player in playersWithoutPublishers" :key="player.userID" :value="player">
           {{ player.user.displayName }}
         </option>
       </b-form-select>
@@ -14,11 +14,11 @@
     <div class="form-horizontal">
       <div class="form-group">
         <label for="publisherName" class="control-label">Publisher Name</label>
-        <input v-model="publisherName" id="publisherName" name="publisherName" type="text" class="form-control input" />
+        <input id="publisherName" v-model="publisherName" name="publisherName" type="text" class="form-control input" />
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Create Publisher" v-on:click="createPublisher" :disabled="!publisherName" />
+      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName" @click="createPublisher" />
     </div>
   </b-modal>
 </template>
@@ -27,6 +27,7 @@ import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       playerToCreatePublisherFor: null,
@@ -34,7 +35,6 @@ export default {
       errorInfo: ''
     };
   },
-  mixins: [LeagueMixin],
   computed: {
     playersWithoutPublishers() {
       let playersToReturn = [];

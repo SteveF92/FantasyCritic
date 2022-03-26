@@ -4,54 +4,51 @@
     <div class="form-group">
       <label for="associatePublisher" class="control-label">Publisher</label>
       <b-form-select v-model="associatePublisher">
-        <option v-for="publisher in publishers" v-bind:value="publisher" :key="publisher.publisherID">
+        <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">
           {{ publisher.publisherName }}
         </option>
       </b-form-select>
       <div v-if="associatePublisher">
         <label for="associatePublisherGame" class="control-label">Game</label>
         <b-form-select v-model="associatePublisherGame">
-          <option v-for="publisherGame in associatePublisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+          <option v-for="publisherGame in associatePublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>
       </div>
     </div>
 
-    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
         <label for="associateGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input v-model="associateGameName" id="associateGameName" name="associateGameName" type="text" class="form-control input" />
+          <input id="associateGameName" v-model="associateGameName" name="associateGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+            <b-button variant="info" @click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possibleGames="possibleMasterGames" v-on:input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
 
         <label v-if="associateMasterGame" for="associateMasterGame" class="control-label">Selected Game: {{ associateMasterGame.gameName }}</label>
       </div>
     </form>
 
-    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="associateGame" v-if="associateMasterGame">
+    <form v-if="associateMasterGame" method="post" class="form-horizontal" role="form" @submit.prevent="associateGame">
       <div>
         <input type="submit" class="btn btn-primary add-game-button" value="Associate game" />
       </div>
 
-      <div
-        v-if="associateResult && !associateResult.success"
-        class="alert associate-error"
-        v-bind:class="{ 'alert-danger': !associateResult.overridable, 'alert-warning': associateResult.overridable }">
-        <h3 class="alert-heading" v-if="associateResult.overridable">Warning!</h3>
-        <h3 class="alert-heading" v-if="!associateResult.overridable">Error!</h3>
+      <div v-if="associateResult && !associateResult.success" class="alert associate-error" :class="{ 'alert-danger': !associateResult.overridable, 'alert-warning': associateResult.overridable }">
+        <h3 v-if="associateResult.overridable" class="alert-heading">Warning!</h3>
+        <h3 v-if="!associateResult.overridable" class="alert-heading">Error!</h3>
         <ul>
           <li v-for="error in associateResult.errors" :key="error">{{ error }}</li>
         </ul>
 
-        <div class="form-check" v-if="associateResult.overridable">
+        <div v-if="associateResult.overridable" class="form-check">
           <span>
             <label class="text-white">Do you want to override these warnings?</label>
-            <input class="form-check-input override-checkbox" type="checkbox" v-model="associateOverride" />
+            <input v-model="associateOverride" class="form-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
       </div>

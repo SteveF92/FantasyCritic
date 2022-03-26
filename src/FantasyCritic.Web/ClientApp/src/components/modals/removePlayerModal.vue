@@ -5,12 +5,12 @@
       <div class="form-group">
         <label for="publisherToRemove" class="control-label">Publisher to Remove</label>
         <b-form-select v-model="publisherToRemove">
-          <option v-for="publisher in publishers" v-bind:value="publisher" :key="publisher.publisherID">
+          <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">
             {{ publisher.publisherName }}
           </option>
         </b-form-select>
       </div>
-      <b-button variant="danger" v-show="publisherToRemove" v-on:click="removePublisher">Remove Publisher</b-button>
+      <b-button v-show="publisherToRemove" variant="danger" @click="removePublisher">Remove Publisher</b-button>
       <hr />
     </div>
     <div>
@@ -22,25 +22,25 @@
       <div class="form-group">
         <label for="playerToRemove" class="control-label">Player to Remove</label>
         <b-form-select v-model="playerToRemove">
-          <option v-for="player in players" v-bind:value="player" :key="player.user.userID">
+          <option v-for="player in players" :key="player.user.userID" :value="player">
             {{ player.user.displayName }}
           </option>
         </b-form-select>
       </div>
 
-      <div class="alert alert-info" v-show="playerToRemove && playerIsSafelyRemoveable(playerToRemove)">
+      <div v-show="playerToRemove && playerIsSafelyRemoveable(playerToRemove)" class="alert alert-info">
         This player can be safely removed without any issues. Please type
         <strong>REMOVE PLAYER</strong>
         into the box below and click the button.
       </div>
-      <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
+      <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)" class="alert alert-danger">
         This will affect prior years of this league, not only the current one. Removing a player for the current year in this way will delete their publishers from prior years. If you just want to
         remove a player because they won't be participating in the league anymore, you should use the "Manage Active Players" feature. You can do that after you start the new league year.
       </div>
-      <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
+      <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)" class="alert alert-danger">
         If you delete a user's publishers, all of their games will become available for pickup. This is not reverseable. You should be really, really, sure that this is what you want.
       </div>
-      <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
+      <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)" class="alert alert-danger">
         I'm so confident that you
         <em>almost certainly</em>
         do not want to do this that I'm going to be very annoying about it. In order you remove this player, you must type the "secret phase".
@@ -52,18 +52,18 @@
         </ul>
         Once you have it, type it into the box below and click the button.
       </div>
-      <div class="alert alert-danger" v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)">
+      <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)" class="alert alert-danger">
         The only reason I can think of to use this feature is if a player has been a "problem" in some way, and you need to forcibly remove them from the league, and are you okay with the
         consequences. Again, if you just need to remove a player that played last year, but will not be playing this year,
         <em>do not use this feature.</em>
         Use "Manage Active Players" after starting the new year.
       </div>
 
-      <div class="alert alert-danger" v-show="playerToRemove && playerIsLeagueManager(playerToRemove)">You cannot remove yourself!</div>
+      <div v-show="playerToRemove && playerIsLeagueManager(playerToRemove)" class="alert alert-danger">You cannot remove yourself!</div>
 
-      <input v-model="removeConfirmation" v-show="playerToRemove && !playerIsLeagueManager(playerToRemove)" type="text" class="form-control input" />
+      <input v-show="playerToRemove && !playerIsLeagueManager(playerToRemove)" v-model="removeConfirmation" type="text" class="form-control input" />
 
-      <b-button variant="danger" class="remove-button" v-if="playerToRemove && !playerIsLeagueManager(playerToRemove)" v-on:click="removePlayer" :disabled="!removeConfirmed(playerToRemove)">
+      <b-button v-if="playerToRemove && !playerIsLeagueManager(playerToRemove)" variant="danger" class="remove-button" :disabled="!removeConfirmed(playerToRemove)" @click="removePlayer">
         Remove Player
       </b-button>
     </div>

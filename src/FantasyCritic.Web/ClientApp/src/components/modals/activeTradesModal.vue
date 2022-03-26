@@ -1,11 +1,11 @@
 <template>
   <b-modal id="activeTradesModal" ref="activeTradesModalRef" size="xl" title="Active Trades" hide-footer>
-    <div class="alert alert-danger" v-show="errorInfo" role="alert">
+    <div v-show="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>
-    <div class="alert alert-info" v-show="activeTrades.length === 0" role="alert">There are no active trades for this league. To see past trades, check the League History page.</div>
+    <div v-show="activeTrades.length === 0" class="alert alert-info" role="alert">There are no active trades for this league. To see past trades, check the League History page.</div>
 
-    <tradeSummary v-for="activeTrade in activeTrades" v-bind:key="activeTrade.tradeID" :trade="activeTrade" defaultVisible></tradeSummary>
+    <tradeSummary v-for="activeTrade in activeTrades" :key="activeTrade.tradeID" :trade="activeTrade" default-visible></tradeSummary>
   </b-modal>
 </template>
 

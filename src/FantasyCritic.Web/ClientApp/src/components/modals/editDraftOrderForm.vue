@@ -2,9 +2,9 @@
   <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" @hidden="clearData">
     <label>Drag and drop to change order.</label>
     <div class="fluid container draft-order-editor">
-      <draggable class="list-group" element="ul" v-model="desiredDraftOrder" :options="dragOptions" @start="isDragging = true" @end="isDragging = false" handle=".handle">
+      <draggable v-model="desiredDraftOrder" class="list-group" element="ul" :options="dragOptions" handle=".handle" @start="isDragging = true" @end="isDragging = false">
         <transition-group type="transition" :name="'flip-list'">
-          <li class="draft-order-item" v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition">
+          <li v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
             <font-awesome-icon icon="bars" class="handle" />
             <span class="badge">{{ publisher.draftPosition }}</span>
             {{ publisher.publisherName }} ({{ publisher.playerName }})
@@ -13,10 +13,10 @@
       </draggable>
     </div>
 
-    <b-button variant="info" size="sm" v-on:click="shuffleOrder">Randomize draft order</b-button>
+    <b-button variant="info" size="sm" @click="shuffleOrder">Randomize draft order</b-button>
 
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Draft Order" v-on:click="setDraftOrder" />
+      <input type="submit" class="btn btn-primary" value="Set Draft Order" @click="setDraftOrder" />
     </div>
   </b-modal>
 </template>
@@ -47,9 +47,6 @@ export default {
       };
     }
   },
-  mounted() {
-    this.clearData();
-  },
   watch: {
     isDragging(newValue) {
       if (newValue) {
@@ -60,6 +57,9 @@ export default {
         this.delayedDragging = false;
       });
     }
+  },
+  mounted() {
+    this.clearData();
   },
   methods: {
     setDraftOrder() {

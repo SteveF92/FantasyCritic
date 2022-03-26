@@ -10,11 +10,11 @@
       <br />
       Drop requests are processed on Saturday Nights. See the FAQ for more info.
     </p>
-    <form class="form-horizontal" v-on:submit.prevent="dropGame" hide-footer>
+    <form class="form-horizontal" hide-footer @submit.prevent="dropGame">
       <div class="form-group">
         <label for="gameToDrop" class="control-label">Game</label>
         <b-form-select v-model="gameToDrop">
-          <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+          <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>

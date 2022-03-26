@@ -28,7 +28,9 @@
 </template>
 <script>
 export default {
-  props: ['publisherGame'],
+  props: {
+    publisherGame: Object
+  },
   methods: {
     sellGame() {
       this.$refs.sellRoyaleGameModalRef.hide();

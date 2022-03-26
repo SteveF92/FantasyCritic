@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="editAutoDraftForm" size="lg" ref="editAutoDraftFormRef" title="Edit Auto Draft">
+  <b-modal id="editAutoDraftForm" ref="editAutoDraftFormRef" size="lg" title="Edit Auto Draft">
     <div class="alert alert-info">
       If "Auto Draft" is turned on, the site will select your games for you when it is your turn.
       <br />
@@ -8,10 +8,10 @@
       For counterpicks, the game with the highest counterpick % site-wide will be chosen.
     </div>
     <b-form inline>
-      <b-form-checkbox class="mb-2 mr-sm-2 mb-sm-0" v-model="isAutoDraft">Auto Draft</b-form-checkbox>
+      <b-form-checkbox v-model="isAutoDraft" class="mb-2 mr-sm-2 mb-sm-0">Auto Draft</b-form-checkbox>
     </b-form>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Auto Draft" v-on:click="setAutoDraft" />
+      <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
     </div>
   </b-modal>
 </template>
@@ -25,6 +25,9 @@ export default {
     return {
       isAutoDraft: null
     };
+  },
+  mounted() {
+    this.isAutoDraft = this.userPublisher.autoDraft;
   },
   methods: {
     setAutoDraft() {
@@ -44,9 +47,6 @@ export default {
         })
         .catch(() => {});
     }
-  },
-  mounted() {
-    this.isAutoDraft = this.userPublisher.autoDraft;
   }
 };
 </script>

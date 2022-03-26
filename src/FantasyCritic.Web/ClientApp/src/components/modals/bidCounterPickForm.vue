@@ -9,28 +9,28 @@
       Bids are processed on Saturday Nights. See the FAQ for more info.
     </p>
 
-    <div class="alert alert-danger" v-show="publisherSlotsAreFilled">You have already filled all of your counter pick slots!</div>
+    <div v-show="publisherSlotsAreFilled" class="alert alert-danger">You have already filled all of your counter pick slots!</div>
 
-    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="search-results">
         <ValidationObserver>
           <h3 class="text-black">Available Counter Picks</h3>
           <b-form-select v-model="bidCounterPick">
-            <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+            <option v-for="publisherGame in possibleCounterPicks" :key="publisherGame.publisherGameID" :value="publisherGame">
               {{ publisherGame.gameName }}
             </option>
           </b-form-select>
 
           <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
 
-          <ValidationProvider rules="required|integer" v-slot="{ errors }">
-            <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />
+          <ValidationProvider v-slot="{ errors }" rules="required|integer">
+            <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
             <span class="text-danger">{{ errors[0] }}</span>
           </ValidationProvider>
 
           <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.</div>
 
-          <b-button variant="primary" v-on:click="bidGame" class="add-game-button" v-if="formIsValid" :disabled="isBusy || counterPickInvalid">{{ bidButtonText }}</b-button>
+          <b-button v-if="formIsValid" variant="primary" class="add-game-button" :disabled="isBusy || counterPickInvalid" @click="bidGame">{{ bidButtonText }}</b-button>
           <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
             <h3 class="alert-heading">Error!</h3>
             <ul>
@@ -82,6 +82,9 @@ export default {
       return this.bidCounterPick && !this.bidCounterPick.masterGame;
     }
   },
+  mounted() {
+    this.getPossibleCounterPicks();
+  },
   methods: {
     getPossibleCounterPicks() {
       this.clearData();
@@ -131,9 +134,6 @@ export default {
     newGameSelected() {
       this.bidCounterPick = null;
     }
-  },
-  mounted() {
-    this.getPossibleCounterPicks();
   }
 };
 </script>

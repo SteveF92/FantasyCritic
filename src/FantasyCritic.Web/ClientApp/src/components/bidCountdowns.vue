@@ -19,7 +19,9 @@
 import moment from 'moment';
 
 export default {
-  props: ['mode'],
+  props: {
+    mode: String
+  },
   data() {
     return {
       forceActionProcessing: false

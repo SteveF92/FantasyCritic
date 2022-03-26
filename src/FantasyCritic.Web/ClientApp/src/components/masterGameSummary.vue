@@ -23,7 +23,7 @@
         <div v-if="masterGame.tags && masterGame.tags.length > 0" class="long-tag-list">
           <span class="detail-label">Tags:</span>
           <span v-for="tag in masterGame.tags" :key="tag">
-            <masterGameTagBadge :tagName="tag"></masterGameTagBadge>
+            <masterGameTagBadge :tag-name="tag"></masterGameTagBadge>
           </span>
         </div>
 
@@ -90,14 +90,16 @@ import moment from 'moment';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
 
 export default {
+  components: {
+    MasterGameTagBadge
+  },
+  props: {
+    masterGame: Object
+  },
   data() {
     return {
       error: ''
     };
-  },
-  props: ['masterGame'],
-  components: {
-    MasterGameTagBadge
   },
   computed: {
     ggCoverArtLink() {

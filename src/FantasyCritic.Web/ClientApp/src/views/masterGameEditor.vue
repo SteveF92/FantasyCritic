@@ -5,7 +5,7 @@
         <h1>Edit Master Game</h1>
         <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master change game requests</b-button>
         <b-button variant="info" :to="{ name: 'adminConsole' }">Admin Console</b-button>
-        <b-button variant="info" size="sm" v-on:click="generateSQL(masterGame)">Generate SQL</b-button>
+        <b-button variant="info" size="sm" @click="generateSQL(masterGame)">Generate SQL</b-button>
       </div>
       <hr />
       <div v-if="responseInfo" class="alert alert-success">Master Game edited successfully!</div>
@@ -16,7 +16,7 @@
           <div class="col-xl-8 col-lg-10 col-md-12 text-well">
             <div class="form-group">
               <label for="generated SQL" class="control-label">GeneratedSQL</label>
-              <input v-model="generatedSQL" id="generatedSQL" name="generatedSQL" class="form-control input" />
+              <input id="generatedSQL" v-model="generatedSQL" name="generatedSQL" class="form-control input" />
             </div>
           </div>
         </div>
@@ -24,7 +24,7 @@
       <div v-if="masterGame">
         <h2>{{ masterGame.gameName }}</h2>
         <router-link class="text-primary" :to="{ name: 'mastergame', params: { mastergameid: masterGame.masterGameID } }"><strong>View full details</strong></router-link>
-        <div class="row" v-if="changeRequest">
+        <div v-if="changeRequest" class="row">
           <div class="text-well">
             <h2>Request Note</h2>
             <p>{{ changeRequest.requestNote }}</p>
@@ -35,11 +35,11 @@
         <div class="row">
           <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
             <ValidationObserver v-slot="{ invalid }">
-              <form v-on:submit.prevent="sendEditMasterGameRequest">
+              <form @submit.prevent="sendEditMasterGameRequest">
                 <div class="form-group">
                   <label for="gameName" class="control-label">Game Name</label>
-                  <ValidationProvider rules="required" v-slot="{ errors }">
-                    <input v-model="masterGame.gameName" id="gameName" name="Game Name" type="text" class="form-control input" />
+                  <ValidationProvider v-slot="{ errors }" rules="required">
+                    <input id="gameName" v-model="masterGame.gameName" name="Game Name" type="text" class="form-control input" />
                     <span class="text-danger">{{ errors[0] }}</span>
                   </ValidationProvider>
                 </div>
@@ -49,13 +49,13 @@
                   <flat-pickr v-model="masterGame.releaseDate" class="form-control"></flat-pickr>
                 </div>
 
-                <b-button variant="info" size="sm" v-on:click="propagateDate">Propagate Date</b-button>
-                <b-button variant="info" size="sm" v-on:click="parseEstimatedReleaseDate">Parse Estimated</b-button>
-                <b-button variant="warning" size="sm" v-on:click="clearDates">Clear Dates</b-button>
+                <b-button variant="info" size="sm" @click="propagateDate">Propagate Date</b-button>
+                <b-button variant="info" size="sm" @click="parseEstimatedReleaseDate">Parse Estimated</b-button>
+                <b-button variant="warning" size="sm" @click="clearDates">Clear Dates</b-button>
 
                 <div class="form-group">
                   <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
-                  <input v-model="masterGame.estimatedReleaseDate" id="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
+                  <input id="estimatedReleaseDate" v-model="masterGame.estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
                 </div>
                 <div class="form-group">
                   <label for="minimumReleaseDate" class="control-label">Minimum Release Date</label>
@@ -80,20 +80,20 @@
 
                 <div class="form-group">
                   <label for="openCriticID" class="control-label">Open Critic ID</label>
-                  <input v-model="masterGame.openCriticID" id="openCriticID" name="openCriticID" class="form-control input" />
+                  <input id="openCriticID" v-model="masterGame.openCriticID" name="openCriticID" class="form-control input" />
                 </div>
 
                 <div class="form-group">
                   <label for="ggToken" class="control-label">GG Token</label>
-                  <input v-model="masterGame.ggToken" id="ggToken" name="ggToken" class="form-control input" />
+                  <input id="ggToken" v-model="masterGame.ggToken" name="ggToken" class="form-control input" />
                 </div>
 
                 <h3>Tags</h3>
-                <masterGameTagSelector v-model="tags" :includeSystem="true"></masterGameTagSelector>
+                <masterGameTagSelector v-model="tags" include-system></masterGameTagSelector>
 
                 <div class="form-group">
                   <label for="notes" class="control-label">Other Notes</label>
-                  <input v-model="masterGame.notes" id="notes" name="notes" class="form-control input" />
+                  <input id="notes" v-model="masterGame.notes" name="notes" class="form-control input" />
                 </div>
 
                 <h3>Other</h3>
@@ -119,7 +119,7 @@
                 </div>
                 <div class="form-group">
                   <label for="notes" class="control-label">Box Art File Name</label>
-                  <input v-model="masterGame.boxartFileName" id="boxartFileName" name="boxartFileName" class="form-control input" />
+                  <input id="boxartFileName" v-model="masterGame.boxartFileName" name="boxartFileName" class="form-control input" />
                 </div>
 
                 <div class="form-group">
@@ -156,16 +156,16 @@ export default {
       generatedSQL: null
     };
   },
+  watch: {
+    $route() {
+      this.fetchMasterGame();
+    }
+  },
   async mounted() {
     await this.fetchMasterGame();
     await this.fetchChangeRequest();
     this.parseEstimatedReleaseDate();
     this.populateTags();
-  },
-  watch: {
-    $route() {
-      this.fetchMasterGame();
-    }
   },
   methods: {
     async fetchMasterGame() {

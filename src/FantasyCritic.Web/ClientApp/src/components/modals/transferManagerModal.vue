@@ -4,13 +4,13 @@
     <div class="form-group">
       <label for="newManager" class="control-label">New Manager</label>
       <b-form-select v-model="newManager">
-        <option v-for="user in players" v-bind:value="user" :key="user.userID">
+        <option v-for="user in players" :key="user.userID" :value="user">
           {{ user.displayName }}
         </option>
       </b-form-select>
       <br />
       <br />
-      <b-button variant="danger" v-on:click="promoteNewManager">Transfer League Manager</b-button>
+      <b-button variant="danger" @click="promoteNewManager">Transfer League Manager</b-button>
     </div>
   </b-modal>
 </template>

@@ -4,10 +4,10 @@
 
     <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="gameRows" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
       <template #cell(masterGame.gameName)="data">
-        <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+        <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
       </template>
       <template #cell(masterGame.maximumReleaseDate)="data">
-        <div v-bind:class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
+        <div :class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
           <span>{{ data.item.masterGame.estimatedReleaseDate }}</span>
           <span v-show="data.item.masterGame.isReleased">(Released)</span>
         </div>
@@ -16,10 +16,10 @@
         {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
       </template>
       <template #cell(status)="data">
-        <statusBadge :possibleMasterGame="data.item"></statusBadge>
+        <statusBadge :possible-master-game="data.item"></statusBadge>
       </template>
       <template #cell(select)="data">
-        <b-button size="sm" variant="info" v-on:click="selectGame(data.item.masterGame)">Select</b-button>
+        <b-button size="sm" variant="info" @click="selectGame(data.item.masterGame)">Select</b-button>
       </template>
     </b-table>
   </div>
@@ -29,6 +29,14 @@ import StatusBadge from '@/components/statusBadge';
 import MasterGamePopover from '@/components/masterGamePopover';
 
 export default {
+  components: {
+    StatusBadge,
+    MasterGamePopover
+  },
+  props: {
+    value: Object,
+    possibleGames: Array
+  },
   data() {
     return {
       selectedMasterGame: null,
@@ -46,11 +54,6 @@ export default {
       sortDesc: true
     };
   },
-  components: {
-    StatusBadge,
-    MasterGamePopover
-  },
-  props: ['possibleGames', 'value'],
   computed: {
     rows() {
       return this.possibleGames.length;

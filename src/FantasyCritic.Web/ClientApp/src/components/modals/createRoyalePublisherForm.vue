@@ -3,11 +3,11 @@
     <div class="form-horizontal">
       <div class="form-group">
         <label for="publisherName" class="control-label">Publisher Name</label>
-        <input v-model="publisherName" id="publisherName" name="publisherName" type="text" class="form-control input" />
+        <input id="publisherName" v-model="publisherName" name="publisherName" type="text" class="form-control input" />
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Create Publisher" v-on:click="createRoyalePublisher" :disabled="!publisherName" />
+      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName" @click="createRoyalePublisher" />
     </div>
   </b-modal>
 </template>

@@ -5,7 +5,7 @@
         <b-dropdown text="Quarters" class="quarter-select">
           <b-dropdown-item
             v-for="royaleYearQuarterOption in royaleYearQuarterOptions"
-            v-bind:key="royaleYearQuarterOption.year + '-' + royaleYearQuarterOption.quarter"
+            :key="royaleYearQuarterOption.year + '-' + royaleYearQuarterOption.quarter"
             :active="royaleYearQuarterOption.year === year && royaleYearQuarterOption.quarter === quarter"
             :to="{ name: 'criticsRoyale', params: { year: royaleYearQuarterOption.year, quarter: royaleYearQuarterOption.quarter } }">
             {{ royaleYearQuarterOption.year }}-Q{{ royaleYearQuarterOption.quarter }}
@@ -23,8 +23,8 @@
       <div v-if="!userPublisherBusy">
         <div v-if="!userRoyalePublisher && isAuth" class="alert alert-info">
           Create your publisher to start playing!
-          <b-button class="login-button" variant="primary" v-b-modal="'createRoyalePublisher'">Create Publisher</b-button>
-          <createRoyalePublisherForm :royaleYearQuarter="royaleYearQuarter"></createRoyalePublisherForm>
+          <b-button v-b-modal="'createRoyalePublisher'" class="login-button" variant="primary">Create Publisher</b-button>
+          <createRoyalePublisherForm :royale-year-quarter="royaleYearQuarter"></createRoyalePublisherForm>
         </div>
         <div v-if="!userRoyalePublisher && !isAuth" class="alert alert-success">
           Sign up or log in to start playing now!
@@ -58,11 +58,11 @@
             </template>
             <template #cell(playerName)="data">
               {{ data.item.playerName }}
-              <font-awesome-icon v-if="data.item.previousQuarterWinner" icon="crown" class="previous-quarter-winner" v-b-popover.hover.focus="'Reigning Champion'" />
-              <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" icon="crown" class="onetime-winner" v-b-popover.hover.focus="'Previous Champion'" />
+              <font-awesome-icon v-if="data.item.previousQuarterWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-quarter-winner" />
+              <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" v-b-popover.hover.focus="'Previous Champion'" icon="crown" class="onetime-winner" />
             </template>
           </b-table>
-          <b-pagination class="pagination-dark" v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+          <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
         </div>
         <div v-else class="spinner">
           <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
@@ -162,13 +162,13 @@ export default {
       return this.royaleStandings.length;
     }
   },
-  async mounted() {
-    await this.initializePage();
-  },
   watch: {
     async $route() {
       await this.initializePage();
     }
+  },
+  async mounted() {
+    await this.initializePage();
   },
   methods: {
     async initializePage() {

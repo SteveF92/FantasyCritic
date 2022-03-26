@@ -202,6 +202,9 @@ export default {
       error: null
     };
   },
+  mounted() {
+    this.fetchDonors();
+  },
   methods: {
     fetchDonors() {
       axios
@@ -211,9 +214,6 @@ export default {
         })
         .catch((returnedError) => (this.error = returnedError));
     }
-  },
-  mounted() {
-    this.fetchDonors();
   }
 };
 </script>

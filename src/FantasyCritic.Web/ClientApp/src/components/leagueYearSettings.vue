@@ -9,8 +9,8 @@
       <div v-if="freshSettings">
         <div class="form-group">
           <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-          <ValidationProvider rules="required|min_value:2|max_value:20|integer" v-slot="{ errors }">
-            <input v-model="intendedNumberOfPlayers" id="intendedNumberOfPlayers" name="Intended Number of Players" type="text" class="form-control input" @input="fullAutoUpdate()" />
+          <ValidationProvider v-slot="{ errors }" rules="required|min_value:2|max_value:20|integer">
+            <input id="intendedNumberOfPlayers" v-model="intendedNumberOfPlayers" name="Intended Number of Players" type="text" class="form-control input" @input="fullAutoUpdate()" />
             <span class="text-danger">{{ errors[0] }}</span>
           </ValidationProvider>
           <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
@@ -35,8 +35,8 @@
         <label for="standardGames" class="control-label">Total Number of Games</label>
         <p>This is the total number of games that each player will have on their roster.</p>
 
-        <ValidationProvider rules="required|min_value:1|max_value:50|integer" v-slot="{ errors }">
-          <input v-model="internalValue.standardGames" id="standardGames" name="Total Number of Games" type="text" class="form-control input" @input="autoUpdateSpecialSlotOptions()" />
+        <ValidationProvider v-slot="{ errors }" rules="required|min_value:1|max_value:50|integer">
+          <input id="standardGames" v-model="internalValue.standardGames" name="Total Number of Games" type="text" class="form-control input" @input="autoUpdateSpecialSlotOptions()" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
@@ -48,8 +48,8 @@
           <a href="/faq#bidding-system" target="_blank">Pickup Games.</a>
         </p>
 
-        <ValidationProvider rules="required|min_value:1|max_value:50|integer" v-slot="{ errors }">
-          <input v-model="internalValue.gamesToDraft" id="gamesToDraft" name="Games to Draft" type="text" class="form-control input" />
+        <ValidationProvider v-slot="{ errors }" rules="required|min_value:1|max_value:50|integer">
+          <input id="gamesToDraft" v-model="internalValue.gamesToDraft" name="Games to Draft" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
@@ -61,8 +61,8 @@
           <a href="/faq#scoring" target="_blank">click here.</a>
         </p>
 
-        <ValidationProvider rules="required|max_value:50|integer" v-slot="{ errors }">
-          <input v-model="internalValue.counterPicks" id="counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
+        <ValidationProvider v-slot="{ errors }" rules="required|max_value:50|integer">
+          <input id="counterPicks" v-model="internalValue.counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
@@ -74,16 +74,16 @@
           <a href="/faq#bidding-system" target="_blank">Pickup Counter picks.</a>
         </p>
 
-        <ValidationProvider rules="required|max_value:50|integer" v-slot="{ errors }">
-          <input v-model="internalValue.counterPicksToDraft" id="counterPicksToDraft" name="Counter picks to Draft" type="text" class="form-control input" />
+        <ValidationProvider v-slot="{ errors }" rules="required|max_value:50|integer">
+          <input id="counterPicksToDraft" v-model="internalValue.counterPicksToDraft" name="Counter picks to Draft" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
 
       <div class="form-group">
         <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
-        <ValidationProvider rules="required|min_value:0|max_value:100|integer" v-slot="{ errors }">
-          <input v-model="internalValue.minimumBidAmount" id="minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
+        <ValidationProvider v-slot="{ errors }" rules="required|min_value:0|max_value:100|integer">
+          <input id="minimumBidAmount" v-model="internalValue.minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
         <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
@@ -131,22 +131,22 @@
           <tr>
             <th scope="row">Will Release</th>
             <td>
-              <ValidationProvider rules="required|max_value:100|integer" v-slot="{ errors }" v-if="!internalValue.unlimitedWillReleaseDroppableGames">
-                <input v-model="internalValue.willReleaseDroppableGames" id="willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
+              <ValidationProvider v-if="!internalValue.unlimitedWillReleaseDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
+                <input id="willReleaseDroppableGames" v-model="internalValue.willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
                 <span class="text-danger">{{ errors[0] }}</span>
               </ValidationProvider>
             </td>
             <td>
-              <b-form-checkbox class="unlimited-checkbox" v-model="internalValue.unlimitedWillReleaseDroppableGames"></b-form-checkbox>
+              <b-form-checkbox v-model="internalValue.unlimitedWillReleaseDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
             </td>
           </tr>
           <tr>
             <th scope="row">Will Not Release</th>
             <td>
-              <ValidationProvider rules="required|max_value:100|integer" v-slot="{ errors }" v-if="!internalValue.unlimitedWillNotReleaseDroppableGames">
+              <ValidationProvider v-if="!internalValue.unlimitedWillNotReleaseDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
                 <input
-                  v-model="internalValue.willNotReleaseDroppableGames"
                   id="willNotReleaseDroppableGames"
+                  v-model="internalValue.willNotReleaseDroppableGames"
                   name="Will Not Release Droppable Games"
                   type="text"
                   class="form-control input drop-number" />
@@ -154,19 +154,19 @@
               </ValidationProvider>
             </td>
             <td>
-              <b-form-checkbox class="unlimited-checkbox" v-model="internalValue.unlimitedWillNotReleaseDroppableGames"></b-form-checkbox>
+              <b-form-checkbox v-model="internalValue.unlimitedWillNotReleaseDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
             </td>
           </tr>
           <tr>
             <th scope="row">Any Unreleased</th>
             <td>
-              <ValidationProvider rules="required|max_value:100|integer" v-slot="{ errors }" v-if="!internalValue.unlimitedFreeDroppableGames">
-                <input v-model="internalValue.freeDroppableGames" id="freeDroppableGames" name="Unrestricted Droppable Games" type="text" class="form-control input drop-number" />
+              <ValidationProvider v-if="!internalValue.unlimitedFreeDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
+                <input id="freeDroppableGames" v-model="internalValue.freeDroppableGames" name="Unrestricted Droppable Games" type="text" class="form-control input drop-number" />
                 <span class="text-danger">{{ errors[0] }}</span>
               </ValidationProvider>
             </td>
             <td>
-              <b-form-checkbox class="unlimited-checkbox" v-model="internalValue.unlimitedFreeDroppableGames"></b-form-checkbox>
+              <b-form-checkbox v-model="internalValue.unlimitedFreeDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
             </td>
           </tr>
         </tbody>
@@ -195,7 +195,7 @@
         <br />
         All games have a number of tags associated with them. If you place a tag in the "Banned" column, any game with that tag will not be selectable.
       </div>
-      <leagueTagSelector v-model="internalValue.tags" :gameMode="gameMode"></leagueTagSelector>
+      <leagueTagSelector v-model="internalValue.tags" :game-mode="gameMode"></leagueTagSelector>
 
       <hr />
       <h3>Special Game Slots</h3>
@@ -211,7 +211,7 @@
       <specialGameSlotSelector v-model="internalValue.specialGameSlots"></specialGameSlotSelector>
 
       <hr />
-      <h3 class="collapse-header" v-b-toggle.advanced-settings-collapse>
+      <h3 v-b-toggle.advanced-settings-collapse class="collapse-header">
         Advanced Settings
         <span class="collapse-opened"><font-awesome-icon icon="caret-down" /></span>
         <span class="collapse-closed"><font-awesome-icon icon="caret-left" /></span>
@@ -232,7 +232,18 @@ import LeagueTagSelector from '@/components/leagueTagSelector';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector';
 
 export default {
-  props: ['value', 'year', 'possibleLeagueOptions', 'editMode', 'currentNumberOfPlayers', 'freshSettings'],
+  components: {
+    LeagueTagSelector,
+    SpecialGameSlotSelector
+  },
+  props: {
+    value: Object,
+    year: Number,
+    possibleLeagueOptions: Object,
+    editMode: Boolean,
+    currentNumberOfPlayers: Number,
+    freshSettings: Boolean
+  },
   data() {
     return {
       intendedNumberOfPlayers: null,
@@ -242,9 +253,22 @@ export default {
       internalValue: null
     };
   },
-  components: {
-    LeagueTagSelector,
-    SpecialGameSlotSelector
+  watch: {
+    intendedNumberOfPlayers: function () {
+      if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
+        this.intendedNumberOfPlayersEverValid = true;
+      }
+    },
+    internalValue: function () {
+      this.updateInternalValue();
+    }
+  },
+  mounted() {
+    if (this.currentNumberOfPlayers && this.freshSettings) {
+      this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
+    }
+
+    this.internalValue = _.cloneDeep(this.value);
   },
   methods: {
     updateInternalValue() {
@@ -387,23 +411,6 @@ export default {
       }
       slotIndex++;
     }
-  },
-  watch: {
-    intendedNumberOfPlayers: function () {
-      if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
-        this.intendedNumberOfPlayersEverValid = true;
-      }
-    },
-    internalValue: function () {
-      this.updateInternalValue();
-    }
-  },
-  mounted() {
-    if (this.currentNumberOfPlayers && this.freshSettings) {
-      this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
-    }
-
-    this.internalValue = _.cloneDeep(this.value);
   }
 };
 </script>

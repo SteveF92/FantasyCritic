@@ -3,29 +3,31 @@
     <div class="form-horizontal">
       <div class="form-group">
         <label for="messageText" class="control-label">Message</label>
-        <textarea class="form-control" v-model="messageText" rows="3"></textarea>
+        <textarea v-model="messageText" class="form-control" rows="3"></textarea>
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" v-model="isPublic" />
+          <input v-model="isPublic" type="checkbox" class="form-check-input" />
           <label class="form-check-label" for="isPublic">Show message to users not in league? (only applies in public leagues)</label>
         </div>
       </div>
     </div>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Post Message" v-on:click="postNewMessage" :disabled="!messageText" />
+      <input type="submit" class="btn btn-primary" value="Post Message" :disabled="!messageText" @click="postNewMessage" />
     </div>
   </b-modal>
 </template>
 
 <script>
 import axios from 'axios';
+import LeagueMixin from '@/mixins/leagueMixin';
+
 export default {
+  mixins: [LeagueMixin],
   data() {
     return {
       messageText: null,
       isPublic: false
     };
   },
-  props: ['league', 'leagueYear'],
   computed: {},
   methods: {
     postNewMessage() {

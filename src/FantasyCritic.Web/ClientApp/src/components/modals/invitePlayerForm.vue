@@ -1,18 +1,18 @@
 <template>
   <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData">
-    <div class="alert alert-danger" v-show="errorInfo">
+    <div v-show="errorInfo" class="alert alert-danger">
       {{ errorInfo }}
     </div>
     <div>
       <h3 class="text-black">Invite Link</h3>
       <label>This is the easiest way to invite players. Just send one link to anyone you want to invite.</label>
-      <div v-for="inviteLink in inviteLinks" class="invite-link" :key="inviteLink.inviteID">
+      <div v-for="inviteLink in inviteLinks" :key="inviteLink.inviteID" class="invite-link">
         <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly />
-        <b-button variant="info" size="sm" v-clipboard:copy="inviteLink.fullInviteLink" v-clipboard:success="inviteLinkCopied">Copy</b-button>
-        <b-button variant="danger" size="sm" v-on:click="deleteInviteLink(inviteLink)">Delete</b-button>
+        <b-button v-clipboard:copy="inviteLink.fullInviteLink" v-clipboard:success="inviteLinkCopied" variant="info" size="sm">Copy</b-button>
+        <b-button variant="danger" size="sm" @click="deleteInviteLink(inviteLink)">Delete</b-button>
       </div>
       <br />
-      <b-button variant="primary" size="sm" v-on:click="createInviteLink()">Create Invite Link</b-button>
+      <b-button variant="primary" size="sm" @click="createInviteLink()">Create Invite Link</b-button>
     </div>
     <hr />
     <div>
@@ -21,8 +21,8 @@
         <div class="form-horizontal">
           <div class="form-group email-form">
             <label for="inviteEmail" class="control-label">Email Address</label>
-            <ValidationProvider rules="email" v-slot="{ errors }" name="Email Address">
-              <input v-model="inviteEmail" id="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
+            <ValidationProvider v-slot="{ errors }" rules="email" name="Email Address">
+              <input id="inviteEmail" v-model="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
@@ -32,18 +32,18 @@
         <div class="form-horizontal">
           <div class="form-group">
             <label for="inviteDisplayName" class="control-label">Display Name</label>
-            <input v-model="inviteDisplayName" id="inviteDisplayName" name="inviteDisplayName" type="text" class="form-control input" />
+            <input id="inviteDisplayName" v-model="inviteDisplayName" name="inviteDisplayName" type="text" class="form-control input" />
           </div>
           <div class="form-group">
             <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
-            <ValidationProvider rules="min_value:1000|max_value:9999" v-slot="{ errors }" name="Display Number">
-              <input v-model="inviteDisplayNumber" id="inviteDisplayNumber" name="inviteDisplayNumber" type="number" class="form-control input" />
+            <ValidationProvider v-slot="{ errors }" rules="min_value:1000|max_value:9999" name="Display Number">
+              <input id="inviteDisplayNumber" v-model="inviteDisplayNumber" name="inviteDisplayNumber" type="number" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
         </div>
         <div slot="modal-footer">
-          <input type="submit" class="btn btn-primary" value="Send Invite" v-on:click="invitePlayer" :disabled="invalid || !valuesEntered" />
+          <input type="submit" class="btn btn-primary" value="Send Invite" :disabled="invalid || !valuesEntered" @click="invitePlayer" />
         </div>
       </ValidationObserver>
     </div>

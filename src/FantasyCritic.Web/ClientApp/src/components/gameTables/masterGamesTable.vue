@@ -10,7 +10,7 @@
       </b-col>
 
       <b-col sm="12" md="6" class="my-1">
-        <b-form-group label="Filter On" description="Leave all unchecked to filter on all data" label-cols-sm="3" label-align-sm="right" label-size="sm" class="mb-0" v-slot="{ ariaDescribedby }">
+        <b-form-group v-slot="{ ariaDescribedby }" label="Filter On" description="Leave all unchecked to filter on all data" label-cols-sm="3" label-align-sm="right" label-size="sm" class="mb-0">
           <b-form-checkbox-group v-model="filterOn" :aria-describedby="ariaDescribedby" class="mt-1">
             <b-form-checkbox value="gameName">Name</b-form-checkbox>
             <b-form-checkbox value="estimatedReleaseDate">Release Date</b-form-checkbox>
@@ -20,7 +20,7 @@
       </b-col>
 
       <b-col sm="12" md="6" class="my-1">
-        <b-form-group label="Sort" label-for="sort-by-select" label-cols-sm="3" label-align-sm="right" label-size="sm" class="mb-0" v-slot="{ ariaDescribedby }">
+        <b-form-group v-slot="{ ariaDescribedby }" label="Sort" label-for="sort-by-select" label-cols-sm="3" label-align-sm="right" label-size="sm" class="mb-0">
           <b-input-group size="sm">
             <b-form-select id="sort-by-select" v-model="sortBy" :options="sortOptions" :aria-describedby="ariaDescribedby" class="w-75">
               <template #first>
@@ -64,7 +64,7 @@
       sticky-header="1000px"
       @filtered="onFiltered">
       <template #cell(gameName)="data">
-        <masterGamePopover :masterGame="data.item"></masterGamePopover>
+        <masterGamePopover :master-game="data.item"></masterGamePopover>
       </template>
       <template #cell(maximumReleaseDate)="data">
         {{ getReleaseDate(data.item) }}
@@ -102,8 +102,8 @@
         {{ data.item.addedTimestamp | date }}
       </template>
       <template #cell(tags)="data">
-        <span v-for="tag in data.item.tags" v-bind:key="tag">
-          <masterGameTagBadge :tagName="tag" short></masterGameTagBadge>
+        <span v-for="tag in data.item.tags" :key="tag">
+          <masterGameTagBadge :tag-name="tag" short></masterGameTagBadge>
         </span>
       </template>
     </b-table>
@@ -175,6 +175,9 @@ export default {
       return gameRows;
     }
   },
+  mounted() {
+    this.totalRows = this.masterGames.length;
+  },
   methods: {
     getReleaseDate(game) {
       return GlobalFunctions.formatMasterGameReleaseDate(game);
@@ -217,9 +220,6 @@ export default {
 
       return false;
     }
-  },
-  mounted() {
-    this.totalRows = this.masterGames.length;
   }
 };
 </script>

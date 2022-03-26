@@ -10,14 +10,14 @@
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
           <b-form-select v-model="manuallyScoreGamePublisher">
-            <option v-for="publisher in leagueYear.publishers" v-bind:value="publisher" :key="publisher.publisherID">
+            <option v-for="publisher in leagueYear.publishers" :key="publisher.publisherID" :value="publisher">
               {{ publisher.publisherName }}
             </option>
           </b-form-select>
           <div v-if="manuallyScoreGamePublisher">
             <label for="manuallyScoreGame" class="control-label">Game</label>
             <b-form-select v-model="manuallyScoreGame">
-              <option v-for="publisherGame in manuallyScoreGamePublisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+              <option v-for="publisherGame in manuallyScoreGamePublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
                 {{ publisherGame.gameName }}
               </option>
             </b-form-select>
@@ -26,7 +26,7 @@
             <div v-if="manuallyScoreGame.manualCriticScore" class="form-check">
               <span>
                 <label class="form-check-label">Remove Manual Score?</label>
-                <input class="form-check-input remove-manual-score-checkbox" type="checkbox" v-model="removeManualScore" />
+                <input v-model="removeManualScore" class="form-check-input remove-manual-score-checkbox" type="checkbox" />
               </span>
             </div>
             <div v-if="!removeManualScore">
@@ -37,7 +37,7 @@
         </div>
 
         <div v-if="manuallyScoreGame && (manualScore || removeManualScore)">
-          <b-button variant="primary" class="add-game-button" v-on:click="manuallyScorePublisherGame">{{ buttonText }}</b-button>
+          <b-button variant="primary" class="add-game-button" @click="manuallyScorePublisherGame">{{ buttonText }}</b-button>
           <div v-if="errorInfo" class="alert alert-danger manuallyScore-error">
             <h3 class="alert-heading">Error!</h3>
             <p>{{ errorInfo }}</p>

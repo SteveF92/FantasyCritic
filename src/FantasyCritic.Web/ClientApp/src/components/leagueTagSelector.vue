@@ -2,22 +2,22 @@
   <div>
     <div class="reset-button-flex">
       <h5 class="help-text">Drag and Drop to Re-arrange</h5>
-      <b-button variant="warning" class="reset-button" v-on:click="resetValues">Reset Changes</b-button>
+      <b-button variant="warning" class="reset-button" @click="resetValues">Reset Changes</b-button>
     </div>
-    <div class="alert alert-warning" v-show="showWarning && !showDanger && !showPortDanger">You've chosen slightly non-standard settings. Be sure this is what you want.</div>
-    <div class="alert alert-danger" v-show="showDanger && !showPortDanger">
+    <div v-show="showWarning && !showDanger && !showPortDanger" class="alert alert-warning">You've chosen slightly non-standard settings. Be sure this is what you want.</div>
+    <div v-show="showDanger && !showPortDanger" class="alert alert-danger">
       The settings you have selected are REALLY not recommended, unless you really know what you are doing and want a highly custom league.
     </div>
-    <div class="alert alert-danger" v-show="showPortDanger">
+    <div v-show="showPortDanger" class="alert alert-danger">
       Please, please, don't allow the tag 'Port'. These games very very rarely get new Open Critic pages, so we usually end up assigning the points from the original game. You're free to allow the
       tag, but please be aware that this is an "unsupported" feature.
     </div>
     <div class="tag-flex-container">
       <div class="tag-flex-drag">
         <draggable class="tag-drag-list" :list="internalValue.banned" group="tags" @change="onChange">
-          <div class="tag-drag-item" v-for="element in internalValue.banned" :key="element">
+          <div v-for="element in internalValue.banned" :key="element" class="tag-drag-item">
             <font-awesome-icon icon="bars" />
-            <masterGameTagBadge :tagName="element"></masterGameTagBadge>
+            <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
           </div>
           <span slot="header" class="tag-header">Banned Tags</span>
         </draggable>
@@ -25,9 +25,9 @@
 
       <div class="tag-flex-drag">
         <draggable class="tag-drag-list" :list="internalValue.allowed" group="tags" @change="onChange">
-          <div class="tag-drag-item" v-for="element in internalValue.allowed" :key="element">
+          <div v-for="element in internalValue.allowed" :key="element" class="tag-drag-item">
             <font-awesome-icon icon="bars" />
-            <masterGameTagBadge :tagName="element"></masterGameTagBadge>
+            <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
           </div>
           <span slot="header" class="tag-header">Allowed Tags</span>
         </draggable>
@@ -41,10 +41,13 @@ import draggable from 'vuedraggable';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
 
 export default {
-  props: ['value', 'gameMode'],
   components: {
     draggable,
     MasterGameTagBadge
+  },
+  props: {
+    value: Object,
+    gameMode: String
   },
   data() {
     return {
@@ -89,6 +92,9 @@ export default {
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     }
   },
+  mounted() {
+    this.initializeValues();
+  },
   methods: {
     onChange() {
       this.$emit('input', this.internalValue);
@@ -112,9 +118,6 @@ export default {
 
       this.internalValue = _.cloneDeep(this.initialValue);
     }
-  },
-  mounted() {
-    this.initializeValues();
   }
 };
 </script>

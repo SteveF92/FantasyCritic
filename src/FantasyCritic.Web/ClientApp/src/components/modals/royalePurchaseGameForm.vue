@@ -8,27 +8,27 @@
       game(s).
     </p>
 
-    <form method="post" class="form-horizontal" role="form" v-on:submit.prevent="searchGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
         <label for="PurchaseGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input v-model="searchGameName" id="searchGameName" name="searchGameName" type="text" class="form-control input" />
+          <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" v-on:click="searchGame">Search Game</b-button>
+            <b-button variant="info" @click="searchGame">Search Game</b-button>
           </span>
         </div>
 
-        <h3 class="text-black" v-if="searchedTop">Top games</h3>
+        <h3 v-if="searchedTop" class="text-black">Top games</h3>
         <possibleRoyaleMasterGamesTable
           v-if="possibleMasterGames.length > 0"
           v-model="purchaseRoyaleGame"
-          :possibleGames="possibleMasterGames"
-          v-on:input="newGameSelected"></possibleRoyaleMasterGamesTable>
+          :possible-games="possibleMasterGames"
+          @input="newGameSelected"></possibleRoyaleMasterGamesTable>
 
         <div
           v-show="searched && !purchaseRoyaleGame && possibleMasterGames.length === 0"
           class="alert"
-          v-bind:class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+          :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
             <span class="col-12 col-md-7">No games were found.</span>
           </div>
@@ -40,11 +40,11 @@
 
     <div class="form-horizontal">
       <div>
-        <b-button variant="primary" class="add-game-button" v-on:click="addGame" v-if="formIsValid" :disabled="isBusy">Purchase Game for {{ purchaseRoyaleGame.cost | money }}</b-button>
+        <b-button v-if="formIsValid" variant="primary" class="add-game-button" :disabled="isBusy" @click="addGame">Purchase Game for {{ purchaseRoyaleGame.cost | money }}</b-button>
       </div>
-      <div v-if="purchaseResult && !purchaseResult.success" class="alert purchase-error" v-bind:class="{ 'alert-danger': !purchaseResult.overridable, 'alert-warning': purchaseResult.overridable }">
-        <h3 class="alert-heading" v-if="purchaseResult.overridable">Warning!</h3>
-        <h3 class="alert-heading" v-if="!purchaseResult.overridable">Error!</h3>
+      <div v-if="purchaseResult && !purchaseResult.success" class="alert purchase-error" :class="{ 'alert-danger': !purchaseResult.overridable, 'alert-warning': purchaseResult.overridable }">
+        <h3 v-if="purchaseResult.overridable" class="alert-heading">Warning!</h3>
+        <h3 v-if="!purchaseResult.overridable" class="alert-heading">Error!</h3>
         <ul>
           <li v-for="error in purchaseResult.errors" :key="error">{{ error }}</li>
         </ul>
@@ -58,6 +58,13 @@ import axios from 'axios';
 import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable';
 
 export default {
+  components: {
+    PossibleRoyaleMasterGamesTable
+  },
+  props: {
+    yearQuarter: Object,
+    userRoyalePublisher: Object
+  },
   data() {
     return {
       searchGameName: null,
@@ -69,9 +76,6 @@ export default {
       isBusy: false
     };
   },
-  components: {
-    PossibleRoyaleMasterGamesTable
-  },
   computed: {
     formIsValid() {
       return this.purchaseRoyaleGame;
@@ -80,7 +84,9 @@ export default {
       return this.userRoyalePublisher.publisherGames.length;
     }
   },
-  props: ['yearQuarter', 'userRoyalePublisher'],
+  mounted() {
+    this.searchGame();
+  },
   methods: {
     searchGame() {
       this.searched = false;
@@ -153,9 +159,6 @@ export default {
     newGameSelected() {
       this.purchaseResult = null;
     }
-  },
-  mounted() {
-    this.searchGame();
   }
 };
 </script>

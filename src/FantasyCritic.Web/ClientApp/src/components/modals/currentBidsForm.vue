@@ -1,6 +1,6 @@
 <template>
   <b-modal id="currentBidsForm" ref="currentBidsFormRef" size="lg" title="My Current Bids" @hidden="clearData">
-    <div class="alert alert-danger" v-show="errorInfo" role="alert">
+    <div v-show="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>
     <label v-show="settingPriority">Drag and drop to change order.</label>
@@ -22,7 +22,7 @@
           <b-th v-show="!settingPriority">Cancel</b-th>
         </b-tr>
       </b-thead>
-      <draggable v-model="desiredBidPriorities" tag="tbody" v-if="settingPriority" handle=".handle">
+      <draggable v-if="settingPriority" v-model="desiredBidPriorities" tag="tbody" handle=".handle">
         <b-tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
           <b-td class="handle"><font-awesome-icon icon="bars" size="lg" /></b-td>
           <b-td>{{ bid.masterGame.gameName }}</b-td>
@@ -42,34 +42,34 @@
           <b-td v-else>None</b-td>
           <b-td>{{ bid.counterPick | yesNo }}</b-td>
           <b-td class="select-cell">
-            <b-button variant="info" size="sm" v-on:click="startEditingBid(bid)">Edit</b-button>
+            <b-button variant="info" size="sm" @click="startEditingBid(bid)">Edit</b-button>
           </b-td>
           <b-td class="select-cell">
-            <b-button variant="danger" size="sm" v-on:click="cancelBid(bid)">Cancel</b-button>
+            <b-button variant="danger" size="sm" @click="cancelBid(bid)">Cancel</b-button>
           </b-td>
         </b-tr>
       </b-tbody>
     </b-table-simple>
     <div v-if="bidBeingEdited">
       <h3 for="bidBeingEdited" class="selected-game text-black">Edit Bid:</h3>
-      <masterGameSummary :masterGame="bidBeingEdited.masterGame"></masterGameSummary>
+      <masterGameSummary :master-game="bidBeingEdited.masterGame"></masterGameSummary>
       <div class="form-group">
         <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
 
-        <ValidationProvider rules="required|integer" v-slot="{ errors }">
-          <input v-model="bidAmount" id="bidAmount" name="bidAmount" type="number" class="form-control input" />
+        <ValidationProvider v-slot="{ errors }" rules="required|integer">
+          <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
-      <div class="form-group" v-if="!bidBeingEdited.counterPick">
+      <div v-if="!bidBeingEdited.counterPick" class="form-group">
         <label for="conditionalDrop" class="control-label">Conditional Drop</label>
         <b-form-select v-model="conditionalDrop">
-          <option v-for="publisherGame in droppableGames" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+          <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>
       </div>
-      <b-button variant="primary" v-on:click="editBid" class="add-game-button" :disabled="isBusy">Edit Bid</b-button>
+      <b-button variant="primary" class="add-game-button" :disabled="isBusy" @click="editBid">Edit Bid</b-button>
       <div v-if="editBidResult && !editBidResult.success" class="alert bid-error alert-danger">
         <h3 class="alert-heading">Error!</h3>
         <ul>
@@ -78,7 +78,7 @@
       </div>
     </div>
     <div slot="modal-footer">
-      <b-button variant="primary" v-if="settingPriority" v-on:click="setBidPriorityOrder()">Set Priority Order</b-button>
+      <b-button v-if="settingPriority" variant="primary" @click="setBidPriorityOrder()">Set Priority Order</b-button>
     </div>
   </b-modal>
 </template>
@@ -118,13 +118,13 @@ export default {
       return list;
     }
   },
-  mounted() {
-    this.clearData();
-  },
   watch: {
     settingPriority() {
       this.desiredBidPriorities = this.currentBids;
     }
+  },
+  mounted() {
+    this.clearData();
   },
   methods: {
     setBidPriorityOrder() {

@@ -1,13 +1,15 @@
 <template>
   <span>
-    <span class="badge badge-primary badge-success" v-show="isAvailable">Available</span>
-    <span class="badge badge-primary badge-info" v-show="alreadyOwned">Already Owned</span>
-    <span class="badge badge-primary badge-warning" v-show="!isAvailable && !alreadyOwned">{{ status }}</span>
+    <span v-show="isAvailable" class="badge badge-primary badge-success">Available</span>
+    <span v-show="alreadyOwned" class="badge badge-primary badge-info">Already Owned</span>
+    <span v-show="!isAvailable && !alreadyOwned" class="badge badge-primary badge-warning">{{ status }}</span>
   </span>
 </template>
 <script>
 export default {
-  props: ['possibleMasterGame'],
+  props: {
+    possibleMasterGame: Object
+  },
   computed: {
     status() {
       return this.possibleMasterGame.status;

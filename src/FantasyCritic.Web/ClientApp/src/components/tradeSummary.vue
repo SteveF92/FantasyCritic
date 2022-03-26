@@ -1,6 +1,6 @@
 <template>
   <div>
-    <collapseCard :defaultVisible="defaultVisible">
+    <collapseCard :default-visible="defaultVisible">
       <div slot="header">{{ header }}</div>
       <div slot="body">
         <div class="row">
@@ -10,7 +10,7 @@
             <h5>{{ recievesVerbiage }}</h5>
             <div v-for="game in trade.counterPartySendGames" :key="game.masterGameYear.masterGameID" class="component-row">
               •
-              <masterGamePopover :masterGame="game.masterGameYear"></masterGamePopover>
+              <masterGamePopover :master-game="game.masterGameYear"></masterGamePopover>
               <template v-if="game.counterPick">(Counter Pick)</template>
             </div>
             <div v-if="trade.counterPartyBudgetSendAmount" class="component-row">• ${{ trade.counterPartyBudgetSendAmount }} of budget</div>
@@ -21,7 +21,7 @@
             <h5>{{ recievesVerbiage }}</h5>
             <div v-for="game in trade.proposerSendGames" :key="game.masterGameYear.masterGameID" class="component-row">
               •
-              <masterGamePopover :masterGame="game.masterGameYear"></masterGamePopover>
+              <masterGamePopover :master-game="game.masterGameYear"></masterGamePopover>
               <template v-if="game.counterPick">(Counter Pick)</template>
             </div>
             <div v-if="trade.proposerBudgetSendAmount" class="component-row">• ${{ trade.proposerBudgetSendAmount }} of budget</div>
@@ -40,7 +40,7 @@
           <div v-if="trade.status === 'Executed'">• Trade executed by league manager at {{ trade.completedTimestamp | dateTime }}.</div>
 
           <div v-if="tradeIsActive && trade.error">
-            <div class="alert alert-warning" v-if="trade.error">
+            <div v-if="trade.error" class="alert alert-warning">
               <p>This trade is no longer valid due to the following error:</p>
               <p>
                 {{ trade.error }}
@@ -48,40 +48,40 @@
 
               <template v-if="league.isManager">
                 <p>The only option at this point is to reject the trade. Another trade can be proposed if the players wish.</p>
-                <b-button variant="success" v-on:click="managerRejectTrade">Reject Trade</b-button>
+                <b-button variant="success" @click="managerRejectTrade">Reject Trade</b-button>
               </template>
               <template v-if="isProposer">
                 <p>The only option at this point is to rescind the trade. Another trade can be proposed if you wish.</p>
-                <b-button variant="success" v-on:click="rescindTrade">Rescind Trade</b-button>
+                <b-button variant="success" @click="rescindTrade">Rescind Trade</b-button>
               </template>
               <template v-if="isCounterParty">
                 <p>The only option at this point is to reject the trade. Another trade can be proposed if you wish.</p>
-                <b-button variant="success" v-on:click="rejectTrade">Rescind Trade</b-button>
+                <b-button variant="success" @click="rejectTrade">Rescind Trade</b-button>
               </template>
             </div>
           </div>
           <div v-else>
-            <div class="alert alert-info" v-if="trade.status === 'Proposed' && !isCounterParty">
+            <div v-if="trade.status === 'Proposed' && !isCounterParty" class="alert alert-info">
               Trade is waiting for approval from '{{ trade.counterPartyPublisherName }}'.
-              <b-button v-if="isProposer" variant="danger" v-on:click="rescindTrade">Rescind Trade</b-button>
+              <b-button v-if="isProposer" variant="danger" @click="rescindTrade">Rescind Trade</b-button>
             </div>
-            <div class="alert alert-info" v-if="trade.status === 'Accepted' && isProposer">
+            <div v-if="trade.status === 'Accepted' && isProposer" class="alert alert-info">
               Trade is has been accepted by '{{ trade.counterPartyPublisherName }}', but you can still rescind it.
-              <b-button variant="danger" v-on:click="rescindTrade">Rescind Trade</b-button>
+              <b-button variant="danger" @click="rescindTrade">Rescind Trade</b-button>
             </div>
-            <div class="alert alert-info" v-if="trade.status === 'Proposed' && isCounterParty">
+            <div v-if="trade.status === 'Proposed' && isCounterParty" class="alert alert-info">
               This trade is waiting for your approval.
-              <b-button variant="success" v-on:click="acceptTrade">Accept</b-button>
-              <b-button variant="danger" v-on:click="rejectTrade">Reject</b-button>
+              <b-button variant="success" @click="acceptTrade">Accept</b-button>
+              <b-button variant="danger" @click="rejectTrade">Reject</b-button>
             </div>
-            <div class="alert alert-info" v-if="trade.status === 'Accepted' && isCounterParty">
+            <div v-if="trade.status === 'Accepted' && isCounterParty" class="alert alert-info">
               You accepted this trade, but you are free to change your mind.
-              <b-button variant="danger" v-on:click="rejectTrade">Reject Trade</b-button>
+              <b-button variant="danger" @click="rejectTrade">Reject Trade</b-button>
             </div>
 
             <div v-if="trade.status === 'Accepted'">
-              <div class="alert alert-info" v-if="league.isManager">League members can now vote on this trade.</div>
-              <div class="alert alert-info" v-else>League members can now vote on this trade, and the league manager can execute or reject it.</div>
+              <div v-if="league.isManager" class="alert alert-info">League members can now vote on this trade.</div>
+              <div v-else class="alert alert-info">League members can now vote on this trade, and the league manager can execute or reject it.</div>
 
               <div v-if="isInLeagueButNotInvolved">
                 When considering a trade, you should ask "is this trade reasonable?" A reasonable trade is beneficial to both parties. The following situations are cases where trades should not be
@@ -101,25 +101,25 @@
               <div v-if="canVote" class="alert alert-secondary">
                 <h5>Vote</h5>
                 <div class="form-group">
-                  <input type="text" v-model="comment" class="form-control" aria-describedby="emailHelp" placeholder="Enter a comment (Optional)" />
+                  <input v-model="comment" type="text" class="form-control" aria-describedby="emailHelp" placeholder="Enter a comment (Optional)" />
                 </div>
-                <b-button variant="success" v-on:click="vote(true)">Vote Approve</b-button>
-                <b-button variant="danger" v-on:click="vote(false)">Vote Reject</b-button>
+                <b-button variant="success" @click="vote(true)">Vote Approve</b-button>
+                <b-button variant="danger" @click="vote(false)">Vote Reject</b-button>
               </div>
 
-              <div class="alert alert-warning" v-if="league.isManager && !trade.error">
+              <div v-if="league.isManager && !trade.error" class="alert alert-warning">
                 <p>
                   As league manager, you ultimately make the choice to execute or reject the trade. If you reject it, the full record of the trade goes to the league history page, but nothing else
                   happens. If you execute the trade, the games and budget (if applicable) will change hands immediately, and again, the full record will be visible on the league history page.
                 </p>
                 <p>You should, however, weigh your league's votes when making your decision.</p>
 
-                <b-button variant="success" v-on:click="executeTrade">Execute Trade</b-button>
-                <b-button variant="danger" v-on:click="managerRejectTrade">Reject Trade</b-button>
+                <b-button variant="success" @click="executeTrade">Execute Trade</b-button>
+                <b-button variant="danger" @click="managerRejectTrade">Reject Trade</b-button>
               </div>
             </div>
 
-            <div class="alert alert-info" v-if="trade.status === 'Accepted' && trade.votes.length === 0">There are no votes yet.</div>
+            <div v-if="trade.status === 'Accepted' && trade.votes.length === 0" class="alert alert-info">There are no votes yet.</div>
 
             <div v-if="trade.votes.length > 0">
               <h4>Votes</h4>
@@ -131,7 +131,7 @@
                 <template #cell(comment)="data">
                   {{ data.item.comment }}
                   <template v-if="data.item.userID === userInfo.userID && !trade.completedTimestamp">
-                    <b-button variant="danger" size="sm" v-on:click="deleteVote">Delete Vote</b-button>
+                    <b-button variant="danger" size="sm" @click="deleteVote">Delete Vote</b-button>
                   </template>
                 </template>
               </b-table-lite>
@@ -139,7 +139,7 @@
           </div>
         </div>
 
-        <div class="alert alert-danger" v-show="errorInfo">
+        <div v-show="errorInfo" class="alert alert-danger">
           <h3>Error!</h3>
           {{ errorInfo }}
         </div>

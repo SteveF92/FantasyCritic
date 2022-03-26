@@ -30,30 +30,30 @@
 
         <div class="col-md-12 col-lg-4">
           <div v-if="userIsPublisher" class="user-actions">
-            <b-button block variant="primary" v-b-modal="'royalePurchaseGameForm'" class="action-button">Purchase a Game</b-button>
-            <b-button block variant="secondary" v-b-modal="'royaleChangePublisherNameForm'" class="action-button">Change Publisher Name</b-button>
-            <b-button block v-if="isPlusUser" variant="secondary" v-b-modal="'royaleChangePublisherIconForm'" class="action-button">Change Publisher Icon</b-button>
+            <b-button v-b-modal="'royalePurchaseGameForm'" block variant="primary" class="action-button">Purchase a Game</b-button>
+            <b-button v-b-modal="'royaleChangePublisherNameForm'" block variant="secondary" class="action-button">Change Publisher Name</b-button>
+            <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherIconForm'" block variant="secondary" class="action-button">Change Publisher Icon</b-button>
 
-            <royalePurchaseGameForm :yearQuarter="publisher.yearQuarter" :userRoyalePublisher="publisher" v-on:gamePurchased="gamePurchased"></royalePurchaseGameForm>
-            <royaleChangePublisherNameForm :userRoyalePublisher="publisher" v-on:publisherNameChanged="publisherNameChanged"></royaleChangePublisherNameForm>
-            <royaleChangePublisherIconForm :userRoyalePublisher="publisher" v-on:publisherIconChanged="publisherIconChanged"></royaleChangePublisherIconForm>
+            <royalePurchaseGameForm :year-quarter="publisher.yearQuarter" :user-royale-publisher="publisher" @gamePurchased="gamePurchased"></royalePurchaseGameForm>
+            <royaleChangePublisherNameForm :user-royale-publisher="publisher" @publisherNameChanged="publisherNameChanged"></royaleChangePublisherNameForm>
+            <royaleChangePublisherIconForm :user-royale-publisher="publisher" @publisherIconChanged="publisherIconChanged"></royaleChangePublisherIconForm>
           </div>
         </div>
       </div>
 
       <hr />
-      <div class="alert alert-danger" v-if="errorInfo">{{ errorInfo }}</div>
+      <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
 
       <h1>Games</h1>
-      <b-table striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" v-if="publisher.publisherGames.length !== 0" :tbody-tr-class="publisherGameRowClass">
+      <b-table v-if="publisher.publisherGames.length !== 0" striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" :tbody-tr-class="publisherGameRowClass">
         <template #cell(masterGame.gameName)="data">
           <span class="master-game-popover">
-            <masterGamePopover :masterGame="data.item.masterGame" :currentlyIneligible="data.item.currentlyIneligible"></masterGamePopover>
+            <masterGamePopover :master-game="data.item.masterGame" :currently-ineligible="data.item.currentlyIneligible"></masterGamePopover>
           </span>
 
           <span v-if="data.item.currentlyIneligible" class="game-ineligible">
             Ineligible
-            <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.focus="inEligibleText" />
+            <font-awesome-icon v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="info-circle" />
           </span>
         </template>
         <template #cell(masterGame.maximumReleaseDate)="data">
@@ -64,7 +64,7 @@
         </template>
         <template #cell(advertisingMoney)="data">
           {{ data.item.advertisingMoney | money }}
-          <b-button variant="info" size="sm" v-if="userIsPublisher && !data.item.locked" v-on:click="setGameToSetBudget(data.item)">Set Budget</b-button>
+          <b-button v-if="userIsPublisher && !data.item.locked" variant="info" size="sm" @click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
         <template #cell(masterGame.criticScore)="data">
           {{ data.item.masterGame.criticScore | score(2) }}
@@ -76,7 +76,7 @@
           {{ data.item.timestamp | date }}
         </template>
         <template #cell(sellGame)="data">
-          <b-button block variant="danger" v-if="!data.item.locked" v-on:click="setGameToSell(data.item)" v-b-modal="'sellRoyaleGameModal'">Sell</b-button>
+          <b-button v-if="!data.item.locked" v-b-modal="'sellRoyaleGameModal'" block variant="danger" @click="setGameToSell(data.item)">Sell</b-button>
         </template>
       </b-table>
       <div v-else class="alert alert-info">
@@ -85,7 +85,7 @@
       </div>
     </div>
 
-    <sellRoyaleGameModal v-if="gameToModify" :publisherGame="gameToModify" v-on:sellGame="sellGame"></sellRoyaleGameModal>
+    <sellRoyaleGameModal v-if="gameToModify" :publisher-game="gameToModify" @sellGame="sellGame"></sellRoyaleGameModal>
 
     <b-modal id="setAdvertisingMoneyModal" ref="setAdvertisingMoneyModalRef" title="Set Advertising Budget" @ok="setBudget">
       <div v-if="gameToModify">
@@ -100,7 +100,7 @@
         <div class="form-group row">
           <label for="advertisingBudgetToSet" class="col-sm-2 col-form-label">Budget</label>
           <div class="col-sm-10">
-            <input class="form-control" v-model="advertisingBudgetToSet" />
+            <input v-model="advertisingBudgetToSet" class="form-control" />
           </div>
         </div>
       </div>
@@ -180,13 +180,13 @@ export default {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
     }
   },
-  mounted() {
-    this.fetchPublisher();
-  },
   watch: {
     $route() {
       this.fetchPublisher();
     }
+  },
+  mounted() {
+    this.fetchPublisher();
   },
   methods: {
     fetchPublisher() {

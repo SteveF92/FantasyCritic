@@ -1,10 +1,10 @@
 <template>
   <b-modal id="manageActivePlayers" ref="manageActivePlayersRef" title="Manage Active Players" @show="setData">
     <h4 class="text-black">Active Players for {{ leagueYear.year }}</h4>
-    <div class="alert alert-danger" v-show="errorInfo">
+    <div v-show="errorInfo" class="alert alert-danger">
       {{ errorInfo }}
     </div>
-    <table class="table table-bordered table-striped table-sm" v-if="showTable">
+    <table v-if="showTable" class="table table-bordered table-striped table-sm">
       <thead>
         <tr class="bg-primary">
           <th scope="col">User</th>
@@ -15,13 +15,13 @@
         <tr v-for="(value, name) in internalPlayerActive" :key="name">
           <td>{{ value.displayName }}</td>
           <td>
-            <input type="checkbox" v-model="value.active" :disabled="value.manager" />
+            <input v-model="value.active" type="checkbox" :disabled="value.manager" />
           </td>
         </tr>
       </tbody>
     </table>
     <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Active Players" v-on:click="confirmActivePlayers" />
+      <input type="submit" class="btn btn-primary" value="Set Active Players" @click="confirmActivePlayers" />
     </div>
   </b-modal>
 </template>

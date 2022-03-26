@@ -10,19 +10,19 @@
         <span class="detail-label">Minimum Release Date:</span>
         <span v-if="masterGame.minimumReleaseDate">{{ formatDate(masterGame.minimumReleaseDate) }}</span>
         <font-awesome-icon
+          v-b-popover.hover.focus="'Minimum Release Date is our attempt at defining the \'earlist possible release date\' based on the above estimate from the makers of the game.'"
           color="white"
           icon="info-circle"
-          class="date-info"
-          v-b-popover.hover.focus="'Minimum Release Date is our attempt at defining the \'earlist possible release date\' based on the above estimate from the makers of the game.'" />
+          class="date-info" />
       </li>
       <li v-if="masterGame.maximumReleaseDate && !masterGame.releaseDate">
         <span class="detail-label">Maximum Release Date:</span>
         <span v-if="masterGame.maximumReleaseDate">{{ formatDate(masterGame.maximumReleaseDate) }}</span>
         <font-awesome-icon
+          v-b-popover.hover.focus="'Maximum Release Date is our attempt at defining the \'latest possible release date\' based on the above estimate from the makers of the game.'"
           color="white"
           icon="info-circle"
-          class="date-info"
-          v-b-popover.hover.focus="'Maximum Release Date is our attempt at defining the \'latest possible release date\' based on the above estimate from the makers of the game.'" />
+          class="date-info" />
       </li>
       <li v-if="masterGame.earlyAccessReleaseDate">
         <span class="detail-label">Early Access Release Date:</span>
@@ -60,7 +60,7 @@
     <div v-if="masterGame.tags && masterGame.tags.length > 0" class="long-tag-list">
       <h4>Tags</h4>
       <span v-for="tag in masterGame.tags" :key="tag">
-        <masterGameTagBadge :tagName="tag"></masterGameTagBadge>
+        <masterGameTagBadge :tag-name="tag"></masterGameTagBadge>
       </span>
     </div>
     <div v-show="masterGame.notes">
@@ -75,9 +75,11 @@ import moment from 'moment';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
 
 export default {
-  props: ['masterGame'],
   components: {
     MasterGameTagBadge
+  },
+  props: {
+    masterGame: Object
   },
   methods: {
     formatDate(releaseDate) {

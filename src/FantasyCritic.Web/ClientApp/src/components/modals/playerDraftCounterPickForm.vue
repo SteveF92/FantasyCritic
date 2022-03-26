@@ -1,10 +1,10 @@
 <template>
   <b-modal id="playerDraftCounterPickForm" ref="playerDraftCounterPickFormRef" title="Select Counter-Pick" hide-footer @hidden="clearData" @show="getPossibleCounterPicks">
-    <form class="form-horizontal" v-on:submit.prevent="selectCounterPick" hide-footer>
+    <form class="form-horizontal" hide-footer @submit.prevent="selectCounterPick">
       <div class="form-group">
         <label for="selectedCounterPick" class="control-label">Game</label>
         <b-form-select v-model="selectedCounterPick">
-          <option v-for="publisherGame in possibleCounterPicks" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+          <option v-for="publisherGame in possibleCounterPicks" :key="publisherGame.publisherGameID" :value="publisherGame">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>

@@ -6,14 +6,14 @@
         <div class="form-group">
           <label for="claimPublisher" class="control-label">Publisher</label>
           <b-form-select v-model="manuallySetWillNotReleasePublisher">
-            <option v-for="publisher in leagueYear.publishers" v-bind:value="publisher" :key="publisher.publisherID">
+            <option v-for="publisher in leagueYear.publishers" :key="publisher.publisherID" :value="publisher">
               {{ publisher.publisherName }}
             </option>
           </b-form-select>
           <div v-if="manuallySetWillNotReleasePublisher">
             <label for="manuallySetWillNotReleaseGame" class="control-label">Game</label>
             <b-form-select v-model="manuallySetWillNotReleaseGame">
-              <option v-for="publisherGame in manuallySetWillNotReleasePublisher.games" v-bind:value="publisherGame" :key="publisherGame.publisherGameID">
+              <option v-for="publisherGame in manuallySetWillNotReleasePublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
                 {{ publisherGame.gameName }}
               </option>
             </b-form-select>
@@ -21,10 +21,10 @@
           <br />
           <div v-if="manuallySetWillNotReleaseGame">
             <div v-if="manuallySetWillNotReleaseGame.manualWillNotRelease">
-              <b-button variant="primary" class="add-game-button" v-on:click="manuallySetWillNotRelease(false)">Clear manual 'Will not Release'</b-button>
+              <b-button variant="primary" class="add-game-button" @click="manuallySetWillNotRelease(false)">Clear manual 'Will not Release'</b-button>
             </div>
             <div v-if="!manuallySetWillNotReleaseGame.manualWillNotRelease">
-              <b-button variant="primary" class="add-game-button" v-on:click="manuallySetWillNotRelease(true)">Set game as 'Will not Release'</b-button>
+              <b-button variant="primary" class="add-game-button" @click="manuallySetWillNotRelease(true)">Set game as 'Will not Release'</b-button>
             </div>
           </div>
         </div>

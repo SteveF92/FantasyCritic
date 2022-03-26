@@ -33,7 +33,7 @@
           <hr />
           <div class="text-well">
             <h2>Details</h2>
-            <masterGameDetails :masterGame="masterGame"></masterGameDetails>
+            <masterGameDetails :master-game="masterGame"></masterGameDetails>
           </div>
 
           <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-year-section">
@@ -50,11 +50,11 @@
               <template v-if="masterGameYear.year >= 2022 && masterGameYear.peakHypeFactor > masterGameYear.dateAdjustedHypeFactor">
                 <li v-show="masterGameYear.peakHypeFactor">
                   Peak Hype Factor: {{ masterGameYear.peakHypeFactor | score(1) }}
-                  <font-awesome-icon color="white" size="lg" icon="info-circle" v-b-popover.hover.top="peakHypeFactorText" />
+                  <font-awesome-icon v-b-popover.hover.top="peakHypeFactorText" color="white" size="lg" icon="info-circle" />
                 </li>
                 <li v-show="!masterGameYear.peakHypeFactor">
                   Peak Hype Factor: Unhyped...
-                  <font-awesome-icon color="white" icon="info-circle" v-b-popover.hover.top="peakHypeFactorText" />
+                  <font-awesome-icon v-b-popover.hover.top="peakHypeFactorText" color="white" icon="info-circle" />
                 </li>
               </template>
 
@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="masterGame.subGames && masterGame.subGames.length > 0">
+      <div v-if="masterGame.subGames && masterGame.subGames.length > 0" class="row">
         <h2>Sub Games (Episodes)</h2>
         <div v-for="subGame in masterGame.subGames" :key="subGame.masterGameID">
           <h3>{{ subGame.gameName }}</h3>
@@ -95,15 +95,15 @@ export default {
   components: {
     MasterGameDetails
   },
+  props: {
+    mastergameid: String
+  },
   data() {
     return {
       masterGame: null,
       masterGameYears: [],
       error: ''
     };
-  },
-  props: {
-    mastergameid: String
   },
   computed: {
     ggCoverArtLink() {
@@ -138,14 +138,14 @@ export default {
       };
     }
   },
-  mounted() {
-    this.fetchMasterGame();
-    this.fetchMasterGameYears();
-  },
   watch: {
     $route() {
       this.fetchMasterGame();
     }
+  },
+  mounted() {
+    this.fetchMasterGame();
+    this.fetchMasterGameYears();
   },
   methods: {
     fetchMasterGame() {

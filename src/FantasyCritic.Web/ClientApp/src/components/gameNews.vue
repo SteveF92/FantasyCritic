@@ -11,8 +11,8 @@
       </template>
       <toggle-button
         v-if="isPlusUser"
-        class="toggle"
         v-model="recentReleasesMode"
+        class="toggle"
         :sync="true"
         :labels="{ checked: 'Recent', unchecked: 'Upcoming' }"
         :css-colors="true"
@@ -23,7 +23,7 @@
     <div v-if="gameNewsItems && gameNewsItems.length > 0">
       <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="gameNewsItems" :fields="gameNewsFields" bordered striped responsive small>
         <template #cell(gameName)="data">
-          <masterGamePopover :masterGame="data.item.masterGame"></masterGamePopover>
+          <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
         <template #cell(maximumReleaseDate)="data">
           {{ getReleaseDate(data.item) }}
@@ -52,7 +52,14 @@ import MasterGamePopover from '@/components/masterGamePopover';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
-  props: ['gameNews', 'mode'],
+  components: {
+    MasterGamePopover,
+    ToggleButton
+  },
+  props: {
+    gameNews: Array,
+    mode: String
+  },
   data() {
     return {
       recentReleasesMode: false,
@@ -90,9 +97,11 @@ export default {
       return this.gameNews.upcomingGames;
     }
   },
-  components: {
-    MasterGamePopover,
-    ToggleButton
+  watch: {
+    recentReleasesMode: function () {
+      this.sortBy = 'maximumReleaseDate';
+      this.sortDesc = this.recentReleasesMode;
+    }
   },
   methods: {
     getReleaseDate(game) {
@@ -100,12 +109,6 @@ export default {
         return moment(game.releaseDate).format('YYYY-MM-DD');
       }
       return game.estimatedReleaseDate + ' (Estimated)';
-    }
-  },
-  watch: {
-    recentReleasesMode: function () {
-      this.sortBy = 'maximumReleaseDate';
-      this.sortDesc = this.recentReleasesMode;
     }
   }
 };

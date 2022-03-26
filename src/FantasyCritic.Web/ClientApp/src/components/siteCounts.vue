@@ -35,6 +35,9 @@ export default {
       error: ''
     };
   },
+  mounted() {
+    this.fetchSiteCounts();
+  },
   methods: {
     fetchSiteCounts() {
       axios
@@ -44,9 +47,6 @@ export default {
         })
         .catch((returnedError) => (this.error = returnedError));
     }
-  },
-  mounted() {
-    this.fetchSiteCounts();
   }
 };
 </script>
