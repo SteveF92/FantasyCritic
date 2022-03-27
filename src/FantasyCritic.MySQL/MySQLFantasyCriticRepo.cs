@@ -668,6 +668,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks)
     {
         int tempPosition = queueRanks.Select(x => x.Value).Max() + 1;
+        string updateSQL = "update tbl_league_publisherqueue set `Rank` = @rank where `PublisherID` = @PublisherID AND `MasterGameID` = @MasterGameID;";
         using (var connection = new MySqlConnection(_connectionString))
         {
             await connection.OpenAsync();
@@ -675,27 +676,26 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             {
                 foreach (var queuedGame in queueRanks)
                 {
-                    await connection.ExecuteAsync(
-                        "update tbl_league_publisherqueue set Rank = @rank where PublisherID = @PublisherID AND MasterGameID = @MasterGameID",
-                        new
-                        {
-                            queuedGame.Key.MasterGame.MasterGameID,
-                            queuedGame.Key.Publisher.PublisherID,
-                            rank = tempPosition
-                        }, transaction);
+                    var tempParams = new
+                    {
+                        queuedGame.Key.MasterGame.MasterGameID,
+                        queuedGame.Key.Publisher.PublisherID,
+                        rank = tempPosition
+                    };
+                    await connection.ExecuteAsync(updateSQL, tempParams, transaction);
                     tempPosition++;
                 }
 
+                
                 foreach (var queuedGame in queueRanks)
                 {
-                    await connection.ExecuteAsync(
-                        "update tbl_league_publisherqueue set Rank = @rank where PublisherID = @PublisherID AND MasterGameID = @MasterGameID",
-                        new
-                        {
-                            queuedGame.Key.MasterGame.MasterGameID,
-                            queuedGame.Key.Publisher.PublisherID,
-                            rank = queuedGame.Value
-                        }, transaction);
+                    var realParams = new
+                    {
+                        queuedGame.Key.MasterGame.MasterGameID,
+                        queuedGame.Key.Publisher.PublisherID,
+                        rank = queuedGame.Value
+                    };
+                    await connection.ExecuteAsync(updateSQL, realParams, transaction);
                 }
 
                 await transaction.CommitAsync();

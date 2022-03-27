@@ -74,6 +74,13 @@ let leagueMixin = {
 
       return this.leagueYear.privatePublisherData.myActiveDrops;
     },
+    queuedGames() {
+      if (!this.leagueYear || !this.leagueYear.privatePublisherData) {
+        return [];
+      }
+
+      return this.leagueYear.privatePublisherData.queuedGames;
+    },
     gameNews() {
       if (!this.leagueYear || !this.leagueYear.gameNews) {
         return [];

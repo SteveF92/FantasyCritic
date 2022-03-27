@@ -27,6 +27,10 @@
       </span>
     </div>
 
+    <div v-show="isBusy" class="spinner">
+      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#000000' }" />
+    </div>
+
     <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
 
     <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possible-games="possibleMasterGames" @input="addGameToQueue"></possibleMasterGamesTable>
@@ -95,7 +99,6 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      queuedGames: null,
       searchGameName: null,
       possibleMasterGames: [],
       queueResult: null,
@@ -105,35 +108,19 @@ export default {
       isBusy: false
     };
   },
-  watch: {
-    queuedGames(newValue, oldValue) {
-      if (!oldValue || (oldValue.constructor === Array && newValue.constructor === Array && oldValue.length !== newValue.length)) {
-        this.clearQueueData();
-      }
-    },
-    year() {
-      this.fetchQueuedGames();
-    }
-  },
   mounted() {
-    this.fetchQueuedGames();
+    this.initializeDesiredRankings();
   },
   methods: {
-    fetchQueuedGames() {
-      axios
-        .get('/api/league/CurrentQueuedGames/' + this.userPublisher.publisherID)
-        .then((response) => {
-          this.queuedGames = response.data;
-          this.desiredQueueRanks = this.queuedGames;
-        })
-        .catch(() => {});
+    initializeDesiredRankings() {
+      this.desiredQueueRanks = this.queuedGames;
     },
     searchGame() {
       this.clearDataExceptSearch();
       this.isBusy = true;
 
       axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
+        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.userPublisher.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
@@ -147,7 +134,7 @@ export default {
       this.isBusy = true;
 
       axios
-        .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
+        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.userPublisher.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.showingTopAvailable = true;
@@ -174,50 +161,46 @@ export default {
           this.isBusy = false;
         });
     },
-    addGameToQueue() {
+    async addGameToQueue() {
       var request = {
         publisherID: this.userPublisher.publisherID,
         masterGameID: this.gameToQueue.masterGameID
       };
+
       this.isBusy = true;
-      axios
-        .post('/api/league/AddGameToQueue', request)
-        .then((response) => {
-          this.queueResult = response.data;
-          this.isBusy = false;
-          this.fetchQueuedGames();
-        })
-        .catch((response) => {
-          this.isBusy = false;
-          this.errorInfo = response.response.data;
-        });
+      try {
+        const response = await axios.post('/api/league/AddGameToQueue', request);
+        this.queueResult = response.data;
+        this.isBusy = false;
+        await this.notifyAction('Game added to watchlist.');
+        this.initializeDesiredRankings();
+      } catch (error) {
+        this.isBusy = false;
+        this.errorInfo = error;
+      }
     },
-    setQueueRankings() {
+    async setQueueRankings() {
       let desiredMasterGameIDs = this.desiredQueueRanks.map(function (v) {
         return v.masterGame.masterGameID;
       });
       var model = {
         publisherID: this.userPublisher.publisherID,
-        QueueRanks: desiredMasterGameIDs
+        queueRanks: desiredMasterGameIDs
       };
-      axios
-        .post('/api/league/SetQueueRankings', model)
-        .then(() => {
-          this.fetchQueuedGames();
-        })
-        .catch(() => {});
+
+      await axios.post('/api/league/SetQueueRankings', model);
+      await this.notifyAction('Watchlist reordered.');
+      this.initializeDesiredRankings();
     },
-    removeQueuedGame(game) {
+    async removeQueuedGame(game) {
       var model = {
         publisherID: this.userPublisher.publisherID,
         masterGameID: game.masterGame.masterGameID
       };
-      axios
-        .post('/api/league/DeleteQueuedGame', model)
-        .then(() => {
-          this.fetchQueuedGames();
-        })
-        .catch(() => {});
+
+      await axios.post('/api/league/DeleteQueuedGame', model);
+      await this.notifyAction('Game removed from watchlist.');
+      this.initializeDesiredRankings();
     },
     clearAllData() {
       this.clearQueueData();
@@ -249,5 +232,10 @@ export default {
   background: rgba(50, 50, 50, 0.7);
   border-radius: 5px;
   justify-content: space-around;
+}
+
+.spinner {
+  margin-top: 20px;
+  text-align: center;
 }
 </style>

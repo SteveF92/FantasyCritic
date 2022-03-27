@@ -27,7 +27,7 @@ export default {
   },
   props: {
     gameSlot: { type: Object, required: true },
-    name: { type: String, required: true }
+    name: { type: String, default: null }
   },
   methods: {
     getTag(tagName) {

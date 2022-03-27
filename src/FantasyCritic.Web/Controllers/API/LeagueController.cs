@@ -246,7 +246,8 @@ public class LeagueController : BaseLeagueController
         {
             var bids = await _gameAcquisitionService.GetActiveAcquisitionBids(leagueYear, userPublisher.Value);
             var dropRequests = await _gameAcquisitionService.GetActiveDropRequests(leagueYear, userPublisher.Value);
-            privatePublisherData = new PrivatePublisherDataViewModel(bids, dropRequests, currentDate);
+            var queuedGames = await _publisherService.GetQueuedGames(userPublisher.Value);
+            privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher.Value, bids, dropRequests, queuedGames, currentDate);
         }
 
         var upcomingGames = GetGameNewsViewModel(leagueYear, false, false).ToList();
@@ -1017,34 +1018,7 @@ public class LeagueController : BaseLeagueController
         return Ok();
     }
 
-    [HttpGet("{publisherID}")]
-    public async Task<IActionResult> CurrentQueuedGames(Guid publisherID)
-    {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
-        if (publisherRecord.FailedResult.HasValue)
-        {
-            return publisherRecord.FailedResult.Value;
-        }
-        var leagueYear = publisherRecord.ValidResult.Value.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Value.Publisher;
-
-        var queuedGames = await _publisherService.GetQueuedGames(publisher);
-
-        HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
-            .SelectMany(x => x.PublisherGames)
-            .Where(x => !x.CounterPick && x.MasterGame.HasValue)
-            .Select(x => x.MasterGame.Value.MasterGame)
-            .ToHashSet();
-
-        HashSet<MasterGame> myPublisherMasterGames = publisher.MyMasterGames;
-
-        var currentDate = _clock.GetToday();
-        var viewModels = queuedGames.Select(x =>
-            new QueuedGameViewModel(x, currentDate, publisherMasterGames.Contains(x.MasterGame),
-                myPublisherMasterGames.Contains(x.MasterGame)
-            )).OrderBy(x => x.Rank);
-        return Ok(viewModels);
-    }
+    
 
     [HttpGet("{publisherID}")]
     public async Task<IActionResult> CurrentQueuedGameYears(Guid publisherID)
