@@ -27,7 +27,7 @@ export default {
     MasterGameTagBadge
   },
   props: {
-    value: { type: Object, required: true },
+    value: { type: Array, default: null },
     includeSystem: { type: Boolean }
   },
   data() {
