@@ -8,7 +8,7 @@
 <script>
 export default {
   props: {
-    possibleMasterGame: Object
+    possibleMasterGame: { type: Object, required: true }
   },
   computed: {
     status() {

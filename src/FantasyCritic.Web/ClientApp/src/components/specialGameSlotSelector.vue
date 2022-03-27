@@ -30,7 +30,7 @@ export default {
     MasterGameTagSelector
   },
   props: {
-    value: Object
+    value: { type: Object, required: true }
   },
   data() {
     return {

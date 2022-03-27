@@ -62,8 +62,8 @@ export default {
     PossibleRoyaleMasterGamesTable
   },
   props: {
-    yearQuarter: Object,
-    userRoyalePublisher: Object
+    yearQuarter: { type: Object, required: true },
+    userRoyalePublisher: { type: Object, required: true }
   },
   data() {
     return {

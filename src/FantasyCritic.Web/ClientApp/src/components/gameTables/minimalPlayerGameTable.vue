@@ -66,7 +66,7 @@ export default {
   },
   mixins: [LeagueMixin],
   props: {
-    publisher: Object
+    publisher: { type: Object, required: true }
   },
   data() {
     return {

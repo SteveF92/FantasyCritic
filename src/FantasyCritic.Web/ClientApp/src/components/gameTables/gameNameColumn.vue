@@ -42,9 +42,9 @@ export default {
     SlotTypeBadge
   },
   props: {
-    gameSlot: Object,
-    supportedYear: Object,
-    hasSpecialSlots: Boolean
+    gameSlot: { type: Object, required: true },
+    supportedYear: { type: Object, required: true },
+    hasSpecialSlots: { type: Boolean, required: true }
   },
   computed: {
     game() {

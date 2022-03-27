@@ -237,12 +237,12 @@ export default {
     SpecialGameSlotSelector
   },
   props: {
-    value: Object,
-    year: Number,
-    possibleLeagueOptions: Object,
-    editMode: Boolean,
-    currentNumberOfPlayers: Number,
-    freshSettings: Boolean
+    value: { type: Object, required: true },
+    year: { type: Number, required: true },
+    possibleLeagueOptions: { type: Object, required: true },
+    editMode: { type: Boolean, required: true },
+    currentNumberOfPlayers: { type: Number, required: true },
+    freshSettings: { type: Boolean, required: true }
   },
   data() {
     return {

@@ -16,7 +16,7 @@ import axios from 'axios';
 
 export default {
   props: {
-    royaleYearQuarter: Object
+    royaleYearQuarter: { type: Object, required: true }
   },
   data() {
     return {

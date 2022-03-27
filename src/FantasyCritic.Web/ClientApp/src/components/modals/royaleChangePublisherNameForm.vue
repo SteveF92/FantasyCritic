@@ -16,7 +16,7 @@ import axios from 'axios';
 
 export default {
   props: {
-    userRoyalePublisher: Object
+    userRoyalePublisher: { type: Object, required: true }
   },
   data() {
     return {

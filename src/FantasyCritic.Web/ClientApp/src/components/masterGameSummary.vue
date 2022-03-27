@@ -94,7 +94,7 @@ export default {
     MasterGameTagBadge
   },
   props: {
-    masterGame: Object
+    masterGame: { type: Object, required: true }
   },
   data() {
     return {

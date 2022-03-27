@@ -30,11 +30,11 @@ import axios from 'axios';
 
 export default {
   props: {
-    leagues: Array,
-    leagueIcon: String,
-    userID: String,
-    showArchive: Boolean,
-    showUnArchive: Boolean
+    leagues: { type: Array, required: true },
+    leagueIcon: { type: String, required: true },
+    userID: { type: String, required: true },
+    showArchive: { type: Boolean },
+    showUnArchive: { type: Boolean }
   },
   data() {
     return {

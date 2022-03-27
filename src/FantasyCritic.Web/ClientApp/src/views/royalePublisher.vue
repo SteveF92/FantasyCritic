@@ -131,7 +131,7 @@ export default {
   },
   mixins: [BasicMixin],
   props: {
-    publisherid: String
+    publisherid: { type: String, required: true }
   },
   data() {
     return {

@@ -27,7 +27,7 @@ export default {
     MasterGameTagBadge
   },
   props: {
-    gameSlot: Object
+    gameSlot: { type: Object, required: true }
   },
   computed: {
     regularText() {

@@ -26,8 +26,8 @@ export default {
     MasterGameTagBadge
   },
   props: {
-    gameSlot: Object,
-    name: String
+    gameSlot: { type: Object, required: true },
+    name: { type: String, required: true }
   },
   methods: {
     getTag(tagName) {

@@ -29,7 +29,7 @@
 <script>
 export default {
   props: {
-    publisherGame: Object
+    publisherGame: { type: Object, required: true }
   },
   methods: {
     sellGame() {

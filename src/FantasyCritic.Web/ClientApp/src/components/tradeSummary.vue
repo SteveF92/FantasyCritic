@@ -163,8 +163,8 @@ export default {
   },
   mixins: [LeagueMixin],
   props: {
-    trade: Object,
-    defaultVisible: Boolean
+    trade: { type: Object, required: true },
+    defaultVisible: { type: Boolean }
   },
   data() {
     return {

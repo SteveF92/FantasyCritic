@@ -61,8 +61,8 @@ export default {
     MasterGamePopover
   },
   props: {
-    leagueActionSet: Array,
-    mode: String
+    leagueActionSet: { type: Array, required: true },
+    mode: { type: String, required: true }
   },
   data() {
     return {

@@ -25,9 +25,9 @@
 <script>
 export default {
   props: {
-    tagName: String,
-    short: Boolean,
-    noPopover: Boolean
+    tagName: { type: String, required: true },
+    short: { type: Boolean },
+    noPopover: { type: Boolean }
   },
   computed: {
     tag() {

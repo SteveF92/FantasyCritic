@@ -121,7 +121,7 @@ export default {
     MasterGameTagBadge
   },
   props: {
-    masterGames: Array
+    masterGames: { type: Array, required: true }
   },
   data() {
     return {

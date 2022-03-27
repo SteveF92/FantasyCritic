@@ -144,7 +144,7 @@ export default {
     MasterGameTagSelector
   },
   props: {
-    mastergameid: String
+    mastergameid: { type: String, required: true }
   },
   data() {
     return {

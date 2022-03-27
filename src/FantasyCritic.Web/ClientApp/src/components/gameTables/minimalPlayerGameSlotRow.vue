@@ -29,7 +29,7 @@ export default {
   },
   mixins: [LeagueMixin],
   props: {
-    gameSlot: Object
+    gameSlot: { type: Object, required: true }
   },
   computed: {
     game() {

@@ -14,7 +14,7 @@
             v-model="leagueYearSettings"
             :year="year"
             :possible-league-options="possibleLeagueOptions"
-            :edit-mode="true"
+            edit-mode
             :current-number-of-players="activePlayersInLeague"
             :fresh-settings="freshSettings"></leagueYearSettings>
         </div>
@@ -37,8 +37,8 @@ export default {
     LeagueYearSettings
   },
   props: {
-    leagueid: String,
-    year: Number
+    leagueid: { type: String, required: true },
+    year: { type: Number, required: true }
   },
   data() {
     return {

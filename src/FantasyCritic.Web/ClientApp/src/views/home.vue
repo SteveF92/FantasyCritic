@@ -79,7 +79,7 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card class="homepage-section">
+          <b-card v-if="gameNews" class="homepage-section">
             <gameNews :game-news="gameNews" mode="user" />
           </b-card>
         </div>

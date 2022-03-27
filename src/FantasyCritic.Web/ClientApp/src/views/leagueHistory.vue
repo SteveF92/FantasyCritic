@@ -72,8 +72,8 @@ export default {
   },
   mixins: [LeagueMixin],
   props: {
-    leagueid: String,
-    year: Number
+    leagueid: { type: String, required: true },
+    year: { type: Number, required: true }
   },
   data() {
     return {

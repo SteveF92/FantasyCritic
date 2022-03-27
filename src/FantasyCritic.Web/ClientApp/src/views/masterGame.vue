@@ -96,7 +96,7 @@ export default {
     MasterGameDetails
   },
   props: {
-    mastergameid: String
+    mastergameid: { type: String, required: true }
   },
   data() {
     return {

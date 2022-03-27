@@ -21,8 +21,8 @@ export default {
     MasterGameSummary
   },
   props: {
-    masterGame: Object,
-    currentlyIneligible: Boolean
+    masterGame: { type: Object, required: true },
+    currentlyIneligible: { type: Boolean }
   },
   computed: {
     popoverID() {

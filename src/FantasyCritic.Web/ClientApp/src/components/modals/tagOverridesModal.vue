@@ -23,13 +23,17 @@
 
 <script>
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   components: {
     MasterGameTagBadge
   },
-  props: {
-    tagOverrides: Array
+  mixins: [LeagueMixin],
+  computed: {
+    tagOverrides() {
+      return this.leagueYear.tagOverrides;
+    }
   }
 };
 </script>

@@ -57,8 +57,8 @@ export default {
     ToggleButton
   },
   props: {
-    gameNews: Object,
-    mode: String
+    gameNews: { type: Object, required: true },
+    mode: { type: String, required: true }
   },
   data() {
     return {

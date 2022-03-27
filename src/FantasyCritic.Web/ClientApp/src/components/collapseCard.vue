@@ -20,7 +20,7 @@
 <script>
 export default {
   props: {
-    defaultVisible: Boolean
+    defaultVisible: { type: Boolean }
   }
 };
 </script>
