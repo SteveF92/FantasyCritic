@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <div v-if="!publisher.publicLeague && !(publisher.userIsInLeague || publisher.outstandingInvite)" class="alert alert-warning">You are viewing a private league.</div>
+      <div v-if="!leagueYear.league.publicLeague && !(publisher.userIsInLeague || publisher.outstandingInvite)" class="alert alert-warning">You are viewing a private league.</div>
 
       <div v-show="moveGameError" class="alert alert-danger">
         {{ moveGameError }}
