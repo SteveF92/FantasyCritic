@@ -119,7 +119,7 @@ export default {
       this.clearDataExceptSearch();
       this.isBusy = true;
       axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
+        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
@@ -133,7 +133,7 @@ export default {
       this.clearDataExceptSearch();
       this.isBusy = true;
       axios
-        .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.userPublisher.leagueID)
+        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;

@@ -49,7 +49,7 @@ export default {
         .post('/api/leagueManager/AddNewLeagueYear', model)
         .then(() => {
           this.$refs.addNewLeagueYearRef.hide();
-          this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: this.year }, query: { freshSettings: true } });
+          this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: this.selectedYear }, query: { freshSettings: true } });
         })
         .catch((response) => {
           this.error = response;

@@ -115,9 +115,6 @@ export default {
   computed: {
     formIsValid() {
       return this.draftUnlistedGame || this.draftMasterGame;
-    },
-    year() {
-      return this.leagueYear.year;
     }
   },
   methods: {
@@ -125,7 +122,7 @@ export default {
       this.clearDataExceptSearch();
       this.isBusy = true;
       axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
+        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.nextPublisherUp.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
@@ -139,7 +136,7 @@ export default {
       this.clearDataExceptSearch();
       this.isBusy = true;
       axios
-        .get('/api/league/TopAvailableGames?year=' + this.year + '&leagueid=' + this.nextPublisherUp.leagueID)
+        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.nextPublisherUp.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
