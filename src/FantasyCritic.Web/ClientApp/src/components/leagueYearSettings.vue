@@ -240,8 +240,8 @@ export default {
     value: { type: Object, required: true },
     year: { type: Number, required: true },
     possibleLeagueOptions: { type: Object, required: true },
-    editMode: { type: Boolean, required: true },
-    currentNumberOfPlayers: { type: Number, required: true },
+    editMode: { type: Boolean },
+    currentNumberOfPlayers: { type: Number, default: null },
     freshSettings: { type: Boolean, required: true }
   },
   data() {
