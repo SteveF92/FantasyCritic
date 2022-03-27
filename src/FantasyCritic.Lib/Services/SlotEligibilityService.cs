@@ -24,7 +24,8 @@ public static class SlotEligibilityService
         return false;
     }
 
-    public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, LeagueOptions leagueOptions, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors, bool counterPick, int? validDropSlot, bool watchListing)
+    public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, LeagueOptions leagueOptions, Maybe<MasterGameWithEligibilityFactors> eligibilityFactors,
+        bool counterPick, int? validDropSlot, bool acquiringNow)
     {
         string filledSpacesText = "User's game spaces are filled.";
         if (counterPick)
@@ -48,7 +49,7 @@ public static class SlotEligibilityService
                 return new PublisherSlotAcquisitionResult(validDropSlot.Value);
             }
 
-            if (watchListing)
+            if (!acquiringNow)
             {
                 return new PublisherSlotAcquisitionResult(1);
             }
@@ -71,7 +72,7 @@ public static class SlotEligibilityService
                 return new PublisherSlotAcquisitionResult(validDropSlot.Value);
             }
 
-            if (watchListing)
+            if (!acquiringNow)
             {
                 return new PublisherSlotAcquisitionResult(1);
             }

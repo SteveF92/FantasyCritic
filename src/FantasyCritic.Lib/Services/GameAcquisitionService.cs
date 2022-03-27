@@ -21,7 +21,7 @@ public class GameAcquisitionService
         _clock = clock;
     }
 
-    public ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool watchListing, bool drafting)
+    public ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, bool drafting)
     {
         var currentDate = _clock.GetToday();
         var dateOfPotentialAcquisition = currentDate;
@@ -86,7 +86,7 @@ public class GameAcquisitionService
             eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(request.MasterGame.Value, dateOfPotentialAcquisition);
         }
 
-        var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(request.Publisher, leagueYear.Options, eligibilityFactors, request.CounterPick, validDropSlot, watchListing);
+        var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(request.Publisher, leagueYear.Options, eligibilityFactors, request.CounterPick, validDropSlot, acquiringNow);
         if (!slotResult.SlotNumber.HasValue)
         {
             claimErrors.AddRange(slotResult.ClaimErrors);
@@ -307,7 +307,7 @@ public class GameAcquisitionService
 
         if (counterPick && !drafting && masterGame.DelayContention)
         {
-            claimErrors.Add(new ClaimError($"That game is in 'delay contention', and therefore cannot be counter picked.", true));
+            claimErrors.Add(new ClaimError("That game is in 'delay contention', and therefore cannot be counter picked.", true));
         }
 
         bool willRelease = masterGame.MinimumReleaseDate.Year == year && !counterPickedGameIsManualWillNotRelease;
@@ -333,8 +333,7 @@ public class GameAcquisitionService
             masterGameYear = new MasterGameYear(request.MasterGame.Value, request.LeagueYear.Year);
         }
 
-        LeagueYear leagueYear = request.LeagueYear;
-        ClaimResult claimResult = CanClaimGame(request, null, null, false, drafting);
+        ClaimResult claimResult = CanClaimGame(request, null, null, true, drafting);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -445,7 +444,7 @@ public class GameAcquisitionService
         }
 
         var claimRequest = new ClaimGameDomainRequest(leagueYear, publisher, masterGame.GameName, false, false, false, false, masterGame, null, null);
-        var claimResult = CanClaimGame(claimRequest, null, null, true, false);
+        var claimResult = CanClaimGame(claimRequest, null, null, false, false);
         if (!claimResult.Success)
         {
             return claimResult;
