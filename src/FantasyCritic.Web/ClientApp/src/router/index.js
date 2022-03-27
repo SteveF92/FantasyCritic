@@ -7,14 +7,14 @@ import { routes } from './routes';
 Vue.use(VueRouter);
 
 let router = new VueRouter({
-  scrollBehavior(to) {
+  scrollBehavior(to, from) {
     if (to.hash) {
       const smoothParams = {
         selector: to.hash,
         behavior: 'smooth'
       };
 
-      if (!to.meta.delayScroll) {
+      if (!to.meta.delayScroll || to.path === from.path) {
         return smoothParams;
       }
 
@@ -35,8 +35,10 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     document.title = toRoute.meta.title + ' - Fantasy Critic';
   }
 
-  store.commit('clearPublisherStoreData');
-  store.commit('clearLeagueStoreData');
+  if (toRoute.path !== fromRoute.path) {
+    store.commit('clearPublisherStoreData');
+    store.commit('clearLeagueStoreData');
+  }
 
   var getPrereqs = function () {
     var prereqs = [];
