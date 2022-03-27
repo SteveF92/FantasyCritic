@@ -29,7 +29,7 @@
               <label for="intialYear" class="control-label">Year to Play</label>
               <p>The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the December before the new year begins.</p>
               <select id="initialYear" v-model="initialYear" class="form-control">
-                <option v-for="possibleYear in possibleLeagueOptions.openYears" :key="possibleYear" :value="initialYear">{{ possibleYear }}</option>
+                <option v-for="possibleYear in possibleLeagueOptions.openYears" :key="possibleYear" :value="possibleYear">{{ possibleYear }}</option>
               </select>
             </div>
           </div>
@@ -95,7 +95,7 @@ export default {
   },
   computed: {
     readyToSetupLeagueYear() {
-      return this.leagueName && this.initialYear;
+      return !!this.leagueName && !!this.initialYear;
     },
     leagueYearIsValid() {
       let valid =
