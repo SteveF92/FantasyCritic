@@ -8,7 +8,26 @@
         </div>
       </div>
       <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
-        <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="publicLeagues" :fields="leagueFields" bordered striped responsive :per-page="perPage" :current-page="currentPage">
+        <b-form-group>
+          <label>Search by League Name</label>
+          <b-input-group size="sm">
+            <b-form-input id="filter-input" v-model="filter" type="search" placeholder="Type to Search"></b-form-input>
+          </b-input-group>
+        </b-form-group>
+
+        <b-table
+          :sort-by.sync="sortBy"
+          :sort-desc.sync="sortDesc"
+          :items="publicLeagues"
+          :fields="leagueFields"
+          bordered
+          striped
+          responsive
+          :per-page="perPage"
+          :current-page="currentPage"
+          :filter="filter"
+          :filter-included-fields="filterOn"
+          @filtered="onFiltered">
           <template #cell(leagueName)="data">
             <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
           </template>
@@ -25,8 +44,10 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      perPage: 100,
+      perPage: 10,
       currentPage: 1,
+      filter: null,
+      filterOn: ['leagueName'],
       selectedYear: null,
       supportedYears: [],
       publicLeagues: [],
@@ -39,10 +60,20 @@ export default {
       sortDesc: true
     };
   },
+  computed: {
+    rows() {
+      return this.publicLeagues.length;
+    }
+  },
   mounted() {
     this.fetchSupportedYears();
   },
   methods: {
+    onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1;
+    },
     fetchSupportedYears() {
       axios
         .get('/api/game/SupportedYears')
