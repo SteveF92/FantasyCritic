@@ -10,7 +10,11 @@
     </p>
 
     <div v-show="publisherSlotsAreFilled" class="alert alert-warning">
-      Warning! You have already filled all of your game slots. You can still make bids, but you must drop a game first. You can use the conditional drop feature for this.
+      Warning! You have already filled all of your game slots. You can still make bids, but you must drop a game first. You have two options:
+      <ul>
+        <li>Use the conditional drop option on this form to drop a game only if this bid succeeds.</li>
+        <li>Use the normal "drop a game" option to drop a game no matter what. The drop will process before any bids so it will work as long as it is a valid drop.</li>
+      </ul>
     </div>
 
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
