@@ -8,11 +8,12 @@
         </div>
       </div>
       <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
-        <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="publicLeagues" :fields="leagueFields" bordered striped responsive>
+        <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="publicLeagues" :fields="leagueFields" bordered striped responsive :per-page="perPage" :current-page="currentPage">
           <template #cell(leagueName)="data">
             <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
           </template>
         </b-table>
+        <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
       </div>
     </div>
   </div>
@@ -24,6 +25,8 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      perPage: 100,
+      currentPage: 1,
       selectedYear: null,
       supportedYears: [],
       publicLeagues: [],

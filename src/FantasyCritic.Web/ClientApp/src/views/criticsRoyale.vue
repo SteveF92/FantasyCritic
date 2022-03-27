@@ -145,7 +145,7 @@ export default {
   },
   data() {
     return {
-      perPage: 101,
+      perPage: 10,
       currentPage: 1,
       userRoyalePublisher: null,
       royaleYearQuarter: null,
