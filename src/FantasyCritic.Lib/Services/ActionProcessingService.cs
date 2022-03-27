@@ -115,6 +115,7 @@ public class ActionProcessingService
     private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
         PublisherStateSet publisherStateSet, SystemWideValues systemWideValues, Instant processingTime)
     {
+        LeagueYear updatedLeagueYear = publisherStateSet.GetUpdatedLeagueYear(leagueYear);
         var gamesGroupedByPublisherAndGame = activeBidsForLeague.GroupBy(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
         var duplicateBidGroups = gamesGroupedByPublisherAndGame.Where(x => x.Count() > 1).ToList();
         List<PickupBid> duplicateBids = new List<PickupBid>();
@@ -138,14 +139,14 @@ public class ActionProcessingService
         foreach (var activeBid in nonDuplicateBids)
         {
             Publisher bidPublisher = publisherStateSet.GetPublisher(activeBid.Publisher.PublisherID);
-            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
-            var gameRequest = new ClaimGameDomainRequest(leagueYear, bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
+            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(updatedLeagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
+            var gameRequest = new ClaimGameDomainRequest(updatedLeagueYear, bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
 
             PickupBid pickupBidWithConditionalDropResult = activeBid;
             int? validConditionalDropSlot = null;
             if (activeBid.ConditionalDropPublisherGame.HasValue)
             {
-                var conditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, leagueYear, bidPublisher, processingTime);
+                var conditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, updatedLeagueYear, bidPublisher, processingTime);
                 pickupBidWithConditionalDropResult = activeBid.WithConditionalDropResult(conditionalDropResult);
                 if (conditionalDropResult.Result.IsSuccess)
                 {
@@ -172,7 +173,7 @@ public class ActionProcessingService
                 continue;
             }
 
-            if (pickupBidWithConditionalDropResult.BidAmount < leagueYear.Options.MinimumBidAmount)
+            if (pickupBidWithConditionalDropResult.BidAmount < updatedLeagueYear.Options.MinimumBidAmount)
             {
                 belowMinimumBids.Add(pickupBidWithConditionalDropResult);
                 continue;
@@ -181,7 +182,7 @@ public class ActionProcessingService
             validPickupBids.Add(new ValidPickupBid(pickupBidWithConditionalDropResult, claimResult.BestSlotNumber.Value));
         }
 
-        var winnableBids = GetWinnableBids(leagueYear, validPickupBids, systemWideValues, currentDate);
+        var winnableBids = GetWinnableBids(updatedLeagueYear, validPickupBids, systemWideValues, currentDate);
         var winningBids = GetWinningBids(winnableBids);
 
         var takenGames = winningBids.Select(x => x.PickupBid.MasterGame);
