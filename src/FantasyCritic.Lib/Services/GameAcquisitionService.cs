@@ -499,7 +499,7 @@ public class GameAcquisitionService
 
     public Task<IReadOnlyList<PickupBid>> GetActiveAcquisitionBids(LeagueYear leagueYear, Publisher publisher)
     {
-        return _fantasyCriticRepo.GetActivePickupBids(leagueYear);
+        return _fantasyCriticRepo.GetActivePickupBids(leagueYear, publisher);
     }
 
     public Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>>> GetActiveAcquisitionBids(SupportedYear supportedYear, IReadOnlyList<LeagueYear> allLeagueYears)
