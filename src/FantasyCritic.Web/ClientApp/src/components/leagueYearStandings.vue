@@ -1,19 +1,6 @@
 <template>
   <div>
-    <div class="header">
-      <h2>Standings</h2>
-      <span>
-        <label class="projections-label">Show Projections</label>
-        <toggle-button
-          v-model="projectionsToggle"
-          class="toggle"
-          :class="{ 'toggle-on': projectionsToggle }"
-          :sync="true"
-          :labels="{ checked: 'On', unchecked: 'Off' }"
-          :css-colors="true"
-          :font-size="13" />
-      </span>
-    </div>
+    <h2>Standings</h2>
 
     <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="standings" :fields="standingFields" bordered small responsive striped>
       <template #cell(userName)="data">
@@ -50,14 +37,9 @@
 </template>
 <script>
 import axios from 'axios';
-import { ToggleButton } from 'vue-js-toggle-button';
-
 import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
-  components: {
-    ToggleButton
-  },
   mixins: [LeagueMixin],
   data() {
     return {
@@ -75,14 +57,6 @@ export default {
     };
   },
   computed: {
-    projectionsToggle: {
-      get() {
-        return this.showProjections;
-      },
-      set(value) {
-        this.$store.commit('setShowProjections', value);
-      }
-    },
     standings() {
       let standings = this.leagueYear.players;
       if (!standings) {
