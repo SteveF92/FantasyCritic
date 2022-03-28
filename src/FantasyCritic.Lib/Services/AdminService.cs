@@ -8,6 +8,7 @@ using NLog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -284,21 +285,46 @@ public class AdminService
 
         List<PublisherGame> allGamesWithPoints = new List<PublisherGame>();
         var supportedYears = await _interLeagueService.GetSupportedYears();
+        var allLeagueYears = new List<LeagueYear>();
         foreach (var supportedYear in supportedYears)
         {
             var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
-            var publishers = leagueYears.SelectMany(x => x.Publishers);
+            var nonTestLeagues = leagueYears.Where(x => !x.League.TestLeague).ToList();
+            allLeagueYears.AddRange(nonTestLeagues);
+            var publishers = nonTestLeagues.SelectMany(x => x.Publishers).ToList();
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
             var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue).ToList();
             allGamesWithPoints.AddRange(gamesWithPoints);
         }
 
-        var averageStandardPoints = allGamesWithPoints.Where(x => !x.CounterPick).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
-        var averagePickupOnlyStandardPoints = allGamesWithPoints.Where(x => !x.CounterPick && !x.OverallDraftPosition.HasValue).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
-        var averageCounterPickPoints = allGamesWithPoints.Where(x => x.CounterPick).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
+        var allStandardGamesWithPoints = allGamesWithPoints.Where(x => !x.CounterPick).ToList();
+        var allCounterPicksWithPoints = allGamesWithPoints.Where(x => x.CounterPick).ToList();
 
-        //TODO Dictionary
+        var averageStandardPoints = allStandardGamesWithPoints.Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
+        var averagePickupOnlyStandardPoints = allStandardGamesWithPoints.Where(x => !x.OverallDraftPosition.HasValue).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
+        var averageCounterPickPoints = allCounterPicksWithPoints.Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
+
+        Dictionary<int, List<decimal>> pointsForPosition = new Dictionary<int, List<decimal>>();
+        foreach (var leagueYear in allLeagueYears)
+        {
+            var publishers = leagueYear.Publishers;
+            var orderedGames = publishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick & x.FantasyPoints.HasValue).OrderBy(x => x.Timestamp).ToList();
+            for (var index = 0; index < orderedGames.Count; index++)
+            {
+                if (!pointsForPosition.ContainsKey(index))
+                {
+                    pointsForPosition[index] = new List<decimal>();
+                }
+
+                pointsForPosition[index].Add(orderedGames[index].FantasyPoints.Value);
+            }
+        }
+
         Dictionary<int, decimal> averageStandardGamePointsByPickPosition = new Dictionary<int, decimal>();
+        foreach (var position in pointsForPosition)
+        {
+            averageStandardGamePointsByPickPosition[position.Key] = position.Value.Average();
+        }
 
         var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints, averageStandardGamePointsByPickPosition);
         await _interLeagueService.UpdateSystemWideValues(systemWideValues);

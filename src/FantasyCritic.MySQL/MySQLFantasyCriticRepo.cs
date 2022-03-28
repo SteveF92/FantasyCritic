@@ -10,6 +10,7 @@ using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
 using NLog;
 using FantasyCritic.MySQL.Entities.Trades;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FantasyCritic.MySQL;
 
@@ -2583,13 +2584,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<SystemWideValues> GetSystemWideValues()
     {
-        //TODO Dictionary
-        Dictionary<int, decimal> averageStandardGamePointsByPickPosition = new Dictionary<int, decimal>();
-
         using (var connection = new MySqlConnection(_connectionString))
         {
+            var positionPoints = await connection.QueryAsync<AveragePositionPointsEntity>("select * from tbl_caching_averagepositionpoints;");
             var result = await connection.QuerySingleAsync<SystemWideValuesEntity>("select * from tbl_caching_systemwidevalues;");
-            return result.ToDomain(averageStandardGamePointsByPickPosition);
+            return result.ToDomain(positionPoints.ToDictionary(x => x.PickPosition, y=> y.AveragePoints));
         }
     }
 
@@ -2786,16 +2785,20 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
     {
         string deleteSQL = "delete from tbl_caching_systemwidevalues;";
+        string deletePositionsSQL = "delete from tbl_caching_averagepositionpoints;";
         string insertSQL = "INSERT into tbl_caching_systemwidevalues VALUES (@AverageStandardGamePoints,@AveragePickupOnlyStandardGamePoints,@AverageCounterPickPoints);";
 
         SystemWideValuesEntity entity = new SystemWideValuesEntity(systemWideValues);
+        var positionEntities = systemWideValues.AverageStandardGamePointsByPickPosition.Select(x => new AveragePositionPointsEntity(x.Key, x.Value)).ToList();
         using (var connection = new MySqlConnection(_connectionString))
         {
             await connection.OpenAsync();
             using (var transaction = await connection.BeginTransactionAsync())
             {
                 await connection.ExecuteAsync(deleteSQL, transaction: transaction);
+                await connection.ExecuteAsync(deletePositionsSQL, transaction: transaction);
                 await connection.ExecuteAsync(insertSQL, entity, transaction);
+                await connection.BulkInsertAsync(positionEntities, "tbl_caching_averagepositionpoints", 500, transaction);
                 await transaction.CommitAsync();
             }
         }
