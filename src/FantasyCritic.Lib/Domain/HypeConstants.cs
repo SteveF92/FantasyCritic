@@ -24,7 +24,7 @@ public class HypeConstants
 
     public static HypeConstants GetReasonableDefaults()
     {
-        //These were the correct values on 2021-11-13 and are likely good enough.
-        return new HypeConstants(72.20342723922732, -1.9925384952602971, -3.303780811503217, -3.303780811503217);
+        //These were the correct values on 2022-03-28 and are likely good enough.
+        return new HypeConstants(72.15607447516923, 1.599796665594027, -2.4574452697921627, 0.10576458996831795);
     }
 }
