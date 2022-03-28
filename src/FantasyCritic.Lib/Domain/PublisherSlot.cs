@@ -42,13 +42,11 @@ public class PublisherSlot
         return SlotEligibilityService.GetClaimErrorsForSlot(this, eligibilityFactors.Value);
     }
 
-    public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate)
+    public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, bool draftFinished, ScoringSystem scoringSystem, SystemWideValues systemWideValues, LocalDate currentDate)
     {
         if (PublisherGame.HasNoValue)
         {
-            //TODO revert to commented version once major refactors are tested.
-            //return systemWideValues.GetAveragePoints(!simpleProjections, CounterPick);
-            return systemWideValues.GetAveragePoints(false, CounterPick);
+            return systemWideValues.GetAveragePoints(draftFinished, CounterPick);
         }
 
         if (PublisherGame.Value.MasterGame.HasNoValue)
@@ -58,20 +56,13 @@ public class PublisherSlot
                 return PublisherGame.Value.ManualCriticScore.Value;
             }
 
-            //TODO revert to commented version once major refactors are tested.
-            //return systemWideValues.GetAveragePoints(!simpleProjections, CounterPick);
-            return systemWideValues.GetAveragePoints(false, CounterPick);
+            return systemWideValues.GetAveragePoints(draftFinished, CounterPick);
         }
 
         decimal? fantasyPoints = CalculateFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);
         if (fantasyPoints.HasValue)
         {
             return fantasyPoints.Value;
-        }
-
-        if (simpleProjections)
-        {
-            return PublisherGame.Value.MasterGame.Value.GetSimpleProjectedFantasyPoints(systemWideValues, CounterPick);
         }
 
         return PublisherGame.Value.MasterGame.Value.GetProjectedOrRealFantasyPoints(scoringSystem, CounterPick, currentDate);

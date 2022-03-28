@@ -129,11 +129,6 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return projectedPoints;
     }
 
-    public decimal GetSimpleProjectedFantasyPoints(SystemWideValues systemWideValues, bool counterPick)
-    {
-        return systemWideValues.GetAveragePoints(false, counterPick);
-    }
-
     public decimal? CalculateFantasyPoints(ScoringSystem scoringSystem, bool counterPick, LocalDate currentDate, bool mustBeReleased)
     {
         if (!WillRelease())

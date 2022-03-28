@@ -5,9 +5,9 @@
     </td>
     <template v-if="game">
       <td class="score-column">{{ game.criticScore | score }}</td>
-      <template v-if="advancedProjections">
+      <template v-if="showProjections">
         <td v-if="game.fantasyPoints || !game.willRelease" class="score-column">{{ game.fantasyPoints | score }}</td>
-        <td v-else class="score-column projected-text">~{{ gameSlot.advancedProjectedFantasyPoints | score }}</td>
+        <td v-else class="score-column projected-text">~{{ gameSlot.projectedFantasyPoints | score }}</td>
       </template>
       <template v-else>
         <td class="score-column">{{ game.fantasyPoints | score }}</td>

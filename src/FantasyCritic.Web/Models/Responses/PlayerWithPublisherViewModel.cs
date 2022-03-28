@@ -24,8 +24,7 @@ public class PlayerWithPublisherViewModel
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
 
         var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
-        SimpleProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, true, currentDate, ineligiblePointsShouldCount, leagueYear);
-        AdvancedProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, ineligiblePointsShouldCount, leagueYear);
+        ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, currentDate, ineligiblePointsShouldCount, leagueYear);
         PreviousYearWinner = previousYearWinner;
     }
 
@@ -34,7 +33,6 @@ public class PlayerWithPublisherViewModel
     public PlayerViewModel User { get; }
     public MinimalPublisherViewModel Publisher { get; }
     public decimal TotalFantasyPoints { get; }
-    public decimal SimpleProjectedFantasyPoints { get; }
-    public decimal AdvancedProjectedFantasyPoints { get; }
+    public decimal ProjectedFantasyPoints { get; }
     public bool PreviousYearWinner { get; }
 }

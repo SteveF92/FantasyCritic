@@ -70,12 +70,12 @@ public class Publisher : IEquatable<Publisher>
         return score.Value + emptyCounterPickSlotPoints;
     }
 
-    public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, bool simpleProjections, LocalDate currentDate, bool ineligiblePointsShouldCount, LeagueYear leagueYear)
+    public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, LocalDate currentDate, bool ineligiblePointsShouldCount, LeagueYear leagueYear)
     {
         var leagueOptions = leagueYear.Options;
         var score = GetPublisherSlots(leagueOptions)
-            .Sum(x => x.GetProjectedOrRealFantasyPoints(ineligiblePointsShouldCount || x.SlotIsValid(leagueYear),
-                leagueOptions.ScoringSystem, systemWideValues, simpleProjections, currentDate));
+            .Sum(x => x.GetProjectedOrRealFantasyPoints(ineligiblePointsShouldCount || x.SlotIsValid(leagueYear), leagueYear.PlayStatus.DraftFinished,
+                leagueOptions.ScoringSystem, systemWideValues, currentDate));
 
         return score;
     }

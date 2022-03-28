@@ -260,7 +260,7 @@ public class ActionProcessingService
         if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.LowestProjectedPoints))
         {
             bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
-            var bestBidsByProjectedScore = bestBids.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames, leagueYear)).ToList();
+            var bestBidsByProjectedScore = bestBids.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, currentDate, countIneligibleGames, leagueYear)).ToList();
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();
@@ -286,7 +286,7 @@ public class ActionProcessingService
             }
 
             bool countIneligibleGames = leagueYear.Options.HasSpecialSlots();
-            var bestBidsByProjectedScore = bestBidsByBidTime.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, countIneligibleGames, leagueYear)).ToList();
+            var bestBidsByProjectedScore = bestBidsByBidTime.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, currentDate, countIneligibleGames, leagueYear)).ToList();
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();

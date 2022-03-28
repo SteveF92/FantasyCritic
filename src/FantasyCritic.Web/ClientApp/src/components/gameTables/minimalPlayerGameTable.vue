@@ -37,10 +37,10 @@
         <minimalPlayerGameSlotRow v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber" :minimal="true" :game-slot="gameSlot"></minimalPlayerGameSlotRow>
         <tr class="minimal-game-row">
           <td id="total-description">
-            <span v-if="!advancedProjections" id="total-description-text">Total Fantasy Points</span>
+            <span v-if="!showProjections" id="total-description-text">Total Fantasy Points</span>
             <span v-else id="total-description-text">Projected Fantasy Points</span>
           </td>
-          <template v-if="!advancedProjections">
+          <template v-if="!showProjections">
             <td id="total-column" class="bg-success" colspan="2">{{ publisher.totalFantasyPoints | score }}</td>
           </template>
           <template v-else>

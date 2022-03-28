@@ -13,7 +13,7 @@ let leagueMixin = {
       leagueActions: (state) => state.league.leagueActions,
       leagueActionSets: (state) => state.league.leagueActionSets,
       historicalTrades: (state) => state.league.historicalTrades,
-      advancedProjections: (state) => state.league.advancedProjections,
+      showProjections: (state) => state.league.showProjections,
       draftOrderView: (state) => state.league.draftOrderView
     }),
     league() {

@@ -19,7 +19,7 @@ public class MinimalPublisherViewModel
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
 
         var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
-        TotalProjectedPoints = publisher.GetProjectedFantasyPoints(systemWideValues, false, currentDate, ineligiblePointsShouldCount, leagueYear);
+        TotalProjectedPoints = publisher.GetProjectedFantasyPoints(systemWideValues, currentDate, ineligiblePointsShouldCount, leagueYear);
         Budget = publisher.Budget;
 
         UserIsInLeague = userIsInLeague;

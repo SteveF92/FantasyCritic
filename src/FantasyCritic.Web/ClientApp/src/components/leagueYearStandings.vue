@@ -3,11 +3,11 @@
     <div class="header">
       <h2>Standings</h2>
       <span>
-        <label class="projections-label">Advanced Projections</label>
+        <label class="projections-label">Show Projections</label>
         <toggle-button
-          v-model="editableAdvancedProjections"
+          v-model="projectionsToggle"
           class="toggle"
-          :class="{ 'toggle-on': editableAdvancedProjections }"
+          :class="{ 'toggle-on': projectionsToggle }"
           :sync="true"
           :labels="{ checked: 'On', unchecked: 'Off' }"
           :css-colors="true"
@@ -34,8 +34,7 @@
           </span>
         </span>
       </template>
-      <template #cell(simpleProjectedFantasyPoints)="data">{{ data.item.simpleProjectedFantasyPoints | score(2) }}</template>
-      <template #cell(advancedProjectedFantasyPoints)="data">{{ data.item.advancedProjectedFantasyPoints | score(2) }}</template>
+      <template #cell(projectedFantasyPoints)="data">{{ data.item.projectedFantasyPoints | score(2) }}</template>
       <template #cell(totalFantasyPoints)="data">{{ data.item.totalFantasyPoints | score(2) }}</template>
       <template #cell(gamesReleased)="data">
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesReleased }}</span>
@@ -62,44 +61,26 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      basicStandingFields: [
+      standingFields: [
         { key: 'userName', label: 'User', thClass: 'bg-primary' },
         { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+        { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
         { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
         { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
         { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' },
         { key: 'budget', label: 'Budget', thClass: 'bg-primary' }
-      ],
-      projectionFields: [
-        { key: 'simpleProjectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
-        { key: 'advancedProjectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true }
       ],
       sortBy: 'totalFantasyPoints',
       sortDesc: true
     };
   },
   computed: {
-    standingFields() {
-      let copiedArray = this.basicStandingFields.slice(0);
-      if (this.advancedProjections) {
-        copiedArray.splice(2, 0, this.projectionFields[1]);
-      } else {
-        copiedArray.splice(2, 0, this.projectionFields[0]);
-      }
-
-      return copiedArray;
-    },
-    editableAdvancedProjections: {
+    projectionsToggle: {
       get() {
-        return this.advancedProjections;
+        return this.showProjections;
       },
       set(value) {
-        if (value && this.sortBy === 'simpleProjectedFantasyPoints') {
-          this.sortBy = 'advancedProjectedFantasyPoints';
-        } else if (!value && this.sortBy === 'advancedProjectedFantasyPoints') {
-          this.sortBy = 'simpleProjectedFantasyPoints';
-        }
-        this.$store.commit('setAdvancedProjections', value);
+        this.$store.commit('setShowProjections', value);
       }
     },
     standings() {

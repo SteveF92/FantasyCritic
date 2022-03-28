@@ -160,7 +160,7 @@
           </li>
           <li>
             <a href="https://github.com/uioreanu" target="_blank">Calin Uioreanu</a>
-            , for helping develop the "Advanced Projections" statistic.
+            , for helping develop the "Projected Points" algorithm.
           </li>
           <li>
             <a href="https://twitter.com/WhatsGoode1" target="_blank">Matt Goode</a>

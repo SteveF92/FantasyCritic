@@ -17,8 +17,7 @@ public class PublisherSlotViewModel
         GameMeetsSlotCriteria = !EligibilityErrors.Any();
 
         var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
-        SimpleProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, leagueYear.Options.ScoringSystem, systemWideValues, true, currentDate);
-        AdvancedProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, leagueYear.Options.ScoringSystem, systemWideValues, false, currentDate);
+        ProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, leagueYear.PlayStatus.DraftFinished, leagueYear.Options.ScoringSystem, systemWideValues, currentDate);
     }
 
     public int SlotNumber { get; }
@@ -28,7 +27,5 @@ public class PublisherSlotViewModel
     public PublisherGameViewModel PublisherGame { get; }
     public IReadOnlyList<string> EligibilityErrors { get; }
     public bool GameMeetsSlotCriteria { get; }
-
-    public decimal? SimpleProjectedFantasyPoints { get; }
-    public decimal? AdvancedProjectedFantasyPoints { get; }
+    public decimal? ProjectedFantasyPoints { get; }
 }

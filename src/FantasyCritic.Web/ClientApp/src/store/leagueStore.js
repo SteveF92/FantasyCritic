@@ -12,7 +12,7 @@ export default {
     leagueActions: null,
     leagueActionSets: null,
     historicalTrades: null,
-    advancedProjections: false,
+    showProjections: false,
     draftOrderView: false
   },
   actions: {
@@ -133,8 +133,8 @@ export default {
     setHistoricalTrades(state, historicalTrades) {
       state.historicalTrades = historicalTrades;
     },
-    setAdvancedProjections(state, advancedProjections) {
-      state.advancedProjections = advancedProjections;
+    setShowProjections(state, showProjections) {
+      state.showProjections = showProjections;
     },
     setDraftOrderView(state, draftOrderView) {
       state.draftOrderView = draftOrderView;
