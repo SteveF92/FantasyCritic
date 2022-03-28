@@ -3,20 +3,17 @@
     <td>
       <gameNameColumn :game-slot="gameSlot" :has-special-slots="hasSpecialSlots" :supported-year="supportedYear"></gameNameColumn>
     </td>
-    <template v-if="game">
-      <td class="score-column">{{ game.criticScore | score }}</td>
-      <template v-if="showProjections">
-        <td v-if="game.fantasyPoints || !game.willRelease" class="score-column">{{ game.fantasyPoints | score }}</td>
-        <td v-else class="score-column projected-text">~{{ gameSlot.projectedFantasyPoints | score }}</td>
+    <td class="score-column">
+      <template v-if="game">
+        {{ game.criticScore | score }}
       </template>
-      <template v-else>
-        <td class="score-column">{{ game.fantasyPoints | score }}</td>
-      </template>
-    </template>
-    <template v-else>
-      <td class="score-column"></td>
-      <td class="score-column">{{ emptySlotScore }}</td>
-    </template>
+    </td>
+
+    <td class="score-column" :class="{ 'projected-text': showProjectedScore }">
+      <template v-if="scoreColumnMode === 'RealScore'">{{ game.fantasyPoints | score }}</template>
+      <template v-if="scoreColumnMode === 'ProjectedPoints'">~{{ gameSlot.projectedFantasyPoints | score }}</template>
+      <template v-if="scoreColumnMode === 'Empty'">{{ emptySlotScore | score }}</template>
+    </td>
   </tr>
 </template>
 <script>
@@ -34,6 +31,19 @@ export default {
   computed: {
     game() {
       return this.gameSlot.publisherGame;
+    },
+    scoreColumnMode() {
+      if (this.game && (this.game.fantasyPoints || !this.game.willRelease)) {
+        return 'RealScore';
+      }
+      if (this.showProjections) {
+        return 'ProjectedPoints';
+      }
+
+      return 'Empty';
+    },
+    showProjectedScore() {
+      return this.showProjections && !(this.game && (this.game.fantasyPoints || !this.game.willRelease));
     },
     emptySlotScore() {
       if (this.gameSlot.counterPick && this.yearFinished) {

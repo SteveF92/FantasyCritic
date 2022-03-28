@@ -26,7 +26,7 @@ public class SystemWideValues
         var relevantDataPoints = AverageStandardGamePointsByPickPosition
             .Where(x => x.PickPosition >= lowestPossiblePickNumber && x.PickPosition <= highestPossiblePickNumber).Select(x => x.AveragePoints)
             .ToList();
-        if (relevantDataPoints.Any())
+        if (!relevantDataPoints.Any())
         {
             return AveragePickupOnlyStandardGamePoints;
         }
