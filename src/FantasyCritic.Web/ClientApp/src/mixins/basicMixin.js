@@ -4,6 +4,9 @@ let basicMixin = {
   computed: {
     ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'userPublisher', 'authIsBusy']),
     displayName() {
+      if (!this.$store.getters.userInfo) {
+        return;
+      }
       return this.$store.getters.userInfo.displayName;
     }
   },

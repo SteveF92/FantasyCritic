@@ -45,9 +45,12 @@ export default {
       try {
         const response = await axios.get(queryURL);
         const leagueYearPayload = {
-          leagueYear: response.data,
-          userID: context.getters.userInfo.userID
+          leagueYear: response.data
         };
+        if (context.getters.userInfo) {
+          leagueYearPayload.userID = context.getters.userInfo.userID;
+        }
+
         context.commit('setLeagueYear', leagueYearPayload);
       } catch (err) {
         context.commit('setErrorInfo', leagueErrorMessageText);
@@ -112,8 +115,11 @@ export default {
     setLeagueYear(state, leagueYearPayload) {
       state.leagueYear = leagueYearPayload.leagueYear;
       document.title = leagueYearPayload.leagueYear.league.leagueName + ' - Fantasy Critic';
-      let matchingPublishers = _.filter(leagueYearPayload.leagueYear.publishers, (x) => x.userID === leagueYearPayload.userID);
-      state.userPublisher = matchingPublishers[0];
+
+      if (leagueYearPayload.userID) {
+        let matchingPublishers = _.filter(leagueYearPayload.leagueYear.publishers, (x) => x.userID === leagueYearPayload.userID);
+        state.userPublisher = matchingPublishers[0];
+      }
     },
     setGameNews(state, gameNews) {
       state.gameNews = gameNews;
