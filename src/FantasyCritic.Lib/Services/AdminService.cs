@@ -289,9 +289,9 @@ public class AdminService
         foreach (var supportedYear in supportedYears)
         {
             var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
-            var nonTestLeagues = leagueYears.Where(x => !x.League.TestLeague).ToList();
-            allLeagueYears.AddRange(nonTestLeagues);
-            var publishers = nonTestLeagues.SelectMany(x => x.Publishers).ToList();
+            var leaguesToCount = leagueYears.Where(x => !x.League.TestLeague && x.PlayStatus.DraftFinished).ToList();
+            allLeagueYears.AddRange(leaguesToCount);
+            var publishers = leaguesToCount.SelectMany(x => x.Publishers).ToList();
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
             var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue).ToList();
             allGamesWithPoints.AddRange(gamesWithPoints);
