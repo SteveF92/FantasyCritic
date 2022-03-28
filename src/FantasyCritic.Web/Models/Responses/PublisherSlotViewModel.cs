@@ -18,7 +18,7 @@ public class PublisherSlotViewModel
 
         var ineligiblePointsShouldCount = leagueYear.Options.HasSpecialSlots();
         ProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, leagueYear.Options.ScoringSystem, systemWideValues, currentDate,
-            leagueYear.StandardGamesTaken, leagueYear.Options.StandardGames);
+            leagueYear.StandardGamesTaken, leagueYear.TotalNumberOfStandardGames);
     }
 
     public int SlotNumber { get; }

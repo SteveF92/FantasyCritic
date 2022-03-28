@@ -43,6 +43,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public Maybe<FantasyCriticUser> WinningUser { get; }
     public IReadOnlyList<Publisher> Publishers => _publisherDictionary.Values.ToList();
     public int StandardGamesTaken { get; }
+    public int TotalNumberOfStandardGames => Options.StandardGames * Publishers.Count;
 
     public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 
