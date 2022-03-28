@@ -6,12 +6,17 @@ internal class AveragePositionPointsEntity
 
     }
 
-    public AveragePositionPointsEntity(int pickPosition, decimal averagePoints)
+    public AveragePositionPointsEntity(AveragePickPositionPoints domain)
     {
-        PickPosition = pickPosition;
-        AveragePoints = averagePoints;
+        PickPosition = domain.PickPosition;
+        DataPoints = domain.DataPoints;
+        AveragePoints = domain.AveragePoints;
     }
 
     public int PickPosition { get; set; }
+    public int DataPoints { get; set; }
     public decimal AveragePoints { get; set; }
+
+    public AveragePickPositionPoints ToDomain() =>
+        new AveragePickPositionPoints(PickPosition, DataPoints, AveragePoints);
 }

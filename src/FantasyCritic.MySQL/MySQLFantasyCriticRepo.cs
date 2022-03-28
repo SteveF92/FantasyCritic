@@ -2588,7 +2588,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             var positionPoints = await connection.QueryAsync<AveragePositionPointsEntity>("select * from tbl_caching_averagepositionpoints;");
             var result = await connection.QuerySingleAsync<SystemWideValuesEntity>("select * from tbl_caching_systemwidevalues;");
-            return result.ToDomain(positionPoints.ToDictionary(x => x.PickPosition, y=> y.AveragePoints));
+            return result.ToDomain(positionPoints.Select(x => x.ToDomain()));
         }
     }
 
@@ -2789,7 +2789,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         string insertSQL = "INSERT into tbl_caching_systemwidevalues VALUES (@AverageStandardGamePoints,@AveragePickupOnlyStandardGamePoints,@AverageCounterPickPoints);";
 
         SystemWideValuesEntity entity = new SystemWideValuesEntity(systemWideValues);
-        var positionEntities = systemWideValues.AverageStandardGamePointsByPickPosition.Select(x => new AveragePositionPointsEntity(x.Key, x.Value)).ToList();
+        var positionEntities = systemWideValues.AverageStandardGamePointsByPickPosition.Select(x => new AveragePositionPointsEntity(x)).ToList();
         using (var connection = new MySqlConnection(_connectionString))
         {
             await connection.OpenAsync();

@@ -311,21 +311,18 @@ public class AdminService
             var orderedGames = publishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick & x.FantasyPoints.HasValue).OrderBy(x => x.Timestamp).ToList();
             for (var index = 0; index < orderedGames.Count; index++)
             {
-                if (!pointsForPosition.ContainsKey(index))
+                var game = orderedGames[index];
+                var pickPosition = index + 1;
+                if (!pointsForPosition.ContainsKey(pickPosition))
                 {
-                    pointsForPosition[index] = new List<decimal>();
+                    pointsForPosition[pickPosition] = new List<decimal>();
                 }
 
-                pointsForPosition[index].Add(orderedGames[index].FantasyPoints.Value);
+                pointsForPosition[pickPosition].Add(game.FantasyPoints.Value);
             }
         }
 
-        Dictionary<int, decimal> averageStandardGamePointsByPickPosition = new Dictionary<int, decimal>();
-        foreach (var position in pointsForPosition)
-        {
-            averageStandardGamePointsByPickPosition[position.Key] = position.Value.Average();
-        }
-
+        var averageStandardGamePointsByPickPosition = pointsForPosition.Select(position => new AveragePickPositionPoints(position.Key, position.Value.Count, position.Value.Average())).ToList();
         var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints, averageStandardGamePointsByPickPosition);
         await _interLeagueService.UpdateSystemWideValues(systemWideValues);
     }
