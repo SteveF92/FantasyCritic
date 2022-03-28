@@ -5,9 +5,9 @@
       <span>
         <label class="projections-label">Advanced Projections</label>
         <toggle-button
-          v-model="advancedProjections"
+          v-model="editableAdvancedProjections"
           class="toggle"
-          :class="{ 'toggle-on': advancedProjections }"
+          :class="{ 'toggle-on': editableAdvancedProjections }"
           :sync="true"
           :labels="{ checked: 'On', unchecked: 'Off' }"
           :css-colors="true"
@@ -89,9 +89,9 @@ export default {
 
       return copiedArray;
     },
-    advancedProjections: {
+    editableAdvancedProjections: {
       get() {
-        return this.$store.getters.advancedProjections;
+        return this.advancedProjections;
       },
       set(value) {
         if (value && this.sortBy === 'simpleProjectedFantasyPoints') {
