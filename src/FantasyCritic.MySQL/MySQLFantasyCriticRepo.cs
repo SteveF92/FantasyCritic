@@ -2583,10 +2583,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<SystemWideValues> GetSystemWideValues()
     {
+        //TODO Dictionary
+        Dictionary<int, decimal> averageStandardGamePointsByPickPosition = new Dictionary<int, decimal>();
+
         using (var connection = new MySqlConnection(_connectionString))
         {
             var result = await connection.QuerySingleAsync<SystemWideValuesEntity>("select * from tbl_caching_systemwidevalues;");
-            return result.ToDomain();
+            return result.ToDomain(averageStandardGamePointsByPickPosition);
         }
     }
 

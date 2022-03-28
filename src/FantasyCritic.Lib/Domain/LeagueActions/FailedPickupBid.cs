@@ -6,7 +6,7 @@ public class FailedPickupBid : IProcessedBid
     {
         PickupBid = pickupBid;
         FailureReason = failureReason;
-        ProjectedPointsAtTimeOfBid = PickupBid.Publisher.GetProjectedFantasyPoints(systemWideValues, currentDate, false, pickupBid.LeagueYear);
+        ProjectedPointsAtTimeOfBid = PickupBid.Publisher.GetProjectedFantasyPoints(pickupBid.LeagueYear, systemWideValues, currentDate);
     }
 
     public PickupBid PickupBid { get; }

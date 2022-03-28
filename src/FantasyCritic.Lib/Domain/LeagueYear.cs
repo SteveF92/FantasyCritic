@@ -29,6 +29,7 @@ public class LeagueYear : IEquatable<LeagueYear>
 
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
         _managerPublisher = Maybe.From(Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id));
+        StandardGamesTaken = _publisherDictionary.Values.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
     }
 
     public League League { get; }
@@ -41,6 +42,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public Instant? DraftStartedTimestamp { get; }
     public Maybe<FantasyCriticUser> WinningUser { get; }
     public IReadOnlyList<Publisher> Publishers => _publisherDictionary.Values.ToList();
+    public int StandardGamesTaken { get; }
 
     public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 

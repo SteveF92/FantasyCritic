@@ -42,11 +42,12 @@ public class PublisherSlot
         return SlotEligibilityService.GetClaimErrorsForSlot(this, eligibilityFactors.Value);
     }
 
-    public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, bool draftFinished, ScoringSystem scoringSystem, SystemWideValues systemWideValues, LocalDate currentDate)
+    public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues, LocalDate currentDate,
+        int standardGamesTaken, int numberOfStandardGames)
     {
         if (PublisherGame.HasNoValue)
         {
-            return systemWideValues.GetAveragePoints(draftFinished, CounterPick);
+            return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken, numberOfStandardGames);
         }
 
         if (PublisherGame.Value.MasterGame.HasNoValue)
@@ -56,7 +57,7 @@ public class PublisherSlot
                 return PublisherGame.Value.ManualCriticScore.Value;
             }
 
-            return systemWideValues.GetAveragePoints(draftFinished, CounterPick);
+            return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken, numberOfStandardGames);
         }
 
         decimal? fantasyPoints = CalculateFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);

@@ -297,7 +297,10 @@ public class AdminService
         var averagePickupOnlyStandardPoints = allGamesWithPoints.Where(x => !x.CounterPick && !x.OverallDraftPosition.HasValue).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
         var averageCounterPickPoints = allGamesWithPoints.Where(x => x.CounterPick).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
 
-        var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints);
+        //TODO Dictionary
+        Dictionary<int, decimal> averageStandardGamePointsByPickPosition = new Dictionary<int, decimal>();
+
+        var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints, averageStandardGamePointsByPickPosition);
         await _interLeagueService.UpdateSystemWideValues(systemWideValues);
     }
 

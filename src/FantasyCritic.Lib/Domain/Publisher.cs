@@ -70,14 +70,21 @@ public class Publisher : IEquatable<Publisher>
         return score.Value + emptyCounterPickSlotPoints;
     }
 
-    public decimal GetProjectedFantasyPoints(SystemWideValues systemWideValues, LocalDate currentDate, bool ineligiblePointsShouldCount, LeagueYear leagueYear)
+    public decimal GetProjectedFantasyPoints(LeagueYear leagueYear, SystemWideValues systemWideValues, LocalDate currentDate)
     {
         var leagueOptions = leagueYear.Options;
-        var score = GetPublisherSlots(leagueOptions)
-            .Sum(x => x.GetProjectedOrRealFantasyPoints(ineligiblePointsShouldCount || x.SlotIsValid(leagueYear), leagueYear.PlayStatus.DraftFinished,
-                leagueOptions.ScoringSystem, systemWideValues, currentDate));
+        bool ineligiblePointsShouldCount = leagueYear.Options.HasSpecialSlots();
+        var slots = GetPublisherSlots(leagueOptions);
+        decimal projectedScore = 0;
+        foreach (var slot in slots)
+        {
+            bool countSlotAsValid = ineligiblePointsShouldCount || slot.SlotIsValid(leagueYear);
+            var slotScore = slot.GetProjectedOrRealFantasyPoints(countSlotAsValid, leagueOptions.ScoringSystem, systemWideValues, currentDate,
+                leagueYear.StandardGamesTaken, leagueOptions.StandardGames);
+            projectedScore += slotScore;
+        }
 
-        return score;
+        return projectedScore;
     }
 
     private decimal? GetEmptyCounterPickSlotPoints(SupportedYear year, LeagueOptions leagueOptions)
