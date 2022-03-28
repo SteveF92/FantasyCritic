@@ -16,8 +16,9 @@ public class PublisherSlotViewModel
         EligibilityErrors = slot.GetClaimErrorsForSlot(leagueYear).Select(x => x.Error).ToList();
         GameMeetsSlotCriteria = !EligibilityErrors.Any();
 
-        var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
-        ProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, leagueYear.PlayStatus.DraftFinished, leagueYear.Options.ScoringSystem, systemWideValues, currentDate);
+        var ineligiblePointsShouldCount = leagueYear.Options.HasSpecialSlots();
+        ProjectedFantasyPoints = slot.GetProjectedOrRealFantasyPoints(GameMeetsSlotCriteria || ineligiblePointsShouldCount, leagueYear.Options.ScoringSystem, systemWideValues, currentDate,
+            leagueYear.StandardGamesTaken, leagueYear.Options.StandardGames);
     }
 
     public int SlotNumber { get; }

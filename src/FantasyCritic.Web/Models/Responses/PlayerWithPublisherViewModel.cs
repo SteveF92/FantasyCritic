@@ -22,9 +22,7 @@ public class PlayerWithPublisherViewModel
         User = new PlayerViewModel(leagueYear.League, user, removable);
         Publisher = new MinimalPublisherViewModel(leagueYear, publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues);
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
-
-        var ineligiblePointsShouldCount = !SupportedYear.Year2022FeatureSupported(leagueYear.Year);
-        ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(systemWideValues, currentDate, ineligiblePointsShouldCount, leagueYear);
+        ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate);
         PreviousYearWinner = previousYearWinner;
     }
 
