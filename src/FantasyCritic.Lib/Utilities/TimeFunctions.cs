@@ -37,14 +37,17 @@ public static class TimeFunctions
         else if (splitString.Length == 2)
         {
             yearPart = TryParseYear(splitString.Last());
-            bool hasSubYear = _recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart);
-            if (hasSubYear)
+            if (yearPart.HasValue)
             {
-                return (new LocalDate(yearPart.Value, subYearPart.minimumDate.Month, subYearPart.minimumDate.Day),
-                    new LocalDate(yearPart.Value, subYearPart.maximumDate.Month, subYearPart.maximumDate.Day));
-            }
+                bool hasSubYear = _recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart);
+                if (hasSubYear)
+                {
+                    return (new LocalDate(yearPart.Value, subYearPart.minimumDate.Month, subYearPart.minimumDate.Day),
+                        new LocalDate(yearPart.Value, subYearPart.maximumDate.Month, subYearPart.maximumDate.Day));
+                }
 
-            return (new LocalDate(yearPart.Value, 1, 1), new LocalDate(yearPart.Value, 12, 31));
+                return (new LocalDate(yearPart.Value, 1, 1), new LocalDate(yearPart.Value, 12, 31));
+            }
         }
 
         return (tomorrow, null);

@@ -75,8 +75,7 @@ public class EmailSendingService
 
         foreach (var user in usersWithPublicBidEmails)
         {
-            bool hasLeagueYears = usersWithLeagueYears.TryGetValue(user, out var leagueYearKeys);
-            if (!hasLeagueYears)
+            if (!usersWithLeagueYears.TryGetValue(user, out var leagueYearKeys))
             {
                 continue;
             }
@@ -84,8 +83,7 @@ public class EmailSendingService
             List<PublicBiddingSet> publicBiddingSetsForUser = new List<PublicBiddingSet>();
             foreach (var leagueYearKey in leagueYearKeys)
             {
-                bool hasPublicBiddingSet = publicBiddingSetDictionary.TryGetValue(leagueYearKey, out var publicBiddingSet);
-                if (hasPublicBiddingSet)
+                if (publicBiddingSetDictionary.TryGetValue(leagueYearKey, out var publicBiddingSet))
                 {
                     publicBiddingSetsForUser.Add(publicBiddingSet);
                 }

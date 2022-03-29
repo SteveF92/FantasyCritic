@@ -340,7 +340,7 @@ public class GameAcquisitionService
         }
 
         PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-            masterGameYear, claimResult.BestSlotNumber.Value, request.DraftPosition, request.OverallDraftPosition, null, null);
+            masterGameYear, claimResult.BestSlotNumber!.Value, request.DraftPosition, request.OverallDraftPosition, null, null);
 
         LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
         await _fantasyCriticRepo.AddLeagueAction(leagueAction);
@@ -619,7 +619,7 @@ public class GameAcquisitionService
         List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
         foreach (var bid in distinctBids)
         {
-            var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, leagueYear.Year);
+            var masterGameYear = await _masterGameRepo.GetMasterGameYearOrThrow(bid.MasterGame.MasterGameID, leagueYear.Year);
             var claimResult = GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false, false);
             masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
         }
@@ -689,7 +689,7 @@ public class GameAcquisitionService
             List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
             foreach (var bid in distinctBids)
             {
-                var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, activeBidsForLeague.Key.Year);
+                var masterGameYear = await _masterGameRepo.GetMasterGameYearOrThrow(bid.MasterGame.MasterGameID, activeBidsForLeague.Key.Year);
                 var claimResult = GetGenericSlotMasterGameErrors(activeBidsForLeague.Key, bid.MasterGame, activeBidsForLeague.Key.Year, false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false, false);
                 masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
             }

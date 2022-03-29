@@ -47,8 +47,7 @@ public class PatreonService
                 _logger.Info("Patreon request successful.");
                 await foreach (var member in campaignMembers)
                 {
-                    var hasFantasyCriticUser = patreonUserDictionary.TryGetValue(member.Relationships.User.Id, out var fantasyCriticUser);
-                    if (!hasFantasyCriticUser)
+                    if (!patreonUserDictionary.TryGetValue(member.Relationships.User.Id, out var fantasyCriticUser))
                     {
                         continue;
                     }

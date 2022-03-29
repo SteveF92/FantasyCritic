@@ -103,6 +103,15 @@ public class LeagueYear : IEquatable<LeagueYear>
         return _managerPublisher;
     }
 
+    public Publisher GetManagerPublisherOrThrow()
+    {
+        if (_managerPublisher is null)
+        {
+            throw new Exception($"League: {League.LeagueID} has no manager publisher");
+        }
+        return _managerPublisher;
+    }
+
     public Publisher? GetUserPublisher(FantasyCriticUser user)
     {
         return Publishers.SingleOrDefault(x => x.User.Id == user.Id);
@@ -126,8 +135,7 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public Publisher GetPublisherByOrFakePublisher(Guid publisherID)
     {
-        bool hasPublisher = _publisherDictionary.TryGetValue(publisherID, out var publisher);
-        if (!hasPublisher)
+        if (!_publisherDictionary.TryGetValue(publisherID, out var publisher))
         {
             return Publisher.GetFakePublisher(Key);
         }
@@ -135,14 +143,14 @@ public class LeagueYear : IEquatable<LeagueYear>
         return publisher;
     }
 
-    public bool Equals(LeagueYear other)
+    public bool Equals(LeagueYear? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Equals(League, other.League) && Year == other.Year;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

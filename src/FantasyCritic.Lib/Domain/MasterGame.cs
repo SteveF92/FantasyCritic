@@ -72,7 +72,7 @@ public class MasterGame : IEquatable<MasterGame>
                 return null;
             }
 
-            decimal average = SubGames.Where(x => x.CriticScore.HasValue).Average(x => x.CriticScore.Value);
+            decimal average = SubGames.Where(x => x.CriticScore.HasValue).Average(x => x.CriticScore!.Value);
             return average;
         }
     }

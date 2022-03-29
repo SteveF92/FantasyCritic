@@ -65,7 +65,7 @@ public static class TimeExtensions
         return dateTime.InZoneStrictly(nyc).ToInstant();
     }
 
-    public static readonly DateTimeZone EasternTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
+    public static readonly DateTimeZone EasternTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")!;
     public static readonly IsoDayOfWeek PublicBiddingRevealDay = IsoDayOfWeek.Thursday;
     public static readonly LocalTime PublicBiddingRevealTime = new LocalTime(20, 0);
     public static readonly IsoDayOfWeek ActionProcessingDay = IsoDayOfWeek.Saturday;

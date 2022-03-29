@@ -9,8 +9,8 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
 
     }
 
-    public FantasyCriticUser(Guid userID, string displayName, string patreonDonorNameOverride, int displayNumber, string emailAddress, string normalizedEmailAddress,
-        bool emailConfirmed, string securityStamp, string passwordHash, bool twoFactorEnabled, string authenticatorKey, Instant lastChangedCredentials, bool isDeleted)
+    public FantasyCriticUser(Guid userID, string displayName, string? patreonDonorNameOverride, int displayNumber, string emailAddress, string normalizedEmailAddress,
+        bool emailConfirmed, string securityStamp, string passwordHash, bool twoFactorEnabled, string? authenticatorKey, Instant lastChangedCredentials, bool isDeleted)
     {
         Id = userID;
         UserName = displayName;
@@ -27,11 +27,11 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
         IsDeleted = isDeleted;
     }
 
-    public string PatreonDonorNameOverride { get; }
+    public string? PatreonDonorNameOverride { get; }
     public int DisplayNumber { get; set; }
     public Instant LastChangedCredentials { get; set; }
     public bool IsDeleted { get; set; }
-    public string AuthenticatorKey { get; set; }
+    public string? AuthenticatorKey { get; set; }
 
     public void UpdateLastUsedCredentials(Instant currentInstant)
     {

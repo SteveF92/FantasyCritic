@@ -164,7 +164,7 @@ public class FantasyCriticService
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.PlayStatus, eligibilityOverrides,
             tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers);
 
-        var managerPublisher = leagueYear.GetManagerPublisher();
+        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         var differenceString = options.GetDifferenceString(leagueYear.Options);
         if (differenceString is not null)
         {
@@ -317,7 +317,7 @@ public class FantasyCriticService
     public async Task ManuallySetWillNotRelease(LeagueYear leagueYear, PublisherGame publisherGame, bool willNotRelease)
     {
         await _fantasyCriticRepo.ManuallySetWillNotRelease(publisherGame, willNotRelease);
-        var managerPublisher = leagueYear.GetManagerPublisher();
+        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
 
         string description;
         if (willNotRelease)
@@ -505,7 +505,7 @@ public class FantasyCriticService
             await _fantasyCriticRepo.SetEligibilityOverride(leagueYear, masterGame, eligible.Value);
         }
 
-        var managerPublisher = leagueYear.GetManagerPublisher();
+        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         string description;
         if (!eligible.HasValue)
         {
@@ -537,7 +537,7 @@ public class FantasyCriticService
     public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
     {
         await _fantasyCriticRepo.SetTagOverride(leagueYear, masterGame, requestedTags);
-        var managerPublisher = leagueYear.GetManagerPublisher();
+        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         if (requestedTags.Any())
         {
             var tagNames = string.Join(", ", requestedTags.Select(x => x.ReadableName));

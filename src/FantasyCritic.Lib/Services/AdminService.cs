@@ -8,7 +8,6 @@ using NLog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -89,7 +88,7 @@ public class AdminService
                 }
             }
 
-            var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID.Value);
+            var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID!.Value);
             if (openCriticGame is not null)
             {
                 await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame);
@@ -300,9 +299,9 @@ public class AdminService
         var allStandardGamesWithPoints = allGamesWithPoints.Where(x => !x.CounterPick).ToList();
         var allCounterPicksWithPoints = allGamesWithPoints.Where(x => x.CounterPick).ToList();
 
-        var averageStandardPoints = allStandardGamesWithPoints.Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
-        var averagePickupOnlyStandardPoints = allStandardGamesWithPoints.Where(x => !x.OverallDraftPosition.HasValue).Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
-        var averageCounterPickPoints = allCounterPicksWithPoints.Select(x => x.FantasyPoints.Value).DefaultIfEmpty(0m).Average();
+        var averageStandardPoints = allStandardGamesWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
+        var averagePickupOnlyStandardPoints = allStandardGamesWithPoints.Where(x => !x.OverallDraftPosition.HasValue).Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
+        var averageCounterPickPoints = allCounterPicksWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
 
         Dictionary<int, List<decimal>> pointsForPosition = new Dictionary<int, List<decimal>>();
         foreach (var leagueYear in allLeagueYears)
@@ -318,7 +317,7 @@ public class AdminService
                     pointsForPosition[pickPosition] = new List<decimal>();
                 }
 
-                pointsForPosition[pickPosition].Add(game.FantasyPoints.Value);
+                pointsForPosition[pickPosition].Add(game.FantasyPoints!.Value);
             }
         }
 
@@ -552,7 +551,7 @@ public class AdminService
 
         foreach (var masterGame in masterGamesWithEarlyAccessDate)
         {
-            bool inEarlyAccess = today >= masterGame.EarlyAccessReleaseDate.Value;
+            bool inEarlyAccess = today >= masterGame.EarlyAccessReleaseDate!.Value;
             if (inEarlyAccess)
             {
                 tagsToAdd[masterGame].Add(tagDictionary["CurrentlyInEarlyAccess"]);
@@ -565,7 +564,7 @@ public class AdminService
 
         foreach (var masterGame in masterGamesWithInternationalDate)
         {
-            bool releasedInternationally = today >= masterGame.InternationalReleaseDate.Value;
+            bool releasedInternationally = today >= masterGame.InternationalReleaseDate!.Value;
             if (releasedInternationally)
             {
                 tagsToAdd[masterGame].Add(tagDictionary["ReleasedInternationally"]);

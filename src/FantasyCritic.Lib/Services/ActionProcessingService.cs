@@ -121,7 +121,7 @@ public class ActionProcessingService
         List<PickupBid> duplicateBids = new List<PickupBid>();
         foreach (var duplicateBidGroup in duplicateBidGroups)
         {
-            var bestBid = duplicateBidGroup.WhereMax(x => x.BidAmount).WhereMin(x => x.Timestamp).FirstOrDefault();
+            var bestBid = duplicateBidGroup.WhereMax(x => x.BidAmount).WhereMin(x => x.Timestamp).First();
             var otherBids = duplicateBidGroup.Except(new List<PickupBid>() { bestBid });
             duplicateBids.AddRange(otherBids);
         }
@@ -179,7 +179,7 @@ public class ActionProcessingService
                 continue;
             }
 
-            validPickupBids.Add(new ValidPickupBid(pickupBidWithConditionalDropResult, claimResult.BestSlotNumber.Value));
+            validPickupBids.Add(new ValidPickupBid(pickupBidWithConditionalDropResult, claimResult.BestSlotNumber!.Value));
         }
 
         var winnableBids = GetWinnableBids(updatedLeagueYear, validPickupBids, systemWideValues, currentDate);
@@ -346,12 +346,12 @@ public class ActionProcessingService
         }
 
         List<FormerPublisherGame> conditionalDroppedGames = new List<FormerPublisherGame>();
-        var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame is not null && x.PickupBid.ConditionalDropResult.Result.IsSuccess);
+        var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame is not null && x.PickupBid.ConditionalDropResult!.Result.IsSuccess);
         foreach (var successfulConditionalDrop in successfulConditionalDrops)
         {
             var affectedPublisher = publisherStateSet.GetPublisher(successfulConditionalDrop.PickupBid.Publisher.PublisherID);
-            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame, successfulConditionalDrop.PickupBid.LeagueYear.Options);
-            var formerPublisherGame = successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.GetFormerPublisherGame(processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
+            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame!, successfulConditionalDrop.PickupBid.LeagueYear.Options);
+            var formerPublisherGame = successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame!.GetFormerPublisherGame(processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
             conditionalDroppedGames.Add(formerPublisherGame);
         }
 

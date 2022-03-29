@@ -44,8 +44,8 @@ public class Publisher : IEquatable<Publisher>
             List<decimal> gamesWithCriticScores = PublisherGames
                 .Where(x => !x.CounterPick)
                 .Where(x => x.MasterGame is not null)
-                .Where(x => x.MasterGame.MasterGame.CriticScore.HasValue)
-                .Select(x => x.MasterGame.MasterGame.CriticScore.Value)
+                .Where(x => x.MasterGame!.MasterGame.CriticScore.HasValue)
+                .Select(x => x.MasterGame!.MasterGame.CriticScore!.Value)
                 .ToList();
 
             if (gamesWithCriticScores.Count == 0)

@@ -2,12 +2,12 @@ namespace FantasyCritic.Lib.Utilities;
 
 public static class ListFunctions
 {
-    public static IReadOnlyDictionary<TKey, IReadOnlyList<TSource>> SealDictionary<TKey, TSource>(this Dictionary<TKey, List<TSource>> source)
+    public static IReadOnlyDictionary<TKey, IReadOnlyList<TSource>> SealDictionary<TKey, TSource>(this Dictionary<TKey, List<TSource>> source) where TKey : notnull
     {
         return source.ToDictionary(x => x.Key, y => (IReadOnlyList<TSource>)y.Value);
     }
 
-    public static IReadOnlyDictionary<TKey, IReadOnlyList<TSource>> GroupToDictionary<TKey, TSource>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+    public static IReadOnlyDictionary<TKey, IReadOnlyList<TSource>> GroupToDictionary<TKey, TSource>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector) where TKey : notnull
     {
         return source.GroupBy(keySelector).ToDictionary(x => x.Key, y => (IReadOnlyList<TSource>)y.ToList());
     }
@@ -15,7 +15,7 @@ public static class ListFunctions
     public static IReadOnlyDictionary<TKey, TCombinedValue> CombineDictionaries<TKey, TValue1, TValue2, TCombinedValue>(
         IReadOnlyDictionary<TKey, IReadOnlyList<TValue1>> dictionaryOne,
         IReadOnlyDictionary<TKey, IReadOnlyList<TValue2>> dictionaryTwo,
-        Func<IEnumerable<TValue1>, IEnumerable<TValue2>, TCombinedValue> combiner)
+        Func<IEnumerable<TValue1>, IEnumerable<TValue2>, TCombinedValue> combiner) where TKey : notnull
     {
         Dictionary<TKey, TCombinedValue> combinedDictionary = new Dictionary<TKey, TCombinedValue>();
         var keys = dictionaryOne.Keys.Concat(dictionaryTwo.Keys).Distinct();

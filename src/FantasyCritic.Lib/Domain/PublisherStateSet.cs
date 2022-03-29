@@ -14,8 +14,7 @@ public class PublisherStateSet
 
     public Publisher GetPublisher(Guid publisherID)
     {
-        var hasPublisher = _publisherDictionary.TryGetValue(publisherID, out var publisher);
-        if (!hasPublisher)
+        if (!_publisherDictionary.TryGetValue(publisherID, out var publisher))
         {
             throw new Exception($"Cannot find publisher: {publisherID}");
         }

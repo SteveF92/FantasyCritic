@@ -199,8 +199,8 @@ public class Trade
     public Result<IReadOnlyList<PublisherGame>> GetNewPublisherGamesFromTrade(Instant completionTime)
     {
         var dateOfAcquisition = completionTime.ToEasternDate();
-        var proposerGameDictionary = Proposer.PublisherGames.Where(x => x.MasterGame is not null).ToDictionary(x => x.GetMasterGameYearWithCounterPick());
-        var counterPartyGameDictionary = CounterParty.PublisherGames.Where(x => x.MasterGame is not null).ToDictionary(x => x.GetMasterGameYearWithCounterPick());
+        var proposerGameDictionary = Proposer.PublisherGames.Where(x => x.MasterGame is not null).ToDictionary(x => x.GetMasterGameYearWithCounterPick()!);
+        var counterPartyGameDictionary = CounterParty.PublisherGames.Where(x => x.MasterGame is not null).ToDictionary(x => x.GetMasterGameYearWithCounterPick()!);
 
         List<PotentialPublisherSlot> newlyOpenProposerSlotNumbers = new List<PotentialPublisherSlot>();
         foreach (var game in ProposerMasterGames)
